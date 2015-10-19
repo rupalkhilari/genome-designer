@@ -2,10 +2,7 @@ import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { ReduxRouter } from 'redux-router';
-import configureStore from './store/configureStore';
-
-//note that the store loads the routes, which in turn load components. ReduxRouter works with react-router. see routes.js
-const store = configureStore();
+import store from './store';
 
 render(
   <Provider store={store}>
