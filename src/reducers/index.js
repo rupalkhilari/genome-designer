@@ -1,4 +1,4 @@
-import * as ActionTypes from '../actions';
+import * as ActionTypes from '../constants/ActionTypes';
 import merge from 'lodash/object/merge';
 import paginate from './paginate';
 import { routerStateReducer as router } from 'redux-router';

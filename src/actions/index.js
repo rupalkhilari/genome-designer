@@ -1,15 +1,16 @@
 import { CALL_API, Schemas } from '../middleware/api';
-
-export const USER_REQUEST = 'USER_REQUEST';
-export const USER_SUCCESS = 'USER_SUCCESS';
-export const USER_FAILURE = 'USER_FAILURE';
+import * as ActionTypes from '../constants/ActionTypes';
 
 // Fetches a single user from Github API.
 // Relies on the custom API middleware defined in ../middleware/api.js.
 function fetchUser(login) {
   return {
     [CALL_API]: {
-      types: [USER_REQUEST, USER_SUCCESS, USER_FAILURE],
+      types: [
+        ActionTypes.USER_REQUEST,
+        ActionTypes.USER_SUCCESS,
+        ActionTypes.USER_FAILURE
+      ],
       endpoint: `users/${login}`,
       schema: Schemas.USER
     }
@@ -29,16 +30,16 @@ export function loadUser(login, requiredFields = []) {
   };
 }
 
-export const REPO_REQUEST = 'REPO_REQUEST';
-export const REPO_SUCCESS = 'REPO_SUCCESS';
-export const REPO_FAILURE = 'REPO_FAILURE';
-
 // Fetches a single repository from Github API.
 // Relies on the custom API middleware defined in ../middleware/api.js.
 function fetchRepo(fullName) {
   return {
     [CALL_API]: {
-      types: [REPO_REQUEST, REPO_SUCCESS, REPO_FAILURE],
+      types: [
+        ActionTypes.REPO_REQUEST,
+        ActionTypes.REPO_SUCCESS,
+        ActionTypes.REPO_FAILURE
+      ],
       endpoint: `repos/${fullName}`,
       schema: Schemas.REPO
     }
@@ -58,17 +59,17 @@ export function loadRepo(fullName, requiredFields = []) {
   };
 }
 
-export const STARRED_REQUEST = 'STARRED_REQUEST';
-export const STARRED_SUCCESS = 'STARRED_SUCCESS';
-export const STARRED_FAILURE = 'STARRED_FAILURE';
-
 // Fetches a page of starred repos by a particular user.
 // Relies on the custom API middleware defined in ../middleware/api.js.
 function fetchStarred(login, nextPageUrl) {
   return {
     login,
     [CALL_API]: {
-      types: [STARRED_REQUEST, STARRED_SUCCESS, STARRED_FAILURE],
+      types: [
+        ActionTypes.STARRED_REQUEST,
+        ActionTypes.STARRED_SUCCESS,
+        ActionTypes.STARRED_FAILURE
+      ],
       endpoint: nextPageUrl,
       schema: Schemas.REPO_ARRAY
     }
@@ -93,17 +94,17 @@ export function loadStarred(login, nextPage) {
   };
 }
 
-export const STARGAZERS_REQUEST = 'STARGAZERS_REQUEST';
-export const STARGAZERS_SUCCESS = 'STARGAZERS_SUCCESS';
-export const STARGAZERS_FAILURE = 'STARGAZERS_FAILURE';
-
 // Fetches a page of stargazers for a particular repo.
 // Relies on the custom API middleware defined in ../middleware/api.js.
 function fetchStargazers(fullName, nextPageUrl) {
   return {
     fullName,
     [CALL_API]: {
-      types: [STARGAZERS_REQUEST, STARGAZERS_SUCCESS, STARGAZERS_FAILURE],
+      types: [
+        ActionTypes.STARGAZERS_REQUEST,
+        ActionTypes.STARGAZERS_SUCCESS,
+        ActionTypes.STARGAZERS_FAILURE
+      ],
       endpoint: nextPageUrl,
       schema: Schemas.USER_ARRAY
     }
@@ -128,11 +129,9 @@ export function loadStargazers(fullName, nextPage) {
   };
 }
 
-export const RESET_ERROR_MESSAGE = 'RESET_ERROR_MESSAGE';
-
 // Resets the currently visible error message.
 export function resetErrorMessage() {
   return {
-    type: RESET_ERROR_MESSAGE
+    type: ActionTypes.RESET_ERROR_MESSAGE
   };
 }

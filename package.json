@@ -20,6 +20,7 @@
   "bugs": {
     "url": "https://github.com/autodesk-bionano/genome-designer/issues"
   },
+  "styleguide" : "https://github.com/airbnb/javascript",
   "homepage": "https://github.com/autodesk-bionano/genome-designer#readme",
   "dependencies": {
     "humps": "^1.0.0",
