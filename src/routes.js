@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, IndexRoute } from 'react-router';
+import { Route, IndexRoute, Redirect } from 'react-router';
 import App from './containers/App';
 import AboutPage from './containers/AboutPage';
 import SupportPage from './containers/SupportPage';
@@ -15,8 +15,7 @@ export default (
 
     {/* todo - signout page w/ dynamic routing */}
 
-    <IndexRoute path="/dashboard"
-                component={DashboardPage}/>
+    <IndexRoute component={DashboardPage}/>
 
     <Route path="/about"
            component={AboutPage}/>
@@ -28,5 +27,7 @@ export default (
       <Route path="/project/:projectId/:constructId"
              component={ConstructPage}/>
     </Route>
+
+    <Redirect from="/project" to="/" />
   </Route>
 );

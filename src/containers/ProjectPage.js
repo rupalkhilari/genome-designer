@@ -6,17 +6,24 @@ class ProjectPage extends Component {
     super(props);
   }
 
+  static propTypes = {
+    projectId : PropTypes.string.isRequired
+  }
+
   render() {
     return (
       <div>
-        <h1>Project</h1>
+        <h1>Project {this.props.projectId}</h1>
       </div>
     );
   }
 }
 
 function mapStateToProps(state) {
-  return {};
+  const { projectId } = state.router.params;
+  return {
+    projectId
+  };
 }
 
 export default connect(mapStateToProps)(ProjectPage);
