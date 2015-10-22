@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { pushState } from 'redux-router';
-import Explore from '../components/Explore';
+import ProjectSelect from '../components/ProjectSelect';
 import { resetErrorMessage } from '../actions';
 
 class App extends Component {
@@ -10,50 +10,23 @@ class App extends Component {
   }
 
   static propTypes = {
-    // Injected by React Redux
-    errorMessage: PropTypes.string,
-    resetErrorMessage: PropTypes.func.isRequired,
-    pushState: PropTypes.func.isRequired,
-    inputValue: PropTypes.string.isRequired,
+    pushState: PropTypes.func.isRequired, //defined for dispatch actions, see below
+    inputValue: PropTypes.string.isRequired, //defined in mapStateToProps, see below
+
     // Injected by React Router
     children: PropTypes.node
   }
 
-  handleDismissClick = (e) => {
-    this.props.resetErrorMessage();
-    e.preventDefault();
-  }
-
   handleChange = (nextValue) => {
-    this.props.pushState(null, `/${nextValue}`);
-  }
-
-  renderErrorMessage() {
-    const { errorMessage } = this.props;
-    if (!errorMessage) {
-      return null;
-    }
-
-    return (
-      <p style={{ backgroundColor: '#e99', padding: 10 }}>
-        <b>{errorMessage}</b>
-        {' '}
-        (<a href="#"
-            onClick={this.handleDismissClick}>
-          Dismiss
-        </a>)
-      </p>
-    );
+    this.props.pushState(null, `/project/${nextValue}`);
   }
 
   render() {
-    const { children, inputValue } = this.props;
+    const { children } = this.props;
     return (
       <div>
-        <Explore value={inputValue}
-                 onChange={this.handleChange} />
-        <hr />
-        {this.renderErrorMessage()}
+        <ProjectSelect value={this.props.inputValue}
+                       onChange={this.handleChange} />
         {children}
       </div>
     );
@@ -62,12 +35,10 @@ class App extends Component {
 
 function mapStateToProps(state) {
   return {
-    errorMessage: state.errorMessage,
-    inputValue: state.router.location.pathname.substring(1)
+    inputValue: state.router.params.projectId || ''
   };
 }
 
 export default connect(mapStateToProps, {
-  resetErrorMessage,
   pushState
 })(App);
