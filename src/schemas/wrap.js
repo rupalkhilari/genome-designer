@@ -7,7 +7,7 @@
  * @param optional {Boolean=} pass `true` to validate `undefined`
  * @return {Boolean} true if valid, false otherwise
  */
-export default function wrap (validator) => {
+export default function wrap (validator) {
 
   function validateCatchError (required, input) {
     if (required === false && input === undefined) {

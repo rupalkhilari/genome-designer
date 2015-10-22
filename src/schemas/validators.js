@@ -3,64 +3,71 @@ import wrap from './wrap';
 import { PropTypes } from 'react';
 
 //validates an ID
-export const id = wrap((input) => {
+export const id = params => wrap(input => {
   //todo - real validation
   if (input.length === 0) {
     return new Error('invalid id: ' + input);
   }
 });
 
-export const equal = wrap((checker) => (input) => {
-  return Object.is(checker, input);
+export const sequence = params => wrap(input => {
+  return /^[acgt]*$/ig.test(input);
 });
 
-export const string = wrap((input) => {
+export const string = params => wrap(input => {
   return (typeof input === 'string' || input instanceof String);
 });
 
-export const number = wrap((input) => {
+export const number = params => wrap(input => {
   return typeof input === 'number';
 });
 
-export const func = wrap((input) => {
+export const func = params => wrap(input => {
   return typeof input === 'function';
 });
 
-export const array = wrap((input) => {
+export const array = params => wrap(input => {
   return Array.isArray(input);
 });
 
-export const object = wrap((input) => {
+export const object = params => wrap(input => {
   return input !== null && typeof input === 'object';
 });
 
-export const undef = wrap((input) => {
+export const undef = params => wrap(input => {
   return input === undefined;
 });
 
-export const instanceOf = wrap((type) => (input) => {
+export const instanceOf = type => wrap(input => {
   return input instanceof type;
 });
 
+export const equal = checker => wrap(input => {
+  return Object.is(checker, input);
+});
+
 //should return error?
-export const shape = wrap((fields) => (input) => {
+export const shape = fields => wrap(input => {
   return Object.keys(fields).every((key) => {
     return fields[key](input[key]);
   });
 });
 
-export const oneOf = wrap((possible) => (input) => {
+export const oneOf = possible => wrap(input => {
   if (!possible.indexOf(input) > -1) {
     throw new Error(input + ' not found in ' + possible.join(','));
   }
 });
 
-export const oneOfType = wrap((types) => (input) => {
-  return types.some((validator) => {
-    return validator(input);
+//can pass either function to validate, or an object to check instanceof
+export const oneOfType = types => wrap(input => {
+  return types.some(type => {
+    return typeof type === 'function' ?
+           type(input) :
+           input instanceof type;
   })
 });
 
-export const arrayOf = wrap((validator) => (input) => {
-  return array(input) && input.every((item) => validator(item))
+export const arrayOf = validator => wrap(input => {
+  return Array.isArray(input) && input.every(item => validator(item));
 });
