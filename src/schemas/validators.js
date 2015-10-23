@@ -1,6 +1,5 @@
 //all functions should be wrapped here for js-schema
 import wrap from './wrap';
-import { PropTypes } from 'react';
 
 //validates an ID
 export const id = params => wrap(input => {
@@ -16,6 +15,11 @@ export const sequence = params => wrap(input => {
 
 export const string = params => wrap(input => {
   return (typeof input === 'string' || input instanceof String);
+});
+
+export const email = params => wrap(input => {
+  //todo - get a robust one, i just hacked this together
+  return /\w+?@\w\w+?\.\w{2,6}/.test(input);
 });
 
 export const number = params => wrap(input => {
@@ -47,7 +51,7 @@ export const equal = checker => wrap(input => {
 });
 
 //should return error?
-export const shape = fields => wrap(input => {
+export const shape = (fields, params) => wrap(input => {
   return Object.keys(fields).every((key) => {
     return fields[key](input[key]);
   });

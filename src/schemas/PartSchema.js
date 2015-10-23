@@ -1,5 +1,4 @@
 import * as types from './validators';
-import FeatureSchema from './FeatureSchema';
 
 /*
 A physical sequence.
@@ -18,7 +17,12 @@ const PartSchema = types.shape({
 
   sequence: types.id().isRequired,
   source  : types.id(),
-  features: types.arrayOf(FeatureSchema)
+  features: types.arrayOf(types.shape({
+    optimizability: types.oneOf(),
+    start      : types.number(),
+    end        : types.number(),
+    description: types.string()
+  }))
 }).isRequired;
 
 export default PartSchema;

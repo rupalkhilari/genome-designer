@@ -1,24 +1,21 @@
 import * as types from './validators';
-import FeatureSchema from './FeatureSchema';
 
 /*
-A physical sequence.
+A component of a construct, or construct itself
 
 */
 
-const PartSchema = types.shape({
+const BlockSchema = types.shape({
   id      : types.id().isRequired,
   parent  : types.id(),
   metadata: types.shape({
     authors : types.arrayOf(types.id()).isRequired,
     tags    : types.object().isRequired,
-    name       : types.string(),
+    name    : types.string(),
     description: types.string()
   }).isRequired,
 
-  sequence: types.id().isRequired,
-  source  : types.id(),
-  features: types.arrayOf(FeatureSchema)
+  components : types.arrayOf().isRequired             //todo - define structure / relation to template?
 }).isRequired;
 
-export default PartSchema;
+export default BlockSchema;
