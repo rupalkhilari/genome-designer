@@ -10,6 +10,7 @@ const ProjectSchema = types.shape({
   parent  : types.id(),
   metadata: types.shape({
     authors : types.arrayOf(types.id()).isRequired,
+    version: types.version().isRequired,
     tags    : types.object().isRequired,
     name    : types.string(),
     description: types.string()

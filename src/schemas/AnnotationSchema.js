@@ -1,13 +1,15 @@
 import * as types from './validators';
 
 /*
-An annotation on a sequence.
-Child of Part.
+@description An annotation on a sequence.
+@parent Part
+@sbol Annotation (kinda)
 
 */
 
-const FeatureSchema = types.shape({
+const AnnotationSchema = types.shape({
   metadata: types.shape({
+    version: types.version().isRequired,
     authors : types.arrayOf(types.id()).isRequired,
     tags    : types.object().isRequired,
     name    : types.string(),
@@ -21,4 +23,4 @@ const FeatureSchema = types.shape({
 
 }).isRequired;
 
-export default FeatureSchema;
+export default AnnotationSchema;

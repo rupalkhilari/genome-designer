@@ -1,7 +1,8 @@
 import * as types from './validators';
 
 /*
-Container defining placeholders, rules etc. within a block
+@description Container defining placeholders, rules etc. within a block
+@sbol ComponentDefinition
 
 */
 
@@ -11,6 +12,7 @@ const TemplateSchema = types.shape({
   metadata: types.shape({
     name    : types.string(),
     authors : types.arrayOf(types.id).isRequired,
+    version: types.version().isRequired,
     tags    : types.object().isRequired,
     description: types.string()
   }).isRequired,

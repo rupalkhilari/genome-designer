@@ -1,7 +1,7 @@
 import * as types from './validators';
 
 /*
-A user account
+@description A user account
 
 */
 

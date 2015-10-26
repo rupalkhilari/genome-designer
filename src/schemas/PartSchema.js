@@ -1,4 +1,5 @@
 import * as types from './validators';
+import AnnotationSchema from './AnnotationSchema';
 
 /*
 A physical sequence.
@@ -10,6 +11,7 @@ const PartSchema = types.shape({
   parent  : types.id(),
   metadata: types.shape({
     authors : types.arrayOf(types.id()).isRequired,
+    version: types.version().isRequired,
     tags    : types.object().isRequired,
     name       : types.string(),
     description: types.string()
@@ -17,12 +19,7 @@ const PartSchema = types.shape({
 
   sequence: types.id().isRequired,
   source  : types.id(),
-  features: types.arrayOf(types.shape({
-    optimizability: types.oneOf(),
-    start      : types.number(),
-    end        : types.number(),
-    description: types.string()
-  }))
+  annoations: types.arrayOf(AnnotationSchema)
 }).isRequired;
 
 export default PartSchema;
