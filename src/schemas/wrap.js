@@ -4,7 +4,6 @@
  * @param validator {Function} function which either:
  * 1) returns true / false for validation
  * 2) throws an error for invalid, and returns anything but false otherwise
- * @param optional {Boolean=} pass `true` to validate `undefined`
  * @return {Boolean} true if valid, false otherwise
  */
 export default function wrap (validator) {

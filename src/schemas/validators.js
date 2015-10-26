@@ -1,4 +1,6 @@
 import wrap from './wrap';
+import urlRegex from 'url-regex';
+import semverRegex from 'semver-regex';
 
 /*
 TODO - consistent error handling, ability to handle errors and return (esp. in loops)
@@ -13,7 +15,7 @@ export const id = params => wrap(input => {
 });
 
 export const string = params => wrap(input => {
-  return isString(input) || input instanceof String);
+  return isString(input) || input instanceof String;
 });
 
 export const sequence = params => wrap(input => {
@@ -39,6 +41,10 @@ export const array = params => wrap(input => {
 
 export const object = params => wrap(input => {
   return input !== null && getPropType(input) === 'object';
+});
+
+export const bool = params => wrap(input => {
+  return input === true || input === false;
 });
 
 export const undef = params => wrap(input => {
@@ -80,14 +86,26 @@ export const arrayOf = validator => wrap(input => {
   return Array.isArray(input) && input.every(item => validator(item));
 });
 
+//remove package if you remove this test
+export const version = params => wrap(input => {
+  return semverRegex().test(input) ?
+         true :
+         new Error();
+});
+
+//remove package if you remove this test
+export const url = params => wrap(input => {
+  return urlRegex({exact: true}).test(input);
+});
+
 //utils
 
-function isString(input) {
+function isString (input) {
   return getPropType(input) === 'string';
 }
 
 // Equivalent of `typeof` but with special handling for array and regexp.
-function getPropType(propValue) {
+function getPropType (propValue) {
   var propType = typeof propValue;
   if (Array.isArray(propValue)) {
     return 'array';
@@ -102,7 +120,7 @@ function getPropType(propValue) {
 }
 
 // This handles more types than `getPropType`, e.g. Date and regexp
-function getPreciseType(propValue) {
+function getPreciseType (propValue) {
   var propType = getPropType(propValue);
   if (propType === 'object') {
     if (propValue instanceof Date) {

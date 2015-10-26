@@ -6,28 +6,28 @@ import * as types from './validators';
 
 */
 
-const BlockSchema = types.shape({
+const BlockSchema = {
   id      : types.id().isRequired,
   parent  : types.id(),
   metadata: types.shape({
-    authors : types.arrayOf(types.id()).isRequired,
-    version: types.version().isRequired,
-    tags    : types.object().isRequired,
-    name    : types.string(),
+    authors    : types.arrayOf(types.id()).isRequired,
+    version    : types.version().isRequired,
+    tags       : types.object().isRequired,
+    name       : types.string(),
     description: types.string()
   }).isRequired,
 
   roles: types.arrayOf(types.oneOf([
-	'Promoter',		//todo - complete enumeration. These are from SBOL. consider visual symbols
-	'RBS',
-	'CDS',
-	'Terminator',
-	'Gene',
-	'Engineered Gene',
-	'mRNA'
-  ]))
+    'Promoter',		//todo - complete enumeration. These are from SBOL. consider visual symbols
+    'RBS',
+    'CDS',
+    'Terminator',
+    'Gene',
+    'Engineered Gene',
+    'mRNA'
+  ])),
 
-  components : types.arrayOf().isRequired             //todo - define structure / relation to template?
-}).isRequired;
+  components: types.arrayOf().isRequired             //todo - define structure / relation to template?
+};
 
 export default BlockSchema;

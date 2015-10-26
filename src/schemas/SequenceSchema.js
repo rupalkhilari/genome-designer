@@ -6,24 +6,24 @@ import * as types from './validators';
 
 */
 
-const SequenceSchema = types.shape({
+const SequenceSchema = {
   id      : types.id().isRequired,
   metadata: types.shape({
-    authors : types.arrayOf(types.id()).isRequired,
-    version: types.version().isRequired,
-    tags    : types.object().isRequired,
-    name    : types.string(),
+    authors    : types.arrayOf(types.id()).isRequired,
+    version    : types.version().isRequired,
+    tags       : types.object().isRequired,
+    name       : types.string(),
     description: types.string()
   }).isRequired,
 
   type: types.oneOf([
-  	'dna', 				//IUPAC DNA
-  	'protein', 			//IUPAC Protein
-  	'molecule' 			//SMILES
+    'dna',        //IUPAC DNA
+    'protein', 		//IUPAC Protein
+    'molecule' 		//SMILES
   ]).isRequired,
 
-  sequence : types.sequence().isRequired             //todo - define. placeholders? rules? how to pass type?
-  orientForward : types.bool						 //default is forward
-}).isRequired;
+  sequence     : types.sequence().isRequired,     //todo - define. placeholders? rules? how to pass type?
+  orientForward: types.bool()                //default is forward
+};
 
 export default SequenceSchema;
