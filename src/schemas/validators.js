@@ -1,5 +1,8 @@
-//all functions should be wrapped here for js-schema
 import wrap from './wrap';
+
+/*
+TODO - consistent error handling, ability to handle errors and return (esp. in loops)
+*/
 
 //validates an ID
 export const id = params => wrap(input => {
@@ -9,25 +12,25 @@ export const id = params => wrap(input => {
   }
 });
 
-export const sequence = params => wrap(input => {
-  return /^[acgt]*$/ig.test(input);
+export const string = params => wrap(input => {
+  return isString(input) || input instanceof String);
 });
 
-export const string = params => wrap(input => {
-  return (typeof input === 'string' || input instanceof String);
+export const sequence = params => wrap(input => {
+  return isString(input) && /^[acgt]*$/ig.test(input);
 });
 
 export const email = params => wrap(input => {
   //todo - get a robust one, i just hacked this together
-  return /\w+?@\w\w+?\.\w{2,6}/.test(input);
+  return isString(input) === 'string' && /\w+?@\w\w+?\.\w{2,6}/.test(input);
 });
 
 export const number = params => wrap(input => {
-  return typeof input === 'number';
+  return getPropType(input) === 'number';
 });
 
 export const func = params => wrap(input => {
-  return typeof input === 'function';
+  return getPropType(input) === 'function';
 });
 
 export const array = params => wrap(input => {
@@ -35,7 +38,7 @@ export const array = params => wrap(input => {
 });
 
 export const object = params => wrap(input => {
-  return input !== null && typeof input === 'object';
+  return input !== null && getPropType(input) === 'object';
 });
 
 export const undef = params => wrap(input => {
@@ -46,6 +49,7 @@ export const instanceOf = type => wrap(input => {
   return input instanceof type;
 });
 
+//reference check only. Might want another one for deep equality check
 export const equal = checker => wrap(input => {
   return Object.is(checker, input);
 });
@@ -75,3 +79,37 @@ export const oneOfType = types => wrap(input => {
 export const arrayOf = validator => wrap(input => {
   return Array.isArray(input) && input.every(item => validator(item));
 });
+
+//utils
+
+function isString(input) {
+  return getPropType(input) === 'string';
+}
+
+// Equivalent of `typeof` but with special handling for array and regexp.
+function getPropType(propValue) {
+  var propType = typeof propValue;
+  if (Array.isArray(propValue)) {
+    return 'array';
+  }
+  if (propValue instanceof RegExp) {
+    // Old webkits (at least until Android 4.0) return 'function' rather than
+    // 'object' for typeof a RegExp. We'll normalize this here so that /bla/
+    // passes PropTypes.object.
+    return 'object';
+  }
+  return propType;
+}
+
+// This handles more types than `getPropType`, e.g. Date and regexp
+function getPreciseType(propValue) {
+  var propType = getPropType(propValue);
+  if (propType === 'object') {
+    if (propValue instanceof Date) {
+      return 'date';
+    } else if (propValue instanceof RegExp) {
+      return 'regexp';
+    }
+  }
+  return propType;
+}
