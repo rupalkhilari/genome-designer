@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import SketchConstruct from '../components/SketchConstruct'
 
 class ConstructPage extends Component {
   constructor(props) {
@@ -10,6 +11,8 @@ class ConstructPage extends Component {
     return (
       <div>
         <h1>Construct</h1>
+
+        <SketchConstruct />
       </div>
     );
   }

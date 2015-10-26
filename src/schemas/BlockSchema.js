@@ -1,7 +1,9 @@
 import * as types from './validators';
-
+import PartSchema from './PartSchema'
 /*
 A component of a construct, or construct itself
+
+todo - determine relation between Blocks and Templates, and how components are tied to the template
 
 */
 
@@ -15,7 +17,12 @@ const BlockSchema = types.shape({
     description: types.string()
   }).isRequired,
 
-  components : types.arrayOf().isRequired             //todo - define structure / relation to template?
+  template: types.id(),			//todo - is this required? How to handle multple?
+
+  components : types.arrayOf(types.oneOfType([
+	PartSchema,
+	BlockSchema  				//todo - verify self-reference works here
+  ])).isRequired
 }).isRequired;
 
 export default BlockSchema;

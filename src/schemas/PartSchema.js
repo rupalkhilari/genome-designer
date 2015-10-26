@@ -18,7 +18,7 @@ const PartSchema = types.shape({
   sequence: types.id().isRequired,
   source  : types.id(),
   features: types.arrayOf(types.shape({
-    optimizability: types.oneOf(),
+    optimizability: types.oneOf(),          //todo - define enumeration
     start      : types.number(),
     end        : types.number(),
     description: types.string()
