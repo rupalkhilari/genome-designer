@@ -15,10 +15,11 @@ export const id = params => wrap(input => {
 });
 
 export const string = params => wrap(input => {
-  return isString(input) || input instanceof String;
+  return isString(input);
 });
 
 export const sequence = params => wrap(input => {
+  //todo - should support all IUPAC with option to limit
   return isString(input) && /^[acgt]*$/ig.test(input);
 });
 
@@ -28,7 +29,18 @@ export const email = params => wrap(input => {
 });
 
 export const number = params => wrap(input => {
-  return getPropType(input) === 'number';
+  if (!isNumber(input)) {
+    return new Error(`input ${input} is not a number`);
+  }
+  if (isRealObject(params)) {
+    if (params.min && input < params.min) {
+      return new Error(`input ${input} is less than minimum ${params.min}`);
+    }
+    if (params.max && input > params.max) {
+      return new Error(`input ${input} is greater than maximum ${params.max}`);
+    }
+  }
+  return true;
 });
 
 export const func = params => wrap(input => {
@@ -40,7 +52,7 @@ export const array = params => wrap(input => {
 });
 
 export const object = params => wrap(input => {
-  return input !== null && getPropType(input) === 'object';
+  return isRealObject(input);
 });
 
 export const bool = params => wrap(input => {
@@ -101,7 +113,15 @@ export const url = params => wrap(input => {
 //utils
 
 function isString (input) {
-  return getPropType(input) === 'string';
+  return getPropType(input) === 'string' || input instanceof String;
+}
+
+function isRealObject (input) {
+  return input !== null && getPropType(input) === 'object';
+}
+
+function isNumber (input) {
+  return getPropType(input) === 'number';
 }
 
 // Equivalent of `typeof` but with special handling for array and regexp.
@@ -112,8 +132,7 @@ function getPropType (propValue) {
   }
   if (propValue instanceof RegExp) {
     // Old webkits (at least until Android 4.0) return 'function' rather than
-    // 'object' for typeof a RegExp. We'll normalize this here so that /bla/
-    // passes PropTypes.object.
+    // 'object' for typeof a RegExp.
     return 'object';
   }
   return propType;

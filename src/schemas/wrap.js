@@ -15,7 +15,13 @@ export default function wrap (validator) {
 
     try {
       let valid = validator(input);
-      return valid !== false;
+
+      //todo - should run in dev only
+      if (isError(valid)) {
+        console.error(valid);
+      }
+
+      return isError(valid) && valid !== false;
     }
     catch (err) {
       return false;
@@ -27,3 +33,7 @@ export default function wrap (validator) {
 
   return chainedCheckType;
 };
+
+function isError (val) {
+  return val instanceof Error;
+}
