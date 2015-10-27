@@ -10,7 +10,7 @@ class ConstructPage extends Component {
   render() {
     return (
       <div>
-        <h1>Construct</h1>
+        <h1>Construct {this.props.constructId}</h1>
 
         <SketchConstruct />
       </div>
@@ -19,7 +19,11 @@ class ConstructPage extends Component {
 }
 
 function mapStateToProps(state) {
-  return {};
+  const { projectId, constructId } = state.router.params;
+  return {
+    projectId,
+    constructId
+  };
 }
 
 export default connect(mapStateToProps)(ConstructPage);

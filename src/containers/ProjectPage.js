@@ -11,9 +11,17 @@ class ProjectPage extends Component {
   }
 
   render() {
+
+    const { children, projectId } = this.props;
+
+
     return (
       <div>
-        <h1>Project {this.props.projectId}</h1>
+        <h1>Project {projectId}</h1>
+
+        {/* constructs */}
+        {children}
+
       </div>
     );
   }

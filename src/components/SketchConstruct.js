@@ -4,39 +4,39 @@ import * as SchemaTypes from '../schemas/validators';
 import SketchBlock from './SketchBlock';
 
 /**
-@name SketchConstruct
-@description SketchConstruct is the parent element for drawing a construct.
+ @name SketchConstruct
+ @description SketchConstruct is the parent element for drawing a construct.
 
-*/
+ */
 
 export default class SketchConstruct extends Component {
-  constructor(props) {
+  constructor (props) {
     super(props);
   }
 
   state = {
-  	construct : {
-  		components: [100, 500, 300].map(makePart)
-  	}
+    construct: {
+      components: [100, 500, 300].map(makePart)
+    }
   }
 
   static propTypes = {
-  	alignOn: SchemaTypes.id() //future, just an example property
+    //alignOn: SchemaTypes.id() //future, just an example property
   };
 
-  render() {
+  render () {
+
+    //todo - verify components is defined
+    let {components} = this.state.construct;
+    console.log(components);
+
     return (
       <svg>
-      	<g ref="componentsGroup">
-      	  {
-      	  	let components = this.state.construct.components;
-      	  	console.log(components);
-
-      	  	return components.map(comp => {
-      	  		return <SketchBlock block={component} />
-      	  	});
-      	  }
-      	</g>
+        <g ref="componentsGroup">
+          {components.map(comp => {
+            return <SketchBlock block={comp}/>
+          })}
+        </g>
       </svg>
     );
   }
@@ -45,37 +45,37 @@ export default class SketchConstruct extends Component {
 //todo - these should be reusable utils
 
 function makePart (seqLength) {
-	return {
-		id: UUID(),
-		metadata: {
-			name: 'My Part'
-		},
-		sequence: randomSequence(seqLength),
-		color: randomColor(),
-		features: []
-	}
+  return {
+    id      : UUID(),
+    metadata: {
+      name: 'My Part'
+    },
+    sequence: randomSequence(seqLength),
+    color   : randomColor(),
+    features: []
+  }
 }
 
 function UUID () {
-	var d    = new Date().getTime();
-	var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-	  var r = (d + Math.random() * 16) % 16 | 0;
-	  d     = Math.floor(d / 16);
-	  return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-	});
-	return uuid;
+  var d    = new Date().getTime();
+  var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+    var r = (d + Math.random() * 16) % 16 | 0;
+    d     = Math.floor(d / 16);
+    return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+  });
+  return uuid;
 }
 
-function randomColor() {
-	return '#' + Math.floor(0.234234 * Math.pow(2, 24)).toString(16);
+function randomColor () {
+  return '#' + Math.floor(0.234234 * Math.pow(2, 24)).toString(16);
 }
 
 function randomSequence (length) {
-	let seq = [],
-		monos = 'acgt'.split('');
-	for (let i = 0; i<length; i++) {
-		let rando = Math.floor(Math.random() * 4);
-		seq.push(monos[rando]);
-	}
-	return seq.join('');
+  let seq   = [],
+      monos = 'acgt'.split('');
+  for (let i = 0; i < length; i++) {
+    let rando = Math.floor(Math.random() * 4);
+    seq.push(monos[rando]);
+  }
+  return seq.join('');
 }

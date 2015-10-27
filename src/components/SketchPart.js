@@ -1,27 +1,23 @@
 import React, { Component, PropTypes } from 'react';
 import * as SchemaTypes from '../schemas/validators';
 
-export default class SketchBlock extends Component {
-  constructor(props) {
+export default class SketchPart extends Component {
+  constructor (props) {
     super(props);
   }
 
   static PropTypes = {
-    component : PropTypes.object.isRequired //once using real ones, can pass schema as PropType
+    part: PropTypes.object.isRequired //once using real ones, can pass schema as PropType
   }
 
-  render() {
+  render () {
 
-    let comp = this.props.component;
+    let {part} = this.props;
 
     return (
       <g ref="partGroup">
-    	  <rect color={comp.color} />
-    	</g>
+        <rect color={part.color}/>
+      </g>
     );
   }
-}
-
-function isPart (component) {
-  return ! component.components;
 }

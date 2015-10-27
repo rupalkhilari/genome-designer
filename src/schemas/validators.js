@@ -2,6 +2,7 @@ import wrap from './wrap';
 
 /*
 TODO - consistent error handling, ability to handle errors and return (esp. in loops)
+To be consistent with React, should return null (valid) or Error (invalid)
 */
 
 //validates an ID
@@ -13,7 +14,7 @@ export const id = params => wrap(input => {
 });
 
 export const string = params => wrap(input => {
-  return isString(input) || input instanceof String);
+  return isString(input) || input instanceof String;
 });
 
 export const sequence = params => wrap(input => {
