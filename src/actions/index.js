@@ -1,8 +1,10 @@
 import * as ActionTypes from '../constants/ActionTypes';
+import makeActionCreator from './makeActionCreator';
 
-// Resets the currently visible error message.
-export function resetErrorMessage() {
-  return {
-    type: ActionTypes.RESET_ERROR_MESSAGE
-  };
-}
+//todo - refactor so each module is imported separately (like reducers)
+
+//Adds a construct to a project
+export const projectAddConstruct = makeActionCreator(ActionTypes.PROJECT_ADD_CONSTRUCT, 'id', 'construct');
+
+//updates the name of a part
+export const partUpdateName = makeActionCreator(ActionTypes.PART_UPDATE_NAME, 'id', 'name');

@@ -2,7 +2,6 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { pushState } from 'redux-router';
 import ProjectSelect from '../components/ProjectSelect';
-import { resetErrorMessage } from '../actions';
 
 class App extends Component {
   constructor(props) {

@@ -1,11 +1,7 @@
 import React, { PropTypes, Component } from 'react';
 import { connect } from 'react-redux';
 
-export class AboutPage extends Component {
-  constructor (props) {
-    super(props);
-  }
-
+export default class AboutPage extends Component {
   static propTypes = {}
 
   state = {
@@ -33,8 +29,3 @@ export class AboutPage extends Component {
     );
   }
 }
-
-// we dont really need to inject anything from redux here, so just inject the dispatch function by calling connect() alone.
-// otherwise, we would choose which reducers we wanted to pass in explicitly so that the component would re-render when those stores change
-// https://github.com/rackt/react-redux/blob/master/docs/api.md#api
-export default connect()(AboutPage);
