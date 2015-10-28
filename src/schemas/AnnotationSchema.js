@@ -1,4 +1,4 @@
-import * as types from './validators';
+import fields, { validators } from './fields';
 
 /*
 @description An annotation on a sequence.
@@ -8,15 +8,15 @@ import * as types from './validators';
 */
 
 const AnnotationSchema = {
-  metadata: types.shape({
-    version    : types.version().isRequired,
-    authors    : types.arrayOf(types.id()).isRequired,
-    tags       : types.object().isRequired,
-    name       : types.string(),
-    description: types.string()
+  metadata: validators.shape({
+    version    : validators.version().isRequired,
+    authors    : validators.arrayOf(validators.id()).isRequired,
+    tags       : validators.object().isRequired,
+    name       : validators.string(),
+    description: validators.string()
   }).isRequired,
 
-  optimizability: types.oneOf([ //todo - rename
+  optimizability: validators.oneOf([ //todo - rename
     'none', //todo - define enum. allow sequence? capture as sequence e.g. ACNRYGT
     'codon-optimize',
     'any'
@@ -24,9 +24,9 @@ const AnnotationSchema = {
 
   //either a sequence or a range is required, or potentially both? Perhaps dependent on type? Is this just more of an interface?
 
-  sequence: types.sequence(),
-  start   : types.number(),
-  end     : types.number()
+  sequence: validators.sequence(),
+  start   : validators.number(),
+  end     : validators.number()
 };
 
 export default AnnotationSchema;

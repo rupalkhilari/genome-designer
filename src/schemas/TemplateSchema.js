@@ -1,4 +1,4 @@
-import * as types from './validators';
+import fields, { validators } from './fields';
 
 /*
 @description Container defining placeholders, rules etc. within a block
@@ -7,17 +7,17 @@ import * as types from './validators';
 */
 
 const TemplateSchema = {
-  id      : types.id().isRequired,
-  parent  : types.id(),
-  metadata: types.shape({
-    name       : types.string(),
-    authors    : types.arrayOf(types.id).isRequired,
-    version    : types.version().isRequired,
-    tags       : types.object().isRequired,
-    description: types.string()
+  id      : validators.id().isRequired,
+  parent  : validators.id(),
+  metadata: validators.shape({
+    name       : validators.string(),
+    authors    : validators.arrayOf(validators.id).isRequired,
+    version    : validators.version().isRequired,
+    tags       : validators.object().isRequired,
+    description: validators.string()
   }).isRequired,
 
-  grammar: types.object().isRequired             //todo - define. placeholders? rules?
+  grammar: validators.object().isRequired             //todo - define. placeholders? rules?
 };
 
 export default TemplateSchema;

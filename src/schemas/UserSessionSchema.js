@@ -1,4 +1,4 @@
-import * as types from './validators';
+import fields, { validators } from './fields';
 
 /*
 Information about user's last session
@@ -7,8 +7,8 @@ Information about user's last session
 */
 
 const UserSettingsSchema = {
-  id  : types.id().isRequired,
-  user: types.id().isRequired
+  id  : validators.id().isRequired,
+  user: validators.id().isRequired
 };
 
 export default UserSettingsSchema;

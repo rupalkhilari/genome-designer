@@ -1,4 +1,4 @@
-import * as types from './validators';
+import fields, { validators } from './fields';
 
 /*
 Project is the container for a body of work.
@@ -6,17 +6,17 @@ Project is the container for a body of work.
 */
 
 const ProjectSchema = {
-  id      : types.id().isRequired,
-  parent  : types.id(),
-  metadata: types.shape({
-    authors    : types.arrayOf(types.id()).isRequired,
-    version    : types.version().isRequired,
-    tags       : types.object().isRequired,
-    name       : types.string(),
-    description: types.string()
+  id      : validators.id().isRequired,
+  parent  : validators.id(),
+  metadata: validators.shape({
+    authors    : validators.arrayOf(validators.id()).isRequired,
+    version    : validators.version().isRequired,
+    tags       : validators.object().isRequired,
+    name       : validators.string(),
+    description: validators.string()
   }).isRequired,
 
-  components: types.arrayOf(types.id()).isRequired
+  components: validators.arrayOf(validators.id()).isRequired
 };
 
 export default ProjectSchema;

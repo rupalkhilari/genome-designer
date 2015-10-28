@@ -1,4 +1,4 @@
-import * as types from './validators';
+import fields, { validators } from './fields';
 import AnnotationSchema from './AnnotationSchema';
 
 /*

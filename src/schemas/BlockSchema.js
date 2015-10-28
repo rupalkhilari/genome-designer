@@ -1,4 +1,4 @@
-import * as types from './validators';
+import fields, { validators } from './fields';
 
 /*
 @description A component of a construct, or construct itself
@@ -6,28 +6,31 @@ import * as types from './validators';
 
 */
 
+//todo - complete enumeration. These are from SBOL. consider other visual symbols (e.g. templating)
+export const enumRoles = [
+  'Promoter',
+  'RBS',
+  'CDS',
+  'Terminator',
+  'Gene',
+  'Engineered Gene',
+  'mRNA'
+];
+
 const BlockSchema = {
-  id      : types.id().isRequired,
-  parent  : types.id(),
-  metadata: types.shape({
-    authors    : types.arrayOf(types.id()).isRequired,
-    version    : types.version().isRequired,
-    tags       : types.object().isRequired,
-    name       : types.string(),
-    description: types.string()
+  id      : validators.id().isRequired,
+  parent  : validators.id(),
+  metadata: validators.shape({
+    authors    : validators.arrayOf(validators.id()).isRequired,
+    version    : validators.version().isRequired,
+    tags       : validators.object().isRequired,
+    name       : validators.string(),
+    description: validators.string()
   }).isRequired,
 
-  roles: types.arrayOf(types.oneOf([
-    'Promoter',		//todo - complete enumeration. These are from SBOL. consider visual symbols
-    'RBS',
-    'CDS',
-    'Terminator',
-    'Gene',
-    'Engineered Gene',
-    'mRNA'
-  ])),
+  roles: validators.arrayOf(validators.oneOf(enumRoles)),
 
-  components: types.arrayOf().isRequired             //todo - define structure / relation to template?
+  components: validators.arrayOf().isRequired             //todo - define structure / relation to template?
 };
 
 export default BlockSchema;

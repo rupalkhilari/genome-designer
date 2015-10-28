@@ -1,4 +1,4 @@
-import wrap from './wrap';
+import wrap from './validatorWrap';
 import urlRegex from 'url-regex';
 import semverRegex from 'semver-regex';
 
@@ -6,7 +6,6 @@ import semverRegex from 'semver-regex';
 TODO - consistent error handling, ability to handle errors and return (esp. in loops)
 */
 
-//validates an ID
 export const id = params => wrap(input => {
   //todo - real validation
   if (input.length === 0) {
@@ -16,16 +15,6 @@ export const id = params => wrap(input => {
 
 export const string = params => wrap(input => {
   return isString(input);
-});
-
-export const sequence = params => wrap(input => {
-  //todo - should support all IUPAC with option to limit
-  return isString(input) && /^[acgt]*$/ig.test(input);
-});
-
-export const email = params => wrap(input => {
-  //todo - get a robust one, i just hacked this together
-  return isString(input) === 'string' && /\w+?@\w\w+?\.\w{2,6}/.test(input);
 });
 
 export const number = params => wrap(input => {
@@ -63,6 +52,36 @@ export const undef = params => wrap(input => {
   return input === undefined;
 });
 
+/*******
+ string subtypes
+ *******/
+
+export const sequence = params => wrap(input => {
+  //todo - should support all IUPAC with option to limit
+  return isString(input) && /^[acgt]*$/ig.test(input);
+});
+
+export const email = params => wrap(input => {
+  //todo - get a robust one, i just hacked this together
+  return isString(input) === 'string' && /\w+?@\w\w+?\.\w{2,6}/.test(input);
+});
+
+//remove package if you remove this test
+export const version = params => wrap(input => {
+  return isString(input) && semverRegex().test(input) ?
+         true :
+         new Error();
+});
+
+//remove package if you remove this test
+export const url = params => wrap(input => {
+  return isString(input) && urlRegex({exact: true}).test(input);
+});
+
+/*******
+ complex
+ *******/
+
 export const instanceOf = type => wrap(input => {
   return input instanceof type;
 });
@@ -72,7 +91,6 @@ export const equal = checker => wrap(input => {
   return Object.is(checker, input);
 });
 
-//should return error?
 export const shape = (fields, params) => wrap(input => {
   return Object.keys(fields).every((key) => {
     return fields[key](input[key]);
@@ -96,18 +114,6 @@ export const oneOfType = types => wrap(input => {
 
 export const arrayOf = validator => wrap(input => {
   return Array.isArray(input) && input.every(item => validator(item));
-});
-
-//remove package if you remove this test
-export const version = params => wrap(input => {
-  return semverRegex().test(input) ?
-         true :
-         new Error();
-});
-
-//remove package if you remove this test
-export const url = params => wrap(input => {
-  return urlRegex({exact: true}).test(input);
 });
 
 //utils

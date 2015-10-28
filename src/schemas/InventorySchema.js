@@ -1,4 +1,4 @@
-import * as types from './validators';
+import fields, { validators } from './fields';
 
 /*
 An Inventory is a foundry / freezer / storage facility, the location where e.g. a part is sourced
@@ -7,16 +7,16 @@ An Inventory is a foundry / freezer / storage facility, the location where e.g. 
 */
 
 const InventorySchema = {
-  id      : types.id().isRequired,
-  metadata: types.shape({
-    authors    : types.arrayOf(types.id()).isRequired,
-    version    : types.version().isRequired,             //do we want to use this e.g. for caching purposes? or just store a date?
-    tags       : types.object().isRequired,
-    name       : types.string(),
-    description: types.string()
+  id      : validators.id().isRequired,
+  metadata: validators.shape({
+    authors    : validators.arrayOf(validators.id()).isRequired,
+    version    : validators.version().isRequired,             //do we want to use this e.g. for caching purposes? or just store a date?
+    tags       : validators.object().isRequired,
+    name       : validators.string(),
+    description: validators.string()
   }).isRequired,
 
-  url: types.url()
+  url: validators.url()
 };
 
 export default InventorySchema;

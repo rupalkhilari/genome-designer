@@ -1,4 +1,4 @@
-import * as types from './validators';
+import fields, { validators } from './fields';
 
 /*
 @description A user account
@@ -6,15 +6,15 @@ import * as types from './validators';
 */
 
 const AuthorSchema = {
-  id         : types.id().isRequired,
-  email      : types.email().isRequired,
-  firstName  : types.string(),
-  lastName   : types.string(),
-  description: types.string(),
-  homepage   : types.url(),
-  social     : types.arrayOf(types.shape({
-    provider: types.string().isRequired, //e.g. facebook
-    username: types.string().isRequired
+  id         : validators.id().isRequired,
+  email      : validators.email().isRequired,
+  firstName  : validators.string(),
+  lastName   : validators.string(),
+  description: validators.string(),
+  homepage   : validators.url(),
+  social     : validators.arrayOf(validators.shape({
+    provider: validators.string().isRequired, //e.g. facebook
+    username: validators.string().isRequired
   }))
 };
 
