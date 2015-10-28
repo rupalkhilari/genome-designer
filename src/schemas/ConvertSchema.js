@@ -15,6 +15,10 @@ import {
 
 
 var SchemaMap = {
+	'final': { //final object to be returned
+		graphql: (json) => new GraphQLObjectType(json),
+		validator: (json) => new type.shape(json)
+	},
 	'version': {
 		graphql: () => GraphQLString,
 		validator: () => types.version().isRequired
@@ -79,7 +83,8 @@ function ConvertSchema(genericSchema, specificType) {
 		}
 		convertedSchema[key] = val;	
 	}
-	return convertedSchema;
+	var finalfunc = SchemaMap['final'][specificType];
+	return finalfunc.call(SchemaMap, convertedSchema);
 }
 
 var m;
