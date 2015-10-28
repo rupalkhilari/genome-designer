@@ -1,4 +1,4 @@
-import fields, { validators } from './fields';
+import fields, {schemaField} from './fields';
 
 /*
 @description An annotation on a sequence.

@@ -1,6 +1,8 @@
-import wrap from './validatorWrap';
+import wrap from './createField';
 import urlRegex from 'url-regex';
 import semverRegex from 'semver-regex';
+
+/* these validators are used by fields/index.js - you shuold use the ones exported from that file instead of these directly */
 
 /*
 TODO - consistent error handling, ability to handle errors and return (esp. in loops)
@@ -9,12 +11,14 @@ TODO - consistent error handling, ability to handle errors and return (esp. in l
 export const id = params => wrap(input => {
   //todo - real validation
   if (input.length === 0) {
-    return new Error('invalid id: ' + input);
+    return new Error(`${input} is not a valid ID`);
   }
 });
 
 export const string = params => wrap(input => {
-  return isString(input);
+  if (!isString(input)) {
+    return new Error(`${input} is not a string`);
+  }
 });
 
 export const number = params => wrap(input => {
@@ -29,7 +33,7 @@ export const number = params => wrap(input => {
       return new Error(`input ${input} is greater than maximum ${params.max}`);
     }
   }
-  return true;
+  return null;
 });
 
 export const func = params => wrap(input => {

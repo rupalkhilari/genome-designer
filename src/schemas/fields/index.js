@@ -1,94 +1,95 @@
 import * as validatorFunctions from './validators';
+import createField from './createField';
 import mapValues from '../../utils/mapValues';
 
-//todo - assert that every type has a corresponding validator and is function
+//todo - assert that every type has a corresponding baseValidator and is function
 
-const fields = {
+const fields = mapValues({
 
   //primitives
 
-  id        : {
-    validator  : validatorFunctions.id,
-    description: 'A UUID'
+  id    : {
+    baseValidator  : validatorFunctions.id,
+    typeDescription: 'A UUID'
   },
-  string    : {
-    validator  : validatorFunctions.string,
-    description: 'A string'
+  string: {
+    baseValidator  : validatorFunctions.string,
+    typeDescription: 'A string'
   },
-  number    : {
-    validator  : validatorFunctions.number,
-    description: 'A number'
+  number: {
+    baseValidator  : validatorFunctions.number,
+    typeDescription: 'A number'
   },
-  func      : {
-    validator  : validatorFunctions.func,
-    description: 'A function'
+  func  : {
+    baseValidator  : validatorFunctions.func,
+    typeDescription: 'A function'
   },
-  array     : {
-    validator  : validatorFunctions.array,
-    description: 'An array, with any values'
+  array : {
+    baseValidator  : validatorFunctions.array,
+    typeDescription: 'An array, with any values'
   },
-  object    : {
-    validator  : validatorFunctions.object,
-    description: 'An object, of any shape'
+  object: {
+    baseValidator  : validatorFunctions.object,
+    typeDescription: 'An object, of any shape'
   },
-  bool      : {
-    validator  : validatorFunctions.bool,
-    description: 'A boolean, strictly true or false'
+  bool  : {
+    baseValidator  : validatorFunctions.bool,
+    typeDescription: 'A boolean, strictly true or false'
   },
-  undef     : {
-    validator  : validatorFunctions.undef,
-    description: 'the value undefined'
+  undef : {
+    baseValidator  : validatorFunctions.undef,
+    typeDescription: 'the value undefined'
   },
-  
+
   //string subtypes
-  
-  sequence  : {
-    validator  : validatorFunctions.sequence,
-    description: 'An IUPAC compliant sequence'
+
+  sequence: {
+    baseValidator  : validatorFunctions.sequence,
+    typeDescription: 'An IUPAC compliant sequence'
   },
-  email     : {
-    validator  : validatorFunctions.email,
-    description: 'A valid email address'
+  email   : {
+    baseValidator  : validatorFunctions.email,
+    typeDescription: 'A valid email address'
   },
-  version   : {
-    validator  : validatorFunctions.version,
-    description: 'String conforming to semantic versioning'
+  version : {
+    baseValidator  : validatorFunctions.version,
+    typeDescription: 'String conforming to semantic versioning'
   },
-  url       : {
-    validator  : validatorFunctions.url,
-    description: 'A valid URL'
+  url     : {
+    baseValidator  : validatorFunctions.url,
+    typeDescription: 'A valid URL'
   },
-  
+
   //complex - functions + classes
-  
+
   shape     : {
-    validator  : validatorFunctions.shape,
-    description: 'An object with a defined fields and types'
+    baseValidator  : validatorFunctions.shape,
+    typeDescription: 'An object with a defined fields and types'
   },
   equal     : {
-    validator  : validatorFunctions.equal,
-    description: 'Equality check using Object.is()'
+    baseValidator  : validatorFunctions.equal,
+    typeDescription: 'Equality check using Object.is()'
   },
   instanceOf: {
-    validator  : validatorFunctions.instanceOf,
-    description: 'Instance of another class'
+    baseValidator  : validatorFunctions.instanceOf,
+    typeDescription: 'Instance of another class'
   },
   oneOf     : {
-    validator  : validatorFunctions.oneOf,
-    description: 'Input matches item in possible values'
+    baseValidator  : validatorFunctions.oneOf,
+    typeDescription: 'Input matches item in possible values'
   },
   oneOfType : {
-    validator  : validatorFunctions.oneOfType,
-    description: 'Value matches at least one possibility, which may be (1) an object (instanceof), or (2) validation function'
+    baseValidator  : validatorFunctions.oneOfType,
+    typeDescription: 'Value matches at least one possibility, which may be (1) an object (instanceof), or (2) validation function'
   },
   arrayOf   : {
-    validator  : validatorFunctions.arrayOf,
-    description: 'An array, where each item passes the passed validation function'
+    baseValidator  : validatorFunctions.arrayOf,
+    typeDescription: 'An array, where each item passes the passed validation function'
   }
-};
+}, createField);
 
-export const fieldNames = Object.keys(fields);
-export const fieldDescriptions = mapValues(fields, (val, key) => val.description);
-export const validators = mapValues(fields, (val, key) => val.validator);
+export const fieldNames        = Object.keys(fields);
+export const fieldDescriptions = mapValues(fields, val => val.typeDescription);
+export const baseValidators    = mapValues(fields, val => val.baseValidator);
 
 export default fields;

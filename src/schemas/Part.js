@@ -1,5 +1,5 @@
 import fields, { validators } from './fields';
-import AnnotationSchema from './AnnotationSchema';
+import AnnotationSchema from './Annotation';
 
 /*
 A physical sequence.
