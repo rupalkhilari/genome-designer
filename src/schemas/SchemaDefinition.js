@@ -13,17 +13,15 @@ function createSchemaField (field, description = '', additional) {
 
 export default class SchemaDefinition {
   constructor (fieldDefinitions) {
+    this.definitions = fieldDefinitions;
+    this.fields = createFields(fieldDefinitions);
+  }
 
-    this.fields = mapValues(fieldDefinitions,
-      (fieldDefinition, fieldName) => {
-
-        //note - assign to field to maintain prototype, i.e. validate() function if instanceof SchemaDefinition
-        return Object.assign(
-          createSchemaField(...fieldDefinition),
-          {name: fieldName}
-        );
-      }
-    );
+  extend (childDefinitions) {
+    return new SchemaDefinition(Object.assign({},
+      this.definitions,
+      childDefinitions
+    ));
   }
 
   validate (schema = {}) {
@@ -39,4 +37,17 @@ export default class SchemaDefinition {
       return isValid;
     });
   }
+}
+
+function createFields (fieldDefinitions) {
+  return mapValues(fieldDefinitions,
+    (fieldDefinition, fieldName) => {
+
+      //note - assign to field to maintain prototype, i.e. validate() function if instanceof SchemaDefinition
+      return Object.assign(
+        createSchemaField(...fieldDefinition),
+        {name: fieldName}
+      );
+    }
+  );
 }

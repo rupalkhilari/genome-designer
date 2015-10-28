@@ -12,7 +12,7 @@ const MetadataDefinition = new SchemaDefinition({
     'Description of instance'
   ],
   authors    : [
-    fields.arrayOf(validators.id(), {required : true}).required,
+    fields.arrayOf(validators.id(), {required: true}).required,
     'IDs of authors'
   ],
   version    : [
@@ -26,27 +26,18 @@ const MetadataDefinition = new SchemaDefinition({
 });
 
 const InstanceDefinition = new SchemaDefinition({
-  id: [
+  id      : [
     fields.id().required,
     'ID of the instance'
   ],
-
-  parent: [
+  parent  : [
     fields.id(),
     'Ancestral parent from which object is derived'
   ],
-
   metadata: [
     MetadataDefinition,
     'Metadata for the object'
   ]
 });
 
-//todo - should use a class instead of just object assign
-const InstanceBase = (childDefinition = {}) => {
-  return Object.assign({}, childDefinition, InstanceDefinition);
-};
-
-console.log(InstanceDefinition);
-
-export default InstanceBase;
+export default InstanceDefinition;

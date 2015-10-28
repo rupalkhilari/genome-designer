@@ -154,7 +154,7 @@ export const oneOf = possible => input => {
     return new Error(`possible values ${possible} for oneOf not an array`);
   }
 
-  if (!possible.indexOf(input) > -1) {
+  if (possible.indexOf(input) < 0) {
     return new Error(input + ' not found in ' + possible.join(','));
   }
 };

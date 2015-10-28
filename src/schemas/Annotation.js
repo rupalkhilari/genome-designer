@@ -1,32 +1,44 @@
-import fields, {schemaField} from './fields';
+import fields from './fields';
+import * as validators from './fields/validators';
+import InstanceDefinition from './Instance';
 
 /*
 @description An annotation on a sequence.
 @parent Part
 @sbol Annotation (kinda)
 
+@description
+Should either have a sequence or start+end location
+
 */
 
-const AnnotationSchema = {
-  metadata: validators.shape({
-    version    : validators.version().isRequired,
-    authors    : validators.arrayOf(validators.id()).isRequired,
-    tags       : validators.object().isRequired,
-    name       : validators.string(),
-    description: validators.string()
-  }).isRequired,
+const AnnotationDefinition = InstanceDefinition.extend({
 
-  optimizability: validators.oneOf([ //todo - rename
-    'none', //todo - define enum. allow sequence? capture as sequence e.g. ACNRYGT
-    'codon-optimize',
-    'any'
-  ]),
+  //todo - rename
+  //todo - define enum. allow sequence? capture as sequence e.g. ACNRYGT
+  optimizability: [
+    fields.oneOf([
+      'none',
+      'codon',
+      'any'
+    ]),
+    'Degree to which annotation can be safely changed, e.g. codon-optimized'
+  ],
 
   //either a sequence or a range is required, or potentially both? Perhaps dependent on type? Is this just more of an interface?
 
-  sequence: validators.sequence(),
-  start   : validators.number(),
-  end     : validators.number()
-};
+  sequence: [
+    fields.sequence(),
+    'IUPAC sequence of the annotation'
+  ],
+  start   : [
+    fields.number(),
+    'Location of start of annoation'
+  ],
+  end     : [
+    fields.number(),
+    'Location of end of annotation'
+  ]
+});
 
-export default AnnotationSchema;
+export default AnnotationDefinition;
