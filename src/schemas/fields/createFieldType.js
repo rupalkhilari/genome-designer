@@ -1,3 +1,5 @@
+import safeValidate from './safeValidate';
+
 /**
  * Takes a basic field definition, returns a function which takes parameters, which subsequently returns a fully defined field.
  *
@@ -47,28 +49,5 @@ function createFieldFromValidator (definition, definedValidator, required) {
 }
 
 function wrapValidator (validator, required = false) {
-  return validateCatchError.bind(null, validator, required);
-}
-
-function validateCatchError (validator = () => {}, required = false, input) {
-  if (required === false && input === undefined) {
-    return true;
-  }
-
-  try {
-    let valid = validator(input);
-
-    if (isError(valid)) {
-      console.error(valid);
-    }
-
-    return !isError(valid) && valid !== false;
-  }
-  catch (err) {
-    return false;
-  }
-}
-
-function isError (val) {
-  return val instanceof Error;
+  return safeValidate.bind(null, validator, required);
 }

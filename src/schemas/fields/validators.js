@@ -1,4 +1,4 @@
-import wrap from './createFieldType';
+import safeValidate from './safeValidate';
 import urlRegex from 'url-regex';
 import semverRegex from 'semver-regex';
 
@@ -37,7 +37,7 @@ export const number = params => input => {
 };
 
 export const func = params => input => {
-  if (getPropType(input) !== 'function') {
+  if (!isFunction(input)) {
     return new Error(`${input} is not a function`);
   }
 };
@@ -55,37 +55,67 @@ export const object = params => input => {
 };
 
 export const bool = params => input => {
-  return input === true || input === false;
+  if (!(input === true || input === false)) {
+    return new Error(`${input} is not a boolean`);
+  }
 };
 
 export const undef = params => input => {
-  return input === undefined;
+  if (input !== undefined) {
+    return new Error(`${input} is not undefined`);
+  }
 };
 
 /*******
  string subtypes
  *******/
 
+             //todo - should support all IUPAC with option to limit
 export const sequence = params => input => {
-  //todo - should support all IUPAC with option to limit
-  return isString(input) && /^[acgt]*$/ig.test(input);
+  if (!isString(input)) {
+    return new Error(`${input} is not a string`);
+  }
+
+  let sequenceRegex = /^[acgt]*$/ig;
+
+  if (!sequenceRegex.test(input)) {
+    return new Error(`${input} is not a valid sequence`);
+  }
 };
 
+//todo - get a robust one, i just hacked this together
 export const email = params => input => {
-  //todo - get a robust one, i just hacked this together
-  return isString(input) === 'string' && /\w+?@\w\w+?\.\w{2,6}/.test(input);
+  if (!isString(input)) {
+    return new Error(`${input} is not a string`);
+  }
+
+  let emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+
+  if (!emailRegex.test(input)) {
+    return new Error(`${input} is not a valid email`);
+  }
 };
 
 //remove package if you remove this test
 export const version = params => input => {
-  return isString(input) && semverRegex().test(input) ?
-         true :
-         new Error();
+  if (!isString(input)) {
+    return new Error(`${input} is not a string`);
+  }
+
+  if (!semverRegex().test(input)) {
+    return new Error(`${input} is not a valid version`);
+  }
 };
 
 //remove package if you remove this test
 export const url = params => input => {
-  return isString(input) && urlRegex({exact: true}).test(input);
+  if (!isString(input)) {
+    return new Error(`${input} is not a string`);
+  }
+
+  if (!urlRegex({exact: true}).test(input)) {
+    return new Error(`${input} is not a valid url`);
+  }
 };
 
 /*******
@@ -93,37 +123,71 @@ export const url = params => input => {
  *******/
 
 export const instanceOf = type => input => {
-  return input instanceof type;
+  if (!input instanceof type) {
+    return new Error(`${input} is not an instance of ${type}`);
+  }
 };
 
 //reference check only. Might want another one for deep equality check
 export const equal = checker => input => {
-  return Object.is(checker, input);
+  if (!Object.is(checker, input)) {
+    return new Error(`${input} does not equal ${checker}`);
+  }
 };
 
-export const shape = (fields, params) => input => {
-  return Object.keys(fields).every((key) => {
-    return fields[key](input[key]);
-  });
+export const shape = (fields, {required = false} = {}) => input => {
+  if (!isRealObject(fields)) {
+    return new Error(`shape ${fields} is not an object`);
+  }
+
+  let checker = (key) => {
+    safeValidate(fields[key], key, input[key])
+  };
+
+  if (!Object.keys(fields).every(checker)) {
+    return new Error(`input ${input} passed to arrayOf did not pass validation`);
+  }
 };
 
 export const oneOf = possible => input => {
+  if (!Array.isArray(possible)) {
+    return new Error(`possible values ${possible} for oneOf not an array`);
+  }
+
   if (!possible.indexOf(input) > -1) {
-    throw new Error(input + ' not found in ' + possible.join(','));
+    return new Error(input + ' not found in ' + possible.join(','));
   }
 };
 
 //can pass either function to validate, or an object to check instanceof
-export const oneOfType = types => input => {
-  return types.some(type => {
-    return typeof type === 'function' ?
-           type(input) :
+export const oneOfType = (types, {required = false} = {}) => input => {
+  if (!Array.isArray(types)) {
+    return new Error(`possible types ${types} for oneOfType not an array`);
+  }
+
+  let checker = type => {
+    return isFunction(type) ?
+           safeValidate(type, required, input) :
            input instanceof type;
-  })
+  };
+
+  if (!types.some(checker)) {
+    return new Error(`input ${input} passed to oneOfType not found in ${types}`)
+  }
 };
 
-export const arrayOf = validator => input => {
-  return Array.isArray(input) && input.every(item => validator(item));
+export const arrayOf = (validator, {required = false} = {}) => input => {
+  if (!isFunction(validator)) {
+    return new Error(`validatr ${validator} passed to arrayOf is not a function`);
+  }
+
+  if (!Array.isArray(input)) {
+    return new Error(`input ${input} passed to arrayOf is not an array`);
+  }
+
+  if (!input.every(item => safeValidate(validator, required, item))) {
+    return new Error(`input ${input} passed to arrayOf did not pass validation`);
+  }
 };
 
 //utils
@@ -138,6 +202,10 @@ function isRealObject (input) {
 
 function isNumber (input) {
   return getPropType(input) === 'number';
+}
+
+function isFunction (input) {
+  return getPropType(input) === 'function';
 }
 
 // Equivalent of `typeof` but with special handling for array and regexp.

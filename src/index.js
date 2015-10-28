@@ -4,6 +4,7 @@ import { Provider } from 'react-redux';
 import { ReduxRouter } from 'redux-router';
 import store from './store';
 
+//note - testing
 import InstanceBase from './schemas/InstanceBase'
 
 render(

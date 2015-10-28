@@ -1,32 +1,45 @@
 import fields from './fields';
-import SchemaDefinition from './helpers';
+import * as validators from './fields/validators';
+import SchemaDefinition from './SchemaDefinition';
 
-const MetadataDefinition = {
-  version    : fields.version().required,
-  authors    : fields.arrayOf(fields.id().required).required,
-  tags       : fields.object().required,
-  name       : fields.string(),
-  description: fields.string()
-};
+const MetadataDefinition = new SchemaDefinition({
+  name       : [
+    fields.string(),
+    'Name of the instance'
+  ],
+  description: [
+    fields.string(),
+    'Description of instance'
+  ],
+  authors    : [
+    fields.arrayOf(validators.id(), {required : true}).required,
+    'IDs of authors'
+  ],
+  version    : [
+    fields.version().required,
+    'Semantic version of Instance'
+  ],
+  tags       : [
+    fields.object().required,
+    'Dictionary of tags defining object'
+  ]
+});
 
 const InstanceDefinition = new SchemaDefinition({
-  id      : [
+  id: [
     fields.id().required,
     'ID of the instance'
   ],
 
-  parent  : [
+  parent: [
     fields.id(),
     'Ancestral parent from which object is derived'
-  ]
+  ],
 
-  //todo - need better handle for childen + inheritance. use classes!
-
-  /*
-  metadata: schemaField(
+  metadata: [
     MetadataDefinition,
-    'Metadata for the object')
-  */
+    'Metadata for the object'
+  ]
 });
 
 //todo - should use a class instead of just object assign
