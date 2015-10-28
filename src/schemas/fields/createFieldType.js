@@ -20,23 +20,23 @@
  *   baseValidator:  {Function} base validation function, pre-parameterized
  * }
  */
-export default function createField (definition, type) {
+export default function createFieldType (definition, type) {
   let fieldDef = Object.assign({
     type
   }, definition);
 
-  return function (validationParams) {
+  return function validatorAwaitingParams (validationParams) {
     let { baseValidator } = fieldDef,
         definedValidator = baseValidator(validationParams);
 
-    let opt      = createDefinedValidator(fieldDef, definedValidator, false);
-    opt.required = createDefinedValidator(fieldDef, definedValidator, true);
+    let opt      = createFieldFromValidator(fieldDef, definedValidator, false);
+    opt.required = createFieldFromValidator(fieldDef, definedValidator, true);
 
     return opt;
   };
 }
 
-function createDefinedValidator (definition, definedValidator, required) {
+function createFieldFromValidator (definition, definedValidator, required) {
   return Object.assign({},
     definition,
     {

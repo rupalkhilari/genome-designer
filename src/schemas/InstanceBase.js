@@ -1,5 +1,5 @@
 import fields from './fields';
-import {schemaField, schemaDefinition} from './helpers';
+import SchemaDefinition from './helpers';
 
 const MetadataDefinition = {
   version    : fields.version().required,
@@ -9,16 +9,16 @@ const MetadataDefinition = {
   description: fields.string()
 };
 
-const InstanceDefinition = {
-  id      : schemaField(
+const InstanceDefinition = new SchemaDefinition({
+  id      : [
     fields.id().required,
     'ID of the instance'
-  ),
+  ],
 
-  parent  : schemaField(
+  parent  : [
     fields.id(),
     'Ancestral parent from which object is derived'
-  )
+  ]
 
   //todo - need better handle for childen + inheritance. use classes!
 
@@ -27,7 +27,7 @@ const InstanceDefinition = {
     MetadataDefinition,
     'Metadata for the object')
   */
-};
+});
 
 //todo - should use a class instead of just object assign
 const InstanceBase = (childDefinition = {}) => {

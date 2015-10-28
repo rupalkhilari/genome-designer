@@ -1,5 +1,5 @@
 import * as validatorFunctions from './validators';
-import createField from './createField';
+import createFieldType from './createFieldType';
 import mapValues from '../../utils/mapValues';
 
 //todo - assert that every type has a corresponding baseValidator and is function
@@ -86,7 +86,7 @@ const fields = mapValues({
     baseValidator  : validatorFunctions.arrayOf,
     typeDescription: 'An array, where each item passes the passed validation function'
   }
-}, createField);
+}, createFieldType);
 
 export const fieldNames        = Object.keys(fields);
 export const fieldDescriptions = mapValues(fields, val => val.typeDescription);
