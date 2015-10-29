@@ -32,11 +32,11 @@ const AnnotationDefinition = InstanceDefinition.extend({
     'IUPAC sequence of the annotation'
   ],
   start   : [
-    fields.number(),
+    fields.number({min: 0}),
     'Location of start of annoation'
   ],
   end     : [
-    fields.number(),
+    fields.number({min: 0}),
     'Location of end of annotation'
   ]
 });
