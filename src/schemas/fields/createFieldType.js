@@ -3,11 +3,15 @@ import safeValidate from './safeValidate';
 /**
  * Takes a basic field definition, returns a function which takes parameters, which subsequently returns a fully defined field.
  *
- * @param definition {Object} Object which minimally contains the following keys:
+ * @param baseFieldDefinition {Object} Object which minimally contains the following keys:
  *
- * baseValidator
+ * baseValidator {Function} validation function which accepts a set of parameters (see validators.js), and returns a function which accepts an input, and subsequently returns:
  *   1) returns nothing if valid
  *   2) returns an error for invalid with relevant message
+ *
+ * and likely should include the following keys
+ *
+ * typeDescription {String}
  *
  * @param type {String} the field type (e.g. 'id')
  *
@@ -22,10 +26,10 @@ import safeValidate from './safeValidate';
  *   baseValidator:  {Function} base validation function, pre-parameterized
  * }
  */
-export default function createFieldType (definition, type) {
+export default function createFieldType (baseFieldDefinition, type) {
   let fieldDef = Object.assign({
     type
-  }, definition);
+  }, baseFieldDefinition);
 
   return function validatorAwaitingParams (validationParams) {
     let { baseValidator } = fieldDef,
@@ -38,9 +42,9 @@ export default function createFieldType (definition, type) {
   };
 }
 
-function createFieldFromValidator (definition, definedValidator, required) {
+function createFieldFromValidator (fieldDefinition, definedValidator, required) {
   return Object.assign({},
-    definition,
+    fieldDefinition,
     {
       validate: wrapValidator(definedValidator, required),
       isRequired: required

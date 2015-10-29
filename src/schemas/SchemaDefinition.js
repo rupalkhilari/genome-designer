@@ -30,12 +30,15 @@ export default class SchemaDefinition {
           field       = this.fields[fieldName],
           //need to bind field in case it's a schema
           validator   = field.validate.bind(field),
+          //note - should not error using our validators. Might want to try-catch though, e.g. if we allow custom validator functions
           isValid     = validator(schemaValue);
-
-      console.log(field.name, schemaValue, isValid, field);
 
       return isValid;
     });
+  }
+
+  describe () {
+    return mapValues(this.fields, field => (field.description || field.typeDescription || ''))
   }
 }
 
