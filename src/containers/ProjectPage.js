@@ -39,7 +39,12 @@ class ProjectPage extends Component {
         {!constructSelected && project.components && project.components.map(construct => {
           return (
             <div key={construct.id}>
-              <h3><Link to={`/project/${projectId}/${construct.id}`}>Construct {construct.metadata.name}</Link></h3>
+              <h3>
+                <Link to={`/project/${projectId}/${construct.id}`}>
+                  Construct {construct.metadata.name}
+                </Link>
+              </h3>
+
               <SketchConstruct construct={construct}/>
             </div>
           )
