@@ -2,10 +2,15 @@ import safeValidate from './safeValidate';
 import urlRegex from 'url-regex';
 import semverRegex from 'semver-regex';
 
-/* these validators are used by fields/index.js - you shuold use the ones exported from that file instead of these directly */
-
-/*
-TODO - consistent error handling, ability to handle errors and return (esp. in loops)
+/**
+ * @description
+ * these validators are used by fields/index.js
+ * when defining a SchemaDefinition you should use the fieldType objects exported from that file instead of these directly. However, you may want to use these when just running validation. Note that they expect parameters.
+ *
+ * @example
+ * let validator = number({min:5});
+ * validator(4); //false
+ * validator(40); //true
 */
 
 export const id = params => input => {

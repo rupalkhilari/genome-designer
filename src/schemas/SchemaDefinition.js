@@ -1,20 +1,29 @@
 import mapValues from '../utils/mapValues';
 
-function createSchemaField (field, description = '', additional) {
-
-  delete field.required; //in case still here, created by createField()
-
-  //note - assign to field to maintain prototype, i.e. validate() function if instanceof SchemaDefinition
-  return Object.assign(field,
-    {description},
-    additional
-  );
-}
-
+/**
+ * @class SchemaDefinition
+ * @param fieldDefinitions {Object} dictionary of field names to definitions. Definitions take the form:
+ * [
+ *   parameterizedFieldType {function} Parameterized field type (e.g. fields.id().required)
+ *   description {string} description of the field in this schema
+ *   additional {Object} object to assign to the field
+ * ]
+ * @returns {SchemaDefinition} SchemaDefinition instance, which can validate(), describe(), etc.
+ * @example
+ * import fields from './fields';
+ *
+ * let SimpleDefinition = new SchemaDefinition({
+ *   id : [
+ *     fields.id().required,
+ *     'the ID for the Simple Instance',
+ *     {additionalField : 'yada'}
+ *   ]
+ * }
+ */
 export default class SchemaDefinition {
   constructor (fieldDefinitions) {
     this.definitions = fieldDefinitions;
-    this.fields = createFields(fieldDefinitions);
+    this.fields      = createFields(fieldDefinitions);
   }
 
   extend (childDefinitions) {
@@ -38,7 +47,11 @@ export default class SchemaDefinition {
   }
 
   describe () {
-    return mapValues(this.fields, field => (field.description || field.typeDescription || ''))
+    return mapValues(this.fields, field => (
+      field.description ||
+      field.typeDescription ||
+      '<no description>'
+    ));
   }
 }
 
@@ -52,5 +65,17 @@ function createFields (fieldDefinitions) {
         {name: fieldName}
       );
     }
+  );
+}
+
+function createSchemaField (field, description = '', additional) {
+
+  //in case still here, created by createFieldType()
+  delete field.required;
+
+  //note - assign to field to maintain prototype, e.g. validate() function if instanceof SchemaDefinition
+  return Object.assign(field,
+    {description},
+    additional
   );
 }

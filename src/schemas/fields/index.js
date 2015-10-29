@@ -2,8 +2,28 @@ import * as validatorFunctions from './validators';
 import createFieldType from './createFieldType';
 import mapValues from '../../utils/mapValues';
 
-//todo - assert that every type has a corresponding baseValidator and is function
-
+/**
+ * @name fields
+ * @description
+ * Exports a dictionary of field types to unparameterized fieldType functions. These are called with parameters passed to the baseValidator, and return a fully defined fieldType object.
+ *
+ * See createFieldType for what is output.
+ *
+ * @example
+ * import fields from './fields';
+ * import * as validatorFunctions from './validators';
+ *
+ * let myField = fields.id().required;
+ *
+ returns:
+ {
+  type: 'id'
+  validate: {Parameterized validation function}
+  isRequired: true
+  typeDescription: <from fields.js>
+  baseValidator:  validatorFunctions.id
+}
+ */
 const fields = mapValues({
 
   //primitives
@@ -88,8 +108,9 @@ const fields = mapValues({
   }
 }, createFieldType);
 
+//todo - assert that every type has a corresponding baseValidator and is function
+
 export const fieldNames        = Object.keys(fields);
 export const fieldDescriptions = mapValues(fields, val => val.typeDescription);
-export const baseValidators    = mapValues(fields, val => val.baseValidator);
 
 export default fields;
