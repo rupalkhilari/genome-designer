@@ -3,6 +3,10 @@ import { connect } from 'react-redux';
 
 import GlobalNav from './GlobalNav';
 
+import styles from '../styles/App.css';
+import withStyles from '../decorators/withStyles';
+
+@withStyles(styles)
 class App extends Component {
   constructor(props) {
     super(props);
@@ -18,7 +22,7 @@ class App extends Component {
     return (
       <div className="App">
         <GlobalNav />
-        <div className="pageContent">
+        <div className="App-pageContent">
           {children}
         </div>
       </div>
