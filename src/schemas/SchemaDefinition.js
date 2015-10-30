@@ -35,6 +35,10 @@ export default class SchemaDefinition {
     ));
   }
 
+  clone () {
+    return new SchemaDefinition(this.definitions);
+  }
+
   validate (schema = {}) {
     return Object.keys(this.fields).every(fieldName => {
       let schemaValue = schema[fieldName],
@@ -72,10 +76,16 @@ function createFields (fieldDefinitions) {
 
 function createSchemaField (field, description = '', additional) {
 
-  //in case still here, created by createFieldType()
+  //in case still here, created by createFieldType() and field is not required
   delete field.required;
 
-  //note - assign to field to maintain prototype, e.g. validate() function if instanceof SchemaDefinition
+  //todo - can probably handle this more intelligently...
+  //because each field is a new FieldType instance (since it is parameterized), we can overwrite it
+  //However, if its a SchemaDefinition, we dont want to assign to it, so clone it
+  if (field instanceof SchemaDefinition) {
+   field = field.clone();
+  }
+
   return Object.assign(field,
     {description},
     additional
