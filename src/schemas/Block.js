@@ -9,7 +9,7 @@ import InstanceDefinition from './Instance';
 
  */
 
-//todo - complete enumeration. consider other visual symbols (e.g. templating)
+//SBOL has a field called role, particularly in defining modules. We may want to add this later. For now, this annotation can be a role per-component.
 export const enumRoles = [
   //SBOL
   'Promoter',
@@ -25,10 +25,6 @@ export const enumRoles = [
 ];
 
 const BlockDefinition = InstanceDefinition.extend({
-  role      : [
-    fields.oneOf(enumRoles),
-    `A specific role of this block, useful e.g. for inventory filtering`
-  ],
   template: [
     fields.id(),
     `Reference to another Block to use as a template (i.e. validation, component rules)`

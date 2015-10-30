@@ -11,6 +11,7 @@ import SchemaDefinition from './SchemaDefinition';
  An annotation on a sequence.
  Should either have a sequence or start+end location
 
+ Later, we may want to make a field that notes how optimizable the sequence is. E.g. none, codon-optimize, or random sequence. It may be represented as a degenerate sequence?
  */
 
 const AnnotationDefinition = new SchemaDefinition({
@@ -22,17 +23,6 @@ const AnnotationDefinition = new SchemaDefinition({
   tags       : [
     fields.object().required,
     'Dictionary of tags defining annotation'
-  ],
-  //todo - decide if we need this
-  //todo - rename
-  //todo - define enum. allow degenerate sequence specification?
-  optimizability: [
-    fields.oneOf([
-      'none',
-      'codon',
-      'any'
-    ]),
-    'Degree to which annotation can be safely changed, e.g. codon-optimized'
   ],
   sequence: [
     fields.sequence(),
