@@ -29,18 +29,26 @@ const BlockDefinition = InstanceDefinition.extend({
     fields.oneOf(enumRoles),
     `A specific role of this block, useful e.g. for inventory filtering`
   ],
+  template: [
+    fields.id(),
+    `Reference to another Block to use as a template (i.e. validation, component rules)`
+  ],
   // placeholder for block-level validation.
   // todo - define structure
   rules     : [
     fields.shape({
       type  : validators.string(),
       params: validators.object()
-    }),
+    }).required,
     `Grammar/rules governing the whole Block`
   ],
+  //todo - define structure. May want to make own Definition.
   components: [
-    fields.arrayOf().required,
-    `Array of Blocks/Parts of which this Block is comprised`
+    fields.arrayOf(validators.shape({
+      rules: validators.object(),
+      options: validators.arrayOf(validators.id())
+    })).required,
+    `Array of Blocks/Parts (and their rules) of which this Block is comprised`
   ]
 });
 
