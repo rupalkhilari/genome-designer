@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import { connect } from 'react-redux';
 import { pushState } from 'redux-router';
+import { projectCreate } from '../actions';
 
 import ProjectSelect from '../components/ProjectSelect';
 
@@ -15,12 +16,21 @@ class GlobalNav extends Component {
   }
 
   static propTypes = {
-    pushState: PropTypes.func.isRequired,
+    projects: PropTypes.object.isRequired,
     inputValue: PropTypes.string.isRequired,
+    projectCreate: PropTypes.func.isRequired,
+    pushState: PropTypes.func.isRequired,
   }
 
   handleChange = (nextValue) => {
-    this.props.pushState(null, `/project/${nextValue}`);
+    const { pushState, projectCreate, projects } = this.props;
+
+    //todo - this should be run in the project page or route transition, not here
+    if (!projects[nextValue]) {
+      projectCreate(nextValue);
+    }
+
+    pushState(null, `/project/${nextValue}`);
   }
 
   render() {
@@ -38,10 +48,12 @@ class GlobalNav extends Component {
 
 function mapStateToProps(state) {
   return {
+    projects : state.projects,
     inputValue: state.router.params.projectId || ''
   };
 }
 
 export default connect(mapStateToProps, {
-  pushState
+  pushState,
+  projectCreate
 })(GlobalNav);

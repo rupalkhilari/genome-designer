@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import { pushState } from 'redux-router';
-import { projectAddConstruct, projectCreate } from '../actions';
+import { projectAddConstruct } from '../actions';
 import { makeConstruct, makeProject } from '../utils/randomGenerators';
 import range from '../utils/range';
 
@@ -22,21 +22,6 @@ export class ProjectPage extends Component {
     pushState          : PropTypes.func.isRequired,
   }
 
-  static willTransitionTo (transition, params) {
-    const { children, projectId, constructId, project } = this.props;
-
-    console.log('project transition', project);
-
-    //todo - error handle this better - should send them somewhere else?
-    //todo - this is a hack. The project should be created using an action. Need to handle route transition checks better. We probably shouldn't make it here.
-    //react router can probably handle this much better
-    //also should ensure that Project is of the proper format, using propTypes + Schemas, rather than checks in the render method
-    if (!project || !project.components) {
-      this.props.projectCreate(projectId);
-      transition.abort();
-    }
-  }
-
   handleClickAddConstruct = (e) => {
     let {projectId} = this.props,
         lengths = range(3).map(() => Math.floor(Math.random() * 1000));
@@ -51,6 +36,12 @@ export class ProjectPage extends Component {
 
   render () {
     const { children, projectId, constructId, project } = this.props;
+
+    //todo - need error handling here. Should be in route transition probably?
+    //right now there is some handling in GlobalNav when using ProjectSelect. Doesn't handle request of the URL.
+    if (!project || !project.metadata) {
+      alert('ProjectPage - handle no project in state');
+    }
 
     let constructSelected = !!constructId;
 
@@ -106,6 +97,5 @@ function mapStateToProps (state) {
 
 export default connect(mapStateToProps, {
   projectAddConstruct,
-  projectCreate,
   pushState
 })(ProjectPage);
