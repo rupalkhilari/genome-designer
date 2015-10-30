@@ -12,5 +12,6 @@
 
   &-title {
     color: #bbb;
+    text-decoration: none;
   }
 }

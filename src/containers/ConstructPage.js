@@ -39,8 +39,9 @@ class ConstructPage extends Component {
 function mapStateToProps (state) {
   const { projectId, constructId } = state.router.params;
 
-  //todo - this should be in the blocks section of the state
+  //todo - this should be in the 'blocks' section of the state
   //todo - this should be a selector
+  //react router can probably handle this much better
   const construct = state.projects[projectId].components.find(comp => comp.id === constructId);
 
   return {

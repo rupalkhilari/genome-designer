@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import { Link } from 'react-router';
 
 import styles from '../styles/ProjectHeader.css';
 import withStyles from '../decorators/withStyles';
@@ -23,6 +24,8 @@ export default class ProjectHeader extends Component {
   render () {
     const { project } = this.props;
 
+    console.log(project);
+
     return (
       <div className="ProjectHeader">
 
@@ -32,9 +35,10 @@ export default class ProjectHeader extends Component {
             backgroundImage: `url(${project.metadata.image})`
           }}></div>
           <div className="ProjectHeader-text">
-            <h3 className="ProjectHeader-title">
+            <Link to={`project/${project.id}`}
+              className="ProjectHeader-title">
               {project.metadata.name}
-            </h3>
+            </Link>
             {this.state.detailVisible &&
               <p className="ProjectHeader-description">
                 {project.metadata.description}

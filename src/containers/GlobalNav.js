@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import { Link } from 'react-router';
 import { connect } from 'react-redux';
 import { pushState } from 'redux-router';
 
@@ -25,7 +26,8 @@ class GlobalNav extends Component {
   render() {
     return (
       <div className="GlobalNav">
-        <span className="GlobalNav-title">Global Nav</span>
+          <Link className="GlobalNav-title"
+                to="/">Home</Link>
         <ProjectSelect value={this.props.inputValue}
                        onChange={this.handleChange} />
 

@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
+import { pushState } from 'redux-router';
 import { projectAddConstruct } from '../actions';
 import { makeConstruct } from '../utils/randomGenerators';
 import range from '../utils/range';
@@ -77,7 +78,14 @@ class ProjectPage extends Component {
 
 function mapStateToProps (state) {
   const { projectId, constructId } = state.router.params;
-  const project = state.projects[projectId] || {};
+  const project = state.projects[projectId];
+
+  //todo - error handle this better - should send them somewhere else?
+  //react router can probably handle this much better
+  if (!project) {
+
+  }
+
 
   return {
     projectId,

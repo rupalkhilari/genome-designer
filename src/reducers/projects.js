@@ -1,5 +1,7 @@
 import * as ActionTypes from '../constants/ActionTypes';
 
+import { blockAddBlock } from '../actions';
+
 //testing
 import { makeConstruct } from '../utils/randomGenerators';
 
@@ -27,7 +29,8 @@ export default function projects (state = initialState, action) {
   switch (action.type) {
     case ActionTypes.PROJECT_ADD_CONSTRUCT : {
 
-      //todo - should be adding blocks to own section of state, not inside the project
+      // todo - should be adding blocks to own section of state, not inside the project
+      // use blockAddBlock
 
       const { id, construct } = action,
             oldProject = state[id] || {},
