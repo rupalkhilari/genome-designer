@@ -1,6 +1,6 @@
 import fields from './fields';
 import * as validators from './fields/validators';
-import InstanceDefinition from './Instance';
+import SchemaDefinition from './SchemaDefinition';
 
 /**
  @name AnnotationDefinition
@@ -11,10 +11,18 @@ import InstanceDefinition from './Instance';
  An annotation on a sequence.
  Should either have a sequence or start+end location
 
-*/
+ */
 
-const AnnotationDefinition = InstanceDefinition.extend({
+const AnnotationDefinition = new SchemaDefinition({
 
+  description: [
+    fields.string(),
+    'Description of annotation'
+  ],
+  tags       : [
+    fields.object().required,
+    'Dictionary of tags defining annotation'
+  ],
   //todo - decide if we need this
   //todo - rename
   //todo - define enum. allow degenerate sequence specification?
@@ -26,9 +34,6 @@ const AnnotationDefinition = InstanceDefinition.extend({
     ]),
     'Degree to which annotation can be safely changed, e.g. codon-optimized'
   ],
-
-  //either a sequence or a range is required, or potentially both? Perhaps dependent on type? Is this just more of an interface?
-
   sequence: [
     fields.sequence(),
     'IUPAC sequence of the annotation'
