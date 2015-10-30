@@ -2,8 +2,8 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import { pushState } from 'redux-router';
-import { projectAddConstruct } from '../actions';
-import { makeConstruct } from '../utils/randomGenerators';
+import { projectAddConstruct, projectCreate } from '../actions';
+import { makeConstruct, makeProject } from '../utils/randomGenerators';
 import range from '../utils/range';
 
 import SketchConstruct from '../components/SketchConstruct';
@@ -13,12 +13,28 @@ import styles from '../styles/ProjectPage.css';
 import withStyles from '../decorators/withStyles';
 
 @withStyles(styles)
-class ProjectPage extends Component {
+export class ProjectPage extends Component {
   static propTypes = {
     project            : PropTypes.object.isRequired,
     projectId          : PropTypes.string.isRequired,
     projectAddConstruct: PropTypes.func.isRequired,
     constructId        : PropTypes.string, //only visible if a construct is selected
+    pushState          : PropTypes.func.isRequired,
+  }
+
+  static willTransitionTo (transition, params) {
+    const { children, projectId, constructId, project } = this.props;
+
+    console.log('project transition', project);
+
+    //todo - error handle this better - should send them somewhere else?
+    //todo - this is a hack. The project should be created using an action. Need to handle route transition checks better. We probably shouldn't make it here.
+    //react router can probably handle this much better
+    //also should ensure that Project is of the proper format, using propTypes + Schemas, rather than checks in the render method
+    if (!project || !project.components) {
+      this.props.projectCreate(projectId);
+      transition.abort();
+    }
   }
 
   handleClickAddConstruct = (e) => {
@@ -29,7 +45,8 @@ class ProjectPage extends Component {
   }
 
   handleClickFromInventory = (e) => {
-
+    //todo
+    alert('inventory forthcoming...');
   }
 
   render () {
@@ -80,13 +97,6 @@ function mapStateToProps (state) {
   const { projectId, constructId } = state.router.params;
   const project = state.projects[projectId];
 
-  //todo - error handle this better - should send them somewhere else?
-  //react router can probably handle this much better
-  if (!project) {
-
-  }
-
-
   return {
     projectId,
     constructId,
@@ -95,5 +105,7 @@ function mapStateToProps (state) {
 }
 
 export default connect(mapStateToProps, {
-  projectAddConstruct
+  projectAddConstruct,
+  projectCreate,
+  pushState
 })(ProjectPage);

@@ -1,10 +1,13 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import * as SchemaTypes from '../schemas/validators';
 import { partUpdateName } from '../actions';
 
 import SketchPartName from './SketchPartName';
 
+import styles from '../styles/SketchPart.css';
+import withStyles from '../decorators/withStyles';
+
+@withStyles(styles)
 export class SketchPart extends Component {
 
   static PropTypes = {
@@ -25,6 +28,7 @@ export class SketchPart extends Component {
 
     return (
       <div ref="partGroup"
+           className="SketchPart"
            style={{backgroundColor: part.color, width: '120px', height: '30px'}}>
         <SketchPartName partName={partName}
                         onChange={this.handleRename}/>

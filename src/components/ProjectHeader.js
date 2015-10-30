@@ -24,8 +24,6 @@ export default class ProjectHeader extends Component {
   render () {
     const { project } = this.props;
 
-    console.log(project);
-
     return (
       <div className="ProjectHeader">
 
@@ -35,7 +33,7 @@ export default class ProjectHeader extends Component {
             backgroundImage: `url(${project.metadata.image})`
           }}></div>
           <div className="ProjectHeader-text">
-            <Link to={`project/${project.id}`}
+            <Link to={`/project/${project.id}`}
               className="ProjectHeader-title">
               {project.metadata.name}
             </Link>

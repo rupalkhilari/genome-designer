@@ -1,4 +1,5 @@
 import * as ActionTypes from '../constants/ActionTypes';
+import { UUID, makeProject } from '../utils/randomGenerators';
 
 import { blockAddBlock } from '../actions';
 
@@ -39,6 +40,11 @@ export default function projects (state = initialState, action) {
             newProject = Object.assign({}, oldProject, {components: newComponents});
 
       return Object.assign({}, state, {[id] : newProject});
+    }
+    case ActionTypes.PROJECT_CREATE : {
+      const { projectId = UUID() } = action;
+
+      return Object.assign({}, state, {[projectId] : makeProject(projectId)});
     }
     default : {
       return state;

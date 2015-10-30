@@ -6,6 +6,8 @@ import makeActionCreator from './makeActionCreator';
 //Adds a construct to a project
 export const projectAddConstruct = makeActionCreator(ActionTypes.PROJECT_ADD_CONSTRUCT, 'id', 'construct');
 
+export const projectCreate = makeActionCreator(ActionTypes.PROJECT_CREATE, 'name');
+
 export const blockAddBlock = makeActionCreator(ActionTypes.BLOCK_ADD_BLOCK, 'block');
 
 //updates the name of a part

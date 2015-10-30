@@ -23,6 +23,16 @@ export function makeConstruct (...partLengths) {
   };
 }
 
+export function makeProject (UUID) {
+  return {
+    id: UUID,
+    metadata  : {
+      name: 'My Project'
+    },
+    components: []
+  }
+}
+
 /* random gen utils */
 
 //todo - lets pull this out into its own class

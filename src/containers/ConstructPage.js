@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 
 import SketchConstruct from '../components/SketchConstruct'
 
-class ConstructPage extends Component {
+export class ConstructPage extends Component {
 
   static propTypes = {
     constructId: PropTypes.string.isRequired,

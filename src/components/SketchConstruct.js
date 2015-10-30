@@ -1,5 +1,4 @@
 import React, { Component, PropTypes } from 'react';
-import * as SchemaTypes from '../schemas/validators';
 
 import SketchBlock from './SketchBlock';
 
