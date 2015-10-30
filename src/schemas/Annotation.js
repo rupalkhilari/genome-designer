@@ -15,8 +15,9 @@ import InstanceDefinition from './Instance';
 
 const AnnotationDefinition = InstanceDefinition.extend({
 
+  //todo - decide if we need this
   //todo - rename
-  //todo - define enum. allow sequence? capture as sequence e.g. ACNRYGT
+  //todo - define enum. allow degenerate sequence specification?
   optimizability: [
     fields.oneOf([
       'none',

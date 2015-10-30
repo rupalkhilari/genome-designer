@@ -26,7 +26,7 @@ export const enumRoles = [
 
 const BlockDefinition = InstanceDefinition.extend({
   role      : [
-    fields..oneOf(enumRoles),
+    fields.oneOf(enumRoles),
     `A specific role of this block, useful e.g. for inventory filtering`
   ],
   // placeholder for block-level validation.
