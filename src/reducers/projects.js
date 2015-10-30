@@ -1,6 +1,26 @@
 import * as ActionTypes from '../constants/ActionTypes';
 
-const initialState = {};
+//testing
+import { makeConstruct } from '../utils/randomGenerators';
+
+//testing
+const initialState = {
+  "test" : {
+    id : "test",
+    metadata: {
+      name : "Test Project",
+      description: "Sample Description of the Project. I'm trying to engineer hairless humans for the next wave of Calvin Klein models.",
+      authors: [],
+      tags : {
+        keywords : ['the future', 'human']
+      }
+    },
+    components: [
+      makeConstruct(100, 500, 750),
+      makeConstruct(200, 100, 450),
+    ]
+  }
+};
 
 export default function projects (state = initialState, action) {
 

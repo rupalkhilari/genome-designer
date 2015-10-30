@@ -13,8 +13,7 @@ class App extends Component {
   }
 
   static propTypes = {
-    // Injected by React Router
-    children: PropTypes.node
+    children: PropTypes.node, // Injected by React Router
   }
 
   render() {

@@ -1,4 +1,4 @@
-//todo - realistically, makePart + makeConstruct should probably be part of schemas. here temporarily until it has a proper home.
+//todo - realistically, makePart + makeConstruct should probably be part of Models. here temporarily until it has a proper home.
 let partCounter = 0;
 export function makePart (seqLength = 100) {
   return {
@@ -25,6 +25,7 @@ export function makeConstruct (...partLengths) {
 
 /* random gen utils */
 
+//todo - lets pull this out into its own class
 export function UUID () {
   var d    = new Date().getTime();
   var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {

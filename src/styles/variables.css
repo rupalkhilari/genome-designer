@@ -1,17 +1,25 @@
 :root {
 
-    --GlobalNav-backgroundColor: black;
+  --colors-white: #ffffff;
+  --colors-greyDark: #666666;
+  --colors-grey: #cccccc;
+  --colors-greyLight: #f8f8f8;
 
-   /* Typography
-   ==================== */
+  /* Typography
+  ==================== */
 
-    --font-family-base:      'Segoe UI', 'HelveticaNeue-Light', sans-serif;
+  --font-family-base: 'Segoe UI', 'HelveticaNeue-Light', sans-serif;
 
-    /* Media queries breakpoints
-    ==================== */
+  /* Media queries breakpoints
+  ==================== */
 
-    --screen-xs-min: 480px; /* Extra small screen / phone */
-    --screen-sm-min: 768px; /* Small screen / tablet */
-    --screen-md-min: 992px; /* Medium screen / desktop */
-    --screen-lg-min: 1200px; /* Large screen / wide desktop */
+  --screen-xs-min: 480px; /* Extra small screen / phone */
+  --screen-sm-min: 768px; /* Small screen / tablet */
+  --screen-md-min: 992px; /* Medium screen / desktop */
+  --screen-lg-min: 1200px; /* Large screen / wide desktop */
+
+  /* Component Level (but
+ ==================== */
+
+  --GlobalNav-backgroundColor: #fafafa;
 }

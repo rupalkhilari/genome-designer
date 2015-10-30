@@ -14,8 +14,8 @@ class GlobalNav extends Component {
   }
 
   static propTypes = {
-    pushState: PropTypes.func.isRequired, //defined for dispatch actions, see below
-    inputValue: PropTypes.string.isRequired //defined in mapStateToProps, see below
+    pushState: PropTypes.func.isRequired,
+    inputValue: PropTypes.string.isRequired,
   }
 
   handleChange = (nextValue) => {
@@ -25,6 +25,7 @@ class GlobalNav extends Component {
   render() {
     return (
       <div className="GlobalNav">
+        <span className="GlobalNav-title">Global Nav</span>
         <ProjectSelect value={this.props.inputValue}
                        onChange={this.handleChange} />
 

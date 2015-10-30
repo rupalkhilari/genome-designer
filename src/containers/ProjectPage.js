@@ -2,25 +2,33 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import { projectAddConstruct } from '../actions';
-
 import { makeConstruct } from '../utils/randomGenerators';
 import range from '../utils/range';
 
 import SketchConstruct from '../components/SketchConstruct';
+import ProjectHeader from '../components/ProjectHeader';
 
+import styles from '../styles/ProjectPage.css';
+import withStyles from '../decorators/withStyles';
+
+@withStyles(styles)
 class ProjectPage extends Component {
   static propTypes = {
     project            : PropTypes.object.isRequired,
     projectId          : PropTypes.string.isRequired,
     projectAddConstruct: PropTypes.func.isRequired,
-    constructId        : PropTypes.string //only visible if a construct is selected
+    constructId        : PropTypes.string, //only visible if a construct is selected
   }
 
-  addConstruct = (e) => {
+  handleClickAddConstruct = (e) => {
     let {projectId} = this.props,
         lengths = range(3).map(() => Math.floor(Math.random() * 1000));
 
     this.props.projectAddConstruct(projectId, makeConstruct(...lengths));
+  }
+
+  handleClickFromInventory = (e) => {
+
   }
 
   render () {
@@ -29,8 +37,8 @@ class ProjectPage extends Component {
     let constructSelected = !!constructId;
 
     return (
-      <div>
-        <h1>Project {projectId}</h1>
+      <div className="ProjectPage">
+        <ProjectHeader project={project}/>
 
         {/* if viewing specific construct, let routing take over*/}
         {constructSelected && children}
@@ -50,9 +58,17 @@ class ProjectPage extends Component {
           )
         })}
 
-        <div>
-          <hr />
-          <a onClick={this.addConstruct}>Add Construct</a>
+        <div className="ProjectPage-actions">
+          <a className="ProjectPage-action"
+             onClick={this.handleClickAddConstruct}>
+            <span className="dummyButton"></span>
+            Add Construct
+          </a>
+          <a className="ProjectPage-action"
+             onClick={this.handleClickFromInventory}>
+            <span className="dummyButton"></span>
+            From Inventory
+          </a>
         </div>
       </div>
     );

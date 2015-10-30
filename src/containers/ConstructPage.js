@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import { pushState } from 'redux-router';
 import { connect } from 'react-redux';
 
 import SketchConstruct from '../components/SketchConstruct'
@@ -8,15 +9,26 @@ class ConstructPage extends Component {
   static propTypes = {
     constructId: PropTypes.string.isRequired,
     projectId  : PropTypes.string.isRequired,
-    construct  : PropTypes.object.isRequired
+    construct  : PropTypes.object.isRequired,
+    pushState  : PropTypes.func.isRequired,
+  }
+
+  //todo - should probably use proper router hook for this
+  componentWillMount () {
+    const { projectId, construct } = this.props;
+
+    //Check to make sure Construct exists, e.g. if construct has been deleted
+    if (!construct) {
+      this.props.pushState(null, `/project/${projectId}`)
+    }
   }
 
   render () {
-    const { constructId, construct } = this.props;
+    const { construct } = this.props;
 
     return (
       <div>
-        <h1>Construct {constructId}</h1>
+        <h4>{construct.metadata.name}</h4>
 
         <SketchConstruct construct={construct}/>
       </div>
@@ -38,4 +50,6 @@ function mapStateToProps (state) {
   };
 }
 
-export default connect(mapStateToProps)(ConstructPage);
+export default connect(mapStateToProps, {
+  pushState
+})(ConstructPage);
