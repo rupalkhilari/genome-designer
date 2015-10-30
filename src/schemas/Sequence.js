@@ -1,9 +1,12 @@
-import fields, { validators } from './fields';
+import fields from './fields';
+import * as validators from './fields/validators';
+import InstanceDefinition from './Instance';
 
-/*
-@description A sequence, typically of a part and a large string. Sequences are references because they are not usually loaded in the applicaiton, and may be very large, so can be loaded with their own API for defining desired regions
-@sbol Sequence (mostly)
-
+/**
+ @name SequenceDefinition
+ @sbol Sequence (mostly)
+ @description
+ A sequence, typically of a part and a large string. Sequences are references because they are not usually loaded in the applicaiton, and may be very large, so can be loaded with their own API for defining desired regions.
 */
 
 export const enumType = [
@@ -12,20 +15,25 @@ export const enumType = [
   'molecule' 		//SMILES
 ];
 
-const SequenceSchema = {
-  id      : validators.id().isRequired,
-  metadata: validators.shape({
-    authors    : validators.arrayOf(validators.id()).isRequired,
-    version    : validators.version().isRequired,
-    tags       : validators.object().isRequired,
-    name       : validators.string(),
-    description: validators.string()
-  }).isRequired,
+const SequenceDefinition = InstanceDefinition.extend({
+  type: [
+    fields.oneOf(enumType).required,
+    `Type of sequence, as defined in ${enumType.join(', ')}, to determine valid monomers}`
+  ],
+  //todo - define. placeholders? rules? need schema-level validation based on type
+  sequence     : [
+    fields.sequence().required,
+    `String representing monomers of the sequence`
+  ],
+  length : [
+    fields.number(),
+    `Length of the sequence (calculated on the server)`
+  ],
+  //default is forward (true)
+  orientForward: [
+    fields.bool(),
+    ``
+  ]
+});
 
-  type: validators.oneOf(enumType).isRequired,
-
-  sequence     : validators.sequence().isRequired,    //todo - define. placeholders? rules? how to pass type?
-  orientForward: validators.bool()                    //default is forward
-};
-
-export default SequenceSchema;
+export default SequenceDefinition;

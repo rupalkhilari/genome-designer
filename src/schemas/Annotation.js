@@ -2,13 +2,14 @@ import fields from './fields';
 import * as validators from './fields/validators';
 import InstanceDefinition from './Instance';
 
-/*
-@description An annotation on a sequence.
-@parent Part
-@sbol Annotation (kinda)
+/**
+ @name AnnotationDefinition
+ @parent PartDefinition
+ @sbol Annotation (kinda)
 
-@description
-Should either have a sequence or start+end location
+ @description
+ An annotation on a sequence.
+ Should either have a sequence or start+end location
 
 */
 

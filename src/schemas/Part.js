@@ -1,25 +1,26 @@
-import fields, { validators } from './fields';
-import AnnotationSchema from './Annotation';
+import fields from './fields';
+import InstanceDefinition from './Instance';
+import AnnotationDefinition from './Annotation';
 
-/*
-A physical sequence.
+/**
+ @name PartDefinition
+ @description
+ Represents a physical sequence, sourced from an Inventory
+ */
 
-*/
+const PartDefinition = InstanceDefinition.extend({
+  sequence  : [
+    fields.id().required,
+    `ID of the associated Sequence (not the sequence itself)`
+  ],
+  source    : [
+    fields.id().required,
+    `Source (Inventory) ID of the Part`
+  ],
+  annotations: [
+    fields.arrayOf(validators.id()).required,
+    `A list of Annotations associated with the Part`
+  ]
+});
 
-const PartSchema = {
-  id      : types.id().isRequired,
-  parent  : types.id(),
-  metadata: types.shape({
-    authors    : types.arrayOf(types.id()).isRequired,
-    version    : types.version().isRequired,
-    tags       : types.object().isRequired,
-    name       : types.string(),
-    description: types.string()
-  }).isRequired,
-
-  sequence  : types.id().isRequired,
-  source    : types.id(),
-  annoations: types.arrayOf(types.shape(AnnotationSchema).isRequired)
-};
-
-export default PartSchema;
+export default PartDefinition;

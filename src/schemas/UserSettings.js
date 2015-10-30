@@ -1,14 +1,29 @@
-import fields, { validators } from './fields';
+import fields from './fields';
+import * as validators from './fields/validators';
+import SchemaDefinition from './SchemaDefinition';
 
-/*
-Dictionary of user settings
+/**
+ @name UserSettingsDefinition
+ @description
+ Dictionary of persistent user settings
+ */
 
-//todo - what else do we need?
-*/
+//todo - what else do we need? What cannot be captured in the URL?
 
-const UserSettingsSchema = {
-  id  : validators.id().isRequired,
-  user: validators.id().isRequired
-};
+const UserSettingsDefinition = new SchemaDefinition({
+  id   : [
+    fields.id().required
+      `ID of UserSettings`
+  ],
+  //Let UserDefinition Specify?
+  user : [
+    fields.id().required,
+    `Associated User`
+  ],
+  state: [
+    fields.object(),
+    `Actual information about User Settings`
+  ]
+});
 
-export default UserSettingsSchema;
+export default UserSettingsDefinition;

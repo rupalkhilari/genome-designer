@@ -1,5 +1,7 @@
 import mapValues from '../utils/mapValues';
 
+//todo - support SchemaDefinition level validation function (across all fields)
+
 /**
  * @class SchemaDefinition
  * @param fieldDefinitions {Object} dictionary of field names to definitions. Definitions take the form:

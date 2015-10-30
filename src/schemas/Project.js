@@ -1,22 +1,19 @@
-import fields, { validators } from './fields';
+import fields from './fields';
+import * as validators from './fields/validators';
+import InstanceDefinition from './Instance';
 
-/*
-Project is the container for a body of work.
+/**
+ @name ProjectDefinition
+ @description
+ Project is the container for a body of work. It consists primarily of constructs
 
 */
 
-const ProjectSchema = {
-  id      : validators.id().isRequired,
-  parent  : validators.id(),
-  metadata: validators.shape({
-    authors    : validators.arrayOf(validators.id()).isRequired,
-    version    : validators.version().isRequired,
-    tags       : validators.object().isRequired,
-    name       : validators.string(),
-    description: validators.string()
-  }).isRequired,
+const ProjectDefinition = InstanceDefinition.extend({
+  components: [
+    field.arrayOf(validators.id()).required,
+    `Constructs associated with this project`
+  ]
+});
 
-  components: validators.arrayOf(validators.id()).isRequired
-};
-
-export default ProjectSchema;
+export default ProjectDefinition;

@@ -1,22 +1,19 @@
-import fields, { validators } from './fields';
+import fields from './fields';
+import InstanceDefinition from './Instance';
 
-/*
-An Inventory is a foundry / freezer / storage facility, the location where e.g. a part is sourced
-
-//todo - what else do we need?
+/**
+ @name InventoryDefinition
+ @description
+ An Inventory is a foundry / freezer / storage facility, the location where e.g. a part is sourced
 */
 
-const InventorySchema = {
-  id      : validators.id().isRequired,
-  metadata: validators.shape({
-    authors    : validators.arrayOf(validators.id()).isRequired,
-    version    : validators.version().isRequired,             //do we want to use this e.g. for caching purposes? or just store a date?
-    tags       : validators.object().isRequired,
-    name       : validators.string(),
-    description: validators.string()
-  }).isRequired,
+//todo - what else do we need?
 
-  url: validators.url()
-};
+const InventoryDefinition = InstanceDefinition.extend({
+  url: [
+    fields.url(),
+    `URL that is API endpoint for the Inventory`
+  ]
+});
 
-export default InventorySchema;
+export default InventoryDefinition;

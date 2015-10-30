@@ -1,36 +1,47 @@
-import fields, { validators } from './fields';
+import fields from './fields';
+import * as validators from './fields/validators';
+import InstanceDefinition from './Instance';
 
-/*
-@description A component of a construct, or construct itself
-@sbol Component
+/**
+ @name BlockDefinition
+ @description A component of a construct, or construct itself
+ @sbol Component
 
-*/
+ */
 
-//todo - complete enumeration. These are from SBOL. consider other visual symbols (e.g. templating)
+//todo - complete enumeration. consider other visual symbols (e.g. templating)
 export const enumRoles = [
+  //SBOL
   'Promoter',
   'RBS',
   'CDS',
   'Terminator',
   'Gene',
   'Engineered Gene',
-  'mRNA'
+  'mRNA',
+
+  //others
+  'placeholder'
 ];
 
-const BlockSchema = {
-  id      : validators.id().isRequired,
-  parent  : validators.id(),
-  metadata: validators.shape({
-    authors    : validators.arrayOf(validators.id()).isRequired,
-    version    : validators.version().isRequired,
-    tags       : validators.object().isRequired,
-    name       : validators.string(),
-    description: validators.string()
-  }).isRequired,
+const BlockDefinition = InstanceDefinition.extend({
+  role      : [
+    fields..oneOf(enumRoles),
+    `A specific role of this block, useful e.g. for inventory filtering`
+  ],
+  // placeholder for block-level validation.
+  // todo - define structure
+  rules     : [
+    fields.shape({
+      type  : validators.string(),
+      params: validators.object()
+    }),
+    `Grammar/rules governing the whole Block`
+  ],
+  components: [
+    fields.arrayOf().required,
+    `Array of Blocks/Parts of which this Block is comprised`
+  ]
+});
 
-  roles: validators.arrayOf(validators.oneOf(enumRoles)),
-
-  components: validators.arrayOf().isRequired             //todo - define structure / relation to template?
-};
-
-export default BlockSchema;
+export default BlockDefinition;

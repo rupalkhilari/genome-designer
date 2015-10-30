@@ -1,14 +1,29 @@
-import fields, { validators } from './fields';
+import fields from './fields';
+import * as validators from './fields/validators';
+import SchemaDefinition from './SchemaDefinition';
 
-/*
-Information about user's last session
+/**
+ @name UserSessionDefinition
+ @description
+ Information about user's last session
+ */
 
-//todo - what else do we need? Much of this likely should be captured in the URL (cf. Google Maps)
-*/
+//todo - what else do we need? What cannot be captured in the URL?
 
-const UserSettingsSchema = {
-  id  : validators.id().isRequired,
-  user: validators.id().isRequired
-};
+const UserSessionDefinition = new SchemaDefinition({
+  id   : [
+    fields.id().required
+      `ID of UserSession`
+  ],
+  //Let UserDefinition Specify?
+  user : [
+    fields.id().required,
+    `Associated User`
+  ],
+  state: [
+    fields.object(),
+    `Actual information about User Session state`
+  ]
+});
 
-export default UserSettingsSchema;
+export default UserSessionDefinition;
