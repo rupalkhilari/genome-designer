@@ -5,11 +5,13 @@ import UUID from './generators/UUID';
 //todo - these should exist in /schemas/ where each schema creates a scaffold, e.g. from fields
 
 let partCounter = 0;
-export function makePart (seqLength = 100) {
+export function makePart (forceId = UUID(), seqLength = 100) {
   return {
-    id      : UUID(),
+    id      : forceId,
     metadata: {
-      name: 'Part ' + (partCounter++)
+      name: 'Part ' + (partCounter++),
+      authors: [],
+      tags: {}
     },
     sequence: generateSequence(seqLength),
     color   : generateColor(),
@@ -17,22 +19,26 @@ export function makePart (seqLength = 100) {
   }
 }
 
-let constructCounter = 0;
-export function makeConstruct (...partLengths) {
+let blockCounter = 0;
+export function makeBlock (forceId = UUID()) {
   return {
-    id        : UUID(),
+    id        : forceId,
     metadata  : {
-      name: 'Construct ' + (constructCounter++)
+      name: 'Construct ' + (blockCounter++),
+      authors: [],
+      tags: {}
     },
-    components: partLengths.map(makePart)
+    components: []
   };
 }
 
-export function makeProject (UUID) {
+export function makeProject (forceId = UUID()) {
   return {
-    id        : UUID,
+    id        : forceId,
     metadata  : {
-      name: 'My Project'
+      name: 'My Project',
+      authors: [],
+      tags: {}
     },
     components: []
   }

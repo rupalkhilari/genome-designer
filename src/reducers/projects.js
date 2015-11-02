@@ -4,26 +4,11 @@ import UUID from '../utils/generators/UUID';
 
 import { blockAddBlock } from '../actions';
 
-//testing
-import { makeConstruct } from '../utils/schemaGenerators';
-
-//testing
+//testing, default should be {}
 const initialState = {
-  "test" : {
-    id : "test",
-    metadata: {
-      name : "Test Project",
-      description: "Sample Description of the Project. I'm trying to engineer hairless humans for the next wave of Calvin Klein models.",
-      authors: [],
-      tags : {
-        keywords : ['the future', 'human']
-      }
-    },
-    components: [
-      makeConstruct(100, 500, 750),
-      makeConstruct(200, 100, 450),
-    ]
-  }
+  "test" : Object.assign(makeProject('test'), {
+    components: ["block1",  "block2"]
+  })
 };
 
 export default function projects (state = initialState, action) {
@@ -43,10 +28,11 @@ export default function projects (state = initialState, action) {
       return Object.assign({}, state, {[id] : newProject});
     }
     case ActionTypes.PROJECT_CREATE : {
-      //todo - shouldn't pass in UUID, but should return the generated project to action creator
-      const { projectId = UUID() } = action;
+      //todo - should return the generated project to action creator so knows ID
+      const newProject = makeProject(),
+            projectId = newProject.id;
 
-      return Object.assign({}, state, {[projectId] : makeProject(projectId)});
+      return Object.assign({}, state, {[projectId] : newProject});
     }
     default : {
       return state;

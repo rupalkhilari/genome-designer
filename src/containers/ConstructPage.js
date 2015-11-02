@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { pushState } from 'redux-router';
 import { connect } from 'react-redux';
 
-import SketchConstruct from '../components/SketchConstruct'
+import SketchConstruct from 'SketchConstruct'
 
 export class ConstructPage extends Component {
 

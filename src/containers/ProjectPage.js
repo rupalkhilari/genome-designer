@@ -3,10 +3,10 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import { pushState } from 'redux-router';
 import { projectAddConstruct } from '../actions';
-import { makeConstruct, makeProject } from '../utils/schemaGenerators';
+import { makeBlock, makeProject } from '../utils/schemaGenerators';
 import range from '../utils/array/range';
 
-import SketchConstruct from '../components/SketchConstruct';
+import SketchConstruct from 'SketchConstruct';
 import ProjectHeader from '../components/ProjectHeader';
 
 import styles from '../styles/ProjectPage.css';
@@ -26,7 +26,7 @@ export class ProjectPage extends Component {
     let {projectId} = this.props,
         lengths = range(3).map(() => Math.floor(Math.random() * 1000));
 
-    this.props.projectAddConstruct(projectId, makeConstruct(...lengths));
+    this.props.projectAddConstruct(projectId, makeBlock(...lengths));
   }
 
   handleClickFromInventory = (e) => {
@@ -35,7 +35,7 @@ export class ProjectPage extends Component {
   }
 
   render () {
-    const { children, projectId, constructId, project } = this.props;
+    const { children, projectId, constructId, project, constructs } = this.props;
 
     //todo - need error handling here. Should be in route transition probably?
     //right now there is some handling in GlobalNav when using ProjectSelect. Doesn't handle request of the URL.
@@ -53,7 +53,7 @@ export class ProjectPage extends Component {
         {constructSelected && children}
 
         {/* otherwise, show all the constructs... */}
-        {!constructSelected && project.components && project.components.map(construct => {
+        {!constructSelected && constructs.map(construct => {
           return (
             <div key={construct.id}>
               <h3>
@@ -87,11 +87,13 @@ export class ProjectPage extends Component {
 function mapStateToProps (state) {
   const { projectId, constructId } = state.router.params;
   const project = state.projects[projectId];
+  const constructs = project.components.map(componentId => state.blocks[componentId]);
 
   return {
     projectId,
     constructId,
-    project
+    project,
+    constructs
   };
 }
 
