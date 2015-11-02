@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { pushState } from 'redux-router';
 import { connect } from 'react-redux';
 
-import SketchConstruct from 'SketchConstruct'
+import SketchConstruct from './SketchConstruct'
 
 export class ConstructPage extends Component {
 
@@ -39,18 +39,17 @@ export class ConstructPage extends Component {
 function mapStateToProps (state) {
   const { projectId, constructId } = state.router.params;
 
-  //todo - this should be in the 'blocks' section of the state
-  //todo - this should be a selector
-  //react router can probably handle this much better
-  const construct = state.projects[projectId].components.find(comp => comp.id === constructId);
+  //todo - need to check if this exists
+  //react router can probably handle this much better (i.e. check if exists)
+  const construct = state.blocks[constructId];
 
   return {
     projectId,
     constructId,
-    construct
+    construct,
   };
 }
 
 export default connect(mapStateToProps, {
-  pushState
+  pushState,
 })(ConstructPage);

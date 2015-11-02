@@ -6,7 +6,6 @@ import styles from '../styles/SketchBlock.css';
 import withStyles from '../decorators/withStyles';
 
 @withStyles(styles)
-
 export default class SketchBlock extends Component {
 
   static PropTypes = {

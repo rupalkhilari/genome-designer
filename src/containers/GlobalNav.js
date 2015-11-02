@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import { connect } from 'react-redux';
 import { pushState } from 'redux-router';
-import { projectCreate } from '../actions';
+import { project_create } from '../actions/projects';
 
 import ProjectSelect from '../components/ProjectSelect';
 
@@ -18,19 +18,21 @@ class GlobalNav extends Component {
   static propTypes = {
     projects: PropTypes.object.isRequired,
     inputValue: PropTypes.string.isRequired,
-    projectCreate: PropTypes.func.isRequired,
+    project_create: PropTypes.func.isRequired,
     pushState: PropTypes.func.isRequired,
   }
 
   handleChange = (nextValue) => {
-    const { pushState, projectCreate, projects } = this.props;
+    const { pushState, project_create, projects } = this.props;
 
     //todo - this should be run in the project page or route transition, not here
-    if (!projects[nextValue]) {
-      projectCreate(nextValue);
+    //note that this relies on projects with name as ID
+    let project = projects[nextValue];
+    if (!project) {
+      project = project_create(nextValue);
     }
 
-    pushState(null, `/project/${nextValue}`);
+    pushState(null, `/project/${project.id}`);
   }
 
   render() {
@@ -55,5 +57,5 @@ function mapStateToProps(state) {
 
 export default connect(mapStateToProps, {
   pushState,
-  projectCreate
+  project_create,
 })(GlobalNav);

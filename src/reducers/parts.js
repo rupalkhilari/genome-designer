@@ -7,18 +7,24 @@ const initialState = {
   "part3" : makePart('part3', 300),
   "part4" : makePart('part4', 300),
   "part5" : makePart('part5', 300),
-  "part6" : makePart('part6', 300),
 };
 
 export default function parts (state = initialState, action) {
 
   switch (action.type) {
-    case ActionTypes.PART_UPDATE_NAME : {
+    case ActionTypes.PART_CREATE : {
+      const { part } = action,
+            partId = part.id;
 
-      //todo - get this action working
-      console.warn('updating part names doesnt work yet...');
+      return Object.assign({}, state, { [partId] : part });
+    }
+    case ActionTypes.PART_RENAME : {
+      const { partId , name } = action;
 
-     return state;
+      let newPart = Object.assign({}, state[partId]);
+      newPart.metadata.name =  name;
+
+      return Object.assign({}, state, {[partId] : newPart});
     }
     default : {
       return state;

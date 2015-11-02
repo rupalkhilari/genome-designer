@@ -2,11 +2,11 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import { pushState } from 'redux-router';
-import { projectAddConstruct } from '../actions';
-import { makeBlock, makeProject } from '../utils/schemaGenerators';
+import { block_create } from '../actions/blocks';
+import { project_addConstruct } from '../actions/projects';
 import range from '../utils/array/range';
 
-import SketchConstruct from 'SketchConstruct';
+import SketchConstruct from './SketchConstruct';
 import ProjectHeader from '../components/ProjectHeader';
 
 import styles from '../styles/ProjectPage.css';
@@ -15,18 +15,20 @@ import withStyles from '../decorators/withStyles';
 @withStyles(styles)
 export class ProjectPage extends Component {
   static propTypes = {
-    project            : PropTypes.object.isRequired,
-    projectId          : PropTypes.string.isRequired,
-    projectAddConstruct: PropTypes.func.isRequired,
-    constructId        : PropTypes.string, //only visible if a construct is selected
-    pushState          : PropTypes.func.isRequired,
+    project             : PropTypes.object.isRequired,
+    projectId           : PropTypes.string.isRequired,
+    constructId         : PropTypes.string, //only visible if a construct is selected
+    block_create        : PropTypes.func.isRequired,
+    project_addConstruct: PropTypes.func.isRequired,
+    pushState           : PropTypes.func.isRequired,
   }
 
   handleClickAddConstruct = (e) => {
-    let {projectId} = this.props,
-        lengths = range(3).map(() => Math.floor(Math.random() * 1000));
+    let { projectId, block_create, project_addConstruct } = this.props,
+        construct = block_create(),
+        constructId = construct.id;
 
-    this.props.projectAddConstruct(projectId, makeBlock(...lengths));
+    project_addConstruct(projectId, constructId);
   }
 
   handleClickFromInventory = (e) => {
@@ -85,19 +87,20 @@ export class ProjectPage extends Component {
 }
 
 function mapStateToProps (state) {
-  const { projectId, constructId } = state.router.params;
-  const project = state.projects[projectId];
-  const constructs = project.components.map(componentId => state.blocks[componentId]);
+  const { projectId, constructId } = state.router.params,
+        project = state.projects[projectId],
+        constructs = project.components.map(componentId => state.blocks[componentId]);
 
   return {
     projectId,
     constructId,
     project,
-    constructs
+    constructs,
   };
 }
 
 export default connect(mapStateToProps, {
-  projectAddConstruct,
-  pushState
+  block_create,
+  project_addConstruct,
+  pushState,
 })(ProjectPage);
