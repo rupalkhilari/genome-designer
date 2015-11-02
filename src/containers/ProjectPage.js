@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import { pushState } from 'redux-router';
 import { projectAddConstruct } from '../actions';
-import { makeConstruct, makeProject } from '../utils/randomGenerators';
-import range from '../utils/range';
+import { makeConstruct, makeProject } from '../utils/schemaGenerators';
+import range from '../utils/array/range';
 
 import SketchConstruct from '../components/SketchConstruct';
 import ProjectHeader from '../components/ProjectHeader';

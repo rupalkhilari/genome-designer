@@ -1,6 +1,6 @@
 import * as validatorFunctions from './validators';
 import createFieldType from './createFieldType';
-import mapValues from '../../utils/mapValues';
+import mapValues from '../../utils/object/mapValues';
 
 /**
  * @name fields

@@ -1,4 +1,4 @@
-import mapValues from '../utils/mapValues';
+import mapValues from '../utils/object/mapValues';
 
 //todo - support SchemaDefinition level validation function (across all fields)
 

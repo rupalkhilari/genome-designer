@@ -1,10 +1,11 @@
 import * as ActionTypes from '../constants/ActionTypes';
-import { UUID, makeProject } from '../utils/randomGenerators';
+import { makeProject } from '../utils/schemaGenerators';
+import UUID from '../utils/generators/UUID';
 
 import { blockAddBlock } from '../actions';
 
 //testing
-import { makeConstruct } from '../utils/randomGenerators';
+import { makeConstruct } from '../utils/schemaGenerators';
 
 //testing
 const initialState = {
@@ -42,6 +43,7 @@ export default function projects (state = initialState, action) {
       return Object.assign({}, state, {[id] : newProject});
     }
     case ActionTypes.PROJECT_CREATE : {
+      //todo - shouldn't pass in UUID, but should return the generated project to action creator
       const { projectId = UUID() } = action;
 
       return Object.assign({}, state, {[projectId] : makeProject(projectId)});
