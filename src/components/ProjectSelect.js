@@ -1,5 +1,9 @@
 import React, { Component, PropTypes } from 'react';
 
+import styles from '../styles/ProjectSelect.css';
+import withStyles from '../decorators/withStyles';
+
+@withStyles(styles)
 export default class ProjectSelect extends Component {
   constructor(props) {
     super(props);
@@ -39,15 +43,16 @@ export default class ProjectSelect extends Component {
 
   render() {
     return (
-      <div>
+      <div className="ProjectSelect">
         <input size="30"
                ref="input"
-               placeholder="Enter Project ID"
+               className="ProjectSelect-input"
+               placeholder="Enter Project ID (dev)"
                defaultValue={this.props.value}
                onKeyUp={this.handleKeyUp} />
-        <button onClick={this.handleGoClick}>
+        {/* <button onClick={this.handleGoClick}>
           Go!
-        </button>
+        </button> */}
       </div>
     );
   }

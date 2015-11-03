@@ -1,15 +1,16 @@
-var path = require('path');
+var path    = require('path');
 var webpack = require('webpack');
+var webpackBase = require('./webpack.config.base');
 
-module.exports = {
+module.exports = Object.assign({}, webpackBase, {
   devtool: 'cheap-module-eval-source-map',
-  entry: [
+  entry  : [
     'webpack-hot-middleware/client',
     './src/index'
   ],
-  output: {
-    path: path.join(__dirname, 'dist'),
-    filename: 'bundle.js',
+  output : {
+    path      : path.join(__dirname, 'dist'),
+    filename  : 'bundle.js',
     publicPath: '/static/'
   },
   plugins: [
@@ -22,12 +23,18 @@ module.exports = {
       }
     })
   ],
-  module: {
-    loaders: [{
-      test: /\.js$/,
-      loaders: ['babel'],
-      include: path.join(__dirname, 'src'),
-      exclude: /node_modules/
-    }]
+  module : {
+    loaders: [
+      {
+        test   : /\.js$/,
+        loaders: ['babel'],
+        include: path.join(__dirname, 'src'),
+        exclude: /node_modules/
+      },
+      {
+        test  : /\.css$/,
+        loader: 'style-loader/useable!css-loader!postcss-loader'
+      }
+    ]
   }
-};
+});

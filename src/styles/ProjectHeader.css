@@ -1,0 +1,44 @@
+@import 'variables.css';
+
+.ProjectHeader {
+  background-color: var(--colors-white);
+  display: flex;
+  justify-content: space-between;
+
+  /* left side */
+  &-info {
+    display: flex;
+  }
+
+  &-icon {
+    width: 48px;
+    height: 48px;
+    background-size: cover;
+    background-color: var(--colors-greyDark);
+  }
+
+  &-text {
+    padding: 1rem;
+  }
+
+  &-title {
+    margin: 0;
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+  }
+
+  &-description {
+
+  }
+
+  /* right side */
+  &-actions {
+    align-self: center;
+  }
+
+  &-detailToggle {
+    padding: 1em;
+    cursor: pointer;
+  }
+}

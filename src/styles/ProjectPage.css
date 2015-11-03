@@ -1,0 +1,28 @@
+@import 'variables.css';
+
+.ProjectPage {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+
+  &-actions {
+    display: flex;
+    justify-content: space-around;
+    flex-grow: 1;
+    align-items: flex-end;
+    padding: 3em;
+  }
+
+  &-action {
+    cursor: pointer;
+  }
+
+  /* placeholder pending images */
+  .dummyButton {
+    height: 30px;
+    width: 30px;
+    margin: 0 auto;
+    background-color: var(--colors-grey);
+    display: block;
+  }
+}

@@ -1,0 +1,17 @@
+@import 'variables.css';
+
+:root {
+  /* component variable declarations */
+}
+
+.GlobalNav {
+
+  display: flex;
+  justify-content: space-between;
+  padding: 0.25em 0.5em;
+
+  &-title {
+    color: #bbb;
+    text-decoration: none;
+  }
+}
