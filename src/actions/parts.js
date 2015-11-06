@@ -3,16 +3,16 @@ import makeActionCreator from './makeActionCreator';
 
 import { makePart } from '../utils/schemaGenerators';
 
-export const part_create = () => {
+export const partCreate = () => {
   return (dispatch, getState) => {
-    let part = makePart();
+    const part = makePart();
     dispatch({
       type: ActionTypes.PART_CREATE,
-      part
+      part,
     });
     return part;
-  }
+  };
 };
 
 //updates the name of a part
-export const part_rename = makeActionCreator(ActionTypes.PART_RENAME, 'partId', 'name');
+export const partRename = makeActionCreator(ActionTypes.PART_RENAME, 'partId', 'name');
