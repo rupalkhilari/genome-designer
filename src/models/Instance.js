@@ -13,4 +13,10 @@ export default class Instance {
       },
     });
   }
+
+  //this is just a placeholder until we are using immutables...
+  //note, wont be of same class but has same prototype etc.
+  clone() {
+    return Object.assign(Object.create(this), this);
+  }
 }

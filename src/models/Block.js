@@ -8,4 +8,10 @@ export default class Block extends Instance {
       components: [],
     });
   }
+
+  addComponent(component) {
+    const newBlock = this.clone();
+    newBlock.components.push(component);
+    return newBlock;
+  }
 }

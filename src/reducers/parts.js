@@ -1,6 +1,7 @@
 import * as ActionTypes from '../constants/ActionTypes';
 import Part from '../models/Part';
 
+//testing, default should be {} (but need to hydrate to models)
 const initialState = {
   part1: new Part('part1', 300),
   part2: new Part('part2', 300),

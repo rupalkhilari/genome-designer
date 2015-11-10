@@ -3,7 +3,7 @@ import * as ActionTypes from '../constants/ActionTypes';
 //testing
 import Block from '../models/Block';
 
-//testing, default should be {}
+//testing, default should be {} (but need to hydrate to models)
 const initialState = {
   block1: Object.assign(new Block('block1'), {
     components: ['part1', 'part2', 'part3'],
@@ -23,12 +23,9 @@ export default function blocks(state = initialState, action) {
   }
 
   case ActionTypes.BLOCK_ADD_COMPONENT : {
-    //note - using _.merge() would simplify this a lot
     const { blockId, componentId } = action;
     const oldBlock = state[blockId];
-    const newComponents = Array.isArray(oldBlock.components) ? oldBlock.components.slice() : [];
-    newComponents.push(componentId);
-    const newBlock = Object.assign({}, oldBlock, {components: newComponents});
+    const newBlock = oldBlock.addComponent(componentId);
 
     return Object.assign({}, state, {[blockId]: newBlock});
   }
