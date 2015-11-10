@@ -12,12 +12,12 @@ import InstanceDefinition from './Instance';
 const ProjectDefinition = InstanceDefinition.extend({
   components: [
     fields.arrayOf(validators.id()).required,
-    `Constructs associated with this project`
+    `Constructs associated with this project`,
   ],
   settings: [
     fields.object().required,
-    `Settings associated with this project`
-  ]
+    `Settings associated with this project`,
+  ],
 });
 
 export default ProjectDefinition;

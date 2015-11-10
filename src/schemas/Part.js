@@ -1,6 +1,6 @@
 import fields from './fields';
 import InstanceDefinition from './Instance';
-import AnnotationDefinition from './Annotation';
+import * as validators from './fields/validators';
 
 /**
  @name PartDefinition
@@ -9,18 +9,18 @@ import AnnotationDefinition from './Annotation';
  */
 
 const PartDefinition = InstanceDefinition.extend({
-  sequence  : [
+  sequence: [
     fields.id().required,
-    `ID of the associated Sequence (not the sequence itself)`
+    `ID of the associated Sequence (not the sequence itself)`,
   ],
-  source    : [
+  source: [
     fields.id().required,
-    `Source (Inventory) ID of the Part`
+    `Source (Inventory) ID of the Part`,
   ],
   annotations: [
     fields.arrayOf(validators.id()).required,
-    `A list of Annotations associated with the Part`
-  ]
+    `A list of Annotations associated with the Part`,
+  ],
 });
 
 export default PartDefinition;

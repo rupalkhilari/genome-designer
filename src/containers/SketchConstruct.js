@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { part_create } from '../actions/parts';
-import { block_addComponent } from '../actions/blocks';
+import { partCreate } from '../actions/parts';
+import { blockAddComponent } from '../actions/blocks';
 
 import SketchBlock from '../components/SketchBlock';
 
@@ -12,23 +12,24 @@ import SketchBlock from '../components/SketchBlock';
  */
 
 export default class SketchConstruct extends Component {
-
   static propTypes = {
-    construct         : PropTypes.object.isRequired,
-    components        : PropTypes.array.isRequired,
-    block_create      : PropTypes.func.isRequired,
-    block_addComponent: PropTypes.func.isRequired,
+    construct: PropTypes.object.isRequired,
+    components: PropTypes.array.isRequired,
+
+    blockCreate: PropTypes.func.isRequired,
+    blockAddComponent: PropTypes.func.isRequired,
+    partCreate: PropTypes.func.isRequired,
   };
 
-  handleClickAddPart = (e) => {
+  handleClickAddPart = (event) => {
     //todo - should support adding blocks, not just parts
-    const { construct , part_create, block_addComponent } = this.props;
-    let block = part_create();
-    block_addComponent(construct.id, block.id);
+    const { construct, partCreate, blockAddComponent } = this.props;
+    const block = partCreate();
+    blockAddComponent(construct.id, block.id);
   }
 
-  render () {
-    let { construct, components } = this.props;
+  render() {
+    const { construct, components } = this.props;
 
     return (
       <div ref="constructContainer">
@@ -53,7 +54,7 @@ export default class SketchConstruct extends Component {
   }
 }
 
-function mapStateToProps (state, props) {
+function mapStateToProps(state, props) {
   //todo - should not know whether blocks / parts here. Need to handle nesting. Need to update schema with rules / options, and parts are options
   const components = props.construct.components.map(componentId => state.parts[componentId]);
 
@@ -63,6 +64,6 @@ function mapStateToProps (state, props) {
 }
 
 export default connect(mapStateToProps, {
-  part_create,
-  block_addComponent
+  partCreate,
+  blockAddComponent,
 })(SketchConstruct);

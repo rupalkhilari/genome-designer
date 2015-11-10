@@ -5,35 +5,36 @@ import { makeBlock } from '../utils/schemaGenerators';
 
 //testing, default should be {}
 const initialState = {
-  "block1" : Object.assign(makeBlock('block1'), {
-    components: ['part1', 'part2', 'part3']
+  block1: Object.assign(makeBlock('block1'), {
+    components: ['part1', 'part2', 'part3'],
   }),
-  "block2" : Object.assign(makeBlock('block2'), {
-    components: ['part4', 'part5']
-  })
+  block2: Object.assign(makeBlock('block2'), {
+    components: ['part4', 'part5'],
+  }),
 };
 
-export default function blocks (state = initialState, action) {
-
+export default function blocks(state = initialState, action) {
   switch (action.type) {
-    case ActionTypes.BLOCK_CREATE : {
-      const { block } = action,
-            blockId = block.id;
+  case ActionTypes.BLOCK_CREATE : {
+    const { block } = action;
+    const blockId = block.id;
 
-      return Object.assign({}, state, { [blockId] : block });
-    }
-    case ActionTypes.BLOCK_ADD_COMPONENT : {
-      const { blockId, componentId } = action,
-            //note - using _.merge() would simplify this a lot
-            oldBlock = state[blockId],
-            newComponents = Array.isArray(oldBlock.components) ? oldBlock.components.slice() : [],
-            _ignore = newComponents.push(componentId),
-            newBlock = Object.assign({}, oldBlock, {components : newComponents});
+    return Object.assign({}, state, {[blockId]: block});
+  }
 
-      return Object.assign({}, state, {[blockId] : newBlock});
-    }
-    default : {
-      return state;
-    }
+  case ActionTypes.BLOCK_ADD_COMPONENT : {
+    //note - using _.merge() would simplify this a lot
+    const { blockId, componentId } = action;
+    const oldBlock = state[blockId];
+    const newComponents = Array.isArray(oldBlock.components) ? oldBlock.components.slice() : [];
+    newComponents.push(componentId);
+    const newBlock = Object.assign({}, oldBlock, {components: newComponents});
+
+    return Object.assign({}, state, {[blockId]: newBlock});
+  }
+
+  default : {
+    return state;
+  }
   }
 }
