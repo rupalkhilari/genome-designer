@@ -1,9 +1,9 @@
 import * as ActionTypes from '../constants/ActionTypes';
-import { makeProject } from '../utils/schemaGenerators';
+import Project from '../models/Project';
 
 //testing, default should be {}
 const initialState = {
-  test: Object.assign(makeProject('test'), {
+  test: Object.assign(new Project('test'), {
     components: ['block1', 'block2'],
   }),
 };

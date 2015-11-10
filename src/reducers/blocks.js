@@ -1,14 +1,14 @@
 import * as ActionTypes from '../constants/ActionTypes';
 
 //testing
-import { makeBlock } from '../utils/schemaGenerators';
+import Block from '../models/Block';
 
 //testing, default should be {}
 const initialState = {
-  block1: Object.assign(makeBlock('block1'), {
+  block1: Object.assign(new Block('block1'), {
     components: ['part1', 'part2', 'part3'],
   }),
-  block2: Object.assign(makeBlock('block2'), {
+  block2: Object.assign(new Block('block2'), {
     components: ['part4', 'part5'],
   }),
 };
