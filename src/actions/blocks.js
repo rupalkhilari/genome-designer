@@ -14,4 +14,5 @@ export const blockCreate = () => {
   };
 };
 
+export const blockRename = makeActionCreator(ActionTypes.BLOCK_RENAME, 'blockId', 'name');
 export const blockAddComponent = makeActionCreator(ActionTypes.BLOCK_ADD_COMPONENT, 'blockId', 'componentId');

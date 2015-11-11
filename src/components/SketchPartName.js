@@ -5,7 +5,7 @@ export default function SketchPartName({onChange, partName}) {
     <input type="text"
            onChange={onChange}
            value={partName}
-           placeholder="My Part"
+           placeholder="My Block"
            style={{border: 0, background: 'none'}}/>
   );
 }

@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { partCreate } from '../actions/parts';
-import { blockAddComponent } from '../actions/blocks';
+import { blockCreate, blockAddComponent } from '../actions/blocks';
 
 import SketchBlock from '../components/SketchBlock';
 
@@ -18,13 +17,11 @@ export default class SketchConstruct extends Component {
 
     blockCreate: PropTypes.func.isRequired,
     blockAddComponent: PropTypes.func.isRequired,
-    partCreate: PropTypes.func.isRequired,
   };
 
-  handleClickAddPart = (event) => {
-    //todo - should support adding blocks, not just parts
-    const { construct, partCreate, blockAddComponent } = this.props;
-    const block = partCreate();
+  handleClickAddBlock = (event) => {
+    const { construct, blockCreate, blockAddComponent } = this.props;
+    const block = blockCreate();
     blockAddComponent(construct.id, block.id);
   }
 
@@ -35,7 +32,7 @@ export default class SketchConstruct extends Component {
       <div ref="constructContainer">
         <div ref="constructTitle"
              className="SketchPart">
-          {construct.metadata.name}
+          {construct.metadata.name || 'My Construct'}
         </div>
         <div ref="constructComponents"
              className="SketchBlock">
@@ -46,8 +43,8 @@ export default class SketchConstruct extends Component {
         </div>
         <div ref="constructActions"
              className="SketchPart"
-             onClick={this.handleClickAddPart}>
-          Add Part
+             onClick={this.handleClickAddBlock}>
+          Add Block
         </div>
       </div>
     );
@@ -55,8 +52,7 @@ export default class SketchConstruct extends Component {
 }
 
 function mapStateToProps(state, props) {
-  //todo - should not know whether blocks / parts here. Need to handle nesting. Need to update schema with rules / options, and parts are options
-  const components = props.construct.components.map(componentId => state.parts[componentId]);
+  const components = props.construct.components.map(componentId => state.blocks[componentId]);
 
   return {
     components,
@@ -64,6 +60,6 @@ function mapStateToProps(state, props) {
 }
 
 export default connect(mapStateToProps, {
-  partCreate,
+  blockCreate,
   blockAddComponent,
 })(SketchConstruct);
