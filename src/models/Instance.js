@@ -19,4 +19,10 @@ export default class Instance {
   clone() {
     return Object.assign(Object.create(this), this);
   }
+
+  rename(newName) {
+    const newInstance = this.clone();
+    newInstance.metadata.name = newName;
+    return newInstance;
+  }
 }

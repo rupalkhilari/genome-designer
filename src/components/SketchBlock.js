@@ -30,5 +30,5 @@ export default class SketchBlock extends Component {
 }
 
 function isPart(component) {
-  return component && (!component.components || component.components.length === 1);
+  return component && (!component.components || !component.components.length);
 }

@@ -14,12 +14,12 @@ import withStyles from '../decorators/withStyles';
 @withStyles(styles)
 export class ProjectPage extends Component {
   static propTypes = {
-    constructs: PropTypes.object.isRequired,
+    constructs: PropTypes.array.isRequired,
     project: PropTypes.object.isRequired,
     projectId: PropTypes.string.isRequired,
     constructId: PropTypes.string, //only visible if a construct is selected
 
-    children: PropTypes.func.isRequired, //react-router
+    children: PropTypes.func, //react-router
     blockCreate: PropTypes.func.isRequired,
     projectAddConstruct: PropTypes.func.isRequired,
     pushState: PropTypes.func.isRequired,
