@@ -1,11 +1,11 @@
 import * as ActionTypes from '../constants/ActionTypes';
 import makeActionCreator from './makeActionCreator';
 
-import { makePart } from '../utils/schemaGenerators';
+import Part from '../models/Part';
 
 export const partCreate = () => {
   return (dispatch, getState) => {
-    const part = makePart();
+    const part = new Part();
     dispatch({
       type: ActionTypes.PART_CREATE,
       part,

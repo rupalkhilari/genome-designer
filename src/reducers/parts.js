@@ -1,12 +1,13 @@
 import * as ActionTypes from '../constants/ActionTypes';
-import { makePart } from '../utils/schemaGenerators';
+import Part from '../models/Part';
 
+//testing, default should be {} (but need to hydrate to models)
 const initialState = {
-  part1: makePart('part1', 300),
-  part2: makePart('part2', 300),
-  part3: makePart('part3', 300),
-  part4: makePart('part4', 300),
-  part5: makePart('part5', 300),
+  part1: new Part('part1', 300),
+  part2: new Part('part2', 300),
+  part3: new Part('part3', 300),
+  part4: new Part('part4', 300),
+  part5: new Part('part5', 300),
 };
 
 export default function parts(state = initialState, action) {

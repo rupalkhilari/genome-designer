@@ -1,13 +1,13 @@
 import * as ActionTypes from '../constants/ActionTypes';
 import makeActionCreator from './makeActionCreator';
 
-import { makeProject } from '../utils/schemaGenerators';
+import Project from '../models/Project';
 
 //create a new project
 export const projectCreate = (name) => {
   return (dispatch, getState) => {
     //temp - force name as ID. will need to reconfigure routing
-    const project = makeProject(name);
+    const project = new Project(name);
     if (name) {
       project.metadata.name = name;
     }
