@@ -1,6 +1,6 @@
 import invariant from '../../utils/environment/invariant';
 import { isRealNumber, deg2rad, rad2deg } from './utils';
-
+import Line2D from './Line2D';
 /**
  * a 2D Vector/Point
  */
@@ -88,24 +88,10 @@ export default class Vector2D {
    * @param {Number} r
    * @param {Number} degrees
    */
-  pointOnCircumference(xc, yc, r, degrees) {
+  static pointOnCircumference(xc, yc, r, degrees) {
     return new Vector2D(
       xc + r * Math.cos(deg2rad(degrees)),
       yc + r * Math.sin(deg2rad(degrees))
-    );
-  }
-
-  /**
-   * Point on circumference of ellipse centered in box
-   * @param {Number} xc
-   * @param {Number} yc
-   * @param {Number} r
-   * @param {Number} degrees
-   */
-  pointOnEllipse(b, degrees) {
-    return new Vector2D(
-      b.cx + b.w / 2 * Math.cos(deg2rad(degrees)),
-      b.cy + b.h / 2 * Math.sin(deg2rad(degrees))
     );
   }
 
@@ -183,8 +169,7 @@ export default class Vector2D {
    * @return {Number}       [description]
    */
   distance(other) {
-    // todo
-    // return new G.LineSegment(this, other).len();
+    return new Line2D(this, other).len();
   }
 
   /**
@@ -193,7 +178,7 @@ export default class Vector2D {
    * @returns Vector2D
    */
   dot(other) {
-    return new Vector2D(this.x * other.x + this.y * other.y);
+    return this.x * other.x + this.y * other.y;
   }
 
   /**
