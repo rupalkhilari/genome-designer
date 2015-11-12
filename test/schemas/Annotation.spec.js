@@ -4,14 +4,14 @@ import AnnotationDefinition from '../../src/schemas/Annotation';
 describe('AnnotationDefinition', () => {
 
   it('should be loggable', () => {
-    console.log(AnnotationDefinition);
+    //console.log(AnnotationDefinition);
     assert(true);
   });
 
   it('should describe', () => {
     let description = AnnotationDefinition.describe();
 
-    console.log(description);
+    //console.log(description);
 
     assert(!!description);
   });

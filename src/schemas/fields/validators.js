@@ -33,6 +33,10 @@ export const number = params => input => {
   }
 
   if (isRealObject(params)) {
+    if (params.reals && !isRealNumber(input)) {
+      return new Error(`input ${input} is not a real number`);
+    }
+
     if (params.min && input < params.min) {
       return new Error(`input ${input} is less than minimum ${params.min}`);
     }
@@ -211,6 +215,10 @@ function isRealObject(input) {
 
 function isNumber(input) {
   return getPropType(input) === 'number';
+}
+
+function isRealNumber(input) {
+  return getPropType(input) === 'number' && !isNaN(input) && isFinite(input);
 }
 
 function isFunction(input) {
