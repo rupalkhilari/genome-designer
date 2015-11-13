@@ -1,17 +1,16 @@
 import Instance from './Instance';
+import randomColor from '../utils/generators/color';
 
 export default class Block extends Instance {
-  constructor(forceId) {
-    super(forceId);
-
+  constructor(...args) {
+    super(...args);
     Object.assign(this, {
+      color: randomColor(),
       components: [],
     });
   }
 
-  addComponent(component) {
-    const newBlock = this.clone();
-    newBlock.components.push(component);
-    return newBlock;
+  addComponents(...components) {
+    return this.mutate('components', this.components.concat(components));
   }
 }

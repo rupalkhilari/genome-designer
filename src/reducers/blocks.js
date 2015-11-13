@@ -30,14 +30,14 @@ export default function blocks(state = initialState, action) {
   case ActionTypes.BLOCK_RENAME : {
     const { blockId, name } = action;
     const oldBlock = state[blockId];
-    const newBlock = oldBlock.rename(name);
+    const newBlock = oldBlock.mutate('metadata.name', name);
     return Object.assign({}, state, {[blockId]: newBlock});
   }
 
   case ActionTypes.BLOCK_ADD_COMPONENT : {
     const { blockId, componentId } = action;
     const oldBlock = state[blockId];
-    const newBlock = oldBlock.addComponent(componentId);
+    const newBlock = oldBlock.addComponents(componentId);
 
     return Object.assign({}, state, {[blockId]: newBlock});
   }

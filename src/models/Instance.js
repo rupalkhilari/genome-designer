@@ -1,28 +1,31 @@
 import uuid from '../utils/generators/uuid';
+import pathSet from 'lodash.set';
+import merge from 'lodash.merge';
 
 export default class Instance {
   constructor(forceId = uuid()) {
-    Object.assign(this, {
-      id: forceId,
-      metadata: {
-        name: '',
-        description: '',
-        version: '1.0.0',
-        authors: [],
-        tags: {},
+    const base = (typeof forceId === 'object') ?
+      forceId :
+      {id: forceId};
+
+    Object.assign(this,
+      {
+        id: uuid(),
+        metadata: {
+          name: '',
+          description: '',
+          version: '1.0.0',
+          authors: [],
+          tags: {},
+        },
       },
-    });
+      base
+    );
   }
 
-  //this is just a placeholder until we are using immutables...
-  //note, wont be of same class but has same prototype etc.
-  clone() {
-    return Object.assign(Object.create(this), this);
-  }
-
-  rename(newName) {
-    const newInstance = this.clone();
-    newInstance.metadata.name = newName;
-    return newInstance;
+  //returns a new instance
+  //uses lodash _.set() for path, e.g. 'a.b[0].c'
+  mutate(path, value) {
+    return pathSet(new this.constructor(this), path, value);
   }
 }

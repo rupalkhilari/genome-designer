@@ -21,6 +21,8 @@ const finalCreateStore = compose(
   }),
 
   applyMiddleware(createLogger()),
+
+  //todo - should only apply in dev - need to make minification friendly
   devTools()
 )(createStore);
 

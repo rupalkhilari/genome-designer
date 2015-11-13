@@ -1,17 +1,13 @@
 import Instance from './Instance';
 
 export default class Project extends Instance {
-  constructor(forceId) {
-    super(forceId);
-
+  constructor(...args) {
+    super(...args);
     Object.assign(this, {
       components: [],
     });
   }
-
-  addComponent(component) {
-    const newBlock = this.clone();
-    newBlock.components.push(component);
-    return newBlock;
+  addComponents(...components) {
+    return this.mutate('components', this.components.concat(components));
   }
 }

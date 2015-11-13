@@ -28,7 +28,7 @@ export default function projects(state = initialState, action) {
     //note - using _.merge() would simplify this a lot
     const { projectId, constructId } = action;
     const oldProject = state[projectId];
-    const newProject = oldProject.addComponent(constructId);
+    const newProject = oldProject.addComponents(constructId);
 
     return Object.assign({}, state, {[projectId]: newProject});
   }
