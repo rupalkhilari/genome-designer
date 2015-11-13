@@ -1,4 +1,4 @@
-import uuid from '../utils/generators/uuid';
+import uuid from '../utils/generators/UUID';
 
 export default class Instance {
   constructor(forceId = uuid()) {
