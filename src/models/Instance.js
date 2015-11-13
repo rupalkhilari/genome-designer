@@ -1,28 +1,41 @@
 import uuid from '../utils/generators/UUID';
+import pathSet from 'lodash.set';
+import merge from 'lodash.merge';
+import cloneDeep from 'lodash.clonedeep';
 
+//todo - strip out this forceId business
 export default class Instance {
-  constructor(forceId = uuid()) {
-    Object.assign(this, {
-      id: forceId,
-      metadata: {
-        name: '',
-        description: '',
-        version: '1.0.0',
-        authors: [],
-        tags: {},
+  constructor(forceId = uuid(), base) {
+    const input = (typeof forceId === 'object') ?
+      forceId :
+      {id: forceId};
+
+    merge(this,
+      base,
+      {
+        id: uuid(),
+        metadata: {
+          name: '',
+          description: '',
+          version: '1.0.0',
+          authors: [],
+          tags: {},
+        },
       },
-    });
+      input
+    );
   }
 
-  //this is just a placeholder until we are using immutables...
-  //note, wont be of same class but has same prototype etc.
-  clone() {
-    return Object.assign(Object.create(this), this);
+  // returns a new instance
+  // uses lodash _.set() for path, e.g. 'a.b[0].c'
+  // cloneDeep by default to handle deep properties that might not be handled properly by Object.assign
+  mutate(path, value, bypassCloning = false) {
+    const base = bypassCloning ? this : cloneDeep(this);
+    return pathSet(new this.constructor(base), path, value);
   }
 
-  rename(newName) {
-    const newInstance = this.clone();
-    newInstance.metadata.name = newName;
-    return newInstance;
+  // returns a new instance
+  merge(obj) {
+    return merge(new this.constructor(cloneDeep(this)), obj);
   }
 }
