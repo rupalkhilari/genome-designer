@@ -55,20 +55,22 @@ const BlockDefinition = InstanceDefinition.extend({
   ],
 
   rules: [
-    fields.arrayOf(ruleShape),
+    fields.arrayOf(ruleShape).required,
     `Grammar/rules governing the whole Block`,
   ],
 
   components: [
-    fields.arrayOf(validators.shape({
-      rules: ruleShape,
-      options: validators.arrayOf(validators.id()),
-    })).required,
-    `Array of Blocks (and their rules) of which this Block is comprised`,
+    fields.arrayOf(validators.id()).required,
+    `Array of Blocks of which this Block is comprised`,
+  ],
+
+  options: [
+    fields.arrayOf(validators.id()).required,
+    `Array of Blocks that form the List Block`,
   ],
 
   notes: [
-    fields.arrayOf(validators.string()),
+    fields.object().required,
     `Notes about the whole Block`,
   ],
 
