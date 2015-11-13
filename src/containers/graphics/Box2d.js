@@ -1,7 +1,6 @@
 import invariant from '../../utils/environment/invariant';
 import Vector2D from './Vector2D';
 import Line2D from './Line2d';
-import _ from 'underscore';
 
 export default class Box2D {
   /**
@@ -324,18 +323,10 @@ export default class Box2D {
     const u = new Box2D(0, 0, 0, 0);
 
     if (boxes && boxes.length) {
-      u.x = _.min(boxes, box => {
-        return box.x;
-      }).x;
-      u.y = _.min(boxes, box => {
-        return box.y;
-      }).y;
-      u.r = _.max(boxes, box => {
-        return box.r;
-      }).r;
-      u.b = _.max(boxes, box => {
-        return box.b;
-      }).b;
+      u.x = Math.min.apply(null, boxes.map(box => box.x));
+      u.y = Math.min.apply(null, boxes.map(box => box.y));
+      u.r = Math.min.apply(null, boxes.map(box => box.r));
+      u.b = Math.min.apply(null, boxes.map(box => box.b));
     }
     return u;
   }

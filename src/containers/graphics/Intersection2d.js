@@ -1,7 +1,6 @@
 import invariant from '../../utils/environment/invariant';
 import {isA} from './utils';
 import Vector2D from './Vector2D';
-import _ from 'underscore';
 
 export default class Intersection2D {
   /**
@@ -17,7 +16,7 @@ export default class Intersection2D {
     if (isA(arg, Vector2D)) {
       this.points = [arg];
     } else {
-      if (_.isString(arg)) {
+      if (typeof arg === 'string') {
         this._status = arg;
       }
       this.points = [];
@@ -48,7 +47,7 @@ export default class Intersection2D {
    * @param  {String} s
    */
   set status(s) {
-    invariant(_.isString(s), 'expected a string');
+    invariant(typeof s === 'string', 'expected a string');
     this._status = s;
   }
 

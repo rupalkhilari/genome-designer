@@ -1,7 +1,9 @@
 import invariant from '../../utils/environment/invariant';
 import Vector2D from './Vector2D';
 import Intersection2D from './Intersection2d';
-import _ from 'underscore';
+
+//shallow hasOwnProperty check
+const hasProp = hasOwnProperty.call;
 
 export default class Line2D {
 
@@ -19,7 +21,7 @@ export default class Line2D {
       break;
 
     case 1:
-      invariant(_.has(start, 'x1') && _.has(start, 'y1') && _.has(start, 'x2') && _.has(start, 'y2'), 'Bad parameter');
+      invariant(hasProp(start, 'x1') && hasProp(start, 'y1') && hasProp(start, 'x2') && hasProp(start, 'y2'), 'Bad parameter');
       this._start = new Vector2D(start.x1, start.y1);
       this._end = new Vector2D(start.x2, start.y2);
       break;

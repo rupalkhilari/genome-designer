@@ -1,5 +1,5 @@
 import invariant from '../../utils/environment/invariant';
-import isRealNumber from './utils';
+import {isRealNumber} from './utils';
 import Vector2D from './Vector2D';
 import Matrix2D from './Matrix2D';
 
@@ -71,7 +71,8 @@ export default class Transform2D {
 
   /**
    * flip setter
-   * @return Vector2D
+   * @param {Vector2d}
+   * @return {void}
    */
   set flip(v) {
     invariant((v.x === 1 || v.x === -1) && (v.y === 1 || v.y === -1), 'invalid flip');
