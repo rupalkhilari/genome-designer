@@ -189,18 +189,6 @@ export default class Box2D {
     this.x = v.x;
     this.b = v.y;
   }
-  get topEdge() {
-    return new Line2D(this.topLeft, this.topRight);
-  }
-  get rightEdge() {
-    return new Line2D(this.topRight, this.bottomRight);
-  }
-  get bottomEdge() {
-    return new Line2D(this.bottomRight, this.bottomLeft);
-  }
-  get leftEdge() {
-    return new Line2D(this.bottomRight, this.topLeft);
-  }
 
   /**
    * return a cloned copy of this
