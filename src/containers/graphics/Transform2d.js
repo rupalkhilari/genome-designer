@@ -1,5 +1,5 @@
 import invariant from '../../utils/environment/invariant';
-import isRealNumber from './utils';
+import {isRealNumber} from './utils';
 import Vector2D from './Vector2D';
 import Matrix2D from './Matrix2D';
 
