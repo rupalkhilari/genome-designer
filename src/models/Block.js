@@ -5,7 +5,10 @@ export default class Block extends Instance {
   constructor(...args) {
     super(...args, {
       color: randomColor(),
+      rules: [],
       components: [],
+      options: [],
+      notes: {},
     });
   }
 
