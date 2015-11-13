@@ -10,7 +10,7 @@ export default class Instance {
       forceId :
       {id: forceId};
 
-    Object.assign(this,
+    merge(this,
       base,
       {
         id: uuid(),
@@ -32,5 +32,10 @@ export default class Instance {
   mutate(path, value, bypassCloning = false) {
     const base = bypassCloning ? this : cloneDeep(this);
     return pathSet(new this.constructor(base), path, value);
+  }
+
+  // returns a new instance
+  merge(obj) {
+    return merge(new this.constructor(cloneDeep(this)), obj);
   }
 }
