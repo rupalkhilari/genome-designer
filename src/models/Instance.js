@@ -1,6 +1,7 @@
 import uuid from '../utils/generators/uuid';
 import pathSet from 'lodash.set';
 import merge from 'lodash.merge';
+import cloneDeep from 'lodash.clonedeep';
 
 //todo - strip out this forceId business
 export default class Instance {
@@ -25,9 +26,11 @@ export default class Instance {
     );
   }
 
-  //returns a new instance
-  //uses lodash _.set() for path, e.g. 'a.b[0].c'
-  mutate(path, value) {
-    return pathSet(new this.constructor(this), path, value);
+  // returns a new instance
+  // uses lodash _.set() for path, e.g. 'a.b[0].c'
+  // cloneDeep by default to handle deep properties that might not be handled properly by Object.assign
+  mutate(path, value, bypassCloning = false) {
+    const base = bypassCloning ? this : cloneDeep(this);
+    return pathSet(new this.constructor(base), path, value);
   }
 }
