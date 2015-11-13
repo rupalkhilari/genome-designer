@@ -1,4 +1,4 @@
-import uuid from '../utils/generators/uuid';
+import uuid from '../utils/generators/UUID';
 import pathSet from 'lodash.set';
 import merge from 'lodash.merge';
 import cloneDeep from 'lodash.clonedeep';
