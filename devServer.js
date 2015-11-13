@@ -2,7 +2,9 @@ var path = require('path');
 var express = require('express');
 var webpack = require('webpack');
 var config = require('./webpack.config.dev');
-var port = 3000;
+var DEFAULT_PORT = 3000;
+var port = parseInt(process.argv[2]) || process.env.PORT ||  DEFAULT_PORT;
+var hostname = '0.0.0.0';
 var apiRouter = require('./api');
 
 var app = express();
@@ -34,11 +36,11 @@ app.get('*', function(req, res) {
   res.sendFile(path.join(__dirname, 'src/index.html'));
 });
 
-app.listen(port, 'localhost', function(err) {
+app.listen(port, hostname, function(err) {
   if (err) {
     console.log(err);
     return;
   }
 
-  console.log('Building, will serve at http://localhost:' + port);
+  console.log('Building, will serve at http://' + hostname + ':' + port);
 });

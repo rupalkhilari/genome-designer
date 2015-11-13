@@ -1,9 +1,14 @@
 import * as ActionTypes from '../constants/ActionTypes';
 import Project from '../models/Project';
+import merge from 'lodash.merge';
 
 //testing, default should be {} (but need to hydrate to models)
 const initialState = {
-  test: Object.assign(new Project('test'), {
+  test: merge(new Project('test'), {
+    metadata: {
+      name: 'My Test Project',
+      description: 'Growing hairless humans for the next line of Calvin Klein models.',
+    },
     components: ['block1', 'block2'],
   }),
 };
@@ -28,7 +33,7 @@ export default function projects(state = initialState, action) {
     //note - using _.merge() would simplify this a lot
     const { projectId, constructId } = action;
     const oldProject = state[projectId];
-    const newProject = oldProject.addComponent(constructId);
+    const newProject = oldProject.addComponents(constructId);
 
     return Object.assign({}, state, {[projectId]: newProject});
   }
