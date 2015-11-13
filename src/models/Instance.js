@@ -2,13 +2,15 @@ import uuid from '../utils/generators/uuid';
 import pathSet from 'lodash.set';
 import merge from 'lodash.merge';
 
+//todo - strip out this forceId business
 export default class Instance {
-  constructor(forceId = uuid()) {
-    const base = (typeof forceId === 'object') ?
+  constructor(forceId = uuid(), base) {
+    const input = (typeof forceId === 'object') ?
       forceId :
       {id: forceId};
 
     Object.assign(this,
+      base,
       {
         id: uuid(),
         metadata: {
@@ -19,7 +21,7 @@ export default class Instance {
           tags: {},
         },
       },
-      base
+      input
     );
   }
 

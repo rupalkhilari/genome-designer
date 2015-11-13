@@ -3,8 +3,7 @@ import randomColor from '../utils/generators/color';
 
 export default class Block extends Instance {
   constructor(...args) {
-    super(...args);
-    Object.assign(this, {
+    super(...args, {
       color: randomColor(),
       components: [],
     });

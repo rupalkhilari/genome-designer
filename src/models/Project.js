@@ -2,8 +2,7 @@ import Instance from './Instance';
 
 export default class Project extends Instance {
   constructor(...args) {
-    super(...args);
-    Object.assign(this, {
+    super(...args, {
       components: [],
     });
   }
