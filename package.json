@@ -10,6 +10,7 @@
     "lint": "eslint src; exit 0;",
     "lint-jscs": "jscs src",
     "test": "NODE_ENV=test mocha --recursive --compilers js:babel-core/register --require ./test/setup.js",
+    "test-server": "NODE_ENV=test mocha ./test-server --recursive --compilers js:babel-core/register --require ./test-server/setup.js",
     "test:watch": "npm test -- --watch",
     "nightwatch": "./node_modules/nightwatch/bin/nightwatch"
   },
@@ -73,6 +74,7 @@
     "rimraf": "^2.3.4",
     "selenium-standalone": "^4.7.1",
     "style-loader": "^0.13.0",
+    "supertest": "^1.1.0",
     "webpack": "^1.9.6",
     "webpack-dev-middleware": "^1.2.0",
     "webpack-hot-middleware": "^2.0.0"
