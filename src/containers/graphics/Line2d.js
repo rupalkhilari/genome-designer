@@ -3,7 +3,9 @@ import Vector2D from './Vector2D';
 import Intersection2D from './Intersection2d';
 
 //shallow hasOwnProperty check
-const hasProp = hasOwnProperty.call;
+const hasProp = (obj, prop) => {
+  return obj.hasOwnProperty(prop);
+};
 
 export default class Line2D {
 
