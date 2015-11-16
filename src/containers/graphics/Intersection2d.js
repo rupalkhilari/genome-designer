@@ -1,6 +1,4 @@
 import invariant from '../../utils/environment/invariant';
-import {isA} from './utils';
-import Vector2D from './Vector2D';
 
 export default class Intersection2D {
   /**
