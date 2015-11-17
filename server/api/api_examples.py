@@ -3,14 +3,18 @@ from requests import put as PUT
 from requests import post as POST
 from json import dumps as json
 
-url = "http://localhost:3000/api/"
+url = "http://0.0.0.0:3000/api/"
 
 block1 = {
   "metadata": {
     "authors": [],
     "version": "0.0.0",
     "tags": {}
-  }
+  },
+  "options":[],
+  "components":[],
+  "rules": [],
+  "notes": {}
 }
 
 block2 = {
@@ -18,7 +22,11 @@ block2 = {
     "authors": [],
     "version": "0.0.0",
     "tags": {}
-  }
+  },
+  "options":[],
+  "components":[],
+  "rules": [],
+  "notes": {}
 }
 
 
@@ -37,7 +45,10 @@ block3 = {
   "components": [
     id1,
     id2
-  ]
+  ],
+  "options":[],
+  "rules": [],
+  "notes": {}
 }
 
 block4 = {
@@ -49,7 +60,10 @@ block4 = {
   "options": [
     id1,
     id2
-  ]
+  ],
+  "components":[],
+  "rules": [],
+  "notes": {}
 }
 
 res = PUT(url + "block", data = json(block3))
@@ -67,7 +81,8 @@ proj1 = {
   "components": [
     id3,
     id4
-  ]
+  ],
+  "settings": {}
 }
 
 res = PUT(url + "project", data = json(proj1))

@@ -1,6 +1,5 @@
-import BlockDefinition from '../src/schemas/Block';
-import ProjectDefinition from '../src/schemas/Project';
-import PartDefinition from '../src/schemas/Part';
+import BlockDefinition from '../../src/schemas/Block';
+import ProjectDefinition from '../../src/schemas/Project';
 
 var path = require('path');
 var express = require('express');
