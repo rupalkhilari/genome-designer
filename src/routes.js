@@ -17,12 +17,16 @@ export default (
 
     {/* todo - signout page w/ dynamic routing *//* todo - signout page w/ dynamic routing */}
 
+    {/* this is temporary pending splash page */}
     <IndexRoute component={DashboardPage}/>
 
     <Route path="/about"
            component={AboutPage}/>
     <Route path="/support"
            component={SupportPage}/>
+
+    <Route path="/projects"
+           component={DashboardPage}/>
 
     <Route path="/project/:projectId"
            component={ProjectPage}>

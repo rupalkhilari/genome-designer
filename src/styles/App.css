@@ -6,11 +6,10 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: var(--GlobalNav-backgroundColor);
+  background-color: var(--colors-greyLight);
 }
 
 .App-pageContent {
   flex-grow: 1;
   display: flex;
-
 }
