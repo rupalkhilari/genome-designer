@@ -11,7 +11,6 @@ export default class InventorySearch extends Component {
   }
 
   handleSearchChange = (event) => {
-    console.log(event.target);
     this.props.onSearchChange(event.target.value);
   }
 

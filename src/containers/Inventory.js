@@ -20,7 +20,7 @@ export class Inventory extends Component {
   }
 
   handleSearchChange = (value) => {
-    const action = this.props.inventorySearch(value);
+    this.props.inventorySearch(value);
   }
 
   render() {
