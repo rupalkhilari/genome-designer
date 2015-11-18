@@ -44,11 +44,6 @@ export default class ProjectSelect extends Component {
                placeholder="Enter Project ID (dev)"
                defaultValue={this.props.value}
                onKeyUp={this.handleKeyUp}/>
-        {/* <button onClick={this.handleGoClick}>
-         Go!
-         </button> *//* <button onClick={this.handleGoClick}>
-         Go!
-         </button> */}
       </div>
     );
   }

@@ -14,7 +14,8 @@ export default class InventoryListing extends Component {
       <div className="InventoryListing">
         {this.props.items.map(item => {
           return (
-            <InventoryItem item={item} />
+            <InventoryItem key={item}
+                           item={item}/>
           );
         })}
       </div>

@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { inventorySearch, inventoryToggleVisiblity } from '../actions/inventory';
+import { inventorySearch, inventoryToggleVisibility } from '../actions/inventory';
 
 import InventorySearch from '../components/Inventory/InventorySearch';
 import InventoryListing from '../components/Inventory/InventoryListing';
@@ -57,5 +57,5 @@ function mapStateToProps(state, props) {
 
 export default connect(mapStateToProps, {
   inventorySearch,
-  inventoryToggleVisiblity,
+  inventoryToggleVisibility,
 })(Inventory);

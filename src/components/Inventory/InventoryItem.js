@@ -4,7 +4,7 @@ import '../../styles/InventoryItem.css';
 
 export default class InventoryItem extends Component {
   static propTypes = {
-    item: PropTypes.object.isRequired,
+    item: PropTypes.string.isRequired,
   }
 
   render() {
