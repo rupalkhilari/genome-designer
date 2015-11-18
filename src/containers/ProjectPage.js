@@ -8,10 +8,8 @@ import ProjectActions from './ProjectActions';
 import SketchConstruct from './SketchConstruct';
 import ProjectHeader from '../components/ProjectHeader';
 
-import styles from '../styles/ProjectPage.css';
-import withStyles from '../decorators/withStyles';
+import '../styles/ProjectPage.css';
 
-@withStyles(styles)
 export class ProjectPage extends Component {
   static propTypes = {
     constructs: PropTypes.array.isRequired,

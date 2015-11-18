@@ -2,10 +2,8 @@ import React, { Component, PropTypes } from 'react';
 
 import SketchPart from './SketchPart';
 
-import styles from '../styles/SketchBlock.css';
-import withStyles from '../decorators/withStyles';
+import '../styles/SketchBlock.css';
 
-@withStyles(styles)
 export default class SketchBlock extends Component {
   static propTypes = {
     block: PropTypes.object.isRequired, //once using real ones, can pass schema as PropType

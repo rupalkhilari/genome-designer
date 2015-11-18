@@ -1,9 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 
-import styles from '../styles/ProjectSelect.css';
-import withStyles from '../decorators/withStyles';
+import '../styles/ProjectSelect.css';
 
-@withStyles(styles)
 export default class ProjectSelect extends Component {
   static propTypes = {
     value: PropTypes.string.isRequired,

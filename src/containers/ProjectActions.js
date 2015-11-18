@@ -4,10 +4,8 @@ import { blockCreate } from '../actions/blocks';
 import { projectAddConstruct } from '../actions/projects';
 import { inventoryToggleVisiblity } from '../actions/inventory';
 
-import styles from '../styles/ProjectActions.css';
-import withStyles from '../decorators/withStyles';
+import '../styles/ProjectActions.css';
 
-@withStyles(styles)
 export class ProjectActions extends Component {
   static propTypes = {
     projectId: PropTypes.string.isRequired,
