@@ -2,10 +2,8 @@ import React, { Component, PropTypes } from 'react';
 
 import InventoryItem from './InventoryItem';
 
-import styles from '../../styles/InventoryListing.css';
-import withStyles from '../../decorators/withStyles';
+import '../../styles/InventoryListing.css';
 
-@withStyles(styles)
 export default class InventoryListing extends Component {
   static propTypes = {
     items: PropTypes.array.isRequired,

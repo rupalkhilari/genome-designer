@@ -1,9 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 
-import styles from '../../styles/InventorySearch.css';
-import withStyles from '../../decorators/withStyles';
+import '../../styles/InventorySearch.css';
 
-@withStyles(styles)
 export default class InventorySearch extends Component {
   static propTypes = {
     searchTerm: PropTypes.string.isRequired,

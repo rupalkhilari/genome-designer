@@ -6,10 +6,10 @@
   "scripts": {
     "clean": "rimraf lib dist coverage",
     "check": "npm run lint && npm run test",
-    "start": "node devServer.js",
+    "start": "babel-node devServer.js",
     "lint": "eslint src; exit 0;",
     "lint-jscs": "jscs src",
-    "test": "NODE_ENV=test mocha --recursive --compilers js:babel-core/register --require ./test/setup.js",
+    "test": "NODE_ENV=test mocha --recursive --compilers js:babel-core/register,css:test/css-null-compiler.js --require ./test/setup.js",
     "test-server": "NODE_ENV=test mocha ./test-server --recursive --compilers js:babel-core/register --require ./test-server/setup.js",
     "test:watch": "npm test -- --watch",
     "nightwatch": "./node_modules/nightwatch/bin/nightwatch"
@@ -78,6 +78,8 @@
     "redux-devtools": "^2.1.5",
     "rimraf": "^2.3.4",
     "selenium-standalone": "^4.7.1",
+    "sinon": "^1.17.2",
+    "sinon-chai": "^2.8.0",
     "style-loader": "^0.13.0",
     "supertest": "^1.1.0",
     "webpack": "^1.9.6",

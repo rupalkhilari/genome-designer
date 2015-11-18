@@ -1,43 +1,52 @@
-//todo - test the inventory component
-
-import chai from 'chai';
 import React from 'react';
 import TestUtils from 'react-addons-test-utils';
-//import InventoryConnected, { Inventory } from '../../src/containers/Inventory';
-
+import chai from 'chai';
 const { expect } = chai;
+import sinon from 'sinon';
+import sinonChai from 'sinon-chai';
+chai.use(sinonChai);
 
 /*
-function setup(propOverrides) {
+ import { Provider } from 'react-redux';
+ import App from '../../src/containers/App';
+ import configureStore from '../../src/store/configureStore';
+ */
+
+import InventoryConnected, { Inventory } from '../../src/containers/Inventory';
+
+function setup(propOverrides = {}) {
+  //const store = configureStore(initialState);
+
   const props = Object.assign({
-    inventorySearch: expect.createSpy(),
-    inventoryToggleVisibility: expect.createSpy(),
-    isVisible: true,
+    inventorySearch: sinon.spy(),
+    inventoryToggleVisibility: sinon.spy(),
+    isVisible: false,
     searchTerm: '',
   }, propOverrides);
 
-  const renderer = TestUtils.createRenderer();
-
-  renderer.render(
-    <InventoryConnected {...props} />
+  const component = TestUtils.renderIntoDocument(
+    <Inventory {...props} />
   );
-
-  const output = renderer.getRenderOutput();
 
   return {
     props,
-    output,
-    renderer,
+    component,
   };
 }
 
 describe('containers', () => {
   describe('Inventory', () => {
-    it('initial render', () => {
-      const {output} = setup();
-      console.log(output);
+    it('clicking close button', () => {
+      const toggleSpy = sinon.spy();
+      const {component, props} = setup({
+        isVisible: true,
+        inventoryToggleVisibility: toggleSpy,
+      });
+
+      expect(props.isVisible).to.equal(true);
+
+      TestUtils.Simulate.click(component.refs.close);
+      expect(toggleSpy).to.have.been.calledWith(false);
     });
   });
 });
-*/
-
