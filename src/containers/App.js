@@ -3,10 +3,8 @@ import { connect } from 'react-redux';
 
 import GlobalNav from './GlobalNav';
 
-import styles from '../styles/App.css';
-import withStyles from '../decorators/withStyles';
+import '../styles/App.css';
 
-@withStyles(styles)
 class App extends Component {
   static propTypes = {
     children: PropTypes.node, // Injected by React Router

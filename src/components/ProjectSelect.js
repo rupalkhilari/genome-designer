@@ -1,9 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 
-import styles from '../styles/ProjectSelect.css';
-import withStyles from '../decorators/withStyles';
+import '../styles/ProjectSelect.css';
 
-@withStyles(styles)
 export default class ProjectSelect extends Component {
   static propTypes = {
     value: PropTypes.string.isRequired,
@@ -46,11 +44,6 @@ export default class ProjectSelect extends Component {
                placeholder="Enter Project ID (dev)"
                defaultValue={this.props.value}
                onKeyUp={this.handleKeyUp}/>
-        {/* <button onClick={this.handleGoClick}>
-         Go!
-         </button> *//* <button onClick={this.handleGoClick}>
-         Go!
-         </button> */}
       </div>
     );
   }

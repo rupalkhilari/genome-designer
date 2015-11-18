@@ -1,0 +1,11 @@
+.InventorySearch {
+  color: black;
+
+  input {
+    width: 100%;
+    outline: 0;
+    border: 0;
+    padding: 0.25em;
+    margin-bottom: 0.75em;
+  }
+}

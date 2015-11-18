@@ -1,10 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 
-import styles from '../styles/ProjectHeader.css';
-import withStyles from '../decorators/withStyles';
+import '../styles/ProjectHeader.css';
 
-@withStyles(styles)
 export default class ProjectHeader extends Component {
   static propTypes = {
     project: PropTypes.object.isRequired,

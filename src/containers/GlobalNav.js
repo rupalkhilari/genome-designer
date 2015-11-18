@@ -6,10 +6,8 @@ import { projectCreate } from '../actions/projects';
 
 import ProjectSelect from '../components/ProjectSelect';
 
-import styles from '../styles/GlobalNav.css';
-import withStyles from '../decorators/withStyles';
+import '../styles/GlobalNav.css';
 
-@withStyles(styles)
 class GlobalNav extends Component {
   static propTypes = {
     projects: PropTypes.object.isRequired,
