@@ -1,11 +1,13 @@
+import express from 'express';
+import { get as redisGet, set as redisSet} from '../database';
+import path from 'path';
+import uuid from 'uuid'; //todo - unify with client side
+import execSync from 'exec-sync';
+
 import BlockDefinition from '../../src/schemas/Block';
 import ProjectDefinition from '../../src/schemas/Project';
 
-var path = require('path');
-var express = require('express');
-var uuid = require('uuid');
-var execSync = require('sync-exec');
-var router = express.Router();
+const router = express.Router();
 
 //TODO: timeout on all requests
 
@@ -30,7 +32,7 @@ function update(id, data, validate) {
   } catch (e) {
     result.error = e.message;
     console.log(e);
-  } 
+  }
 }
 
 /**
@@ -76,17 +78,17 @@ function getBlocks(ids, result) {
         result[id] = obj;
 
         //recursively get all nested blocks
-        if (BlockDefinition.validate(obj)) {  
+        if (BlockDefinition.validate(obj)) {
           result = getBlocks(obj.components, result);
         }
-        
+
       });
   return result;
 }
 
 
 /*
-Store the parent-child info 
+Store the parent-child info
 in the database
 @param {uuid} child id
 @param {uuid} parent id
@@ -102,7 +104,6 @@ function recordHistory(newid, oldid) {
 
   update(newid+"-history", JSON.stringify(hist));
 
-  
   var children = get(oldid+"-children");
 
   if (!children.children) {
@@ -306,7 +307,7 @@ router.post('/clone', function (req, resp) {
         result.parent = oldid;
         result.id = newid;
         recordHistory(newid, oldid);
-        update(newid, JSON.stringify(result));        
+        update(newid, JSON.stringify(result));
     } else {
         result.error = "ID does not exist";
         console.log(result.error);

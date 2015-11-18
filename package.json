@@ -27,7 +27,7 @@
   "homepage": "https://github.com/autodesk-bionano/genome-designer#readme",
   "peerDependencies": {
     "node": "^4.0.0",
-    "npm" : "^2.0.0",
+    "npm": "^2.0.0",
     "webpack": "*"
   },
   "dependencies": {
@@ -75,6 +75,7 @@
     "react-transform-catch-errors": "^1.0.0",
     "react-transform-hmr": "^1.0.0",
     "redbox-react": "^1.0.1",
+    "redis": "^2.3.0",
     "redux-devtools": "^2.1.5",
     "rimraf": "^2.3.4",
     "selenium-standalone": "^4.7.1",
