@@ -13,7 +13,7 @@ describe('inventory actions', () => {
   });
 
   it('inventoryToggleVisiblity -> INVENTORY_TOGGLE_VISIBILITY action', () => {
-    expect(actions.inventoryToggleVisiblity(true)).to.eql({
+    expect(actions.inventoryToggleVisibility(true)).to.eql({
       type: types.INVENTORY_TOGGLE_VISIBILITY,
       forceState: true,
     });
