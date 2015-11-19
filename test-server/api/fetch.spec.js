@@ -1,5 +1,4 @@
-//todo
-//this is sort of an end to end test... mostly testing the fetch interface - should probably inherit the same testing structures for testing REST explicitly
+//this is sort of an end to end test... mostly testing the fetch interface
 
 import { expect } from 'chai';
 import fetch from 'isomorphic-fetch';
