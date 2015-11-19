@@ -16,7 +16,7 @@ export const validateProject = (instance) => {
  * @param {uuid} id
  */
 export const assertValidId = (id) => {
-  if (!id || typeof id !== 'string') {
+  if (!id || typeof id !== 'string' || id.length < 10) {
     throw new Error(errorNoIdProvided);
   }
 };

@@ -49,11 +49,11 @@ export const get = (id) => {
 };
 
 /**
- @description Like get, but doesn't reject for undefined
+ @description Like get, but doesn't reject for doesnt exist
  @param {string} id
  @param {*} defaultValue Value to use if doesn't exist (default null)
  @returns {Promise}
- If resolves, the value, after JSON.parse, or null if undefined
+ If resolves, the value, after JSON.parse, or null if doesnt exist
  If rejects, error string
  **/
 export const getSafe = (id, defaultValue = null) => {

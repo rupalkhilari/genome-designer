@@ -18,7 +18,7 @@ function getRecursively(ids = [],
                         field = 'components',
                         result = {tree: {}, leaves: []}) {
   if (!ids.length) {
-    return Promise.resolve();
+    return Promise.resolve(result);
   }
 
   const promise = getInstances(ids).then(instances => {
