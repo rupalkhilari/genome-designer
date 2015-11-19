@@ -3,34 +3,30 @@
 
 import { expect } from 'chai';
 import fetch from 'isomorphic-fetch';
+import { Block as exampleBlock } from '../../test/schemas/examples';
+
 const devServer = require('../../devServer');
 
 const serverRoot = 'http://localhost:3000';
 
 describe('fetch() with REST', () => {
   it('basic test', () => {
-    const block = {
-      'metadata': {
-        'authors': [],
-        'version': '0.0.0',
-        'tags': {},
+    const testBlock = Object.assign({}, exampleBlock, {
+      notes: {
+        some: 'note',
       },
-      'options': [],
-      'components': [],
-      'rules': [],
-      'notes': {},
-    };
+    });
 
     fetch(serverRoot + '/api/block/bla', {
       method: 'put',
       headers: {
         'Content-type': 'application/json',
       },
-      body: JSON.stringify(block),
+      body: JSON.stringify(testBlock),
     })
       .then(res => res.json())
       .then(json => {
-        expect(json).to.eql(block);
+        expect(json).to.eql(testBlock);
         console.log(json);
       });
   });

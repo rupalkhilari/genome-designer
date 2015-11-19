@@ -1,6 +1,8 @@
 import { expect } from 'chai';
+import { Block as exampleBlock } from '../../test/schemas/examples';
 const request = require('supertest');
 const devServer = require('../../devServer');
+
 
 describe('REST API', () => {
   let server;
@@ -11,10 +13,9 @@ describe('REST API', () => {
     server.close();
   });
 
-  const myTestBlock = {
-    id: 'myTestBlock',
+  const myTestBlock = Object.assign({}, exampleBlock, {
     some: 'field',
-  };
+  });
 
   it('returns a 404 for invalid routes', function testProject(done) {
     request(server)
@@ -24,12 +25,12 @@ describe('REST API', () => {
 
   it('GET a block that is not real returns null', (done) => {
     request(server)
-    .get('/api/block/notrealblock')
-    .expect(200)
-    .end((err, result) => {
-      expect(result.body.instance).to.be.null;
-      done();
-    });
+      .get('/api/block/notrealblock')
+      .expect(200)
+      .end((err, result) => {
+        expect(result.body.instance).to.be.null;
+        done();
+      });
   });
 
   it('POST to create a block', (done) => {
@@ -49,4 +50,6 @@ describe('REST API', () => {
         done();
       });
   });
+
+  it('PUT should ignore ID', () => {});
 });
