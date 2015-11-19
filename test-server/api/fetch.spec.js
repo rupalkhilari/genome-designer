@@ -1,0 +1,37 @@
+//todo
+//this is sort of an end to end test... mostly testing the fetch interface - should probably inherit the same testing structures for testing REST explicitly
+
+import { expect } from 'chai';
+import fetch from 'isomorphic-fetch';
+const devServer = require('../../devServer');
+
+const serverRoot = 'http://localhost:3000';
+
+describe('fetch() with REST', () => {
+  it('basic test', () => {
+    const block = {
+      'metadata': {
+        'authors': [],
+        'version': '0.0.0',
+        'tags': {},
+      },
+      'options': [],
+      'components': [],
+      'rules': [],
+      'notes': {},
+    };
+
+    fetch(serverRoot + '/api/block/bla', {
+      method: 'put',
+      headers: {
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify(block),
+    })
+      .then(res => res.json())
+      .then(json => {
+        expect(json).to.eql(block);
+        console.log(json);
+      });
+  });
+});

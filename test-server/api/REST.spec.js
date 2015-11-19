@@ -11,6 +11,11 @@ describe('REST API', () => {
     server.close();
   });
 
+  const myTestBlock = {
+    id: 'myTestBlock',
+    some: 'field',
+  };
+
   it('returns a 404 for invalid routes', function testProject(done) {
     request(server)
       .get('/api/invalidEndpoint')
@@ -28,13 +33,20 @@ describe('REST API', () => {
   });
 
   it('POST to create a block', (done) => {
-    const block = {
-      id: 'myTestBlock',
-      some: 'field',
-    };
     request(server)
-      .post(`/api/block/${block.id}`)
-      .send(block)
+      .post(`/api/block/${myTestBlock.id}`)
+      .send(myTestBlock)
       .expect(200, done);
+  });
+
+  it('GET an created block', (done) => {
+    request(server)
+      .get(`/api/block/${myTestBlock.id}`)
+      .expect(200)
+      .end((err, res) => {
+        const { instance } = res.body;
+        expect(instance).to.eql(myTestBlock);
+        done();
+      });
   });
 });
