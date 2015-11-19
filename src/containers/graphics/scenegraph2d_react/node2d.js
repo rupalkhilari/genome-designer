@@ -12,24 +12,35 @@ import Ellipse2D from './glyphs/svg/ellipse2d';
 
 export default class Node2D extends Component {
 
+  constructor() {
+    super();
+
+  }
 
   render () {
 
-    // compose our transform
-    const t2d = new Transform2D();
-    t2d.translate = new Vector2D(this.props.x, this.props.y);
-    t2d.rotate = this.props.r;
-    t2d.scale = new Vector2D(this.props.scale, this.props.scale);
-    const m2d = t2d.getTransformationMatrix(this.props.w, this.props.h);
+    // cache transform based on x/y/w/h/s
+    const key = `${this.props.x},${this.props.y},${this.props.w},${this.props.h},${this.props.scale}`;
+    let css = this.transformCached;
+    if (this.transformCachedKey !== key) {
+      this.transformCachedKey = key;
+      // compose our transform
+      const T = new Transform2D();
+      T.translate = new Vector2D(this.props.x, this.props.y);
+      T.rotate = this.props.r;
+      T.scale = new Vector2D(this.props.scale, this.props.scale);
+      const m2d = T.getTransformationMatrix(this.props.w, this.props.h);
+      this.transformCached = m2d.toCSSString();
+    }
 
     // construct our glyph ( if we have one e.g. the root node doesn't have a glyph )
     let glyph;
     switch (this.props.glyph) {
       case 'rectangle':
-        glyph = <Rectangle2D w={this.props.w} h={this.props.h} fill={this.props.fill}/>
+        glyph = <Rectangle2D key={this.props.uuid} w={this.props.w} h={this.props.h} fill={this.props.fill}/>
         break;
       case 'ellipse':
-        glyph = <Ellipse2D w={this.props.w} h={this.props.h} fill={this.props.fill}/>
+        glyph = <Ellipse2D key={this.props.uuid} w={this.props.w} h={this.props.h} fill={this.props.fill}/>
         break;
       default:
         glyph = null;
@@ -40,7 +51,7 @@ export default class Node2D extends Component {
     const style = {
       width: this.props.w + 'px',
       height: this.props.h + 'px',
-      transform: m2d.toCSSString()
+      transform: this.transformCached,
     }
 
     // render DIV with transform, then our glyph, then our text, then our children

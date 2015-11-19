@@ -32,34 +32,37 @@ class SceneGraphPage extends Component {
     });
     this.sceneGraph.props.userInterface = new UserInterface(this.sceneGraph);
 
-    this.sceneGraph.root.appendChild(new Node2D({
-      x: 200,
-      y: 300,
-      w: 200,
-      h: 100,
-      r: 22.5,
-      glyph: 'rectangle',
-      text: 'parent'
-    })).appendChild(new Node2D({
-      x: 200,
-      y: 100,
-      w: 200,
-      h: 100,
-      r: 22.5,
-      fill: 'red',
-      glyph: 'rectangle',
-      text: 'child',
-    }));
+    for(let y = 0; y < 8; y += 1) {
+      for(let x = 0; x < 8; x += 1) {
+        this.sceneGraph.root.appendChild(new Node2D({
+          x: 50 + x * 100,
+          y: 50 + y * 100,
+          w: 80,
+          h: 60,
+          fill: 'red',
+          r: Math.random() * 360,
+          glyph: 'rectangle'
+        })).appendChild(new Node2D({
+          x: 50,
+          y: 50,
+          w: 60,
+          h: 40,
+          fill: 'green',
+          r: Math.random() * 360,
+          glyph: 'rectangle'
+        })).appendChild(new Node2D({
+          x: 50,
+          y: 50,
+          w: 60,
+          h: 40,
+          fill: 'blue',
+          r: Math.random() * 360,
+          glyph: 'ellipse',
+          text: (x + y * 8).toString()
+        }));
+      }
+    }
 
-    this.sceneGraph.root.appendChild(new Node2D({
-      x: 400,
-      y: 100,
-      w: 200,
-      h: 100,
-      fill: 'green',
-      glyph: 'ellipse',
-      text: 'sibling'
-    }))
   }
 
   onZoom = () => {

@@ -44,15 +44,31 @@ export default class Node2D {
  * should adjust for that first.
  */
  get transformationMatrix() {
-    // our local transform
-    const T = new Transform2D();
-    T.translate = new Vector2D(this.props.x, this.props.y);
-    T.rotate = this.props.r;
-    T.scale = new Vector2D(this.props.scale, this.props.scale);
-    const M = T.getTransformationMatrix(this.props.w, this.props.h);
+
+    // use simple caching to save on this calculation
+    const key = `${this.props.x},${this.props.y},${this.props.w},${this.props.h},${this.props.scale}`;
+    if (this.transformCachedKey !== key) {
+      // update cache key
+      this.transformCachedKey = key;
+      // our local transform
+      const T = new Transform2D();
+      T.translate = new Vector2D(this.props.x, this.props.y);
+      T.translate = new Vector2D(this.props.x, this.props.y);
+      T.rotate = this.props.r;
+      T.scale = new Vector2D(this.props.scale, this.props.scale);
+      this.matrixCached = T.getTransformationMatrix(this.props.w, this.props.h);
+    }
 
     // bring in parent if we have one, otherwise just our matrix
-    return this.parent ? this.parent.transformationMatrix.multiplyMatrix(M) : M;
+    return this.parent ? this.parent.transformationMatrix.multiplyMatrix(this.matrixCached) : this.matrixCached.clone();
+  }
+
+  /**
+   * inverse transformation matrix
+   * @return {[type]} [description]
+   */
+  get inverseTransformationMatrix() {
+    return this.transformationMatrix.inverse();
   }
 
   /**
@@ -64,7 +80,19 @@ export default class Node2D {
         return this.globalToLocal(v);
       }, this);
     }
-    return this.transformationMatrix.inverse().multiplyVector(p);
+    return this.inverseTransformationMatrix.multiplyVector(p);
+  }
+
+  /**
+   * convert a point ( or array of points ) in global ( scene graph space ) to local space
+   */
+  localToGlobal(p) {
+    if (Array.isArray(p)) {
+      return p.map(function (v) {
+        return this.localToGlobal(v);
+      }, this);
+    }
+    return this.transformationMatrix.multiplyVector(p);
   }
 
   /**
@@ -90,7 +118,7 @@ export default class Node2D {
     });
 
     //return <Node2D_React text={p.text} x={p.x} y={p.y} w={p.w} h={p.h} stroke={p.stroke} strokeWidth={p.strokeWidth} fill={p.fill} glyph={p.glyph}>
-    return <Node2D_React {...this.props}>
+    return <Node2D_React key={this.props.uuid} {...this.props}>
       {childrenRendered}
     </Node2D_React>;
   }

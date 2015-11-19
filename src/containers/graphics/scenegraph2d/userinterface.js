@@ -15,11 +15,12 @@ export default class UserInterface {
     console.log('-------------Mouse Down:' + p.toString());
 
     this.sceneGraph.traverse( node => {
-      if (node.containsGlobalPoint(p)) {
+      if (node.parent && node.containsGlobalPoint(p)) {
         this.drag = node;
         this.dragStart = p;
-        this.nodeStart = new Vector2D(this.drag.props.x, this.drag.props.y);
-        console.log("HIT:", node.props.text);
+        // node starting position, relative to parent, in global coordinates
+        this.nodeStart = this.drag.parent.localToGlobal(new Vector2D(this.drag.props.x, this.drag.props.y));
+        console.log(`HIT:, ${node.props.glyph}, ${node.props.fill}`);
       }
     }, this);
   }
@@ -27,9 +28,16 @@ export default class UserInterface {
   onMouseMove = (e) => {
     if (this.drag) {
       const p = this.eventToLocal(e);
-      const delta = p.sub(this.dragStart);
-      this.drag.props.x = this.nodeStart.x + delta.x;
-      this.drag.props.y = this.nodeStart.y + delta.y;
+      // the delta includes accomodating the view scale on the root node
+      const delta = p.sub(this.dragStart).multiply(1/this.sceneGraph.root.props.scale);
+      // add the delta to the nodes starting global position
+      const g = this.nodeStart.add(delta);
+      // transform this point back into local space of the dragged node
+      const l = this.drag.parent.globalToLocal(g);
+      // apply to the nodes position
+      this.drag.props.x = l.x;
+      this.drag.props.y = l.y;
+      // update the entire graph ... yuk
       this.sceneGraph.update();
     }
   }
