@@ -16,8 +16,7 @@ export default class SceneGraph2D {
     // extend default options with the given options
     this.props = Object.assign({
       w: 800,
-      h: 600,
-      scale: 1
+      h: 600
     }, props);
 
     // create our root node, which represents the view matrix and to which
@@ -25,11 +24,29 @@ export default class SceneGraph2D {
     this.root = new Node2D();
   }
 
+  traverse (callback, context) {
+    let stack = [this.root];
+    while (stack.length) {
+      const next = stack.pop();
+      callback.call(context, next);
+      stack = stack.concat(next.children);
+    }
+  }
+
+  /**
+   * update involves re-rendering by our owner
+   */
+  update() {
+    this.props.owner.forceUpdate();
+  }
+
   render() {
-    const rr = this.root.render();
-    debugger;
+    const ui = this.props.userInterface ? this.props.userInterface.render() : null;
+
     return <SceneGraph2D_React w={this.props.w} h={this.props.h}>
-      {rr}
+      {this.root.render()}
+      {ui}
     </SceneGraph2D_React>;
+
   }
 }

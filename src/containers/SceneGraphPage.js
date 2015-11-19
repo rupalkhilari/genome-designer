@@ -12,6 +12,7 @@ import styles from '../styles/SceneGraphPage.css';
 import withStyles from '../decorators/withStyles';
 import SceneGraph2D from './graphics/scenegraph2d/scenegraph2d';
 import Node2D from './graphics/scenegraph2d/node2d';
+import UserInterface from './graphics/scenegraph2d/userinterface';
 
 
 /**
@@ -22,33 +23,67 @@ class SceneGraphPage extends Component {
 
   constructor (props) {
     super(props);
-    this.state = {
-      zoom: 1
-    };
 
     // create new scene graph
     this.sceneGraph = new SceneGraph2D({
-      w: 800,
-      h: 200,
-      zoom: 1
+      w: 1000,
+      h: 800,
+      owner: this,
     });
+    this.sceneGraph.props.userInterface = new UserInterface(this.sceneGraph);
 
-    debugger;
     this.sceneGraph.root.appendChild(new Node2D({
       x: 200,
-      y: 50,
+      y: 300,
       w: 200,
       h: 100,
-      glyph: 'rectangle'
+      r: 22.5,
+      glyph: 'rectangle',
+      text: 'parent'
+    })).appendChild(new Node2D({
+      x: 200,
+      y: 100,
+      w: 200,
+      h: 100,
+      r: 22.5,
+      fill: 'red',
+      glyph: 'rectangle',
+      text: 'child',
     }));
+
+    this.sceneGraph.root.appendChild(new Node2D({
+      x: 400,
+      y: 100,
+      w: 200,
+      h: 100,
+      fill: 'green',
+      glyph: 'ellipse',
+      text: 'sibling'
+    }))
   }
 
+  onZoom = () => {
+    this.sceneGraph.root.set({
+      scale: parseFloat(this.refs.zoom.value)
+    });
+    this.forceUpdate();
+  }
 
+  onTraverse = () => {
+    console.log('traversal');
+    this.sceneGraph.traverse( node => {
+      console.log(node.props.text);
+    });
+  }
 
   render () {
     return (
       <div>
         {this.sceneGraph.render()}
+        <br></br>
+        <input ref="zoom" type="range" min={0.1} max={4} step={0.1} onChange={this.onZoom}></input>
+        <br></br>
+        <button onClick={this.onTraverse}>Traverse</button>
       </div>
     );
   }

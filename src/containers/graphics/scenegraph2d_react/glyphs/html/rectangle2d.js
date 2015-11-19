@@ -4,7 +4,6 @@ import React, {
   PropTypes
 } from 'react';
 import Glyph2D from '../glyph2d';
-import K from '../../scenegraph2d_consts'
 
 export default class Rectangle2D extends Glyph2D {
 

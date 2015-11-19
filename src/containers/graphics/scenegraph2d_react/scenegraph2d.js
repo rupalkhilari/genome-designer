@@ -4,6 +4,8 @@ import Vector2D from '../geometry/vector2d.js';
 
 export default class SceneGraph2D extends React.Component {
 
+
+
   render() {
 
     const style = {
