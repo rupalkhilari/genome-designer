@@ -1,320 +1,125 @@
 import express from 'express';
-import { get as redisGet, set as redisSet} from '../database';
-import path from 'path';
+import bodyParser from 'body-parser';
 import uuid from 'uuid'; //todo - unify with client side
-import execSync from 'exec-sync';
+import { createDescendent, record, getParents, getTree } from '../history';
+import { get as dbGet, getSafe as dbGetSafe, set as dbSet } from '../database';
+import { errorDoesNotExist, errorNoIdProvided } from '../errors';
+import { validateBlock, validateProject, assertValidId } from '../validation';
 
-import BlockDefinition from '../../src/schemas/Block';
-import ProjectDefinition from '../../src/schemas/Project';
+const router = express.Router(); //eslint-disable-line new-cap
+const jsonParser = bodyParser.json({
+  strict: false, //allow values other than arrays and objects
+});
 
-const router = express.Router();
-
-//TODO: timeout on all requests
-
-/**
-Updates an entry in the database
-@param {uuid v4} id
-@param {String} data
-@param {Function} validate (optional)
-**/
-function update(id, data, validate) {
-  try {
-    var cmd = 'redis-cli set ' + id + ' \'' + data + '\'';
-
-    console.log(cmd);
-    if (validate) {
-      if (validate(JSON.parse( decodeURI(data) ))) {
-        execSync(cmd);
-      }
-    } else {
-      execSync(cmd);
-    }
-  } catch (e) {
-    result.error = e.message;
-    console.log(e);
-  }
-}
-
-/**
-Fetch an entry from the database
-@param {uuid v4} id
-**/
-function get(id) {
-  var result = {};
-  if (id) {
-    var cmd = 'redis-cli get ' + id;
-    console.log(cmd);
-    var output = execSync(cmd).stdout;
-    if (output.length > 0) {
-        try {
-            result = JSON.parse(output);
-            result.id = id;
-            console.log(result);
-        } catch (e) {
-            result.error = e.message;
-            console.log(e.message + " in " + output);
-        }
-    }
-  }
-  return result;
-}
-
-/**
-Fetch multiple entries from the database.
-If the entry is a Block, all subcomponents will be
-fetched recursively into the results object
-@param {Array} id
-@param {Object} result
-**/
-function getBlocks(ids, result) {
-  if (!result) {
-    result = {};
-  }
-
-  if (ids)
-    ids.forEach(
-      function(id) {
-        var obj = get(id);
-        result[id] = obj;
-
-        //recursively get all nested blocks
-        if (BlockDefinition.validate(obj)) {
-          result = getBlocks(obj.components, result);
-        }
-
-      });
-  return result;
-}
-
-
-/*
-Store the parent-child info
-in the database
-@param {uuid} child id
-@param {uuid} parent id
-*/
-function recordHistory(newid, oldid) {
-  var hist = get(oldid+"-history");
-
-  if (!hist.history) {
-    hist = { history: [oldid] };
-  } else {
-    hist.history.unshift(oldid);
-  }
-
-  update(newid+"-history", JSON.stringify(hist));
-
-  var children = get(oldid+"-children");
-
-  if (!children.children) {
-    children = { children: [newid] };
-  } else {
-    children.children.push(newid);
-  }
-
-  update(oldid+"-children", JSON.stringify(children));
+//given a promise, and handlers onSuccess and onError,
+// when the promise resolves, will call onSuccess with the value,
+// when the promise rejects, will call onError with err.message
+function simplePromiseExpressHandler(promise, onSuccess, onError) {
+  promise
+    .catch(err => {
+      onError(err.message);
+    })
+    .then(onSuccess);
 }
 
 /*********************************
-GET
-Fetch an entry and all sub-entries
-**********************************/
+ GET
+ Fetch an entry and all sub-entries
+ *********************************/
 
-/**
-GET handler for fetching Projects
-All blocks and their subcomponents will be
-fetched recursively into the results object
-**/
-router.get('/project', function (req, resp) {
-  var result = {};
-  if (req.query.id) {
-    var proj = get(req.query.id);
-    if (ProjectDefinition.validate(proj)) {
-      result.project = proj;
-      result.instances = getBlocks(proj.components);
-    }
-  }
-  resp.json(result);
+//todo - ability to get all components
+router.get('/project/:id', (req, res) => {
+  const { id } = req.params;
+  simplePromiseExpressHandler(dbGetSafe(id), res.json, res.err);
 });
 
-/**
-GET handler for fetching Blocks
-All blocks and their subcomponents will be
-fetched recursively into the results object
-**/
-router.get('/block', function (req, resp) {
-  var result;
-  if (req.query.id) {
-    var block = get(req.query.id);
-    if (BlockDefinition.validate(block)) {
-      result = {};
-      result.block = block;
-      result.instances = getBlocks(block.components);
-    }
-  }
-
-  if (!result) {
-    result = {error: "Not a valid Block ID"};
-  }
-  resp.json(result);
+//todo - ability to get all components
+router.get('/block/:id', (req, res) => {
+  const { id } = req.params;
+  simplePromiseExpressHandler(dbGetSafe(id), res.json, res.err);
 });
 
-/*
-GET handler for children
-*/
-router.get('/children', function (req, resp) {
-  var result = {};
-  if (req.query.id) {
-    result = get(req.query.id+"-children");
-    result.id = req.query.id;
-  }
-  resp.json(result);
+router.get('/history/:id', (req, res) => {
+  const { id } = req.params;
+  simplePromiseExpressHandler(getParents(id), res.json, res.err);
 });
 
-/*
-GET handler for parents
-*/
-router.get('/history', function (req, resp) {
-  var result = {};
-  if (req.query.id) {
-    result = get(req.query.id+"-history");
-    result.id = req.query.id;
-  }
-  resp.json(result);
+router.get('/children/:id', (req, res) => {
+  const { id } = req.params;
+  simplePromiseExpressHandler(getTree(id), res.json, res.err);
 });
 
 /*********************************
-PUT
-Create an entry for the first time
-Server generates the new UUID
-**********************************/
+ PUT
+ Create an entry for the first time, server generates uuid
+ *********************************/
 
+router.post('/project/:id', jsonParser, (req, res) => {
+  //todo - verify body
+  const data = req.body;
+  //todo - verify project, allow bypassing?
+  const id = uuid.v4();
 
-/**
-PUT handler for creating Projects
-**/
-router.put('/project', function (req, resp) {
-  var result = {};
-  req.on('data', function (chunk) {
-    var id = uuid.v4();
-    var json = JSON.parse(decodeURI(chunk));
-    json.id = id;
-    if (ProjectDefinition.validate(json)) {
-      update(id, chunk);
-      result.id = id;
-    } else {
-      result.error = "Not a valid Project JSON";
-      console.log(result.error);
-    }
-    resp.json(result);
-  });
+  //todo - should be able to generate scaffold and extend with body
+  const validated = data;
+
+  simplePromiseExpressHandler(dbSet(id, validated), res.json, res.err);
 });
 
-/**
-PUT handler for creating Blocks
-**/
-router.put('/block', function (req, resp) {
-  var result = {};
-  req.on('data', function (chunk) {
-    var id = uuid.v4();
-    var json = JSON.parse(decodeURI(chunk));
-    json.id = id;
-    if (BlockDefinition.validate(json)) {
-      update(id, chunk);
-      result.id = id;
-    } else {
-      result.error = "Not a valid Block JSON";
-      console.log(result.error);
-    }
-    resp.json(result);
-  });
+router.post('/block/:id', jsonParser, (req, res) => {
+  //todo - verify body
+  const data = req.body;
+  //todo - verify project, allow bypassing?
+  const id = uuid.v4();
+
+  //todo - should be able to generate scaffold and extend with body
+  const validated = data;
+
+  simplePromiseExpressHandler(dbSet(id, validated), res.json, res.err);
 });
 
 /*********************************
-POST
-Modify an existing entry
-**********************************/
+ POST
+ Modify an existing entry
+ *********************************/
 
-router.post('/project', function (req, resp) {
-  var result = {};
-  if (req.query.id) {
-    var id = req.query.id;
-    var output = get(id);
-    if (output.id) {
-        req.on('data', function (chunk) {
-          var json = JSON.parse(decodeURI(chunk));
-          if (ProjectDefinition.validate(json)) {
-            update(id, chunk);
-            result.id = id;
-          } else {
-            result.error = "Not valid Project JSON";
-            console.log(result.error);
-          }
-          resp.json(result);
-        });
-    } else {
-        result.error = "ID does not exist";
-        console.log(result.error);
-    }
-  } else {
-    result.error = "No ID provided in input";
-    console.log(result.error);
-    resp.json(result);
-  }
+router.post('/project/:id', jsonParser, (req, res) => {
+  const { id } = req.params;
+  //todo - verify body
+  const data = req.body;
+  //todo - verify project, allow bypassing?
+  simplePromiseExpressHandler(dbSet(id, data), res.json, res.err);
 });
 
-
-router.post('/block', function (req, resp) {
-  var result = {};
-  if (req.query.id) {
-    var id = req.query.id;
-    var output = get(id);
-    if (output.id) {
-        req.on('data', function (chunk) {
-          var json = JSON.parse(decodeURI(chunk));
-          if (BlockDefinition.validate(json)) {
-            update(id, chunk);
-            result.id = id;
-          } else {
-            result.error = "Not a valid Block JSON";
-            console.log(result.error);
-          }
-          resp.json(result);
-        });
-    } else {
-        result.error = "ID does not exist";
-        console.log(result.error);
-        resp.json(result);
-    }
-  } else {
-    result.error = "No ID provided in input";
-    console.log(result.error);
-    resp.json(result);
-  }
+router.post('/block/:id', jsonParser, (req, res) => {
+  const { id } = req.params;
+  //todo - verify body
+  const data = req.body;
+  //todo - verify block, allow bypassing?
+  simplePromiseExpressHandler(dbSet(id, data), res.json, res.err);
 });
 
-/*
-Create a child
-*/
-router.post('/clone', function (req, resp) {
-  var result = {};
-  if (req.query.id) {
-    var oldid = req.query.id;
-    var output = get(oldid);
-    if (output.id) {
-        var newid = uuid.v4();
-        result = output;
-        result.parent = oldid;
-        result.id = newid;
-        recordHistory(newid, oldid);
-        update(newid, JSON.stringify(result));
-    } else {
-        result.error = "ID does not exist";
-        console.log(result.error);
-    }
-  }
-  resp.json(result);
-});
+/**
+ * Create a child
+ */
+router.post('/clone', (req, res) => {
+  const { id } = req.query;
 
+  dbGet(id)
+    .then(instance => {
+      const clone = createDescendent(instance);
+      return dbSet(clone.id, clone)
+        .then(() => {
+          return record(clone, instance);
+        })
+        .then(() => clone);
+    })
+    .catch(err => {
+      res.error(err.message);
+    })
+    .then(clone => {
+      res.json(clone);
+    });
+});
 
 module.exports = router;
