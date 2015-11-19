@@ -1,7 +1,7 @@
 import BlockDefinition from '../src/schemas/Block';
 import ProjectDefinition from '../src/schemas/Project';
 
-import { errorNoIdProvided } from './errors';
+import { errorNoIdProvided, errorIdTooShort } from './errors';
 
 export const validateBlock = (instance) => {
   return BlockDefinition.validate(instance);
@@ -16,7 +16,10 @@ export const validateProject = (instance) => {
  * @param {uuid} id
  */
 export const assertValidId = (id) => {
-  if (!id || typeof id !== 'string' || id.length < 10) {
+  if (!id || typeof id !== 'string') {
     throw new Error(errorNoIdProvided);
+  }
+  if (id.length < 5) {
+    throw new Error(errorIdTooShort);
   }
 };

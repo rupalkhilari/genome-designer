@@ -12,17 +12,6 @@ const jsonParser = bodyParser.json({
   strict: false, //allow values other than arrays and objects
 });
 
-//given a promise, and handlers onSuccess and onError,
-// when the promise resolves, will call onSuccess with the value,
-// when the promise rejects, will call onError with err.message
-function simplePromiseExpressHandler(promise, onSuccess, onError) {
-  promise
-    .catch(err => {
-      onError(err.message);
-    })
-    .then(onSuccess);
-}
-
 /*********************************
  GET
  Fetch an entry and all sub-entries
@@ -32,7 +21,9 @@ router.get('/project/:id', (req, res) => {
   const { id } = req.params;
   const instance = dbGetSafe(id);
   const components = getComponents(id);
-  Promise.all([
+
+  Promise
+    .all([
       instance,
       components,
     ])
@@ -49,27 +40,33 @@ router.get('/block/:id', (req, res) => {
   const { id } = req.params;
   const instance = dbGetSafe(id);
   const components = getComponents(id);
-  Promise.all([
-    instance,
-    components,
-  ])
-  .then(([inst, comps]) => {
-    res.json({
-      instance: inst,
-      components: comps,
-    });
-  })
-  .catch(reason => res.status(500).send(reason.message));
+
+  Promise
+    .all([
+      instance,
+      components,
+    ])
+    .then(([inst, comps]) => {
+      res.json({
+        instance: inst,
+        components: comps,
+      });
+    })
+    .catch(err => res.status(500).send(err.message));
 });
 
 router.get('/history/:id', (req, res) => {
   const { id } = req.params;
-  simplePromiseExpressHandler(getAncestors(id), res.json, res.err);
+  getAncestors(id)
+    .then(result => res.json(result))
+    .catch(err => res.status(500).send(err.message));
 });
 
 router.get('/children/:id', (req, res) => {
   const { id } = req.params;
-  simplePromiseExpressHandler(getTree(id), res.json, res.err);
+  getTree(id)
+    .then(result => res.json(result))
+    .catch(err => res.status(500).send(err.message));
 });
 
 /*********************************
@@ -77,7 +74,7 @@ router.get('/children/:id', (req, res) => {
  Create an entry for the first time, server generates uuid
  *********************************/
 
-router.post('/project/:id', jsonParser, (req, res) => {
+router.put('/project/:id', jsonParser, (req, res) => {
   //todo - verify body
   const data = req.body;
   //todo - verify project, allow bypassing?
@@ -86,10 +83,12 @@ router.post('/project/:id', jsonParser, (req, res) => {
   //todo - should be able to generate scaffold and extend with body
   const validated = data;
 
-  simplePromiseExpressHandler(dbSet(id, validated), res.json, res.err);
+  dbSet(id, validated)
+    .then(result => res.json(result))
+    .catch(err => res.err(err.message));
 });
 
-router.post('/block/:id', jsonParser, (req, res) => {
+router.put('/block/:id', jsonParser, (req, res) => {
   //todo - verify body
   const data = req.body;
   //todo - verify project, allow bypassing?
@@ -98,7 +97,9 @@ router.post('/block/:id', jsonParser, (req, res) => {
   //todo - should be able to generate scaffold and extend with body
   const validated = data;
 
-  simplePromiseExpressHandler(dbSet(id, validated), res.json, res.err);
+  dbSet(id, validated)
+    .then(result => res.json(result))
+    .catch(err => res.err(err.message));
 });
 
 /*********************************
@@ -111,7 +112,9 @@ router.post('/project/:id', jsonParser, (req, res) => {
   //todo - verify body
   const data = req.body;
   //todo - verify project, allow bypassing?
-  simplePromiseExpressHandler(dbSet(id, data), res.json, res.err);
+  dbSet(id, data)
+    .then(result => res.json(result))
+    .catch(err => res.status(500).send(err.message));
 });
 
 router.post('/block/:id', jsonParser, (req, res) => {
@@ -119,14 +122,17 @@ router.post('/block/:id', jsonParser, (req, res) => {
   //todo - verify body
   const data = req.body;
   //todo - verify block, allow bypassing?
-  simplePromiseExpressHandler(dbSet(id, data), res.json, res.err);
+
+  dbSet(id, data)
+    .then(result => res.json(result))
+    .catch(err => res.status(500).send(err.message));
 });
 
 /**
  * Create a child
  */
-router.post('/clone', (req, res) => {
-  const { id } = req.query;
+router.post('/clone/:id', (req, res) => {
+  const { id } = req.params;
 
   dbGet(id)
     .then(instance => {
