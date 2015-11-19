@@ -1,4 +1,5 @@
 import AnnotationDefinition from '../../src/schemas/Annotation';
+import { Annotation as exampleAnnotation } from './examples';
 import chai from 'chai';
 
 const { assert } = chai;
@@ -18,12 +19,7 @@ describe('AnnotationDefinition', () => {
   });
 
 
-  it('should validate', () => {
-    assert(AnnotationDefinition.validate({
-      description: 'example annotation',
-      tags: {},
-      optimizability: 'none',
-      sequence: 'acgtagc',
-    }));
+  it('should validate the example', () => {
+    assert(AnnotationDefinition.validate(exampleAnnotation));
   });
 });

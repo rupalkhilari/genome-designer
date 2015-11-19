@@ -20,7 +20,7 @@ describe('history', () => {
       expect(descendent.parent).to.equal(dummyInstance.id);
     });
 
-    it('should clone data', () => {
+    it('should clone arbitrary fields', () => {
       const descendent = createDescendent(dummyInstance);
 
       expect(descendent.data).to.not.be.undefined;

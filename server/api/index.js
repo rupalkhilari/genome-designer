@@ -20,6 +20,8 @@ const jsonParser = bodyParser.json({
  Fetch an entry and all sub-entries
  *********************************/
 
+//todo-  should be opt-in to the tree structure, and by default just return the instance
+
 router.get('/project/:id', (req, res) => {
   const { id } = req.params;
   const instance = dbGetSafe(id);
