@@ -46,34 +46,62 @@ export const record = (child, parent) => {
   ]);
 };
 
-export const getImmediateAncestors = (instance) => {
-  const ancestryKey = makeAncestoryKey(instance.id);
+export const getAncestors = (id) => {
+  const ancestryKey = makeAncestoryKey(id);
   return getSafe(ancestryKey, null);
 };
 
-export const getImmediateChildren = (instance) => {
-  const descendencyKey = makeDescendentKey(instance.id);
+export const getImmediateChildren = (id) => {
+  const descendencyKey = makeDescendentKey(id);
   return getSafe(descendencyKey, []);
 };
 
-export const getAncestors = (instance) => {
-  //todo - recurse
-  return getImmediateAncestors(instance);
+export const getTree = (id) => {  
+  var output = {};
+      
+  //promise object for fetching the tree from an ID
+  function createPromiseObj(id) {
+    return getTree(id).then(
+          res => {
+            output[id] = res;
+            console.log("p: " + JSON.stringify(output));
+            return Promise.resolve(null);
+          });
+  };
+
+
+  //for each child...
+  return getImmediateChildren(id).
+      then(result => {
+
+        console.log(result);
+        
+        //create promise objects from each child ID
+        var promiseArr = [], 
+            promiseObj;
+
+        for (var i=0; i < result.length; ++i) {
+          promiseObj = createPromiseObj(result[i]);
+          promiseArr.push(promiseObj);
+        };
+
+        //when all sub-trees have been fetched...
+        Promise.all(promiseArr).
+          then(res => {
+
+            //return output
+            console.log("res: " + JSON.stringify(output));
+            return output;
+          });
+      });
 };
 
-export const getTree = (instance) => {
-  //todo - recurse
-  return getImmediateChildren(instance);
-};
+export const getRoot = (instance) => { 
 
-export const getRoot = (instance) => {
-  //todo - recurse
-  /*
+  //getAncestors will return all parents in order 
   return getAncestors(instance).then(result => {
-    (result.leaves.length > 1) && console.error('more than one root', result.leaves); //eslint-disable-line
-    return result.leaves[0];
+    return result[0];
   });
-   */
 };
 
 export const getLeaves = (instance) => {

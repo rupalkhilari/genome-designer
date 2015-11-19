@@ -29,11 +29,13 @@ block2 = {
   "notes": {}
 }
 
+headers = {  "Content-type": "application/json"  };
 
-res = PUT(url + "block", data = json(block1))
+res = POST(url + "block", data = json(block1), headers=headers)
+
 id1 = res.json()['id']
 
-res = PUT(url + "block", data = json(block2))
+res = POST(url + "block", data = json(block2), headers=headers)
 id2 = res.json()['id']
 
 block3 = {
@@ -66,10 +68,10 @@ block4 = {
   "notes": {}
 }
 
-res = PUT(url + "block", data = json(block3))
+res = POST(url + "block", data = json(block3), headers=headers)
 id3 = res.json()['id']
 
-res = PUT(url + "block", data = json(block4))
+res = POST(url + "block", data = json(block4), headers=headers)
 id4 = res.json()['id']
 
 proj1 = {
@@ -85,23 +87,27 @@ proj1 = {
   "settings": {}
 }
 
-res = PUT(url + "project", data = json(proj1))
+res = POST(url + "project", data = json(proj1), headers=headers)
 pid1 = res.json()['id']
 
+proj1["settings"] = { "SBOLv-version": "1.2.0" }
 
-res = GET(url + "project", params = {"id":pid1})
+res = PUT(url + "project/" + pid1, data = json(proj1), headers=headers)
+pid1 = res.json()['id']
 
-res = POST(url + "clone", params = {"id":pid1})
+res = GET(url + "project/" + pid1, params = {"id":pid1})
+
+res = POST(url + "clone/" + pid1, params = {"id":pid1})
 pid2 = res.json()['id']
 
-res = POST(url + "clone", params = {"id":pid2})
+res = POST(url + "clone/" + pid2, params = {"id":pid2})
 pid3 = res.json()['id']
 
-res = POST(url + "clone", params = {"id":pid3})
+res = POST(url + "clone/" + pid3, params = {"id":pid3})
 pid4 = res.json()['id']
 
-res = GET(url + "project", params = {"id":pid4})
+res = GET(url + "project/" + pid4, params = {"id":pid4})
 
-hist = GET(url + "history", params = {"id":pid4})
+hist = GET(url + "history/" + pid4, params = {"id":pid4})
 
-child = GET(url + "children", params = {"id":pid1})
+child = GET(url + "children/" + pid1, params = {"id":pid1})

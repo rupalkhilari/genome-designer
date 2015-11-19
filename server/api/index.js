@@ -7,6 +7,9 @@ import { errorDoesNotExist, errorNoIdProvided } from '../errors';
 import { validateBlock, validateProject, assertValidId } from '../validation';
 import { getComponents } from '../getRecursively';
 
+import BlockDefinition from '../../src/schemas/Block';
+import ProjectDefinition from '../../src/schemas/Project';
+
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
   strict: false, //allow values other than arrays and objects
@@ -70,54 +73,69 @@ router.get('/children/:id', (req, res) => {
 });
 
 /*********************************
- PUT
+ POST
  Create an entry for the first time, server generates uuid
  *********************************/
 
-router.put('/project/:id', jsonParser, (req, res) => {
+router.post('/project', jsonParser, (req, res) => {
   //todo - verify body
   const data = req.body;
   //todo - verify project, allow bypassing?
   const id = uuid.v4();
+  data.id = id;
 
-  //todo - should be able to generate scaffold and extend with body
-  const validated = data;
+  if (ProjectDefinition.validate(data)) {
+    //todo - should be able to generate scaffold and extend with body
+    const validated = data;
 
-  dbSet(id, validated)
-    .then(result => res.json(result))
-    .catch(err => res.err(err.message));
+    dbSet(id, validated)
+      .then(result => res.json(result))
+      .catch(err => res.err(err.message));
+  }
 });
 
-router.put('/block/:id', jsonParser, (req, res) => {
+router.post('/block', jsonParser, (req, res) => {
   //todo - verify body
   const data = req.body;
   //todo - verify project, allow bypassing?
   const id = uuid.v4();
+  data.id = id;
 
-  //todo - should be able to generate scaffold and extend with body
-  const validated = data;
+  if (BlockDefinition.validate(data)) {
+    //todo - should be able to generate scaffold and extend with body
+    const validated = data;
 
-  dbSet(id, validated)
-    .then(result => res.json(result))
-    .catch(err => res.err(err.message));
+    dbSet(id, validated)
+      .then(result => res.json(result))
+      .catch(err => res.err(err.message));
+  }
 });
 
 /*********************************
- POST
+ PUT
  Modify an existing entry
  *********************************/
 
-router.post('/project/:id', jsonParser, (req, res) => {
+router.put('/project/:id', jsonParser, (req, res) => {
   const { id } = req.params;
   //todo - verify body
   const data = req.body;
-  //todo - verify project, allow bypassing?
-  dbSet(id, data)
-    .then(result => res.json(result))
-    .catch(err => res.status(500).send(err.message));
+  data.id = id;
+  
+  //Check that the input is a valid Project
+  if (ProjectDefinition.validate(data)) {
+
+    //check that the project already exists, otherwise use PUT
+    dbGet(id).then( 
+      result =>  {
+        dbSet(id, data)
+          .then(result => res.json(result))
+          .catch(err => res.status(500).send(err.message));
+      });
+  }
 });
 
-router.post('/block/:id', jsonParser, (req, res) => {
+router.put('/block/:id', jsonParser, (req, res) => {
   const { id } = req.params;
   //todo - verify body
   const data = req.body;
