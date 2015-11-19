@@ -21,7 +21,7 @@ client.on('error', (err) => {
 
 /**
  @description Fetch an entry from the database
- @param {uuid} id
+ @param {string} id
  @returns {Promise}
  If resolves, the value, after JSON.parse
  If rejects or doesn't exist, error string
@@ -49,15 +49,16 @@ export const get = (id) => {
 
 /**
  @description Like get, but doesn't reject for undefined
- @param {uuid} id
+ @param {string} id
+ @param {*} defaultValue Value to use if doesn't exist (default null)
  @returns {Promise}
  If resolves, the value, after JSON.parse, or null if undefined
  If rejects, error string
  **/
-export const getSafe = (id) => {
+export const getSafe = (id, defaultValue = null) => {
   return get(id).catch(err => {
     if (err.message === errorDoesNotExist) {
-      return Promise.resolve(null);
+      return Promise.resolve(defaultValue);
     }
     return Promise.reject(err);
   });
@@ -65,7 +66,7 @@ export const getSafe = (id) => {
 
 /**
  @description Updates an entry in the database
- @param {uuid} id
+ @param {string} id
  @param {*} data value to be run through JSON.stringify
  @returns {Promise}
  If resolves, data input

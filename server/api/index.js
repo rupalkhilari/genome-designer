@@ -1,10 +1,11 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import uuid from 'uuid'; //todo - unify with client side
-import { createDescendent, record, getParents, getTree } from '../history';
+import { createDescendent, record, getAncestors, getTree } from '../history';
 import { get as dbGet, getSafe as dbGetSafe, set as dbSet } from '../database';
 import { errorDoesNotExist, errorNoIdProvided } from '../errors';
 import { validateBlock, validateProject, assertValidId } from '../validation';
+import { getComponents } from '../getRecursively';
 
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
@@ -27,21 +28,43 @@ function simplePromiseExpressHandler(promise, onSuccess, onError) {
  Fetch an entry and all sub-entries
  *********************************/
 
-//todo - ability to get all components
 router.get('/project/:id', (req, res) => {
   const { id } = req.params;
-  simplePromiseExpressHandler(dbGetSafe(id), res.json, res.err);
+  const instance = dbGetSafe(id);
+  const components = getComponents(id);
+  Promise.all([
+      instance,
+      components,
+    ])
+    .then(([inst, comps]) => {
+      res.json({
+        instance: inst,
+        components: comps,
+      });
+    })
+    .catch(reason => res.error(reason.message));
 });
 
-//todo - ability to get all components
 router.get('/block/:id', (req, res) => {
   const { id } = req.params;
-  simplePromiseExpressHandler(dbGetSafe(id), res.json, res.err);
+  const instance = dbGetSafe(id);
+  const components = getComponents(id);
+  Promise.all([
+    instance,
+    components,
+  ])
+  .then(([inst, comps]) => {
+    res.json({
+      instance: inst,
+      components: comps,
+    });
+  })
+  .catch(reason => res.error(reason.message));
 });
 
 router.get('/history/:id', (req, res) => {
   const { id } = req.params;
-  simplePromiseExpressHandler(getParents(id), res.json, res.err);
+  simplePromiseExpressHandler(getAncestors(id), res.json, res.err);
 });
 
 router.get('/children/:id', (req, res) => {

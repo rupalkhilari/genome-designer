@@ -11,13 +11,12 @@ function getInstances(ids = []) {
  @param {Array} ids
  @param {Object} result Dictionary, used for recursing. expects field `leaves`.
  @param {string} field (default = `components`)
- @return {Object} result dictionary with IDs which are all ids, and a field `leaves` with the leaf nodes of the tree
+ @return {Object} result dictionary with IDs which are all ids, and a field `leaves` with the leaf nodes of the tree, and field `tree` which is an object noting the hierarchy
  **/
-//todo - store tree structure
-//todo - verify this works, assert ids is array
+//todo - verify this works
 function getRecursively(ids = [],
                         field = 'components',
-                        result = {leaves: []}) {
+                        result = {tree: {}, leaves: []}) {
   if (!ids.length) {
     return Promise.resolve();
   }
@@ -37,8 +36,13 @@ function getRecursively(ids = [],
     });
   });
 
+  //todo - store tree structure once we've retrieved things
   return promise.then(() => result);
 }
+
+export const getParents = (instance) => {
+  return getRecursively([instance.parent], 'parent');
+};
 
 export const getComponents = (instance) => {
   return getRecursively(instance.components, 'components');
