@@ -1,12 +1,13 @@
 import redis from 'redis';
 import { errorDoesNotExist } from './errors';
-import { assertValidId } from 'validation';
+import { assertValidId } from './validation';
 /**
  * This file expects only valid data for the database. handles stringifying / parsing.
  *
  * Redis Database interface
  */
 
+//stub / mock this for tests?
 const client = redis.createClient();
 const timeoutTime = 5000;
 

@@ -1,17 +1,18 @@
 const request = require('supertest');
+const devServer = require('../../devServer');
 
 describe('Server API', () => {
   let server;
-  beforeEach(function () {
-    server = require('../../devServer').listen();
+  beforeEach(() => {
+    server = devServer.listen();
   });
-  afterEach(function () {
+  afterEach(() => {
     server.close();
   });
 
-  it('responds to /api/project', function testProject(done) {
+  it('returns a 404 for invalid routes', function testProject(done) {
     request(server)
-      .get('/api/project')
-      .expect('yup', done);
+      .get('/api/asdfasdf')
+      .expect(404, done);
   });
 });

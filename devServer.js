@@ -1,7 +1,7 @@
 var path = require('path');
 var express = require('express');
 var webpack = require('webpack');
-var morgan = require('morgan')
+var morgan = require('morgan');
 var config = require('./webpack.config.dev');
 var DEFAULT_PORT = 3000;
 var port = parseInt(process.argv[2]) || process.env.PORT ||  DEFAULT_PORT;
@@ -12,7 +12,7 @@ var app = express();
 var compiler = webpack(config);
 
 //logging middleware
-app.use(morgan());
+app.use(morgan('dev'));
 
 // Register Hotloading Middleware
 // ----------------------------------------------------

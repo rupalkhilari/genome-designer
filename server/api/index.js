@@ -42,7 +42,7 @@ router.get('/project/:id', (req, res) => {
         components: comps,
       });
     })
-    .catch(reason => res.error(reason.message));
+    .catch(reason => res.status(500).send(reason.message));
 });
 
 router.get('/block/:id', (req, res) => {
@@ -59,7 +59,7 @@ router.get('/block/:id', (req, res) => {
       components: comps,
     });
   })
-  .catch(reason => res.error(reason.message));
+  .catch(reason => res.status(500).send(reason.message));
 });
 
 router.get('/history/:id', (req, res) => {
@@ -138,11 +138,16 @@ router.post('/clone', (req, res) => {
         .then(() => clone);
     })
     .catch(err => {
-      res.error(err.message);
+      res.status(500).send(err.message);
     })
     .then(clone => {
       res.json(clone);
     });
+});
+
+//default catch
+router.use('*', (req, res) => {
+  res.status(404).send('Invalid Route');
 });
 
 module.exports = router;
