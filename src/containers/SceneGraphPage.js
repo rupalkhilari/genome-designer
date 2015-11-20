@@ -26,58 +26,53 @@ class SceneGraphPage extends Component {
 
     // create new scene graph
     this.sceneGraph = new SceneGraph2D({
-      w: 1000,
-      h: 800,
+      w: 975,
+      h: 600,
       owner: this,
     });
-    this.sceneGraph.props.userInterface = new UserInterface(this.sceneGraph);
 
-    for(let y = 0; y < 8; y += 1) {
-      for(let x = 0; x < 8; x += 1) {
-        this.sceneGraph.root.appendChild(new Node2D({
-          x: 50 + x * 100,
-          y: 50 + y * 100,
-          w: 80,
-          h: 60,
-          fill: 'red',
-          r: Math.random() * 360,
-          glyph: 'rectangle'
-        })).appendChild(new Node2D({
-          x: 50,
-          y: 50,
-          w: 60,
-          h: 40,
-          fill: 'green',
-          r: Math.random() * 360,
-          glyph: 'rectangle'
-        })).appendChild(new Node2D({
-          x: 50,
-          y: 50,
-          w: 60,
-          h: 40,
-          fill: 'blue',
-          r: Math.random() * 360,
-          glyph: 'ellipse',
-          text: (x + y * 8).toString()
-        }));
-      }
-    }
+    this.sceneGraph.props.userInterface = new UserInterface(this.sceneGraph, this.fakeDataSet());
 
   }
 
   onZoom = () => {
-    this.sceneGraph.root.set({
-      scale: parseFloat(this.refs.zoom.value)
-    });
+    this.sceneGraph.setScale(parseFloat(this.refs.zoom.value));
     this.forceUpdate();
   }
 
-  onTraverse = () => {
-    console.log('traversal');
-    this.sceneGraph.traverse( node => {
-      console.log(node.props.text);
-    });
+  fakeATGC = () => {
+    const letters = ['A', 'T', 'G', 'C']
+    let s = '';
+    for(let i = 0; i < 4; i +=1) {
+      s += letters[(Math.random() * 4)>>0];
+    }
+    return s;
   }
+
+  /*
+   * build some fake data to test SVG rendering
+   */
+  fakeDataSet = () => {
+
+    const d = {
+      name: 'Bacterial ORI-AMPR #4',
+      parts: [],
+    };
+    const colors = ['#DBE8C7','#8DA5D2','#FEE798','#E8D1E4','#FEE3BA'];
+    for(let i = 0; i < 50; i += 1) {
+      d.parts.push({
+        type: 'part',
+        text: `Part ${i}`,
+        color: colors[Math.min(colors.length-1, Math.round(Math.random() * colors.length))]
+      });
+      d.parts.push({
+        type: 'connector',
+        text: this.fakeATGC(),
+      });
+    }
+    return d;
+  }
+
 
   render () {
     return (
@@ -85,8 +80,6 @@ class SceneGraphPage extends Component {
         {this.sceneGraph.render()}
         <br></br>
         <input ref="zoom" type="range" min={0.1} max={4} step={0.1} onChange={this.onZoom}></input>
-        <br></br>
-        <button onClick={this.onTraverse}>Traverse</button>
       </div>
     );
   }

@@ -37,10 +37,11 @@ export default class Node2D extends Component {
     let glyph;
     switch (this.props.glyph) {
       case 'rectangle':
-        glyph = <Rectangle2D key={this.props.uuid} w={this.props.w} h={this.props.h} fill={this.props.fill}/>
+        //glyph = <Rectangle2D key={this.props.uuid} w={this.props.w} h={this.props.h} fill={this.props.fill} stroke={this.props.stroke} strokeWidth={this.props.strokeWidth}/>
+        glyph = <Rectangle2D key={this.props.uuid} {...this.props}/>
         break;
       case 'ellipse':
-        glyph = <Ellipse2D key={this.props.uuid} w={this.props.w} h={this.props.h} fill={this.props.fill}/>
+        glyph = <Ellipse2D key={this.props.uuid} {...this.props}/>
         break;
       default:
         glyph = null;
@@ -58,7 +59,7 @@ export default class Node2D extends Component {
     return (
       <div style={style} className="node">
         {glyph}
-        <NodeText2D text={this.props.text} width={this.props.w} height={this.props.h}/>
+        <NodeText2D {...this.props}/>
         {this.props.children}
       </div>
     );

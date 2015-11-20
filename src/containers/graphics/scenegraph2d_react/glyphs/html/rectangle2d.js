@@ -16,10 +16,15 @@ export default class Rectangle2D extends Glyph2D {
   }
 
   render() {
+
+    const sw = this.props.strokeWidth || 0;
     const style = {
-      width: this.props.w + 'px',
-      height: this.props.h + 'px',
+      left: -(sw / 2),
+      top: -(sw / 2),
+      width: (this.props.w + sw) + 'px',
+      height: (this.props.h + sw) + 'px',
       backgroundColor: this.props.fill,
+      border: sw ? `${sw}px solid ${this.props.stroke}` : 'none',
     }
 
     return (

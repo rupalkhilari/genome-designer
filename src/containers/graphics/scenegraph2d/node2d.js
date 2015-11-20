@@ -33,6 +33,10 @@ export default class Node2D {
     return child;
   }
 
+  removeChild(child) {
+    throw new Error('Implement');
+  }
+
   set(p) {
     this.props = Object.assign(this.props, p);
   }

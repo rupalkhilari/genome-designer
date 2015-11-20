@@ -15,7 +15,10 @@ export default class Node2DText extends Component {
   render() {
 
     const style = {
-      width: this.props.width + 'px'
+      width: this.props.w + 'px',
+      color: this.props.color || 'black',
+      fontWeight: this.props.fontWeight || 'normal',
+      fontSize: this.props.fontSize || '13px',
     }
 
     return (

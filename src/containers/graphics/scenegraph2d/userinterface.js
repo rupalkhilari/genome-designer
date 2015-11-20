@@ -4,16 +4,25 @@ import React, { Component, PropTypes } from 'react';
 import Vector2D from '../geometry/vector2d';
 import UserInterface_React from '../scenegraph2d_react/userinterface';
 
+import Layout1 from './layout1.js';
+
 export default class UserInterface {
 
-  constructor(sceneGraph) {
+  constructor(sceneGraph, dataSet) {
+
     this.sceneGraph = sceneGraph;
+    this.dataSet = dataSet;
+    this.layout = new Layout1(this.sceneGraph, this.dataSet, {
+      width: 900
+    });
+    this.layout.update();
   }
+
+
 
   onMouseDown = (e) => {
     const p = this.eventToLocal(e);
     console.log('-------------Mouse Down:' + p.toString());
-
     this.sceneGraph.traverse( node => {
       if (node.parent && node.containsGlobalPoint(p)) {
         this.drag = node;
@@ -29,7 +38,7 @@ export default class UserInterface {
     if (this.drag) {
       const p = this.eventToLocal(e);
       // the delta includes accomodating the view scale on the root node
-      const delta = p.sub(this.dragStart).multiply(1/this.sceneGraph.root.props.scale);
+      const delta = p.sub(this.dragStart); //.multiply(1/this.sceneGraph.root.props.scale);
       // add the delta to the nodes starting global position
       const g = this.nodeStart.add(delta);
       // transform this point back into local space of the dragged node
@@ -70,7 +79,14 @@ export default class UserInterface {
   }
 
   render() {
-    return <UserInterface_React
+
+    // scale according to scene graph
+    const s = this.sceneGraph.root.props.scale;
+    const style = {
+      transform: `scale(${s}, ${s})`
+    };
+
+    return <UserInterface_React style={style}
       onMouseDown={this.onMouseDown}
       onMouseMove={this.onMouseMove}
       onMouseUp={this.onMouseUp}

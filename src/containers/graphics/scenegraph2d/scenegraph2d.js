@@ -40,10 +40,34 @@ export default class SceneGraph2D {
     this.props.owner.forceUpdate();
   }
 
+  /**
+   * when our underlying element is scrolled / panned
+   * @param  {Vector2D} vector
+   */
+  onScrolled = (vector) => {
+    console.log(vector.toString());
+  }
+
+  /**
+   * set the current scaling of the scenegraph view. This is performed
+   * by just changing the scaling of our root node.
+   * @param {[type]} s [description]
+   */
+  setScale(s) {
+    // apply to root node
+    this.root.set({
+      scale: s
+    });
+  }
+
+  /**
+   * render the scenegraph and its root node ( which recursively renders it children )
+   * If there is a UI element, then render it on top of everything
+   * @return {[type]} [description]
+   */
   render() {
     const ui = this.props.userInterface ? this.props.userInterface.render() : null;
-
-    return <SceneGraph2D_React w={this.props.w} h={this.props.h}>
+    return <SceneGraph2D_React w={this.props.w} h={this.props.h} onScrolled={this.onScrolled}>
       {this.root.render()}
       {ui}
     </SceneGraph2D_React>;
