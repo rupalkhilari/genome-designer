@@ -111,3 +111,8 @@ res = GET(url + "project/" + pid4, params = {"id":pid4})
 hist = GET(url + "history/" + pid4, params = {"id":pid4})
 
 child = GET(url + "children/" + pid1, params = {"id":pid1})
+
+
+input1 = "ACGTACGACTACGACTGACGACTACGAGCT"
+
+
