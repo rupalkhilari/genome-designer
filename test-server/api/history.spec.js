@@ -34,4 +34,13 @@ describe('history', () => {
       expect(descendent.id).to.not.equal(descendent2.id);
     });
   });
+
+  describe('record()', () => {
+    it('should accept ids, return a promise');
+    it('should update the database');
+  });
+
+  describe('getTree()', () => {});
+  describe('getRoot()', () => {});
+  describe('getLeaves()', () => {});
 });

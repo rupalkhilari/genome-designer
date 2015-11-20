@@ -12,49 +12,67 @@ const jsonParser = bodyParser.json({
   strict: false, //allow values other than arrays and objects
 });
 
+function paramIsTruthy(param) {
+  return param !== undefined && param !== 'false';
+}
+
 /*********************************
  GET
  Fetch an entry and all sub-entries
  *********************************/
 
-//todo-  should be opt-in to the tree structure, and by default just return the instance
-
 router.get('/project/:id', (req, res) => {
   const { id } = req.params;
-  const instance = dbGetSafe(id);
-  const components = getComponents(id);
+  const { tree } = req.query;
 
-  Promise
-    .all([
-      instance,
-      components,
-    ])
-    .then(([inst, comps]) => {
-      res.json({
-        instance: inst,
-        components: comps,
-      });
-    })
-    .catch(reason => res.status(500).send(reason.message));
+  if (paramIsTruthy(tree)) {
+    const instance = dbGetSafe(id);
+    const components = getComponents(id);
+
+    Promise
+      .all([
+        instance,
+        components,
+      ])
+      .then(([inst, comps]) => {
+        res.json({
+          instance: inst,
+          components: comps,
+        });
+      })
+      .catch(err => res.status(500).send(err.message));
+  } else {
+    dbGetSafe(id)
+      .then(result => res.json(result))
+      .catch(err => res.status(500).send(err.message));
+  }
 });
 
 router.get('/block/:id', (req, res) => {
   const { id } = req.params;
-  const instance = dbGetSafe(id);
-  const components = getComponents(id);
+  const { tree } = req.query;
 
-  Promise
-    .all([
-      instance,
-      components,
-    ])
-    .then(([inst, comps]) => {
-      res.json({
-        instance: inst,
-        components: comps,
-      });
-    })
-    .catch(err => res.status(500).send(err.message));
+  if (paramIsTruthy(tree)) {
+    const instance = dbGetSafe(id);
+    const components = getComponents(id);
+
+    Promise
+      .all([
+        instance,
+        components,
+      ])
+      .then(([inst, comps]) => {
+        res.json({
+          instance: inst,
+          components: comps,
+        });
+      })
+      .catch(err => res.status(500).send(err.message));
+  } else {
+    dbGetSafe(id)
+      .then(result => res.json(result))
+      .catch(err => res.status(500).send(err.message));
+  }
 });
 
 router.get('/history/:id', (req, res) => {
@@ -72,32 +90,32 @@ router.get('/children/:id', (req, res) => {
 });
 
 /*********************************
- PUT
+ POST
  Create an entry for the first time, server generates uuid
  *********************************/
 
-router.put('/project/:id', jsonParser, (req, res) => {
-  //todo - verify body
+router.post('/project', jsonParser, (req, res) => {
   const data = req.body;
-  //todo - verify project, allow bypassing?
   const id = uuid.v4();
 
-  //todo - should be able to generate scaffold and extend with body
-  const validated = data;
+  //todo - should be able to generate scaffold and extend with body, and validate() (allow bypassing)
+  const validated = Object.assign(data, {
+    id,
+  });
 
   dbSet(id, validated)
     .then(result => res.json(result))
     .catch(err => res.err(err.message));
 });
 
-router.put('/block/:id', jsonParser, (req, res) => {
-  //todo - verify body
+router.post('/block', jsonParser, (req, res) => {
   const data = req.body;
-  //todo - verify project, allow bypassing?
   const id = uuid.v4();
 
-  //todo - should be able to generate scaffold and extend with body
-  const validated = data;
+  //todo - should be able to generate scaffold and extend with body, and validate() (allow bypassing)
+  const validated = Object.assign(data, {
+    id,
+  });
 
   dbSet(id, validated)
     .then(result => res.json(result))
@@ -105,13 +123,12 @@ router.put('/block/:id', jsonParser, (req, res) => {
 });
 
 /*********************************
- POST
+ PUT
  Modify an existing entry
  *********************************/
 
-router.post('/project/:id', jsonParser, (req, res) => {
+router.put('/project/:id', jsonParser, (req, res) => {
   const { id } = req.params;
-  //todo - verify body
   const data = req.body;
   //todo - verify project, allow bypassing?
   dbSet(id, data)
@@ -119,11 +136,12 @@ router.post('/project/:id', jsonParser, (req, res) => {
     .catch(err => res.status(500).send(err.message));
 });
 
-router.post('/block/:id', jsonParser, (req, res) => {
+router.put('/block/:id', jsonParser, (req, res) => {
   const { id } = req.params;
-  //todo - verify body
   const data = req.body;
   //todo - verify block, allow bypassing?
+
+  console.log(data);
 
   dbSet(id, data)
     .then(result => res.json(result))
@@ -141,7 +159,7 @@ router.post('/clone/:id', (req, res) => {
       const clone = createDescendent(instance);
       return dbSet(clone.id, clone)
         .then(() => {
-          return record(clone, instance);
+          return record(clone.id, instance.id);
         })
         .then(() => clone);
     })

@@ -19,24 +19,24 @@ export const createDescendent = (instance) => {
 
 /**
  * @description Record parent-child info in the database
- * @param {uuid} child
- * @param {uuid} parent
+ * @param {uuid} childId
+ * @param {uuid} parentId
  * @return {Promise} array, where [0] is ancestry, [1] is descendence
  */
-export const record = (child, parent) => {
+export const record = (childId, parentId) => {
   //todo - in the future, we should not record both parent and child relationships, but use an index on parent, or create a hash in redis that handles the children part. There should not be a need to have a double-linked list
-  const ancestryKey = makeAncestoryKey(child.id);
-  const descendencyKey = makeDescendentKey(parent.id);
+  const ancestryKey = makeAncestoryKey(childId);
+  const descendencyKey = makeDescendentKey(parentId);
 
   const setAncestry = getSafe(ancestryKey, null)
     .then(history => {
-      const nextVal = (history === null) ? [parent.id] : history.concat(parent.id);
+      const nextVal = (history === null) ? [parentId] : history.concat(parentId);
       return set(ancestryKey, nextVal);
     });
 
   const setDescendence = getSafe(descendencyKey, null)
     .then(children => {
-      const nextVal = (children === null) ? [child.id] : children.concat(child.id);
+      const nextVal = (children === null) ? [childId] : children.concat(childId);
       return set(descendencyKey, nextVal);
     });
 
@@ -46,34 +46,44 @@ export const record = (child, parent) => {
   ]);
 };
 
-export const getImmediateAncestors = (instance) => {
-  const ancestryKey = makeAncestoryKey(instance.id);
+export const getImmediateAncestors = (instanceId) => {
+  const ancestryKey = makeAncestoryKey(instanceId);
   return getSafe(ancestryKey, null);
 };
 
-export const getImmediateChildren = (instance) => {
-  const descendencyKey = makeDescendentKey(instance.id);
+export const getImmediateDescendents = (instanceId) => {
+  const descendencyKey = makeDescendentKey(instanceId);
   return getSafe(descendencyKey, []);
 };
 
-export const getAncestors = (instance) => {
-  //todo - recurse
-  return getImmediateAncestors(instance);
+export const getAncestors = (instanceId) => {
+  return getRecursively(
+    [makeAncestoryKey(instanceId)],
+    (instance) => makeAncestoryKey(instance)
+  );
 };
 
-export const getTree = (instance) => {
-  //todo - recurse
-  return getImmediateChildren(instance);
+export const getDescendents = (instanceId) => {
+  return getRecursively(
+    [makeDescendentKey(instanceId)],
+    (instance) => makeDescendentKey(instance)
+  );
 };
 
-export const getRoot = (instance) => {
-  //todo - recurse
-  /*
-  return getAncestors(instance).then(result => {
-    (result.leaves.length > 1) && console.error('more than one root', result.leaves); //eslint-disable-line
-    return result.leaves[0];
-  });
-   */
+export const getRoot = (instanceId) => {
+  return getAncestors(instanceId)
+    .then(result => {
+      (result.leaves.length > 1) && console.error('more than one root', result.leaves); //eslint-disable-line
+      return result.leaves[0];
+    });
+};
+
+//get root, get whole tree
+export const getTree = (id) => {
+  return getRoot(id)
+    .then(instance => {
+      return getDescendents(instance.id);
+    });
 };
 
 export const getLeaves = (instance) => {

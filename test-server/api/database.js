@@ -3,7 +3,6 @@ import uuid from 'uuid';
 import { get, getSafe, set } from '../../server/database';
 
 describe('Database', () => {
-
   describe('get', () => {
     it('should return a promise');
     it('should reject if ID invalid');

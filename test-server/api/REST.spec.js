@@ -4,7 +4,7 @@ import { Block as exampleBlock } from '../../test/schemas/examples';
 const request = require('supertest');
 const devServer = require('../../devServer');
 
-describe('REST API', () => {
+describe('REST', () => {
   let server;
   beforeEach(() => {
     server = devServer.listen();
@@ -26,21 +26,84 @@ describe('REST API', () => {
   });
 
   describe('Blocks', () => {
+    //NOTE - order of these tests matters. ideally, we'd reset the database every time, but i dont know how to do that...
+
     it('GET a block that is not real returns null', (done) => {
       request(server)
         .get('/api/block/notrealblock')
         .expect(200)
-        .end((err, result) => {
-          expect(result.body.instance).to.be.null;
-          done();
-        });
+        .expect((result) => {
+          expect(result.body).to.be.null;
+        })
+        .end(done);
     });
 
-    it('POST to create a block', (done) => {
+    it('POST to create a block with an ID', (done) => {
+      const block = Object.assign({}, exampleBlock);
+      delete block.id;
+
       request(server)
-        .post(`/api/block/${exampleBlock.id}`)
+        .post('/api/block')
+        .send(block)
+        .expect((res) => {
+          const instance = res.body;
+          const mockedSimilar = Object.assign({}, block, {
+            id: instance.id,
+          });
+          expect(instance.id).to.not.be.undefined;
+          expect(instance).to.eql(mockedSimilar);
+        })
+        .end(done);
+    });
+
+    it('POST should ignore IDs', (done) => {
+      const block = exampleBlock;
+
+      request(server)
+        .post('/api/block')
+        .send(block)
+        .expect((res) => {
+          const instance = res.body;
+          expect(instance.id).to.not.equal(block.id);
+        })
+        .end(done);
+    });
+
+    it('PUT to update a block', (done) => {
+      request(server)
+        .put(`/api/block/${exampleBlock.id}`)
         .send(exampleBlock)
-        .expect(200, done);
+        .expect(200)
+        .expect((res) => {
+          expect(res.body).to.eql(exampleBlock);
+        })
+        .end(done);
+    });
+
+    it('GET should return the instance by default', (done) => {
+      request(server)
+        .get(`/api/block/${exampleBlock.id}`)
+        .expect(200)
+        .expect((res) => {
+          expect(res.body).to.not.be.undefined;
+          expect(res.body).to.eql(exampleBlock);
+          expect(res.body.instance).to.be.undefined;
+          expect(res.body.tree).to.be.undefined;
+        })
+        .end(done);
+    });
+
+    it('GET should return the tree with query parameter', (done) => {
+      request(server)
+        .get(`/api/block/${exampleBlock.id}?tree=true`)
+        .expect(200)
+        .expect((res) => {
+          expect(res.body).to.not.be.undefined;
+          expect(res.body.instance).to.not.be.undefined;
+          expect(res.body.instance).to.eql(exampleBlock);
+          expect(res.body.components).to.not.be.undefined;
+        })
+        .end(done);
     });
 
     //relies on the previous test
@@ -48,22 +111,27 @@ describe('REST API', () => {
       request(server)
         .get(`/api/block/${exampleBlock.id}`)
         .expect(200)
-        .end((err, res) => {
-          const { instance } = res.body;
+        .expect((res) => {
+          const instance  = res.body;
           expect(instance).to.eql(exampleBlock);
-          done();
-        });
+        })
+        .end(done);
     });
 
-    it('should persist extra fields');
-
-    it('should return the instance by default');
-
-    it('should return the tree with query parameter');
-
-    it('PUT should ignore ID');
+    it('PUT allows custom fields', (done) => {
+      request(server)
+        .put(`/api/block/${extendedBlock.id}`)
+        .send(extendedBlock)
+        .expect(200)
+        .expect((res) => {
+          console.log(res.body);
+          expect(res.body).to.eql(extendedBlock);
+        })
+        .end(done);
+    });
   });
 
+  //todo - these should probably be different files
   describe('Project', () => {
 
   });
