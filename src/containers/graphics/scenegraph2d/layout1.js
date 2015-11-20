@@ -8,8 +8,9 @@ const kBLOCK_H = 24;
 const kBLOCK_W = 70;
 const kTITLE_W = 200;
 const kROW_H = 60;
-const kROW_BAR_H = 4;
-const kROW_BAR_W = 4;
+const kROW_BAR_H = 3;
+const kROW_BAR_W = 3;
+const kTEXT_PAD = 16;
 
 const kTITLE_APPEARANCE = {
   fill: 'black',
@@ -140,26 +141,31 @@ export default class Layout {
             this.sceneGraph.root.appendChild(p.element);
           }
 
+          // measure out text
+          const td = p.element.measureText(p.text);
+          // add padding
+          td.x += kTEXT_PAD;
+
           // if position would exceed x limit then wrap
-          if (xp + kBLOCK_W > mx) {
+          if (xp + td.x > mx) {
             xp = x + kROW_BAR_W;
             yp += kROW_H;
             row = null;
           }
 
           // update part
-          const pp = this.boxXY(xp, yp, kBLOCK_W, kBLOCK_H);
+          const pp = this.boxXY(xp, yp, td.x, kBLOCK_H);
           p.element.set({
             text: p.text,
             fill: p.color,
             x: pp.x,
             y: pp.y,
-            w: kBLOCK_W,
+            w: td.x,
             h: kBLOCK_H,
           });
 
           // set next part position
-          xp += kBLOCK_W;
+          xp += td.x;
 
 
         break;

@@ -13,7 +13,7 @@ export default class UserInterface {
     this.sceneGraph = sceneGraph;
     this.dataSet = dataSet;
     this.layout = new Layout1(this.sceneGraph, this.dataSet, {
-      width: 900
+      width: 850
     });
     this.layout.update();
   }

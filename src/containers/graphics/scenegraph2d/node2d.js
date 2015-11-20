@@ -5,9 +5,17 @@ import Vector2D from '../geometry/vector2d';
 import Transform2D from '../geometry/transform2d';
 import Matrix2D from '../geometry/matrix2d';
 
+/**
+ * shared DIV for measuring text,
+ */
+let textDIV;
+
+/**
+ * basic rectangular node
+ */
 export default class Node2D {
 
-  constructor(props) {
+  constructor (props) {
 
     // child nodes of this node
     this.children = [];
@@ -15,39 +23,42 @@ export default class Node2D {
     // extend default options with the given options
     this.props = Object.assign({
       stroke: 'black',
-      strokeWidth: 5,
+      strokeWidth: 0,
       fill: 'dodgerblue',
       w: 0,
       h: 0,
       x: 0,
       y: 0,
       r: 0,
+      fontSize: '13px',
+      fontWeight: 'normal',
+      color: 'black',
       scale: 1,
       uuid: uuid.v4()
     }, props);
   }
 
-  appendChild(child) {
+  appendChild (child) {
     child.parent = this;
     this.children.push(child);
     return child;
   }
 
-  removeChild(child) {
+  removeChild (child) {
     throw new Error('Implement');
   }
 
-  set(p) {
+  set (p) {
     this.props = Object.assign(this.props, p);
   }
 
-/**
+  /**
  * get our transform multiplied by our parents, if present, this recursive
  * and works up the child -> parent hierarchy
  * NOTE: This excludes the scene graphs view matrix, generally input points
  * should adjust for that first.
  */
- get transformationMatrix() {
+  get transformationMatrix () {
 
     // use simple caching to save on this calculation
     const key = `${this.props.x},${this.props.y},${this.props.w},${this.props.h},${this.props.scale}`;
@@ -64,23 +75,25 @@ export default class Node2D {
     }
 
     // bring in parent if we have one, otherwise just our matrix
-    return this.parent ? this.parent.transformationMatrix.multiplyMatrix(this.matrixCached) : this.matrixCached.clone();
+    return this.parent
+      ? this.parent.transformationMatrix.multiplyMatrix(this.matrixCached)
+      : this.matrixCached.clone();
   }
 
   /**
    * inverse transformation matrix
    * @return {[type]} [description]
    */
-  get inverseTransformationMatrix() {
+  get inverseTransformationMatrix () {
     return this.transformationMatrix.inverse();
   }
 
   /**
    * convert a point ( or array of points ) in global ( scene graph space ) to local space
    */
-  globalToLocal(p) {
+  globalToLocal (p) {
     if (Array.isArray(p)) {
-      return p.map(function (v) {
+      return p.map(function(v) {
         return this.globalToLocal(v);
       }, this);
     }
@@ -90,9 +103,9 @@ export default class Node2D {
   /**
    * convert a point ( or array of points ) in global ( scene graph space ) to local space
    */
-  localToGlobal(p) {
+  localToGlobal (p) {
     if (Array.isArray(p)) {
-      return p.map(function (v) {
+      return p.map(function(v) {
         return this.localToGlobal(v);
       }, this);
     }
@@ -104,7 +117,7 @@ export default class Node2D {
  * @param {Vector2D} p
  * @returns boolean
  */
- containsGlobalPoint(p) {
+  containsGlobalPoint (p) {
 
     // get our inverse transformation matrix including all our parents transforms
     // and use the inverse to put the point into the local space of the
@@ -114,18 +127,44 @@ export default class Node2D {
     return pt.x >= 0 && pt.y >= 0 && pt.x <= this.props.w && pt.y <= this.props.h;
   }
 
-  render() {
+  /**
+   * uses a global, hidden div to measure the width height of the given string
+   * using our current text settings
+   * @param  {string} s - string to measure or if ommitted this.props.text
+   * @return {Vectot2D}
+   */
+  measureText(s) {
+    // create div on demand
+    if (!textDIV) {
+      textDIV = document.createElement('DIV');
+      textDIV.style.display = 'inline-block';
+      textDIV.style.position = 'absolute';
+      textDIV.style.padding = 0;
+      textDIV.style.visibility = 'hidden';
+      document.body.appendChild(textDIV);
+    }
+
+    // update to our current font settings and text
+    textDIV.innerHTML = s || this.props.text || '';
+    textDIV.style.fontSize = this.props.fontSize;
+    textDIV.style.fontWeight = this.props.fontWeight;
+
+    // return measurement
+    return new Vector2D(textDIV.clientWidth, textDIV.clientHeight);
+  }
+
+  render () {
 
     // get a rendering of all our children, recursively including all their children
-    const childrenRendered = this.children.map( child => {
+    const childrenRendered = this.children.map(child => {
       return child.render();
     });
 
-    //return <Node2D_React text={p.text} x={p.x} y={p.y} w={p.w} h={p.h} stroke={p.stroke} strokeWidth={p.strokeWidth} fill={p.fill} glyph={p.glyph}>
+    //return <Node2D_React text={p.text} x={p.x} y={p.y} w={p.w} h={p.h} stroke={p.stroke} strokeWidth={p.strokeWidth}
+    //fill={p.fill} glyph={p.glyph}>
     return <Node2D_React key={this.props.uuid} {...this.props}>
       {childrenRendered}
     </Node2D_React>;
   }
-
 
 }

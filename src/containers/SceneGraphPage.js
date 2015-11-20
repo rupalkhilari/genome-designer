@@ -40,10 +40,10 @@ class SceneGraphPage extends Component {
     this.forceUpdate();
   }
 
-  fakeATGC = () => {
+  fakeATGC = (l = 4) => {
     const letters = ['A', 'T', 'G', 'C']
     let s = '';
-    for(let i = 0; i < 4; i +=1) {
+    for(let i = 0; i < l; i +=1) {
       s += letters[(Math.random() * 4)>>0];
     }
     return s;
@@ -58,11 +58,11 @@ class SceneGraphPage extends Component {
       name: 'Bacterial ORI-AMPR #4',
       parts: [],
     };
-    const colors = ['#DBE8C7','#8DA5D2','#FEE798','#E8D1E4','#FEE3BA'];
-    for(let i = 0; i < 50; i += 1) {
+    const colors = ['EBBE9C', '#E89695', '#EAD993', '#96C78C', '#D0DFDE', '#79BFC1'];
+    for(let i = 0; i < 25; i += 1) {
       d.parts.push({
         type: 'part',
-        text: `Part ${i}`,
+        text: `Part ${i} ${this.fakeATGC(Math.random() * 6)}`,
         color: colors[Math.min(colors.length-1, Math.round(Math.random() * colors.length))]
       });
       d.parts.push({
