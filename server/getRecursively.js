@@ -9,15 +9,16 @@ function getInstances(ids = []) {
  If the entry is a Block, all subcomponents will be
  fetched recursively into the results object
  @param {Array} ids
- @param {Object} result Dictionary, used for recursing. expects field `leaves`.
  @param {string|function} field (default = `components`) Field of retreived instance to use, or function returning the ID to use
+ @param {number} recursionDepth Depth of recursion
+ @param {Object} result Dictionary, used for recursing. expects field `leaves`.
  @return {Object} result dictionary with IDs which are all ids, and a field `leaves` with the leaf nodes of the tree, and field `tree` which is an object noting the hierarchy
  **/
 //todo - verify this works
-//todo - support depth
 //todo - save tree structure
 function getRecursively(ids = [],
                         field = 'components',
+                        recursionDepth = 5,
                         result = {tree: {}, leaves: []}) {
   if (!ids.length) {
     return Promise.resolve(result);
@@ -26,10 +27,15 @@ function getRecursively(ids = [],
   const promise = getInstances(ids).then(instances => {
     return instances.map(inst => {
       result[inst.id] = inst;
-      const accessor = (typeof field === 'function') ?
+
+      if (recursionDepth === 0) {
+        return Promise.resolve();
+      }
+
+      const nextAccessor = (typeof field === 'function') ?
         field :
         (instance) => instance[field];
-      const next = accessor(inst);
+      const next = nextAccessor(inst);
 
       //if next list to recurse is empty, mark as leaf
       if (!next || !next.length) {
@@ -37,7 +43,7 @@ function getRecursively(ids = [],
         return Promise.resolve();
       }
 
-      return getRecursively(next, field, result);
+      return getRecursively(next, field, (recursionDepth - 1), result);
     });
   });
 

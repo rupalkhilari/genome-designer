@@ -75,14 +75,14 @@ router.get('/block/:id', (req, res) => {
   }
 });
 
-router.get('/history/:id', (req, res) => {
+router.get('/ancestors/:id', (req, res) => {
   const { id } = req.params;
   getAncestors(id)
     .then(result => res.json(result))
     .catch(err => res.status(500).send(err.message));
 });
 
-router.get('/children/:id', (req, res) => {
+router.get('/descendents/:id', (req, res) => {
   const { id } = req.params;
   getTree(id)
     .then(result => res.json(result))

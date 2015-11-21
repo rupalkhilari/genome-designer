@@ -1,8 +1,8 @@
 import { expect } from 'chai';
-import { Block as exampleBlock } from '../../test/schemas/examples';
+import { Block as exampleBlock } from '../../schemas/examples';
+import request from 'supertest';
 
-const request = require('supertest');
-const devServer = require('../../devServer');
+const devServer = require('../../../devServer');
 
 describe('REST', () => {
   let server;
@@ -15,14 +15,6 @@ describe('REST', () => {
 
   const extendedBlock = Object.assign({}, exampleBlock, {
     some: 'field',
-  });
-
-  describe('basics', () => {
-    it('returns a 404 for invalid routes', function testProject(done) {
-      request(server)
-        .get('/api/invalidEndpoint')
-        .expect(404, done);
-    });
   });
 
   describe('Blocks', () => {
@@ -112,7 +104,7 @@ describe('REST', () => {
         .get(`/api/block/${exampleBlock.id}`)
         .expect(200)
         .expect((res) => {
-          const instance  = res.body;
+          const instance = res.body;
           expect(instance).to.eql(exampleBlock);
         })
         .end(done);
@@ -129,18 +121,5 @@ describe('REST', () => {
         })
         .end(done);
     });
-  });
-
-  //todo - these should probably be different files
-  describe('Project', () => {
-
-  });
-
-  describe('Clone', () => {
-    it('should create descendents with proper parent');
-  });
-
-  describe('History', () => {
-    it('should retrieve history of an instance');
   });
 });

@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { createDescendent, record } from '../../server/history';
+import { createDescendent, record } from '../../../server/history';
 
 describe('history', () => {
   describe('createDescendent()', () => {

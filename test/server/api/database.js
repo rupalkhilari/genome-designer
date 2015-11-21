@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import uuid from 'uuid';
-import { get, getSafe, set } from '../../server/database';
+import { get, getSafe, set } from '../../../server/database';
 
 describe('Database', () => {
   describe('get', () => {
