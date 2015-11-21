@@ -6,7 +6,7 @@ import getRecursively, { getParents, getComponents } from '../../../server/getRe
 
 const { expect } = chai;
 
-describe.only('getRecursively', () => {
+describe('getRecursively', () => {
   const componentField = 'components';
   const treeDepth = 4;
   const treeNumberChildren = 3;
@@ -60,7 +60,9 @@ describe.only('getRecursively', () => {
         //reduce to get number of expected children...
         //e.g., if you have treeDepth = 4, shortDepth = 2, treeNumberChildren = 3,
         //[0,1] -> [1,2] -> (3 + 9 + 1) = 13 expected children
-        const numberInstances = range(shortDepth).map(ind => ind + 1).reduce((acc, cur) => acc + Math.pow(treeNumberChildren, cur), 1);
+        const numberInstances = range(shortDepth)
+          .map(ind => ind + 1)
+          .reduce((acc, cur) => acc + Math.pow(treeNumberChildren, cur), 1);
         expect(Object.keys(instances).length).to.equal(numberInstances);
       });
   });

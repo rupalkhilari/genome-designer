@@ -94,6 +94,7 @@ describe('REST', () => {
           expect(res.body.instance).to.not.be.undefined;
           expect(res.body.instance).to.eql(exampleBlock);
           expect(res.body.components).to.not.be.undefined;
+          //todo - actually interrogate the tree
         })
         .end(done);
     });
