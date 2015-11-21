@@ -1,7 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import uuid from 'uuid'; //todo - unify with client side
-import { createDescendent, record, getAncestors, getTree } from '../history';
+import { createDescendant, record, getAncestors, getTree } from '../history';
 import { get as dbGet, getSafe as dbGetSafe, set as dbSet } from '../database';
 import { errorDoesNotExist, errorNoIdProvided } from '../errors';
 import { validateBlock, validateProject, assertValidId } from '../validation';
@@ -149,7 +149,7 @@ router.post('/clone/:id', (req, res) => {
 
   dbGet(id)
     .then(instance => {
-      const clone = createDescendent(instance);
+      const clone = createDescendant(instance);
       return dbSet(clone.id, clone)
         .then(() => {
           return record(clone.id, instance.id);

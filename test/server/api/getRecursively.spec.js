@@ -23,6 +23,15 @@ describe('getRecursively', () => {
     }));
   });
 
+  it('should reject if you dont pass an array', (done) => {
+    return getRecursively('asdf')
+      .then()
+      .catch((err) => {
+        expect(err).to.be.instanceof(Error);
+        done();
+      });
+  });
+
   it('should resolve for no inputs with empty tree and leaves', () => {
     return getRecursively([]).then(val => {
       expect(val).to.eql({tree: {}, leaves: []});

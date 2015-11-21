@@ -1,9 +1,11 @@
 import { expect } from 'chai';
+import uuid from 'uuid';
 import { Block as exampleBlock } from '../../schemas/examples';
-import { createDescendent, record } from '../../../server/history';
+import { get as dbGet, set as dbSet, getSafe as dbGetSafe } from '../../../server/database';
+import { createDescendant, record, makeAncestorKey, makeDescendantKey, getTree, getDescendants, getAncestors, getRoot } from '../../../server/history';
 
-describe('history', () => {
-  describe('createDescendent()', () => {
+describe.only('History', () => {
+  describe('createDescendant()', () => {
     const dummyInstance = {
       id: 'some-cool-id',
       metadata: {
@@ -15,35 +17,133 @@ describe('history', () => {
     };
 
     it('should use instance id for parent id', () => {
-      const descendent = createDescendent(dummyInstance);
+      const descendant = createDescendant(dummyInstance);
 
-      expect(descendent.id).to.not.equal(dummyInstance.id);
-      expect(descendent.parent).to.equal(dummyInstance.id);
+      expect(descendant.id).to.not.equal(dummyInstance.id);
+      expect(descendant.parent).to.equal(dummyInstance.id);
     });
 
     it('should clone arbitrary fields', () => {
-      const descendent = createDescendent(dummyInstance);
+      const descendant = createDescendant(dummyInstance);
 
-      expect(descendent.data).to.not.be.undefined;
+      expect(descendant.data).to.eql(dummyInstance.data);
+      expect(descendant.metadata).to.eql(dummyInstance.metadata);
     });
 
-    it('should create descendents with new ids', () => {
-      const descendent = createDescendent(dummyInstance);
-      const descendent2 = createDescendent(dummyInstance);
+    it('should create descendants with new ids', () => {
+      const descendant = createDescendant(dummyInstance);
+      const descendant2 = createDescendant(dummyInstance);
 
-      expect(descendent.parent).to.equal(descendent2.parent);
-      expect(descendent.id).to.not.equal(descendent2.id);
+      expect(descendant.parent).to.equal(descendant2.parent);
+      expect(descendant.id).to.not.equal(descendant2.id);
     });
   });
 
   describe('record()', () => {
-    it('should update the database', () => {
-      const instance = Object.assign({}, exampleBlock);
-      const descendent = createDescendent(instance);
+    //order of these operations matters
+    const instance = Object.assign({}, exampleBlock, {id: uuid.v4()});
+    const descendant = createDescendant(instance);
+
+    it('should return the ancestry and descendants', () => {
+      return record(descendant.id, instance.id)
+        .then(([ancestry, descendants]) => {
+          expect(ancestry).to.eql([instance.id]);
+          expect(descendants).to.eql([descendant.id]);
+        });
     });
+
+    it('should update the database', () => {
+      const checkAncestry = dbGetSafe(makeAncestorKey(descendant.id))
+        .then(ancestry => {
+          expect(ancestry).to.eql([instance.id]);
+        });
+      const checkDescendants = dbGetSafe(makeDescendantKey(instance.id))
+        .then(descendants => {
+          expect(descendants).to.eql([descendant.id]);
+        });
+
+      return Promise.all([checkAncestry, checkDescendants]);
+    });
+
+    it('should push to array for multiple descendents', () => {
+      const descendant2 = createDescendant(instance);
+      return record(descendant2.id, instance.id)
+        .then(([ancestry, descendants]) => {
+          expect(ancestry).to.eql([instance.id]);
+          expect(descendants).to.eql([descendant.id, descendant2.id]);
+        });
+    });
+
   });
 
-  describe('getTree()', () => {});
-  describe('getRoot()', () => {});
-  describe('getLeaves()', () => {});
+  describe('[Tree functions]', () => {
+    //setup a basic tree, with a fork from levelTree
+    const levelOne = Object.assign({}, exampleBlock, {id: uuid.v4()});
+    const levelTwo = createDescendant(levelOne);
+    const levelThree = createDescendant(levelTwo);
+    const levelFour = createDescendant(levelThree);
+    const levelFourAlt = createDescendant(levelThree);
+
+    //console.log([levelOne, levelTwo, levelThree, levelFour, levelFourAlt].map(inst => inst.id));
+
+    before(() => {
+      return Promise.all([
+        record(levelTwo.id, levelOne.id),
+        record(levelThree.id, levelTwo.id),
+        record(levelFour.id, levelThree.id),
+      ])
+      .then(() => {
+        //ensure this runs afterwards
+        return record(levelFourAlt.id, levelThree.id);
+      });
+      /*
+       .then((results) => {
+       results.map(([ancestry, descendants]) => {
+       console.log(ancestry, descendants);
+       });
+       });
+       */
+    });
+
+    describe('getAncestors()', () => {
+      it('should get all ancestors', () => {
+        return getAncestors(levelFour.id).then(result => {
+          delete result.tree;
+          delete result.leaves;
+          expect(Object.keys(result).length).to.equal(3);
+        });
+      });
+
+      //todo
+      it('should return dictionary where values are parents of keys');
+      it('should support tree structure');
+    });
+
+    describe('getDescendants()', () => {
+      it('should get all descendants', () => {
+        return getDescendants(levelOne.id).then(result => {
+          delete result.tree;
+          delete result.leaves;
+          console.log(result);
+          expect(Object.keys(result).length).to.equal(4);
+        });
+      });
+
+      //todo
+      it('should return dictionary where values are parents of keys');
+      it('should support tree structure');
+    });
+
+    describe('getTree()', () => {
+
+    });
+
+    describe('getRoot()', () => {
+      it('should retrieve the root instance given a node in its tree');
+    });
+
+    describe('getLeaves()', () => {
+
+    });
+  });
 });

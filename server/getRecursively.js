@@ -1,7 +1,9 @@
 import { getSafe } from './database';
 
 function getInstances(ids = []) {
-  return Promise.all(ids.map(getSafe));
+  return Promise.all(ids.map((id) => {
+    return getSafe(id, null);
+  }));
 }
 
 /**
@@ -11,6 +13,7 @@ function getInstances(ids = []) {
  @param {Array} ids
  @param {string|function} field (default = `components`) Field of retreived instance to use, or function returning the ID to use
  @param {number} recursionDepth Depth of recursion
+ @param {function} idAccessor function to return the ID, default: (inst) => inst.id
  @param {Object} result Dictionary, used for recursing. expects field `leaves`.
  @return {Object} result dictionary with IDs which are all ids, and a field `leaves` with the leaf nodes of the tree, and field `tree` which is an object noting the hierarchy
  **/
@@ -19,7 +22,12 @@ function getInstances(ids = []) {
 function getRecursively(ids = [],
                         field = 'components',
                         recursionDepth = 5,
+                        idAccessor = (inst) => inst.id,
                         result = {tree: {}, leaves: []}) {
+  if (!Array.isArray(ids)) {
+    return Promise.reject(new Error(`must pass array to getRecursively, got ${ids}`));
+  }
+
   if (!ids.length) {
     return Promise.resolve(result);
   }
@@ -27,7 +35,13 @@ function getRecursively(ids = [],
   return getInstances(ids)
     .then(instances => {
       return Promise.all(instances.map(inst => {
-        result[inst.id] = inst;
+        //if safeGet did not find anything, we're done
+        if (inst === null) {
+          return Promise.resolve();
+        }
+
+        const instanceId = idAccessor(inst);
+        result[instanceId] = inst;
 
         if (recursionDepth === 0) {
           return Promise.resolve();
@@ -40,11 +54,11 @@ function getRecursively(ids = [],
 
         //if next list to recurse is empty, mark as leaf
         if (!next || !next.length) {
-          result.leaves.push(inst.id);
+          result.leaves.push(instanceId);
           return Promise.resolve();
         }
 
-        return getRecursively(next, field, (recursionDepth - 1), result);
+        return getRecursively(next, field, (recursionDepth - 1), idAccessor, result);
       }));
     })
     .then(() => result);
