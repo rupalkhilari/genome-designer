@@ -18,7 +18,11 @@ describe('REST', () => {
   });
 
   describe('History', () => {
-    it('/ancestors');
-    it('/descendents');
+    describe('/ancestors', () => {
+
+    });
+    describe('/descendents', () => {
+
+    });
   });
 });

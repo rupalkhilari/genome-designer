@@ -1,5 +1,7 @@
 import uuid from 'uuid';
 
+//todo - these should be generators so IDs change
+
 export const Block = {
   'id': uuid.v4(),
   'metadata': {

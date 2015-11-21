@@ -15,5 +15,7 @@ describe('REST', () => {
 
   describe('Project', () => {
 
+    //todo - should fold block and project APIs together, and just test them once... will only need to test project validation separately then
+
   });
 });

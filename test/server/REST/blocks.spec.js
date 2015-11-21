@@ -49,7 +49,7 @@ describe('REST', () => {
     });
 
     it('POST should ignore IDs', (done) => {
-      const block = exampleBlock;
+      const block = Object.assign({}, exampleBlock);
 
       request(server)
         .post('/api/block')
@@ -122,5 +122,7 @@ describe('REST', () => {
         })
         .end(done);
     });
+
+    it('should validate the block');
   });
 });

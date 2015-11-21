@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import { Block as exampleBlock } from '../../schemas/examples';
 import { createDescendent, record } from '../../../server/history';
 
 describe('history', () => {
@@ -36,8 +37,10 @@ describe('history', () => {
   });
 
   describe('record()', () => {
-    it('should accept ids, return a promise');
-    it('should update the database');
+    it('should update the database', () => {
+      const instance = Object.assign({}, exampleBlock);
+      const descendent = createDescendent(instance);
+    });
   });
 
   describe('getTree()', () => {});

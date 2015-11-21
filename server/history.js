@@ -46,7 +46,7 @@ export const record = (childId, parentId) => {
   ]);
 };
 
-export const getImmediateAncestors = (instanceId) => {
+export const getImmediateAncestor = (instanceId) => {
   const ancestryKey = makeAncestoryKey(instanceId);
   return getSafe(ancestryKey, null);
 };
@@ -56,17 +56,19 @@ export const getImmediateDescendents = (instanceId) => {
   return getSafe(descendencyKey, []);
 };
 
-export const getAncestors = (instanceId) => {
+export const getAncestors = (instanceId, depth) => {
   return getRecursively(
     [makeAncestoryKey(instanceId)],
-    (instance) => makeAncestoryKey(instance)
+    (instance) => makeAncestoryKey(instance),
+    depth
   );
 };
 
-export const getDescendents = (instanceId) => {
+export const getDescendents = (instanceId, depth) => {
   return getRecursively(
     [makeDescendentKey(instanceId)],
-    (instance) => makeDescendentKey(instance)
+    (instance) => makeDescendentKey(instance),
+    depth
   );
 };
 
