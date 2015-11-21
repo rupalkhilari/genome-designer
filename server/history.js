@@ -4,9 +4,6 @@ import { get, getSafe, set } from './database';
 
 export const makeHistoryKey = (id) => id + '-history';
 
-export const makeAncestorKey = (id) => id + '-history';
-export const makeDescendantKey = (id) => id + '-children';
-
 /**
  * @description Creates an new instance which is a descendent of the input instance. Does not interact with database.
  * @param instance
@@ -28,35 +25,43 @@ export const createDescendant = (instance) => {
 export const record = (childId, parentId) => {
   //todo - in the future, we should not record both parent and child relationships, but use an index on parent, or create a hash in redis that handles the children part. There should not be a need to have a double-linked list
   //todo - need to handle ACID assurances
-  const ancestryKey = makeAncestorKey(childId);
-  const descendentsKey = makeDescendantKey(parentId);
+  const ancestryKey = makeHistoryKey(childId);
+  const descendantsKey = makeHistoryKey(parentId);
 
-  const setAncestry = getSafe(ancestryKey, null)
+  const setAncestry = getSafe(ancestryKey, {id: ancestryKey, ancestors: [], descendants: []})
     .then(history => {
-      const nextVal = Array.isArray(history) ? history.concat(parentId) : [parentId];
+      const { ancestors } = history;
+      const nextVal = Object.assign(history, {ancestors: ancestors.concat(parentId)});
       return set(ancestryKey, nextVal);
     });
 
-  const setDescendents = getSafe(descendentsKey, null)
-    .then(children => {
-      const nextVal = Array.isArray(children) ? children.concat(childId) : [childId];
-      return set(descendentsKey, nextVal);
+  const setDescendants = getSafe(descendantsKey, {id: descendantsKey, ancestors: [], descendants: []})
+    .then(history => {
+      const { descendants } = history;
+      const nextVal = Object.assign(history, {descendants: descendants.concat(childId)});
+      return set(descendantsKey, nextVal);
     });
 
   return Promise.all([
     setAncestry,
-    setDescendents,
+    setDescendants,
   ]);
 };
 
 export const getImmediateAncestor = (instanceId) => {
-  const ancestryKey = makeAncestorKey(instanceId);
-  return getSafe(ancestryKey, null);
+  const ancestryKey = makeHistoryKey(instanceId);
+  return getSafe(ancestryKey, {})
+    .then(history => {
+      return history.ancestors || null;
+    });
 };
 
 export const getImmediateDescendants = (instanceId) => {
-  const descendencyKey = makeDescendantKey(instanceId);
-  return getSafe(descendencyKey, []);
+  const descendencyKey = makeHistoryKey(instanceId);
+  return getSafe(descendencyKey, {})
+  .then(history => {
+    return history.descendants || [];
+  });
 };
 
 //todo - need better support in getRecursively (or write new function) for tree, leaves, and so not flat
@@ -64,27 +69,17 @@ export const getImmediateDescendants = (instanceId) => {
 
 export const getAncestors = (instanceId, depth) => {
   return getRecursively(
-    [makeAncestorKey(instanceId)],
-    (instance) => {
-      return Array.isArray(instance) ?
-        instance.map(instance => makeAncestorKey(instance)) :
-        [];
-    },
-    depth,
-    (inst) => inst
+    [makeHistoryKey(instanceId)],
+    (instance) => instance.ancestors.map(makeHistoryKey),
+    depth
   );
 };
 
 export const getDescendants = (instanceId, depth) => {
   return getRecursively(
-    [makeDescendantKey(instanceId)],
-    (instance) => {
-      return Array.isArray(instance) ?
-        instance.map(instance => makeDescendantKey(instance)) :
-        [];
-    },
-    depth,
-    (inst) => inst
+    [makeHistoryKey(instanceId)],
+    (instance) => instance.descendants.map(makeHistoryKey),
+    depth
   );
 };
 

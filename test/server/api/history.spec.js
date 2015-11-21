@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import uuid from 'uuid';
 import { Block as exampleBlock } from '../../schemas/examples';
 import { get as dbGet, set as dbSet, getSafe as dbGetSafe } from '../../../server/database';
-import { createDescendant, record, makeAncestorKey, makeDescendantKey, getTree, getDescendants, getAncestors, getRoot } from '../../../server/history';
+import { createDescendant, record, makeHistoryKey, getTree, getDescendants, getAncestors, getRoot } from '../../../server/history';
 
 describe.only('History', () => {
   describe('createDescendant()', () => {
@@ -46,20 +46,20 @@ describe.only('History', () => {
 
     it('should return the ancestry and descendants', () => {
       return record(descendant.id, instance.id)
-        .then(([ancestry, descendants]) => {
-          expect(ancestry).to.eql([instance.id]);
-          expect(descendants).to.eql([descendant.id]);
+        .then(([descendantHistory, instanceHistory]) => {
+          expect(descendantHistory.ancestors).to.eql([instance.id]);
+          expect(instanceHistory.descendants).to.eql([descendant.id]);
         });
     });
 
     it('should update the database', () => {
-      const checkAncestry = dbGetSafe(makeAncestorKey(descendant.id))
-        .then(ancestry => {
-          expect(ancestry).to.eql([instance.id]);
+      const checkAncestry = dbGetSafe(makeHistoryKey(descendant.id))
+        .then(history => {
+          expect(history.ancestors).to.eql([instance.id]);
         });
-      const checkDescendants = dbGetSafe(makeDescendantKey(instance.id))
-        .then(descendants => {
-          expect(descendants).to.eql([descendant.id]);
+      const checkDescendants = dbGetSafe(makeHistoryKey(instance.id))
+        .then(history => {
+          expect(history.descendants).to.eql([descendant.id]);
         });
 
       return Promise.all([checkAncestry, checkDescendants]);
@@ -68,9 +68,9 @@ describe.only('History', () => {
     it('should push to array for multiple descendents', () => {
       const descendant2 = createDescendant(instance);
       return record(descendant2.id, instance.id)
-        .then(([ancestry, descendants]) => {
-          expect(ancestry).to.eql([instance.id]);
-          expect(descendants).to.eql([descendant.id, descendant2.id]);
+        .then(([descendantHistory, instanceHistory]) => {
+          expect(descendantHistory.ancestors).to.eql([instance.id]);
+          expect(instanceHistory.descendants).to.eql([descendant.id, descendant2.id]);
         });
     });
 
@@ -84,25 +84,14 @@ describe.only('History', () => {
     const levelFour = createDescendant(levelThree);
     const levelFourAlt = createDescendant(levelThree);
 
-    //console.log([levelOne, levelTwo, levelThree, levelFour, levelFourAlt].map(inst => inst.id));
+    console.log([levelOne, levelTwo, levelThree, levelFour, levelFourAlt].map(inst => inst.id));
 
     before(() => {
-      return Promise.all([
-        record(levelTwo.id, levelOne.id),
-        record(levelThree.id, levelTwo.id),
-        record(levelFour.id, levelThree.id),
-      ])
-      .then(() => {
-        //ensure this runs afterwards
-        return record(levelFourAlt.id, levelThree.id);
-      });
-      /*
-       .then((results) => {
-       results.map(([ancestry, descendants]) => {
-       console.log(ancestry, descendants);
-       });
-       });
-       */
+      //these need to run sequentually so they dont overwrite each other...
+      return record(levelTwo.id, levelOne.id)
+        .then(() => record(levelThree.id, levelTwo.id))
+        .then(() => record(levelFour.id, levelThree.id))
+        .then(() => record(levelFourAlt.id, levelThree.id));
     });
 
     describe('getAncestors()', () => {
@@ -110,7 +99,8 @@ describe.only('History', () => {
         return getAncestors(levelFour.id).then(result => {
           delete result.tree;
           delete result.leaves;
-          expect(Object.keys(result).length).to.equal(3);
+          //4 including itself
+          expect(Object.keys(result).length).to.equal(4);
         });
       });
 
@@ -124,8 +114,8 @@ describe.only('History', () => {
         return getDescendants(levelOne.id).then(result => {
           delete result.tree;
           delete result.leaves;
-          console.log(result);
-          expect(Object.keys(result).length).to.equal(4);
+          //5 including itself
+          expect(Object.keys(result).length).to.equal(5);
         });
       });
 

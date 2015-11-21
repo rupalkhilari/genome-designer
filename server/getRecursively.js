@@ -22,7 +22,6 @@ function getInstances(ids = []) {
 function getRecursively(ids = [],
                         field = 'components',
                         recursionDepth = 5,
-                        idAccessor = (inst) => inst.id,
                         result = {tree: {}, leaves: []}) {
   if (!Array.isArray(ids)) {
     return Promise.reject(new Error(`must pass array to getRecursively, got ${ids}`));
@@ -40,7 +39,7 @@ function getRecursively(ids = [],
           return Promise.resolve();
         }
 
-        const instanceId = idAccessor(inst);
+        const instanceId = inst.id;
         result[instanceId] = inst;
 
         if (recursionDepth === 0) {
@@ -58,7 +57,7 @@ function getRecursively(ids = [],
           return Promise.resolve();
         }
 
-        return getRecursively(next, field, (recursionDepth - 1), idAccessor, result);
+        return getRecursively(next, field, (recursionDepth - 1), result);
       }));
     })
     .then(() => result);
