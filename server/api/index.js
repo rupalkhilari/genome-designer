@@ -26,13 +26,10 @@ router.get('/project/:id', (req, res) => {
   const { tree } = req.query;
 
   if (paramIsTruthy(tree)) {
-    const instance = dbGetSafe(id);
-    const components = getComponents(id);
-
     Promise
       .all([
-        instance,
-        components,
+        dbGetSafe(id),
+        getComponents(id),
       ])
       .then(([inst, comps]) => {
         res.json({
@@ -53,13 +50,10 @@ router.get('/block/:id', (req, res) => {
   const { tree } = req.query;
 
   if (paramIsTruthy(tree)) {
-    const instance = dbGetSafe(id);
-    const components = getComponents(id);
-
     Promise
       .all([
-        instance,
-        components,
+        dbGetSafe(id),
+        getComponents(id),
       ])
       .then(([inst, comps]) => {
         res.json({
@@ -130,6 +124,7 @@ router.post('/block', jsonParser, (req, res) => {
 router.put('/project/:id', jsonParser, (req, res) => {
   const { id } = req.params;
   const data = req.body;
+
   //todo - verify project, allow bypassing?
   dbSet(id, data)
     .then(result => res.json(result))
@@ -139,10 +134,8 @@ router.put('/project/:id', jsonParser, (req, res) => {
 router.put('/block/:id', jsonParser, (req, res) => {
   const { id } = req.params;
   const data = req.body;
+
   //todo - verify block, allow bypassing?
-
-  console.log(data);
-
   dbSet(id, data)
     .then(result => res.json(result))
     .catch(err => res.status(500).send(err.message));

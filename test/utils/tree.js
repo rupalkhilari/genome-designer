@@ -1,8 +1,8 @@
 import uuid from 'uuid';
 import range from '../../src/utils/array/range';
 
-const createNode = (childField = 'components',
-                    parent = {}) => {
+const createStubNode = (childField = 'components',
+                        parent = {}) => {
   const obj = {
     id: uuid.v4(),
     [childField]: [],
@@ -16,8 +16,7 @@ const createNode = (childField = 'components',
 const generateTree = (depth = 5,
                       numberChildren = 3,
                       field = 'components',
-                      parent = createNode(field)) => {
-
+                      parent = createStubNode(field)) => {
   //will only happen if directly call with depth 0
   if (depth === 0) {
     return parent;
@@ -26,12 +25,12 @@ const generateTree = (depth = 5,
   const childDepth = depth - 1;
   const nodes = range(numberChildren).map(() => {
     if (depth <= 1) {
-      return Object.assign(createNode(field, parent), {
+      return Object.assign(createStubNode(field, parent), {
         depth: childDepth,
       });
     }
 
-    const node = createNode(field, parent);
+    const node = createStubNode(field, parent);
     //don't assign here or create circular references
     generateTree(childDepth, numberChildren, field, node);
     return node;
@@ -57,12 +56,15 @@ export const flattenTree = (node = {},
                             field = 'components',
                             idField = 'id',
                             result = {leaves: []}) => {
-  result[node[idField]] = node;
-
   const nextAccessor = (typeof field === 'function') ?
     field :
     (instance) => instance[field];
   const next = nextAccessor(node);
+  const nextIds = next.map(inst => inst[idField]);
+
+  result[node[idField]] = Object.assign({}, node, {
+    [field]: nextIds,
+  });
 
   //if next list to recurse is empty, save as leaf
   if (!next || !next.length) {

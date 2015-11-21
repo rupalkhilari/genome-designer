@@ -24,30 +24,30 @@ function getRecursively(ids = [],
     return Promise.resolve(result);
   }
 
-  const promise = getInstances(ids).then(instances => {
-    return instances.map(inst => {
-      result[inst.id] = inst;
+  return getInstances(ids)
+    .then(instances => {
+      return Promise.all(instances.map(inst => {
+        result[inst.id] = inst;
 
-      if (recursionDepth === 0) {
-        return Promise.resolve();
-      }
+        if (recursionDepth === 0) {
+          return Promise.resolve();
+        }
 
-      const nextAccessor = (typeof field === 'function') ?
-        field :
-        (instance) => instance[field];
-      const next = nextAccessor(inst);
+        const nextAccessor = (typeof field === 'function') ?
+          field :
+          (instance) => instance[field];
+        const next = nextAccessor(inst);
 
-      //if next list to recurse is empty, mark as leaf
-      if (!next || !next.length) {
-        result.leaves.push(inst.id);
-        return Promise.resolve();
-      }
+        //if next list to recurse is empty, mark as leaf
+        if (!next || !next.length) {
+          result.leaves.push(inst.id);
+          return Promise.resolve();
+        }
 
-      return getRecursively(next, field, (recursionDepth - 1), result);
-    });
-  });
-
-  return promise.then(() => result);
+        return getRecursively(next, field, (recursionDepth - 1), result);
+      }));
+    })
+    .then(() => result);
 }
 
 export const getParents = (instance) => {
