@@ -1,11 +1,24 @@
 
-.sceneGraph {
+.sceneGraphContainer {
   position: relative;
   display: inline-block;
-  overflow: hidden;
   border: 1px solid lightgray;
   overflow: auto;
   margin: 5rem 0 2rem 5rem;
+}
+.sceneGraph {
+  position: absolute;
+  display: inline-block;
+  overflow: hidden;
+}
+/* test user interface */
+.userInterface {
+  position: absolute;
+  transform-origin: 0 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255,0,0,0.1);
+  cursor: default;
 }
 .sceneGraph {
   /*ase node type in scene graph*/
@@ -34,14 +47,5 @@
     position: absolute;
     display: inline-block;
     box-sizing: border-box;
-  }
-  /* test user interface */
-  .userInterface {
-    position: absolute;
-    transform-origin: 0 0;
-    width: 100%;
-    height: 100%;
-    background-color: transparent;
-    cursor: default;
   }
 }

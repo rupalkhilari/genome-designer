@@ -72,10 +72,11 @@ export default class UserInterface {
   }
 
   render() {
-    // scale according to scene graph
-    const s = this.sceneGraph.root.props.scale;
+    // size to cover scene graph but don't scale
+    const s = this.sceneGraph.getScale();
     const style = {
-      transform: `scale(${s}, ${s})`,
+      width: (this.sceneGraph.props.w * s ) + 'px',
+      height: (this.sceneGraph.props.h * s ) + 'px',
     };
 
     return (<UserInterfaceReact style={style}

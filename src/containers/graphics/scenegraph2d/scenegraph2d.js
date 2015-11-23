@@ -56,15 +56,28 @@ export default class SceneGraph2D {
   }
 
   /**
+   * return our scale
+   * @return {number}
+   */
+  getScale() {
+    return this.root.props.scale;
+  }
+
+  /**
    * render the scenegraph and its root node ( which recursively renders it children )
    * If there is a UI element, then render it on top of everything
    * @return {[type]} [description]
    */
   render() {
     const ui = this.props.userInterface ? this.props.userInterface.render() : null;
-    return (<SceneGraph2DReact uuid={this.props.uuid} w={this.props.w} h={this.props.h} onScrolled={this.onScrolled}>
+    return (<SceneGraph2DReact
+      scale={this.root.props.scale}
+      uuid={this.props.uuid}
+      w={this.props.w}
+      h={this.props.h}
+      ui={ui}
+      onScrolled={this.onScrolled}>
       {this.root.render()}
-      {ui}
     </SceneGraph2DReact>);
   }
 }

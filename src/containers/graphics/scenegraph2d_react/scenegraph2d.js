@@ -6,9 +6,10 @@ export default class SceneGraph2D extends Component {
   static propTypes = {
     w: PropTypes.number.isRequired,
     h: PropTypes.number.isRequired,
+    scale: PropTypes.number.isRequired,
     uuid: PropTypes.string.isRequired,
-    children: PropTypes.array.isRequired,
     onScrolled: PropTypes.func.isRequired,
+    ui: PropTypes.object,
   }
   /**
    * scene graph has overflow:auto so that as it is scaled it will allow the user
@@ -27,14 +28,23 @@ export default class SceneGraph2D extends Component {
    * @return {[type]} [description]
    */
   render() {
-    const style = {
+    // container style
+    const cstyle = {
       width: this.props.w + 'px',
       height: this.props.h + 'px',
     };
+    // width and height of the scenegraph should match our size * view scale
+    const style = {
+      width: (this.props.w * this.props.scale) + 'px',
+      height: (this.props.h * this.props.scale) + 'px',
+    };
 
     return (
-      <div style={style} key={this.props.uuid} ref="sceneGraph" className="sceneGraph" onScroll={this.onScroll} >
-        {this.props.children}
+      <div className="sceneGraphContainer" style={cstyle} ref="sceneGraphContainer" onScroll={this.onScroll}>
+        <div style={style} key={this.props.uuid} ref="sceneGraph" className="sceneGraph">
+          {this.props.children}
+        </div>
+        {this.props.ui}
       </div>
     );
   }
