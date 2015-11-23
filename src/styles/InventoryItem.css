@@ -1,3 +1,11 @@
-.InventoryItem {
+@import 'variables.css';
 
+.InventoryItem {
+  border-radius: 3px;
+  padding: 1px 5px;
+
+  &:hover,
+  &.isDragging {
+    background-color: var(--colors-selected);
+  }
 }

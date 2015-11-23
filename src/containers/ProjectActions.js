@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { blockCreate } from '../actions/blocks';
 import { projectAddConstruct } from '../actions/projects';
-import { inventoryToggleVisiblity } from '../actions/inventory';
+import { inventoryToggleVisibility } from '../actions/inventory';
 
 import '../styles/ProjectActions.css';
 
@@ -12,7 +12,7 @@ export class ProjectActions extends Component {
     project: PropTypes.object.isRequired,
     blockCreate: PropTypes.func.isRequired,
     projectAddConstruct: PropTypes.func.isRequired,
-    inventoryToggleVisiblity: PropTypes.func.isRequired,
+    inventoryToggleVisibility: PropTypes.func.isRequired,
   };
 
   handleClickAddConstruct = (event) => {
@@ -24,7 +24,7 @@ export class ProjectActions extends Component {
   }
 
   handleClickFromInventory = (event) => {
-    this.props.inventoryToggleVisiblity();
+    this.props.inventoryToggleVisibility();
   }
 
   render() {
@@ -57,5 +57,5 @@ function mapStateToProps(state, props) {
 export default connect(mapStateToProps, {
   blockCreate,
   projectAddConstruct,
-  inventoryToggleVisiblity,
+  inventoryToggleVisibility,
 })(ProjectActions);
