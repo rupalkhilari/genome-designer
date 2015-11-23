@@ -1,35 +1,28 @@
-import invariant from '../../../utils/environment/invariant';
-import React, { Component, PropTypes } from 'react';
-
+import React from 'react';
 import Vector2D from '../geometry/vector2d';
-import UserInterface_React from '../scenegraph2d_react/userinterface';
-
+import UserInterfaceReact from '../scenegraph2d_react/userinterface';
 import Layout1 from './layout1.js';
 
 export default class UserInterface {
 
   constructor(sceneGraph, dataSet) {
-
     this.sceneGraph = sceneGraph;
     this.dataSet = dataSet;
     this.layout = new Layout1(this.sceneGraph, this.dataSet, {
-      width: 850
+      width: 850,
     });
     this.layout.update();
   }
 
-
-
   onMouseDown = (e) => {
     const p = this.eventToLocal(e);
-    console.log('-------------Mouse Down:' + p.toString());
     this.sceneGraph.traverse( node => {
       if (node.parent && node.containsGlobalPoint(p)) {
         this.drag = node;
         this.dragStart = p;
         // node starting position, relative to parent, in global coordinates
         this.nodeStart = this.drag.parent.localToGlobal(new Vector2D(this.drag.props.x, this.drag.props.y));
-        console.log(`HIT:, ${node.props.glyph}, ${node.props.fill}`);
+        //console.log(`HIT:, ${node.props.glyph}, ${node.props.fill}`);
       }
     }, this);
   }
@@ -61,15 +54,14 @@ export default class UserInterface {
    * @return {[type]}   [description]
    */
   eventToLocal(e) {
-
     function getPosition(element) {
       let xPosition = 0;
       let yPosition = 0;
-
-      while (element) {
-          xPosition += (element.offsetLeft - element.scrollLeft + element.clientLeft);
-          yPosition += (element.offsetTop - element.scrollTop + element.clientTop);
-          element = element.offsetParent;
+      let e = element;
+      while (e) {
+        xPosition += (e.offsetLeft - e.scrollLeft + e.clientLeft);
+        yPosition += (e.offsetTop - e.scrollTop + e.clientTop);
+        e = e.offsetParent;
       }
       return new Vector2D(xPosition, yPosition);
     }
@@ -79,17 +71,16 @@ export default class UserInterface {
   }
 
   render() {
-
     // scale according to scene graph
     const s = this.sceneGraph.root.props.scale;
     const style = {
-      transform: `scale(${s}, ${s})`
+      transform: `scale(${s}, ${s})`,
     };
 
-    return <UserInterface_React style={style}
+    return (<UserInterfaceReact style={style}
       onMouseDown={this.onMouseDown}
       onMouseMove={this.onMouseMove}
       onMouseUp={this.onMouseUp}
-      />
+      />);
   }
 }

@@ -1,22 +1,16 @@
-import invariant from '../../../utils/environment/invariant';
-import React, { Component, PropTypes } from 'react';
-
+import React from 'react';
 // scene graph classes
 import Node2D from '../scenegraph2d/node2d';
-
 // react components for rendering scene graph classes
-import SceneGraph2D_React from '../scenegraph2d_react/scenegraph2d';
-import Node2D_React from '../scenegraph2d_react/node2d';
-
+import SceneGraph2DReact from '../scenegraph2d_react/scenegraph2d';
 
 export default class SceneGraph2D {
 
   constructor(props) {
-
     // extend default options with the given options
     this.props = Object.assign({
       w: 800,
-      h: 600
+      h: 600,
     }, props);
 
     // create our root node, which represents the view matrix and to which
@@ -24,7 +18,7 @@ export default class SceneGraph2D {
     this.root = new Node2D();
   }
 
-  traverse (callback, context) {
+  traverse(callback, context) {
     let stack = [this.root];
     while (stack.length) {
       const next = stack.pop();
@@ -45,7 +39,6 @@ export default class SceneGraph2D {
    * @param  {Vector2D} vector
    */
   onScrolled = (vector) => {
-    console.log(vector.toString());
   }
 
   /**
@@ -56,7 +49,7 @@ export default class SceneGraph2D {
   setScale(s) {
     // apply to root node
     this.root.set({
-      scale: s
+      scale: s,
     });
   }
 
@@ -67,10 +60,9 @@ export default class SceneGraph2D {
    */
   render() {
     const ui = this.props.userInterface ? this.props.userInterface.render() : null;
-    return <SceneGraph2D_React w={this.props.w} h={this.props.h} onScrolled={this.onScrolled}>
+    return (<SceneGraph2DReact w={this.props.w} h={this.props.h} onScrolled={this.onScrolled}>
       {this.root.render()}
       {ui}
-    </SceneGraph2D_React>;
-
+    </SceneGraph2DReact>);
   }
 }

@@ -1,9 +1,8 @@
 import uuid from 'node-uuid';
 import React from 'react';
-import Node2D_React from '../scenegraph2d_react/node2d';
+import Node2DReact from '../scenegraph2d_react/node2d';
 import Vector2D from '../geometry/vector2d';
 import Transform2D from '../geometry/transform2d';
-import Matrix2D from '../geometry/matrix2d';
 
 /**
  * shared DIV for measuring text,
@@ -15,8 +14,7 @@ let textDIV;
  */
 export default class Node2D {
 
-  constructor (props) {
-
+  constructor(props) {
     // child nodes of this node
     this.children = [];
 
@@ -34,21 +32,21 @@ export default class Node2D {
       fontWeight: 'normal',
       color: 'black',
       scale: 1,
-      uuid: uuid.v4()
+      uuid: uuid.v4(),
     }, props);
   }
 
-  appendChild (child) {
+  appendChild(child) {
     child.parent = this;
     this.children.push(child);
     return child;
   }
 
-  removeChild (child) {
+  removeChild(child) {
     throw new Error('Implement');
   }
 
-  set (p) {
+  set(p) {
     this.props = Object.assign(this.props, p);
   }
 
@@ -58,8 +56,7 @@ export default class Node2D {
  * NOTE: This excludes the scene graphs view matrix, generally input points
  * should adjust for that first.
  */
-  get transformationMatrix () {
-
+  get transformationMatrix() {
     // use simple caching to save on this calculation
     const key = `${this.props.x},${this.props.y},${this.props.w},${this.props.h},${this.props.scale}`;
     if (this.transformCachedKey !== key) {
@@ -84,16 +81,16 @@ export default class Node2D {
    * inverse transformation matrix
    * @return {[type]} [description]
    */
-  get inverseTransformationMatrix () {
+  get inverseTransformationMatrix() {
     return this.transformationMatrix.inverse();
   }
 
   /**
    * convert a point ( or array of points ) in global ( scene graph space ) to local space
    */
-  globalToLocal (p) {
+  globalToLocal(p) {
     if (Array.isArray(p)) {
-      return p.map(function(v) {
+      return p.map( v => {
         return this.globalToLocal(v);
       }, this);
     }
@@ -103,9 +100,9 @@ export default class Node2D {
   /**
    * convert a point ( or array of points ) in global ( scene graph space ) to local space
    */
-  localToGlobal (p) {
+  localToGlobal(p) {
     if (Array.isArray(p)) {
-      return p.map(function(v) {
+      return p.map( v => {
         return this.localToGlobal(v);
       }, this);
     }
@@ -117,13 +114,11 @@ export default class Node2D {
  * @param {Vector2D} p
  * @returns boolean
  */
-  containsGlobalPoint (p) {
-
+  containsGlobalPoint(p) {
     // get our inverse transformation matrix including all our parents transforms
     // and use the inverse to put the point into the local space of the
     // node. Then we can just test against the AABB
-
-    var pt = this.globalToLocal(p);
+    const pt = this.globalToLocal(p);
     return pt.x >= 0 && pt.y >= 0 && pt.x <= this.props.w && pt.y <= this.props.h;
   }
 
@@ -153,18 +148,14 @@ export default class Node2D {
     return new Vector2D(textDIV.clientWidth, textDIV.clientHeight);
   }
 
-  render () {
-
+  render() {
     // get a rendering of all our children, recursively including all their children
     const childrenRendered = this.children.map(child => {
       return child.render();
     });
-
-    //return <Node2D_React text={p.text} x={p.x} y={p.y} w={p.w} h={p.h} stroke={p.stroke} strokeWidth={p.strokeWidth}
-    //fill={p.fill} glyph={p.glyph}>
-    return <Node2D_React key={this.props.uuid} {...this.props}>
+    return (<Node2DReact key={this.props.uuid} {...this.props}>
       {childrenRendered}
-    </Node2D_React>;
+    </Node2DReact>);
   }
 
 }

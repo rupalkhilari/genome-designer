@@ -1,18 +1,12 @@
 import React from 'react';
-import {
-  Route,
-  IndexRoute,
-  Redirect
-} from 'react-router';
+import { Route, IndexRoute, Redirect } from 'react-router';
 
 import App from './containers/App';
 import DashboardPage from './containers/DashboardPage';
 import ProjectPage from './containers/ProjectPage';
 import ConstructPage from './containers/ConstructPage';
-
 import AboutPage from './components/AboutPage';
 import SupportPage from './components/SupportPage';
-
 import SceneGraphPage from './containers/SceneGraphPage';
 
 //Routes are specified as a separate component so they can hotloaded

@@ -1,10 +1,5 @@
-import invariant from '../../../utils/environment/invariant';
-import React, {
-  Component,
-  PropTypes
-} from 'react';
+import React, { Component, PropTypes } from 'react';
 import Transform2D from '../geometry/transform2d';
-import Matrix2D from '../geometry/matrix2d';
 import Vector2D from '../geometry/vector2d';
 import NodeText2D from './nodetext2d.js';
 import Rectangle2D from './glyphs/html/rectangle2d';
@@ -12,16 +7,28 @@ import Ellipse2D from './glyphs/svg/ellipse2d';
 
 export default class Node2D extends Component {
 
-  constructor() {
-    super();
-
+  static propTypes = {
+    x: PropTypes.number.isRequired,
+    y: PropTypes.number.isRequired,
+    w: PropTypes.number.isRequired,
+    h: PropTypes.number.isRequired,
+    r: PropTypes.number.isRequired,
+    uuid: PropTypes.string.isRequired,
+    children: PropTypes.array.isRequired,
+    glyph: PropTypes.string.isOptional,
+    scale: PropTypes.number.isRequired,
+    fill: PropTypes.string.isRequired,
+    stroke: PropTypes.string.isOptional,
+    strokeWidth: PropTypes.number.isOptional,
   }
 
-  render () {
+  constructor() {
+    super();
+  }
 
+  render() {
     // cache transform based on x/y/w/h/s
     const key = `${this.props.x},${this.props.y},${this.props.w},${this.props.h},${this.props.scale}`;
-    let css = this.transformCached;
     if (this.transformCachedKey !== key) {
       this.transformCachedKey = key;
       // compose our transform
@@ -36,25 +43,22 @@ export default class Node2D extends Component {
     // construct our glyph ( if we have one e.g. the root node doesn't have a glyph )
     let glyph;
     switch (this.props.glyph) {
-      case 'rectangle':
-        //glyph = <Rectangle2D key={this.props.uuid} w={this.props.w} h={this.props.h} fill={this.props.fill} stroke={this.props.stroke} strokeWidth={this.props.strokeWidth}/>
-        glyph = <Rectangle2D key={this.props.uuid} {...this.props}/>
-        break;
-      case 'ellipse':
-        glyph = <Ellipse2D key={this.props.uuid} {...this.props}/>
-        break;
-      default:
-        glyph = null;
-        break;
+    case 'rectangle':
+      glyph = <Rectangle2D key={this.props.uuid} {...this.props}/>;
+      break;
+    case 'ellipse':
+      glyph = <Ellipse2D key={this.props.uuid} {...this.props}/>;
+      break;
+    default:
+      glyph = null;
+      break;
     }
-
     // set width / height via style
     const style = {
       width: this.props.w + 'px',
       height: this.props.h + 'px',
       transform: this.transformCached,
-    }
-
+    };
     // render DIV with transform, then our glyph, then our text, then our children
     return (
       <div style={style} className="node">
@@ -74,4 +78,4 @@ Node2D.defaultProps = {
   h: 0,
   scale: 1,
   r: 0,
-}
+};

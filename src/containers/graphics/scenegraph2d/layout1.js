@@ -4,37 +4,44 @@ import Node2D from '../scenegraph2d/node2d';
 
 
 // layout metrics
-const kBLOCK_H = 24;
-const kBLOCK_W = 70;
-const kTITLE_W = 200;
-const kROW_H = 60;
-const kROW_BAR_H = 3;
-const kROW_BAR_W = 3;
-const kTEXT_PAD = 16;
+// height of blocks
+const kBlockH = 24;
+// width of blocks
+const kBlockW = 70;
+// width of title
+const kTitleW = 200;
+// total height of each row
+const kRowH = 60;
+// row header bar height
+const kRowBarH = 3;
+// vertical bar width
+const kRowBarW = 3;
+// padding around text on blocks
+const kTextPad = 16;
 
-const kTITLE_APPEARANCE = {
+const kTitleAppearance = {
   fill: 'black',
   color: 'white',
   glyph: 'rectangle',
   strokeWidth: 0,
 };
 
-const kROW_APPEARANCE = {
-  h: kROW_BAR_H,
+const kRowAppearance = {
+  h: kRowBarH,
   fill: 'black',
   glyph: 'rectangle',
   strokeWidth: 0,
 };
 
-const kVERTICAL_APPEARANCE = {
-  w: kROW_BAR_W,
+const kVerticalAppearance = {
+  w: kRowBarW,
   fill: 'black',
   glyph: 'rectangle',
   strokeWidth: 0,
 };
 
 // display attributes for 'part'
-const kPART_APPEARANCE = {
+const kPartAppearance = {
   color: 'black',
   glyph: 'rectangle',
   fontWeight: 'bold',
@@ -43,15 +50,14 @@ const kPART_APPEARANCE = {
 };
 
 // display attributes for 'connector'
-const kCONNECTOR_APPEARANCE = {
-  color: 'black',
+const kConnectorAppearance = {
   glyph: 'rectangle',
   strokeWidth: 1,
   stroke: 'gray',
   fill: 'whitesmoke',
   fontWeight: 'bold',
   fontSize: '10px',
-  color: 'gray'
+  color: 'gray',
 };
 
 // layout class
@@ -70,60 +76,58 @@ export default class Layout {
    * @return {[type]} [description]
    */
   update() {
-
     // shortcut
     const d = this.dataSet;
     // top left of our area to render in
-    const x = 20;
-    const y = 20;
+    const x = 50;
+    const y = 100;
     // maximum x position
     const mx = this.options.width + x;
 
     // will become this.rows after we are done with the layout
-    let newRows = [];
+    const newRows = [];
 
     // create title as neccessary and position
     if (!d.element) {
-      d.element = new Node2D(kTITLE_APPEARANCE);
+      d.element = new Node2D(kTitleAppearance);
       this.sceneGraph.root.appendChild(d.element);
     }
 
     // update title to current position and text
-    const tp = this.boxXY(x, y, kTITLE_W, kBLOCK_H);
+    const tp = this.boxXY(x, y, kTitleW, kBlockH);
     d.element.set({
       x: tp.x,
       y: tp.y,
-      w: kTITLE_W,
-      h: kBLOCK_H,
+      w: kTitleW,
+      h: kBlockH,
       text: d.name,
     });
 
     // layout all the various components, constructing elements as required
     // and wrapping when a row is complete
 
-    let xp = x + kROW_BAR_W;
-    let yp = y + kBLOCK_H + kROW_BAR_H;
+    let xp = x + kRowBarW;
+    let yp = y + kBlockH + kRowBarH;
 
     let row = null;
 
     d.parts.forEach(p => {
-
       // create a row bar as neccessary
       if (!row) {
         // re-use existing if possible
         if (this.rows.length) {
           row = this.rows.pop();
         } else {
-          row = new Node2D(kROW_APPEARANCE);
+          row = new Node2D(kRowAppearance);
           this.sceneGraph.root.appendChild(row);
         }
 
         // position and size
-        const rp = this.boxXY(x, yp - kROW_BAR_H, this.options.width, kROW_BAR_H);
+        const rp = this.boxXY(x, yp - kRowBarH, this.options.width, kRowBarH);
         row.set({
           x: rp.x,
           y: rp.y,
-          h: kROW_BAR_H,
+          h: kRowBarH,
           w: this.options.width,
         });
 
@@ -133,79 +137,71 @@ export default class Layout {
 
       switch (p.type) {
 
-        case 'part':
+      case 'part':
 
-          // create element on demand
-          if (!p.element) {
-            p.element = new Node2D(kPART_APPEARANCE);
-            this.sceneGraph.root.appendChild(p.element);
-          }
+        // create element on demand
+        if (!p.element) {
+          p.element = new Node2D(kPartAppearance);
+          this.sceneGraph.root.appendChild(p.element);
+        }
 
-          // measure out text
-          const td = p.element.measureText(p.text);
-          // add padding
-          td.x += kTEXT_PAD;
+        // measure out text
+        const td = p.element.measureText(p.text);
+        // add padding
+        td.x += kTextPad;
 
-          // if position would exceed x limit then wrap
-          if (xp + td.x > mx) {
-            xp = x + kROW_BAR_W;
-            yp += kROW_H;
-            row = null;
-          }
+        // if position would exceed x limit then wrap
+        if (xp + td.x > mx) {
+          xp = x + kRowBarW;
+          yp += kRowH;
+          row = null;
+        }
 
-          // update part
-          const pp = this.boxXY(xp, yp, td.x, kBLOCK_H);
-          p.element.set({
-            text: p.text,
-            fill: p.color,
-            x: pp.x,
-            y: pp.y,
-            w: td.x,
-            h: kBLOCK_H,
-          });
+        // update part
+        const pp = this.boxXY(xp, yp, td.x, kBlockH);
+        p.element.set({
+          text: p.text,
+          fill: p.color,
+          x: pp.x,
+          y: pp.y,
+          w: td.x,
+          h: kBlockH,
+        });
 
-          // set next part position
-          xp += td.x;
-
-
+        // set next part position
+        xp += td.x;
         break;
 
-        case 'connector':
+      case 'connector':
+        // create element on demand
+        if (!p.element) {
+          p.element = new Node2D(kConnectorAppearance);
+          this.sceneGraph.root.appendChild(p.element);
+        }
 
-          // create element on demand
-          if (!p.element) {
-            p.element = new Node2D(kCONNECTOR_APPEARANCE);
-            this.sceneGraph.root.appendChild(p.element);
-          }
+        // if position would exceed x limit then wrap
+        if (xp + kBlockW > mx) {
+          xp = x + kRowBarW;
+          yp += kRowH;
+          row = null;
+        }
 
-          // if position would exceed x limit then wrap
-          if (xp + kBLOCK_W > mx) {
-            xp = x + kROW_BAR_W;
-            yp += kROW_H;
-            row = null;
-          }
-
-          // update part
-          const cp = this.boxXY(xp, yp, kBLOCK_W, kBLOCK_H);
-          p.element.set({
-            text: p.text,
-            x: cp.x,
-            y: cp.y,
-            w: kBLOCK_W,
-            h: kBLOCK_H,
-          });
-
-          // set next part position
-          xp += kBLOCK_W;
-
-
+        // update part
+        const cp = this.boxXY(xp, yp, kBlockW, kBlockH);
+        p.element.set({
+          text: p.text,
+          x: cp.x,
+          y: cp.y,
+          w: kBlockW,
+          h: kBlockH,
+        });
+        // set next part position
+        xp += kBlockW;
         break;
 
-        default: throw new Error('bad part:' + p.type);
+      default: throw new Error('bad part:' + p.type);
       }
-
     });
-
     // cleanup unused rows
     while (this.rows.length) {
       this.sceneGraph.root.removeChild(this.rows.pop());
@@ -214,13 +210,13 @@ export default class Layout {
 
     // show vertical bar
     if (!this.vertical) {
-      this.vertical = new Node2D(kVERTICAL_APPEARANCE);
+      this.vertical = new Node2D(kVerticalAppearance);
       this.sceneGraph.root.appendChild(this.vertical);
     }
 
     // position and size vertical bar
-    const vh = (this.rows.length - 1) * kROW_H;
-    var vp = this.boxXY(x, y + kBLOCK_H, kROW_BAR_W, vh);
+    const vh = (this.rows.length - 1) * kRowH;
+    const vp = this.boxXY(x, y + kBlockH, kRowBarW, vh);
     this.vertical.set({
       x: vp.x,
       y: vp.y,
@@ -237,8 +233,8 @@ export default class Layout {
    * @param  {number} h
    * @return {Vector2D}
    */
-  boxXY(x,y,w,h) {
-    return new Vector2D(x + w/2, y + h/2);
+  boxXY(x, y, w, h) {
+    return new Vector2D(x + w / 2, y + h / 2);
   }
 
 }
