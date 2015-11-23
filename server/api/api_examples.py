@@ -113,6 +113,8 @@ hist = GET(url + "history/" + pid4, params = {"id":pid4})
 child = GET(url + "children/" + pid1, params = {"id":pid1})
 
 
-input1 = "ACGTACGACTACGACTGACGACTACGAGCT"
-
+#Test extensions
+url = "http://0.0.0.0:3000/extensions/run/"
+input1 = {"DNA":"ACGTACGACTACGACTGACGACTACGAGCT"}
+res = POST(url + "translate_dna_example", data = json(input1), headers=headers)
 

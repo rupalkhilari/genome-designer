@@ -7,33 +7,32 @@ exec = require('promised-exec');
  * @param dir
  * @returns 
  */
-export const run = (id) => {
-  var dir = "extensions/cloud/" + id;
-  console.log("docker build -t \"" + id + "\" " + dir);
-  return exec("docker build -t \"" + id + "\" " + dir)
-        .then(function (result) {
-            var stdout = result.stdout;
-            var stderr = result.stderr;
-            console.log('stdout: ', stdout);
-            console.log('stderr: ', stderr);
-            console.log("docker run -v $(pwd)/" + dir + "/inputs:/inputs -v $(pwd)/" + dir + "/outputs:/outputs -i \"" + id + "\" ");
-            return exec("docker run -v $(pwd)/" + dir + "/inputs:/inputs -v $(pwd)/" + dir + "/outputs:/outputs -i \"" + id + "\" ")
-                .then(
-                    function(result) {
-                        var stdout = result.stdout;
-                        var stderr = result.stderr;
-                        console.log('stdout: ', stdout);
-                        console.log('stderr: ', stderr);
-                    }
-                ).
-                catch(function(err) {
-                    console.log(err);
+export const runNode = (id) => {
+  var dir = getNodeDir(id);
+  
+  var cmdBuild = "docker build -t \"" + id + "\" " + dir;
+  var cmdRun = "docker run -v " + dir + "/inputs:/inputs -v " + dir + "/outputs:/outputs -i \"" + id + "\" &";
+
+  return exec(cmdBuild).then(result => {
+
+            console.log("Done with Build...Running");
+    
+            return exec(cmdRun).then(result => {
+
+                    console.log("Done with Run");
+                }).catch(err => {
+                    
+                    //apparently, even warning messages trigger this section of exec, so it "usually" ok
+                    console.log("Done with Run");
+
                 });
-        }).
-        catch(function(err) {
+        }).catch(err => {
+
             console.log(err);
+
         });
 };
 
-
-//run("TranslateDNAExample");
+export const getNodeDir = (id) => {
+    return process.cwd() + "/extensions/cloud/" + id;
+};

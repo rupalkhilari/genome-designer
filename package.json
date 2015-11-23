@@ -50,7 +50,10 @@
     "redux-thunk": "^0.1.0",
     "semver-regex": "^1.0.0",
     "url-regex": "^3.0.0",
-    "promised-exec": "^1.0.1"
+    "promised-exec": "^1.0.1",
+    "read-multiple-files": "^1.1.1",
+    "write-files": "^1.0.0",
+    "yamljs" : "^0.2.4 "
   },
   "devDependencies": {
     "autoprefixer": "^6.0.3",
