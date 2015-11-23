@@ -2,16 +2,14 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import { pushState } from 'redux-router';
-import { blockCreate } from '../actions/blocks';
-import { projectAddConstruct } from '../actions/projects';
 
+import Inventory from './Inventory';
+import ProjectActions from './ProjectActions';
 import SketchConstruct from './SketchConstruct';
 import ProjectHeader from '../components/ProjectHeader';
 
-import styles from '../styles/ProjectPage.css';
-import withStyles from '../decorators/withStyles';
+import '../styles/ProjectPage.css';
 
-@withStyles(styles)
 export class ProjectPage extends Component {
   static propTypes = {
     constructs: PropTypes.array.isRequired,
@@ -20,21 +18,7 @@ export class ProjectPage extends Component {
     constructId: PropTypes.string, //only visible if a construct is selected
 
     children: PropTypes.func, //react-router
-    blockCreate: PropTypes.func.isRequired,
-    projectAddConstruct: PropTypes.func.isRequired,
     pushState: PropTypes.func.isRequired,
-  }
-
-  handleClickAddConstruct = (event) => {
-    const { projectId, blockCreate, projectAddConstruct } = this.props;
-    const construct = blockCreate();
-    const constructId = construct.id;
-
-    projectAddConstruct(projectId, constructId);
-  }
-
-  handleClickFromInventory = (event) => {
-    //todo
   }
 
   render() {
@@ -50,6 +34,8 @@ export class ProjectPage extends Component {
 
     return (
       <div className="ProjectPage">
+        <Inventory />
+
         <ProjectHeader project={project}/>
 
         {/* if viewing specific construct, let routing take over*//* if viewing specific construct, let routing take over*/}
@@ -70,18 +56,7 @@ export class ProjectPage extends Component {
           );
         })}
 
-        <div className="ProjectPage-actions">
-          <a className="ProjectPage-action"
-             onClick={this.handleClickAddConstruct}>
-            <span className="dummyButton"></span>
-            Add Construct
-          </a>
-          <a className="ProjectPage-action"
-             onClick={this.handleClickFromInventory}>
-            <span className="dummyButton"></span>
-            From Inventory
-          </a>
-        </div>
+        <ProjectActions projectId={project.id} />
       </div>
     );
   }
@@ -101,7 +76,5 @@ function mapStateToProps(state) {
 }
 
 export default connect(mapStateToProps, {
-  blockCreate,
-  projectAddConstruct,
   pushState,
 })(ProjectPage);

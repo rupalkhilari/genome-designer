@@ -4,10 +4,8 @@ import { blockRename } from '../actions/blocks';
 
 import SketchPartName from './SketchPartName';
 
-import styles from '../styles/SketchPart.css';
-import withStyles from '../decorators/withStyles';
+import '../styles/SketchPart.css';
 
-@withStyles(styles)
 export class SketchPart extends Component {
   static propTypes = {
     part: PropTypes.object.isRequired,  //once using real ones, can pass schema as PropType
