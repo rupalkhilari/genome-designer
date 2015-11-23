@@ -7,8 +7,8 @@ export default class Ellipse2D extends Glyph2D {
     w: PropTypes.number.isRequired,
     h: PropTypes.number.isRequired,
     fill: PropTypes.string.isRequired,
-    stroke: PropTypes.string.isOptional,
-    strokeWidth: PropTypes.number.isOptional,
+    stroke: PropTypes.string,
+    strokeWidth: PropTypes.number,
   }
   /**
    * base class for all glyphs

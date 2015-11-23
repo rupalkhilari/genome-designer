@@ -15,11 +15,11 @@ export default class Node2D extends Component {
     r: PropTypes.number.isRequired,
     uuid: PropTypes.string.isRequired,
     children: PropTypes.array.isRequired,
-    glyph: PropTypes.string.isOptional,
+    glyph: PropTypes.string,
     scale: PropTypes.number.isRequired,
     fill: PropTypes.string.isRequired,
-    stroke: PropTypes.string.isOptional,
-    strokeWidth: PropTypes.number.isOptional,
+    stroke: PropTypes.string,
+    strokeWidth: PropTypes.number,
   }
 
   constructor() {

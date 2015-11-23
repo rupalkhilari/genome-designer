@@ -3,6 +3,7 @@ import React from 'react';
 import Node2D from '../scenegraph2d/node2d';
 // react components for rendering scene graph classes
 import SceneGraph2DReact from '../scenegraph2d_react/scenegraph2d';
+import uuid from 'node-uuid';
 
 export default class SceneGraph2D {
 
@@ -11,6 +12,7 @@ export default class SceneGraph2D {
     this.props = Object.assign({
       w: 800,
       h: 600,
+      uuid: uuid.v4(),
     }, props);
 
     // create our root node, which represents the view matrix and to which
@@ -60,7 +62,7 @@ export default class SceneGraph2D {
    */
   render() {
     const ui = this.props.userInterface ? this.props.userInterface.render() : null;
-    return (<SceneGraph2DReact w={this.props.w} h={this.props.h} onScrolled={this.onScrolled}>
+    return (<SceneGraph2DReact uuid={this.props.uuid} w={this.props.w} h={this.props.h} onScrolled={this.onScrolled}>
       {this.root.render()}
       {ui}
     </SceneGraph2DReact>);
