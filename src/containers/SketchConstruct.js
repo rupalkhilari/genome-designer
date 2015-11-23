@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { blockCreate, blockAddComponent } from '../actions/blocks';
 import { DropTarget } from 'react-dnd';
-import { block as blockDragType } from '../constants/DragTypes';
+import { block as blockDragType, inventoryPart as inventoryPartDragType } from '../constants/DragTypes';
 
 import SketchBlock from '../components/SketchBlock';
 
@@ -13,11 +13,16 @@ import SketchBlock from '../components/SketchBlock';
 
 const constructTarget = {
   drop(props, monitor) {
-    console.log(monitor.getItem());
+    const type = monitor.getItemType();
+    const monitorItem = monitor.getItem();
+    const block = (type === blockDragType) ?
+      monitorItem.block :
+      props.blockCreate({metadata: {name: monitorItem.item}});
+    props.blockAddComponent(props.construct.id, block.id);
   },
 };
 
-@DropTarget(blockDragType, constructTarget, (connect, monitor) => ({
+@DropTarget([blockDragType, inventoryPartDragType], constructTarget, (connect, monitor) => ({
   connectDropTarget: connect.dropTarget(),
   isOver: monitor.isOver(),
   canDrop: monitor.canDrop(),

@@ -5,7 +5,7 @@ import Block from '../models/Block';
 
 export const blockCreate = (initialModel) => {
   return (dispatch, getState) => {
-    const block = new Block(null, initialModel);
+    const block = new Block(initialModel);
     dispatch({
       type: ActionTypes.BLOCK_CREATE,
       block,

@@ -20,14 +20,14 @@ export class SketchPart extends Component {
   }
 
   render() {
-    const {part} = this.props;
-    const partName = part.metadata.name;
+    const { part } = this.props;
+    const { name, color } = part.metadata;
 
     return (
       <div ref="partGroup"
            className="SketchPart"
-           style={{backgroundColor: part.color}}>
-        <SketchPartName partName={partName}
+           style={{backgroundColor: color}}>
+        <SketchPartName partName={name}
                         onChange={this.handleRename}/>
       </div>
     );
