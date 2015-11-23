@@ -8,6 +8,7 @@ export default class SceneGraph2D extends Component {
     h: PropTypes.number.isRequired,
     scale: PropTypes.number.isRequired,
     uuid: PropTypes.string.isRequired,
+    children: PropTypes.object.isRequired,
     onScrolled: PropTypes.func.isRequired,
     ui: PropTypes.object,
   }
