@@ -35,7 +35,7 @@ router.get('/login', (req, res) => {
       res.json({"key": sha1});
     });
   }
-}
+});
 
 /*********************************
  GET
