@@ -22,8 +22,7 @@ function getInstances(ids = []) {
 function getRecursively(ids = [],
                         field = 'components',
                         recursionDepth = 5,
-                        result = {}) {
-  console.log(ids);
+                        result = {leaves:[]}) {
   if (!Array.isArray(ids)) {
     return Promise.reject(new Error(`must pass array to getRecursively, got ${ids}`));
   }

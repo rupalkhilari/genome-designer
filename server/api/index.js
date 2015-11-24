@@ -183,7 +183,6 @@ router.post('/clone/:id', (req, res) => {
       const clone = createDescendant(instance);
       return dbSet(clone.id, clone)
         .then(() => {
-          console.log(clone.id + " -- " + instance.id);
           return record(clone.id, instance.id);
         })
         .then(() => clone);
