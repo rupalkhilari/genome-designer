@@ -5,17 +5,18 @@ import App from './containers/App';
 import DashboardPage from './containers/DashboardPage';
 import ProjectPage from './containers/ProjectPage';
 import ConstructPage from './containers/ConstructPage';
-
 import AboutPage from './components/AboutPage';
 import SupportPage from './components/SupportPage';
+import SceneGraphPage from './containers/SceneGraphPage';
 
 //Routes are specified as a separate component so they can hotloaded
 //see: https://github.com/rackt/redux-router/issues/44#issuecomment-140198502
 
-export default (
+export default(
   <Route path="/" component={App}>
 
-    {/* todo - signout page w/ dynamic routing *//* todo - signout page w/ dynamic routing */}
+    {/* todo - signout page w/ dynamic routing */
+    /* todo - signout page w/ dynamic routing */}
 
     {/* this is temporary pending splash page */}
     <IndexRoute component={DashboardPage}/>
@@ -33,7 +34,7 @@ export default (
       <Route path="/project/:projectId/:constructId"
              component={ConstructPage}/>
     </Route>
-
-    <Redirect from="/project" to="/" />
+    <Redirect from="/project" to="/"/>
+    <Route path="/scenegraph" component={SceneGraphPage}/>
   </Route>
 );
