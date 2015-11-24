@@ -14,14 +14,12 @@ export default class SceneGraph2D extends Component {
     ui: PropTypes.object,
   }
 
-  // TODO TODO TODO TODO
-  // TODO SEND THE REQUIRED SCROLL POSITION TO REACT ELEMENT, AFTER COMPONENT DID UPDATE SET SCROLL POSITION ON
-  // NATIVE DOM ELEMENT
   componentDidUpdate() {
     const dom = React.findDOMNode(this);
     dom.scrollLeft = this.props.scrollOffset.x;
     dom.scrollTop = this.props.scrollOffset.y;
   }
+
   /**
    * scene graph has overflow:auto so that as it is scaled it will allow the user
    * to pan around to view the entire scene. Any user interface would need to

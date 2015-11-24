@@ -1,15 +1,13 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import styles from '../styles/SceneGraphPage.css';
-import withStyles from '../decorators/withStyles';
 import SceneGraph2D from './graphics/scenegraph2d/scenegraph2d';
 import UserInterface from './graphics/scenegraph2d/userinterface';
 
+import '../styles/SceneGraphPage.css';
 
 /**
  * just for testing bootstrap, hence the lack of comments
  */
-@withStyles(styles)
 class SceneGraphPage extends Component {
 
   constructor(props) {

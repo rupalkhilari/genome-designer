@@ -15,11 +15,11 @@ export default class UserInterface {
   }
 
   onMouseDown = (e) => {
-    const p = this.eventToLocal(e);
+    const point = this.eventToLocal(e);
     this.sceneGraph.traverse( node => {
-      if (node.parent && node.containsGlobalPoint(p)) {
+      if (node.parent && node.containsGlobalPoint(point)) {
         this.drag = node;
-        this.dragStart = p;
+        this.dragStart = point;
         // node starting position, relative to parent, in global coordinates
         this.nodeStart = this.drag.parent.localToGlobal(new Vector2D(this.drag.props.x, this.drag.props.y));
         //console.log(`HIT:, ${node.props.glyph}, ${node.props.fill}`);
@@ -50,32 +50,32 @@ export default class UserInterface {
 
   /**
    * convert clientX/clientY to local coordinates
-   * @param  {[type]} e [description]
+   * @param  {[type]} evt [description]
    * @return {[type]}   [description]
    */
-  eventToLocal(e) {
+  eventToLocal(evt) {
     function getPosition(element) {
       let xPosition = 0;
       let yPosition = 0;
-      let e = element;
-      while (e) {
-        xPosition += (e.offsetLeft - e.scrollLeft + e.clientLeft);
-        yPosition += (e.offsetTop - e.scrollTop + e.clientTop);
-        e = e.offsetParent;
+      let el = element;
+      while (el) {
+        xPosition += (el.offsetLeft - el.scrollLeft + el.clientLeft);
+        yPosition += (el.offsetTop - el.scrollTop + el.clientTop);
+        el = el.offsetParent;
       }
       return new Vector2D(xPosition, yPosition);
     }
 
-    const parentPosition = getPosition(e.currentTarget);
-    return new Vector2D(e.clientX, e.clientY).sub(parentPosition);
+    const parentPosition = getPosition(evt.currentTarget);
+    return new Vector2D(evt.clientX, evt.clientY).sub(parentPosition);
   }
 
   render() {
     // size to cover scene graph but don't scale
-    const s = this.sceneGraph.getScale();
+    const scale = this.sceneGraph.getScale();
     const style = {
-      width: (this.sceneGraph.props.w * s ) + 'px',
-      height: (this.sceneGraph.props.h * s ) + 'px',
+      width: (this.sceneGraph.props.w * scale) + 'px',
+      height: (this.sceneGraph.props.h * scale) + 'px',
     };
 
     return (<UserInterfaceReact style={style}
