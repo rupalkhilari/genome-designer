@@ -4,7 +4,7 @@
   display: inline-block;
   border: 1px solid lightgray;
   overflow: auto;
-  margin: 5rem 0 2rem 5rem;
+  margin-top: 1rem;
 }
 .sceneGraph {
   position: absolute;

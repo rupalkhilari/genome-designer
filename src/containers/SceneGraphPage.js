@@ -23,6 +23,10 @@ class SceneGraphPage extends Component {
     this.sceneGraph.props.userInterface = new UserInterface(this.sceneGraph, this.fakeDataSet());
   }
 
+  componentDidMount = () => {
+    this.refs.zoom.value = 1;
+  }
+
   onZoom = () => {
     this.sceneGraph.setScale(parseFloat(this.refs.zoom.value));
     this.forceUpdate();
@@ -63,9 +67,9 @@ class SceneGraphPage extends Component {
   render() {
     return (
       <div>
-        {this.sceneGraph.render()}
-        <br></br>
         <input ref="zoom" type="range" min={0.1} max={4} step={0.1} onChange={this.onZoom}></input>
+        <br></br>
+        {this.sceneGraph.render()}
       </div>
     );
   }
