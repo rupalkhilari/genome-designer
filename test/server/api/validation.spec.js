@@ -1,7 +1,7 @@
 import chai from 'chai';
 import uuid from 'uuid';
-import { assertValidId } from '../../server/validation';
-import { errorNoIdProvided } from '../../server/errors';
+import { assertValidId } from '../../../server/validation';
+import { errorNoIdProvided } from '../../../server/errors';
 
 const {expect} = chai;
 

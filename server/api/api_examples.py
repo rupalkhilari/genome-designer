@@ -9,8 +9,7 @@ block1 = {
   "metadata": {
     "authors": [],
     "version": "0.0.0",
-    "tags": {}
-  },
+    "tags": {}  },
   "options":[],
   "components":[],
   "rules": [],
@@ -117,4 +116,3 @@ child = GET(url + "children/" + pid1, params = {"id":pid1})
 url = "http://0.0.0.0:3000/extensions/run/"
 input1 = {"DNA":"ACGTACGACTACGACTGACGACTACGAGCT"}
 res = POST(url + "translate_dna_example", data = json(input1), headers=headers)
-

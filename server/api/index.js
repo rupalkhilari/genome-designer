@@ -1,7 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import uuid from 'uuid'; //todo - unify with client side
-import { createDescendent, record, getAncestors, getTree } from '../history';
+import { createDescendant, record, getAncestors, getDescendants, getTree } from '../history';
 import { get as dbGet, getSafe as dbGetSafe, set as dbSet } from '../database';
 import { errorDoesNotExist, errorNoIdProvided } from '../errors';
 import { validateBlock, validateProject, assertValidId } from '../validation';
@@ -10,66 +10,79 @@ import { getComponents } from '../getRecursively';
 import BlockDefinition from '../../src/schemas/Block';
 import ProjectDefinition from '../../src/schemas/Project';
 
+
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
   strict: false, //allow values other than arrays and objects
 });
+
+function paramIsTruthy(param) {
+  return param !== undefined && param !== 'false';
+}
 
 /*********************************
  GET
  Fetch an entry and all sub-entries
  *********************************/
 
-//todo-  should be opt-in to the tree structure, and by default just return the instance
-
 router.get('/project/:id', (req, res) => {
   const { id } = req.params;
-  const instance = dbGetSafe(id);
-  const components = getComponents(id);
+  const { tree } = req.query;
 
-  Promise
-    .all([
-      instance,
-      components,
-    ])
-    .then(([inst, comps]) => {
-      res.json({
-        instance: inst,
-        components: comps,
-      });
-    })
-    .catch(reason => res.status(500).send(reason.message));
+  if (paramIsTruthy(tree)) {
+    Promise
+      .all([
+        dbGetSafe(id),
+        getComponents(id),
+      ])
+      .then(([inst, comps]) => {
+        res.json({
+          instance: inst,
+          components: comps,
+        });
+      })
+      .catch(err => res.status(500).send(err.message));
+  } else {
+    dbGetSafe(id)
+      .then(result => res.json(result))
+      .catch(err => res.status(500).send(err.message));
+  }
 });
 
 router.get('/block/:id', (req, res) => {
   const { id } = req.params;
-  const instance = dbGetSafe(id);
-  const components = getComponents(id);
+  const { tree } = req.query;
 
-  Promise
-    .all([
-      instance,
-      components,
-    ])
-    .then(([inst, comps]) => {
-      res.json({
-        instance: inst,
-        components: comps,
-      });
-    })
-    .catch(err => res.status(500).send(err.message));
+  if (paramIsTruthy(tree)) {
+    Promise
+      .all([
+        dbGetSafe(id),
+        getComponents(id),
+      ])
+      .then(([inst, comps]) => {
+        res.json({
+          instance: inst,
+          components: comps,
+        });
+      })
+      .catch(err => res.status(500).send(err.message));
+  } else {
+    dbGetSafe(id)
+      .then(result => res.json(result))
+      .catch(err => res.status(500).send(err.message));
+  }
 });
 
-router.get('/history/:id', (req, res) => {
+router.get('/ancestors/:id', (req, res) => {
   const { id } = req.params;
   getAncestors(id)
     .then(result => res.json(result))
     .catch(err => res.status(500).send(err.message));
 });
 
-router.get('/children/:id', (req, res) => {
+router.get('/descendants/:id', (req, res) => {
   const { id } = req.params;
-  getTree(id)
+  getDescendants(id)
     .then(result => res.json(result))
     .catch(err => res.status(500).send(err.message));
 });
@@ -127,7 +140,7 @@ router.put('/project/:id', jsonParser, (req, res) => {
   //Check that the input is a valid Project
   if (ProjectDefinition.validate(data)) {
 
-    //check that the project already exists, otherwise use PUT
+    //check that the project already exists,
     dbGet(id).then( 
       result =>  {
         dbSet(id, data)
@@ -141,12 +154,23 @@ router.put('/block/:id', jsonParser, (req, res) => {
   const { id } = req.params;
   //todo - verify body
   const data = req.body;
-  //todo - verify block, allow bypassing?
+  
+  if (BlockDefinition.validate(data)) {
+
+    //check that the block already exists,
+    dbGet(id).then( 
+      result =>  {
+        dbSet(id, data)
+          .then(result => res.json(result))
+          .catch(err => res.status(500).send(err.message));
+      });
+  }
 
   dbSet(id, data)
     .then(result => res.json(result))
     .catch(err => res.status(500).send(err.message));
 });
+
 
 /**
  * Create a child
@@ -156,10 +180,10 @@ router.post('/clone/:id', (req, res) => {
 
   dbGet(id)
     .then(instance => {
-      const clone = createDescendent(instance);
+      const clone = createDescendant(instance);
       return dbSet(clone.id, clone)
         .then(() => {
-          return record(clone, instance);
+          return record(clone.id, instance.id);
         })
         .then(() => clone);
     })

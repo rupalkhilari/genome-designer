@@ -1,7 +1,9 @@
 import { getSafe } from './database';
 
 function getInstances(ids = []) {
-  return Promise.all(ids.map(getSafe));
+  return Promise.all(ids.map((id) => {
+    return getSafe(id, null);
+  }));
 }
 
 /**
@@ -9,45 +11,69 @@ function getInstances(ids = []) {
  If the entry is a Block, all subcomponents will be
  fetched recursively into the results object
  @param {Array} ids
+ @param {string|function} field (default = `components`) Field of retreived instance to use, or function returning the ID to use
+ @param {number} recursionDepth Depth of recursion
+ @param {function} idAccessor function to return the ID, default: (inst) => inst.id
  @param {Object} result Dictionary, used for recursing. expects field `leaves`.
- @param {string} field (default = `components`)
  @return {Object} result dictionary with IDs which are all ids, and a field `leaves` with the leaf nodes of the tree, and field `tree` which is an object noting the hierarchy
  **/
 //todo - verify this works
-//todo - support depth
 //todo - save tree structure
 function getRecursively(ids = [],
                         field = 'components',
-                        result = {tree: {}, leaves: []}) {
+                        recursionDepth = 5,
+                        result = {leaves:[]}) {
+  if (!Array.isArray(ids)) {
+    return Promise.reject(new Error(`must pass array to getRecursively, got ${ids}`));
+  }
+
   if (!ids.length) {
     return Promise.resolve(result);
   }
 
-  const promise = getInstances(ids).then(instances => {
-    return instances.map(inst => {
-      result[inst.id] = inst;
-      const next = inst[field];
+  return getInstances(ids)
+    .then(instances => {
+      return Promise.all(instances.map(inst => {
+        //if safeGet did not find anything, we're done
 
-      //if next list to recurse is empty, mark as leaf
-      if (!next || !next.length) {
-        result.leaves.push(inst.id);
-        return Promise.resolve();
-      }
+        if (inst === null) {
+          return Promise.resolve();
+        }
 
-      return getRecursively(next, field, result);
-    });
-  });
+        const instanceId = inst.id;
+        result[instanceId] = inst;
 
-  //todo - store tree structure once we've retrieved things
-  return promise.then(() => result);
+        if (recursionDepth === 0) {
+          return Promise.resolve();
+        }
+
+        const nextAccessor = (typeof field === 'function') ?
+          field :
+          (instance) => instance[field];
+        const next = nextAccessor(inst);
+
+        //if next list to recurse is empty, mark as leaf
+        if (!next || !next.length) {
+          result.leaves.push(instanceId);
+          return Promise.resolve();
+        }
+
+        return getRecursively(next, field, (recursionDepth - 1), result);
+      }));
+    })
+    .then(() => result);
 }
 
-export const getParents = (instance) => {
-  return getRecursively([instance.parent], 'parent');
+export const getParents = (instanceID) => {
+  return getSafe(instanceID).then( instance => {
+    return getRecursively(instance.components, 'parent');
+  });
 };
 
-export const getComponents = (instance) => {
-  return getRecursively(instance.components, 'components');
+export const getComponents = (instanceID) => {
+  return getSafe(instanceID).then( instance => {
+    return getRecursively(instance.components, 'components');
+  });
 };
 
 export default getRecursively;
