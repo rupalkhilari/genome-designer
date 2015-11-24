@@ -1,11 +1,15 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import uuid from 'uuid'; //todo - unify with client side
-import { createDescendant, record, getAncestors, getTree } from '../history';
+import { createDescendant, record, getAncestors, getDescendants, getTree } from '../history';
 import { get as dbGet, getSafe as dbGetSafe, set as dbSet } from '../database';
 import { errorDoesNotExist, errorNoIdProvided } from '../errors';
 import { validateBlock, validateProject, assertValidId } from '../validation';
 import { getComponents } from '../getRecursively';
+
+import BlockDefinition from '../../src/schemas/Block';
+import ProjectDefinition from '../../src/schemas/Project';
+
 
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
@@ -76,9 +80,9 @@ router.get('/ancestors/:id', (req, res) => {
     .catch(err => res.status(500).send(err.message));
 });
 
-router.get('/descendents/:id', (req, res) => {
+router.get('/descendants/:id', (req, res) => {
   const { id } = req.params;
-  getTree(id)
+  getDescendants(id)
     .then(result => res.json(result))
     .catch(err => res.status(500).send(err.message));
 });
@@ -89,31 +93,37 @@ router.get('/descendents/:id', (req, res) => {
  *********************************/
 
 router.post('/project', jsonParser, (req, res) => {
+  //todo - verify body
   const data = req.body;
+  //todo - verify project, allow bypassing?
   const id = uuid.v4();
+  data.id = id;
 
-  //todo - should be able to generate scaffold and extend with body, and validate() (allow bypassing)
-  const validated = Object.assign(data, {
-    id,
-  });
+  if (ProjectDefinition.validate(data)) {
+    //todo - should be able to generate scaffold and extend with body
+    const validated = data;
 
-  dbSet(id, validated)
-    .then(result => res.json(result))
-    .catch(err => res.err(err.message));
+    dbSet(id, validated)
+      .then(result => res.json(result))
+      .catch(err => res.err(err.message));
+  }
 });
 
 router.post('/block', jsonParser, (req, res) => {
+  //todo - verify body
   const data = req.body;
+  //todo - verify project, allow bypassing?
   const id = uuid.v4();
+  data.id = id;
 
-  //todo - should be able to generate scaffold and extend with body, and validate() (allow bypassing)
-  const validated = Object.assign(data, {
-    id,
-  });
+  if (BlockDefinition.validate(data)) {
+    //todo - should be able to generate scaffold and extend with body
+    const validated = data;
 
-  dbSet(id, validated)
-    .then(result => res.json(result))
-    .catch(err => res.err(err.message));
+    dbSet(id, validated)
+      .then(result => res.json(result))
+      .catch(err => res.err(err.message));
+  }
 });
 
 /*********************************
@@ -123,23 +133,44 @@ router.post('/block', jsonParser, (req, res) => {
 
 router.put('/project/:id', jsonParser, (req, res) => {
   const { id } = req.params;
+  //todo - verify body
   const data = req.body;
+  data.id = id;
+  
+  //Check that the input is a valid Project
+  if (ProjectDefinition.validate(data)) {
 
-  //todo - verify project, allow bypassing?
-  dbSet(id, data)
-    .then(result => res.json(result))
-    .catch(err => res.status(500).send(err.message));
+    //check that the project already exists,
+    dbGet(id).then( 
+      result =>  {
+        dbSet(id, data)
+          .then(result => res.json(result))
+          .catch(err => res.status(500).send(err.message));
+      });
+  }
 });
 
 router.put('/block/:id', jsonParser, (req, res) => {
   const { id } = req.params;
+  //todo - verify body
   const data = req.body;
+  
+  if (BlockDefinition.validate(data)) {
 
-  //todo - verify block, allow bypassing?
+    //check that the block already exists,
+    dbGet(id).then( 
+      result =>  {
+        dbSet(id, data)
+          .then(result => res.json(result))
+          .catch(err => res.status(500).send(err.message));
+      });
+  }
+
   dbSet(id, data)
     .then(result => res.json(result))
     .catch(err => res.status(500).send(err.message));
 });
+
 
 /**
  * Create a child
@@ -152,6 +183,7 @@ router.post('/clone/:id', (req, res) => {
       const clone = createDescendant(instance);
       return dbSet(clone.id, clone)
         .then(() => {
+          console.log(clone.id + " -- " + instance.id);
           return record(clone.id, instance.id);
         })
         .then(() => clone);

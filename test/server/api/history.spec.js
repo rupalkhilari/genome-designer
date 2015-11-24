@@ -96,12 +96,20 @@ describe.only('History', () => {
 
     describe('getAncestors()', () => {
       it('should get all ancestors', () => {
-        return getAncestors(levelFour.id).then(result => {
-          delete result.tree;
-          delete result.leaves;
-          //4 including itself
-          expect(Object.keys(result).length).to.equal(4);
-        });
+        return Promise.all([
+          getAncestors(levelFour.id).then(result => {
+            expect(result.length).to.equal(3);
+            expect(result[2]).to.equal(levelOne.id);
+          }),
+          getAncestors(levelFourAlt.id).then(result => {
+            expect(result.length).to.equal(3);
+            expect(result[2]).to.equal(levelOne.id);
+          }),
+          getAncestors(levelThree.id).then(result => {
+            expect(result.length).to.equal(2);
+            expect(result[1]).to.equal(levelOne.id);
+            expect(result[0]).to.equal(levelTwo.id);
+          })]);
       });
 
       //todo
@@ -113,8 +121,9 @@ describe.only('History', () => {
       it('should get all descendants', () => {
         return getDescendants(levelOne.id).then(result => {
           delete result.tree;
-          delete result.leaves;
+          delete result.leaves
           //5 including itself
+          expect(Object.keys(result).length).to.equal(5);
           expect(Object.keys(result).length).to.equal(5);
         });
       });

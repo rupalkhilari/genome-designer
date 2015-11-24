@@ -28,24 +28,26 @@ export const record = (childId, parentId) => {
   const ancestryKey = makeHistoryKey(childId);
   const descendantsKey = makeHistoryKey(parentId);
 
-  const setAncestry = getSafe(ancestryKey, {id: ancestryKey, ancestors: [], descendants: []})
+  return getSafe(descendantsKey, {id: parentId, ancestors: [], descendants: []})
     .then(history => {
-      const { ancestors } = history;
-      const nextVal = Object.assign(history, {ancestors: ancestors.concat(parentId)});
-      return set(ancestryKey, nextVal);
+      const { ancestors, descendants } = history;
+      
+      const newAncestors = {
+        id: childId,
+        ancestors: [parentId].concat(ancestors),
+        descendants: []
+      };
+
+
+      const newDescendants = Object.assign(history, {descendants: descendants.concat(childId)});
+
+      return Promise.all([
+        set(ancestryKey, newAncestors),
+        set(descendantsKey, newDescendants),
+      ]);
     });
 
-  const setDescendants = getSafe(descendantsKey, {id: descendantsKey, ancestors: [], descendants: []})
-    .then(history => {
-      const { descendants } = history;
-      const nextVal = Object.assign(history, {descendants: descendants.concat(childId)});
-      return set(descendantsKey, nextVal);
-    });
-
-  return Promise.all([
-    setAncestry,
-    setDescendants,
-  ]);
+  
 };
 
 export const getImmediateAncestor = (instanceId) => {
@@ -68,11 +70,7 @@ export const getImmediateDescendants = (instanceId) => {
 //todo - getRecursively doesn't exactly work here, since the entry may have multiple values. This is not the same as accessing the field components
 
 export const getAncestors = (instanceId, depth) => {
-  return getRecursively(
-    [makeHistoryKey(instanceId)],
-    (instance) => instance.ancestors.map(makeHistoryKey),
-    depth
-  );
+  return getImmediateAncestor(instanceId);
 };
 
 export const getDescendants = (instanceId, depth) => {
@@ -93,6 +91,7 @@ export const getRoot = (instanceId) => {
 
 //get root, get whole tree
 export const getTree = (id) => {
+  //not tested
   return getRoot(id)
     .then(instance => {
       return getDescendants(instance.id);

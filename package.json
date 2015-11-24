@@ -26,8 +26,6 @@
   "styleguide": "https://github.com/airbnb/javascript",
   "homepage": "https://github.com/autodesk-bionano/genome-designer#readme",
   "peerDependencies": {
-    "node": "^4.0.0",
-    "npm": "^2.0.0",
     "webpack": "*"
   },
   "dependencies": {
