@@ -47,9 +47,7 @@ export default class SceneGraph2D {
    */
   onScrolled = (vector) => {
     this.scrollOffset = vector.clone();
-    console.log(this.getVisibleBounds().toString());
   }
-
   /**
    * the current (raw) scroll position i.e. not adjusted for scaling.
    * @return {Vector2D}
@@ -92,7 +90,6 @@ export default class SceneGraph2D {
   setScale(s) {
     // remember the current center
     let center = this.getVisibleBounds().center;
-    console.log(`old center ${center.toString()}`);
 
     // apply to root node
     this.root.set({
@@ -102,7 +99,6 @@ export default class SceneGraph2D {
     // keep the old center
     this.centerOn(center);
     center = this.getVisibleBounds().center;
-    console.log(`new center ${center.toString()}`);
   }
 
   /**
@@ -112,9 +108,9 @@ export default class SceneGraph2D {
    */
   centerOn(p) {
     // size of window in graph coordinates
-    var w = this.getSize().divide(this.getScale());
+    const w = this.getSize().divide(this.getScale());
     // top/left edge required
-    var leftTop = p.sub(w.divide(2));
+    const leftTop = p.sub(w.divide(2));
     // set scroll position
     this.setScrollPosition(new Vector2D(leftTop.x * this.getScale(), leftTop.y * this.getScale()));
     // must redraw for this to take effect
