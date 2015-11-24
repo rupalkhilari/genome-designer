@@ -10,14 +10,31 @@ import { getComponents } from '../getRecursively';
 import BlockDefinition from '../../src/schemas/Block';
 import ProjectDefinition from '../../src/schemas/Project';
 
-
+var Random = require("random-js");
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
   strict: false, //allow values other than arrays and objects
 });
 
+
 function paramIsTruthy(param) {
   return param !== undefined && param !== 'false';
+}
+
+router.get('/login', (req, res) => {
+  const { id, pw } = req.params;
+  //TODO once we have authentication: check if id/pw is correct
+  const isValidLogin = true;
+
+  if (isValidLogin) {
+    var engine = Random.engines.nativeMath;
+    var distribution = Random.hex(false);
+    var sha1 = distribution(40);
+    
+    dbSet(sha1, {"userID": "NA"}).then(result => {
+      res.json({"key": sha1});
+    });
+  }
 }
 
 /*********************************
@@ -28,6 +45,12 @@ function paramIsTruthy(param) {
 router.get('/project/:id', (req, res) => {
   const { id } = req.params;
   const { tree } = req.query;
+  const { key } = req.headers;
+
+  if (!keyIsValid(key)) {      
+    res.status(500).send("authentication failed");
+    return;
+  }
 
   if (paramIsTruthy(tree)) {
     Promise
@@ -52,6 +75,7 @@ router.get('/project/:id', (req, res) => {
 router.get('/block/:id', (req, res) => {
   const { id } = req.params;
   const { tree } = req.query;
+  console.log(req.headers);
 
   if (paramIsTruthy(tree)) {
     Promise
