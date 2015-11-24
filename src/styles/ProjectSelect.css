@@ -1,9 +1,0 @@
-@import 'variables.css';
-
-.ProjectSelect {
-
-  &-input {
-    font-size: 0.75em;
-    width: 120px;
-  }
-}
