@@ -58,6 +58,6 @@ export default function color() {
   return colors[nextMiddle];
 }
 
-export function trulyRandomColor () {
+export function trulyRandomColor() {
   return '#' + Math.floor(Math.random() * Math.pow(2, 24)).toString(16);
 }
