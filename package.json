@@ -26,7 +26,6 @@
   "styleguide": "https://github.com/airbnb/javascript",
   "homepage": "https://github.com/autodesk-bionano/genome-designer#readme",
   "peerDependencies": {
-    "npm": "^2.0.0",
     "webpack": "*"
   },
   "dependencies": {
@@ -40,6 +39,7 @@
     "normalizr": "^1.2.0",
     "react": "0.14.2",
     "react-addons-test-utils": "0.14.2",
+    "react-dnd": "^2.0.2",
     "react-dom": "0.14.2",
     "react-redux": "^3.1.0",
     "react-router": "^1.0.0-rc3",
@@ -71,6 +71,7 @@
     "postcss-import": "^7.1.0",
     "postcss-loader": "^0.7.0",
     "postcss-nested": "^1.0.0",
+    "react-dnd-test-backend": "^1.0.0",
     "react-transform-catch-errors": "^1.0.0",
     "react-transform-hmr": "^1.0.0",
     "redbox-react": "^1.0.1",

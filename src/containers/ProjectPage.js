@@ -2,6 +2,8 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import { pushState } from 'redux-router';
+import HTML5Backend from 'react-dnd-html5-backend';
+import { DragDropContext } from 'react-dnd';
 
 import Inventory from './Inventory';
 import ProjectActions from './ProjectActions';
@@ -10,6 +12,7 @@ import ProjectHeader from '../components/ProjectHeader';
 
 import '../styles/ProjectPage.css';
 
+@DragDropContext(HTML5Backend)
 export class ProjectPage extends Component {
   static propTypes = {
     constructs: PropTypes.array.isRequired,
