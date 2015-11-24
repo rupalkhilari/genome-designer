@@ -71,6 +71,7 @@
     "postcss-import": "^7.1.0",
     "postcss-loader": "^0.7.0",
     "postcss-nested": "^1.0.0",
+    "react-dnd-test-backend": "^1.0.0",
     "react-transform-catch-errors": "^1.0.0",
     "react-transform-hmr": "^1.0.0",
     "redbox-react": "^1.0.1",
