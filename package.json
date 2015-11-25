@@ -39,17 +39,11 @@
     "node-uuid": "^1.4.7",
     "normalize.css": "^3.0.3",
     "normalizr": "^1.2.0",
-<<<<<<< HEAD
-    "react": "0.14.0",
-    "react-dnd": "^2.0.0",
-    "react-dom": "0.14.0",
-=======
     "react": "0.14.2",
     "react-addons-test-utils": "0.14.2",
     "react-dnd": "^2.0.2",
     "react-dnd-html5-backend": "^2.0.0",
     "react-dom": "0.14.2",
->>>>>>> origin/master
     "react-redux": "^3.1.0",
     "react-router": "^1.0.0-rc3",
     "redux": "^3.0.2",
