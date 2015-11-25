@@ -5,7 +5,6 @@ import { validateSessionKey } from '../server/validation';
 
 const fs = require('fs');
 const yaml = require('yamljs');
-const writeFile = require('then-write-file')
 const readMultipleFiles = require('read-multiple-files');
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
@@ -16,6 +15,7 @@ router.post('/run/:id', jsonParser, (req, resp) => {
   const { id } = req.params;
   const inputs = req.body;
   const dir = getNodeDir(id);
+  const key = req.headers["session-key"];
   var outputFiles = {};
 
   validateSessionKey(key).then( valid => {
@@ -34,11 +34,19 @@ router.post('/run/:id', jsonParser, (req, resp) => {
         var outputFileNames = [];
         var i;
 
-        //inputs      
+        //inputs - write files using promises     
         var inputFileWrites = [];
         for (i in inputs) {
           inputFileWrites.push(
-            writeFile( dir + "/inputs/" + i, inputs[i]) );
+            new Promise((resolve, reject) => {
+              fs.writeFile( dir + "/inputs/" + i, inputs[i] , err => {
+                if (err) {
+                  reject(err.message);
+                } else {
+                  resolve(dir + "/inputs/" + i);
+                }
+              }); //fs.writeFile
+            }));
         }
 
         //outputs
