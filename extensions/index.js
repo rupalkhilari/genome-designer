@@ -1,7 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import { runNode, getNodeDir } from './cloudRun';
-import { validateSessionKey } from '../server/validation';
+import { validateSessionKey } from '../server/authentication';
 
 const fs = require('fs');
 const yaml = require('yamljs');
@@ -36,6 +36,10 @@ router.post('/run/:id', jsonParser, (req, resp) => {
 
         //inputs - write files using promises     
         var inputFileWrites = [];
+
+        //we need to provide a new session-key to all cloud-computes
+        inputs.headers = JSON.stringify({"session-key":key});
+
         for (i in inputs) {
           inputFileWrites.push(
             new Promise((resolve, reject) => {

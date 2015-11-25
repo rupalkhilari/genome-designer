@@ -4,13 +4,13 @@ import uuid from 'uuid'; //todo - unify with client side
 import { createDescendant, record, getAncestors, getDescendants, getTree } from '../history';
 import { get as dbGet, getSafe as dbGetSafe, set as dbSet } from '../database';
 import { errorDoesNotExist, errorNoIdProvided } from '../errors';
-import { validateBlock, validateProject, assertValidId, validateSessionKey } from '../validation';
+import { validateBlock, validateProject, assertValidId } from '../validation';
+import { validateSessionKey, validateLoginCredentials } from '../authentication';
 import { getComponents } from '../getRecursively';
 
 import BlockDefinition from '../../src/schemas/Block';
 import ProjectDefinition from '../../src/schemas/Project';
 
-const crypto = require("crypto");
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
   strict: false, //allow values other than arrays and objects
@@ -28,21 +28,12 @@ Login and session validator
 router.get('/login', (req, res) => {
   const { user, password } = req.params;
   //TODO once we have authentication: check if id/pw is correct
-  const isValidLogin = true;
-
-  if (isValidLogin) {
-    
-    //TODO: check whether there is a better method to 
-    //generate sha1. I copied this from StackOverflow :)
-    var sha1 = crypto.randomBytes(20).toString('hex');
-    
-    dbSet(sha1, {"userID": "NA"}).then(result => {
-      res.json({"session-key": sha1});
-    }).catch(err => {
+  validateLoginCredentials(user, password).then( key => {
+    res.json({"session-key": key});
+  }).catch(err => {
       console.log(err); 
       res.status(500).send(err.message);
-    });
-  }
+  });
 });
 
 
