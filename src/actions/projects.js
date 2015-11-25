@@ -7,10 +7,12 @@ import Project from '../models/Project';
 export const projectCreate = (name) => {
   return (dispatch, getState) => {
     //temp - force name as ID. will need to reconfigure routing
-    const project = new Project(name);
-    if (name) {
-      project.metadata.name = name;
-    }
+    const project = new Project({
+      id: name, //hack... todo - deprecate
+      metadata: {
+        name,
+      },
+    });
 
     dispatch({
       type: ActionTypes.PROJECT_CREATE,

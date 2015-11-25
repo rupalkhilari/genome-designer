@@ -1,5 +1,6 @@
 import React from 'react';
 import TestUtils from 'react-addons-test-utils';
+import wrapInDragTestContext from '../utils/wrapInDragTestContext';
 import chai from 'chai';
 const { expect } = chai;
 import sinon from 'sinon';
@@ -24,9 +25,9 @@ function setup(propOverrides = {}) {
     searchTerm: '',
   }, propOverrides);
 
-  const component = TestUtils.renderIntoDocument(
-    <Inventory {...props} />
-  );
+  // Render with the testing backend
+  const InventoryDragContext = wrapInDragTestContext(Inventory);
+  const component = TestUtils.renderIntoDocument(<InventoryDragContext {...props} />);
 
   return {
     props,
@@ -45,7 +46,10 @@ describe('containers', () => {
 
       expect(props.isVisible).to.equal(true);
 
-      TestUtils.Simulate.click(component.refs.close);
+      //wrapping will break component refs
+      const closeButton = TestUtils.findRenderedDOMComponentWithClass(component, 'Inventory-close');
+
+      TestUtils.Simulate.click(closeButton);
       expect(toggleSpy).to.have.been.calledWith(false);
     });
   });
