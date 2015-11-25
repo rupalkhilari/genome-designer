@@ -111,7 +111,6 @@ hist = GET(url + "ancestors/" + pid4, headers=headers)
 
 child = GET(url + "descendants/" + pid1, headers=headers)
 
-
 #Test extensions
 url = "http://0.0.0.0:3000/extensions/run/"
 input1 = {"DNA":"ACGTACGACTACGACTGACGACTACGAGCT"}
