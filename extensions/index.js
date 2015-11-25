@@ -15,7 +15,6 @@ router.post('/run/:id', jsonParser, (req, resp) => {
   const { id } = req.params;
   const inputs = req.body;
   const dir = getNodeDir(id);
-  var inputFiles = {};
   var outputFiles = {};
 
   fs.readFile(dir + "/workflow.yaml", "utf8", (err, filestr) => {
@@ -33,8 +32,10 @@ router.post('/run/:id', jsonParser, (req, resp) => {
       var i;
 
       //inputs      
+      var inputFileWrites = [];
       for (i in inputs) {
-        inputFiles[ dir + "/inputs/" + i ] = inputs[i];
+        inputFileWrites.push(
+          writeFile( dir + "/inputs/" + i, inputs[i]) );
       }
 
       //outputs
@@ -43,13 +44,11 @@ router.post('/run/:id', jsonParser, (req, resp) => {
         outputFileNames.push(dir + "/outputs/" +  outputs[i].id);
       }
 
-      //write inputs
-      var writeFiles = [];
-      for (i in inputFiles)
-      writeFile
-      Promises.all(writeFiles(inputFiles, err => {
-        if (err) {
-          console.log("Input write error: " + err);
+      
+      Promise.all(inputFileWrites).then(result => {
+        console.log("input files written");
+        if (!result) {
+          console.log("Input write error");
         }
 
         //run the node
