@@ -28,10 +28,10 @@ block2 = {
   "notes": {}
 }
 
-headers = {  "Content-type": "application/json"  };
+login = GET(url + "login", params={"user":"", "password":""});
+headers = {  "Content-type": "application/json", "session-key": login.json()["session-key"] };
 
 res = POST(url + "block", data = json(block1), headers=headers)
-
 id1 = res.json()['id']
 
 res = POST(url + "block", data = json(block2), headers=headers)
@@ -94,22 +94,22 @@ proj1["settings"] = { "SBOLv-version": "1.2.0" }
 res = PUT(url + "project/" + pid1, data = json(proj1), headers=headers)
 pid1 = res.json()['id']
 
-res = GET(url + "project/" + pid1, params = {"id":pid1})
+res = GET(url + "project/" + pid1, params = {"tree":True}, headers=headers)
 
-res = POST(url + "clone/" + pid1, params = {"id":pid1})
+res = POST(url + "clone/" + pid1, headers=headers)
 pid2 = res.json()['id']
 
-res = POST(url + "clone/" + pid2, params = {"id":pid2})
+res = POST(url + "clone/" + pid2, headers=headers)
 pid3 = res.json()['id']
 
-res = POST(url + "clone/" + pid3, params = {"id":pid3})
+res = POST(url + "clone/" + pid3, headers=headers)
 pid4 = res.json()['id']
 
-res = GET(url + "project/" + pid4, params = {"id":pid4})
+res = GET(url + "project/" + pid4, headers=headers)
 
-hist = GET(url + "history/" + pid4, params = {"id":pid4})
+hist = GET(url + "ancestors/" + pid4, headers=headers)
 
-child = GET(url + "children/" + pid1, params = {"id":pid1})
+child = GET(url + "descendants/" + pid1, headers=headers)
 
 
 #Test extensions
