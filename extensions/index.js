@@ -1,6 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import { runNode, getNodeDir } from './cloudRun';
+import { validateSessionKey } from '../server/validation';
 
 const fs = require('fs');
 const yaml = require('yamljs');
@@ -17,63 +18,67 @@ router.post('/run/:id', jsonParser, (req, resp) => {
   const dir = getNodeDir(id);
   var outputFiles = {};
 
-  fs.readFile(dir + "/workflow.yaml", "utf8", (err, filestr) => {
-    
-    if (err) {
+  validateSessionKey(key).then( valid => {
 
-      console.log("Workflow.yaml could not be read: " + err);
-
-    } else {
-
-      var data = yaml.parse(filestr);
-      //var inputs = data.inputs;
-      var outputs = data.outputs;
-      var outputFileNames = [];
-      var i;
-
-      //inputs      
-      var inputFileWrites = [];
-      for (i in inputs) {
-        inputFileWrites.push(
-          writeFile( dir + "/inputs/" + i, inputs[i]) );
-      }
-
-      //outputs
-      for (i=0; i < outputs.length; ++i) {
-        outputFiles[ outputs[i].id ] = "";
-        outputFileNames.push(dir + "/outputs/" +  outputs[i].id);
-      }
-
+    fs.readFile(dir + "/workflow.yaml", "utf8", (err, filestr) => {
       
-      Promise.all(inputFileWrites).then(result => {
-        console.log("input files written");
-        if (!result) {
-          console.log("Input write error");
+      if (err) {
+
+        console.log("Workflow.yaml could not be read: " + err);
+
+      } else {
+
+        var data = yaml.parse(filestr);
+        //var inputs = data.inputs;
+        var outputs = data.outputs;
+        var outputFileNames = [];
+        var i;
+
+        //inputs      
+        var inputFileWrites = [];
+        for (i in inputs) {
+          inputFileWrites.push(
+            writeFile( dir + "/inputs/" + i, inputs[i]) );
         }
 
-        //run the node
-        runNode(id).then( res => {
-          //read the output files
-          readMultipleFiles(outputFileNames, "utf8", (err, buffers) => {
+        //outputs
+        for (i=0; i < outputs.length; ++i) {
+          outputFiles[ outputs[i].id ] = "";
+          outputFileNames.push(dir + "/outputs/" +  outputs[i].id);
+        }
 
-            if (err) {
-              console.log("Output read error: " + err);
-            }
+        
+        Promise.all(inputFileWrites).then(result => {
+          console.log("input files written");
+          if (!result) {
+            console.log("Input write error");
+          }
 
-            //get values from files into object
-            //TODO - select only json-suitable output fields
-            for (var i=0; i < outputFileNames.length; ++i) {
-              outputFiles[ outputs[i].id ] = buffers[i];
-            }
+          //run the node
+          runNode(id).then( res => {
+            //read the output files
+            readMultipleFiles(outputFileNames, "utf8", (err, buffers) => {
 
-            //return object
-            resp.json(outputFiles);
+              if (err) {
+                console.log("Output read error: " + err);
+              }
 
-          }); //readMultipleFiles
-        }); //runNode
-      }); //writeFiles
-    }   //read yaml file successful
-  }); //fs.readFile
+              //get values from files into object
+              //TODO - select only json-suitable output fields
+              for (var i=0; i < outputFileNames.length; ++i) {
+                outputFiles[ outputs[i].id ] = buffers[i];
+              }
+
+              //return object
+              resp.json(outputFiles);
+
+            }); //readMultipleFiles
+          }); //runNode
+        }); //writeFiles
+      }   //read yaml file successful
+    }); //fs.readFile
+  }); //if valid session key
+
 }); //router.post
 
 
