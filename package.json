@@ -50,9 +50,9 @@
     "url-regex": "^3.0.0",
     "promised-exec": "^1.0.1",
     "read-multiple-files": "^1.1.1",
-    "write-files": "^1.0.0",
     "yamljs" : "^0.2.4 ",
-    "random-js": "^1.0.8"
+    "random-js": "^1.0.8",
+    "then-write-file": "^1.0.0"
   },
   "devDependencies": {
     "autoprefixer": "^6.0.3",

@@ -4,7 +4,7 @@ import { runNode, getNodeDir } from './cloudRun';
 
 const fs = require('fs');
 const yaml = require('yamljs');
-const writeFiles = require('write-files');
+const writeFile = require('then-write-file')
 const readMultipleFiles = require('read-multiple-files');
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
@@ -44,7 +44,10 @@ router.post('/run/:id', jsonParser, (req, resp) => {
       }
 
       //write inputs
-      writeFiles(inputFiles, err => {
+      var writeFiles = [];
+      for (i in inputFiles)
+      writeFile
+      Promises.all(writeFiles(inputFiles, err => {
         if (err) {
           console.log("Input write error: " + err);
         }

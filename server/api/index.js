@@ -75,7 +75,12 @@ router.get('/project/:id', (req, res) => {
 router.get('/block/:id', (req, res) => {
   const { id } = req.params;
   const { tree } = req.query;
-  console.log(req.headers);
+  const { key } = req.headers;
+
+  if (!keyIsValid(key)) {      
+    res.status(500).send("authentication failed");
+    return;
+  }
 
   if (paramIsTruthy(tree)) {
     Promise
@@ -99,6 +104,12 @@ router.get('/block/:id', (req, res) => {
 
 router.get('/ancestors/:id', (req, res) => {
   const { id } = req.params;
+  const { key } = req.headers;
+
+  if (!keyIsValid(key)) {      
+    res.status(500).send("authentication failed");
+    return;
+  }
   getAncestors(id)
     .then(result => res.json(result))
     .catch(err => res.status(500).send(err.message));
@@ -106,6 +117,12 @@ router.get('/ancestors/:id', (req, res) => {
 
 router.get('/descendants/:id', (req, res) => {
   const { id } = req.params;
+  const { key } = req.headers;
+
+  if (!keyIsValid(key)) {      
+    res.status(500).send("authentication failed");
+    return;
+  }
   getDescendants(id)
     .then(result => res.json(result))
     .catch(err => res.status(500).send(err.message));
@@ -117,6 +134,13 @@ router.get('/descendants/:id', (req, res) => {
  *********************************/
 
 router.post('/project', jsonParser, (req, res) => {
+  const { key } = req.headers;
+
+  if (!keyIsValid(key)) {      
+    res.status(500).send("authentication failed");
+    return;
+  }
+
   //todo - verify body
   const data = req.body;
   //todo - verify project, allow bypassing?
@@ -134,6 +158,13 @@ router.post('/project', jsonParser, (req, res) => {
 });
 
 router.post('/block', jsonParser, (req, res) => {
+  const { key } = req.headers;
+
+  if (!keyIsValid(key)) {      
+    res.status(500).send("authentication failed");
+    return;
+  }
+
   //todo - verify body
   const data = req.body;
   //todo - verify project, allow bypassing?
@@ -156,6 +187,13 @@ router.post('/block', jsonParser, (req, res) => {
  *********************************/
 
 router.put('/project/:id', jsonParser, (req, res) => {
+  const { key } = req.headers;
+
+  if (!keyIsValid(key)) {      
+    res.status(500).send("authentication failed");
+    return;
+  }
+
   const { id } = req.params;
   //todo - verify body
   const data = req.body;
@@ -175,6 +213,13 @@ router.put('/project/:id', jsonParser, (req, res) => {
 });
 
 router.put('/block/:id', jsonParser, (req, res) => {
+  const { key } = req.headers;
+
+  if (!keyIsValid(key)) {      
+    res.status(500).send("authentication failed");
+    return;
+  }
+
   const { id } = req.params;
   //todo - verify body
   const data = req.body;
@@ -200,6 +245,13 @@ router.put('/block/:id', jsonParser, (req, res) => {
  * Create a child
  */
 router.post('/clone/:id', (req, res) => {
+  const { key } = req.headers;
+
+  if (!keyIsValid(key)) {      
+    res.status(500).send("authentication failed");
+    return;
+  }
+
   const { id } = req.params;
 
   dbGet(id)
