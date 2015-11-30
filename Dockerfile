@@ -5,9 +5,7 @@ RUN apt-get update
 RUN apt-get install -y curl wget
 
 #Install Redis
-RUN wget http://download.redis.io/redis-stable.tar.gz
-RUN tar xvzf redis-stable.tar.gz
-RUN cd redis-stable; make; make install
+RUN apt-get install -y redis-server
 
 ADD package.json /app/package.json
 RUN cd /app && npm install
@@ -19,5 +17,4 @@ ENV PORT=3000
 WORKDIR /app
 ADD . /app
 
-#CMD ["node", "devServer.js"]
-CMD ["npm", "run", "start"]
+ENTRYPOINT touch ../redis.conf && redis-server ../redis.conf & npm run start
