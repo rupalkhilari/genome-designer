@@ -32,9 +32,9 @@ describe('getRecursively', () => {
       });
   });
 
-  it('should resolve for no inputs with empty tree and leaves', () => {
+  it('should resolve for no inputs with empty leaves', () => {
     return getRecursively([]).then(val => {
-      expect(val).to.eql({tree: {}, leaves: []});
+      expect(val).to.eql({leaves: []});
     });
   });
 

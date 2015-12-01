@@ -1,5 +1,5 @@
 import chai from 'chai';
-import uuid from 'uuid';
+import uuid from 'node-uuid';
 import { assertValidId } from '../../../server/validation';
 import { errorNoIdProvided } from '../../../server/errors';
 
