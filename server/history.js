@@ -1,4 +1,4 @@
-import uuid from 'uuid'; //todo - unify with client side
+import uuid from 'node-uuid';
 import getRecursively from './getRecursively';
 import { get, getSafe, set } from './database';
 

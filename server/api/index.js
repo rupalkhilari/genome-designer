@@ -1,15 +1,11 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import uuid from 'uuid'; //todo - unify with client side
+import uuid from 'node-uuid';
 import { createDescendant, record, getAncestors, getDescendants, getTree } from '../history';
 import { get as dbGet, getSafe as dbGetSafe, set as dbSet } from '../database';
-import { errorDoesNotExist, errorNoIdProvided } from '../errors';
+import { errorDoesNotExist, errorNoIdProvided, errorInvalidModel, errorInvalidRoute } from '../errors';
 import { validateBlock, validateProject, assertValidId } from '../validation';
 import { getComponents } from '../getRecursively';
-
-import BlockDefinition from '../../src/schemas/Block';
-import ProjectDefinition from '../../src/schemas/Project';
-
 
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
@@ -89,91 +85,86 @@ router.get('/descendants/:id', (req, res) => {
 
 /*********************************
  POST
- Create an entry for the first time, server generates uuid
+ Create an entry for the first time.
+ Forces a new ID, to guarantee object is new.
+
+ future - extend scaffold with posted body, then check if valid
+ future - allow bypassing of validation?
  *********************************/
 
 router.post('/project', jsonParser, (req, res) => {
-  //todo - verify body
   const data = req.body;
-  //todo - verify project, allow bypassing?
   const id = uuid.v4();
-  data.id = id;
+  Object.assign(data, {
+    id,
+  });
 
-  if (ProjectDefinition.validate(data)) {
-    //todo - should be able to generate scaffold and extend with body
-    const validated = data;
-
-    dbSet(id, validated)
+  if (validateProject(data)) {
+    dbSet(id, data)
       .then(result => res.json(result))
       .catch(err => res.err(err.message));
+  } else {
+    res.status(400).send(errorInvalidModel);
   }
 });
 
 router.post('/block', jsonParser, (req, res) => {
-  //todo - verify body
   const data = req.body;
-  //todo - verify project, allow bypassing?
   const id = uuid.v4();
-  data.id = id;
+  Object.assign(data, {
+    id,
+  });
 
-  if (BlockDefinition.validate(data)) {
-    //todo - should be able to generate scaffold and extend with body
-    const validated = data;
-
-    dbSet(id, validated)
+  if (validateBlock(data)) {
+    dbSet(id, data)
       .then(result => res.json(result))
       .catch(err => res.err(err.message));
+  } else {
+    res.status(400).send(errorInvalidModel);
   }
 });
 
 /*********************************
  PUT
- Modify an existing entry
+ Modify an existing entry.
+ Creates the object if it does not exist. ID of URL is assigned to object.
  *********************************/
 
 router.put('/project/:id', jsonParser, (req, res) => {
   const { id } = req.params;
-  //todo - verify body
   const data = req.body;
-  data.id = id;
-  
-  //Check that the input is a valid Project
-  if (ProjectDefinition.validate(data)) {
+  Object.assign(data, {
+    id,
+  });
 
-    //check that the project already exists,
-    dbGet(id).then( 
-      result =>  {
-        dbSet(id, data)
-          .then(result => res.json(result))
-          .catch(err => res.status(500).send(err.message));
-      });
+  //Check that the input is a valid Project
+  if (validateProject(data)) {
+    dbSet(id, data)
+      .then(result => res.json(result))
+      .catch(err => res.status(500).send(err.message));
+  } else {
+    res.status(400).send(errorInvalidModel);
   }
 });
 
 router.put('/block/:id', jsonParser, (req, res) => {
   const { id } = req.params;
-  //todo - verify body
   const data = req.body;
-  
-  if (BlockDefinition.validate(data)) {
+  Object.assign(data, {
+    id,
+  });
 
-    //check that the block already exists,
-    dbGet(id).then( 
-      result =>  {
-        dbSet(id, data)
-          .then(result => res.json(result))
-          .catch(err => res.status(500).send(err.message));
-      });
+  if (validateBlock(data)) {
+    dbSet(id, data)
+      .then(result => res.json(result))
+      .catch(err => res.status(500).send(err.message));
+  } else {
+    res.status(400).send(errorInvalidModel);
   }
-
-  dbSet(id, data)
-    .then(result => res.json(result))
-    .catch(err => res.status(500).send(err.message));
 });
 
-
 /**
- * Create a child
+ * Create a child element
  */
 router.post('/clone/:id', (req, res) => {
   const { id } = req.params;
@@ -197,7 +188,7 @@ router.post('/clone/:id', (req, res) => {
 
 //default catch
 router.use('*', (req, res) => {
-  res.status(404).send('Invalid Route');
+  res.status(404).send(errorInvalidRoute);
 });
 
 module.exports = router;
