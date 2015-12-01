@@ -1,13 +1,11 @@
 import React, { Component, PropTypes } from 'react';
-import { connect } from 'react-redux';
 
 import GlobalNav from './GlobalNav';
 
-import styles from '../styles/App.css';
-import withStyles from '../decorators/withStyles';
+import '../styles/App.css';
 
-@withStyles(styles)
-class App extends Component {
+
+export class App extends Component {
   static propTypes = {
     children: PropTypes.node, // Injected by React Router
   }
@@ -25,8 +23,4 @@ class App extends Component {
   }
 }
 
-function mapStateToProps(state) {
-  return {};
-}
-
-export default connect(mapStateToProps, {})(App);
+export default App;

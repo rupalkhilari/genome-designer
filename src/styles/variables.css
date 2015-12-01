@@ -1,9 +1,13 @@
 :root {
 
+  /* Typography
+  ==================== */
+
   --colors-white: #ffffff;
   --colors-greyDark: #666666;
   --colors-grey: #cccccc;
   --colors-greyLight: #f8f8f8;
+  --colors-selected: #88aaff;
 
   /* Typography
   ==================== */
@@ -18,8 +22,13 @@
   --screen-md-min: 992px; /* Medium screen / desktop */
   --screen-lg-min: 1200px; /* Large screen / wide desktop */
 
-  /* Component Level (but
+  /* Backgrounds
  ==================== */
 
-  --GlobalNav-backgroundColor: #fafafa;
+  --background-dark-semiTransparent: rgba(0,0,0,0.9);
+
+  /* Timing
+  ==================== */
+
+  --timing-fast: 0.2s;
 }

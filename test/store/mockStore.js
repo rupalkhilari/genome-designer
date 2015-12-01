@@ -1,5 +1,6 @@
 import thunk from 'redux-thunk';
-
+import { applyMiddleware } from 'redux';
+import { expect } from 'chai';
 const middlewares = [thunk];
 
 /*
@@ -23,12 +24,12 @@ export default function mockStore(getState, expectedActions, onLastAction) {
 
       dispatch(action) {
         const expectedAction = expectedActions.shift();
-        expect(action).toEqual(expectedAction);
+        expect(action).to.eql(expectedAction);
         if (onLastAction && !expectedActions.length) {
           onLastAction();
         }
         return action;
-      }
+      },
     };
   }
 

@@ -4,10 +4,8 @@ import { blockRename } from '../actions/blocks';
 
 import SketchPartName from './SketchPartName';
 
-import styles from '../styles/SketchPart.css';
-import withStyles from '../decorators/withStyles';
+import '../styles/SketchPart.css';
 
-@withStyles(styles)
 export class SketchPart extends Component {
   static propTypes = {
     part: PropTypes.object.isRequired,  //once using real ones, can pass schema as PropType
@@ -22,14 +20,14 @@ export class SketchPart extends Component {
   }
 
   render() {
-    const {part} = this.props;
-    const partName = part.metadata.name;
+    const { part } = this.props;
+    const { name, color } = part.metadata;
 
     return (
       <div ref="partGroup"
            className="SketchPart"
-           style={{backgroundColor: part.color}}>
-        <SketchPartName partName={partName}
+           style={{backgroundColor: color}}>
+        <SketchPartName partName={name}
                         onChange={this.handleRename}/>
       </div>
     );

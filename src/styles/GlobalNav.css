@@ -9,9 +9,20 @@
   display: flex;
   justify-content: space-between;
   padding: 0.25em 0.5em;
+  background-color: var(--colors-greyLight);
 
   &-title {
     color: #bbb;
     text-decoration: none;
+  }
+
+  &-action {
+    border-radius: 3px;
+    padding: 1px 5px;
+
+    &:not([disabled]):hover {
+      cursor: pointer;
+      background-color: var(--colors-selected);
+    }
   }
 }
