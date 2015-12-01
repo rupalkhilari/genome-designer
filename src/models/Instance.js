@@ -1,19 +1,29 @@
-import uuid from '../utils/generators/UUID';
+import uuid from 'node-uuid';
 import pathSet from 'lodash.set';
 import merge from 'lodash.merge';
 import cloneDeep from 'lodash.clonedeep';
 
-//todo - strip out this forceId business
+/**
+ * @description
+ * you can pass as argument to the constructor either:
+ *  - an object, which will extend the created instance
+ *  - a string, to use as a forced ID (todo - deprecate)
+ */
 export default class Instance {
-  constructor(forceId = uuid(), base) {
-    const input = (typeof forceId === 'object') ?
-      forceId :
-      {id: forceId};
+  constructor(input = uuid.v4(), subclassBase) {
+    let parsedInput;
+    if (!!input && typeof input === 'object') {
+      parsedInput = input;
+    } else if (typeof input === 'string') {
+      parsedInput = {id: input};
+    } else {
+      parsedInput = {};
+    }
 
     merge(this,
-      base,
+      subclassBase,
       {
-        id: uuid(),
+        id: uuid.v4(),
         metadata: {
           name: '',
           description: '',
@@ -22,7 +32,7 @@ export default class Instance {
           tags: {},
         },
       },
-      input
+      parsedInput
     );
   }
 

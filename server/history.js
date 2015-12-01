@@ -98,7 +98,7 @@ export const getDescendantsRecursively = (instanceId, depth) => {
  */
 export const getRoot = (instanceId) => {
   return getAncestors(instanceId)
-    .then(result => result.pop());
+    .then(result => (result.length) ? result.pop() : null);
 };
 
 /**

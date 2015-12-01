@@ -1,0 +1,51 @@
+
+.sceneGraphContainer {
+  position: relative;
+  display: inline-block;
+  border: 1px solid lightgray;
+  overflow: auto;
+  margin-top: 1rem;
+}
+.sceneGraph {
+  position: absolute;
+  display: inline-block;
+  overflow: hidden;
+}
+/* test user interface */
+.userInterface {
+  position: absolute;
+  transform-origin: 0 0;
+  width: 100%;
+  height: 100%;
+  background-color: transparent;
+  cursor: default;
+}
+.sceneGraph {
+  /*ase node type in scene graph*/
+  .node {
+    position: absolute;
+    display: inline-block;
+    transform-origin: 0 0;
+  }
+  /*text overlay for nodes*/
+  .nodetext {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    display: inline-block;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
+    user-select: none;
+    pointer-events: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  /*base class for html based glyph*/
+  .html-glyph {
+    position: absolute;
+    display: inline-block;
+    box-sizing: border-box;
+  }
+}
