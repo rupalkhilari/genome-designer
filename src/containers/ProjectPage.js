@@ -1,14 +1,12 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router';
 import { pushState } from 'redux-router';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { DragDropContext } from 'react-dnd';
 
 import Inventory from './Inventory';
-import ProjectActions from './ProjectActions';
-import SketchConstruct from './SketchConstruct';
 import ProjectHeader from '../components/ProjectHeader';
+import SketchConstruct from './SketchConstruct';
 
 import '../styles/ProjectPage.css';
 
@@ -25,7 +23,7 @@ export class ProjectPage extends Component {
   }
 
   render() {
-    const { children, projectId, constructId, project, constructs } = this.props;
+    const { children, constructId, project, constructs } = this.props;
 
     //todo - need error handling here. Should be in route transition probably?
     //right now there is some handling in GlobalNav when using ProjectSelect. Doesn't handle request of the URL.
@@ -38,7 +36,6 @@ export class ProjectPage extends Component {
     return (
       <div className="ProjectPage">
         <Inventory />
-
         <ProjectHeader project={project}/>
 
         {/* if viewing specific construct, let routing take over*//* if viewing specific construct, let routing take over*/}
@@ -48,18 +45,14 @@ export class ProjectPage extends Component {
         {!constructSelected && constructs.map(construct => {
           return (
             <div key={construct.id}>
-              <h3>
-                <Link to={`/project/${projectId}/${construct.id}`}>
-                  Construct {construct.metadata.name}
-                </Link>
-              </h3>
+              <h3>Construct {construct.metadata.name}</h3>
 
               <SketchConstruct construct={construct}/>
             </div>
           );
         })}
 
-        <ProjectActions projectId={project.id} />
+
       </div>
     );
   }

@@ -6,6 +6,6 @@ export default function SketchPartName({onChange, partName}) {
            onChange={onChange}
            value={partName}
            placeholder="My Block"
-           style={{border: 0, background: 'none'}}/>
+           style={{border: 0, outline: 0, background: 'none'}}/>
   );
 }

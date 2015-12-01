@@ -15,4 +15,14 @@
     color: #bbb;
     text-decoration: none;
   }
+
+  &-action {
+    border-radius: 3px;
+    padding: 1px 5px;
+
+    &:not([disabled]):hover {
+      cursor: pointer;
+      background-color: var(--colors-selected);
+    }
+  }
 }

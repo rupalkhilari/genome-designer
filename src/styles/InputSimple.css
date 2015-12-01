@@ -1,0 +1,17 @@
+@import 'variables.css';
+
+.InputSimple {
+  width: 100%;
+
+  &-input {
+    cursor: pointer;
+    outline: 0;
+    border: 0;
+    font-size: 0.75em;
+    width: 100%;
+    
+    &:focus {
+      cursor: text;
+    }
+  }
+}
