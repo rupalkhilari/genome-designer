@@ -1,6 +1,6 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import uuid from 'uuid'; //todo - unify with client side
+import uuid from 'node-uuid';
 import { createDescendant, record, getAncestors, getTree } from '../history';
 import { get as dbGet, getSafe as dbGetSafe, set as dbSet } from '../database';
 import { errorDoesNotExist, errorNoIdProvided } from '../errors';
