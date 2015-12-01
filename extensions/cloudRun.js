@@ -10,16 +10,16 @@ exec = require('promised-exec');
 export const runNode = (id) => {
   var dir = getNodeDir(id);
   
-  var cmdBuild = "docker build -t \"" + id + "\" " + dir;
   var cmdRun = "docker run -v " + dir + "/inputs:/inputs -v " + dir + "/outputs:/outputs -i \"" + id + "\" &";
 
-  return exec(cmdBuild).then(result => {
+  buildNodeContainer(id).then(result => {
 
             console.log("Done with Build...Running");
     
             return exec(cmdRun).then(result => {
 
                     console.log("Done with Run");
+
                 }).catch(err => {
                     
                     //apparently, even warning messages trigger this section of exec, so it "usually" ok
@@ -31,6 +31,27 @@ export const runNode = (id) => {
             console.log(err);
 
         });
+};
+
+var nodesDoneBuilding = {};
+
+export const buildNodeContainer = (id) => {
+  var dir = getNodeDir(id);
+
+  if (nodesDoneBuilding[id]) {
+    console.log("Container for " + id + " already exists");
+    return Promise.resolve(true);
+  }
+  
+  var cmdBuild = "docker build -t \"" + id + "\" " + dir;  
+  console.log("Start building " + id + "...");
+  return exec(cmdBuild).then(result => {
+      nodesDoneBuilding[id] = true;
+      return Promise.resolve(result);
+    }).catch(err => {
+      console.log(id + " build failed: " + err.string);
+      return Promise.reject(err);
+    });
 };
 
 export const getNodeDir = (id) => {

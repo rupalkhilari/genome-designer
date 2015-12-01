@@ -1,15 +1,44 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import { runNode, getNodeDir } from './cloudRun';
+import { runNode, getNodeDir, buildNodeContainer } from './cloudRun';
 import { validateSessionKey } from '../server/authentication';
 
-const fs = require('fs');
+const fs = require('fs'), path = require('path');
 const yaml = require('yamljs');
 const readMultipleFiles = require('read-multiple-files');
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
   strict: false, //allow values other than arrays and objects
 });
+
+
+/*
+Helper
+*/
+function getDirectories(srcpath) {
+  return fs.readdirSync(srcpath).filter(function(file) {
+    return fs.statSync(path.join(srcpath, file)).isDirectory();
+  });
+}
+
+/*
+Start building all docker containers before hand
+*/
+function startAllDockerBuildsAsync(dir) {
+  var lst = getDirectories(dir);
+  lst.forEach(
+    function(id) {
+      buildNodeContainer(id).then(result => {
+        console.log("done building " + id);
+      });
+    }
+  );
+
+}
+
+router.init = function() {
+  startAllDockerBuildsAsync("extensions/cloud");
+};
 
 router.post('/run/:id', jsonParser, (req, resp) => {
   const { id } = req.params;
@@ -69,7 +98,11 @@ router.post('/run/:id', jsonParser, (req, resp) => {
           //run the node
           runNode(id).then( res => {
             //read the output files
+            console.log("Reading output files");
+
             readMultipleFiles(outputFileNames, "utf8", (err, buffers) => {
+
+              console.log("Done reading output files");
 
               if (err) {
                 console.log("Output read error: " + err);
