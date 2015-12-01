@@ -1,4 +1,4 @@
-import uuid from 'uuid';
+import uuid from 'node-uuid';
 
 //todo - these should be generators so IDs change
 

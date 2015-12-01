@@ -1,8 +1,8 @@
 import chai from 'chai';
 import generateTree, { flattenTree } from '../../utils/tree';
 import range from '../../../src/utils/array/range';
-import { set as dbSet, get as dbGet, getSafe as dbGetSafe } from '../../../server/database';
-import getRecursively, { getParents, getComponents } from '../../../server/getRecursively';
+import { set as dbSet} from '../../../server/database';
+import getRecursively from '../../../server/getRecursively';
 
 const { expect } = chai;
 
@@ -13,7 +13,7 @@ describe('getRecursively', () => {
   const exampleTree = generateTree(treeDepth, treeNumberChildren, componentField);
   const flattened = flattenTree(exampleTree, componentField);
   const rootId = exampleTree.id;
-  const leaves = flattened.leaves;
+  const savedLeaves = flattened.leaves;
   delete flattened.leaves;
 
   before(() => {
@@ -32,9 +32,9 @@ describe('getRecursively', () => {
       });
   });
 
-  it('should resolve for no inputs with empty tree and leaves', () => {
+  it('should resolve for no inputs with empty leaves', () => {
     return getRecursively([]).then(val => {
-      expect(val).to.eql({tree: {}, leaves: []});
+      expect(val).to.eql({leaves: []});
     });
   });
 
@@ -44,7 +44,7 @@ describe('getRecursively', () => {
   it('should fetch a recursive structure', () => {
     return getRecursively([rootId])
       .then(result => {
-        const { leaves, tree, ...instances } = result;
+        const { leaves, tree, ...instances } = result; //eslint-disable-line
         expect(instances).to.eql(flattened);
       });
   });
@@ -52,8 +52,8 @@ describe('getRecursively', () => {
   it('have the correct leaves', () => {
     return getRecursively([rootId])
       .then(result => {
-        const { leaves, tree, ...instances } = result;
-        expect(leaves).to.eql(leaves);
+        const { leaves, tree, ...instances } = result; //eslint-disable-line
+        expect(leaves).to.eql(savedLeaves);
       });
   });
 
@@ -63,7 +63,7 @@ describe('getRecursively', () => {
     const shortDepth = treeDepth - 2;
     return getRecursively([rootId], componentField, shortDepth)
       .then(result => {
-        const { leaves, tree, ...instances } = result;
+        const { leaves, tree, ...instances } = result; //eslint-disable-line
 
         //start with 1, for the root node
         //reduce to get number of expected children...
@@ -75,6 +75,8 @@ describe('getRecursively', () => {
         expect(Object.keys(instances).length).to.equal(numberInstances);
       });
   });
+
+  it('getComponents()');
 
   //future
   it('should return the constructed tree');

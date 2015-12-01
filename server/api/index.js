@@ -1,9 +1,9 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import uuid from 'node-uuid';
-import { createDescendant, record, getAncestors, getTree } from '../history';
+import { createDescendant, record, getAncestors, getDescendants, getTree } from '../history';
 import { get as dbGet, getSafe as dbGetSafe, set as dbSet } from '../database';
-import { errorDoesNotExist, errorNoIdProvided } from '../errors';
+import { errorDoesNotExist, errorNoIdProvided, errorInvalidModel, errorInvalidRoute } from '../errors';
 import { validateBlock, validateProject, assertValidId } from '../validation';
 import { getComponents } from '../getRecursively';
 
@@ -76,73 +76,95 @@ router.get('/ancestors/:id', (req, res) => {
     .catch(err => res.status(500).send(err.message));
 });
 
-router.get('/descendents/:id', (req, res) => {
+router.get('/descendants/:id', (req, res) => {
   const { id } = req.params;
-  getTree(id)
+  getDescendants(id)
     .then(result => res.json(result))
     .catch(err => res.status(500).send(err.message));
 });
 
 /*********************************
  POST
- Create an entry for the first time, server generates uuid
+ Create an entry for the first time.
+ Forces a new ID, to guarantee object is new.
+
+ future - extend scaffold with posted body, then check if valid
+ future - allow bypassing of validation?
  *********************************/
 
 router.post('/project', jsonParser, (req, res) => {
   const data = req.body;
   const id = uuid.v4();
-
-  //todo - should be able to generate scaffold and extend with body, and validate() (allow bypassing)
-  const validated = Object.assign(data, {
+  Object.assign(data, {
     id,
   });
 
-  dbSet(id, validated)
-    .then(result => res.json(result))
-    .catch(err => res.err(err.message));
+  if (validateProject(data)) {
+    dbSet(id, data)
+      .then(result => res.json(result))
+      .catch(err => res.err(err.message));
+  } else {
+    res.status(400).send(errorInvalidModel);
+  }
 });
 
 router.post('/block', jsonParser, (req, res) => {
   const data = req.body;
   const id = uuid.v4();
-
-  //todo - should be able to generate scaffold and extend with body, and validate() (allow bypassing)
-  const validated = Object.assign(data, {
+  Object.assign(data, {
     id,
   });
 
-  dbSet(id, validated)
-    .then(result => res.json(result))
-    .catch(err => res.err(err.message));
+  if (validateBlock(data)) {
+    dbSet(id, data)
+      .then(result => res.json(result))
+      .catch(err => res.err(err.message));
+  } else {
+    res.status(400).send(errorInvalidModel);
+  }
 });
 
 /*********************************
  PUT
- Modify an existing entry
+ Modify an existing entry.
+ Creates the object if it does not exist. ID of URL is assigned to object.
  *********************************/
 
 router.put('/project/:id', jsonParser, (req, res) => {
   const { id } = req.params;
   const data = req.body;
+  Object.assign(data, {
+    id,
+  });
 
-  //todo - verify project, allow bypassing?
-  dbSet(id, data)
-    .then(result => res.json(result))
-    .catch(err => res.status(500).send(err.message));
+  //Check that the input is a valid Project
+  if (validateProject(data)) {
+    dbSet(id, data)
+      .then(result => res.json(result))
+      .catch(err => res.status(500).send(err.message));
+  } else {
+    res.status(400).send(errorInvalidModel);
+  }
 });
 
 router.put('/block/:id', jsonParser, (req, res) => {
   const { id } = req.params;
   const data = req.body;
+  Object.assign(data, {
+    id,
+  });
 
-  //todo - verify block, allow bypassing?
-  dbSet(id, data)
-    .then(result => res.json(result))
-    .catch(err => res.status(500).send(err.message));
+  if (validateBlock(data)) {
+    dbSet(id, data)
+      .then(result => res.json(result))
+      .catch(err => res.status(500).send(err.message));
+  } else {
+    res.status(400).send(errorInvalidModel);
+  }
 });
 
 /**
- * Create a child
+ * Create a child element
  */
 router.post('/clone/:id', (req, res) => {
   const { id } = req.params;
@@ -166,7 +188,7 @@ router.post('/clone/:id', (req, res) => {
 
 //default catch
 router.use('*', (req, res) => {
-  res.status(404).send('Invalid Route');
+  res.status(404).send(errorInvalidRoute);
 });
 
 module.exports = router;

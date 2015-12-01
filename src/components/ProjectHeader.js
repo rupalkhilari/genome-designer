@@ -26,6 +26,7 @@ export default class ProjectHeader extends Component {
   }
 
   handleProjectDescriptionChange = (nextValue) => {
+    //todo - should be an action
     this.props.project.mutate('metadata.description', nextValue);
   }
 

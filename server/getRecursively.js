@@ -15,14 +15,13 @@ function getInstances(ids = []) {
  @param {number} recursionDepth Depth of recursion
  @param {function} idAccessor function to return the ID, default: (inst) => inst.id
  @param {Object} result Dictionary, used for recursing. expects field `leaves`.
- @return {Object} result dictionary with IDs which are all ids, and a field `leaves` with the leaf nodes of the tree, and field `tree` which is an object noting the hierarchy
+ @return {Promise<Object>} result dictionary with IDs which are all ids, and a field `leaves` with the leaf nodes of the tree, and field `tree` which is an object noting the hierarchy
  **/
-//todo - verify this works
 //todo - save tree structure
 function getRecursively(ids = [],
                         field = 'components',
                         recursionDepth = 5,
-                        result = {tree: {}, leaves: []}) {
+                        result = { leaves: [] }) {
   if (!Array.isArray(ids)) {
     return Promise.reject(new Error(`must pass array to getRecursively, got ${ids}`));
   }
@@ -35,6 +34,7 @@ function getRecursively(ids = [],
     .then(instances => {
       return Promise.all(instances.map(inst => {
         //if safeGet did not find anything, we're done
+
         if (inst === null) {
           return Promise.resolve();
         }
@@ -63,12 +63,10 @@ function getRecursively(ids = [],
     .then(() => result);
 }
 
-export const getParents = (instance) => {
-  return getRecursively([instance.parent], 'parent');
-};
-
-export const getComponents = (instance) => {
-  return getRecursively(instance.components, 'components');
+export const getComponents = (instanceID) => {
+  return getSafe(instanceID).then( instance => {
+    return getRecursively(instance.components, 'components');
+  });
 };
 
 export default getRecursively;

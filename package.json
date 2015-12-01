@@ -7,10 +7,9 @@
     "clean": "rimraf lib dist coverage",
     "check": "npm run lint && npm run test",
     "start": "babel-node devServer.js",
-    "lint": "eslint src; exit 0;",
+    "lint": "eslint src test; exit 0;",
     "lint-jscs": "jscs src",
     "test": "NODE_ENV=test mocha --recursive --compilers js:babel-core/register,css:test/css-null-compiler.js --require ./test/setup.js",
-    "test-server": "NODE_ENV=test mocha ./test-server --recursive --compilers js:babel-core/register --require ./test-server/setup.js",
     "test:watch": "npm test -- --watch",
     "nightwatch": "./node_modules/nightwatch/bin/nightwatch",
     "postinstall": "./node_modules/selenium-standalone/bin/selenium-standalone install"
@@ -27,9 +26,10 @@
   "styleguide": "https://github.com/airbnb/javascript",
   "homepage": "https://github.com/autodesk-bionano/genome-designer#readme",
   "peerDependencies": {
-    "node": "^4.0.0",
-    "npm": "^2.0.0",
     "webpack": "*"
+  },
+  "engines" : {
+    "node" : ">= 4.2.2"
   },
   "dependencies": {
     "history": "^1.12.5",
