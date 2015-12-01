@@ -9,12 +9,6 @@ var hostname = '0.0.0.0';
 
 var apiRouter = require('./server/api');
 var extRouter = require('./extensions');
-if (apiRouter.init) {
-	apiRouter.init();
-}
-if (extRouter.init) {
-	extRouter.init();
-}
 
 var app = express();
 var compiler = webpack(config);

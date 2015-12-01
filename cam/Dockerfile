@@ -1,14 +1,6 @@
 # Inherit from node v4 docker image
 FROM node:4-wheezy
 
-RUN apt-get update
-RUN apt-get install -y curl wget
-
-#Install Redis
-RUN wget http://download.redis.io/redis-stable.tar.gz
-RUN tar xvzf redis-stable.tar.gz
-RUN cd redis-stable; make; make install
-
 #Install Docker
 RUN echo "deb http://ftp.de.debian.org/debian wheezy-backports main" >> /etc/apt/sources.list
 RUN apt-get update
@@ -22,15 +14,13 @@ ADD package.json /app/package.json
 RUN cd /app && npm install
 RUN npm update -g npm
 
-EXPOSE 3000
-#ENV PORT=3000
-
+EXPOSE 3001
 WORKDIR /app
 ADD . /app
 
 #start redis, docker, and then node server
-ENTRYPOINT touch ../redis.conf && redis-server ../redis.conf & service docker start
+ENTRYPOINT npm run start
 
 #commands: 
-#docker build -t "genome-designer" .
-#docker run --privileged=true -i -p 3000:3000 -t genome-designer /bin/bash
+#docker build -t "genome-designer-ext" .
+#docker run --privileged=true -i -p 3001:3001 -t genome-designer-ext /bin/bash

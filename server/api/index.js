@@ -16,6 +16,13 @@ const jsonParser = bodyParser.json({
   strict: false, //allow values other than arrays and objects
 });
 
+var http = require('http');
+
+var cam_hostname = '0.0.0.0';
+var cam_portnum = 3001;
+
+var extensions_hostname = '0.0.0.0';
+var extensions_portnum = 3002;
 
 function paramIsTruthy(param) {
   return param !== undefined && param !== 'false';
@@ -230,7 +237,7 @@ router.put('/block/:id', jsonParser, (req, res) => {
 /**
  * Create a child
  */
-router.post('/clone/:id', (req, res) => {
+router.post('/clone/:id', jsonParser, (req, res) => {
   const key = req.headers["session-key"];
   const { id } = req.params;
 
@@ -254,6 +261,47 @@ router.post('/clone/:id', (req, res) => {
 
   }).catch(err => res.status(500).send(err.message));
 });
+
+/**************
+Extensions
+**************/
+
+function redirectRequest(type, hostname, portnum) {
+  return (req, res) => {
+    const params = req.params;
+    const data = req.body;
+
+    var options = {
+      host: hostname,
+      port: portnum,
+      path: '/',
+      method: type,
+      data: data,
+      formData: params,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    };
+
+    var httpreq = http.request(options, response => {
+      response.setEncoding('utf8');
+      response.on('data', chunk => {
+        res.send(chunk);
+      });
+      response.on('end', function() {
+        res.send('ok');
+      });
+    });
+  };
+}
+
+router.post(/extensions/, jsonParser, redirectRequest( 'POST', extensions_hostname, extensions_portnum ));
+
+router.get(/cam/, jsonParser, redirectRequest( 'GET', cam_hostname, cam_portnum ));
+
+router.put(/cam/, jsonParser, redirectRequest( 'PUT', cam_hostname, cam_portnum ));
+
+router.post(/cam/, jsonParser, redirectRequest( 'POST', cam_hostname, cam_portnum ));
 
 //default catch
 router.use('*', (req, res) => {
