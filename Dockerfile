@@ -18,5 +18,7 @@ ENV PORT=3000
 WORKDIR /app
 ADD . /app
 
-#CMD ["node", "devServer.js"]
+#start redis
+CMD redis-server
+
 CMD ["npm", "run", "start"]
