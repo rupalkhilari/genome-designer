@@ -20,7 +20,12 @@ export const createDescendant = (instance) => {
  * @description Record parent-child info in the database
  * @param {uuid} childId
  * @param {uuid} parentId
- * @return {Promise} array, where [0] is ancestry of child, [1] is descendants of parent
+ @return {Promise} array, where [0] is ancestry of child, [1] is descendants of parent, and each takes the form:
+ * {
+ *   id: ID of the relevant instance
+ *   ancestors: all ancestors as an array, where index=0 is the direct parent
+ *   descendants: direct descendants of the instance
+ * }
  */
 export const record = (childId, parentId) => {
   //todo - in the future, we should not record both parent and child relationships, but use an index on parent, or create a hash in redis that handles the children part. There should not be a need to have a double-linked list
@@ -39,7 +44,9 @@ export const record = (childId, parentId) => {
       };
 
 
-      const newDescendants = Object.assign(history, {descendants: descendants.concat(childId)});
+      const newDescendants = Object.assign(history, {
+        descendants: descendants.concat(childId)
+      });
 
       return Promise.all([
         set(ancestryKey, newAncestors),
@@ -50,30 +57,35 @@ export const record = (childId, parentId) => {
   
 };
 
-export const getImmediateAncestor = (instanceId) => {
+/**
+ * @description Get all ancestors
+ * @param instanceId {uuid}
+ * @returns {Promise<Array>} Returns array of ancestors, direct parent first, or empty array if root
+ */
+export const getAncestors = (instanceId) => {
   const ancestryKey = makeHistoryKey(instanceId);
-  return getSafe(ancestryKey, {})
+  return getSafe(ancestryKey, {ancestors: []})
     .then(history => {
-      return history.ancestors || null;
+      return history.ancestors;
     });
 };
 
-export const getImmediateDescendants = (instanceId) => {
+export const getDescendants = (instanceId) => {
   const descendencyKey = makeHistoryKey(instanceId);
-  return getSafe(descendencyKey, {})
+  return getSafe(descendencyKey, {descendants: []})
   .then(history => {
-    return history.descendants || [];
+    return history.descendants;
   });
 };
 
-//todo - need better support in getRecursively (or write new function) for tree, leaves, and so not flat
-//todo - getRecursively doesn't exactly work here, since the entry may have multiple values. This is not the same as accessing the field components
 
-export const getAncestors = (instanceId, depth) => {
-  return getImmediateAncestor(instanceId);
-};
-
-export const getDescendants = (instanceId, depth) => {
+/**
+ * @description Recursively retrieves descendants for an instance
+ * @param instanceId
+ * @param depth {number}
+ * @returns {Promise<Object>}
+ */
+export const getDescendantsRecursively = (instanceId, depth) => {
   return getRecursively(
     [makeHistoryKey(instanceId)],
     (instance) => instance.descendants.map(makeHistoryKey),
@@ -94,7 +106,7 @@ export const getTree = (id) => {
   //not tested
   return getRoot(id)
     .then(instance => {
-      return getDescendants(instance.id);
+      return getDescendantsRecursively(instance.id);
     });
 };
 

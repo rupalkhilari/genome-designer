@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import uuid from 'node-uuid';
 import { Block as exampleBlock } from '../../schemas/examples';
 import { get as dbGet, set as dbSet, getSafe as dbGetSafe } from '../../../server/database';
-import { createDescendant, record, makeHistoryKey, getTree, getDescendants, getAncestors, getRoot } from '../../../server/history';
+import { createDescendant, record, makeHistoryKey, getTree, getDescendantsRecursively, getAncestors, getRoot } from '../../../server/history';
 
 describe.only('History', () => {
   describe('createDescendant()', () => {
@@ -117,9 +117,9 @@ describe.only('History', () => {
       it('should support tree structure');
     });
 
-    describe('getDescendants()', () => {
+    describe('getDescendantsRecursively()', () => {
       it('should get all descendants', () => {
-        return getDescendants(levelOne.id).then(result => {
+        return getDescendantsRecursively(levelOne.id).then(result => {
           delete result.tree;
           delete result.leaves
           //5 including itself

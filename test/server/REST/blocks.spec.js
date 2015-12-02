@@ -117,7 +117,6 @@ describe('REST', () => {
         .send(extendedBlock)
         .expect(200)
         .expect((res) => {
-          console.log(res.body);
           expect(res.body).to.eql(extendedBlock);
         })
         .end(done);

@@ -27,7 +27,6 @@ describe('REST', () => {
         .then(res => res.json())
         .then(json => {
           expect(json).to.eql(testBlock);
-          console.log(json);
         });
     });
   });

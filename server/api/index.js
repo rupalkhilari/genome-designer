@@ -1,7 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import uuid from 'node-uuid';
-import { createDescendant, record, getAncestors, getDescendants, getTree } from '../history';
+import { createDescendant, record, getAncestors, getDescendantsRecursively as getDescendants, getTree } from '../history';
 import { get as dbGet, getSafe as dbGetSafe, set as dbSet } from '../database';
 import { errorDoesNotExist, errorNoIdProvided, errorInvalidSession, errorInvalidModel, errorInvalidRoute } from '../errors';
 import { validateBlock, validateProject, assertValidId } from '../validation';

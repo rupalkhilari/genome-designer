@@ -192,6 +192,8 @@ class TestGenomeDesignerREST(unittest.TestCase):
     self.assertTrue(child.status_code==200)
     child = child.json()
 
+    print (child)
+
     self.assertTrue(len(child)==5)
     self.assertTrue(len(child['leaves'])==1)
 
