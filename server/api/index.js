@@ -3,7 +3,7 @@ import bodyParser from 'body-parser';
 import uuid from 'node-uuid';
 import { createDescendant, record, getAncestors, getDescendants, getTree } from '../history';
 import { get as dbGet, getSafe as dbGetSafe, set as dbSet } from '../database';
-import { errorDoesNotExist, errorNoIdProvided } from '../errors';
+import { errorDoesNotExist, errorNoIdProvided, errorInvalidSession, errorInvalidModel, errorInvalidRoute } from '../errors';
 import { validateBlock, validateProject, assertValidId } from '../validation';
 import { validateSessionKey, validateLoginCredentials } from '../authentication';
 import { getComponents } from '../getRecursively';
@@ -29,7 +29,7 @@ router.get('/login', (req, res) => {
     res.json({"session-key": key});
   }).catch(err => {
       console.log(err); 
-      res.status(500).send(err.message);
+      res.status(403).send(errorInvalidSession);
   });
 });
 
@@ -63,7 +63,7 @@ router.get('/project/:id', (req, res) => {
         .then(result => res.json(result))
         .catch(err => res.status(500).send(err.message));
     }
-  }).catch(err => res.status(500).send(err.message));
+  }).catch(err => res.status(403).send(errorInvalidSession));
 });
 
 router.get('/block/:id', (req, res) => {
@@ -92,7 +92,7 @@ router.get('/block/:id', (req, res) => {
         .catch(err => res.status(500).send(err.message));
     }
 
-  }).catch(err => res.status(500).send(err.message));
+  }).catch(err => res.status(403).send(errorInvalidSession));
 });
 
 router.get('/ancestors/:id', (req, res) => {
@@ -103,7 +103,7 @@ router.get('/ancestors/:id', (req, res) => {
     getAncestors(id)
       .then(result => res.json(result))
       .catch(err => res.status(500).send(err.message));
-  }).catch(err => res.status(500).send(err.message));
+  }).catch(err => res.status(403).send(errorInvalidSession));
 });
 
 router.get('/descendants/:id', (req, res) => {
@@ -115,7 +115,7 @@ router.get('/descendants/:id', (req, res) => {
       .then(result => res.json(result))
       .catch(err => res.status(500).send(err.message));
   
-  }).catch(err => res.status(500).send(err.message));
+  }).catch(err => res.status(403).send(errorInvalidSession));
 });
 
 /*********************************
@@ -141,9 +141,11 @@ router.post('/project', jsonParser, (req, res) => {
       dbSet(id, validated)
         .then(result => res.json(result))
         .catch(err => res.status(500).err(err.message));
+    } else {
+      res.status(400).send(errorInvalidModel);
     }
 
-  }).catch(err => res.status(500).send(err.message));
+  }).catch(err => res.status(403).send(errorInvalidSession));
 });
 
 router.post('/block', jsonParser, (req, res) => {
@@ -163,9 +165,11 @@ router.post('/block', jsonParser, (req, res) => {
       dbSet(id, validated)
         .then(result => res.json(result))
         .catch(err => res.status(500).err(err.message));
+    } else {
+      res.status(400).send(errorInvalidModel);
     }
 
-  }).catch(err => res.status(500).send(err.message));
+  }).catch(err => res.status(403).send(errorInvalidSession));
 });
 
 /*********************************
@@ -193,9 +197,11 @@ router.put('/project/:id', jsonParser, (req, res) => {
             .then(result => res.json(result))
             .catch(err => res.status(500).send(err.message));
         });
+    } else {
+      res.status(400).send(errorInvalidModel);
     }
 
-  }).catch(err => res.status(500).send(err.message));
+  }).catch(err => res.status(403).send(errorInvalidSession));
 });
 
 router.put('/block/:id', jsonParser, (req, res) => {
@@ -215,12 +221,14 @@ router.put('/block/:id', jsonParser, (req, res) => {
             .then(result => res.json(result))
             .catch(err => res.status(500).send(err.message));
         });
+    } else {
+      res.status(400).send(errorInvalidModel);
     }
 
     dbSet(id, data)
       .then(result => res.json(result))
       .catch(err => res.status(500).send(err.message));
-  }).catch(err => res.status(500).send(err.message));
+  }).catch(err => res.status(403).send(errorInvalidSession));
 });
 
 
@@ -249,12 +257,12 @@ router.post('/clone/:id', (req, res) => {
         res.json(clone);
       });
 
-  }).catch(err => res.status(500).send(err.message));
+  }).catch(err => res.status(403).send(errorInvalidSession));
 });
 
 //default catch
 router.use('*', (req, res) => {
-  res.status(404).send('Invalid Route');
+  res.status(404).send(errorInvalidRoute);
 });
 
 module.exports = router;
