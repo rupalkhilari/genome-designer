@@ -27,9 +27,7 @@ export const createDescendant = (instance) => {
  *   descendants: direct descendants of the instance
  * }
  */
-export const record = (childId, parentId) => {
-  //todo - in the future, we should not record both parent and child relationships, but use an index on parent, or create a hash in redis that handles the children part. There should not be a need to have a double-linked list
-  //todo - need to handle ACID assurances
+export const record = (childId, parentId) => {  
   const ancestryKey = makeHistoryKey(childId);
   const descendantsKey = makeHistoryKey(parentId);
 
@@ -37,13 +35,14 @@ export const record = (childId, parentId) => {
     .then(history => {
       const { ancestors, descendants } = history;
       
+      //Ancestors consists of the entire history of the instance, i.e. all parents up to the root
       const newAncestors = {
         id: childId,
         ancestors: [parentId].concat(ancestors),
         descendants: []
       };
 
-
+      //descendants only goes one level deep
       const newDescendants = Object.assign(history, {
         descendants: descendants.concat(childId)
       });
@@ -105,13 +104,7 @@ export const getDescendantsRecursively = (instanceId, depth) => {
  */
 export const getRoot = (instanceId) => {
   return getAncestors(instanceId)
-    .then(ancestors => {
-      if (ancestors.length > 0) {
-        return ancestors[ancestors.length-1];
-      } else {
-        return null;
-      }
-    });
+    .then(result => (result.length) ? result.pop() : null);
 };
 
 /**
@@ -120,11 +113,11 @@ export const getRoot = (instanceId) => {
  * @param depthFromRoot {number}
  * @returns {Promise<Object>}
  */
-export const getTree = (id) => {
+export const getTree = (instanceId, depthFromRoot) => {
   //not tested
-  return getRoot(id)
-    .then(instance => {
-      return getDescendantsRecursively(instance.id);
+  return getRoot(instanceId)
+    .then(instanceId => {
+      return getDescendantsRecursively(instanceId, depthFromRoot);
     });
 };
 

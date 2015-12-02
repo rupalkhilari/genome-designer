@@ -78,6 +78,6 @@ describe('getRecursively', () => {
 
   it('getComponents()');
 
-   //future
-   it('should return the constructed tree');
+  //future
+  it('should return the constructed tree');
 });
