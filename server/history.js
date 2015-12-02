@@ -70,6 +70,11 @@ export const getAncestors = (instanceId) => {
     });
 };
 
+/**
+ * @description Get immediate descendants
+ * @param instanceId {uuid}
+ * @returns {Promise<Array>} Array of direct children
+ */
 export const getDescendants = (instanceId) => {
   const descendencyKey = makeHistoryKey(instanceId);
   return getSafe(descendencyKey, {descendants: []})
@@ -93,6 +98,11 @@ export const getDescendantsRecursively = (instanceId, depth) => {
   );
 };
 
+/**
+ * @description Get the ancestor root i.e. oldest ancestor
+ * @param instanceId
+ * @returns {Promise<UUID>} ID of the root ancestor
+ */
 export const getRoot = (instanceId) => {
   return getAncestors(instanceId)
     .then(ancestors => {
@@ -104,7 +114,12 @@ export const getRoot = (instanceId) => {
     });
 };
 
-//get root, get whole tree
+/**
+ * @description Goes to instance's ancestry root, then retrieves whole tree of descendants
+ * @param instanceId
+ * @param depthFromRoot {number}
+ * @returns {Promise<Object>}
+ */
 export const getTree = (id) => {
   //not tested
   return getRoot(id)

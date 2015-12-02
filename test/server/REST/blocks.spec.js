@@ -38,7 +38,7 @@ describe('REST', () => {
       const block = Object.assign({}, exampleBlock);
       delete block.id;
 
-      request(server)        
+      request(server)
         .post('/api/block')
         .set('session-key', sessionKey)
         .send(block)

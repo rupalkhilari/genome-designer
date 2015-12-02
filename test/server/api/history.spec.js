@@ -70,7 +70,7 @@ describe('History', () => {
       return Promise.all([checkAncestry, checkDescendants]);
     });
 
-    it('should push to array for multiple descendents', () => {
+    it('should push to array for multiple descendants', () => {
       const descendant2 = createDescendant(instance);
       return record(descendant2.id, instance.id)
         .then(([descendantHistory, instanceHistory]) => {

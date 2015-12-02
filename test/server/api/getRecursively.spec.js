@@ -44,7 +44,7 @@ describe('getRecursively', () => {
   it('should fetch a recursive structure', () => {
     return getRecursively([rootId])
       .then(result => {
-        const { leaves, tree, ...instances } = result;
+        const { leaves, tree, ...instances } = result; //eslint-disable-line
         expect(instances).to.eql(flattened);
       });
   });
@@ -52,7 +52,7 @@ describe('getRecursively', () => {
   it('have the correct leaves', () => {
     return getRecursively([rootId])
       .then(result => {
-        const { leaves, tree, ...instances } = result;
+        const { leaves, tree, ...instances } = result; //eslint-disable-line
         expect(leaves).to.eql(leaves);
       });
   });
@@ -63,7 +63,7 @@ describe('getRecursively', () => {
     const shortDepth = treeDepth - 2;
     return getRecursively([rootId], componentField, shortDepth)
       .then(result => {
-        const { leaves, tree, ...instances } = result;
+        const { leaves, tree, ...instances } = result; //eslint-disable-line
 
         //start with 1, for the root node
         //reduce to get number of expected children...

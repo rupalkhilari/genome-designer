@@ -21,7 +21,7 @@ describe('REST', () => {
     describe('/ancestors', () => {
 
     });
-    describe('/descendents', () => {
+    describe('/descendants', () => {
 
     });
   });
