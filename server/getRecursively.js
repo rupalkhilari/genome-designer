@@ -17,6 +17,7 @@ function getInstances(ids = []) {
  @param {Object} result Dictionary, used for recursing. expects field `leaves`.
  @return {Promise<Object>} result dictionary with IDs which are all ids, and a field `leaves` with the leaf nodes of the tree, and field `tree` which is an object noting the hierarchy
  **/
+ //todo - save tree structure
 function getRecursively(ids = [],
                         field = 'components',
                         recursionDepth = 5,

@@ -20,21 +20,21 @@ export const createDescendant = (instance) => {
  * @description Record parent-child info in the database
  * @param {uuid} childId
  * @param {uuid} parentId
- @return {Promise} array, where [0] is ancestry of child, [1] is descendants of parent, and each takes the form:
+ * @return {Promise} array, where [0] is ancestry of child, [1] is descendants of parent, and each takes the form:
  * {
  *   id: ID of the relevant instance
  *   ancestors: all ancestors as an array, where index=0 is the direct parent
  *   descendants: direct descendants of the instance
  * }
  */
-export const record = (childId, parentId) => {  
+export const record = (childId, parentId) => {
   const ancestryKey = makeHistoryKey(childId);
   const descendantsKey = makeHistoryKey(parentId);
 
   return getSafe(descendantsKey, {id: parentId, ancestors: [], descendants: []})
     .then(history => {
       const { ancestors, descendants } = history;
-      
+
       //Ancestors consists of the entire history of the instance, i.e. all parents up to the root
       const newAncestors = {
         id: childId,
@@ -52,7 +52,6 @@ export const record = (childId, parentId) => {
         set(descendantsKey, newDescendants),
       ]);
     });
-
   
 };
 
