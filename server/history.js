@@ -66,7 +66,7 @@ export const getAncestors = (instanceId) => {
   const ancestryKey = makeHistoryKey(instanceId);
   return getSafe(ancestryKey, {ancestors: []})
     .then(history => {
-      return history.ancestors;
+      return history.ancestors || [];
     });
 };
 
@@ -74,7 +74,7 @@ export const getDescendants = (instanceId) => {
   const descendencyKey = makeHistoryKey(instanceId);
   return getSafe(descendencyKey, {descendants: []})
   .then(history => {
-    return history.descendants;
+    return history.descendants || [];
   });
 };
 
@@ -96,8 +96,11 @@ export const getDescendantsRecursively = (instanceId, depth) => {
 export const getRoot = (instanceId) => {
   return getAncestors(instanceId)
     .then(result => {
-      (result.leaves.length > 1) && console.error('more than one root', result.leaves); //eslint-disable-line
-      return result.leaves[0];
+      if (result.ancestors && result.ancestors.length > 0) {
+        return result.ancestors[0];
+      } else {
+        return null;
+      }
     });
 };
 
