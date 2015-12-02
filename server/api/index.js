@@ -8,9 +8,6 @@ import { validateBlock, validateProject, assertValidId } from '../validation';
 import { validateSessionKey, validateLoginCredentials } from '../authentication';
 import { getComponents } from '../getRecursively';
 
-import BlockDefinition from '../../src/schemas/Block';
-import ProjectDefinition from '../../src/schemas/Project';
-
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
   strict: false, //allow values other than arrays and objects
