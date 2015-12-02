@@ -1,8 +1,8 @@
 import chai from 'chai';
 import generateTree, { flattenTree } from '../../utils/tree';
 import range from '../../../src/utils/array/range';
-import { set as dbSet, get as dbGet, getSafe as dbGetSafe } from '../../../server/database';
-import getRecursively, { getParents, getComponents } from '../../../server/getRecursively';
+import { set as dbSet } from '../../../server/database';
+import getRecursively from '../../../server/getRecursively';
 
 const { expect } = chai;
 
@@ -32,7 +32,7 @@ describe('getRecursively', () => {
       });
   });
 
-  it('should resolve for no inputs with empty tree and leaves', () => {
+  it('should resolve for no inputs with empty leaves', () => {
     return getRecursively([]).then(val => {
       expect(val).to.eql({leaves: []});
     });

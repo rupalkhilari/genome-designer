@@ -39,12 +39,12 @@ export const record = (childId, parentId) => {
       const newAncestors = {
         id: childId,
         ancestors: [parentId].concat(ancestors),
-        descendants: []
+        descendants: [],
       };
 
       //descendants only goes one level deep
       const newDescendants = Object.assign(history, {
-        descendants: descendants.concat(childId)
+        descendants: descendants.concat(childId),
       });
 
       return Promise.all([
@@ -52,7 +52,6 @@ export const record = (childId, parentId) => {
         set(descendantsKey, newDescendants),
       ]);
     });
-  
 };
 
 /**
@@ -63,9 +62,7 @@ export const record = (childId, parentId) => {
 export const getAncestors = (instanceId) => {
   const ancestryKey = makeHistoryKey(instanceId);
   return getSafe(ancestryKey, {ancestors: []})
-    .then(history => {
-      return history.ancestors || [];
-    });
+    .then(history => history.ancestors);
 };
 
 /**
@@ -76,11 +73,8 @@ export const getAncestors = (instanceId) => {
 export const getDescendants = (instanceId) => {
   const descendencyKey = makeHistoryKey(instanceId);
   return getSafe(descendencyKey, {descendants: []})
-  .then(history => {
-    return history.descendants || [];
-  });
+    .then(history => history.descendants);
 };
-
 
 /**
  * @description Recursively retrieves descendants for an instance
@@ -113,7 +107,7 @@ export const getRoot = (instanceId) => {
  * @returns {Promise<Object>}
  */
 export const getTree = (instanceId, depthFromRoot) => {
-  //not tested
+  //untested
   return getRoot(instanceId)
     .then(instanceId => {
       return getDescendantsRecursively(instanceId, depthFromRoot);
