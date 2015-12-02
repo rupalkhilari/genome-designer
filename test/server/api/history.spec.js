@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import uuid from 'node-uuid';
-import { Block as exampleBlock } from '../../schemas/examples';
+import { Block as exampleBlock } from '../../schemas/_examples';
 import { getSafe as dbGetSafe } from '../../../server/database';
 import { createDescendant, record, makeHistoryKey, getAncestors, getDescendants, getRoot, getDescendantsRecursively } from '../../../server/history';
 

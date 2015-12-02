@@ -11,7 +11,7 @@ import semverRegex from 'semver-regex';
  * let validator = number({min:5});
  * validator(4); //false
  * validator(40); //true
-*/
+ */
 
 export const id = params => input => {
   //todo - real validation
@@ -154,11 +154,11 @@ export const shape = (fields, {required = false} = {}) => input => {
   }
 
   const checker = (key) => {
-    safeValidate(fields[key], key, input[key]);
+    return safeValidate(fields[key], required, input[key]);
   };
 
   if (!Object.keys(fields).every(checker)) {
-    return new Error(`input ${input} passed to arrayOf did not pass validation`);
+    return new Error(`input ${input} passed to shape did not pass validation`);
   }
 };
 
@@ -180,8 +180,8 @@ export const oneOfType = (types, {required = false} = {}) => input => {
 
   const checker = type => {
     return isFunction(type) ?
-           safeValidate(type, required, input) :
-           input instanceof type;
+      safeValidate(type, required, input) :
+    input instanceof type;
   };
 
   if (!types.some(checker)) {
@@ -191,11 +191,15 @@ export const oneOfType = (types, {required = false} = {}) => input => {
 
 export const arrayOf = (validator, {required = false} = {}) => input => {
   if (!isFunction(validator)) {
-    return new Error(`validatr ${validator} passed to arrayOf is not a function`);
+    return new Error(`validator ${validator} passed to arrayOf is not a function`);
   }
 
   if (!Array.isArray(input)) {
     return new Error(`input ${input} passed to arrayOf is not an array`);
+  }
+
+  if (required && !input.length) {
+    return new Error(`this arrayOf requires values, but got an empty array: ${input}`);
   }
 
   if (!input.every(item => safeValidate(validator, required, item))) {
