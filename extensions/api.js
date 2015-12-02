@@ -1,7 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import { runNode, getNodeDir, buildNodeContainer } from './cloudRun';
-import { validateSessionKey } from '../server/authentication';
+import { validateSessionKey } from './authentication';
 
 const fs = require('fs'), path = require('path');
 const yaml = require('yamljs');
@@ -37,7 +37,7 @@ function startAllDockerBuildsAsync(dir) {
 }
 
 router.init = function() {
-  startAllDockerBuildsAsync("extensions/cloud");
+  startAllDockerBuildsAsync("cloud");
 };
 
 router.post('/run/:id', jsonParser, (req, resp) => {

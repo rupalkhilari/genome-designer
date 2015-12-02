@@ -14,7 +14,7 @@ ADD package.json /app/package.json
 RUN cd /app && npm install
 RUN npm update -g npm
 
-EXPOSE 3001
+EXPOSE 3000
 WORKDIR /app
 ADD . /app
 
@@ -23,4 +23,4 @@ ENTRYPOINT npm run start
 
 #commands: 
 #docker build -t "genome-designer-ext" .
-#docker run --privileged=true -i -p 3001:3001 -t genome-designer-ext /bin/bash
+#docker run --privileged=true -i -p 3001:3000 -t genome-designer-ext /bin/bash

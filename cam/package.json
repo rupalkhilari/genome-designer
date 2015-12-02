@@ -4,16 +4,9 @@
   "description": "Genome Designer",
   "main": "index.js",
   "scripts": {
-    "clean": "rimraf lib dist coverage",
     "check": "npm run lint && npm run test",
     "start": "babel-node server.js",
-    "lint": "eslint src; exit 0;",
-    "lint-jscs": "jscs src",
-    "test": "NODE_ENV=test mocha --recursive --compilers js:babel-core/register --require ./test/setup.js",
-    "test-server": "NODE_ENV=test mocha ./test/server --recursive --compilers js:babel-core/register",
-    "test:watch": "npm test -- --watch",
-    "nightwatch": "./node_modules/nightwatch/bin/nightwatch",
-    "postinstall": "./node_modules/selenium-standalone/bin/selenium-standalone install"
+    "lint": "eslint src; exit 0;"
   },
   "repository": {
     "type": "git",
