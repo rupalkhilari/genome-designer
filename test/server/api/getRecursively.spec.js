@@ -13,7 +13,7 @@ describe('getRecursively', () => {
   const exampleTree = generateTree(treeDepth, treeNumberChildren, componentField);
   const flattened = flattenTree(exampleTree, componentField);
   const rootId = exampleTree.id;
-  const leaves = flattened.leaves;
+  const savedLeaves = flattened.leaves;
   delete flattened.leaves;
 
   before(() => {
@@ -53,7 +53,7 @@ describe('getRecursively', () => {
     return getRecursively([rootId])
       .then(result => {
         const { leaves, tree, ...instances } = result; //eslint-disable-line
-        expect(leaves).to.eql(leaves);
+        expect(leaves).to.eql(savedLeaves);
       });
   });
 
@@ -76,6 +76,8 @@ describe('getRecursively', () => {
       });
   });
 
-  //future
-  it('should return the constructed tree');
+  it('getComponents()');
+
+   //future
+   it('should return the constructed tree');
 });
