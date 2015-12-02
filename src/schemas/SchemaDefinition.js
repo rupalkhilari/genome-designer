@@ -52,7 +52,7 @@ export default class SchemaDefinition {
       //note - should not error using our validators. Might want to try-catch though, e.g. if we allow custom validator functions
       const isValid = validator(instanceFieldValue);
 
-      if (!isValid) {
+      if (!isValid && process.env.NODE_ENV !== 'production') {
         console.error(`Invalid: Field ${field.name} of type ${field.type}. Got ${instanceFieldValue}. (${field.description || field.typeDescription})`);
       }
 
