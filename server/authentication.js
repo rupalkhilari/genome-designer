@@ -8,8 +8,7 @@ const crypto = require("crypto");
 export const validateSessionKey = (key) => {
   return dbGet(key).then( result => {
      return Promise.resolve(true);
-   }).catch( err => {     
-     console.log("Session Key is Invalid")
+   }).catch( err => {
      return Promise.reject("Session Key is invalid");
    });
 }
@@ -26,7 +25,6 @@ export const validateLoginCredentials = (user, pw) => {
     return dbSet(sha1, info).then(result => {
         return Promise.resolve(sha1);
     }).catch(err => {
-        console.log("Session Key could not be saved!")
         return Promise.reject("Session key could not be generated");
     });
 }
