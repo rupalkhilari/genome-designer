@@ -1,15 +1,10 @@
 import { expect } from 'chai';
-import uuid from 'node-uuid';
+import uuid from 'uuid';
 import { Block as exampleBlock } from '../../schemas/examples';
-import { getSafe as dbGetSafe } from '../../../server/database';
-import { createDescendant, record, makeHistoryKey, getAncestors, getDescendants, getRoot, getDescendantsRecursively } from '../../../server/history';
+import { get as dbGet, set as dbSet, getSafe as dbGetSafe } from '../../../server/database';
+import { createDescendant, record, makeHistoryKey, getTree, getDescendants, getAncestors, getRoot } from '../../../server/history';
 
-describe('History', () => {
-  it('makeHistoryKey() should append "-history"', () => {
-    const key = 'blah';
-    expect(makeHistoryKey(key) === key + '-history');
-  });
-
+describe.only('History', () => {
   describe('createDescendant()', () => {
     const dummyInstance = {
       id: 'some-cool-id',
@@ -78,6 +73,7 @@ describe('History', () => {
           expect(instanceHistory.descendants).to.eql([descendant.id, descendant2.id]);
         });
     });
+
   });
 
   describe('[Tree functions]', () => {
@@ -88,7 +84,7 @@ describe('History', () => {
     const levelFour = createDescendant(levelThree);
     const levelFourAlt = createDescendant(levelThree);
 
-    //console.log([levelOne, levelTwo, levelThree, levelFour, levelFourAlt].map(inst => inst.id));
+    console.log([levelOne, levelTwo, levelThree, levelFour, levelFourAlt].map(inst => inst.id));
 
     before(() => {
       //these need to run sequentually so they dont overwrite each other...
@@ -116,55 +112,37 @@ describe('History', () => {
           })]);
       });
 
+      //todo
       it('should return dictionary where values are parents of keys');
       it('should support tree structure');
     });
 
     describe('getDescendants()', () => {
-      it('should get direct descendants as an array', () => {
-        return getDescendants(levelOne.id).then(result => {
-          expect(Array.isArray(result)).to.equal(true);
-          expect(result).to.eql([levelTwo.id]);
-        });
-      });
-    });
-
-    describe('getDescendantsRecursively()', () => {
       it('should get all descendants', () => {
-        return getDescendantsRecursively(levelOne.id).then(result => {
-          delete result.leaves;
+        return getDescendants(levelOne.id).then(result => {
+          delete result.tree;
+          delete result.leaves
           //5 including itself
+          expect(Object.keys(result).length).to.equal(5);
           expect(Object.keys(result).length).to.equal(5);
         });
       });
 
+      //todo
       it('should return dictionary where values are parents of keys');
       it('should support tree structure');
     });
 
-    describe('getRoot()', () => {
-      it('should retrieve the root instance given a node in its tree', () => {
-        return Promise.all([
-          getRoot(levelThree.id).then(result => {
-            expect(result).to.equal(levelOne.id);
-          }),
-          getRoot(levelFourAlt.id).then(result => {
-            expect(result).to.equal(levelOne.id);
-          }),
-        ]);
-      });
+    describe('getTree()', () => {
 
-      it('should return null if there are no parents', () => {
-        return getRoot(levelOne.id).then(result => {
-          expect(result).to.eql(null);
-        });
-      });
     });
 
-    describe('getTree()', () => {
+    describe('getRoot()', () => {
+      it('should retrieve the root instance given a node in its tree');
     });
 
     describe('getLeaves()', () => {
+
     });
   });
 });

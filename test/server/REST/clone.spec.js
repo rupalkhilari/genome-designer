@@ -82,6 +82,7 @@ describe('REST', () => {
             expect(descendent.id).to.not.equal(parent.id);
             expect(descendent.parent).to.equal(parent.id);
             expect(descendent.other).to.equal(parent.other);
+            console.log(descendent);
           })
           .expect(200, testClone);
       }
