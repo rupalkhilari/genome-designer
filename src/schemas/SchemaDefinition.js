@@ -53,7 +53,7 @@ export default class SchemaDefinition {
       const isValid = validator(instanceFieldValue);
 
       if (!isValid && process.env.NODE_ENV !== 'production') {
-        console.error(`Invalid: Field ${field.name} of type ${field.type}. Got ${instanceFieldValue}. (${field.description || field.typeDescription})`);
+        console.error(`Invalid: Field ${field.name} of type ${field.type}. Got ${instanceFieldValue}. (${field.description || field.typeDescription})`); //eslint-disable-line
       }
 
       return isValid;

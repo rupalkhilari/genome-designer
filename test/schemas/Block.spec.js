@@ -8,7 +8,7 @@ describe('Schema', () => {
       expect(BlockDefinition.validate(exampleBlock)).to.equal(true);
     });
 
-    it.only('should create a valid scaffold', () => {
+    it('should create a valid scaffold', () => {
       const scaffold = BlockDefinition.scaffold();
       //console.log(scaffold);
       expect(scaffold).to.be.an.object;
