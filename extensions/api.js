@@ -35,9 +35,7 @@ function startAllDockerBuildsAsync(dir) {
 
 }
 
-router.init = function() {
-  startAllDockerBuildsAsync("cloud");
-};
+startAllDockerBuildsAsync("extensions/cloud"); //start loading
 
 router.post('/run/:id', jsonParser, (req, resp) => {
   const { id } = req.params;

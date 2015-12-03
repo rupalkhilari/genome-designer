@@ -8,7 +8,8 @@ var port = parseInt(process.argv[2]) || process.env.PORT ||  DEFAULT_PORT;
 var hostname = '0.0.0.0';
 
 var apiRouter = require('./server/api');
-var extRouter = require('./extensions');
+var extRouter = require('./extensions/api');
+var camRouter = require('./cam/api');
 
 var app = express();
 var compiler = webpack(config);
@@ -32,6 +33,7 @@ app.use(require('webpack-hot-middleware')(compiler));
 
 app.use('/api', apiRouter);
 app.use('/extensions', extRouter);
+app.use('/cam', camRouter);
 
 
 // Register Client Requests, delegate routing to client

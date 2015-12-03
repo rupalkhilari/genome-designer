@@ -29,7 +29,11 @@ WORKDIR /app
 ADD . /app
 
 #start redis, docker, and then node server
-ENTRYPOINT touch ../redis.conf && redis-server ../redis.conf & service docker start
+RUN touch /redis.conf
+RUN usermod -aG docker root
+
+ENTRYPOINT service docker start && redis-server /redis.conf & npm run start
+
 
 #commands: 
 #docker build -t "genome-designer" .

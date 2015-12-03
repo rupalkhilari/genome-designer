@@ -59,5 +59,5 @@ export const buildNodeContainer = (id) => {
 };
 
 export const getNodeDir = (id) => {
-    return process.cwd() + "/cloud/" + id;
+    return process.cwd() + "/extensions/cloud/" + id;
 };
