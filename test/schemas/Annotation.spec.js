@@ -1,5 +1,5 @@
 import AnnotationDefinition from '../../src/schemas/Annotation';
-import { Annotation as exampleAnnotation } from './examples';
+import { Annotation as exampleAnnotation } from './_examples';
 import chai from 'chai';
 
 const { assert } = chai;

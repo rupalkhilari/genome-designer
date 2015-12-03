@@ -28,6 +28,8 @@ export default class SchemaDefinition {
     this.fields = createFields(fieldDefinitions);
   }
 
+  //todo - should be able to extend the class directly, rather than calling extend()
+
   extend(childDefinitions) {
     return new SchemaDefinition(Object.assign({},
       this.definitions,
@@ -39,16 +41,20 @@ export default class SchemaDefinition {
     return new SchemaDefinition(this.definitions);
   }
 
-  validate(schema = {}) {
+  validate(instance = {}) {
     return Object.keys(this.fields).every(fieldName => {
-      const schemaValue = schema[fieldName];
+      const instanceFieldValue = instance[fieldName];
       const field = this.fields[fieldName];
 
       //need to bind field in case it's a schema
       const validator = field.validate.bind(field);
 
       //note - should not error using our validators. Might want to try-catch though, e.g. if we allow custom validator functions
-      const isValid = validator(schemaValue);
+      const isValid = validator(instanceFieldValue);
+
+      if (!isValid && process.env.NODE_ENV !== 'production') {
+        console.error(`Invalid: Field ${field.name} of type ${field.type}. Got ${instanceFieldValue}. (${field.description || field.typeDescription})`); //eslint-disable-line
+      }
 
       return isValid;
     });
@@ -59,6 +65,16 @@ export default class SchemaDefinition {
       field.description ||
       field.typeDescription ||
       '<no description>'
+    ));
+  }
+
+  scaffold() {
+    const defaultScaffoldValue = null;
+
+    return mapValues(this.fields, field => (
+      typeof field.scaffold === 'function' ?
+        field.scaffold() :
+        defaultScaffoldValue
     ));
   }
 }
