@@ -5,7 +5,7 @@ import { createDescendant, record, getAncestors, getDescendantsRecursively } fro
 import { get as dbGet, getSafe as dbGetSafe, set as dbSet } from '../database';
 import { errorDoesNotExist, errorNoIdProvided, errorInvalidSessionKey, errorInvalidModel, errorInvalidRoute } from '../errors';
 import { validateBlock, validateProject, assertValidId } from '../validation';
-import { validateSessionKey, validateLoginCredentials } from '../authentication';
+import { validateSessionKey, validateLoginCredentials, sessionMiddleware } from '../authentication';
 import { getComponents } from '../getRecursively';
 
 const router = express.Router(); //eslint-disable-line new-cap
@@ -21,16 +21,19 @@ function paramIsTruthy(param) {
  Login and session validator
  ****************************/
 
+//todo - likely want to move this out of the API itself and expose as root route
 router.get('/login', (req, res) => {
   const { user, password } = req.params;
-  //TODO once we have authentication: check if id/pw is correct
-  validateLoginCredentials(user, password).then(key => {
-    res.json({'session-key': key});
-  }).catch(err => {
-    console.log(err);
-    res.status(403).send(errorInvalidSessionKey);
-  });
+  validateLoginCredentials(user, password)
+    .then(key => {
+      res.json({'session-key': key});
+    })
+    .catch(err => {
+      res.status(403).send(errorInvalidSessionKey);
+    });
 });
+
+router.use(sessionMiddleware);
 
 /*********************************
  GET
@@ -40,81 +43,66 @@ router.get('/login', (req, res) => {
 router.get('/project/:id', (req, res) => {
   const { id } = req.params;
   const { tree } = req.query;
-  const key = req.headers['session-key'];
 
-  validateSessionKey(key).then(valid => {
-    if (paramIsTruthy(tree)) {
-      Promise
-        .all([
-          dbGetSafe(id),
-          getComponents(id),
-        ])
-        .then(([inst, comps]) => {
-          res.json({
-            instance: inst,
-            components: comps,
-          });
-        })
-        .catch(err => res.status(500).send(err.message));
-    } else {
-      dbGetSafe(id)
-        .then(result => res.json(result))
-        .catch(err => res.status(500).send(err.message));
-    }
-  }).catch(err => res.status(403).send(errorInvalidSessionKey));
+  if (paramIsTruthy(tree)) {
+    Promise
+      .all([
+        dbGetSafe(id),
+        getComponents(id),
+      ])
+      .then(([inst, comps]) => {
+        res.json({
+          instance: inst,
+          components: comps,
+        });
+      })
+      .catch(err => res.status(500).send(err.message));
+  } else {
+    dbGetSafe(id)
+      .then(result => res.json(result))
+      .catch(err => res.status(500).send(err.message));
+  }
 });
 
 router.get('/block/:id', (req, res) => {
   const { id } = req.params;
   const { tree } = req.query;
-  const key = req.headers['session-key'];
 
-  validateSessionKey(key).then(valid => {
-
-    if (paramIsTruthy(tree)) {
-      Promise
-        .all([
-          dbGetSafe(id),
-          getComponents(id),
-        ])
-        .then(([inst, comps]) => {
-          res.json({
-            instance: inst,
-            components: comps,
-          });
-        })
-        .catch(err => res.status(500).send(err.message));
-    } else {
-      dbGetSafe(id)
-        .then(result => res.json(result))
-        .catch(err => res.status(500).send(err.message));
-    }
-
-  }).catch(err => res.status(403).send(errorInvalidSessionKey));
+  if (paramIsTruthy(tree)) {
+    Promise
+      .all([
+        dbGetSafe(id),
+        getComponents(id),
+      ])
+      .then(([inst, comps]) => {
+        res.json({
+          instance: inst,
+          components: comps,
+        });
+      })
+      .catch(err => res.status(500).send(err.message));
+  } else {
+    dbGetSafe(id)
+      .then(result => res.json(result))
+      .catch(err => res.status(500).send(err.message));
+  }
 });
 
 router.get('/ancestors/:id', (req, res) => {
   const { id } = req.params;
-  const key = req.headers['session-key'];
 
-  validateSessionKey(key).then(valid => {
-    getAncestors(id)
-      .then(result => res.json(result))
-      .catch(err => res.status(500).send(err.message));
-  }).catch(err => res.status(403).send(errorInvalidSessionKey));
+  getAncestors(id)
+    .then(result => res.json(result))
+    .catch(err => res.status(500).send(err.message));
 });
 
 router.get('/descendants/:id', (req, res) => {
   const { id } = req.params;
   const { depth } = req.query;
-  const key = req.headers['session-key'];
 
-  validateSessionKey(key).then(valid => {
-    getDescendantsRecursively(id, depth)
-      .then(result => res.json(result))
-      .catch(err => res.status(500).send(err.message));
-
-  }).catch(err => res.status(403).send(errorInvalidSessionKey));
+  getDescendantsRecursively(id, depth)
+    .then(result => res.json(result))
+    .catch(err => res.status(500).send(err.message));
 });
 
 /*********************************
@@ -127,45 +115,35 @@ router.get('/descendants/:id', (req, res) => {
  *********************************/
 
 router.post('/project', jsonParser, (req, res) => {
-  const key = req.headers['session-key'];
+  const data = req.body;
+  const id = uuid.v4();
+  Object.assign(data, {
+    id,
+  });
 
-  validateSessionKey(key).then(valid => {
-    const data = req.body;
-    const id = uuid.v4();
-    Object.assign(data, {
-      id,
-    });
-
-    if (validateProject(data)) {
-      dbSet(id, data)
-        .then(result => res.json(result))
-        .catch(err => res.status(500).err(err.message));
-    } else {
-      res.status(400).send(errorInvalidModel);
-    }
-
-  }).catch(err => res.status(403).send(errorInvalidSessionKey));
+  if (validateProject(data)) {
+    dbSet(id, data)
+      .then(result => res.json(result))
+      .catch(err => res.status(500).err(err.message));
+  } else {
+    res.status(400).send(errorInvalidModel);
+  }
 });
 
 router.post('/block', jsonParser, (req, res) => {
-  const key = req.headers['session-key'];
+  const data = req.body;
+  const id = uuid.v4();
+  Object.assign(data, {
+    id,
+  });
 
-  validateSessionKey(key).then(valid => {
-    const data = req.body;
-    const id = uuid.v4();
-    Object.assign(data, {
-      id,
-    });
-
-    if (validateBlock(data)) {
-      dbSet(id, data)
-        .then(result => res.json(result))
-        .catch(err => res.status(500).err(err.message));
-    } else {
-      res.status(400).send(errorInvalidModel);
-    }
-
-  }).catch(err => res.status(403).send(errorInvalidSessionKey));
+  if (validateBlock(data)) {
+    dbSet(id, data)
+      .then(result => res.json(result))
+      .catch(err => res.status(500).err(err.message));
+  } else {
+    res.status(400).send(errorInvalidModel);
+  }
 });
 
 /*********************************
@@ -175,72 +153,59 @@ router.post('/block', jsonParser, (req, res) => {
  *********************************/
 
 router.put('/project/:id', jsonParser, (req, res) => {
-  const key = req.headers['session-key'];
+  const { id } = req.params;
+  const data = req.body;
+  Object.assign(data, {
+    id,
+  });
 
-  validateSessionKey(key).then(valid => {
-    const { id } = req.params;
-    const data = req.body;
-    Object.assign(data, {
-      id,
-    });
-
-    //Check that the input is a valid Project
-    if (validateProject(data)) {
-      dbSet(id, data)
-        .then(result => res.json(result))
-        .catch(err => res.status(500).send(err.message));
-    } else {
-      res.status(400).send(errorInvalidModel);
-    }
-  }).catch(err => res.status(403).send(errorInvalidSessionKey));
+  //Check that the input is a valid Project
+  if (validateProject(data)) {
+    dbSet(id, data)
+      .then(result => res.json(result))
+      .catch(err => res.status(500).send(err.message));
+  } else {
+    res.status(400).send(errorInvalidModel);
+  }
 });
 
 router.put('/block/:id', jsonParser, (req, res) => {
-  const key = req.headers['session-key'];
+  const { id } = req.params;
+  const data = req.body;
+  Object.assign(data, {
+    id,
+  });
 
-  validateSessionKey(key).then(valid => {
-    const { id } = req.params;
-    const data = req.body;
-    Object.assign(data, {
-      id,
-    });
-
-    if (validateBlock(data)) {
-      dbSet(id, data)
-        .then(result => res.json(result))
-        .catch(err => res.status(500).send(err.message));
-    } else {
-      res.status(400).send(errorInvalidModel);
-    }
-  }).catch(err => res.status(403).send(errorInvalidSessionKey));
+  if (validateBlock(data)) {
+    dbSet(id, data)
+      .then(result => res.json(result))
+      .catch(err => res.status(500).send(err.message));
+  } else {
+    res.status(400).send(errorInvalidModel);
+  }
 });
 
 /**
  * Create a child instance
  */
 router.post('/clone/:id', (req, res) => {
-  const key = req.headers['session-key'];
   const { id } = req.params;
 
-  validateSessionKey(key).then(valid => {
-
-    dbGet(id)
-      .then(instance => {
-        const clone = createDescendant(instance);
-        return dbSet(clone.id, clone)
-          .then(() => {
-            return record(clone.id, instance.id);
-          })
-          .then(() => clone);
-      })
-      .catch(err => {
-        res.status(500).send(err.message);
-      })
-      .then(clone => {
-        res.json(clone);
-      });
-
-  }).catch(err => res.status(403).send(errorInvalidSessionKey));
+  dbGet(id)
+    .then(instance => {
+      const clone = createDescendant(instance);
+      return dbSet(clone.id, clone)
+        .then(() => {
+          return record(clone.id, instance.id);
+        })
+        .then(() => clone);
+    })
+    .catch(err => {
+      res.status(500).send(err.message);
+    })
+    .then(clone => {
+      res.json(clone);
+    });
 });
 
 //default catch

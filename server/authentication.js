@@ -40,3 +40,10 @@ export const validateLoginCredentials = (user, pw) => {
 export const cleanUpSessionKeys = () => {
   //TODO
 };
+
+export const sessionMiddleware = (req, res, next) => {
+  const key = req.headers['session-key'];
+  return validateSessionKey(key)
+    .then(() => { next(); })
+    .catch(() => { res.status(403).send(errorInvalidSessionKey); });
+};

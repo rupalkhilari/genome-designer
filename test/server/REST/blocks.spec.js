@@ -7,10 +7,10 @@ const devServer = require('../../../devServer');
 
 describe('REST', () => {
   let server;
-  let sessionKey = '123456';
-  beforeEach(() => {
+  const sessionKey = '123456';
+  beforeEach('server setup', () => {
     server = devServer.listen();
-    dbSet(sessionKey,{});
+    return dbSet(sessionKey, {});
   });
   afterEach(() => {
     server.close();
