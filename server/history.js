@@ -52,7 +52,6 @@ export const record = (childId, parentId) => {
         set(descendantsKey, newDescendants),
       ]);
     });
-
 };
 
 /**
@@ -72,8 +71,8 @@ export const getAncestors = (instanceId) => {
  * @returns {Promise<Array>} Array of direct children
  */
 export const getDescendants = (instanceId) => {
-  const descendancyKey = makeHistoryKey(instanceId);
-  return getSafe(descendancyKey, {descendants: []})
+  const descendencyKey = makeHistoryKey(instanceId);
+  return getSafe(descendencyKey, {descendants: []})
     .then(history => history.descendants);
 };
 
@@ -108,10 +107,10 @@ export const getRoot = (instanceId) => {
  * @returns {Promise<Object>}
  */
 export const getTree = (instanceId, depthFromRoot) => {
-  //todo - test
+  //untested
   return getRoot(instanceId)
     .then(instanceId => {
-      return getDescendants(instanceId, depthFromRoot);
+      return getDescendantsRecursively(instanceId, depthFromRoot);
     });
 };
 

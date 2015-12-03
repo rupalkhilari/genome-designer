@@ -11,6 +11,7 @@ RUN cd redis-stable; make; make install
 
 ADD package.json /app/package.json
 RUN cd /app && npm install
+RUN npm update -g npm
 
 EXPOSE 3000
 ENV PORT=3000
@@ -18,7 +19,4 @@ ENV PORT=3000
 WORKDIR /app
 ADD . /app
 
-#start redis
-CMD redis-server
-
-CMD ["npm", "run", "start"]
+ENTRYPOINT touch ../redis.conf && redis-server ../redis.conf & npm run start

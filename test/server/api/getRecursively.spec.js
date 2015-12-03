@@ -1,7 +1,7 @@
 import chai from 'chai';
 import generateTree, { flattenTree } from '../../utils/tree';
 import range from '../../../src/utils/array/range';
-import { set as dbSet} from '../../../server/database';
+import { set as dbSet } from '../../../server/database';
 import getRecursively from '../../../server/getRecursively';
 
 const { expect } = chai;

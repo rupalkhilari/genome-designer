@@ -1,10 +1,11 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import uuid from 'node-uuid';
-import { createDescendant, record, getAncestors, getDescendants, getTree } from '../history';
+import { createDescendant, record, getAncestors, getDescendantsRecursively } from '../history';
 import { get as dbGet, getSafe as dbGetSafe, set as dbSet } from '../database';
-import { errorDoesNotExist, errorNoIdProvided, errorInvalidModel, errorInvalidRoute } from '../errors';
+import { errorDoesNotExist, errorNoIdProvided, errorInvalidSessionKey, errorInvalidModel, errorInvalidRoute } from '../errors';
 import { validateBlock, validateProject, assertValidId } from '../validation';
+import { validateSessionKey, validateLoginCredentials, sessionMiddleware } from '../authentication';
 import { getComponents } from '../getRecursively';
 
 const router = express.Router(); //eslint-disable-line new-cap
@@ -15,6 +16,24 @@ const jsonParser = bodyParser.json({
 function paramIsTruthy(param) {
   return param !== undefined && param !== 'false';
 }
+
+/***************************
+ Login and session validator
+ ****************************/
+
+//todo - likely want to move this out of the API itself and expose as root route
+router.get('/login', (req, res) => {
+  const { user, password } = req.params;
+  validateLoginCredentials(user, password)
+    .then(key => {
+      res.json({'session-key': key});
+    })
+    .catch(err => {
+      res.status(403).send(errorInvalidSessionKey);
+    });
+});
+
+router.use(sessionMiddleware);
 
 /*********************************
  GET
@@ -71,6 +90,7 @@ router.get('/block/:id', (req, res) => {
 
 router.get('/ancestors/:id', (req, res) => {
   const { id } = req.params;
+
   getAncestors(id)
     .then(result => res.json(result))
     .catch(err => res.status(500).send(err.message));
@@ -78,7 +98,9 @@ router.get('/ancestors/:id', (req, res) => {
 
 router.get('/descendants/:id', (req, res) => {
   const { id } = req.params;
-  getDescendants(id)
+  const { depth } = req.query;
+
+  getDescendantsRecursively(id, depth)
     .then(result => res.json(result))
     .catch(err => res.status(500).send(err.message));
 });
@@ -102,7 +124,7 @@ router.post('/project', jsonParser, (req, res) => {
   if (validateProject(data)) {
     dbSet(id, data)
       .then(result => res.json(result))
-      .catch(err => res.err(err.message));
+      .catch(err => res.status(500).err(err.message));
   } else {
     res.status(400).send(errorInvalidModel);
   }
@@ -118,7 +140,7 @@ router.post('/block', jsonParser, (req, res) => {
   if (validateBlock(data)) {
     dbSet(id, data)
       .then(result => res.json(result))
-      .catch(err => res.err(err.message));
+      .catch(err => res.status(500).err(err.message));
   } else {
     res.status(400).send(errorInvalidModel);
   }
@@ -164,7 +186,7 @@ router.put('/block/:id', jsonParser, (req, res) => {
 });
 
 /**
- * Create a child element
+ * Create a child instance
  */
 router.post('/clone/:id', (req, res) => {
   const { id } = req.params;
@@ -191,4 +213,4 @@ router.use('*', (req, res) => {
   res.status(404).send(errorInvalidRoute);
 });
 
-module.exports = router;
+export default router;
