@@ -18,4 +18,6 @@ app.listen(port, hostname, function(err) {
   console.log('Building, will serve at http://' + hostname + ':' + port);
 });
 
+app.use('/', router);
+
 module.exports = app;

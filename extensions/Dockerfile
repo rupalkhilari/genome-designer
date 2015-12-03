@@ -25,8 +25,6 @@ ADD . /app
 
 RUN touch /redis.conf
 RUN usermod -aG docker root
-
-#start redis, docker, and then node server
 ENTRYPOINT service docker start && redis-server /redis.conf & npm run start
 
 #commands: 

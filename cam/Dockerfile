@@ -22,5 +22,5 @@ ADD . /app
 ENTRYPOINT npm run start
 
 #commands: 
-#docker build -t "genome-designer-ext" .
-#docker run --privileged=true -i -p 3001:3000 -t genome-designer-ext /bin/bash
+#docker build -t "genome-designer-cam" .
+#docker run --privileged=true -i -p 3001:3000 -t genome-designer-cam /bin/bash

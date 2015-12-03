@@ -11,24 +11,28 @@ export const runNode = (id) => {
   var dir = getNodeDir(id);
   
   var cmdRun = "docker run -v " + dir + "/inputs:/inputs -v " + dir + "/outputs:/outputs -i \"" + id + "\" &";
-
-  buildNodeContainer(id).then(result => {
+  console.log(cmdRun);
+  
+  return buildNodeContainer(id).then(result => {
 
             console.log("Done with Build...Running");
     
             return exec(cmdRun).then(result => {
 
                     console.log("Done with Run");
+                    return Promise.resolve(true)
 
                 }).catch(err => {
                     
                     //apparently, even warning messages trigger this section of exec, so it "usually" ok
                     console.log("Done with Run");
+                    return Promise.resolve(true)
 
                 });
         }).catch(err => {
 
             console.log(err);
+            return Promise.reject(err)
 
         });
 };

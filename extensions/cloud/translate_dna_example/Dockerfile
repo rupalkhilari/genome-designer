@@ -1,3 +1,7 @@
 FROM biopython/biopython
+
+RUN mv /biopython/Bio /usr/local/lib/python2.7/dist-packages/
+RUN mv /biopython/BioSQL /usr/local/lib/python2.7/dist-packages/
+
 COPY ./translate.py /translate.py
-CMD ["python3", "/translate.py"]
+CMD ["python", "/translate.py"]

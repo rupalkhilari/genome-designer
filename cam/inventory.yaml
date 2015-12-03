@@ -1,0 +1,16 @@
+name: example registry
+description: |
+      just an example
+parts:
+    - name: pTet
+      type: repressible promoter
+      author: NA
+    - name: pLac
+      type: repressible promoter
+      author: NA
+    - name: tetR
+      type: CDS
+      author: NA
+    - name: lacI
+      type: CDS
+      author: NA
