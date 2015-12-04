@@ -9,6 +9,7 @@ export default class InventoryGroupSbol extends Component {
       id: PropTypes.string.isRequired,
       metadata: PropTypes.shape({
         name: PropTypes.string.isRequired,
+        image: PropTypes.string.isRequired,
       }).isRequired,
     })).isRequired,
   }

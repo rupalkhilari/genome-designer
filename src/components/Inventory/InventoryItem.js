@@ -25,18 +25,21 @@ export default class InventoryItem extends Component {
     item: PropTypes.shape({
       metadata: PropTypes.shape({
         name: PropTypes.string.isRequired,
+        image: PropTypes.string,
       }).isRequired,
     }).isRequired,
   }
 
   render() {
     const { item, isDragging, connectDragSource } = this.props;
+    const imagePath = item.metadata.image;
 
     return connectDragSource(
-      <div>
-        <a className={'InventoryItem' + (isDragging ? ' isDragging' : '')}>
-          {item.metadata.name}
-        </a>
+      <div className={'InventoryItem' +
+        (isDragging ? ' isDragging' : '') +
+        (!!imagePath ? ' hasImage' : '')}>
+        {!!imagePath && <img className="InventoryItem-image" src={imagePath}/> }
+        <span className="InventoryItem-text">{item.metadata.name}</span>
       </div>
     );
   }

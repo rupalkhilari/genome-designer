@@ -3,9 +3,24 @@
 .InventoryItem {
   border-radius: 3px;
   padding: 1px 5px;
+  display: block;
 
   &:hover,
   &.isDragging {
     background-color: var(--colors-selected);
+  }
+
+  &.hasImage {
+    display: inline-block;
+    width: 50%;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  &-image {
+    width: 32px;
+    height: 32px;
+    margin-right: 0.5em;
+    background: white;
   }
 }
