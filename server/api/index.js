@@ -227,7 +227,6 @@ router.get('/file/:url', (req, res) => {
 });
 
 router.post('/file/:url', (req, res) => {
-  console.log("here");
   var { url } = req.params;
 
   var buffer = "";
@@ -246,7 +245,6 @@ router.post('/file/:url', (req, res) => {
     mkpath(path, (err) => {
 
       if (err) {
-        console.log(err.message);
         res.status(500).send(err.message);
       } else {
 
