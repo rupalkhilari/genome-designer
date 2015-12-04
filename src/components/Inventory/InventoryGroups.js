@@ -4,6 +4,8 @@ import InventoryTabs from './InventoryTabs';
 import InventoryGroupBlocks from './InventoryGroupBlocks';
 import InventoryGroupSbol from './InventoryGroupSbol';
 
+import '../../styles/InventoryGroups.css';
+
 const inventoryGroupTypeToComponent = (type, props) => {
   if (type === 'sbol') {
     return (<InventoryGroupSbol {...props} />);
@@ -32,8 +34,6 @@ export default class InventoryGroups extends Component {
       currentTabIndex: index,
     });
   }
-
-  //todo - handle scrolling CSS
 
   render() {
     const { currentTabIndex } = this.state;

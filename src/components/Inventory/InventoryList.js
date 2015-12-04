@@ -16,7 +16,7 @@ export default class InventoryList extends Component {
     const { items, inventoryType } = this.props;
 
     return (
-      <div className="InventoryListing">
+      <div className="InventoryList">
         {items.map(item => {
           return (
             <InventoryItem key={item.id}

@@ -4,16 +4,17 @@
   input,
   input:focus {
     width: 100%;
-    outline: 1px solid white;
+    outline: 0;
+    border: 1px solid white;
     margin: 0 0 0.5em;
     padding: 0.25em;
     background: transparent;
     color: white;
-    border: 0;
+    transition: border --var(--timing-fast) linear;
   }
 
   input:focus {
     outline-offset: 0;
-    outline: 1px solid var(--colors-selected);
+    border: 1px solid var(--colors-selected);
   }
 }
