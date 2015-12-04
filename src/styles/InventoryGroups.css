@@ -1,0 +1,12 @@
+.InventoryGroups {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.InventoryGroup {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding-bottom: 1em;
+}

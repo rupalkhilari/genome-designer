@@ -16,7 +16,7 @@ class GlobalNav extends Component {
     projectCreate: PropTypes.func.isRequired,
     pushState: PropTypes.func.isRequired,
     blockCreate: PropTypes.func.isRequired,
-    currentProjectId: PropTypes.string.isRequired,
+    currentProjectId: PropTypes.string,
     projectAddConstruct: PropTypes.func.isRequired,
     inventoryToggleVisibility: PropTypes.func.isRequired,
   }

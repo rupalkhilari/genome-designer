@@ -1,7 +1,5 @@
 import mapValues from '../utils/object/mapValues';
 
-//todo - support SchemaDefinition level validation function (across all fields)
-
 /**
  * @class SchemaDefinition
  * @param fieldDefinitions {Object} dictionary of field names to definitions. Definitions take the form:
@@ -28,8 +26,7 @@ export default class SchemaDefinition {
     this.fields = createFields(fieldDefinitions);
   }
 
-  //todo - should be able to extend the class directly, rather than calling extend()
-
+  //should you be able to extend the class directly, rather than calling extend()????
   extend(childDefinitions) {
     return new SchemaDefinition(Object.assign({},
       this.definitions,
@@ -41,7 +38,7 @@ export default class SchemaDefinition {
     return new SchemaDefinition(this.definitions);
   }
 
-  validate(instance = {}) {
+  validate(instance = {}, shouldThrow) {
     return Object.keys(this.fields).every(fieldName => {
       const instanceFieldValue = instance[fieldName];
       const field = this.fields[fieldName];
@@ -52,8 +49,14 @@ export default class SchemaDefinition {
       //note - should not error using our validators. Might want to try-catch though, e.g. if we allow custom validator functions
       const isValid = validator(instanceFieldValue);
 
-      if (!isValid && process.env.NODE_ENV !== 'production') {
-        console.error(`Invalid: Field ${field.name} of type ${field.type}. Got ${instanceFieldValue}. (${field.description || field.typeDescription})`); //eslint-disable-line
+      if (!isValid) {
+        const errorMessage = `Invalid: Field ${field.name} of type ${field.type}. Got ${instanceFieldValue}. (${field.description || field.typeDescription})`;
+
+        if (shouldThrow) {
+          throw Error(errorMessage);
+        } else if (process.env.NODE_ENV !== 'production') {
+          console.error(errorMessage); //eslint-disable-line
+        }
       }
 
       return isValid;
