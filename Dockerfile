@@ -37,4 +37,5 @@ ENTRYPOINT service docker start && redis-server /redis.conf & npm run start
 
 #commands: 
 #docker build -t "genome-designer" .
-#docker run --privileged=true -i -p 3000:3000 -t genome-designer /bin/bash
+#docker run --privileged=true -i -p 3000:3000 -t genome-designer
+#docker run -v /var/run/docker.sock:/var/run/docker.sock -v $(which docker):/usr/bin/docker -p 3000:3000 -t genome-designer
