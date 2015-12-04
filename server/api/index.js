@@ -13,6 +13,9 @@ const jsonParser = bodyParser.json({
   strict: false, //allow values other than arrays and objects
 });
 
+var fs = require("fs");
+var mkpath = require('mkpath');
+
 function paramIsTruthy(param) {
   return param !== undefined && param !== 'false';
 }
@@ -206,6 +209,61 @@ router.post('/clone/:id', (req, res) => {
     .then(clone => {
       res.json(clone);
     });
+});
+
+/**
+* File IO
+**/
+
+router.get('/file/:url', (req, res) => {
+  const { url } = req.params;
+  fs.readFile('./storage/' + url, (err, data) => {
+   if (err) {
+      res.status(500).send(err.message)
+   } else {
+      res.send(data);
+   }
+  });
+});
+
+router.post('/file/:url', (req, res) => {
+  console.log("here");
+  var { url } = req.params;
+
+  var buffer = "";
+
+  url = './storage/' + url;
+
+  var path = url.substring(0,url.lastIndexOf("/")+1);
+
+  
+  req.on('data', data => {
+    buffer += data; 
+  });
+
+  req.on('end', function() {
+
+    mkpath(path, (err) => {
+
+      if (err) {
+        console.log(err.message);
+        res.status(500).send(err.message);
+      } else {
+
+        fs.writeFile(url, buffer, (err) => {
+
+          if (err) {
+            res.status(500).send(err.message);
+          } else {
+            res.send(url);
+          }
+
+        }); //writeFile
+      }
+
+    });  //mkpath
+  }); //req.on
+
 });
 
 //default catch
