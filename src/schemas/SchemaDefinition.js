@@ -1,7 +1,5 @@
 import mapValues from '../utils/object/mapValues';
 
-//todo - support SchemaDefinition level validation function (across all fields)
-
 /**
  * @class SchemaDefinition
  * @param fieldDefinitions {Object} dictionary of field names to definitions. Definitions take the form:
@@ -28,8 +26,7 @@ export default class SchemaDefinition {
     this.fields = createFields(fieldDefinitions);
   }
 
-  //todo - should be able to extend the class directly, rather than calling extend()
-
+  //should you be able to extend the class directly, rather than calling extend()????
   extend(childDefinitions) {
     return new SchemaDefinition(Object.assign({},
       this.definitions,
