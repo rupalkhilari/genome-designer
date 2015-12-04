@@ -2,22 +2,17 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { inventorySearch } from '../../actions/inventory';
 import { block as blockDragType} from '../../constants/DragTypes';
+import BlockDefinition from '../../schemas/Block';
+import * as validators from '../../schemas/fields/validators';
 
 import InventorySearch from './InventorySearch';
 import InventoryList from './InventoryList';
 
-export default class InventoryGroupBlocks extends Component {
+export class InventoryGroupBlocks extends Component {
   static propTypes = {
     searchTerm: PropTypes.string.isRequired,
     inventorySearch: PropTypes.func.isRequired,
-
-    //todo - this should use Block validator
-    items: PropTypes.arrayOf(PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      metadata: PropTypes.shape({
-        name: PropTypes.string.isRequired,
-      }).isRequired,
-    })).isRequired,
+    items: ({items}) => validators.arrayOf(item => BlockDefinition.validate(item, true))(items) || null,
   }
 
   handleSearchChange = (value) => {
@@ -29,7 +24,7 @@ export default class InventoryGroupBlocks extends Component {
 
     //in the future, we will want smarter searching
     const searchRegex = new RegExp(searchTerm, 'gi');
-    const listingItems = items.filter(item => searchRegex.test(item));
+    const listingItems = items.filter(item => searchRegex.test(item.metadata.name));
 
     return (
       <div className="InventoryGroupBlocks">

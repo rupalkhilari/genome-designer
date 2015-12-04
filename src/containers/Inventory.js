@@ -4,21 +4,20 @@ import { inventoryToggleVisibility } from '../actions/inventory';
 import inventoryDummyBlocks from '../inventory/dummyBlocks';
 import inventorySbol from '../inventory/sbol';
 
-import InventorySearch from '../components/Inventory/InventorySearch';
 import InventoryGroups from '../components/Inventory/InventoryGroups';
 
 import '../styles/Inventory.css';
 
-// todo - find a new home for this? Plug-in friendly
+// find a new home for this when dynamic, consider Plug-in friendly
 // should also better enumerate types...
 const inventoryData = [
   {
-    key: 'dummy',
+    name: 'dummy',
     type: 'block',
     items: inventoryDummyBlocks,
   },
   {
-    key: 'sbol',
+    name: 'sbol',
     type: 'sbol',
     items: inventorySbol,
   },

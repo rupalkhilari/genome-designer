@@ -18,7 +18,7 @@ export default class InventoryGroupSbol extends Component {
 
     return (
       <div className="InventoryGroupSbol">
-        <InventoryList inventorType={sbolDragType}
+        <InventoryList inventoryType={sbolDragType}
                        items={items}/>
       </div>
     );
