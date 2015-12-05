@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { Block as exampleBlock } from '../../schemas/examples';
+import { Block as exampleBlock } from '../../schemas/_examples';
 import { set as dbSet } from '../../../server/database';
 import request from 'supertest';
 
