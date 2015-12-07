@@ -2,6 +2,7 @@ import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 import { ReduxRouter } from 'redux-router';
+import actions from './actions/_expose';
 import store from './store/index';
 
 render(
@@ -18,3 +19,10 @@ if (process.env.NODE_ENV !== 'production') {
   // module and its dependencies as dead code.
   require('./createDevToolsWindow')(store);
 }
+
+//expose various things on the window, e.g. for extensions
+const exposed = global.gd = {};
+Object.assign(exposed, {
+  store,
+  actions,
+});
