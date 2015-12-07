@@ -220,7 +220,7 @@ router.get('/file/:url', (req, res) => {
   const { url } = req.params;
   fs.readFile('./storage/' + url, (err, data) => {
    if (err) {
-      res.status(500).send(err.message)
+      res.status(500).send(err.message);
    } else {
       res.send(data);
    }
@@ -253,7 +253,7 @@ router.post('/file/:url', (req, res) => {
       } else {
 
         //write data to file
-        fs.writeFile(url, buffer, (err) => {
+        fs.writeFile(url, buffer, 'utf8', (err) => {
 
           if (err) {
             res.status(500).send(err.message);
