@@ -4,34 +4,39 @@ import { DropTarget } from 'react-dnd';
 import SelectionBox from './selectionbox';
 import { connect } from 'react-redux';
 import { blockCreate, blockAddComponent } from '../../../actions/blocks';
-import { block as blockDragType, inventoryPart as inventoryPartDragType } from '../../../constants/DragTypes';
+import { block as blockDragType, sbol as sbolDragType, inventoryItem as inventoryItemDragType } from '../../../constants/DragTypes';
 
 const constructTarget = {
-  drop(props, monitor, component) {
-    const type = monitor.getItemType();
-    const monitorItem = monitor.getItem();
-    const offset = monitor.getClientOffset();
-    const target = findDOMNode(component);
 
-    let block = null;
+  drop(props, monitor) {
+    const { item, type } = monitor.getItem();
+
     if (type === blockDragType) {
-      block = monitorItem.block;
+      // fixme
+      // really, we just need to add it to the store...
+      // going to leave for now... let's discuss how to handle
+      // do we just want an action to associate a block with the store, since this isn't really creating it if its coming from the inventory?
+      // do we want to clone inventory?
+      // What happens when you pull something from inventory to associate with your project?
+      // doing this will use the provided ID, and cause problems in the store
+
+      const block = props.blockCreate(item);
+      props.blockAddComponent(props.construct.id, block.id);
+    } else if (type === sbolDragType) {
+      console.log(item); //eslint-disable-line
+      //todo - assign type to the block, likely using block.rules ...
     } else {
-      block = props.blockCreate({metadata: {name: monitorItem.item}});
+      // ?
     }
-    props.blockAddComponent(props.construct.id, block.id);
-    component.props.onDrop.call(this);
   },
 };
 
-@DropTarget([blockDragType, inventoryPartDragType], constructTarget, (connect, monitor) => {
-  return {
-    connectDropTarget: connect.dropTarget(),
-    isOver: monitor.isOver(),
-    canDrop: monitor.canDrop(),
-  };
-})
-export class UserInterface extends Component {
+@DropTarget(inventoryItemDragType, constructTarget, (connect, monitor) => ({
+  connectDropTarget: connect.dropTarget(),
+  isOver: monitor.isOver(),
+  canDrop: monitor.canDrop(),
+}))
+export class UserInterface extends Component { //
 
   static propTypes = {
     style: PropTypes.object.isRequired,

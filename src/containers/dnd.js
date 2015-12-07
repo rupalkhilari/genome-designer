@@ -4,7 +4,6 @@ import { pushState } from 'redux-router';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { DragDropContext } from 'react-dnd';
 import SceneGraph2D from './graphics/scenegraph2d/scenegraph2d';
-import BlockTest from './graphics/scenegraph2d_react/blocktest';
 import UserInterface from './graphics/scenegraph2d/userinterface';
 import K from './graphics/scenegraph2d/blocky/blockyconstants';
 import Inventory from './Inventory';
@@ -25,50 +24,11 @@ class DnD extends Component {
 
   constructor(props) {
     super(props);
-
-    this.bd = [];
-    for(var i = 0; i < 100; i += 1) {
-      this.makeBlock();
-    }
-    window.requestAnimationFrame(this.animate);
-  }
-
-  makeBlock() {
-    this.bd.push({
-      x: Math.random() * 1024,
-      y: Math.random() * 768,
-      w: Math.max(10, Math.random() * 100),
-      h: Math.max(10, Math.random() * 40),
-      c: randomColor(),
-      r: Math.random() * 360,
-    });
-  }
-
-  add100 = () => {
-    for(let i = 0; i < 100; i +=1) {
-      this.makeBlock();
-    }
-    this.refs.blocktest.forceUpdate();
-  }
-
-  animate = () => {
-    if (this.refs.blocktest) {
-      this.bd.forEach(block => {
-        block.x += 1;
-        if (block.x > 1024) {
-          block.x = -block.w;
-        }
-        block.r = (block.r + 1) % 360;
-      });
-      this.refs.blocktest.forceUpdate();
-    }
-    window.requestAnimationFrame(this.animate);
   }
 
   componentDidMount = () => {
     this.refs.zoom.value = 1;
   }
-
   /**
    * when the user changes the zoom/scaling
    * @return {[type]} [description]
@@ -101,7 +61,7 @@ class DnD extends Component {
 
   render() {
     const { children, constructId, project, constructs } = this.props;
-    debugger;
+
     // map all constructs to scene graphs and render them
     const renderedSceneGraphs = constructs.map(construct => {
       const sceneGraph = this.construct2sceneGraph(construct);
@@ -109,20 +69,22 @@ class DnD extends Component {
     });
 
     return (
-      <div>
+      <div className="ProjectPage">
         <Inventory />
-        <input ref="zoom" type="range" min={0.1} max={4} step={0.1} onChange={this.onZoom}></input>
-        <br></br>
-        <select ref="layoutSelect" defaultValue="wrap" onChange={this.layoutChanged}>
-          <option value={K.layoutWrap}>Wrap</option>
-          <option value={K.layoutWrapCondensed}>Wrap / Condensed</option>
-          <option value={K.layoutFull}>Full</option>
-          <option value={K.layoutFullCondensed}>Full / Condensed</option>
-        </select>
-        <br></br>
-        {renderedSceneGraphs}
-        <BlockTest ref="blocktest" blocks={this.bd}/>
-        <button onClick={this.add100}>Add One Hundred</button>
+        <div className="ProjectPage-content">
+          <div style={{width: "400px"}}>
+            <input ref="zoom" type="range" min={0.1} max={4} step={0.1} onChange={this.onZoom}></input>
+            <br></br>
+            <select ref="layoutSelect" defaultValue="wrap" onChange={this.layoutChanged}>
+              <option value={K.layoutWrap}>Wrap</option>
+              <option value={K.layoutWrapCondensed}>Wrap / Condensed</option>
+              <option value={K.layoutFull}>Full</option>
+              <option value={K.layoutFullCondensed}>Full / Condensed</option>
+            </select>
+          </div>
+          <br></br>
+          {renderedSceneGraphs}
+        </div>
       </div>
     );
   }
