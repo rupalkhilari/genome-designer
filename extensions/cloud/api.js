@@ -64,7 +64,7 @@ router.post('/:id', jsonParser, (req, resp) => {
 
       //inputs - write files using promises     
       var inputDirWrites = [];
-      var inputFileWrites;
+      var inputFileWrites = [];
 
       //we need to provide a new session-key to all cloud-computes
       inputs.headers = JSON.stringify({"session-key":key});
@@ -121,7 +121,6 @@ router.post('/:id', jsonParser, (req, resp) => {
             //read the output files
 
             readMultipleFiles(outputFileNames, "utf8", (err, buffers) => {
-
 
               if (err) {
                 console.log("Output read error: " + err);
