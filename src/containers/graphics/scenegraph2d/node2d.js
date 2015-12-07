@@ -2,6 +2,7 @@ import uuid from 'node-uuid';
 import React from 'react';
 import Node2DReact from '../scenegraph2d_react/node2d';
 import Vector2D from '../geometry/vector2d';
+import Box2D from '../geometry/box2d';
 import Transform2D from '../geometry/transform2d';
 
 /**
@@ -36,18 +37,78 @@ export default class Node2D {
     }, props);
   }
 
+  /**
+   * append the given child to us. It will be top most until another child is added
+   * @param  {[type]} child [description]
+   * @return {[type]}       [description]
+   */
   appendChild(child) {
     child.parent = this;
     this.children.push(child);
     return child;
   }
 
-  removeChild(child) {
-    throw new Error('Implement');
+  /**
+   * prepend a child to us. It will be below all other children.
+   * @param  {[type]} child [description]
+   * @return {[type]}       [description]
+   */
+  prependChild(child) {
+    child.parent = this;
+    this.children.unshift(child);
+    return child;
   }
 
+  /**
+   * remove the given child from our children
+   * @param  {[type]} child [description]
+   * @return {[type]}       [description]
+   */
+  removeChild(child) {
+    child.parent = null;
+    this.children.splice(this.children.indexOf(child), 1);
+    return child;
+  }
+
+  /**
+   * bring to front of parents children stack
+   */
+  bringToFront() {
+    this.parent.removeChild(this);
+    this.parent.appendChild(this);
+  }
+
+  /**
+   * send node to back of its parent child list
+   */
+  sendToBack() {
+    this.parent.removeChild(this);
+    this.parent.prependChild(this);
+  }
+
+  /**
+   * apply the properties of the object p to our props.
+   * @param {object} p - key / value pairs of properties
+   */
   set(p) {
-    this.props = Object.assign(this.props, p);
+    Object.keys(p).forEach(key => {
+
+      // value associated with key
+      const value = p[key];
+
+      switch (key) {
+
+        case 'bounds':
+          this.props.x = value.cx;
+          this.props.y = value.cy;
+          this.props.w = value.w;
+          this.props.h = value.h;
+        break;
+
+        // default behaviour is to just set the property
+        default: this.props[key] = p[key];
+      }
+    });
   }
 
   /**
@@ -146,6 +207,31 @@ export default class Node2D {
 
     // return measurement
     return new Vector2D(textDIV.clientWidth, textDIV.clientHeight);
+  }
+
+  /**
+  * get the axis align bounding box for the element
+  * @returns G.Box
+  */
+  getAABB() {
+
+    // transform the 4 corners of the bounds into screen space
+    const pts = [
+      new Vector2D(0, 0),
+      new Vector2D(this.props.w, 0),
+      new Vector2D(this.props.w, this.props.h),
+      new Vector2D(0, this.props.h),
+    ];
+
+    const tpts = pts.map(p => this.transformationMatrix.multiplyVector(p));
+
+    const xmin = Math.min(tpts[0].x, tpts[1].x, tpts[2].x, tpts[3].x);
+    const ymin = Math.min(tpts[0].y, tpts[1].y, tpts[2].y, tpts[3].y);
+    const xmax = Math.max(tpts[0].x, tpts[1].x, tpts[2].x, tpts[3].x);
+    const ymax = Math.max(tpts[0].y, tpts[1].y, tpts[2].y, tpts[3].y);
+
+    return new Box2D(xmin, ymin, xmax - xmin, ymax - ymin);
+
   }
 
   render() {

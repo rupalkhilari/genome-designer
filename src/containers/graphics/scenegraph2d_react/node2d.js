@@ -20,6 +20,7 @@ export default class Node2D extends Component {
     fill: PropTypes.string.isRequired,
     stroke: PropTypes.string,
     strokeWidth: PropTypes.number,
+    classes: PropTypes.string,
   }
 
   constructor() {
@@ -59,9 +60,14 @@ export default class Node2D extends Component {
       height: this.props.h + 'px',
       transform: this.transformCached,
     };
+
+    // base class is node, with any additional class names passed into
+    // out properties via the 'classes' property
+    const classes = 'node' + (this.props.classes ? ' ' + this.props.classes : '');
+
     // render DIV with transform, then our glyph, then our text, then our children
     return (
-      <div style={style} className="node">
+      <div style={style} className={classes}>
         {glyph}
         <NodeText2D {...this.props}/>
         {this.props.children}
