@@ -2,21 +2,18 @@
 
 .ProjectActions {
   display: flex;
-  justify-content: space-around;
-  flex-grow: 1;
-  align-items: flex-end;
-  padding: 3em;
+  flex-direction: row;
+  justify-content: space-between;
+  //flex-grow: 1;
+  //align-items: flex-end;
 
   &-action {
     cursor: pointer;
-  }
+    border-radius: 3px;
+    padding: 1px 5px;
 
-  /* placeholder pending images */
-  .dummyButton {
-    height: 30px;
-    width: 30px;
-    margin: 0 auto;
-    background-color: var(--colors-grey);
-    display: block;
+    &:hover {
+      background-color: var(--colors-selected);
+    }
   }
 }

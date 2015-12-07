@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
+import InputSimple from './InputSimple';
 
 import '../styles/ProjectHeader.css';
 
@@ -19,6 +20,16 @@ export default class ProjectHeader extends Component {
     });
   }
 
+  handleProjectRename = (nextValue) => {
+    //todo - should be an action
+    this.props.project.mutate('metadata.name', nextValue);
+  }
+
+  handleProjectDescriptionChange = (nextValue) => {
+    //todo - should be an action
+    this.props.project.mutate('metadata.description', nextValue);
+  }
+
   render() {
     const { project } = this.props;
 
@@ -33,12 +44,21 @@ export default class ProjectHeader extends Component {
           <div className="ProjectHeader-text">
             <Link to={`/project/${project.id}`}
                   className="ProjectHeader-title">
-              {project.metadata.name}
+              <InputSimple
+                onChange={this.handleProjectRename}
+                placeholder="Project Name"
+                default="My Project"
+                updateOnBlur
+                value={project.metadata.name}/>
             </Link>
             {this.state.detailVisible &&
-            <p className="ProjectHeader-description">
-              {project.metadata.description}
-            </p>
+              <InputSimple
+                onChange={this.handleProjectDescriptionChange}
+                placeholder="Project Description"
+                default=""
+                updateOnBlur
+                useTextarea
+                value={project.metadata.description}/>
             }
           </div>
         </div>

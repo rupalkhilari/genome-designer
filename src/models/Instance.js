@@ -1,4 +1,4 @@
-import uuid from '../utils/generators/UUID';
+import uuid from 'node-uuid';
 import pathSet from 'lodash.set';
 import merge from 'lodash.merge';
 import cloneDeep from 'lodash.clonedeep';
@@ -10,7 +10,7 @@ import cloneDeep from 'lodash.clonedeep';
  *  - a string, to use as a forced ID (todo - deprecate)
  */
 export default class Instance {
-  constructor(input = uuid(), subclassBase) {
+  constructor(input = uuid.v4(), subclassBase) {
     let parsedInput;
     if (!!input && typeof input === 'object') {
       parsedInput = input;
@@ -23,7 +23,7 @@ export default class Instance {
     merge(this,
       subclassBase,
       {
-        id: uuid(),
+        id: uuid.v4(),
         metadata: {
           name: '',
           description: '',

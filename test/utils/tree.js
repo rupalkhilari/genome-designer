@@ -1,4 +1,4 @@
-import uuid from 'uuid';
+import uuid from 'node-uuid';
 import range from '../../src/utils/array/range';
 
 const createStubNode = (childField = 'components',

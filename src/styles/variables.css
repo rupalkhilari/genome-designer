@@ -22,6 +22,11 @@
   --screen-md-min: 992px; /* Medium screen / desktop */
   --screen-lg-min: 1200px; /* Large screen / wide desktop */
 
+  /* Layout
+ ==================== */
+
+  --width-inventory: 300px;
+
   /* Backgrounds
  ==================== */
 
@@ -30,5 +35,5 @@
   /* Timing
   ==================== */
 
-  --timing-fast: 0.2s;
+  --timing-fast: 0.15s;
 }

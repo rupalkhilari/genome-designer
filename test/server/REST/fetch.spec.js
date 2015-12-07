@@ -2,7 +2,7 @@
 
 import { expect } from 'chai';
 import fetch from 'isomorphic-fetch';
-import { Block as exampleBlock } from '../../schemas/examples';
+import { Block as exampleBlock } from '../../schemas/_examples';
 
 const serverRoot = 'http://localhost:3000';
 
@@ -27,7 +27,6 @@ describe('REST', () => {
         .then(res => res.json())
         .then(json => {
           expect(json).to.eql(testBlock);
-          console.log(json);
         });
     });
   });

@@ -1,13 +1,16 @@
 import { expect } from 'chai';
 import { Block as exampleBlock } from '../../schemas/examples';
+import { set as dbSet } from '../../../server/database';
 import request from 'supertest';
 
 const devServer = require('../../../devServer');
 
 describe('REST', () => {
   let server;
-  beforeEach(() => {
+  const sessionKey = '123456';
+  beforeEach('server setup', () => {
     server = devServer.listen();
+    return dbSet(sessionKey, {});
   });
   afterEach(() => {
     server.close();
@@ -18,6 +21,7 @@ describe('REST', () => {
       const parent = exampleBlock;
       request(server)
         .post('/api/clone')
+        .set('session-key', sessionKey)
         .send(parent)
         .expect(404, done);
     });
@@ -26,12 +30,14 @@ describe('REST', () => {
       const parent = exampleBlock;
       request(server)
         .put(`/api/block/${parent.id}`)
+        .set('session-key', sessionKey)
         .send(parent)
         .expect(200, makeClone);
 
       function makeClone() {
         request(server)
           .post(`/api/clone/${parent.id}`)
+          .set('session-key', sessionKey)
           .send()
           .expect(200, done);
       }
@@ -45,12 +51,14 @@ describe('REST', () => {
       });
       request(server)
         .put(`/api/block/${parent.id}`)
+        .set('session-key', sessionKey)
         .send(parent)
         .expect(200, makeClone);
 
       function makeClone() {
         request(server)
           .post(`/api/clone/${parent.id}`)
+          .set('session-key', sessionKey)
           .send()
           .expect(200)
           .expect(result => {
@@ -70,19 +78,20 @@ describe('REST', () => {
       let descendent;
       request(server)
         .put(`/api/block/${parent.id}`)
+        .set('session-key', sessionKey)
         .send(parent)
         .expect(200, makeClone);
 
       function makeClone() {
         request(server)
           .post(`/api/clone/${parent.id}`)
+          .set('session-key', sessionKey)
           .send()
           .expect(result => {
             descendent = result.body;
             expect(descendent.id).to.not.equal(parent.id);
             expect(descendent.parent).to.equal(parent.id);
             expect(descendent.other).to.equal(parent.other);
-            console.log(descendent);
           })
           .expect(200, testClone);
       }
@@ -90,6 +99,7 @@ describe('REST', () => {
       function testClone() {
         request(server)
           .get(`/api/block/${descendent.id}`)
+          .set('session-key', sessionKey)
           .expect(200)
           .expect(result => {
             expect(result.body).to.eql(descendent);

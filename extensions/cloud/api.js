@@ -1,7 +1,9 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import { runNode, getNodeDir, buildNodeContainer } from './cloudRun';
+import { sessionMiddleware } from '../../server/authentication';
 
+const mkpath = require('mkpath');
 const fs = require('fs'), path = require('path');
 const yaml = require('yamljs');
 const readMultipleFiles = require('read-multiple-files');
@@ -37,7 +39,9 @@ function startAllDockerBuildsAsync(dir) {
 
 startAllDockerBuildsAsync("extensions/cloud"); //start loading
 
-router.post('/run/:id', jsonParser, (req, resp) => {
+//router.use(sessionMiddleware);
+
+router.post('/:id', jsonParser, (req, resp) => {
   const { id } = req.params;
   const inputs = req.body;
   const dir = getNodeDir(id) + "/";
@@ -59,62 +63,83 @@ router.post('/run/:id', jsonParser, (req, resp) => {
       var i,j;
 
       //inputs - write files using promises     
-      var inputFileWrites = [];
+      var inputDirWrites = [];
+      var inputFileWrites;
 
       //we need to provide a new session-key to all cloud-computes
       inputs.headers = JSON.stringify({"session-key":key});
 
-      for (var inputKey in inputs) {
-        inputFileWrites.push(
+      inputDirWrites = [
           new Promise((resolve, reject) => {
-            fs.writeFile( dir + "inputs/" + inputKey, inputs[inputKey] , err => {
+            mkpath(dir + "inputs/", (err) => {
               if (err) {
-                console.log(err.message);
                 reject(err.message);
               } else {
-                resolve(dir + "inputs/" + inputKey);
+                resolve(dir + "inputs/");
               }
-            }); //fs.writeFile
-          }));
-      }
+            })
+          }),
+          new Promise((resolve, reject) => {
+            mkpath(dir + "outputs/", (err) => {
+              if (err) {
+                reject(err.message);
+              } else {
+                resolve(dir + "outputs/");
+              }
+            })
+          })
+        ];
 
-      //outputs
-      for (i=0; i < outputs.length; ++i) {
-        outputFiles[ outputs[i].id ] = "";
-        outputFileNames.push(dir + "outputs/" + outputs[i].id);
-      }
+      Promise.all(inputDirWrites).then(result => {
 
-      Promise.all(inputFileWrites).then(result => {
-        console.log("Input files written");
-        if (!result) {
-          console.log("Input write error");
+        for (var inputKey in inputs) {
+          inputFileWrites.push(
+            new Promise((resolve, reject) => {
+              fs.writeFile( dir + "inputs/" + inputKey, inputs[inputKey] , err => {
+                if (err) {
+                  reject(err.message);
+                } else {
+                  resolve(dir + "inputs/" + inputKey);
+                }
+              }); //fs.writeFile
+            }));
         }
 
-        //run the node
-        runNode(id).then( res => {
-          //read the output files
-          console.log("Reading output files");
+        //outputs
+        for (i=0; i < outputs.length; ++i) {
+          outputFiles[ outputs[i].id ] = "";
+          outputFileNames.push(dir + "outputs/" + outputs[i].id);
+        }
+      
+        Promise.all(inputFileWrites).then(result => {
+          if (!result) {
+            console.log("Input write error");
+          }
 
-          readMultipleFiles(outputFileNames, "utf8", (err, buffers) => {
+          //run the node
+          runNode(id).then( res => {
+            //read the output files
 
-            console.log("Done reading output files");
+            readMultipleFiles(outputFileNames, "utf8", (err, buffers) => {
 
-            if (err) {
-              console.log("Output read error: " + err);
-            }
 
-            //get values from files into object
-            //TODO - select only json-suitable output fields
-            for (var i=0; i < outputFileNames.length; ++i) {
-              outputFiles[ outputs[i].id ] = buffers[i];
-            }
+              if (err) {
+                console.log("Output read error: " + err);
+              }
 
-            //return object
-            resp.json(outputFiles);
+              //get values from files into object
+              //TODO - select only json-suitable output fields
+              for (var i=0; i < outputFileNames.length; ++i) {
+                outputFiles[ outputs[i].id ] = buffers[i];
+              }
 
-          }); //readMultipleFiles
-        }); //runNode
-      }); //writeFiles
+              //return object
+              resp.json(outputFiles);
+
+            }); //readMultipleFiles
+          }); //runNode
+        }); //writeFiles
+      });
     }   //read yaml file successful
   }); //fs.readFile
 

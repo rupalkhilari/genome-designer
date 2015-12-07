@@ -1,0 +1,25 @@
+@import './variables.css';
+
+.InventoryTabs {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 0.5em;
+
+  &-tab {
+    flex-grow: 1;
+    text-align: center;
+    padding: 0.25em 0.5em;
+    border-bottom: 3px solid transparent;
+    transition-duration: var(--timing-fast);
+    transition-property: color, border;
+
+    &:hover {
+      color: var(--colors-selected);
+    }
+
+    &.active {
+      color: var(--colors-selected);
+      border-bottom-color: var(--colors-selected);
+    }
+  }
+}

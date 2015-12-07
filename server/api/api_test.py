@@ -8,7 +8,8 @@ class TestGenomeDesignerREST(unittest.TestCase):
 
   def setUp(self):
       self.api_url = "http://0.0.0.0:3000/api/"
-      self.run_url = "http://0.0.0.0:3000/extensions/run/"
+      self.run_url = "http://0.0.0.0:3000/exec/"
+      self.foundry_url = "http://0.0.0.0:3000/foundry/"
 
       url = self.api_url
       login = GET(url + "login", params={"user":"", "password":""})
@@ -30,8 +31,8 @@ class TestGenomeDesignerREST(unittest.TestCase):
       "notes": {}
     }
 
-    res = POST(url + "block", data = json(block1), headers=headers)    
-    self.assertTrue(res.status_code==500)
+    res = POST(url + "block", data = json(block1), headers=headers)
+    self.assertTrue(res.status_code==403)
 
   def test_block_creation(self):
     headers = self.headers
@@ -204,6 +205,12 @@ class TestGenomeDesignerREST(unittest.TestCase):
     self.assertTrue(res.status_code==200)
     self.assertTrue(list(res.json().keys())[0]=='Protein')
 
+  def test_foundry_inventory_get(self):
+    headers = self.headers
+    url = self.foundry_url
+
+    res = GET(url + "inventory/egf", headers=headers)
+    self.assertTrue(res.status_code==200)
 
 if __name__ == '__main__':
     unittest.main()

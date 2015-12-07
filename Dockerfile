@@ -32,12 +32,5 @@ ADD . /app
 RUN touch /redis.conf
 RUN usermod -aG docker root
 
-#dind
-ADD ./wrapdocker /usr/local/bin/wrapdocker
-RUN chmod +x /usr/local/bin/wrapdocker
-VOLUME /var/lib/docker
+ENTRYPOINT service docker start && redis-server /redis.conf & npm run start
 
-#ENTRYPOINT wrapdocker && service docker start && redis-server /redis.conf & npm run start
-
-
-#docker run --privileged=true -v /var/run/docker.sock:/var/run/docker.sock -v $(which docker):/usr/bin/docker -p 3000:3000 -t -i genome-designer
