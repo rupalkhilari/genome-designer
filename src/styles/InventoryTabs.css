@@ -4,12 +4,13 @@
   display: flex;
   flex-direction: row;
   margin-bottom: 0.5em;
+  border-bottom: 1px solid var(--colors-selected);
 
   &-tab {
     flex-grow: 1;
     text-align: center;
     padding: 0.25em 0.5em;
-    border-bottom: 3px solid transparent;
+    border-bottom: 2px solid transparent;
     transition-duration: var(--timing-fast);
     transition-property: color, border;
 
@@ -18,7 +19,8 @@
     }
 
     &.active {
-      color: var(--colors-selected);
+      font-weight: bold;
+      color: white;
       border-bottom-color: var(--colors-selected);
     }
   }

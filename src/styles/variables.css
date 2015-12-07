@@ -25,7 +25,9 @@
   /* Layout
  ==================== */
 
-  --width-inventory: 300px;
+  --SidePanel-trigger-width: 25px;
+  --width-SidePanel-closed: 50px;
+  --width-SidePanel-open: 300px;
 
   /* Backgrounds
  ==================== */
