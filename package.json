@@ -7,6 +7,7 @@
     "clean": "rimraf lib dist coverage",
     "check": "npm run lint && npm run test",
     "start": "babel-node devServer.js",
+    "start-docker": "docker build -t genome-designer . && docker run --privileged -i -p 3000:3000 -t genome-designer",
     "lint": "eslint src; exit 0;",
     "lint-jscs": "jscs src",
     "test": "NODE_ENV=test mocha --recursive --compilers js:babel-core/register --require ./test/setup.js",
