@@ -196,6 +196,20 @@ class TestGenomeDesignerREST(unittest.TestCase):
     self.assertTrue(len(child)==5)
     self.assertTrue(len(child['leaves'])==1)
 
+  def test_file_io(self):
+    headers = self.headers
+    url  = self.api_url
+
+    contents = "Hello World"
+    path = "myDir%2fhello.txt"
+
+    res = POST(url + "file/" + path, data=contents, headers=headers)
+    self.assertTrue(res.status_code==200)
+
+    res = GET(url + "file/" + path, headers=headers)
+    self.assertTrue(res.status_code==200)
+    self.assertTrue(res.text==contents)
+
   def test_running_extensions(self):
     headers = self.headers
     url = self.run_url
@@ -213,4 +227,4 @@ class TestGenomeDesignerREST(unittest.TestCase):
     self.assertTrue(res.status_code==200)
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest.main(warnings='ignore')
