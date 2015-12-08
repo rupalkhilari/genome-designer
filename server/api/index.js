@@ -218,7 +218,7 @@ router.post('/clone/:id', (req, res) => {
 
 router.get('/file/:url', (req, res) => {
   const { url } = req.params;
-  fs.readFile('./storage/' + url, (err, data) => {
+  fs.readFile('./storage/' + url, 'utf8', (err, data) => {
    if (err) {
       res.status(500).send(err.message);
    } else {
