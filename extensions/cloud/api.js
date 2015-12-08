@@ -39,7 +39,7 @@ function startAllDockerBuildsAsync(dir) {
 
 startAllDockerBuildsAsync("extensions/cloud"); //start loading
 
-//router.use(sessionMiddleware);
+router.use(sessionMiddleware);
 
 router.post('/:id', jsonParser, (req, resp) => {
   const { id } = req.params;
