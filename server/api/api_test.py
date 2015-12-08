@@ -223,8 +223,11 @@ class TestGenomeDesignerREST(unittest.TestCase):
     headers = self.headers
     url = self.foundry_url
 
-    res = GET(url + "inventory/egf", headers=headers)
+    res = GET(url + "inventory/ecoli", headers=headers)
     self.assertTrue(res.status_code==200)
+    res = res.json()
+    self.assertTrue(len(res["blocks"]) > 4000)
 
 if __name__ == '__main__':
     unittest.main(warnings='ignore')
+
