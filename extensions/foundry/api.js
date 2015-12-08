@@ -1,5 +1,6 @@
 import express from 'express';
 import bodyParser from 'body-parser';
+import { sessionMiddleware } from '../../server/authentication';
 
 const fs = require('fs'), path = require('path');
 const yaml = require('yamljs');
@@ -9,6 +10,8 @@ const jsonParser = bodyParser.json({
 });
 
 const dir = "extensions/foundry/"
+
+router.use(sessionMiddleware);
 
 router.get('/inventory/:id', jsonParser, (req, resp) => {
   const { id } = req.params;

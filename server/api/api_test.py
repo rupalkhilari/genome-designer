@@ -219,5 +219,12 @@ class TestGenomeDesignerREST(unittest.TestCase):
     self.assertTrue(res.status_code==200)
     self.assertTrue(list(res.json().keys())[0]=='Protein')
 
+  def test_foundry_api(self):
+    headers = self.headers
+    url = self.foundry_url
+
+    res = GET(url + "inventory/egf", headers=headers)
+    self.assertTrue(res.status_code==200)
+
 if __name__ == '__main__':
     unittest.main(warnings='ignore')
