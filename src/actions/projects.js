@@ -3,15 +3,9 @@ import * as ActionTypes from '../constants/ActionTypes';
 import Project from '../models/Project';
 
 //create a new project
-export const projectCreate = (name) => {
+export const projectCreate = (initialModel) => {
   return (dispatch, getState) => {
-    //temp - force name as ID. will need to reconfigure routing
-    const project = new Project({
-      id: name, //hack... todo - deprecate
-      metadata: {
-        name,
-      },
-    });
+    const project = new Project(initialModel);
 
     return Promise.resolve(project)
       .then((project) => {
@@ -43,10 +37,10 @@ export const projectMerge = (projectId, toMerge) => {
 };
 
 //Adds a construct to a project. Does not create the construct. Use blocks.js
-export const projectAddConstruct = (projectId, componentId, index) => {
+export const projectAddConstruct = (projectId, componentId) => {
   return (dispatch, getState) => {
     const oldProject = getState().projects[projectId];
-    const project = oldProject.addComponent(componentId, index);
+    const project = oldProject.addComponents(componentId);
 
     return Promise.resolve(project)
       .then((project) => {

@@ -31,8 +31,9 @@ class GlobalNav extends Component {
 
   handleClickAddProject = (event) => {
     const { pushState, projectCreate } = this.props;
-    const project = projectCreate();
-    pushState(null, `/project/${project.id}`);
+    projectCreate().then(project => {
+      pushState(null, `/project/${project.id}`);
+    });
   }
 
   handleClickAddConstruct = (event) => {
