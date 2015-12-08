@@ -7,6 +7,7 @@ import inventorySbol from '../inventory/sbol';
 import InventoryGroups from '../components/Inventory/InventoryGroups';
 
 import '../styles/Inventory.css';
+import '../styles/SidePanel.css';
 
 // find a new home for this when dynamic, consider Plug-in friendly
 // should also better enumerate types...
@@ -33,16 +34,23 @@ export class Inventory extends Component {
     const { isVisible, inventoryToggleVisibility } = this.props;
 
     return (
-      <div className={'Inventory' + (isVisible ? ' visible' : '')}>
+      <div className={'SidePanel Inventory' + (isVisible ? ' visible' : '')}>
 
-        <div className="Inventory-heading">
-          <span className="Inventory-title">Inventory</span>
-          <a className="Inventory-close"
-             ref="close"
-             onClick={inventoryToggleVisibility.bind(null, false)}>&times;</a>
+
+        <div className="SidePanel-heading">
+          <span className="SidePanel-heading-trigger Inventory-trigger"
+                onClick={() => inventoryToggleVisibility()}>=</span>
+          <div className="SidePanel-heading-content">
+            <span className="SidePanel-title">Inventory</span>
+            <a className="SidePanel-close"
+               ref="close"
+               onClick={inventoryToggleVisibility.bind(null, false)}>&times;</a>
+          </div>
         </div>
 
-        <InventoryGroups groups={inventoryData} />
+        <div className="SidePanel-content">
+          <InventoryGroups groups={inventoryData}/>
+        </div>
       </div>
     );
   }

@@ -38,8 +38,10 @@ export default class InventoryItem extends Component {
       <div className={'InventoryItem' +
         (isDragging ? ' isDragging' : '') +
         (!!imagePath ? ' hasImage' : '')}>
-        {!!imagePath && <img className="InventoryItem-image" src={imagePath}/> }
-        <span className="InventoryItem-text">{item.metadata.name}</span>
+        <a className="InventoryItem-item">
+          {!!imagePath && <img className="InventoryItem-image" src={imagePath}/> }
+          <span className="InventoryItem-text">{item.metadata.name}</span>
+        </a>
       </div>
     );
   }

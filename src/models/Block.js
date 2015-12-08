@@ -16,7 +16,10 @@ export default class Block extends Instance {
     });
   }
 
-  addComponents(...components) {
-    return this.mutate('components', this.components.concat(components));
+  addComponent(component, index) {
+    const spliceIndex = Number.isInteger(index) ? index : this.components.length;
+    const newComponents = this.components.slice();
+    newComponents.splice(spliceIndex, 0, component);
+    return this.mutate('components', newComponents);
   }
 }

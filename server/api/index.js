@@ -218,7 +218,7 @@ router.post('/clone/:id', (req, res) => {
 
 router.get('/file/:url', (req, res) => {
   const { url } = req.params;
-  fs.readFile('./storage/' + url, (err, data) => {
+  fs.readFile('./storage/' + url, 'utf8', (err, data) => {
    if (err) {
       res.status(500).send(err.message);
    } else {
@@ -228,14 +228,14 @@ router.get('/file/:url', (req, res) => {
 });
 
 router.post('/file/:url', (req, res) => {
-  var { url } = req.params;
+  let { url } = req.params;
 
   //assuming contents to be string
-  var buffer = "";
+  let buffer = "";
 
   //All files are put in the storage folder (until platform comes along)
   url = './storage/' + url;
-  var path = url.substring(0,url.lastIndexOf("/")+1);
+  let path = url.substring(0,url.lastIndexOf("/")+1);
 
   //get data in parts
   req.on('data', data => {

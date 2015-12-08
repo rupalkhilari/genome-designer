@@ -35,9 +35,9 @@ export default function blocks(state = initialState, action) {
   }
 
   case ActionTypes.BLOCK_ADD_COMPONENT : {
-    const { blockId, componentId } = action;
+    const { blockId, componentId, index } = action;
     const oldBlock = state[blockId];
-    const newBlock = oldBlock.addComponents(componentId);
+    const newBlock = oldBlock.addComponent(componentId, index);
 
     return Object.assign({}, state, {[blockId]: newBlock});
   }

@@ -5,10 +5,13 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import { DragDropContext } from 'react-dnd';
 
 import Inventory from './Inventory';
+import Inspector from './Inspector';
 import ProjectHeader from '../components/ProjectHeader';
 import SketchConstruct from './SketchConstruct';
 
 import '../styles/ProjectPage.css';
+
+//todo - should abstract away component which has dragDropContext, inventory, inspector
 
 @DragDropContext(HTML5Backend)
 export class ProjectPage extends Component {
@@ -36,23 +39,26 @@ export class ProjectPage extends Component {
     return (
       <div className="ProjectPage">
         <Inventory />
-        <ProjectHeader project={project}/>
 
-        {/* if viewing specific construct, let routing take over*//* if viewing specific construct, let routing take over*/}
-        {constructSelected && children}
+        <div className="ProjectPage-content">
+          <ProjectHeader project={project}/>
 
-        {/* otherwise, show all the constructs... *//* otherwise, show all the constructs... */}
-        {!constructSelected && constructs.map(construct => {
-          return (
-            <div key={construct.id}>
-              <h3>Construct {construct.metadata.name}</h3>
+          {/* if viewing specific construct, let routing take over*//* if viewing specific construct, let routing take over*/}
+          {constructSelected && children}
 
-              <SketchConstruct construct={construct}/>
-            </div>
-          );
-        })}
+          {/* otherwise, show all the constructs... *//* otherwise, show all the constructs... */}
+          {!constructSelected && constructs.map(construct => {
+            return (
+              <div key={construct.id}>
+                <h3>Construct {construct.metadata.name}</h3>
 
+                <SketchConstruct construct={construct}/>
+              </div>
+            );
+          })}
+        </div>
 
+        <Inspector />
       </div>
     );
   }
