@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import { ReduxRouter } from 'redux-router';
 import * as actionTypes from './constants/ActionTypes';
 import actions from './actions/_expose';
-import store from './store/index';
+import store, { lastAction } from './store/index';
 
 render(
   <Provider store={store}>
@@ -28,7 +28,12 @@ Object.assign(exposed, {
   actions,
   store: {
     dispatch: store.dispatch,
-    subscribe: store.subscribe,
     getState: store.getState,
+    lastAction: lastAction,
+    subscribe: (callback) => {
+      return store.subscribe(() => {
+        callback(store.getState(), lastAction());
+      });
+    },
   },
 });
