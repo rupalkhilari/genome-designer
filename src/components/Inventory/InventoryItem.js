@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { DragSource } from 'react-dnd';
-import { inventoryPart as inventoryPartDragType } from '../../constants/DragTypes';
+import { inventoryItem as inventoryItemDragType } from '../../constants/DragTypes';
 
 import '../../styles/InventoryItem.css';
 
@@ -8,11 +8,12 @@ const inventorySource = {
   beginDrag(props) {
     return {
       item: props.item,
+      type: props.inventoryType,
     };
   },
 };
 
-@DragSource(inventoryPartDragType, inventorySource, (connect, monitor) => ({
+@DragSource(inventoryItemDragType, inventorySource, (connect, monitor) => ({
   connectDragSource: connect.dragSource(),
   isDragging: monitor.isDragging(),
 }))
@@ -20,16 +21,26 @@ export default class InventoryItem extends Component {
   static propTypes = {
     connectDragSource: PropTypes.func.isRequired,
     isDragging: PropTypes.bool.isRequired,
-    item: PropTypes.string.isRequired,
+    inventoryType: PropTypes.string.isRequired,
+    item: PropTypes.shape({
+      metadata: PropTypes.shape({
+        name: PropTypes.string.isRequired,
+        image: PropTypes.string,
+      }).isRequired,
+    }).isRequired,
   }
 
   render() {
-    const { isDragging, connectDragSource } = this.props;
+    const { item, isDragging, connectDragSource } = this.props;
+    const imagePath = item.metadata.image;
 
     return connectDragSource(
-      <div>
-        <a className={'InventoryItem' + (isDragging ? ' isDragging' : '')}>
-          {this.props.item}
+      <div className={'InventoryItem' +
+        (isDragging ? ' isDragging' : '') +
+        (!!imagePath ? ' hasImage' : '')}>
+        <a className="InventoryItem-item">
+          {!!imagePath && <img className="InventoryItem-image" src={imagePath}/> }
+          <span className="InventoryItem-text">{item.metadata.name}</span>
         </a>
       </div>
     );

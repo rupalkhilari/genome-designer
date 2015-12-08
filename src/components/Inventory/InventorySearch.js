@@ -15,8 +15,10 @@ export default class InventorySearch extends Component {
   render() {
     return (
       <div className="InventorySearch">
-        <input type="text"
+        <input className="InventorySearch-input"
+               type="text"
                value={this.props.searchTerm}
+               placeholder="Filter Blocks"
                onChange={this.handleSearchChange} />
       </div>
     );

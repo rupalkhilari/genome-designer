@@ -22,6 +22,13 @@
   --screen-md-min: 992px; /* Medium screen / desktop */
   --screen-lg-min: 1200px; /* Large screen / wide desktop */
 
+  /* Layout
+ ==================== */
+
+  --SidePanel-trigger-width: 25px;
+  --width-SidePanel-closed: 50px;
+  --width-SidePanel-open: 300px;
+
   /* Backgrounds
  ==================== */
 
@@ -30,5 +37,5 @@
   /* Timing
   ==================== */
 
-  --timing-fast: 0.2s;
+  --timing-fast: 0.15s;
 }

@@ -1,0 +1,79 @@
+@import './variables.css';
+
+/* probably would look nicer to wrap in an element to avoid reflow on shrink */
+
+.SidePanel {
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  width: var(--width-SidePanel-closed);
+  overflow-x: hidden;
+  top: 0;
+  bottom: 0;
+  padding: 0.5em;
+  background: var(--background-dark-semiTransparent);
+  color: var(--colors-white);
+  transition-property: width, opacity;
+  transition-duration: var(--timing-fast);
+  will-change: width;
+
+  &.visible {
+    width: var(--width-SidePanel-open);
+  }
+
+  &-heading {
+    width: 100%;
+    position: relative;
+    margin: 0 0 0.25em;
+    display: flex;
+
+    &-trigger {
+      width: var(--SidePanel-trigger-width);
+      min-width: var(--SidePanel-trigger-width);
+      /* temp */
+      text-align: center;
+      border-radius: 50%;
+      border: 1px solid white;
+      margin: 0 5px;
+    }
+
+    &-content {
+      display: none;
+
+      .visible & {
+        display: block;
+      }
+    }
+  }
+
+  &-trigger {
+    width: var(--SidePanel-trigger-width);
+    /* temp */
+    text-align: center;
+    border-radius: 50%;
+    border: 1px solid white;
+  }
+
+  &-title {
+    text-transform: uppercase;
+    font-weight: 200;
+  }
+
+  &-close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 20px;
+  }
+
+  &-content {
+    opacity: 0;
+    display: flex;
+    flex-grow: 1;
+
+    .visible & {
+      opacity: 1;
+    }
+  }
+}

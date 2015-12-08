@@ -34,6 +34,9 @@ app.use('/api', apiRouter);
 // Register Client Requests, delegate routing to client
 // ----------------------------------------------------
 
+//Static Files
+app.use('/images', express.static('src/images'));
+
 //so that any routing is delegated to the client
 app.get('*', function(req, res) {
   res.sendFile(path.join(__dirname, 'src/index.html'));

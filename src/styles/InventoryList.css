@@ -1,0 +1,6 @@
+.InventoryList {
+  flex-grow: 1;
+  height: 0; /* hack - flexbox will give it height, but want to calculate to only what fits so actually scrolls */
+  overflow-y: scroll;
+  padding-bottom: 0.5em;
+}
