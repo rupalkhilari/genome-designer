@@ -228,14 +228,14 @@ router.get('/file/:url', (req, res) => {
 });
 
 router.post('/file/:url', (req, res) => {
-  const { url } = req.params;
+  let { url } = req.params;
 
   //assuming contents to be string
-  const buffer = "";
+  let buffer = "";
 
   //All files are put in the storage folder (until platform comes along)
   url = './storage/' + url;
-  const path = url.substring(0,url.lastIndexOf("/")+1);
+  let path = url.substring(0,url.lastIndexOf("/")+1);
 
   //get data in parts
   req.on('data', data => {
