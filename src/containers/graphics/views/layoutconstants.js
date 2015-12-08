@@ -16,6 +16,8 @@ const condensedText = 25;
 // inset of layout in graph
 const insetX = 50;
 const insetY = 50;
+// font size
+const fontSize = '13px';
 
 
 export default {
@@ -42,15 +44,16 @@ export default {
     color: 'white',
     glyph: 'rectangle',
     strokeWidth: 0,
+    fontSize: fontSize,
   },
   rowAppearance: {
-    h: rowBarH,
+    height: rowBarH,
     fill: 'black',
     glyph: 'rectangle',
     strokeWidth: 0,
   },
   verticalAppearance: {
-    w: rowBarW,
+    width: rowBarW,
     fill: 'black',
     glyph: 'rectangle',
     strokeWidth: 0,
@@ -61,6 +64,7 @@ export default {
     fontWeight: 'bold',
     strokeWidth: 1,
     stroke: 'gray',
+    fontSize: fontSize,
     classes: 'transform-animated',
   },
   connectorAppearance: {

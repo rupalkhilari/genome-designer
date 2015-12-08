@@ -4,7 +4,7 @@ import { pushState } from 'redux-router';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { DragDropContext } from 'react-dnd';
 import SceneGraph2D from './graphics/scenegraph2d/scenegraph2d';
-import UserInterface from './graphics/scenegraph2d/userinterface';
+import ConstructViewer from './graphics/views/constructviewer';
 import K from './graphics/scenegraph2d/blocky/blockyconstants';
 import Inventory from './Inventory';
 import '../styles/SceneGraphPage.css';
@@ -49,25 +49,12 @@ class DnD extends Component {
     // });
   }
 
-  construct2sceneGraph(construct) {
-    const sg = new SceneGraph2D({
-      w: 975,
-      h: 300,
-      owner: this,
-    });
-    sg.props.userInterface = new UserInterface(sg, construct);
-    return sg;
-  }
-
   render() {
     const { children, constructId, project, constructs } = this.props;
 
-    // map all constructs to scene graphs and render them
-    const renderedSceneGraphs = constructs.map(construct => {
-      const sceneGraph = this.construct2sceneGraph(construct);
-      return sceneGraph.render();
+    const constructViewers = constructs.map(construct => {
+      return <ConstructViewer key={construct.id} construct={construct}/>
     });
-
     return (
       <div className="ProjectPage">
         <Inventory />
@@ -83,7 +70,7 @@ class DnD extends Component {
             </select>
           </div>
           <br></br>
-          {renderedSceneGraphs}
+          {constructViewers}
         </div>
       </div>
     );

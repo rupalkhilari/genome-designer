@@ -1,17 +1,23 @@
-import cloneDeep from 'lodash.clonedeep';
-import Vector2D from '../../geometry/vector2d';
-import Box2D from '../../geometry/box2d';
-import Node2D from '../../scenegraph2d/node2d';
-import K from './blockyconstants';
+import Vector2D from '../geometry/vector2d';
+import Box2D from '../geometry/box2d';
+import Node2D from '../scenegraph2d/node2d';
+import K from './layoutconstants';
 
-// layout class
+/**
+ * layout and scene graph manager for the construct viewer
+ */
 export default class Layout {
 
-  constructor(sceneGraph, userInterface, dataSet, options) {
+  constructor(constructViewer, sceneGraph, construct, options) {
+    // we need a construct viewer, a scene graph, a construct and options
+    this.constructViewer = constructViewer;
     this.sceneGraph = sceneGraph;
-    this.userInterface = userInterface;
-    this.dataSet = dataSet;
-    this.options = cloneDeep(options || {});
+    this.construct = construct;
+    // set default options
+    Object.assign(this, {
+      width: 800,
+    });
+    // prep data structures for layout
     this.rows = [];
     this.nodes2elements = {};
     this.elements2nodes = {};
@@ -24,7 +30,7 @@ export default class Layout {
    * @return {[type]}      [description]
    */
   map(p, node) {
-    this.nodes2elements[node.props.id] = p;
+    this.nodes2elements[node.uuid] = p;
     this.elements2nodes[p] = node;
   }
   /**
@@ -33,7 +39,7 @@ export default class Layout {
    * @return {[type]}      [description]
    */
   elementFromNode(node) {
-    return this.nodes2elements[node.props.id];
+    return this.nodes2elements[node.uuid];
   }
   /**
    * reverse mapping from anything with an 'uuid' property to a node
@@ -52,7 +58,7 @@ export default class Layout {
    */
   elementFactory(p, appearance) {
     if (!this.nodeFromElement(p)) {
-      const node = new Node2D(appearance);
+      const node = new Node2D(Object.assign({sg: this.sceneGraph}, appearance));
       this.sceneGraph.root.appendChild(node);
       this.map(p, node);
     }
@@ -64,7 +70,7 @@ export default class Layout {
    */
   titleFactory(p) {
     if (!this.nodeFromElement(p)) {
-      const node= new Node2D(K.titleAppearance);
+      const node= new Node2D(Object.assign({sg: this.sceneGraph}, K.titleAppearance));
       this.sceneGraph.root.appendChild(node);
       this.map(p, node);
     }
@@ -75,7 +81,7 @@ export default class Layout {
    */
   verticalFactory() {
     if (!this.vertical) {
-      this.vertical = new Node2D(K.verticalAppearance);
+      this.vertical = new Node2D(Object.assign({sg: this.sceneGraph}, K.verticalAppearance));
       this.sceneGraph.root.appendChild(this.vertical);
     }
   }
@@ -93,7 +99,7 @@ export default class Layout {
     if (this.rows.length) {
       row = this.rows.shift();
     } else {
-      row = new Node2D(K.rowAppearance);
+      row = new Node2D(Object.assign({sg: this.sceneGraph}, K.rowAppearance));
       this.sceneGraph.root.appendChild(row);
     }
     // set bounds
@@ -145,9 +151,6 @@ export default class Layout {
       this.layoutFullCondensed();
       break;
     }
-
-    // update and ensure scenegraph is sized to contain the view
-    this.userInterface.autoSizeSceneGraph();
   }
 
   /**
@@ -166,13 +169,13 @@ export default class Layout {
    */
   layoutWrap() {
     this.layout({
-      xlimit: this.options.width + K.insetX,
+      xlimit: this.width + K.insetX,
       condensed: false,
     });
   }
   layoutWrapCondensed() {
     this.layout({
-      xlimit: this.options.width + K.insetX,
+      xlimit: this.width + K.insetX,
       condensed: true,
     });
   }
@@ -208,7 +211,7 @@ export default class Layout {
   layout(layoutOptions) {
 
     // shortcut
-    const d = this.dataSet;
+    const d = this.construct;
     // top left of our area to render in
     const x = K.insetX;
     const y = K.insetY;
@@ -239,7 +242,7 @@ export default class Layout {
       }
       // resize row bar to current row width
       const rw = xp - x;
-      row.set({x: x + rw / 2, w: rw});
+      row.set({translateX: x + rw / 2, width: rw});
 
       // create element on demand, this should vary by block type, which I don't currently have
       // this.elementFactory(p, p.type === 'part' ? K.partAppearance : K.connectorAppearance);
@@ -252,7 +255,7 @@ export default class Layout {
       if (xp + td.x > mx) {
         xp = x + K.rowBarW;
         yp += K.rowH;
-        row = this.rowFactory(new Box2D(x, yp - K.rowBarH, this.options.width, K.rowBarH));
+        row = this.rowFactory(new Box2D(x, yp - K.rowBarH, this.width, K.rowBarH));
       }
 
       // update part
@@ -269,7 +272,7 @@ export default class Layout {
 
     // ensure final row has the final row width
     const rw = xp - x;
-    row.set({x: x + rw / 2, w: rw});
+    row.set({translateX: x + rw / 2, width: rw});
 
     // cleanup any dangling rows
     this.disposeRows();

@@ -1,10 +1,11 @@
 import uuid from 'node-uuid';
 import React from 'react';
-import Node2DReact from '../scenegraph2d_react/node2d';
 import Vector2D from '../geometry/vector2d';
 import Box2D from '../geometry/box2d';
 import Transform2D from '../geometry/transform2d';
-
+import invariant from '../../../utils/environment/invariant';
+import NodeText2D from './nodetext2d';
+import Rectangle2D from './glyphs/html/rectangle2d';
 /**
  * shared DIV for measuring text,
  */
@@ -16,25 +17,48 @@ let textDIV;
 export default class Node2D {
 
   constructor(props) {
+    // top level element is just a div
+    this.el = document.createElement('div');
+    // default class
+    this.el.className = 'node';
+    // transformation object
+    this.transform = new Transform2D();
     // child nodes of this node
     this.children = [];
-
     // extend default options with the given options
-    this.props = Object.assign({
+    this.set(Object.assign({
       stroke: 'black',
       strokeWidth: 0,
       fill: 'dodgerblue',
-      w: 0,
-      h: 0,
-      x: 0,
-      y: 0,
-      r: 0,
-      fontSize: '13px',
-      fontWeight: 'normal',
-      color: 'black',
+      width: 0,
+      height: 0,
+      translateX: 0,
+      translateY: 0,
+      rotate: 0,
       scale: 1,
+      fontSize: '2rem',
+      fontWeight: 'normal',
+      fontFamily: 'Arial',
+      color: 'black',
       uuid: uuid.v4(),
-    }, props);
+      glyph: 'none',
+    }, props));
+
+    // we must belong to a scene graph
+    invariant(this.sg, 'nodes must belong to a scenegraph');
+
+    // create our glyph at the same time
+    switch (this.glyph) {
+      case 'rectangle':
+        this.glyphObject = new Rectangle2D(this);
+      break;
+      case 'none':
+        // nodes are allowed to have no glyph e.g. the root or a group
+      break;
+      default: throw new Error('unrecognized glyph type');
+    }
+    // create our text element
+    this.textGlyph = new NodeText2D(this);
   }
 
   /**
@@ -43,21 +67,13 @@ export default class Node2D {
    * @return {[type]}       [description]
    */
   appendChild(child) {
+    invariant(child && !child.parent, 'cannot append nothing or a parented node');
     child.parent = this;
     this.children.push(child);
+    this.el.appendChild(child.el);
     return child;
   }
 
-  /**
-   * prepend a child to us. It will be below all other children.
-   * @param  {[type]} child [description]
-   * @return {[type]}       [description]
-   */
-  prependChild(child) {
-    child.parent = this;
-    this.children.unshift(child);
-    return child;
-  }
 
   /**
    * remove the given child from our children
@@ -65,25 +81,10 @@ export default class Node2D {
    * @return {[type]}       [description]
    */
   removeChild(child) {
+    invariant(child && this.children.indexOf(child) >= 0, 'node is not our child');
     child.parent = null;
     this.children.splice(this.children.indexOf(child), 1);
     return child;
-  }
-
-  /**
-   * bring to front of parents children stack
-   */
-  bringToFront() {
-    this.parent.removeChild(this);
-    this.parent.appendChild(this);
-  }
-
-  /**
-   * send node to back of its parent child list
-   */
-  sendToBack() {
-    this.parent.removeChild(this);
-    this.parent.prependChild(this);
   }
 
   /**
@@ -98,44 +99,54 @@ export default class Node2D {
 
       switch (key) {
 
+        case 'parent':
+          value.appendChild(this);
+        break;
         case 'bounds':
-          this.props.x = value.cx;
-          this.props.y = value.cy;
-          this.props.w = value.w;
-          this.props.h = value.h;
+          this.translateX = value.cx;
+          this.translateY = value.cy;
+          this.width = value.w;
+          this.height = value.h;
+        break;
+
+        case 'glyph':
+          invariant(!this.glyph, 'nodes do not expect their glyph type to change after construction');
+          this.glyph = value;
         break;
 
         // default behaviour is to just set the property
-        default: this.props[key] = p[key];
+        default: this[key] = p[key];
       }
     });
   }
-
   /**
+   * just our local transform
+   * @return {[type]} [description]
+   */
+ get localTransform() {
+   // use simple caching to save on this calculation
+   const key = `${this.translateX},${this.translateY},${this.width},${this.height},${this.scale},${this.rotate}`;
+   if (this.transformCachedKey !== key) {
+     // update cache key
+     this.transformCachedKey = key;
+     // our local transform
+     this.transform.translate = new Vector2D(this.translateX, this.translateY);
+     this.transform.rotate = this.rotate;
+     this.transform.scale = new Vector2D(this.scale, this.scale);
+     this.matrixCached = this.transform.getTransformationMatrix(this.width, this.height);
+   }
+   return this.matrixCached.clone();
+ }
+/**
  * get our transform multiplied by our parents, if present, this recursive
  * and works up the child -> parent hierarchy
- * NOTE: This excludes the scene graphs view matrix, generally input points
- * should adjust for that first.
  */
   get transformationMatrix() {
-    // use simple caching to save on this calculation
-    const key = `${this.props.x},${this.props.y},${this.props.w},${this.props.h},${this.props.scale}`;
-    if (this.transformCachedKey !== key) {
-      // update cache key
-      this.transformCachedKey = key;
-      // our local transform
-      const T = new Transform2D();
-      T.translate = new Vector2D(this.props.x, this.props.y);
-      T.translate = new Vector2D(this.props.x, this.props.y);
-      T.rotate = this.props.r;
-      T.scale = new Vector2D(this.props.scale, this.props.scale);
-      this.matrixCached = T.getTransformationMatrix(this.props.w, this.props.h);
-    }
 
     // bring in parent if we have one, otherwise just our matrix
     return this.parent
-      ? this.parent.transformationMatrix.multiplyMatrix(this.matrixCached)
-      : this.matrixCached.clone();
+      ? this.parent.transformationMatrix.multiplyMatrix(this.localTransform)
+      : this.localTransform;
   }
 
   /**
@@ -180,13 +191,13 @@ export default class Node2D {
     // and use the inverse to put the point into the local space of the
     // node. Then we can just test against the AABB
     const pt = this.globalToLocal(p);
-    return pt.x >= 0 && pt.y >= 0 && pt.x <= this.props.w && pt.y <= this.props.h;
+    return pt.x >= 0 && pt.y >= 0 && pt.x <= this.width && pt.y <= this.height;
   }
 
   /**
    * uses a global, hidden div to measure the width height of the given string
    * using our current text settings
-   * @param  {string} s - string to measure or if ommitted this.props.text
+   * @param  {string} s - string to measure or if ommitted this.text
    * @return {Vectot2D}
    */
   measureText(s) {
@@ -201,9 +212,10 @@ export default class Node2D {
     }
 
     // update to our current font settings and text
-    textDIV.innerHTML = s || this.props.text || '';
-    textDIV.style.fontSize = this.props.fontSize;
-    textDIV.style.fontWeight = this.props.fontWeight;
+    textDIV.innerHTML = s || this.text || '';
+    textDIV.style.fontSize = this.fontSize;
+    textDIV.style.fontWeight = this.fontWeight;
+    textDIV.style.fontFamily = this.fontFamily;
 
     // return measurement
     return new Vector2D(textDIV.clientWidth, textDIV.clientHeight);
@@ -218,9 +230,9 @@ export default class Node2D {
     // transform the 4 corners of the bounds into screen space
     const pts = [
       new Vector2D(0, 0),
-      new Vector2D(this.props.w, 0),
-      new Vector2D(this.props.w, this.props.h),
-      new Vector2D(0, this.props.h),
+      new Vector2D(this.width, 0),
+      new Vector2D(this.width, this.height),
+      new Vector2D(0, this.height),
     ];
 
     const tpts = pts.map(p => this.transformationMatrix.multiplyVector(p));
@@ -231,17 +243,45 @@ export default class Node2D {
     const ymax = Math.max(tpts[0].y, tpts[1].y, tpts[2].y, tpts[3].y);
 
     return new Box2D(xmin, ymin, xmax - xmin, ymax - ymin);
-
   }
 
-  render() {
-    // get a rendering of all our children, recursively including all their children
-    const childrenRendered = this.children.map(child => {
-      return child.render();
+  /**
+   * Updating all display properties of the node and returning our element.
+   * @return {[type]} [description]
+   */
+  update() {
+
+    // if we have additional CSS classes to apply do that
+    if (this.classes) {
+      this.el.className = `node ${this.classes}`;
+    }
+
+    // set width/height and transform
+    this.el.style.width = this.width + 'px';
+    this.el.style.height = this.height + 'px';
+    this.el.style.transform = this.localTransform.toCSSString();
+
+    // now update our glyph
+    if (this.glyphObject) {
+      this.glyphObject.update();
+    }
+
+    // update text
+    if (this.textGlyph) {
+      this.textGlyph.update();
+    }
+
+    return this.el;
+  }
+  /**
+   * update branch performs a recursive update on the entire branch rooted on this node.
+   * @return {Node2D}
+   */
+  updateBranch() {
+    this.update();
+    this.children.forEach(child => {
+      child.updateBranch();
     });
-    return (<Node2DReact key={this.props.uuid} {...this.props}>
-      {childrenRendered}
-    </Node2DReact>);
+    return this.el;
   }
-
 }

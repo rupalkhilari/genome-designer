@@ -7,7 +7,6 @@ import ProjectPage from './containers/ProjectPage';
 import ConstructPage from './containers/ConstructPage';
 import AboutPage from './components/AboutPage';
 import SupportPage from './components/SupportPage';
-import SceneGraphPage from './containers/SceneGraphPage';
 import DnD from './containers/dnd'
 
 //Routes are specified as a separate component so they can hotloaded
@@ -36,7 +35,6 @@ export default(
              component={ConstructPage}/>
     </Route>
     <Redirect from="/project" to="/"/>
-    <Route path="/scenegraph" component={SceneGraphPage}/>
     <Route path="/dnd/:projectId" component={DnD}/>
   </Route>
 );

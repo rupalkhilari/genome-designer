@@ -1,15 +1,6 @@
 
-.sceneGraphContainer {
-  position: relative;
-  display: inline-block;
-  border: 1px solid lightgray;
-  overflow: auto;
-  margin-top: 1rem;
-  width: 900px;
-  height: 300px;
-}
 .sceneGraph {
-  position: absolute;
+  position: relative;
   display: inline-block;
   overflow: hidden;
 }
@@ -65,19 +56,9 @@
   }
 }
 
-.blocktest {
-  width: 1024px;
-  height: 768px;
-  border: 1px solid black;
-  margin: 1rem 0 1rem 5rem;
-  position: relative;
-  overflow: hidden;
-}
-.blocktest-block {
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  background-color: dodgerblue;
-  text-align: center;
-  border: 2px solid black;
+.construct-viewer {
+  margin: 1rem 1rem 0 1rem;
+  width: calc(100% - 2rem);
+  height: 40rem;
+  border: 1px solid gray;
 }
