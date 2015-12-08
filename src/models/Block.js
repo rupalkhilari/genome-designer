@@ -63,4 +63,6 @@ export default class Block extends Instance {
 
     return this.mutate('sequence', path);
   }
+
+  /* todo - get/set/delete annotations */
 }

@@ -15,11 +15,41 @@ export const blockCreate = (initialModel) => {
 };
 
 //this is a backup for performing arbitrary mutations
-export const blockMerge = makeActionCreator(ActionTypes.BLOCK_MERGE, 'blockId', 'toMerge');
+export const blockMerge = (blockId, toMerge) => {
+  return (dispatch, getState) => {
+    const oldBlock = getState().blocks[blockId];
+    const block = oldBlock.merge(toMerge);
+    dispatch({
+      type: ActionTypes.BLOCK_MERGE,
+      block,
+    });
+    return block;
+  };
+};
 
-export const blockRename = makeActionCreator(ActionTypes.BLOCK_RENAME, 'blockId', 'name');
+export const blockRename = (blockId, name) => {
+  return (dispatch, getState) => {
+    const oldBlock = getState().blocks[blockId];
+    const block = oldBlock.mutate('metadata.name', name);
+    dispatch({
+      type: ActionTypes.BLOCK_RENAME,
+      block,
+    });
+    return block;
+  };
+};
 
-export const blockAddComponent = makeActionCreator(ActionTypes.BLOCK_ADD_COMPONENT, 'blockId', 'componentId');
+export const blockAddComponent = (blockId, componentId, index) => {
+  return (dispatch, getState) => {
+    const oldBlock = getState().blocks[blockId];
+    const block = oldBlock.addComponent(componentId, index);
+    dispatch({
+      type: ActionTypes.BLOCK_ADD_COMPONENT,
+      block,
+    });
+    return block;
+  };
+};
 
 export const blockSetSequence = (blockId, sequence) => {
   return (dispatch, getState) => {
