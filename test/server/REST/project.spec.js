@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import { expect } from 'chai';
 import { Block as exampleBlock } from '../../schemas/_examples';
 import request from 'supertest';

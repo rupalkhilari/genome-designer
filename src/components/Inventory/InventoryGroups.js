@@ -11,9 +11,8 @@ const inventoryGroupTypeToComponent = (type, props) => {
     return (<InventoryGroupSbol {...props} />);
   } else if (type === 'block') {
     return (<InventoryGroupBlocks {...props} />);
-  } else {
-    throw new Error(`Type ${type} is not registered in InventoryGroups`);
   }
+  throw new Error(`Type ${type} is not registered in InventoryGroups`);
 };
 
 export default class InventoryGroups extends Component {
@@ -48,7 +47,7 @@ export default class InventoryGroups extends Component {
       <div className="InventoryGroups">
         <InventoryTabs tabs={groups}
                        activeTabIndex={currentTabIndex}
-                       onTabSelect={this.handleSelectTab} />
+                       onTabSelect={this.handleSelectTab}/>
         {currentGroupComponent}
       </div>
     );
