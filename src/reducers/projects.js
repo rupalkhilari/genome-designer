@@ -28,6 +28,14 @@ export default function projects(state = initialState, action) {
     return Object.assign({}, state, {[projectId]: project});
   }
 
+  case ActionTypes.PROJECT_MERGE : {
+    const { projectId, toMerge } = action;
+    const oldProject = state[projectId];
+    const newProject = oldProject.merge(toMerge);
+
+    return Object.assign({}, state, {[projectId]: newProject});
+  }
+
     //associated construct with project. Need to create construct on its own.
   case ActionTypes.PROJECT_ADD_CONSTRUCT : {
     //note - using _.merge() would simplify this a lot

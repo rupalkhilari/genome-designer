@@ -14,5 +14,9 @@ export const blockCreate = (initialModel) => {
   };
 };
 
+//this is a backup for performing arbitrary mutations
+export const blockMerge = makeActionCreator(ActionTypes.BLOCK_MERGE, 'blockId', 'toMerge');
+
 export const blockRename = makeActionCreator(ActionTypes.BLOCK_RENAME, 'blockId', 'name');
+
 export const blockAddComponent = makeActionCreator(ActionTypes.BLOCK_ADD_COMPONENT, 'blockId', 'componentId');

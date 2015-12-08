@@ -27,6 +27,14 @@ export default function blocks(state = initialState, action) {
     return Object.assign({}, state, {[blockId]: block});
   }
 
+  case ActionTypes.BLOCK_MERGE : {
+    const { blockId, toMerge } = action;
+    const oldBlock = state[blockId];
+    const newBlock = oldBlock.merge(toMerge);
+
+    return Object.assign({}, state, {[blockId]: newBlock});
+  }
+
   case ActionTypes.BLOCK_RENAME : {
     const { blockId, name } = action;
     const oldBlock = state[blockId];
