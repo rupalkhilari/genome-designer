@@ -37,10 +37,10 @@ class GlobalNav extends Component {
 
   handleClickAddConstruct = (event) => {
     const { currentProjectId, blockCreate, projectAddConstruct } = this.props;
-    const construct = blockCreate();
-    const constructId = construct.id;
-
-    projectAddConstruct(currentProjectId, constructId);
+    blockCreate()
+      .then(block => {
+        projectAddConstruct(currentProjectId, block.id);
+      });
   }
 
   render() {

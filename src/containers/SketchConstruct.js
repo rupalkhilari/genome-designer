@@ -56,8 +56,10 @@ export class SketchConstruct extends Component {
 
   handleClickAddBlock = (event) => {
     const { construct, blockCreate, blockAddComponent } = this.props;
-    const block = blockCreate();
-    blockAddComponent(construct.id, block.id);
+    blockCreate()
+      .then(block => {
+        blockAddComponent(construct.id, block.id);
+      });
   }
 
   render() {

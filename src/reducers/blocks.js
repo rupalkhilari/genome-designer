@@ -23,6 +23,7 @@ export default function blocks(state = initialState, action) {
   case ActionTypes.BLOCK_CREATE :
   case ActionTypes.BLOCK_MERGE :
   case ActionTypes.BLOCK_RENAME :
+  case ActionTypes.BLOCK_CLONE :
   case ActionTypes.BLOCK_ADD_COMPONENT : {
     const { block } = action;
     return Object.assign({}, state, {[block.id]: block});
