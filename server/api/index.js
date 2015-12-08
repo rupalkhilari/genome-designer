@@ -13,6 +13,9 @@ const jsonParser = bodyParser.json({
   strict: false, //allow values other than arrays and objects
 });
 
+var fs = require("fs");
+var mkpath = require('mkpath');
+
 function paramIsTruthy(param) {
   return param !== undefined && param !== 'false';
 }
@@ -206,6 +209,64 @@ router.post('/clone/:id', (req, res) => {
     .then(clone => {
       res.json(clone);
     });
+});
+
+/**
+* File IO
+* Read and write files
+**/
+
+router.get('/file/:url', (req, res) => {
+  const { url } = req.params;
+  fs.readFile('./storage/' + url, 'utf8', (err, data) => {
+   if (err) {
+      res.status(500).send(err.message);
+   } else {
+      res.send(data);
+   }
+  });
+});
+
+router.post('/file/:url', (req, res) => {
+  let { url } = req.params;
+
+  //assuming contents to be string
+  let buffer = "";
+
+  //All files are put in the storage folder (until platform comes along)
+  url = './storage/' + url;
+  let path = url.substring(0,url.lastIndexOf("/")+1);
+
+  //get data in parts
+  req.on('data', data => {
+    buffer += data; 
+  });
+
+  //received all the data
+  req.on('end', function() {
+
+    //make folder if doesn't exists
+    mkpath(path, (err) => {
+
+      if (err) {
+        res.status(500).send(err.message);
+      } else {
+
+        //write data to file
+        fs.writeFile(url, buffer, 'utf8', (err) => {
+
+          if (err) {
+            res.status(500).send(err.message);
+          } else {
+            res.send(url);
+          }
+
+        }); //writeFile
+      }
+
+    });  //mkpath
+  }); //req.on
+
 });
 
 //default catch
