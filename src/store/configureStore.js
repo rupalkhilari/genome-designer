@@ -5,6 +5,7 @@ import createHistory from 'history/lib/createBrowserHistory';
 import routes from '../routes';
 import thunk from 'redux-thunk';
 import createLogger from 'redux-logger';
+import saveLastActionMiddleware from './saveLastActionMiddleware';
 import rootReducer from '../reducers/index';
 
 // note that the store loads the routes, which in turn load components
@@ -14,8 +15,12 @@ const middleware = [
   // middleware like thunk (async, promises) should come first in the chain
   thunk,
 
+  saveLastActionMiddleware(),
+
   //logging middleware
-  createLogger(),
+  createLogger({
+    predicate: (getState, action) => process.env.NODE_ENV !== `production`,
+  }),
 ];
 
 let finalCreateStore;
