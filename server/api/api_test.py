@@ -228,10 +228,15 @@ class TestGenomeDesignerREST(unittest.TestCase):
     url = self.run_url
 
     res = POST(self.api_url + "file/DNA", data="ACGTACGACTACGACTGACGACTACGAGCT", headers=headers)
-    input1 = {"DNA":"storage/DNA"}
+    input1 = {"DNA":res.text}
     res = POST(url + "translate_dna_example", data = json(input1), headers=headers)
     self.assertTrue(res.status_code==200)
     self.assertTrue(list(res.json().keys())[0]=='Protein')
+
+    input1["Protein"] = "storage/myDir/Prot"
+    res = POST(url + "translate_dna_example", data = json(input1), headers=headers)
+    self.assertTrue(res.status_code==200)
+    self.assertTrue(list(res.json().keys())[0]=='storage/myDir/Prot')
 
   def test_foundry_api(self):
     headers = self.headers
