@@ -1,7 +1,6 @@
 import * as ActionTypes from '../constants/ActionTypes';
 
 export const initialState = {
-  isVisible: true,
   currentInstance: null,
 };
 
