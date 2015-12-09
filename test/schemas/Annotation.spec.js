@@ -1,32 +1,25 @@
-import assert from 'assert';
 import AnnotationDefinition from '../../src/schemas/Annotation';
+import { Annotation as exampleAnnotation } from './_examples';
+import chai from 'chai';
+
+const { assert } = chai;
 
 describe('AnnotationDefinition', () => {
-
   it('should be loggable', () => {
-    console.log(AnnotationDefinition);
+    //console.log(AnnotationDefinition);
+
     assert(true);
   });
 
   it('should describe', () => {
-    let description = AnnotationDefinition.describe();
+    const description = AnnotationDefinition.describe();
+    //console.log(description);
 
-    console.log(description);
-
-    assert(!!description);
+    assert(typeof description === 'object');
   });
 
 
-  it('should validate', () => {
-
-    //todo - should we be generating this?
-    let id = 'f47ac10b-58cc-4372-a567-0e02b2c3d479';
-
-    assert(AnnotationDefinition.validate({
-      description: 'example annotation',
-      tags: {},
-      optimizability: 'none',
-      sequence : 'acgtagc'
-    }));
+  it('should validate the example', () => {
+    assert(AnnotationDefinition.validate(exampleAnnotation));
   });
 });

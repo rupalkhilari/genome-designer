@@ -1,28 +1,53 @@
-import uuid from '../utils/generators/uuid';
+import uuid from 'node-uuid';
+import pathSet from 'lodash.set';
+import merge from 'lodash.merge';
+import cloneDeep from 'lodash.clonedeep';
 
+/**
+ * @description
+ * you can pass as argument to the constructor either:
+ *  - an object, which will extend the created instance
+ *  - a string, to use as a forced ID (todo - deprecate)
+ */
 export default class Instance {
-  constructor(forceId = uuid()) {
-    Object.assign(this, {
-      id: forceId,
-      metadata: {
-        name: '',
-        description: '',
-        version: '1.0.0',
-        authors: [],
-        tags: {},
+  constructor(input = uuid.v4(), subclassBase) {
+    let parsedInput;
+    if (!!input && typeof input === 'object') {
+      parsedInput = input;
+    } else if (typeof input === 'string') {
+      parsedInput = {id: input};
+    } else {
+      parsedInput = {};
+    }
+
+    //todo - do we want to force a new ID?
+
+    merge(this,
+      subclassBase,
+      {
+        id: uuid.v4(),
+        metadata: {
+          name: '',
+          description: '',
+          version: '1.0.0',
+          authors: [],
+          tags: {},
+        },
       },
-    });
+      parsedInput
+    );
   }
 
-  //this is just a placeholder until we are using immutables...
-  //note, wont be of same class but has same prototype etc.
-  clone() {
-    return Object.assign(Object.create(this), this);
+  // returns a new instance
+  // uses lodash _.set() for path, e.g. 'a.b[0].c'
+  // cloneDeep by default to handle deep properties that might not be handled properly by Object.assign
+  mutate(path, value, bypassCloning = false) {
+    const base = bypassCloning ? this : cloneDeep(this);
+    return pathSet(new this.constructor(base), path, value);
   }
 
-  rename(newName) {
-    const newInstance = this.clone();
-    newInstance.metadata.name = newName;
-    return newInstance;
+  // returns a new instance
+  merge(obj) {
+    return merge(new this.constructor(cloneDeep(this)), obj);
   }
 }

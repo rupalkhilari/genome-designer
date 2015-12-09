@@ -2,27 +2,15 @@
 
 .ProjectPage {
   display: flex;
-  flex-direction: column;
+  position: relative;
+  flex-direction: row;
   flex-grow: 1;
 
-  &-actions {
+  &-content {
     display: flex;
-    justify-content: space-around;
+    position: relative;
+    flex-direction: column;
     flex-grow: 1;
-    align-items: flex-end;
-    padding: 3em;
-  }
-
-  &-action {
-    cursor: pointer;
-  }
-
-  /* placeholder pending images */
-  .dummyButton {
-    height: 30px;
-    width: 30px;
-    margin: 0 auto;
-    background-color: var(--colors-grey);
-    display: block;
+    width: 0; /* hack - flexbox will give it min-width */
   }
 }

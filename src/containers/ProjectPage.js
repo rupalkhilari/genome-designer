@@ -1,17 +1,19 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router';
 import { pushState } from 'redux-router';
-import { blockCreate } from '../actions/blocks';
-import { projectAddConstruct } from '../actions/projects';
+import HTML5Backend from 'react-dnd-html5-backend';
+import { DragDropContext } from 'react-dnd';
 
-import SketchConstruct from './SketchConstruct';
+import Inventory from './Inventory';
+import Inspector from './Inspector';
 import ProjectHeader from '../components/ProjectHeader';
+import SketchConstruct from './SketchConstruct';
 
-import styles from '../styles/ProjectPage.css';
-import withStyles from '../decorators/withStyles';
+import '../styles/ProjectPage.css';
 
-@withStyles(styles)
+//todo - should abstract away component which has dragDropContext, inventory, inspector
+
+@DragDropContext(HTML5Backend)
 export class ProjectPage extends Component {
   static propTypes = {
     constructs: PropTypes.array.isRequired,
@@ -20,25 +22,11 @@ export class ProjectPage extends Component {
     constructId: PropTypes.string, //only visible if a construct is selected
 
     children: PropTypes.func, //react-router
-    blockCreate: PropTypes.func.isRequired,
-    projectAddConstruct: PropTypes.func.isRequired,
     pushState: PropTypes.func.isRequired,
   }
 
-  handleClickAddConstruct = (event) => {
-    const { projectId, blockCreate, projectAddConstruct } = this.props;
-    const construct = blockCreate();
-    const constructId = construct.id;
-
-    projectAddConstruct(projectId, constructId);
-  }
-
-  handleClickFromInventory = (event) => {
-    //todo
-  }
-
   render() {
-    const { children, projectId, constructId, project, constructs } = this.props;
+    const { children, constructId, project, constructs } = this.props;
 
     //todo - need error handling here. Should be in route transition probably?
     //right now there is some handling in GlobalNav when using ProjectSelect. Doesn't handle request of the URL.
@@ -50,38 +38,27 @@ export class ProjectPage extends Component {
 
     return (
       <div className="ProjectPage">
-        <ProjectHeader project={project}/>
+        <Inventory />
 
-        {/* if viewing specific construct, let routing take over*//* if viewing specific construct, let routing take over*/}
-        {constructSelected && children}
+        <div className="ProjectPage-content">
+          <ProjectHeader project={project}/>
 
-        {/* otherwise, show all the constructs... *//* otherwise, show all the constructs... */}
-        {!constructSelected && constructs.map(construct => {
-          return (
-            <div key={construct.id}>
-              <h3>
-                <Link to={`/project/${projectId}/${construct.id}`}>
-                  Construct {construct.metadata.name}
-                </Link>
-              </h3>
+          {/* if viewing specific construct, let routing take over*//* if viewing specific construct, let routing take over*/}
+          {constructSelected && children}
 
-              <SketchConstruct construct={construct}/>
-            </div>
-          );
-        })}
+          {/* otherwise, show all the constructs... *//* otherwise, show all the constructs... */}
+          {!constructSelected && constructs.map(construct => {
+            return (
+              <div key={construct.id}>
+                <h3>Construct {construct.metadata.name}</h3>
 
-        <div className="ProjectPage-actions">
-          <a className="ProjectPage-action"
-             onClick={this.handleClickAddConstruct}>
-            <span className="dummyButton"></span>
-            Add Construct
-          </a>
-          <a className="ProjectPage-action"
-             onClick={this.handleClickFromInventory}>
-            <span className="dummyButton"></span>
-            From Inventory
-          </a>
+                <SketchConstruct construct={construct}/>
+              </div>
+            );
+          })}
         </div>
+
+        <Inspector />
       </div>
     );
   }
@@ -101,7 +78,5 @@ function mapStateToProps(state) {
 }
 
 export default connect(mapStateToProps, {
-  blockCreate,
-  projectAddConstruct,
   pushState,
 })(ProjectPage);
