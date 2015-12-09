@@ -232,11 +232,12 @@ class TestGenomeDesignerREST(unittest.TestCase):
     res = POST(url + "translate_dna_example", data = json(input1), headers=headers)
     self.assertTrue(res.status_code==200)
     self.assertTrue(list(res.json().keys())[0]=='Protein')
+    self.assertTrue(res.json()["Protein"]=="TYDYD*RLRA")
 
     input1["Protein"] = "storage/myDir/Prot"
     res = POST(url + "translate_dna_example", data = json(input1), headers=headers)
     self.assertTrue(res.status_code==200)
-    self.assertTrue(list(res.json().keys())[0]=='storage/myDir/Prot')
+    self.assertTrue(res.json()["Protein"]=='storage/myDir/Prot')
 
   def test_foundry_api(self):
     headers = self.headers
