@@ -1,10 +1,8 @@
 inputs:
-    - nodeId: translate
-      id: DNA
+    - id: DNA
       type: string
 
 outputs:
-    - nodeId: translate
-      id: Protein
+    - id: Protein
       type: string
 

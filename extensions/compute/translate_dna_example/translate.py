@@ -1,6 +1,7 @@
 from Bio.Seq import Seq
-fin = open('inputs/DNA')
+import sys
+fin = open(sys.argv[1])
 prot = Seq(fin.read()).translate()
-fout = open('outputs/Protein','w')
+fout = open(sys.argv[2],'w')
 fout.write(str(prot))
 fout.close()

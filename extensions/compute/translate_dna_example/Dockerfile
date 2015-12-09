@@ -8,4 +8,4 @@ RUN mkdir /outputs
 
 WORKDIR /
 COPY ./translate.py /translate.py
-CMD ["python", "/translate.py"]
+CMD ["python", "/translate.py", "inputs/DNA", "outputs/Protein"]

@@ -43,7 +43,7 @@ router.use(sessionMiddleware);
 
 router.post('/:id', jsonParser, (req, resp) => {
   const { id } = req.params;
-  const inputs = req.body;
+  const fileUrls = req.body;
   const dir = getNodeDir(id) + "/";
   const key = req.headers["session-key"];
   var outputFiles = {};
@@ -57,7 +57,7 @@ router.post('/:id', jsonParser, (req, resp) => {
     } else {
 
       var data = yaml.parse(filestr);
-      //var inputs = data.inputs;
+      var inputs = data.inputs;
       var outputs = data.outputs;
       var outputFileNames = [];
       var i,j;
@@ -67,7 +67,8 @@ router.post('/:id', jsonParser, (req, resp) => {
       var inputFileWrites = [];
 
       //we need to provide a new session-key to all cloud-computes
-      inputs.headers = JSON.stringify({"session-key":key});
+      //todo: get host url some other way
+      var headers = {"session-key":key, "host": "http://0.0.0.0:3000"};
 
       inputDirWrites = [
           new Promise((resolve, reject) => {
@@ -92,18 +93,37 @@ router.post('/:id', jsonParser, (req, resp) => {
 
       Promise.all(inputDirWrites).then(result => {
 
-        for (var inputKey in inputs) {
+        inputFileWrites.push(
+            new Promise((resolve, reject) => {
+              fs.writeFile( dir + "inputs/headers", JSON.stringify(headers) , "utf8", err => {
+                  if (err) {
+                    console.log(err.message);
+                    reject(err.message);
+                  } else {                    
+                    resolve(dir + "inputs/headers");
+                  }
+                }); //fs.writeFile
+              }));
+
+        inputs.forEach(inputKey => {
           inputFileWrites.push(
             new Promise((resolve, reject) => {
-              fs.writeFile( dir + "inputs/" + inputKey, inputs[inputKey] , err => {
+              fs.readFile(fileUrls[inputKey], "utf8", (err, contents) => {
                 if (err) {
+                  console.log(err.message);
                   reject(err.message);
-                } else {
-                  resolve(dir + "inputs/" + inputKey);
                 }
-              }); //fs.writeFile
+                fs.writeFile( dir + "inputs/" + inputKey, contents , "utf8", err => {
+                  if (err) {
+                    console.log(err.message);
+                    reject(err.message);
+                  } else {                    
+                    resolve(dir + "inputs/" + inputKey);
+                  }
+                }); //fs.writeFile
+              }); //fs.readFile
             }));
-        }
+        });
 
         //outputs
         for (i=0; i < outputs.length; ++i) {

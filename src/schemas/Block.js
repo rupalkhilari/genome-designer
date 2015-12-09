@@ -41,10 +41,10 @@ const BlockDefinition = InstanceDefinition.extend({
    */
   sequence: [
     fields.shape({
-      id: validators.id(),
+      url: validators.string(),
       annotations: validators.array(annotationShape),
     }),
-    `ID of the associated Sequence (not the sequence itself), and list of Annotations associated`,
+    `Reference to the associated Sequence (not the sequence itself), and list of Annotations associated`,
   ],
   source: [
     fields.shape({

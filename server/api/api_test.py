@@ -46,7 +46,20 @@ class TestGenomeDesignerREST(unittest.TestCase):
       "options":[],
       "components":[],
       "rules": [],
-      "notes": {}
+      "notes": {},
+      "sequence": {
+        "url": "/some/location",
+        "annotations": [
+          {
+            "description" : "bla bla",
+            "tags" : {},
+            "sequence" : "ACGT",
+            "start" : 5,
+            "end" : 58,
+            "strand" : "-"
+          }
+        ]
+      }
     }
 
     res = POST(url + "block", data = json(block1), headers=headers)
@@ -214,7 +227,8 @@ class TestGenomeDesignerREST(unittest.TestCase):
     headers = self.headers
     url = self.run_url
 
-    input1 = {"DNA":"ACGTACGACTACGACTGACGACTACGAGCT"}
+    res = POST(self.api_url + "file/DNA", data="ACGTACGACTACGACTGACGACTACGAGCT", headers=headers)
+    input1 = {"DNA":"storage/DNA"}
     res = POST(url + "translate_dna_example", data = json(input1), headers=headers)
     self.assertTrue(res.status_code==200)
     self.assertTrue(list(res.json().keys())[0]=='Protein')

@@ -1,0 +1,10 @@
+inputs:
+    - id: genbank
+      type: string
+
+outputs:
+    - id: data.json
+      type: string
+    - id: block.json
+      type: string
+
