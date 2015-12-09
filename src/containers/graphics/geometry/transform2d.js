@@ -9,18 +9,18 @@ export default class Transform2D {
    * When composed into a matrix the order of operations is S/R/T. Rotation and scaling always occurs around
    * the center i.e. translation to origin occurs, followed by S, then R and T to the final position
    *
-   * @param {Vector2D} [s] - initial scale, defaults to 1,1
-   * @param {Number}      [r] - rotation in degrees, defaults to 0
-   * @param {Vector2D} [t] - initial translation, defaults to 0, 0
-   * @param {Vector2D} [f] - x/y flipping -1 or 1 are the only acceptable values
+   * @param {Vector2D} [scale] - initial scale, defaults to 1,1
+   * @param {Number}      [rotate] - rotation in degrees, defaults to 0
+   * @param {Vector2D} [translate] - initial translation, defaults to 0, 0
+   * @param {Vector2D} [flip] - x/y flipping -1 or 1 are the only acceptable values
    *
    * @constructor
    */
-  constructor(s = new Vector2D(1, 1), r = 0, t = new Vector2D(), f = new Vector2D(1, 1)) {
-    this._s = s.clone();
-    this._r = r;
-    this._t = t.clone();
-    this._f = f.clone();
+  constructor(scale = new Vector2D(1, 1), rotate = 0, translate = new Vector2D(), flip = new Vector2D(1, 1)) {
+    this._s = scale.clone();
+    this._r = rotate;
+    this._t = translate.clone();
+    this._f = flip.clone();
   }
 
   /**
@@ -34,12 +34,12 @@ export default class Transform2D {
 
   /**
    * scale setter
-   * @param  {Vector2D} v
+   * @param  {Vector2D} vector
    */
-  set scale(v) {
+  set scale(vector) {
     // scale must be positive ( use flip to mirror the object )
-    invariant(isRealNumber(v.x) && isRealNumber(v.y) && v.x >= 0 && v.y >= 0, 'invalid scale');
-    this._s = v.clone();
+    invariant(isRealNumber(vector.x) && isRealNumber(vector.y) && vector.x >= 0 && vector.y >= 0, 'invalid scale');
+    this._s = vector.clone();
     this.cache = this.cacheKey = null;
   }
 
@@ -53,11 +53,11 @@ export default class Transform2D {
 
   /**
    * translate setter
-   * @param  {Vector2D} v
+   * @param  {Vector2D} vector
    */
-  set translate(v) {
-    invariant(isRealNumber(v.x) && isRealNumber(v.y), 'invalid translate');
-    this._t = v.clone();
+  set translate(vector) {
+    invariant(isRealNumber(vector.x) && isRealNumber(vector.y), 'invalid translate');
+    this._t = vector.clone();
     this.cache = this.cacheKey = null;
   }
 
@@ -74,9 +74,9 @@ export default class Transform2D {
    * @param {Vector2d}
    * @return {void}
    */
-  set flip(v) {
-    invariant((v.x === 1 || v.x === -1) && (v.y === 1 || v.y === -1), 'invalid flip');
-    this._f = v.clone();
+  set flip(vector) {
+    invariant((vector.x === 1 || vector.x === -1) && (vector.y === 1 || vector.y === -1), 'invalid flip');
+    this._f = vector.clone();
     this.cache = this.cacheKey = null;
   }
 
@@ -90,11 +90,11 @@ export default class Transform2D {
 
   /**
    * rotate setter
-   * @param  {number} v
+   * @param  {number} angle
    */
-  set rotate(v) {
-    invariant(isRealNumber(v), 'invalid rotate');
-    this._r = v;
+  set rotate(angle) {
+    invariant(isRealNumber(angle), 'invalid rotate');
+    this._r = angle;
     this.cache = this.cacheKey = null;
   }
 
@@ -121,16 +121,16 @@ export default class Transform2D {
 
   /**
    * create a new Transform2D from an object created with toObject
-   * @param  {object} o
+   * @param  {object} obj
    * @return Transform2D
    */
-  static fromObject(o) {
-    const t = new Transform2D();
-    t.translate = Vector2D.fromObject(o.translate);
-    t.scale = Vector2D.fromObject(o.scale);
-    t.flip = Vector2D.fromObject(o.flip);
-    t.rotate = o.rotate;
-    return t;
+  static fromObject(obj) {
+    const tr = new Transform2D();
+    tr.translate = Vector2D.fromObject(obj.translate);
+    tr.scale = Vector2D.fromObject(obj.scale);
+    tr.flip = Vector2D.fromObject(obj.flip);
+    tr.rotate = obj.rotate;
+    return tr;
   }
 
   /**

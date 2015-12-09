@@ -40,7 +40,7 @@ export default {
   insetY: insetY,
   // display properties for various elements
   titleAppearance: {
-    fill: 'black',
+    fill: 'dodgerblue',
     color: 'white',
     glyph: 'rectangle',
     strokeWidth: 0,
@@ -63,6 +63,7 @@ export default {
     glyph: 'rectangle',
     fontWeight: 'bold',
     strokeWidth: 1,
+    fill: 'whitesmoke',
     stroke: 'gray',
     fontSize: fontSize,
     classes: 'transform-animated',

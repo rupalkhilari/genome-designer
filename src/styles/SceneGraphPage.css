@@ -59,6 +59,6 @@
 .construct-viewer {
   margin: 1rem 1rem 0 1rem;
   width: calc(100% - 2rem);
-  height: 40rem;
+  height: 20rem;
   border: 1px solid gray;
 }

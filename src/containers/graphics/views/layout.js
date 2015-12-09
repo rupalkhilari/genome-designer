@@ -1,18 +1,17 @@
 import Vector2D from '../geometry/vector2d';
 import Box2D from '../geometry/box2d';
 import Node2D from '../scenegraph2d/node2d';
-import K from './layoutconstants';
+import kT from './layoutconstants';
 
 /**
  * layout and scene graph manager for the construct viewer
  */
 export default class Layout {
 
-  constructor(constructViewer, sceneGraph, construct, options) {
+  constructor(constructViewer, sceneGraph, options) {
     // we need a construct viewer, a scene graph, a construct and options
     this.constructViewer = constructViewer;
     this.sceneGraph = sceneGraph;
-    this.construct = construct;
     // set default options
     Object.assign(this, {
       width: 800,
@@ -21,17 +20,17 @@ export default class Layout {
     this.rows = [];
     this.nodes2elements = {};
     this.elements2nodes = {};
-    this.layoutName = K.layoutWrap;
+    this.layoutName = kT.layoutWrap;
   }
   /**
    * setup the bi drectional mapping between nodes / elements
-   * @param  {[type]} p    [description]
+   * @param  {[type]} part    [description]
    * @param  {[type]} node [description]
    * @return {[type]}      [description]
    */
-  map(p, node) {
-    this.nodes2elements[node.uuid] = p;
-    this.elements2nodes[p] = node;
+  map(part, node) {
+    this.nodes2elements[node.uuid] = part;
+    this.elements2nodes[part] = node;
   }
   /**
    * return the element from the data represented by the given node uuid
@@ -52,27 +51,27 @@ export default class Layout {
   /**
    * create a node, if not already created for the given piece.
    * Add to our hash for tracking
-   * @param  {[type]} p          [description]
+   * @param  {[type]} part          [description]
    * @param  {[type]} appearance [description]
    * @return {[type]}            [description]
    */
-  elementFactory(p, appearance) {
-    if (!this.nodeFromElement(p)) {
+  elementFactory(part, appearance) {
+    if (!this.nodeFromElement(part)) {
       const node = new Node2D(Object.assign({sg: this.sceneGraph}, appearance));
       this.sceneGraph.root.appendChild(node);
-      this.map(p, node);
+      this.map(part, node);
     }
   }
   /**
    * create title as necessary
-   * @param  {[type]} p [description]
+   * @param  {[type]} part [description]
    * @return {[type]}   [description]
    */
-  titleFactory(p) {
-    if (!this.nodeFromElement(p)) {
-      const node= new Node2D(Object.assign({sg: this.sceneGraph}, K.titleAppearance));
+  titleFactory(part) {
+    if (!this.nodeFromElement(part)) {
+      const node = new Node2D(Object.assign({sg: this.sceneGraph}, kT.titleAppearance));
       this.sceneGraph.root.appendChild(node);
-      this.map(p, node);
+      this.map(part, node);
     }
   }
   /**
@@ -81,7 +80,7 @@ export default class Layout {
    */
   verticalFactory() {
     if (!this.vertical) {
-      this.vertical = new Node2D(Object.assign({sg: this.sceneGraph}, K.verticalAppearance));
+      this.vertical = new Node2D(Object.assign({sg: this.sceneGraph}, kT.verticalAppearance));
       this.sceneGraph.root.appendChild(this.vertical);
     }
   }
@@ -99,7 +98,7 @@ export default class Layout {
     if (this.rows.length) {
       row = this.rows.shift();
     } else {
-      row = new Node2D(Object.assign({sg: this.sceneGraph}, K.rowAppearance));
+      row = new Node2D(Object.assign({sg: this.sceneGraph}, kT.rowAppearance));
       this.sceneGraph.root.appendChild(row);
     }
     // set bounds
@@ -131,25 +130,27 @@ export default class Layout {
    * display elements as required
    * @return {[type]} [description]
    */
-  update() {
+  update(construct) {
+    this.construct = construct;
 
     switch (this.layoutName) {
-
-      case K.layoutWrap:
+    case kT.layoutWrap:
       this.layoutWrap();
       break;
 
-      case K.layoutFull:
+    case kT.layoutFull:
       this.layoutFull();
       break;
 
-      case K.layoutWrapCondensed:
+    case kT.layoutWrapCondensed:
       this.layoutWrapCondensed();
       break;
 
-      case K.layoutFullCondensed:
+    case kT.layoutFullCondensed:
       this.layoutFullCondensed();
       break;
+
+    default: throw new Error('Not a valid layout algorithms');
     }
   }
 
@@ -169,13 +170,13 @@ export default class Layout {
    */
   layoutWrap() {
     this.layout({
-      xlimit: this.width + K.insetX,
+      xlimit: this.width + kT.insetX,
       condensed: false,
     });
   }
   layoutWrapCondensed() {
     this.layout({
-      xlimit: this.width + K.insetX,
+      xlimit: this.width + kT.insetX,
       condensed: true,
     });
   }
@@ -197,10 +198,10 @@ export default class Layout {
    */
   measureText(node, str, condensed) {
     if (condensed) {
-      return new Vector2D(K.condensedText, K.blockH);
+      return new Vector2D(kT.condensedText, kT.blockH);
     }
     // measure actual text plus some padding
-    return node.measureText(str).add(new Vector2D(K.textPad, 0));
+    return node.measureText(str).add(new Vector2D(kT.textPad, 0));
   }
 
   /**
@@ -209,70 +210,67 @@ export default class Layout {
    * @return {[type]} [description]
    */
   layout(layoutOptions) {
-
     // shortcut
-    const d = this.construct;
+    const ct = this.construct;
     // top left of our area to render in
-    const x = K.insetX;
-    const y = K.insetY;
+    const xs = kT.insetX;
+    const ys = kT.insetY;
     // maximum x position
     const mx = layoutOptions.xlimit;
     // reset row factory
     this.resetRows();
     // create title as neccessary and position
-    this.titleFactory(d);
+    this.titleFactory(ct);
     // update title to current position and text
-    this.nodeFromElement(d).set({
-      bounds: new Box2D(x, y, K.titleW, K.blockH),
-      text: d.id,
+    this.nodeFromElement(ct).set({
+      bounds: new Box2D(xs, ys, kT.titleW, kT.blockH),
+      text: ct.id,
     });
     // layout all the various components, constructing elements as required
     // and wrapping when a row is complete
-    let xp = x + K.rowBarW;
-    let yp = y + K.blockH + K.rowBarH;
+    let xp = xs + kT.rowBarW;
+    let yp = ys + kT.blockH + kT.rowBarH;
 
     // used to determine when we need a new row
     let row = null;
 
     // update / make all the parts
-    d.components.forEach(p => {
+    ct.components.forEach(part => {
       // create a row bar as neccessary
       if (!row) {
-        row = this.rowFactory(new Box2D(x, yp - K.rowBarH, 0, K.rowBarH));
+        row = this.rowFactory(new Box2D(xs, yp - kT.rowBarH, 0, kT.rowBarH));
       }
       // resize row bar to current row width
-      const rw = xp - x;
-      row.set({translateX: x + rw / 2, width: rw});
+      const rw = xp - xs;
+      row.set({translateX: xs + rw / 2, width: rw});
 
       // create element on demand, this should vary by block type, which I don't currently have
-      // this.elementFactory(p, p.type === 'part' ? K.partAppearance : K.connectorAppearance);
-      this.elementFactory(p, K.partAppearance);
+      // this.elementFactory(p, p.type === 'part' ? kT.partAppearance : kT.connectorAppearance);
+      this.elementFactory(part, kT.partAppearance);
 
       // measure element text or used condensed spacing
-      const td = this.measureText(this.nodeFromElement(p), p, layoutOptions.condensed);
+      const td = this.measureText(this.nodeFromElement(part), part, layoutOptions.condensed);
 
       // if position would exceed x limit then wrap
       if (xp + td.x > mx) {
-        xp = x + K.rowBarW;
-        yp += K.rowH;
-        row = this.rowFactory(new Box2D(x, yp - K.rowBarH, this.width, K.rowBarH));
+        xp = xs + kT.rowBarW;
+        yp += kT.rowH;
+        row = this.rowFactory(new Box2D(xs, yp - kT.rowBarH, this.width, kT.rowBarH));
       }
 
       // update part
-      this.nodeFromElement(p).set({
-        bounds: new Box2D(xp, yp, td.x, K.blockH),
-        text: p,
-        fill: 'whitesmoke',
+      this.nodeFromElement(part).set({
+        bounds: new Box2D(xp, yp, td.x, kT.blockH),
+        text: part,
       });
 
       // set next part position
       xp += td.x;
-
     });
 
     // ensure final row has the final row width
-    const rw = xp - x;
-    row.set({translateX: x + rw / 2, width: rw});
+    const rw = xp - xs;
+    row.set({translateX: xs + rw / 2, width: rw});
 
     // cleanup any dangling rows
     this.disposeRows();
@@ -281,9 +279,9 @@ export default class Layout {
     this.verticalFactory();
 
     // position and size vertical bar
-    const vh = (this.rows.length - 1) * K.rowH + K.blockH;
+    const vh = (this.rows.length - 1) * kT.rowH + kT.blockH;
     this.vertical.set({
-      bounds: new Box2D(x, y + K.blockH + K.rowBarH, K.rowBarW, vh),
+      bounds: new Box2D(xs, ys + kT.blockH + kT.rowBarH, kT.rowBarW, vh),
     });
   }
 }

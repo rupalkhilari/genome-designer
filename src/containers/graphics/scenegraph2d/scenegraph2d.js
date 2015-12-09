@@ -1,14 +1,10 @@
 import uuid from 'node-uuid';
-import React from 'react';
 import Node2D from '../scenegraph2d/node2d';
-import Vector2D from '../geometry/vector2d';
-import Box2D from '../geometry/box2d';
 import invariant from '../../../utils/environment/invariant';
 
 export default class SceneGraph2D {
 
   constructor(props) {
-
     // extend this with defaults and supplied properties
     this.props = Object.assign(this, {
       width: 800,

@@ -1,5 +1,4 @@
 import uuid from 'node-uuid';
-import React from 'react';
 import Vector2D from '../geometry/vector2d';
 import Box2D from '../geometry/box2d';
 import Transform2D from '../geometry/transform2d';
@@ -49,13 +48,13 @@ export default class Node2D {
 
     // create our glyph at the same time
     switch (this.glyph) {
-      case 'rectangle':
-        this.glyphObject = new Rectangle2D(this);
+    case 'rectangle':
+      this.glyphObject = new Rectangle2D(this);
       break;
-      case 'none':
-        // nodes are allowed to have no glyph e.g. the root or a group
+    case 'none':
       break;
-      default: throw new Error('unrecognized glyph type');
+    default:
+      throw new Error('unrecognized glyph type');
     }
     // create our text element
     this.textGlyph = new NodeText2D(this);
@@ -89,60 +88,61 @@ export default class Node2D {
 
   /**
    * apply the properties of the object p to our props.
-   * @param {object} p - key / value pairs of properties
+   * @param {object} props - key / value pairs of properties
    */
-  set(p) {
-    Object.keys(p).forEach(key => {
-
+  set(props) {
+    Object.keys(props).forEach(key => {
       // value associated with key
-      const value = p[key];
+      const value = props[key];
 
       switch (key) {
 
-        case 'parent':
-          value.appendChild(this);
-        break;
-        case 'bounds':
-          this.translateX = value.cx;
-          this.translateY = value.cy;
-          this.width = value.w;
-          this.height = value.h;
+      case 'parent':
+        value.appendChild(this);
         break;
 
-        case 'glyph':
-          invariant(!this.glyph, 'nodes do not expect their glyph type to change after construction');
-          this.glyph = value;
+      case 'bounds':
+        this.translateX = value.cx;
+        this.translateY = value.cy;
+        this.width = value.w;
+        this.height = value.h;
+        break;
+
+      case 'glyph':
+        invariant(!this.glyph, 'nodes do not expect their glyph type to change after construction');
+        this.glyph = value;
         break;
 
         // default behaviour is to just set the property
-        default: this[key] = p[key];
+      default: this[key] = props[key];
       }
     });
   }
+
   /**
    * just our local transform
    * @return {[type]} [description]
    */
- get localTransform() {
-   // use simple caching to save on this calculation
-   const key = `${this.translateX},${this.translateY},${this.width},${this.height},${this.scale},${this.rotate}`;
-   if (this.transformCachedKey !== key) {
-     // update cache key
-     this.transformCachedKey = key;
-     // our local transform
-     this.transform.translate = new Vector2D(this.translateX, this.translateY);
-     this.transform.rotate = this.rotate;
-     this.transform.scale = new Vector2D(this.scale, this.scale);
-     this.matrixCached = this.transform.getTransformationMatrix(this.width, this.height);
-   }
-   return this.matrixCached.clone();
- }
-/**
- * get our transform multiplied by our parents, if present, this recursive
- * and works up the child -> parent hierarchy
- */
-  get transformationMatrix() {
+  get localTransform() {
+    // use simple caching to save on this calculation
+    const key = `${this.translateX},${this.translateY},${this.width},${this.height},${this.scale},${this.rotate}`;
+    if (this.transformCachedKey !== key) {
+      // update cache key
+      this.transformCachedKey = key;
+      // our local transform
+      this.transform.translate = new Vector2D(this.translateX, this.translateY);
+      this.transform.rotate = this.rotate;
+      this.transform.scale = new Vector2D(this.scale, this.scale);
+      this.matrixCached = this.transform.getTransformationMatrix(this.width, this.height);
+    }
+    return this.matrixCached.clone();
+  }
 
+  /**
+   * get our transform multiplied by our parents, if present, this recursive
+   * and works up the child -> parent hierarchy
+   */
+  get transformationMatrix() {
     // bring in parent if we have one, otherwise just our matrix
     return this.parent
       ? this.parent.transformationMatrix.multiplyMatrix(this.localTransform)
@@ -160,47 +160,47 @@ export default class Node2D {
   /**
    * convert a point ( or array of points ) in global ( scene graph space ) to local space
    */
-  globalToLocal(p) {
-    if (Array.isArray(p)) {
-      return p.map( v => {
-        return this.globalToLocal(v);
+  globalToLocal(point) {
+    if (Array.isArray(point)) {
+      return point.map(pt => {
+        return this.globalToLocal(pt);
       }, this);
     }
-    return this.inverseTransformationMatrix.multiplyVector(p);
+    return this.inverseTransformationMatrix.multiplyVector(point);
   }
 
   /**
    * convert a point ( or array of points ) in global ( scene graph space ) to local space
    */
-  localToGlobal(p) {
-    if (Array.isArray(p)) {
-      return p.map( v => {
-        return this.localToGlobal(v);
+  localToGlobal(point) {
+    if (Array.isArray(point)) {
+      return point.map(pt => {
+        return this.localToGlobal(pt);
       }, this);
     }
-    return this.transformationMatrix.multiplyVector(p);
+    return this.transformationMatrix.multiplyVector(point);
   }
 
   /**
- * transform point into our local space and return results of containment test
- * @param {Vector2D} p
- * @returns boolean
- */
-  containsGlobalPoint(p) {
+   * transform point into our local space and return results of containment test
+   * @param {Vector2D} point
+   * @returns boolean
+   */
+  containsGlobalPoint(point) {
     // get our inverse transformation matrix including all our parents transforms
     // and use the inverse to put the point into the local space of the
     // node. Then we can just test against the AABB
-    const pt = this.globalToLocal(p);
+    const pt = this.globalToLocal(point);
     return pt.x >= 0 && pt.y >= 0 && pt.x <= this.width && pt.y <= this.height;
   }
 
   /**
    * uses a global, hidden div to measure the width height of the given string
    * using our current text settings
-   * @param  {string} s - string to measure or if ommitted this.text
+   * @param  {string} str - string to measure or if ommitted this.text
    * @return {Vectot2D}
    */
-  measureText(s) {
+  measureText(str) {
     // create div on demand
     if (!textDIV) {
       textDIV = document.createElement('DIV');
@@ -212,7 +212,7 @@ export default class Node2D {
     }
 
     // update to our current font settings and text
-    textDIV.innerHTML = s || this.text || '';
+    textDIV.innerHTML = str || this.text || '';
     textDIV.style.fontSize = this.fontSize;
     textDIV.style.fontWeight = this.fontWeight;
     textDIV.style.fontFamily = this.fontFamily;
@@ -222,11 +222,10 @@ export default class Node2D {
   }
 
   /**
-  * get the axis align bounding box for the element
-  * @returns G.Box
-  */
+   * get the axis align bounding box for the element
+   * @returns G.Box
+   */
   getAABB() {
-
     // transform the 4 corners of the bounds into screen space
     const pts = [
       new Vector2D(0, 0),
@@ -235,7 +234,7 @@ export default class Node2D {
       new Vector2D(0, this.height),
     ];
 
-    const tpts = pts.map(p => this.transformationMatrix.multiplyVector(p));
+    const tpts = pts.map(pt => this.transformationMatrix.multiplyVector(pt));
 
     const xmin = Math.min(tpts[0].x, tpts[1].x, tpts[2].x, tpts[3].x);
     const ymin = Math.min(tpts[0].y, tpts[1].y, tpts[2].y, tpts[3].y);
@@ -250,7 +249,6 @@ export default class Node2D {
    * @return {[type]} [description]
    */
   update() {
-
     // if we have additional CSS classes to apply do that
     if (this.classes) {
       this.el.className = `node ${this.classes}`;
@@ -273,6 +271,7 @@ export default class Node2D {
 
     return this.el;
   }
+
   /**
    * update branch performs a recursive update on the entire branch rooted on this node.
    * @return {Node2D}

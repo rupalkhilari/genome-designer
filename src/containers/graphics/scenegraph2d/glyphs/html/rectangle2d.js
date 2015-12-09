@@ -19,7 +19,7 @@ export default class Rectangle2D extends Glyph2D {
   /**
    * render latest changes
    */
-   update() {
+  update() {
     const sw = this.node.strokeWidth;
     this.el.style.left = -(sw / 2) + 'px';
     this.el.style.top = -(sw / 2) + 'px';
