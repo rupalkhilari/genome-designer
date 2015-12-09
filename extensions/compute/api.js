@@ -99,15 +99,17 @@ router.post('/:id', jsonParser, (req, resp) => {
                   if (err) {
                     console.log(err.message);
                     reject(err.message);
-                  } else {                    
+                  } else {
                     resolve(dir + "inputs/headers");
                   }
                 }); //fs.writeFile
               }));
 
-        inputs.forEach(inputKey => {
+        inputs.forEach(inputItem => {
+          let inputKey = inputItem.id;
           inputFileWrites.push(
             new Promise((resolve, reject) => {
+              console.log("Reading " + fileUrls[inputKey]);
               fs.readFile(fileUrls[inputKey], "utf8", (err, contents) => {
                 if (err) {
                   console.log(err.message);
@@ -117,7 +119,8 @@ router.post('/:id', jsonParser, (req, resp) => {
                   if (err) {
                     console.log(err.message);
                     reject(err.message);
-                  } else {                    
+                  } else {
+                    console.log("Wrote " + dir + "inputs/" + inputKey);
                     resolve(dir + "inputs/" + inputKey);
                   }
                 }); //fs.writeFile
@@ -152,10 +155,12 @@ router.post('/:id', jsonParser, (req, resp) => {
                 let outFile = fileUrls[outputs[i].id];
                 let contents = buffers[i];
                 if (outFile) {
+                  outputFiles[ outputs[i].id ] = outFile;
                   fs.writeFile(outFile, contents , "utf8", err => {
                     if (err) {
                       console.log(err.message);
                     } else {  
+                      console.log("Wrote " + outFile);
                       //TODO: should be finished before resp.json
                     }
                   }); //fs.writeFile
