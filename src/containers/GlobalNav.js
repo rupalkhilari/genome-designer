@@ -31,16 +31,17 @@ class GlobalNav extends Component {
 
   handleClickAddProject = (event) => {
     const { pushState, projectCreate } = this.props;
-    const project = projectCreate();
-    pushState(null, `/project/${project.id}`);
+    projectCreate().then(project => {
+      pushState(null, `/project/${project.id}`);
+    });
   }
 
   handleClickAddConstruct = (event) => {
     const { currentProjectId, blockCreate, projectAddConstruct } = this.props;
-    const construct = blockCreate();
-    const constructId = construct.id;
-
-    projectAddConstruct(currentProjectId, constructId);
+    blockCreate()
+      .then(block => {
+        projectAddConstruct(currentProjectId, block.id);
+      });
   }
 
   render() {
