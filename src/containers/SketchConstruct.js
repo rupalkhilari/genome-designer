@@ -24,8 +24,9 @@ const constructTarget = {
       // What happens when you pull something from inventory to associate with your project?
       // doing this will use the provided ID, and cause problems in the store
 
-      const block = props.blockCreate(item);
-      props.blockAddComponent(props.construct.id, block.id);
+      props.blockCreate(item).then(block => {
+        props.blockAddComponent(props.construct.id, block.id);
+      });
     } else if (type === sbolDragType) {
       console.log(item); //eslint-disable-line
       //todo - assign type to the block, likely using block.rules ...
