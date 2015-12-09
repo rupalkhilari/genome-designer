@@ -1,4 +1,4 @@
-import fields from './fields';
+import fields from './fields/index';
 import * as validators from './fields/validators';
 import InstanceDefinition from './Instance';
 import SequenceDefinition from './Sequence';

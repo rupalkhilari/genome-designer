@@ -1,4 +1,4 @@
-import fields from './fields';
+import fields from './fields/index';
 import SchemaDefinition from './SchemaDefinition';
 import AnnotationDefinition from './Annotation';
 
