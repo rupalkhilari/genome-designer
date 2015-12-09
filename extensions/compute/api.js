@@ -1,6 +1,6 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import { runNode, getNodeDir, buildNodeContainer } from './cloudRun';
+import { runNode, getNodeDir, buildNodeContainer } from './runNode';
 import { sessionMiddleware } from '../../server/authentication';
 
 const mkpath = require('mkpath');
@@ -37,7 +37,7 @@ function startAllDockerBuildsAsync(dir) {
 
 }
 
-startAllDockerBuildsAsync("extensions/cloud"); //start loading
+startAllDockerBuildsAsync("extensions/compute"); //start loading
 
 router.use(sessionMiddleware);
 

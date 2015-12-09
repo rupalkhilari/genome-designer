@@ -8,7 +8,7 @@ var port = parseInt(process.argv[2]) || process.env.PORT ||  DEFAULT_PORT;
 var hostname = '0.0.0.0';
 
 var apiRouter = require('./server/api');
-var extRouter = require('./extensions/cloud/api');
+var extRouter = require('./extensions/compute/api');
 var camRouter = require('./extensions/foundry/api');
 
 var app = express();
