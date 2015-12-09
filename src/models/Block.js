@@ -53,7 +53,7 @@ export default class Block extends Instance {
     const path = sequenceFilePathFromId(this.id);
 
     //todo - how to handle asynchronous updates like this at model level... Optimistic updates? What about failures? Does this belong in the model? Or separate?
-    writeFile(sequence, path)
+    writeFile(path, sequence)
       .then(response => {
 
       })

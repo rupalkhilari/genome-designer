@@ -7,14 +7,13 @@ import { errorDoesNotExist, errorNoIdProvided, errorInvalidSessionKey, errorInva
 import { validateBlock, validateProject, assertValidId } from '../validation';
 import { validateSessionKey, validateLoginCredentials, sessionMiddleware } from '../authentication';
 import { getComponents } from '../getRecursively';
+import fs from 'fs';
+import mkpath from 'mkpath';
 
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
   strict: false, //allow values other than arrays and objects
 });
-
-var fs = require("fs");
-var mkpath = require('mkpath');
 
 function paramIsTruthy(param) {
   return param !== undefined && param !== 'false';
@@ -211,62 +210,71 @@ router.post('/clone/:id', (req, res) => {
     });
 });
 
-/**
-* File IO
-* Read and write files
-**/
+/*********************************
+ * File IO
+ * Read and write files
+ *********************************/
+
+//All files are put in the storage folder (until platform comes along)
+const createFileUrl = (url) => './storage/' + url;
 
 router.get('/file/:url', (req, res) => {
   const { url } = req.params;
-  fs.readFile('./storage/' + url, 'utf8', (err, data) => {
-   if (err) {
+  const filePath = createFileUrl(url);
+
+  fs.readFile(filePath, 'utf8', (err, data) => {
+    if (err) {
       res.status(500).send(err.message);
-   } else {
+    } else {
       res.send(data);
-   }
+    }
   });
 });
 
 router.post('/file/:url', (req, res) => {
-  let { url } = req.params;
+  const { url } = req.params;
+  const filePath = createFileUrl(url);
+  const path = filePath.substring(0, filePath.lastIndexOf('/') + 1);
 
   //assuming contents to be string
-  let buffer = "";
-
-  //All files are put in the storage folder (until platform comes along)
-  url = './storage/' + url;
-  let path = url.substring(0,url.lastIndexOf("/")+1);
+  let buffer = '';
 
   //get data in parts
   req.on('data', data => {
-    buffer += data; 
+    buffer += data;
   });
 
   //received all the data
-  req.on('end', function() {
-
+  req.on('end', () => {
     //make folder if doesn't exists
     mkpath(path, (err) => {
-
       if (err) {
         res.status(500).send(err.message);
       } else {
-
         //write data to file
-        fs.writeFile(url, buffer, 'utf8', (err) => {
-
+        fs.writeFile(filePath, buffer, 'utf8', (err) => {
           if (err) {
             res.status(500).send(err.message);
           } else {
-            res.send(url);
+            res.send(filePath);
           }
-
-        }); //writeFile
+        });
       }
+    });
+  });
+});
 
-    });  //mkpath
-  }); //req.on
+router.delete('file/:url', (req, res) => {
+  const { url } = req.params;
+  const filePath = createFileUrl(url);
 
+  fs.unlink(filePath, (err) => {
+    if (err) {
+      res.status(500).send(err.message);
+    } else {
+      res.status(200).send();
+    }
+  });
 });
 
 //default catch
