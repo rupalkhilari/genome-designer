@@ -1,6 +1,7 @@
 import Instance from './Instance';
 import randomColor from '../utils/generators/color';
 import { readFile, writeFile } from '../middleware/api';
+import AnnotationDefinition from '../schemas/Annotation';
 
 const sequenceFilePathFromId = (id) => `block/${id}/sequence/`;
 
@@ -64,5 +65,23 @@ export default class Block extends Instance {
     return this.mutate('sequence', path);
   }
 
-  /* todo - get/set/delete annotations */
+  annotate(annotation) {
+    if (!AnnotationDefinition.validate(annotation)) {
+      throw new Error('annotation is not valid', annotation);
+    }
+    return this.mutate('sequence.annotations', this.sequence.annotations.concat(annotation));
+  }
+
+  removeAnnotation(annotation) {
+    const annotations = this.sequence.annotations.slice();
+    const toSplice = annotations.findIndex((ann) => ann.id === annotation.id);
+
+    if (!Number.isInteger(toSplice)) {
+      console.warn('annotation not found'); // eslint-disable-line
+      return this;
+    }
+
+    annotations.splice(toSplice, 1);
+    return this.mutate('sequence.annotations', annotations);
+  }
 }
