@@ -40,7 +40,8 @@ export class Inspector extends Component {
 }
 
 function mapStateToProps(state, props) {
-  const { isVisible, currentInstance } = state.inspector;
+  const { isVisible } = state.inspector;
+  const { currentInstance } = state.ui;
 
   return {
     isVisible,
