@@ -238,6 +238,31 @@ class TestGenomeDesignerREST(unittest.TestCase):
     self.assertTrue(res.status_code==200)
     self.assertTrue(list(res.json().keys())[0]=='storage/myDir/Prot')
 
+  def test_genbank_extension(self):
+    headers = self.headers
+    url = self.run_url
+
+    block1 = {
+      "metadata": {
+        "authors": [],
+        "version": "0.0.0",
+        "tags": {}  },
+      "options":[],
+      "components":[],
+      "rules": [],
+      "notes": {}
+    }
+    res = POST(self.api_url + "block", data = json(block1), headers=headers)
+    block_id = res.json()["id"]
+
+    input1 = {
+      "genbank":"extensions/compute/genbank_to_block/sequence.gb", 
+      "outputs/sequence":"storage/block/"+block_id+"/sequence"
+    }
+
+    res = POST(url + "genbank_to_block", data = json(input1), headers=headers)
+    self.assertTrue(res.status_code==200)
+
   def test_foundry_api(self):
     headers = self.headers
     url = self.foundry_url

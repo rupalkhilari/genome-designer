@@ -174,8 +174,10 @@ router.post('/:id', jsonParser, (req, resp) => {
 
             }); //readMultipleFiles
           }); //runNode
-        }); //writeFiles
-      });
+        })
+        .catch(err => { console.log(err); }); //writeInputFiles
+      })
+      .catch(err => { console.log(err); }); //writeInputDirs
     }   //read yaml file successful
   }); //fs.readFile
 
