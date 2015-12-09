@@ -3,9 +3,9 @@ inputs:
       type: string
 
 outputs:
-    - id: data.json
+    - id: onion_data
       type: string
-    - id: block.json
+    - id: block
       type: string
     - id: sequence
       type: string

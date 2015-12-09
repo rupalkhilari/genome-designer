@@ -26,7 +26,11 @@ def genbank2Json(fname):
 	else:
 		gbkMode = False
 
-	gb = SeqIO.parse(open(fname,'rU'),"genbank").next()
+	generator = SeqIO.parse(open(fname,'rU'),"genbank")
+	for record in generator:
+		gb = record
+		break
+
 	data["seq"] = str(gb.seq)
 	data["features"] = []
 	for f in gb.features:
@@ -37,9 +41,9 @@ def genbank2Json(fname):
 		if gbkMode and f.type=="misc_feature":
 			strand = "."
 		else:
-			strand = strandSign(f.location.strand)
+			strand = f.location.strand
 		q = f.qualifiers
-		if q.has_key('note'):
+		if 'note' in q:
 			title = q['note'][0]	#set feature name by first not if there is
 			if gbkMode:
 				for i in range(1,len(q['note'])):
@@ -49,7 +53,7 @@ def genbank2Json(fname):
 						if sp[0].strip() == 'color':
 							color = sp[1]
 						elif sp[0].strip() == 'direction':
-							strand = strandSignGbk(sp[1].strip())
+							strand = "."#strandSignGbk(sp[1].strip())
 
 		feature = {"start":f.location.start.position, "end":f.location.end.position, "strand":strand, "row":0, "color":color, "text":title, "textColor":"black", "isORF":False}
 		data["features"].append(feature)
@@ -72,13 +76,13 @@ block = {
       "notes": {},
       "sequence": { 
         "url": None,
-				"annotations" : data["features"]
-			}   
+		"annotations" : data["features"]
+	  }   
     }
 
 #write output files
 fh = open(seq_file,"w")
-fh.write(data["sequence"])  #sequence
+fh.write(data["seq"])  #sequence
 fh.close()
 
 json.dump( data, open(data_file,"w") )  #data

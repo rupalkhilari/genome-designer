@@ -156,15 +156,27 @@ router.post('/:id', jsonParser, (req, resp) => {
                 let contents = buffers[i];
                 if (outFile) {
                   outputFiles[ outputs[i].id ] = outFile;
-                  fs.writeFile(outFile, contents , "utf8", err => {
+
+                  //create folder for outFile
+                  let path = outFile.substring(0,outFile.lastIndexOf("/")+1);
+                  mkpath(path, (err) => {
+
                     if (err) {
-                      console.log(err.message);
-                    } else {  
-                      console.log("Wrote " + outFile);
-                      //TODO: should be finished before resp.json
+                      res.status(500).send(err.message);
+                    } else {
+
+                      fs.writeFile(outFile, contents , "utf8", err => {
+                        if (err) {
+                          console.log(err.message);
+                        } else {  
+                          console.log("Wrote " + outFile);
+                          //TODO: should be finished before resp.json
+                        }
+                      }); //fs.writeFile
+
                     }
-                  }); //fs.writeFile
-                } else {
+                  }); //make path
+                } else { //if not writing to output file, return in json
                   outputFiles[ outputs[i].id ] = contents;
                 }
               }

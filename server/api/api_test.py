@@ -1,6 +1,7 @@
 from requests import get as GET
 from requests import put as PUT
 from requests import post as POST
+from json import loads as parse
 from json import dumps as json
 import unittest
 
@@ -258,11 +259,30 @@ class TestGenomeDesignerREST(unittest.TestCase):
 
     input1 = {
       "genbank":"extensions/compute/genbank_to_block/sequence.gb", 
-      "outputs/sequence":"storage/block/"+block_id+"/sequence"
+      "sequence":"storage/block/"+block_id+"/sequence"
     }
 
     res = POST(url + "genbank_to_block", data = json(input1), headers=headers)
     self.assertTrue(res.status_code==200)
+
+    res = res.json()
+    self.assertTrue("onion_data" in res)
+    self.assertTrue("block" in res)
+
+    block = parse(res["block"])
+    block["sequence"]["url"] = input1["sequence"]
+
+    res = PUT(self.api_url + "block/" + block_id, data = json(block), headers=headers)
+    self.assertTrue(res.status_code==200)
+
+    res = GET(self.api_url + "block/" + block_id, headers=headers)
+    self.assertTrue(res.status_code==200)
+    self.assertTrue(res.json()["id"] == block_id)
+    self.assertTrue(res.json()["sequence"]["url"] == input1["sequence"])
+
+    res = GET(self.api_url + "file/block%2f"+block_id+"%2fsequence", headers=headers)
+    self.assertTrue(res.status_code==200)
+    self.assertTrue(len(res.text) > 1000)
 
   def test_foundry_api(self):
     headers = self.headers
