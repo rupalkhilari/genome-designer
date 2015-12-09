@@ -149,7 +149,19 @@ router.post('/:id', jsonParser, (req, resp) => {
               //get values from files into object
               //TODO - select only json-suitable output fields
               for (var i=0; i < outputFileNames.length; ++i) {
-                outputFiles[ outputs[i].id ] = buffers[i];
+                let outFile = fileUrls[outputs[i].id];
+                let contents = buffers[i];
+                if (outFile) {
+                  fs.writeFile(outFile, contents , "utf8", err => {
+                    if (err) {
+                      console.log(err.message);
+                    } else {  
+                      //TODO: should be finished before resp.json
+                    }
+                  }); //fs.writeFile
+                } else {
+                  outputFiles[ outputs[i].id ] = contents;
+                }
               }
 
               //return object

@@ -54,6 +54,10 @@ export const buildNodeContainer = (id) => {
     });
 };
 
+export const copyNodeInputFiles = () => {
+  
+}
+
 export const getNodeDir = (id) => {
     return process.cwd() + "/extensions/compute/" + id;
 };

@@ -7,4 +7,6 @@ outputs:
       type: string
     - id: block.json
       type: string
+    - id: sequence
+      type: string
 

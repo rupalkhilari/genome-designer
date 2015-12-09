@@ -4,11 +4,9 @@ from Bio import SeqIO
 import sys
 
 input_file = sys.argv[1]
-header_file = sys.argv[2]
-headers = json.load(open(header_file))
-
-data_file = sys.argv[3]
-block_file = sys.argv[4]
+data_file = sys.argv[2]
+block_file = sys.argv[3]
+seq_file = sys.argv[4]
 
 def genbank2Json(fname):
 	#data = { name:"",
@@ -59,11 +57,10 @@ def genbank2Json(fname):
 
 	return data
 
-url = headers['host']
-
 #convert genbank
 data = genbank2Json(input_file)
 
+#create block
 block = {
       "metadata": {
         "authors": [],
@@ -74,27 +71,16 @@ block = {
       "rules": [],
       "notes": {},
       "sequence": { 
-        "url": "unknown",
+        "url": None,
 				"annotations" : data["features"]
 			}   
     }
 
-#create new block
-headers["Content-type"] = "application/json"
-result = requests.post(url + "/block", data = json.dumps(block), headers=headers)
+#write output files
+fh = open(seq_file,"w")
+fh.write(data["sequence"])  #sequence
+fh.close()
 
-#get block ID
-bid = result.json()["id"]
+json.dump( data, open(data_file,"w") )  #data
+json.dump( block, open(block_file,"w") )   #block - server will fix sequence URL
 
-#generate sequence file URL
-sequence_url = "blocks/" + bid + "/sequence"
-
-#store sequence file
-requests.post(url + "/file/" + sequence_url.replace('/','%2f'), data=data["seq"], headers=headers)
-
-#update block with sequence URL
-block["sequence"]["url"] = sequence_url
-result = requests.put(url + "/block/" + bid, data = json.dumps(block), headers=headers)
-
-json.dump( data, open(data_file,"w") )
-json.dump( block, open(block_file,"w") )
