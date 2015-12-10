@@ -12,10 +12,22 @@ export const Block = {
   'options': [],
   'components': [],
   'rules': [],
-  'notes': {},
+  'notes': {}
+};
+
+export const Project = {
+  'id': uuid.v4(),
+  "metadata": {
+    "authors": [],
+    "version": "0.0.0",
+    "tags": {}
+  },
+  "components": [],
+  "settings": {}
 };
 
 export const Annotation = {
+  id: uuid.v4(),
   description: 'example annotation',
   tags: {},
   optimizability: 'none',

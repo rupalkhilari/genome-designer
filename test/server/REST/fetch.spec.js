@@ -2,31 +2,32 @@
 
 import { expect } from 'chai';
 import fetch from 'isomorphic-fetch';
+import { serverRoot, getSessionKey } from '../authentication';
 import { Block as exampleBlock } from '../../schemas/_examples';
-
-const serverRoot = 'http://localhost:3000';
 
 describe('REST', () => {
   describe('fetch', () => {
     //todo - explicitly make sure server has started
 
-    it('basic test', () => {
+    it('basic test', (done) => {
       const testBlock = Object.assign({}, exampleBlock, {
         notes: {
           some: 'note',
         },
       });
 
-      fetch(serverRoot + '/api/block/bla', {
+      return fetch(serverRoot + `/api/block/${testBlock.id}`, {
         method: 'put',
         headers: {
           'Content-type': 'application/json',
+          'sessionkey': getSessionKey(),
         },
         body: JSON.stringify(testBlock),
       })
         .then(res => res.json())
         .then(json => {
           expect(json).to.eql(testBlock);
+          done();
         });
     });
   });

@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { blockCreate, blockAddComponent } from '../actions/blocks';
+import { blockCreate, blockClone, blockAddComponent } from '../actions/blocks';
 import { DropTarget } from 'react-dnd';
 import { block as blockDragType, sbol as sbolDragType, inventoryItem as inventoryItemDragType } from '../constants/DragTypes';
 
@@ -24,8 +24,9 @@ const constructTarget = {
       // What happens when you pull something from inventory to associate with your project?
       // doing this will use the provided ID, and cause problems in the store
 
-      const block = props.blockCreate(item);
-      props.blockAddComponent(props.construct.id, block.id);
+      props.blockClone(item.id).then(block => {
+        props.blockAddComponent(props.construct.id, block.id);
+      });
     } else if (type === sbolDragType) {
       console.log(item); //eslint-disable-line
       //todo - assign type to the block, likely using block.rules ...
@@ -51,13 +52,16 @@ export class SketchConstruct extends Component {
     lastDroppedItem: PropTypes.object,
 
     blockCreate: PropTypes.func.isRequired,
+    blockClone: PropTypes.func.isRequired,
     blockAddComponent: PropTypes.func.isRequired,
   };
 
   handleClickAddBlock = (event) => {
     const { construct, blockCreate, blockAddComponent } = this.props;
-    const block = blockCreate();
-    blockAddComponent(construct.id, block.id);
+    blockCreate()
+      .then(block => {
+        blockAddComponent(construct.id, block.id);
+      });
   }
 
   render() {
@@ -96,5 +100,6 @@ function mapStateToProps(state, props) {
 
 export default connect(mapStateToProps, {
   blockCreate,
+  blockClone,
   blockAddComponent,
 })(SketchConstruct);

@@ -6,6 +6,7 @@ export default class Project extends Instance {
       components: [],
     });
   }
+
   addComponents(...components) {
     return this.mutate('components', this.components.concat(components));
   }

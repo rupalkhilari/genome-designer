@@ -3,6 +3,8 @@ import urlRegex from 'url-regex';
 import semverRegex from 'semver-regex';
 
 /**
+ * note that everything exported in this file is tested - so only export real validators
+ *
  * @description
  * these validators are used by fields/index.js
  * when defining a SchemaDefinition you should use the fieldType objects exported from that file instead of these directly. However, you may want to use these when just running validation. Note that they expect parameters.
@@ -45,8 +47,6 @@ export const number = params => input => {
       return new Error(`input ${input} is greater than maximum ${params.max}`);
     }
   }
-
-  return null;
 };
 
 export const func = params => input => {
@@ -128,6 +128,12 @@ export const url = params => input => {
 
   if (!urlRegex({exact: true}).test(input)) {
     return new Error(`${input} is not a valid url`);
+  }
+};
+
+export const date = params => input => {
+  if (!isDate(input)) {
+    return new Error(`${input} is not a valid date`);
   }
 };
 
@@ -229,6 +235,10 @@ function isFunction(input) {
   return getPropType(input) === 'function';
 }
 
+function isDate(input) {
+  return getPreciseType(input) === 'date';
+}
+
 // Equivalent of `typeof` but with special handling for array and regexp.
 function getPropType(propValue) {
   const propType = typeof propValue;
@@ -246,7 +256,7 @@ function getPropType(propValue) {
 }
 
 // This handles more types than `getPropType`, e.g. Date and regexp
-export function getPreciseType(propValue) {
+function getPreciseType(propValue) {
   const propType = getPropType(propValue);
   if (propType === 'object') {
     if (propValue instanceof Date) {

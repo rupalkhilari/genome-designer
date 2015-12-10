@@ -12,11 +12,11 @@ class TestGenomeDesignerREST(unittest.TestCase):
 
       url = self.api_url
       login = GET(url + "login", params={"user":"", "password":""})
-      self.headers = {  "Content-type": "application/json", "session-key": login.json()["session-key"] }
+      self.headers = {  "Content-type": "application/json", "sessionKey": login.json()["sessionkey"] }
 
   def test_invalid_session_key(self):
     headers = self.headers
-    headers["session-key"] = "NA"
+    headers["sessionkey"] = "NA"
     url  = self.api_url
 
     block1 = {
@@ -31,6 +31,7 @@ class TestGenomeDesignerREST(unittest.TestCase):
     }
 
     res = POST(url + "block", data = json(block1), headers=headers)    
+    print(res.status_code)
     self.assertTrue(res.status_code==403)
 
   def test_block_creation(self):
@@ -195,6 +196,19 @@ class TestGenomeDesignerREST(unittest.TestCase):
     self.assertTrue(len(child)==5)
     self.assertTrue(len(child['leaves'])==1)
 
+  def test_file_io(self):
+    headers = self.headers
+    url  = self.api_url
+
+    contents = "Hello World"
+    path = "myDir%2fhello.txt"
+
+    res = POST(url + "file/" + path, data=contents, headers=headers)
+    self.assertTrue(res.status_code==200)
+
+    res = GET(url + "file/" + path, headers=headers)
+    self.assertTrue(res.status_code==200)
+    self.assertTrue(res.text==contents)
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest.main(warnings='ignore')
