@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { blockCreate, blockClone, blockAddComponent } from '../actions/blocks';
+import { blockCreate, blockClone, blockAddComponent, blockSetSbol } from '../actions/blocks';
 import { DropTarget } from 'react-dnd';
 import { block as blockDragType, sbol as sbolDragType, inventoryItem as inventoryItemDragType } from '../constants/DragTypes';
 
@@ -16,20 +16,12 @@ const constructTarget = {
     const { item, type } = monitor.getItem();
 
     if (type === blockDragType) {
-      // fixme
-      // really, we just need to add it to the store...
-      // going to leave for now... let's discuss how to handle
-      // do we just want an action to associate a block with the store, since this isn't really creating it if its coming from the inventory?
-      // do we want to clone inventory?
-      // What happens when you pull something from inventory to associate with your project?
-      // doing this will use the provided ID, and cause problems in the store
-
-      props.blockClone(item.id).then(block => {
+      props.blockClone(item).then(block => {
         props.blockAddComponent(props.construct.id, block.id);
       });
     } else if (type === sbolDragType) {
-      console.log(item); //eslint-disable-line
-      //todo - assign type to the block, likely using block.rules ...
+      const blockId = props.construct.components[0]; //todo - get the right block
+      props.blockSetSbol(blockId, item.id);
     } else {
       // ?
     }
@@ -54,6 +46,7 @@ export class SketchConstruct extends Component {
     blockCreate: PropTypes.func.isRequired,
     blockClone: PropTypes.func.isRequired,
     blockAddComponent: PropTypes.func.isRequired,
+    blockSetSbol: PropTypes.func.isRequired,
   };
 
   handleClickAddBlock = (event) => {
@@ -102,4 +95,5 @@ export default connect(mapStateToProps, {
   blockCreate,
   blockClone,
   blockAddComponent,
+  blockSetSbol,
 })(SketchConstruct);

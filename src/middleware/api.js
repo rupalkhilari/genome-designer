@@ -54,7 +54,7 @@ export const login = (user, password) => {
   return fetch(apiPath(`login?user=${user}&password=${password}`), headersGet())
     .then(resp => resp.json())
     .then(json => {
-      sessionKey = json.sessionKey;
+      sessionKey = json.sessionkey;
     });
 };
 

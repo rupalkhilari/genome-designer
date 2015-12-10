@@ -18,7 +18,7 @@ export default class Block extends Instance {
         annotations: [],
       },
       source: {},
-      rules: [],
+      rules: {},
       options: [],
       components: [],
       notes: {},
@@ -34,6 +34,10 @@ export default class Block extends Instance {
     const newComponents = this.components.slice();
     newComponents.splice(spliceIndex, 0, component);
     return this.mutate('components', newComponents);
+  }
+
+  setSbol(sbol) {
+    return this.mutate('rules.sbol', sbol);
   }
 
   /**
