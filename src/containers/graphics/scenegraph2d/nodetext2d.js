@@ -13,8 +13,8 @@ export default class Node2DText {
    * update to our current dimensions styles and innerHTML (text)
    */
   update() {
-    this.el.style.width = this.node.w + 'px';
-    this.el.style.height = this.el.style.lineHeight = this.node.h + 'px';
+    this.el.style.width = this.node.width + 'px';
+    this.el.style.height = this.el.style.lineHeight = this.node.height + 'px';
     this.el.style.fontWeight = this.node.fontWeight;
     this.el.style.fontSize = this.node.fontSize;
     this.el.style.fontFamily = this.node.fontFamily;

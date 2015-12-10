@@ -28,14 +28,15 @@
   "peerDependencies": {
     "webpack": "*"
   },
-  "engines" : {
-    "node" : ">= 4.2.2"
+  "engines": {
+    "node": ">= 4.2.2"
   },
   "dependencies": {
     "history": "^1.12.5",
     "immutable": "^3.7.5",
     "isomorphic-fetch": "^2.1.1",
     "lodash.clonedeep": "^3.0.2",
+    "lodash.debounce": "^3.1.1",
     "lodash.merge": "^3.3.2",
     "lodash.set": "^3.7.4",
     "node-uuid": "^1.4.7",

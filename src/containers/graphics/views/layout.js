@@ -12,15 +12,27 @@ export default class Layout {
     // we need a construct viewer, a scene graph, a construct and options
     this.constructViewer = constructViewer;
     this.sceneGraph = sceneGraph;
-    // set default options
+    // extend this with options
     Object.assign(this, {
-      width: 800,
-    });
+      layoutAlgorithm: kT.layoutWrap
+    }, options);
+
     // prep data structures for layout
     this.rows = [];
     this.nodes2elements = {};
     this.elements2nodes = {};
-    this.layoutName = kT.layoutWrap;
+  }
+  /**
+   * size the scene graph to just accomodate all the nodes that are present.
+   * @return {[type]} [description]
+   */
+  autoSizeSceneGraph() {
+    const aabb = this.sceneGraph.getAABB();
+    if (aabb) {
+      this.sceneGraph.width = aabb.right + kT.insetX;
+      this.sceneGraph.height = aabb.bottom + kT.insetY;
+      this.sceneGraph.updateSize();
+    }
   }
   /**
    * setup the bi drectional mapping between nodes / elements
@@ -130,10 +142,11 @@ export default class Layout {
    * display elements as required
    * @return {[type]} [description]
    */
-  update(construct) {
+  update(construct, layoutAlgorithm) {
     this.construct = construct;
+    this.layoutAlgorithm = layoutAlgorithm;
 
-    switch (this.layoutName) {
+    switch (this.layoutAlgorithm) {
     case kT.layoutWrap:
       this.layoutWrap();
       break;
@@ -150,18 +163,10 @@ export default class Layout {
       this.layoutFullCondensed();
       break;
 
-    default: throw new Error('Not a valid layout algorithms');
+    default: throw new Error('Not a valid layout algorithm');
     }
-  }
-
-  /**
-   * set the current layout algorithm
-   * @param  {[type]} name [description]
-   * @return {[type]}      [description]
-   */
-  layoutAlgorithm(name) {
-    this.layoutName = name;
-    this.update();
+    // auto size scene after layout
+    this.autoSizeSceneGraph();
   }
 
   /**
@@ -170,13 +175,13 @@ export default class Layout {
    */
   layoutWrap() {
     this.layout({
-      xlimit: this.width + kT.insetX,
+      xlimit: this.sceneGraph.availableWidth - kT.insetX,
       condensed: false,
     });
   }
   layoutWrapCondensed() {
     this.layout({
-      xlimit: this.width + kT.insetX,
+      xlimit: this.sceneGraph.availableWidth - kT.insetX,
       condensed: true,
     });
   }
@@ -255,7 +260,7 @@ export default class Layout {
       if (xp + td.x > mx) {
         xp = xs + kT.rowBarW;
         yp += kT.rowH;
-        row = this.rowFactory(new Box2D(xs, yp - kT.rowBarH, this.width, kT.rowBarH));
+        row = this.rowFactory(new Box2D(xs, yp - kT.rowBarH, 0, kT.rowBarH));
       }
 
       // update part
@@ -269,8 +274,10 @@ export default class Layout {
     });
 
     // ensure final row has the final row width
-    const rw = xp - xs;
-    row.set({translateX: xs + rw / 2, width: rw});
+    if (row) {
+      const rw = xp - xs;
+      row.set({translateX: xs + rw / 2, width: rw});
+    }
 
     // cleanup any dangling rows
     this.disposeRows();

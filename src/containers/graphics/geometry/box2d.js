@@ -275,8 +275,8 @@ export default class Box2D {
       0, 0
     );
 
-    uni.r = Math.max(this.right, box.x + box.w);
-    uni.b = Math.max(this.bottom, box.y + box.h);
+    uni.right = Math.max(this.right, box.x + box.w);
+    uni.bottom = Math.max(this.bottom, box.y + box.h);
 
     return uni;
   }

@@ -52,6 +52,17 @@ describe('Box2D', () => {
     chai.expect(b1.h).to.equal(4);
   });
 
+  it('calculate the union of two boxes', () => {
+    let b1 = new Box2D(100,110,100,100);
+    let b2 = new Box2D(150,150,120,200);
+    let b3 = b1.union(b2);
+
+    chai.expect(b3.x).to.equal(100);
+    chai.expect(b3.y).to.equal(110);
+    chai.expect(b3.right).to.equal(270);
+    chai.expect(b3.bottom).to.equal(350);
+  });
+
   it('should be able to create a box from a point array', () => {
     let b = Box2D.boxFromPoints([
       new Vector2D(2, 2),

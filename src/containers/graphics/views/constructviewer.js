@@ -5,6 +5,7 @@ import { DropTarget } from 'react-dnd';
 import { connect } from 'react-redux';
 import { blockCreate, blockAddComponent } from '../../../actions/blocks';
 import { block as blockDragType, sbol as sbolDragType, inventoryItem as inventoryItemDragType } from '../../../constants/DragTypes';
+import debounce from 'lodash.debounce';
 
 const constructTarget = {
   drop(props, monitor) {
@@ -38,36 +39,74 @@ export class ConstructViewer extends Component {
   static propTypes = {
     construct: PropTypes.object.isRequired,
     constructId: PropTypes.string.isRequired,
-    connectDropTarget: PropTypes.object.isRequired,
+    layoutAlgorithm: PropTypes.string.isRequired,
+    //connectDropTarget: PropTypes.object.isRequired,
   }
 
   constructor(props) {
     super(props);
   }
 
+  /**
+   * accessor that fetches the actual scene graph element within our DOM
+   * @return {[type]} [description]
+   */
+  get sceneGraphEl() {
+    return this.dom.querySelector('.sceneGraph');
+  }
+
+  /**
+   * accessor for our DOM node.
+   * @return {[type]} [description]
+   */
+  get dom() {
+    return React.findDOMNode(this);
+  }
+
+  /**
+   * window resize, update layout and scene graph with new dimensions
+   * @return {[type]} [description]
+   */
+  windowResized() {
+    this.sg.availableWidth = this.dom.clientWidth;
+    this.sg.availableHeight = this.dom.clientHeight;
+    this.update();
+  }
+
+  /**
+   * setup the scene graph and layout component.
+   */
   componentDidMount() {
-    // we will need a reference to our actual DOM node
-    const dom = React.findDOMNode(this);
     // create the scene graph we are going to use to display the construct
     this.sg = new SceneGraph2D({
-      width: dom.clientWidth,
-      height: dom.clientHeight,
-      parent: dom,
+      width: this.dom.clientWidth,
+      height: this.dom.clientHeight,
+      availableWidth: this.dom.clientWidth,
+      availableHeight: this.dom.clientHeight,
+      parent: this.sceneGraphEl,
     });
     // create the layout object
     this.layout = new Layout(this, this.sg, {
-      width: dom.clientWidth,
+      layoutAlgorithm: this.props.layoutAlgorithm,
     });
     // initial render won't call componentDidUpdate so force an update to the layout/scenegraph
-    this.layout.update(this.props.construct);
-    this.sg.update();
+    this.update();
+    // handle window resize to reflow the layout
+    window.addEventListener('resize', debounce(this.windowResized.bind(this), 100));
   }
 
   /**
    * update scene graph after the react component updates`
    */
   componentDidUpdate() {
-    this.layout.update(this.props.construct);
+    this.update();
+  }
+
+  /**
+   * update the layout and then the scene graph
+   */
+  update() {
+    this.layout.update(this.props.construct, this.props.layoutAlgorithm);
     this.sg.update();
   }
   /**
@@ -75,7 +114,11 @@ export class ConstructViewer extends Component {
    */
   render() {
     const { connectDropTarget } = this.props;
-    return connectDropTarget(<div className="construct-viewer" key={this.props.construct.id}/>);
+    return connectDropTarget(
+      <div className="construct-viewer" key={this.props.construct.id}>
+        <div className="sceneGraph"/>
+      </div>
+    );
   }
 }
 

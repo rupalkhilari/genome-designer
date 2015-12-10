@@ -61,4 +61,5 @@
   width: calc(100% - 2rem);
   height: 20rem;
   border: 1px solid gray;
+  overflow: auto;
 }

@@ -9,6 +9,7 @@ import Rectangle2D from './glyphs/html/rectangle2d';
  * shared DIV for measuring text,
  */
 let textDIV;
+let textCache = {};
 
 /**
  * basic rectangular node
@@ -83,6 +84,7 @@ export default class Node2D {
     invariant(child && this.children.indexOf(child) >= 0, 'node is not our child');
     child.parent = null;
     this.children.splice(this.children.indexOf(child), 1);
+    this.el.removeChild(child.el);
     return child;
   }
 
@@ -201,6 +203,14 @@ export default class Node2D {
    * @return {Vectot2D}
    */
   measureText(str) {
+    const text = str || '';
+    // measuring text is probably fairly slow so if possible use a cached measurement
+    const cacheKey = `${text}${this.fontSize}${this.fontWeight}${this.fontFamily}`;
+    const cachedValue = textCache[cacheKey];
+    if (cachedValue) {
+      return cachedValue;
+    }
+
     // create div on demand
     if (!textDIV) {
       textDIV = document.createElement('DIV');
@@ -212,13 +222,17 @@ export default class Node2D {
     }
 
     // update to our current font settings and text
-    textDIV.innerHTML = str || this.text || '';
+    textDIV.innerHTML = text;
     textDIV.style.fontSize = this.fontSize;
     textDIV.style.fontWeight = this.fontWeight;
     textDIV.style.fontFamily = this.fontFamily;
 
-    // return measurement
-    return new Vector2D(textDIV.clientWidth, textDIV.clientHeight);
+    // measure the actual dimensions
+    const size = new Vector2D(textDIV.clientWidth, textDIV.clientHeight);
+    // update cache
+    textCache[cacheKey] = size;
+    // done
+    return size;
   }
 
   /**

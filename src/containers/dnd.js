@@ -22,21 +22,34 @@ class DnD extends Component {
 
   constructor(props) {
     super(props);
+    this.layoutAlgorithm = 'wrap';
+  }
+
+  onLayoutChanged = () => {
+    this.layoutAlgorithm = this.refs.layoutSelector.value;
+    this.forceUpdate();
   }
 
   render() {
     const { children, constructs } = this.props;
 
     const constructViewers = constructs.map(construct => {
-      return <ConstructViewer key={construct.id} constructId={construct.id}/>;
+      return <ConstructViewer key={construct.id} constructId={construct.id} layoutAlgorithm={this.layoutAlgorithm}/>;
     });
 
     return (
       <div className="ProjectPage">
         <Inventory />
         <div className="ProjectPage-content">
+          <div style={{width:"400px",margin:"1rem 0 1rem 1rem"}}>
+            <select ref="layoutSelector" onChange={this.onLayoutChanged}>
+              <option value="wrap">Wrap</option>
+              <option value="wrap-condensed">Wrap Condensed</option>
+              <option value="full">Full</option>
+              <option value="full-condensed">Full Condensed</option>
+            </select>
+          </div>
           {constructViewers}
-          {children}
         </div>
       </div>
     );

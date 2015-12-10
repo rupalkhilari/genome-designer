@@ -12,12 +12,14 @@ const rowBarW = 3;
 // padding around text on blocks
 const textPad = 16;
 // width of condensed text blocks
-const condensedText = 25;
+const condensedText = 40;
 // inset of layout in graph
 const insetX = 50;
 const insetY = 50;
 // font size
 const fontSize = '13px';
+// minimum width for layouts
+const minWidth = 400;
 
 
 export default {
@@ -38,6 +40,7 @@ export default {
   condensedText: condensedText,
   insetX: insetX,
   insetY: insetY,
+  minWidth: minWidth,
   // display properties for various elements
   titleAppearance: {
     fill: 'dodgerblue',

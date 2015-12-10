@@ -5,18 +5,25 @@ import invariant from '../../../utils/environment/invariant';
 export default class SceneGraph2D {
 
   constructor(props) {
-    // extend this with defaults and supplied properties
-    this.props = Object.assign(this, {
+    // extend this with defaults and supplied properties.
+    // width / height are the actual dimensions of the scene graph.
+    // availableWidth, availableHeight are the dimensions of the window we are in.
+    Object.assign(this, {
       width: 800,
       height: 600,
+      availableWidth: 800,
+      availableHeight: 600,
       uuid: uuid.v4(),
     }, props);
 
     // we must have a parent before being created
     invariant(this.parent, 'expected a parent DOM element');
 
-    // parent gets the .sceneGraph CSS class
+    // ensure our parent element has the scene graph class
     this.parent.classList.add('sceneGraph');
+
+    // size our element to initial scene graph size
+    this.updateSize();
 
     // create our root node, which represents the view matrix and to which
     // all other nodes in the graph are ultimately attached.
@@ -24,6 +31,15 @@ export default class SceneGraph2D {
 
     // root is appended directly to the scene graph BUT without setting a parent node.
     this.parent.appendChild(this.root.el);
+  }
+
+  /**
+   * update our element to the current scene graph size
+   * @return {[type]} [description]
+   */
+  updateSize() {
+    this.parent.style.width = this.width + 'px';
+    this.parent.style.height = this.height + 'px';
   }
 
   /**
