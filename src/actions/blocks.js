@@ -39,6 +39,21 @@ export const blockClone = (blockId) => {
   };
 };
 
+export const blockSave = (blockId) => {
+  return (dispatch, getState) => {
+    const block = getState().blocks[blockId];
+    return block.save()
+      .then(response => response.json())
+      .then(json => {
+        dispatch({
+          type: ActionTypes.BLOCK_SAVE,
+          block,
+        });
+        return json;
+      });
+  };
+};
+
 //this is a backup for performing arbitrary mutations
 export const blockMerge = (blockId, toMerge) => {
   return (dispatch, getState) => {
