@@ -14,7 +14,8 @@ export default class Layout {
     this.sceneGraph = sceneGraph;
     // extend this with options
     Object.assign(this, {
-      layoutAlgorithm: kT.layoutWrap
+      layoutAlgorithm: kT.layoutWrap,
+      baseColor: 'white',
     }, options);
 
     // prep data structures for layout
@@ -67,11 +68,38 @@ export default class Layout {
    * @param  {[type]} appearance [description]
    * @return {[type]}            [description]
    */
-  elementFactory(part, appearance) {
+  partFactory(part, appearance) {
+
+    // random colors for nodes.
+    const colors = [
+      'rgb(199, 109, 107)', 'rgb(221, 196, 91)', 'rgb(212, 223, 84)', 'rgb(109, 181, 105)',
+      'rgb(74, 166, 71)', 'rgb(161, 196, 197)', 'rgb(83, 155, 163)', 'rgb(91, 145, 138)', 'rgb(139, 133, 124)',
+      'rgb(149, 150, 147)', 'rgb(183, 183, 178)'];
+
+    const color = colors[Math.floor(Math.random() * colors.length)];
+
     if (!this.nodeFromElement(part)) {
-      const node = new Node2D(Object.assign({sg: this.sceneGraph}, appearance));
+      const node = new Node2D(Object.assign({
+        sg: this.sceneGraph,
+        fill: color,
+      }, appearance));
       this.sceneGraph.root.appendChild(node);
       this.map(part, node);
+    }
+  }
+  /**
+   * create the banner / bar for the construct ( contains the triangle )
+   * @return {[type]} [description]
+   */
+  bannerFactory() {
+    if (!this.banner) {
+      this.banner = new Node2D({
+        sg: this.sceneGraph,
+        fill: this.baseColor,
+        stroke: this.baseColor,
+        glyph: 'construct-banner',
+      });
+      this.sceneGraph.root.appendChild(this.banner);
     }
   }
   /**
@@ -79,9 +107,12 @@ export default class Layout {
    * @param  {[type]} part [description]
    * @return {[type]}   [description]
    */
-  titleFactory(part) {
+  titleFactory(part) { //
     if (!this.nodeFromElement(part)) {
-      const node = new Node2D(Object.assign({sg: this.sceneGraph}, kT.titleAppearance));
+      const node = new Node2D(Object.assign({
+        sg: this.sceneGraph,
+        color: this.baseColor,
+      }, kT.titleAppearance));
       this.sceneGraph.root.appendChild(node);
       this.map(part, node);
     }
@@ -92,7 +123,10 @@ export default class Layout {
    */
   verticalFactory() {
     if (!this.vertical) {
-      this.vertical = new Node2D(Object.assign({sg: this.sceneGraph}, kT.verticalAppearance));
+      this.vertical = new Node2D(Object.assign({
+        sg: this.sceneGraph,
+        fill: this.baseColor,
+      }, kT.verticalAppearance));
       this.sceneGraph.root.appendChild(this.vertical);
     }
   }
@@ -110,7 +144,10 @@ export default class Layout {
     if (this.rows.length) {
       row = this.rows.shift();
     } else {
-      row = new Node2D(Object.assign({sg: this.sceneGraph}, kT.rowAppearance));
+      row = new Node2D(Object.assign({
+        sg: this.sceneGraph,
+        fill: this.baseColor,
+      }, kT.rowAppearance));
       this.sceneGraph.root.appendChild(row);
     }
     // set bounds
@@ -217,6 +254,11 @@ export default class Layout {
   layout(layoutOptions) {
     // shortcut
     const ct = this.construct;
+    // construct the banner
+    this.bannerFactory();
+    this.banner.set({
+      bounds: new Box2D(0,0,this.sceneGraph.availableWidth, kT.bannerHeight),
+    });
     // top left of our area to render in
     const xs = kT.insetX;
     const ys = kT.insetY;
@@ -249,9 +291,8 @@ export default class Layout {
       const rw = xp - xs;
       row.set({translateX: xs + rw / 2, width: rw});
 
-      // create element on demand, this should vary by block type, which I don't currently have
-      // this.elementFactory(p, p.type === 'part' ? kT.partAppearance : kT.connectorAppearance);
-      this.elementFactory(part, kT.partAppearance);
+      // create the node representing the part
+      this.partFactory(part, kT.partAppearance);
 
       // measure element text or used condensed spacing
       const td = this.measureText(this.nodeFromElement(part), part, layoutOptions.condensed);

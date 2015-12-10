@@ -6,6 +6,10 @@ import { DragDropContext } from 'react-dnd';
 import ConstructViewer from './graphics/views/constructviewer';
 import Inventory from './Inventory';
 import '../styles/SceneGraphPage.css';
+import MenuBar from '../components/Menu/MenuBar';
+import Menu from '../components/Menu/Menu';
+import MenuItem from '../components/Menu/MenuItem';
+import MenuSeparator from '../components/Menu/MenuSeparator';
 
 /**
  * just for testing bootstrap, hence the lack of comments
@@ -41,7 +45,7 @@ class DnD extends Component {
       <div className="ProjectPage">
         <Inventory />
         <div className="ProjectPage-content">
-          <div style={{width:"400px",margin:"1rem 0 1rem 1rem"}}>
+          <div style={{margin:"1rem 0 1rem 1rem;padding-right:1rem;text-align:right"}}>
             <select ref="layoutSelector" onChange={this.onLayoutChanged}>
               <option value="wrap">Wrap</option>
               <option value="wrap-condensed">Wrap Condensed</option>

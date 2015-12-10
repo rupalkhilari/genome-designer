@@ -21,6 +21,24 @@ export const isOne = (val) => {
 };
 
 /**
+ * index of child in parent
+ * @param  {[type]} node [description]
+ * @return {[type]}      [description]
+ */
+export const nodeIndex = (node) => {
+  if (!node.parentNode) {
+    return -1;
+  }
+  let i = 0;
+  while (i < node.parentNode.children.length) {
+    if (node.parentNode.children[i].isSameNode(node)) {
+      return i;
+    }
+    i += 1;
+  }
+}
+
+/**
  * true if ~0
  * @param  {number} val
  * @return {boolean}

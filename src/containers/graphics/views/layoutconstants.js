@@ -6,20 +6,25 @@ const titleW = 200;
 // total height of each row
 const rowH = 60;
 // row header bar height
-const rowBarH = 3;
+const rowBarH = 4;
 // vertical bar width
 const rowBarW = 3;
 // padding around text on blocks
 const textPad = 16;
 // width of condensed text blocks
 const condensedText = 40;
+// height of banner bar above construct name
+const bannerHeight = 20;
 // inset of layout in graph
-const insetX = 50;
-const insetY = 50;
+const insetX = 0;
+const insetY = bannerHeight;
 // font size
-const fontSize = '13px';
+const titleFontSize = '20px';
+const blockFontSize = '12px';
 // minimum width for layouts
 const minWidth = 400;
+// background
+const background = 'rgb(39, 43, 61)';
 
 
 export default {
@@ -41,23 +46,24 @@ export default {
   insetX: insetX,
   insetY: insetY,
   minWidth: minWidth,
+  bannerHeight: bannerHeight,
+
   // display properties for various elements
   titleAppearance: {
-    fill: 'dodgerblue',
-    color: 'white',
+    fill: 'transparent',
     glyph: 'rectangle',
     strokeWidth: 0,
-    fontSize: fontSize,
+    fontSize: titleFontSize,
+    textAlign: 'left',
   },
+  // row bar
   rowAppearance: {
     height: rowBarH,
-    fill: 'black',
     glyph: 'rectangle',
     strokeWidth: 0,
   },
   verticalAppearance: {
     width: rowBarW,
-    fill: 'black',
     glyph: 'rectangle',
     strokeWidth: 0,
   },
@@ -66,9 +72,8 @@ export default {
     glyph: 'rectangle',
     fontWeight: 'bold',
     strokeWidth: 1,
-    fill: 'whitesmoke',
-    stroke: 'gray',
-    fontSize: fontSize,
+    stroke: background,
+    fontSize: blockFontSize,
     classes: 'transform-animated',
   },
   connectorAppearance: {
@@ -77,7 +82,7 @@ export default {
     stroke: 'gray',
     fill: 'whitesmoke',
     fontWeight: 'bold',
-    fontSize: '10px',
+    fontSize: blockFontSize,
     color: 'gray',
     classes: 'transform-animated',
   },

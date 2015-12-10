@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import { blockCreate, blockAddComponent } from '../../../actions/blocks';
 import { block as blockDragType, sbol as sbolDragType, inventoryItem as inventoryItemDragType } from '../../../constants/DragTypes';
 import debounce from 'lodash.debounce';
+import { nodeIndex } from '../utils';
 
 const constructTarget = {
   drop(props, monitor) {
@@ -77,6 +78,11 @@ export class ConstructViewer extends Component {
    * setup the scene graph and layout component.
    */
   componentDidMount() {
+
+    // select a base color based on our index in the parent
+    const nindex = nodeIndex(this.dom);
+    const baseColors = ['rgb(225, 163, 116)', 'rgb(199, 109, 107)', 'rgb(83, 155, 163)'];
+
     // create the scene graph we are going to use to display the construct
     this.sg = new SceneGraph2D({
       width: this.dom.clientWidth,
@@ -88,6 +94,7 @@ export class ConstructViewer extends Component {
     // create the layout object
     this.layout = new Layout(this, this.sg, {
       layoutAlgorithm: this.props.layoutAlgorithm,
+      baseColor: baseColors[nindex % baseColors.length],
     });
     // initial render won't call componentDidUpdate so force an update to the layout/scenegraph
     this.update();

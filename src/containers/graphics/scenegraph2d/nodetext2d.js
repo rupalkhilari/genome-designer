@@ -19,6 +19,7 @@ export default class Node2DText {
     this.el.style.fontSize = this.node.fontSize;
     this.el.style.fontFamily = this.node.fontFamily;
     this.el.style.color = this.node.color;
+    this.el.style.textAlign = this.node.textAlign;
     this.el.innerHTML = this.node.text || '';
   }
 }

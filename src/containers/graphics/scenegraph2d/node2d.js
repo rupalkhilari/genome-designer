@@ -5,6 +5,7 @@ import Transform2D from '../geometry/transform2d';
 import invariant from '../../../utils/environment/invariant';
 import NodeText2D from './nodetext2d';
 import Rectangle2D from './glyphs/html/rectangle2d';
+import ConstructBanner from './glyphs/canvas/constructbanner';
 /**
  * shared DIV for measuring text,
  */
@@ -42,6 +43,7 @@ export default class Node2D {
       color: 'black',
       uuid: uuid.v4(),
       glyph: 'none',
+      textAlign: 'center',
     }, props));
 
     // we must belong to a scene graph
@@ -51,6 +53,9 @@ export default class Node2D {
     switch (this.glyph) {
     case 'rectangle':
       this.glyphObject = new Rectangle2D(this);
+      break;
+    case 'construct-banner':
+      this.glyphObject = new ConstructBanner(this);
       break;
     case 'none':
       break;
