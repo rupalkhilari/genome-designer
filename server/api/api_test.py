@@ -12,7 +12,7 @@ class TestGenomeDesignerREST(unittest.TestCase):
 
       url = self.api_url
       login = GET(url + "login", params={"user":"", "password":""})
-      self.headers = {  "Content-type": "application/json", "sessionKey": login.json()["sessionkey"] }
+      self.headers = {  "Content-type": "application/json", "sessionkey": login.json()["sessionkey"] }
 
   def test_invalid_session_key(self):
     headers = self.headers
