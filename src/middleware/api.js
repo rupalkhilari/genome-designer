@@ -7,10 +7,20 @@ import BlockDefinition from '../schemas/Block';
  Utils
  *************************/
 
-const apiPath = (path) => '/api/' + path;
+const serverRoot = 'http://localhost:3000'; //fetch only supports absolute paths
+
+const apiPath = (path) => serverRoot + '/api/' + path;
 
 const headersPost = (body) => ({
   method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body,
+});
+
+const headersPut = (body) => ({
+  method: 'PUT',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -25,8 +35,14 @@ const headersDelete = () => ({
  Server Communication
  *************************/
 
+export const login = (user, password) => {
+  return fetch(apiPath(`login?user=${user}&password=${password}`))
+    .then(resp => resp.json());
+};
+
 export const retrieveBlock = (id) => {
-  return fetch(apiPath(`blocks/${id}`));
+  return fetch(apiPath(`block/${id}`))
+    .then(resp => resp.json());
 };
 
 export const saveBlock = (block) => {
@@ -34,7 +50,7 @@ export const saveBlock = (block) => {
   const { id } = block;
   const stringified = JSON.stringify(block);
 
-  return fetch(apiPath(`blocks/${id}`), headersPost(stringified));
+  return fetch(apiPath(`block/${id}`), headersPut(stringified));
 };
 
 export const readFile = (fileName) => {

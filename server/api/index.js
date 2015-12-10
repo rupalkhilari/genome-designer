@@ -23,19 +23,19 @@ function paramIsTruthy(param) {
  Login and session validator
  ****************************/
 
-//todo - likely want to move this out of the API itself and expose as root route
+router.use(/^((?!login).)*$/, sessionMiddleware);
+
+//todo - likely want to move this out of the API itself and expose as root route. Don't need the regex above then for middleware
 router.get('/login', (req, res) => {
-  const { user, password } = req.params;
+  const { user, password } = req.query;
   validateLoginCredentials(user, password)
     .then(key => {
-      res.json({'session-key': key});
+      res.json({'sessionkey': key});
     })
     .catch(err => {
       res.status(403).send(errorInvalidSessionKey);
     });
 });
-
-router.use(sessionMiddleware);
 
 /*********************************
  GET
@@ -180,7 +180,10 @@ router.put('/block/:id', jsonParser, (req, res) => {
 
   if (validateBlock(data)) {
     dbSet(id, data)
-      .then(result => res.json(result))
+      .then(result => {
+        console.log('result', result);
+        return res.json(result)
+      })
       .catch(err => res.status(500).send(err.message));
   } else {
     res.status(400).send(errorInvalidModel);

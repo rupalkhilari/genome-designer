@@ -1,4 +1,4 @@
-import { get as dbGet, set as dbSet } from './database';
+import { getSafe as dbGetSafe, set as dbSet } from './database';
 import { errorInvalidSessionKey, errorSessionKeyNotValidated } from './errors';
 import crypto from 'crypto';
 
@@ -6,10 +6,13 @@ import crypto from 'crypto';
  * @description asserts valid session key
  * @param key {sha1} session key
  */
+
+//hack - use default because if no sessionkey is set, this will error because no ID provided
 export const validateSessionKey = (key) => {
-  return dbGet(key)
+  return dbGetSafe(key, null)
     .then(result => true)
     .catch(err => {
+      console.log('error getting key', err);
       return Promise.reject(errorInvalidSessionKey);
     });
 };
@@ -42,8 +45,10 @@ export const cleanUpSessionKeys = () => {
 };
 
 export const sessionMiddleware = (req, res, next) => {
-  const key = req.headers['session-key'];
-  return validateSessionKey(key)
+  const { sessionkey } = req.headers;
+  console.log('sessionkey: ', sessionkey, req.headers);
+
+  return validateSessionKey(sessionkey)
     .then(() => { next(); })
     .catch(() => { res.status(403).send(errorInvalidSessionKey); });
 };

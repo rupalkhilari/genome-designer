@@ -1,6 +1,7 @@
 import Instance from './Instance';
+import invariant from '../utils/environment/invariant';
 import randomColor from '../utils/generators/color';
-import { readFile, writeFile } from '../middleware/api';
+import { saveBlock, readFile, writeFile } from '../middleware/api';
 import AnnotationDefinition from '../schemas/Annotation';
 
 const sequenceFilePathFromId = (id) => `block/${id}/sequence/`;
@@ -18,6 +19,10 @@ export default class Block extends Instance {
       components: [],
       notes: {},
     });
+  }
+
+  save() {
+    return saveBlock(this);
   }
 
   addComponent(component, index) {
@@ -66,15 +71,16 @@ export default class Block extends Instance {
   }
 
   annotate(annotation) {
-    if (!AnnotationDefinition.validate(annotation)) {
-      throw new Error('annotation is not valid', annotation);
-    }
+    invariant(AnnotationDefinition.validate(annotation), `'annotation is not valid: ${annotation}`);
     return this.mutate('sequence.annotations', this.sequence.annotations.concat(annotation));
   }
 
   removeAnnotation(annotation) {
+    const annotationId = typeof annotation === 'object' ? annotation.id : annotation;
+    invariant(typeof annotationId === 'string', `Must pass object with ID or annotation ID directly, got ${annotation}`);
+
     const annotations = this.sequence.annotations.slice();
-    const toSplice = annotations.findIndex((ann) => ann.id === annotation.id);
+    const toSplice = annotations.findIndex((ann) => ann.id === annotationId);
 
     if (!Number.isInteger(toSplice)) {
       console.warn('annotation not found'); // eslint-disable-line

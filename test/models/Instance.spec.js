@@ -54,5 +54,9 @@ describe('Model', () => {
       expect(inst.meaning).to.be.undefined;
       expect(newInst.meaning.oflife).to.equal(42);
     });
+
+    it('should not mutate the prior instance', () => {
+      //todo
+    });
   });
 });
