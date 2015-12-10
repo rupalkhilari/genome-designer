@@ -2,8 +2,7 @@ import { expect } from 'chai';
 import { Block as exampleBlock } from '../../schemas/_examples';
 import { set as dbSet } from '../../../server/database';
 import request from 'supertest';
-
-const devServer = require('../../../devServer');
+import devServer from '../../../devServer';
 
 describe('REST', () => {
   let server;

@@ -31,6 +31,7 @@ class TestGenomeDesignerREST(unittest.TestCase):
     }
 
     res = POST(url + "block", data = json(block1), headers=headers)    
+    print(res.status_code)
     self.assertTrue(res.status_code==403)
 
   def test_block_creation(self):
