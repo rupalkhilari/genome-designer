@@ -88,6 +88,38 @@ export const blockAddComponent = (blockId, componentId, index) => {
   };
 };
 
+export const blockAnnotate = (blockId, annotation) => {
+  return (dispatch, getState) => {
+    const oldBlock = getState().blocks[blockId];
+    const block = oldBlock.annotate(annotation);
+
+    return Promise.resolve(block)
+      .then((block) => {
+        dispatch({
+          type: ActionTypes.BLOCK_ANNOTATE,
+          block,
+        });
+        return block;
+      });
+  };
+};
+
+export const blockRemoveAnnotation = (blockId, annotationId) => {
+  return (dispatch, getState) => {
+    const oldBlock = getState().blocks[blockId];
+    const block = oldBlock.removeAnnotation(annotationId);
+
+    return Promise.resolve(block)
+      .then((block) => {
+        dispatch({
+          type: ActionTypes.BLOCK_REMOVE_ANNOTATION,
+          block,
+        });
+        return block;
+      });
+  };
+};
+
 //not ready yet
 export const blockSetSequence = (blockId, sequence) => {
   return (dispatch, getState) => {
