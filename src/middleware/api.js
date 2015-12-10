@@ -10,7 +10,9 @@ import BlockDefinition from '../schemas/Block';
 const serverRoot = 'http://localhost:3000'; //fetch only supports absolute paths
 
 const apiPath = (path) => serverRoot + '/api/' + path;
-const sessionKey = 'testingStub';
+
+//hack - set testing stub from start for now so all requests work
+let sessionKey = 'testingStub';
 
 const headersGet = () => ({
   method: 'GET',
@@ -50,7 +52,10 @@ const headersDelete = () => ({
 
 export const login = (user, password) => {
   return fetch(apiPath(`login?user=${user}&password=${password}`), headersGet())
-    .then(resp => resp.json());
+    .then(resp => resp.json())
+    .then(json => {
+      sessionKey = json.sessionKey;
+    });
 };
 
 export const retrieveBlock = (id) => {
