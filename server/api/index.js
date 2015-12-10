@@ -221,8 +221,9 @@ router.post('/clone/:id', (req, res) => {
 //All files are put in the storage folder (until platform comes along)
 const createFileUrl = (url) => './storage/' + url;
 
-router.get('/file/:url', (req, res) => {
+router.get('/file/:url*', (req, res) => {
   const { url } = req.params;
+  console.log('url', url);
   const filePath = createFileUrl(url);
 
   fs.readFile(filePath, 'utf8', (err, data) => {
@@ -234,7 +235,7 @@ router.get('/file/:url', (req, res) => {
   });
 });
 
-router.post('/file/:url', (req, res) => {
+router.post('/file/:url*', (req, res) => {
   const { url } = req.params;
   const filePath = createFileUrl(url);
   const path = filePath.substring(0, filePath.lastIndexOf('/') + 1);
@@ -267,7 +268,7 @@ router.post('/file/:url', (req, res) => {
   });
 });
 
-router.delete('file/:url', (req, res) => {
+router.delete('file/:url*', (req, res) => {
   const { url } = req.params;
   const filePath = createFileUrl(url);
 

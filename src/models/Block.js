@@ -37,11 +37,11 @@ export default class Block extends Instance {
   }
 
   hasSequenceUrl() {
-    return (typeof this.sequence === 'object' && (this.sequence.url && this.sequence.url.length) );
+    return (typeof this.sequence === 'object' && (typeof this.sequence.url === 'string') );
   }
 
   getSequenceUrl(forceNew) {
-    return ( forceNew && !this.hasSequenceUrl() ) ?
+    return ( forceNew || !this.hasSequenceUrl() ) ?
       sequenceFilePathFromId(this.id) :
       this.sequence.url;
   }
@@ -49,14 +49,19 @@ export default class Block extends Instance {
   /**
    * @description Retrieve the sequence of the block. Retrieves the sequence from the server, since it is stored in a file, returning a promise.
    * @param format {String} accepts 'raw', 'fasta', 'genbank'
-   * @returns {Promise} Promise which resolves with the sequence value, or rejects with null if no sequence is associated.
+   * @returns {Promise} Promise which resolves with the sequence value, or (resolves) with null if no sequence is associated.
    */
   getSequence(format = 'raw') {
-    const sequencePath = this.getSequenceUrl() + `?format=${format}`;
+    //future - url + `?format=${format}`; --- need API support
+    const sequencePath = this.getSequenceUrl();
 
-    return this.hasSequenceUrl() ?
-      readFile(sequencePath) :
-      Promise.reject(null);
+    return !this.hasSequenceUrl() ?
+      Promise.resolve(null) :
+      readFile(sequencePath)
+        .then(resp => resp.text())
+        .then(result => {
+          return result;
+        });
   }
 
   /**

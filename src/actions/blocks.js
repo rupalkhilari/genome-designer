@@ -145,11 +145,13 @@ export const blockSetSequence = (blockId, sequence) => {
 
     return writeFile(sequenceUrl, sequence)
       .then(() => {
-        const block = oldBlock.setSequenceUrl(sequenceUrl);
+        const unannotated = oldBlock.mutate('sequence.annotations', []);
+        const block = unannotated.setSequenceUrl(sequenceUrl);
         dispatch({
           type: ActionTypes.BLOCK_SET_SEQUENCE,
           block,
         });
+        return block;
       });
   };
 };

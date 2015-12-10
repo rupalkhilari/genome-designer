@@ -2,7 +2,7 @@
 
 import { expect } from 'chai';
 import fetch from 'isomorphic-fetch';
-import { serverRoot, getSessionKey } from '../authentication';
+import { apiPath, getSessionKey } from '../../../src/middleware/api';
 import { Block as exampleBlock } from '../../schemas/_examples';
 
 describe('REST', () => {
@@ -16,7 +16,7 @@ describe('REST', () => {
         },
       });
 
-      return fetch(serverRoot + `/api/block/${testBlock.id}`, {
+      return fetch(apiPath(`block/${testBlock.id}`), {
         method: 'put',
         headers: {
           'Content-type': 'application/json',
