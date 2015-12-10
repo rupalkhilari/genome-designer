@@ -16,6 +16,7 @@ export const Block = {
 };
 
 export const Annotation = {
+  id: uuid.v4(),
   description: 'example annotation',
   tags: {},
   optimizability: 'none',

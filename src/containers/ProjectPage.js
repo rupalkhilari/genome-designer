@@ -6,6 +6,7 @@ import { DragDropContext } from 'react-dnd';
 
 import Inventory from './Inventory';
 import Inspector from './Inspector';
+import ProjectDetailView from '../components/ProjectDetailView';
 import ProjectHeader from '../components/ProjectHeader';
 import SketchConstruct from './SketchConstruct';
 
@@ -43,19 +44,24 @@ export class ProjectPage extends Component {
         <div className="ProjectPage-content">
           <ProjectHeader project={project}/>
 
-          {/* if viewing specific construct, let routing take over*//* if viewing specific construct, let routing take over*/}
-          {constructSelected && children}
+          <div className="ProjectPage-constructs">
 
-          {/* otherwise, show all the constructs... *//* otherwise, show all the constructs... */}
-          {!constructSelected && constructs.map(construct => {
-            return (
-              <div key={construct.id}>
-                <h3>Construct {construct.metadata.name}</h3>
+            {/* if viewing specific construct, let routing take over*//* if viewing specific construct, let routing take over*/}
+            {constructSelected && children}
 
-                <SketchConstruct construct={construct}/>
-              </div>
-            );
-          })}
+            {/* otherwise, show all the constructs... *//* otherwise, show all the constructs... */}
+            {!constructSelected && constructs.map(construct => {
+              return (
+                <div key={construct.id}>
+                  <h3>Construct {construct.metadata.name}</h3>
+
+                  <SketchConstruct construct={construct}/>
+                </div>
+              );
+            })}
+          </div>
+
+          <ProjectDetailView project={project}/>
         </div>
 
         <Inspector />
