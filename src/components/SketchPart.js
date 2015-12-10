@@ -1,7 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { blockRename } from '../actions/blocks';
-import { inspectorSetCurrent } from '../actions/inspector';
+import { inspectorToggleVisibility } from '../actions/inspector';
+import { uiSetCurrent } from '../actions/ui';
 
 import SketchPartName from './SketchPartName';
 
@@ -11,7 +12,13 @@ export class SketchPart extends Component {
   static propTypes = {
     part: PropTypes.object.isRequired,  //once using real ones, can pass schema as PropType
     blockRename: PropTypes.func.isRequired,
-    inspectorSetCurrent: PropTypes.func.isRequired,
+    uiSetCurrent: PropTypes.func.isRequired,
+    inspectorToggleVisibility: PropTypes.func.isRequired,
+  }
+
+  handleSelectPart = () => {
+    this.props.uiSetCurrent(this.props.part);
+    this.props.inspectorToggleVisibility(true);
   }
 
   handleRename = (event) => {
@@ -27,7 +34,7 @@ export class SketchPart extends Component {
 
     return (
       <div ref="partGroup"
-           onClick={this.props.inspectorSetCurrent.bind(null, part)}
+           onClick={this.handleSelectPart}
            className="SketchPart"
            style={{backgroundColor: color}}>
         <SketchPartName partName={name}
@@ -43,5 +50,6 @@ function mapStateToProps(state) {
 
 export default connect(mapStateToProps, {
   blockRename,
-  inspectorSetCurrent,
+  uiSetCurrent,
+  inspectorToggleVisibility,
 })(SketchPart);

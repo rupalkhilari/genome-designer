@@ -21,9 +21,12 @@ const initialState = {
 export default function blocks(state = initialState, action) {
   switch (action.type) {
   case ActionTypes.BLOCK_CREATE :
+  case ActionTypes.BLOCK_SAVE :
   case ActionTypes.BLOCK_MERGE :
   case ActionTypes.BLOCK_RENAME :
   case ActionTypes.BLOCK_CLONE :
+  case ActionTypes.BLOCK_ANNOTATE :
+  case ActionTypes.BLOCK_REMOVE_ANNOTATION :
   case ActionTypes.BLOCK_ADD_COMPONENT : {
     const { block } = action;
     return Object.assign({}, state, {[block.id]: block});

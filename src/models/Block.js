@@ -1,8 +1,12 @@
 import Instance from './Instance';
+import invariant from '../utils/environment/invariant';
 import randomColor from '../utils/generators/color';
-import { readFile, writeFile } from '../middleware/api';
+import { saveBlock, readFile, writeFile } from '../middleware/api';
+import AnnotationDefinition from '../schemas/Annotation';
 
 const sequenceFilePathFromId = (id) => `block/${id}/sequence/`;
+
+//todo - should scaffold, not pass manually
 
 export default class Block extends Instance {
   constructor(...args) {
@@ -10,13 +14,19 @@ export default class Block extends Instance {
       metadata: {
         color: randomColor(),
       },
-      sequence: {},
+      sequence: {
+        annotations: [],
+      },
       source: {},
       rules: [],
       options: [],
       components: [],
       notes: {},
     });
+  }
+
+  save() {
+    return saveBlock(this);
   }
 
   addComponent(component, index) {
@@ -53,7 +63,7 @@ export default class Block extends Instance {
     const path = sequenceFilePathFromId(this.id);
 
     //todo - how to handle asynchronous updates like this at model level... Optimistic updates? What about failures? Does this belong in the model? Or separate?
-    writeFile(sequence, path)
+    writeFile(path, sequence)
       .then(response => {
 
       })
@@ -64,5 +74,24 @@ export default class Block extends Instance {
     return this.mutate('sequence', path);
   }
 
-  /* todo - get/set/delete annotations */
+  annotate(annotation) {
+    invariant(AnnotationDefinition.validate(annotation), `'annotation is not valid: ${annotation}`);
+    return this.mutate('sequence.annotations', this.sequence.annotations.concat(annotation));
+  }
+
+  removeAnnotation(annotation) {
+    const annotationId = typeof annotation === 'object' ? annotation.id : annotation;
+    invariant(typeof annotationId === 'string', `Must pass object with ID or annotation ID directly, got ${annotation}`);
+
+    const annotations = this.sequence.annotations.slice();
+    const toSplice = annotations.findIndex((ann) => ann.id === annotationId);
+
+    if (!Number.isInteger(toSplice)) {
+      console.warn('annotation not found'); // eslint-disable-line
+      return this;
+    }
+
+    annotations.splice(toSplice, 1);
+    return this.mutate('sequence.annotations', annotations);
+  }
 }

@@ -39,6 +39,21 @@ export const blockClone = (blockId) => {
   };
 };
 
+export const blockSave = (blockId) => {
+  return (dispatch, getState) => {
+    const block = getState().blocks[blockId];
+    return block.save()
+      .then(response => response.json())
+      .then(json => {
+        dispatch({
+          type: ActionTypes.BLOCK_SAVE,
+          block,
+        });
+        return json;
+      });
+  };
+};
+
 //this is a backup for performing arbitrary mutations
 export const blockMerge = (blockId, toMerge) => {
   return (dispatch, getState) => {
@@ -81,6 +96,38 @@ export const blockAddComponent = (blockId, componentId, index) => {
       .then((block) => {
         dispatch({
           type: ActionTypes.BLOCK_ADD_COMPONENT,
+          block,
+        });
+        return block;
+      });
+  };
+};
+
+export const blockAnnotate = (blockId, annotation) => {
+  return (dispatch, getState) => {
+    const oldBlock = getState().blocks[blockId];
+    const block = oldBlock.annotate(annotation);
+
+    return Promise.resolve(block)
+      .then((block) => {
+        dispatch({
+          type: ActionTypes.BLOCK_ANNOTATE,
+          block,
+        });
+        return block;
+      });
+  };
+};
+
+export const blockRemoveAnnotation = (blockId, annotationId) => {
+  return (dispatch, getState) => {
+    const oldBlock = getState().blocks[blockId];
+    const block = oldBlock.removeAnnotation(annotationId);
+
+    return Promise.resolve(block)
+      .then((block) => {
+        dispatch({
+          type: ActionTypes.BLOCK_REMOVE_ANNOTATION,
           block,
         });
         return block;
