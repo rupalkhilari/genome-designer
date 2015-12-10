@@ -41,9 +41,6 @@ describe('Model', () => {
           .then(json => {
             expect(json).to.eql(block);
             done();
-          })
-          .catch(err => {
-            console.log('error', err);
           });
       });
     });

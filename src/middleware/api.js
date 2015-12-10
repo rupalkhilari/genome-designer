@@ -60,10 +60,12 @@ export const retrieveBlock = (id) => {
 
 export const saveBlock = (block) => {
   invariant(BlockDefinition.validate(block), 'Block does not pass validation: ' + block);
-  const { id } = block;
-  const stringified = JSON.stringify(block);
-
-  return fetch(apiPath(`block/${id}`), headersPut(stringified));
+  try {
+    const stringified = JSON.stringify(block);
+    return fetch(apiPath(`block/${block.id}`), headersPut(stringified));
+  } catch (err) {
+    return Promise.reject('error stringifying block');
+  }
 };
 
 export const readFile = (fileName) => {
