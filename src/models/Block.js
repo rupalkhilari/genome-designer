@@ -6,13 +6,17 @@ import AnnotationDefinition from '../schemas/Annotation';
 
 const sequenceFilePathFromId = (id) => `block/${id}/sequence/`;
 
+//todo - should scaffold, not pass manually
+
 export default class Block extends Instance {
   constructor(...args) {
     super(...args, {
       metadata: {
         color: randomColor(),
       },
-      sequence: {},
+      sequence: {
+        annotations: [],
+      },
       source: {},
       rules: [],
       options: [],

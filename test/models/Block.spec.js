@@ -12,20 +12,24 @@ describe('Model', () => {
       block = new Block();
     });
 
-    describe.only('Annotations', () => {
-      let annotation;
-      beforeEach(() => {
-        annotation = AnnotationDefinition.scaffold();
+    describe('Annotations', () => {
+      const annotation = AnnotationDefinition.scaffold();
+
+      it('annotate() should validate invalid annotations', () => {
+        const clone = Object.assign({}, annotation);
+        delete clone.id;
+        expect(block.annotate.bind(block, clone)).to.throw();
       });
 
-      it('annotate() should validate', () => {
-        console.log(block.sequence);
-        console.log(annotation);
-        //todo - should have fields ID and annotations already present
+      it('annotate() should add the annotation', () => {
+        const annotated = block.annotate(annotation);
+        expect(annotated.sequence.annotations.length).to.equal(1);
       });
 
       it('removeAnnotation() should find by ID', () => {
-
+        const annotated = block.annotate(annotation);
+        const unannotated = annotated.removeAnnotation(annotation.id);
+        expect(unannotated.sequence.annotations.length).to.equal(0);
       });
     });
 
