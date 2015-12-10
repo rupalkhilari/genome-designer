@@ -12,7 +12,7 @@ describe('Model', () => {
       block = new Block();
     });
 
-    describe('Annotations', () => {
+    describe.only('Annotations', () => {
       let annotation;
       beforeEach(() => {
         annotation = AnnotationDefinition.scaffold();
@@ -20,6 +20,7 @@ describe('Model', () => {
 
       it('annotate() should validate', () => {
         console.log(block.sequence);
+        console.log(annotation);
         //todo - should have fields ID and annotations already present
       });
 
