@@ -10,11 +10,20 @@ import BlockDefinition from '../schemas/Block';
 const serverRoot = 'http://localhost:3000'; //fetch only supports absolute paths
 
 const apiPath = (path) => serverRoot + '/api/' + path;
+const sessionKey = 'testingStub';
+
+const headersGet = () => ({
+  method: 'GET',
+  headers: {
+    sessionkey: sessionKey,
+  },
+});
 
 const headersPost = (body) => ({
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
+    sessionkey: sessionKey,
   },
   body,
 });
@@ -23,12 +32,16 @@ const headersPut = (body) => ({
   method: 'PUT',
   headers: {
     'Content-Type': 'application/json',
+    sessionkey: sessionKey,
   },
   body,
 });
 
 const headersDelete = () => ({
   method: 'DELETE',
+  headers: {
+    sessionkey: sessionKey,
+  },
 });
 
 /*************************
@@ -36,12 +49,12 @@ const headersDelete = () => ({
  *************************/
 
 export const login = (user, password) => {
-  return fetch(apiPath(`login?user=${user}&password=${password}`))
+  return fetch(apiPath(`login?user=${user}&password=${password}`), headersGet())
     .then(resp => resp.json());
 };
 
 export const retrieveBlock = (id) => {
-  return fetch(apiPath(`block/${id}`))
+  return fetch(apiPath(`block/${id}`), headersGet())
     .then(resp => resp.json());
 };
 

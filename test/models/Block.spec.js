@@ -37,9 +37,9 @@ describe('Model', () => {
 
       it('persists it', (done) => {
         block.save()
-          .then(response => {
-            console.log('response', response.body);
-            //todo - test better
+          .then(response => response.json())
+          .then(json => {
+            expect(json).to.eql(block);
             done();
           })
           .catch(err => {

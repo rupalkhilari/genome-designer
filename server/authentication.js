@@ -46,7 +46,6 @@ export const cleanUpSessionKeys = () => {
 
 export const sessionMiddleware = (req, res, next) => {
   const { sessionkey } = req.headers;
-  console.log('sessionkey: ', sessionkey, req.headers);
 
   return validateSessionKey(sessionkey)
     .then(() => { next(); })
