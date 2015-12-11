@@ -19,7 +19,7 @@ class SimpleComponent extends React.Component {
 
       if (block.id !== lastBlockId) {
         //note that right now, blocks dont have a sequence... this will work but nothing will be returned
-        store.blocks[block.id].getSequence()
+        block.getSequence()
           .then(sequence => {
             self.setState({
               block,
