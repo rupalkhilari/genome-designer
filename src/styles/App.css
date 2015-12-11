@@ -3,10 +3,10 @@
 @import 'base.css';
 
 .App {
-  height: 100vh;
   display: flex;
   flex-direction: column;
   background-color: var(--colors-greyLight);
+  min-height: 100vh;
 }
 
 .App-pageContent {

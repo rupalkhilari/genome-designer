@@ -192,12 +192,8 @@ export default class Layout {
       this.layoutFull();
       break;
 
-    case kT.layoutWrapCondensed:
-      this.layoutWrapCondensed();
-      break;
-
-    case kT.layoutFullCondensed:
-      this.layoutFullCondensed();
+    case kT.layoutFit:
+      this.layoutFit();
       break;
 
     default: throw new Error('Not a valid layout algorithm');
@@ -216,21 +212,15 @@ export default class Layout {
       condensed: false,
     });
   }
-  layoutWrapCondensed() {
-    this.layout({
-      xlimit: this.sceneGraph.availableWidth - kT.insetX,
-      condensed: true,
-    });
-  }
   layoutFull() {
     this.layout({
       xlimit: Number.MAX_VALUE,
       condensed: false,
     });
   }
-  layoutFullCondensed() {
+  layoutFit() {
     this.layout({
-      xlimit: Number.MAX_VALUE,
+      xlimit: this.sceneGraph.availableWidth - kT.insetX,
       condensed: true,
     });
   }
@@ -270,13 +260,13 @@ export default class Layout {
     this.titleFactory(ct);
     // update title to current position and text
     this.nodeFromElement(ct).set({
-      bounds: new Box2D(xs, ys, kT.titleW, kT.blockH),
+      bounds: new Box2D(xs, ys, this.sceneGraph.availableWidth, kT.titleH),
       text: ct.id,
     });
     // layout all the various components, constructing elements as required
     // and wrapping when a row is complete
     let xp = xs + kT.rowBarW;
-    let yp = ys + kT.blockH + kT.rowBarH;
+    let yp = ys + kT.titleH + kT.rowBarH;
 
     // used to determine when we need a new row
     let row = null;
@@ -329,7 +319,7 @@ export default class Layout {
     // position and size vertical bar
     const vh = (this.rows.length - 1) * kT.rowH + kT.blockH;
     this.vertical.set({
-      bounds: new Box2D(xs, ys + kT.blockH + kT.rowBarH, kT.rowBarW, vh),
+      bounds: new Box2D(xs, ys + kT.titleH + kT.rowBarH, kT.rowBarW, vh),
     });
   }
 }

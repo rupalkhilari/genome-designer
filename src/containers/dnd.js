@@ -48,9 +48,8 @@ class DnD extends Component {
           <div style={{margin:"1rem 0 1rem 1rem;padding-right:1rem;text-align:right"}}>
             <select ref="layoutSelector" onChange={this.onLayoutChanged}>
               <option value="wrap">Wrap</option>
-              <option value="wrap-condensed">Wrap Condensed</option>
               <option value="full">Full</option>
-              <option value="full-condensed">Full Condensed</option>
+              <option value="fit">Fit</option>
             </select>
           </div>
           {constructViewers}

@@ -3,6 +3,7 @@ const blockH = 24;
 const blockW = 70;
 // width of title
 const titleW = 200;
+const titleH = 40;
 // total height of each row
 const rowH = 60;
 // row header bar height
@@ -14,7 +15,7 @@ const textPad = 16;
 // width of condensed text blocks
 const condensedText = 40;
 // height of banner bar above construct name
-const bannerHeight = 20;
+const bannerHeight = 18;
 // inset of layout in graph
 const insetX = 0;
 const insetY = bannerHeight;
@@ -24,20 +25,20 @@ const blockFontSize = '12px';
 // minimum width for layouts
 const minWidth = 400;
 // background
-const background = 'rgb(39, 43, 61)';
+const background = 'rgb(52, 57, 77)';
 
 
 export default {
   // layout algorithms
   layoutWrap: 'wrap',
-  layoutWrapCondensed: 'wrap-condensed',
+  layoutFit: 'fit',
   layoutFull: 'full',
-  layoutFullCondensed: 'full-condensed',
 
   // layout metrics
   blockH: blockH,
   blockW: blockW,
   titleW: titleW,
+  titleH: titleH,
   rowH: rowH,
   rowBarH: rowBarH,
   rowBarW: rowBarW,
@@ -55,6 +56,7 @@ export default {
     strokeWidth: 0,
     fontSize: titleFontSize,
     textAlign: 'left',
+    height: titleH,
   },
   // row bar
   rowAppearance: {

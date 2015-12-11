@@ -7,6 +7,7 @@ import { blockCreate, blockAddComponent } from '../../../actions/blocks';
 import { block as blockDragType, sbol as sbolDragType, inventoryItem as inventoryItemDragType } from '../../../constants/DragTypes';
 import debounce from 'lodash.debounce';
 import { nodeIndex } from '../utils';
+import ConstructViewerMenu from './constructviewermenu';
 
 const constructTarget = {
   drop(props, monitor) {
@@ -123,7 +124,10 @@ export class ConstructViewer extends Component {
     const { connectDropTarget } = this.props;
     return connectDropTarget(
       <div className="construct-viewer" key={this.props.construct.id}>
-        <div className="sceneGraph"/>
+        <ConstructViewerMenu constructId={this.props.constructId} layoutAlgorithm={this.props.layoutAlgorithm}/>
+        <div className="sceneGraphContainer">
+          <div className="sceneGraph"/>
+        </div>
       </div>
     );
   }
@@ -132,7 +136,6 @@ export class ConstructViewer extends Component {
 export default connect((state, props) => {
   return {construct: state.blocks[props.constructId] };
 }, {
-
   blockCreate,
   blockAddComponent,
 })(ConstructViewer);
