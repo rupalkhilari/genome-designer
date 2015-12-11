@@ -171,8 +171,8 @@ export const blockSetSequence = (blockId, sequence) => {
 
     return writeFile(sequenceUrl, sequence)
       .then(() => {
-        const unannotated = oldBlock.mutate('sequence.annotations', []);
-        const block = unannotated.setSequenceUrl(sequenceUrl);
+         //const unannotated = oldBlock.mutate('sequence.annotations', []);
+        const block = oldBlock.setSequenceUrl(sequenceUrl);
         dispatch({
           type: ActionTypes.BLOCK_SET_SEQUENCE,
           block,
