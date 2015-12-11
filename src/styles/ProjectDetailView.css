@@ -1,6 +1,15 @@
 .ProjectDetailView {
   display: flex;
+  flex-direction: column;
   flex-grow: 1;
   min-height: 50px;
   background-color: #eee;
+
+  &-extensions {
+
+  }
+
+  &-extensionView {
+    flex-grow: 1;
+  }
 }

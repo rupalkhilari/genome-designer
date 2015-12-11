@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import { registry } from '../extensions/index';
 
 import '../styles/ProjectDetailView.css';
 
@@ -9,10 +10,25 @@ export default class ProjectDetailView extends Component {
     project: PropTypes.object.isRequired,
   }
 
+  loadExtension = (manifest) => {
+    manifest.render(this.refs.extensionView);
+  }
+
   render() {
     //todo - support resizing
     return (
-      <div className="ProjectDetailView"></div>
+      <div className="ProjectDetailView">
+        <div className="ProjectDetailsView-extensions">
+          {registry.sequenceDetail.map(manifest => {
+            return (
+              <a key={manifest.id}
+                 onClick={this.loadExtension.bind(null, manifest)}>{manifest.name}</a>
+            );
+          })}
+        </div>
+        <div ref="extensionView"
+             className="ProjectDetailView-extensionView"></div>
+      </div>
     );
   }
 }
