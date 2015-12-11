@@ -23,7 +23,7 @@ RUN cd /app && npm install
 RUN npm update -g npm
 
 EXPOSE 3000
-#ENV PORT=3000
+ENV PORT=3000
 
 WORKDIR /app
 ADD . /app

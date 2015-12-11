@@ -11,6 +11,8 @@ const serverRoot = 'http://localhost:3000'; //fetch only supports absolute paths
 
 const apiPath = (path) => serverRoot + '/api/' + path;
 
+const execPath = (path) => serverRoot + '/exec/' + path;
+
 //hack - set testing stub from start for now so all requests work
 let sessionKey = 'testingStub';
 
@@ -70,6 +72,15 @@ export const saveBlock = (block) => {
     return fetch(apiPath(`block/${block.id}`), headersPut(stringified));
   } catch (err) {
     return Promise.reject('error stringifying block');
+  }
+};
+
+export const runProcess = (id, inputs) => {
+  try {
+    const stringified = JSON.stringify(inputs);
+    return fetch(execPath(`${id}`), headersPost(stringified));
+  } catch (err) {
+    return Promise.reject('error stringifying input object');
   }
 };
 
