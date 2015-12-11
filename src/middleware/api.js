@@ -7,11 +7,11 @@ import BlockDefinition from '../schemas/Block';
  Utils
  *************************/
 
-const serverRoot = 'http://localhost:3000'; //fetch only supports absolute paths
+const serverRoot = ''; //fetch only supports absolute paths
 
-const apiPath = (path) => serverRoot + '/api/' + path;
+const apiPath = (path) => serverRoot + 'api/' + path;
 
-const execPath = (path) => serverRoot + '/exec/' + path;
+const execPath = (path) => serverRoot + 'exec/' + path;
 
 //hack - set testing stub from start for now so all requests work
 let sessionKey = 'testingStub';
