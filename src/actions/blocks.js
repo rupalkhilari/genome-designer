@@ -161,6 +161,14 @@ export const blockRemoveAnnotation = (blockId, annotationId) => {
   };
 };
 
+//ignore format for now
+export const blockGetSequence = (blockId, format) => {
+  return (dispatch, getState) => {
+    const block = getState().blocks[blockId];
+    return block.getSequence(format);
+  };
+};
+
 //future - also trigger some history actions
 export const blockSetSequence = (blockId, sequence) => {
   return (dispatch, getState) => {
