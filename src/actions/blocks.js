@@ -1,5 +1,6 @@
 import * as ActionTypes from '../constants/ActionTypes';
 import uuid from 'node-uuid';
+import BlockDefinition from '../schemas/Block';
 import { writeFile } from '../middleware/api';
 import Block from '../models/Block';
 
@@ -18,11 +19,20 @@ export const blockCreate = (initialModel) => {
   };
 };
 
-export const blockClone = (blockId) => {
+//this action accepts either the block directly, or the ID
+//inventory items may not be in the store, so we need to pass the block directly
+export const blockClone = (blockInput) => {
   return (dispatch, getState) => {
-    const oldBlock = getState().blocks[blockId];
+    let oldBlock;
+    if (typeof blockInput === 'string') {
+      oldBlock = getState().blocks[blockInput];
+    } else if (BlockDefinition.validate(blockInput)) {
+      oldBlock = blockInput;
+    } else {
+      throw new Error('invalid input to blockClone', blockInput);
+    }
 
-    //hack - should hit the server with fetch()
+    //hack - should hit the server
     const cloneStub = Object.assign({}, oldBlock, {
       id: uuid.v4(),
       parent: oldBlock.id,
@@ -96,6 +106,22 @@ export const blockAddComponent = (blockId, componentId, index) => {
       .then((block) => {
         dispatch({
           type: ActionTypes.BLOCK_ADD_COMPONENT,
+          block,
+        });
+        return block;
+      });
+  };
+};
+
+export const blockSetSbol = (blockId, sbol) => {
+  return (dispatch, getState) => {
+    const oldBlock = getState().blocks[blockId];
+    const block = oldBlock.setSbol(sbol);
+
+    return Promise.resolve(block)
+      .then((block) => {
+        dispatch({
+          type: ActionTypes.BLOCK_SET_SBOL,
           block,
         });
         return block;
