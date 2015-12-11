@@ -1,6 +1,8 @@
 import uuid from 'node-uuid';
-import Node2D from '../scenegraph2d/node2d';
+import Node2D from './node2d';
+import UserInterface from './userinterface';
 import invariant from '../../../utils/environment/invariant';
+import debounce from 'lodash.debounce';
 
 export default class SceneGraph2D {
 
@@ -14,6 +16,7 @@ export default class SceneGraph2D {
       availableWidth: 800,
       availableHeight: 600,
       uuid: uuid.v4(),
+      userInterfaceConstructor: null,
     }, props);
 
     // we must have a parent before being created
@@ -22,16 +25,26 @@ export default class SceneGraph2D {
     // ensure our parent element has the scene graph class
     this.parent.classList.add('sceneGraph');
 
-    // size our element to initial scene graph size
-    this.updateSize();
-
     // create our root node, which represents the view matrix and to which
     // all other nodes in the graph are ultimately attached.
     this.root = new Node2D({sg: this});
 
     // root is appended directly to the scene graph BUT without setting a parent node.
     this.parent.appendChild(this.root.el);
+
+    // create the user interface layer as required
+    if (this.userInterfaceConstructor) {
+      this.ui = new this.userInterfaceConstructor(this);
+    }
+
+    // size our element to initial scene graph size
+    this.updateSize();
+
+    // if you want an immediate update call this._update(). The this.update()
+    // method is debounced since React tends to over send updates.
+    this.updateDebounced = debounce(this._update, 50);
   }
+
 
   /**
    * update our element to the current scene graph size
@@ -40,6 +53,9 @@ export default class SceneGraph2D {
   updateSize() {
     this.parent.style.width = this.width + 'px';
     this.parent.style.height = this.height + 'px';
+    if (this.ui) {
+      this.ui.updateSize();
+    }
   }
 
   /**
@@ -54,6 +70,22 @@ export default class SceneGraph2D {
       callback.call(context, next);
       stack = stack.concat(next.children);
     }
+  }
+
+  /**
+   * return a list of nodes at the given location, the higest in the z-order
+   * will be towards tht end of the list, the top most node is the last.
+   * @param  {Vector2D} point
+   * @return {[Node2D]}
+   */
+  findNodesAt(point) {
+    let hits = [];
+    this.traverse( node => {
+      if (node.parent && node.containsGlobalPoint(point)) {
+        hits.push(node);
+      }
+    }, this);
+    return hits;
   }
 
   /**
@@ -78,6 +110,9 @@ export default class SceneGraph2D {
    * @return {[type]} [description]
    */
   update() {
+    this.updateDebounced();
+  }
+  _update() {
     this.root.updateBranch();
   }
 }

@@ -8,6 +8,7 @@ import { block as blockDragType, sbol as sbolDragType, inventoryItem as inventor
 import debounce from 'lodash.debounce';
 import { nodeIndex } from '../utils';
 import ConstructViewerMenu from './constructviewermenu';
+import UserInterface from './constructvieweruserinterface';
 
 const constructTarget = {
   drop(props, monitor) {
@@ -42,7 +43,6 @@ export class ConstructViewer extends Component {
     construct: PropTypes.object.isRequired,
     constructId: PropTypes.string.isRequired,
     layoutAlgorithm: PropTypes.string.isRequired,
-    //connectDropTarget: PropTypes.object.isRequired,
   }
 
   constructor(props) {
@@ -91,12 +91,16 @@ export class ConstructViewer extends Component {
       availableWidth: this.dom.clientWidth,
       availableHeight: this.dom.clientHeight,
       parent: this.sceneGraphEl,
+      userInterfaceConstructor: UserInterface,
     });
     // create the layout object
     this.layout = new Layout(this, this.sg, {
       layoutAlgorithm: this.props.layoutAlgorithm,
       baseColor: baseColors[nindex % baseColors.length],
     });
+    // the user interface will also need access to the layout component
+    this.sg.ui.layout = this.layout;
+
     // initial render won't call componentDidUpdate so force an update to the layout/scenegraph
     this.update();
     // handle window resize to reflow the layout

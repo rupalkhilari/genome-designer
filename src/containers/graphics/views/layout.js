@@ -108,13 +108,12 @@ export default class Layout {
    * @return {[type]}   [description]
    */
   titleFactory(part) { //
-    if (!this.nodeFromElement(part)) {
-      const node = new Node2D(Object.assign({
+    if (!this.titleNode) {
+      this.titleNode = new Node2D(Object.assign({
         sg: this.sceneGraph,
         color: this.baseColor,
       }, kT.titleAppearance));
-      this.sceneGraph.root.appendChild(node);
-      this.map(part, node);
+      this.sceneGraph.root.appendChild(this.titleNode);
     }
   }
   /**
@@ -259,7 +258,7 @@ export default class Layout {
     // create title as neccessary and position
     this.titleFactory(ct);
     // update title to current position and text
-    this.nodeFromElement(ct).set({
+    this.titleNode.set({
       bounds: new Box2D(xs, ys, this.sceneGraph.availableWidth, kT.titleH),
       text: ct.id,
     });

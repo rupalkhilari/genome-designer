@@ -37,9 +37,11 @@ class DnD extends Component {
   render() {
     const { children, constructs } = this.props;
 
-    const constructViewers = constructs.map(construct => {
+    let constructViewers = constructs.map(construct => {
       return <ConstructViewer key={construct.id} constructId={construct.id} layoutAlgorithm={this.layoutAlgorithm}/>;
     });
+
+    constructViewers = constructViewers.slice(0, 1);
 
     return (
       <div className="ProjectPage">

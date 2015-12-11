@@ -67,6 +67,14 @@ export default class Node2D {
   }
 
   /**
+   * mostly for debugging
+   * @return {String}
+   */
+  toString() {
+    return `Node = glyph:${this.glyph || 'NONE'} text:${this.text || ''}`;
+  }
+
+  /**
    * append the given child to us. It will be top most until another child is added
    * @param  {[type]} child [description]
    * @return {[type]}       [description]
