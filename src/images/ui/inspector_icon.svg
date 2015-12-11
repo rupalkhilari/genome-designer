@@ -10,7 +10,7 @@
                 <g id="Group" sketch:type="MSShapeGroup">
                     <rect id="Rectangle-6-Copy-2" fill="#FFFFFF" x="8" y="4" width="1" height="2"></rect>
                     <rect id="Rectangle-6-Copy-3" fill="#FFFFFF" x="8" y="7" width="1" height="6"></rect>
-                    <circle id="Oval-3" stroke="#FFFFFF" cx="8.5" cy="8.5" r="8.5"></circle>
+                    <circle id="Oval-3" stroke="#FFFFFF" cx="8.5" cy="8.5" r="7.5"></circle>
                 </g>
             </g>
         </g>
