@@ -14,7 +14,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
   /**
    * mouse down handler
    */
-  mouseDown(point) {
+  mouseDown(point, e) {
     invariant(this.layout, 'you must supply a layout component after construction');
     const hits = this.sg.findNodesAt(point);
     // check the top hit
@@ -22,7 +22,13 @@ export default class ConstructViewerUserInterface extends UserInterface {
     if (top) {
       // check with layout if the user clicked a part
       if (this.layout.elementFromNode(top)) {
-        console.log(`You clicked:${top.toString()}`);
+
+        // shift select is addiditive
+        if (e.shiftKey) {
+          this.addToSelections(top);
+        } else {
+          this.setSelections([top]);
+        }
       }
     }
   }

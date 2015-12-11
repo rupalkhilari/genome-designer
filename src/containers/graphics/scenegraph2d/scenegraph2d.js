@@ -114,5 +114,8 @@ export default class SceneGraph2D {
   }
   _update() {
     this.root.updateBranch();
+    if (this.ui) {
+      this.ui.update();
+    }
   }
 }

@@ -41,8 +41,6 @@ class DnD extends Component {
       return <ConstructViewer key={construct.id} constructId={construct.id} layoutAlgorithm={this.layoutAlgorithm}/>;
     });
 
-    constructViewers = constructViewers.slice(0, 1);
-
     return (
       <div className="ProjectPage">
         <Inventory />
