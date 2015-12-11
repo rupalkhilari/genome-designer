@@ -10,12 +10,14 @@ import '../styles/SidePanel.css';
 export class Inspector extends Component {
   static propTypes = {
     isVisible: PropTypes.bool.isRequired,
-    currentInstance: PropTypes.object,
     inspectorToggleVisibility: PropTypes.func.isRequired,
+    currentInstance: PropTypes.string,
+    project: PropTypes.object,
+    block: PropTypes.object,
   }
 
   render() {
-    const { isVisible, currentInstance, inspectorToggleVisibility } = this.props;
+    const { isVisible, currentInstance, block, project, inspectorToggleVisibility } = this.props;
 
     return (
       <div className={'SidePanel Inspector' + (isVisible ? ' visible' : '')}>
@@ -32,7 +34,8 @@ export class Inspector extends Component {
         </div>
 
         <div className="SidePanel-content">
-          {!!currentInstance && (<InspectorContent instance={currentInstance}/>)}
+          {!currentInstance && (<p>nothing selected. you're in project {project.metadata.name}</p>)}
+          {!!currentInstance && (<InspectorContent instance={block}/>)}
         </div>
       </div>
     );
@@ -42,10 +45,16 @@ export class Inspector extends Component {
 function mapStateToProps(state, props) {
   const { isVisible } = state.inspector;
   const { currentInstance } = state.ui;
+  const block = state.blocks[currentInstance];
+
+  const { projectId } = state.router.params;
+  const project = state.projects[projectId];
 
   return {
     isVisible,
     currentInstance,
+    block,
+    project,
   };
 }
 
