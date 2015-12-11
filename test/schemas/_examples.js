@@ -16,7 +16,7 @@ export const Block = {
   },
   'options': [],
   'components': [],
-  'rules': [],
+  'rules': {},
   'notes': {},
 };
 

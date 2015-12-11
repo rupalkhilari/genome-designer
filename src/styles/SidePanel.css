@@ -29,12 +29,12 @@
 
     &-trigger {
       width: var(--SidePanel-trigger-width);
+      height: var(--SidePanel-trigger-width);
       min-width: var(--SidePanel-trigger-width);
       /* temp */
       text-align: center;
-      border-radius: 50%;
-      border: 1px solid white;
       margin: 0 5px;
+      background-size: contain;
     }
 
     &-content {

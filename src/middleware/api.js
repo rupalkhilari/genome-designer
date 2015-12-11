@@ -9,10 +9,14 @@ import BlockDefinition from '../schemas/Block';
 
 const serverRoot = 'http://localhost:3000'; //fetch only supports absolute paths
 
-const apiPath = (path) => serverRoot + '/api/' + path;
+export const apiPath = (path) => serverRoot + '/api/' + path;
 
 //hack - set testing stub from start for now so all requests work
 let sessionKey = 'testingStub';
+
+export const getSessionKey = () => {
+  return sessionKey;
+};
 
 const headersGet = () => ({
   method: 'GET',
@@ -54,7 +58,8 @@ export const login = (user, password) => {
   return fetch(apiPath(`login?user=${user}&password=${password}`), headersGet())
     .then(resp => resp.json())
     .then(json => {
-      sessionKey = json.sessionKey;
+      sessionKey = json.sessionkey;
+      return sessionKey;
     });
 };
 
@@ -73,8 +78,9 @@ export const saveBlock = (block) => {
   }
 };
 
+//returns a fetch object, for you to parse yourself (doesnt automatically convert to json)
 export const readFile = (fileName) => {
-  return fetch(apiPath(`file/${fileName}`));
+  return fetch(apiPath(`file/${fileName}`), headersGet());
 };
 
 // if contents === null, then the file is deleted
