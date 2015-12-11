@@ -1,7 +1,7 @@
 import Instance from './Instance';
 import invariant from '../utils/environment/invariant';
 import randomColor from '../utils/generators/color';
-import { saveBlock, readFile, writeFile } from '../middleware/api';
+import { saveBlock, readFile } from '../middleware/api';
 import AnnotationDefinition from '../schemas/Annotation';
 
 const sequenceFilePathFromId = (id) => `block/${id}/sequence/`;
@@ -40,42 +40,42 @@ export default class Block extends Instance {
     return this.mutate('rules.sbol', sbol);
   }
 
-  /**
-   * @description Retrieve the sequence of the block. Retrieves the sequence from the server, since it is stored in a file, returning a promise.
-   * @param format {String} accepts 'raw', 'fasta', 'genbank'
-   * @returns {Promise} Promise which resolves with the sequence value, or rejects with null if no sequence is associated.
-   */
-  getSequence(format = 'raw') {
-    const hasSequence = typeof this.sequence === 'string' && this.sequence.length;
-    const sequencePath = sequenceFilePathFromId(this.sequence) + `?format=${format}`;
+  hasSequenceUrl() {
+    return (typeof this.sequence === 'object' && (typeof this.sequence.url === 'string') );
+  }
 
-    return hasSequence ?
-      readFile(sequencePath) :
-      Promise.reject(null);
+  getSequenceUrl(forceNew) {
+    return ( forceNew || !this.hasSequenceUrl() ) ?
+      sequenceFilePathFromId(this.id) :
+      this.sequence.url;
   }
 
   /**
-   * @description Set the sequence of the block.
-   *
-   * future - tie in to history
-   *
-   * @param sequence {String} ACTG representation of the sequence. Annotations should be parsed and stored in the block directly in `annotations`.
+   * @description Retrieve the sequence of the block. Retrieves the sequence from the server, since it is stored in a file, returning a promise.
+   * @param format {String} accepts 'raw', 'fasta', 'genbank'
+   * @returns {Promise} Promise which resolves with the sequence value, or (resolves) with null if no sequence is associated.
+   */
+  getSequence(format = 'raw') {
+    //future - url + `?format=${format}`; --- need API support
+    const sequencePath = this.getSequenceUrl();
+
+    return !this.hasSequenceUrl() ?
+      Promise.resolve(null) :
+      readFile(sequencePath)
+        .then(resp => resp.text())
+        .then(result => {
+          return result;
+        });
+  }
+
+  /**
+   * @description Set the sequence URL of the block. Does not affect annotations.
+   * ONLY SET THE URL ONCE THE FILE IS WRITTEN SUCCESSFULLY
+   * @param url {String} URL of the sequence file. Should generate with block.getSequenceUrl.
    * @returns block {Block} New block with the potentially-updated sequence file path
    */
-  setSequence(sequence) {
-    //If we are editing the sequence, or sequence doesn't exist, we want to set the sequence for the child block, not change the sequence of the parent part. When setting, it doesn't really matter, we just always want to set via filename which matches this block.
-    const path = sequenceFilePathFromId(this.id);
-
-    //todo - how to handle asynchronous updates like this at model level... Optimistic updates? What about failures? Does this belong in the model? Or separate?
-    writeFile(path, sequence)
-      .then(response => {
-
-      })
-      .catch(error => {
-
-      });
-
-    return this.mutate('sequence', path);
+  setSequenceUrl(url) {
+    return this.mutate('sequence.url', url);
   }
 
   annotate(annotation) {

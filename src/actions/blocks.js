@@ -1,7 +1,7 @@
 import * as ActionTypes from '../constants/ActionTypes';
 import uuid from 'node-uuid';
-
 import BlockDefinition from '../schemas/Block';
+import { writeFile } from '../middleware/api';
 import Block from '../models/Block';
 
 export const blockCreate = (initialModel) => {
@@ -161,18 +161,23 @@ export const blockRemoveAnnotation = (blockId, annotationId) => {
   };
 };
 
-//not ready yet
-//todo - add to reducers
+//future - also trigger some history actions
 export const blockSetSequence = (blockId, sequence) => {
   return (dispatch, getState) => {
-    //future - also trigger some history actions
     const oldBlock = getState().blocks[blockId];
-    //todo - do we want to return the promise? or another action for that? Do we want to follow traditional redux async flow? Where does logic all go?
-    //todo - reset annotations
-    const block = oldBlock.setSequence(sequence);
-    dispatch({
-      type: ActionTypes.BLOCK_SET_SEQUENCE,
-      block,
-    });
+    // If we are editing the sequence, or sequence doesn't exist, we want to set the sequence for the child block, not change the sequence of the parent part.
+    // When setting, it doesn't really matter, we just always want to set via filename which matches this block.
+    const sequenceUrl = oldBlock.getSequenceUrl(true);
+
+    return writeFile(sequenceUrl, sequence)
+      .then(() => {
+        const unannotated = oldBlock.mutate('sequence.annotations', []);
+        const block = unannotated.setSequenceUrl(sequenceUrl);
+        dispatch({
+          type: ActionTypes.BLOCK_SET_SEQUENCE,
+          block,
+        });
+        return block;
+      });
   };
 };

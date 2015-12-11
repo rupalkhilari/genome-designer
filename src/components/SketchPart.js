@@ -17,7 +17,7 @@ export class SketchPart extends Component {
   }
 
   handleSelectPart = () => {
-    this.props.uiSetCurrent(this.props.part);
+    this.props.uiSetCurrent(this.props.part.id);
     this.props.inspectorToggleVisibility(true);
   }
 

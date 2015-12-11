@@ -4,8 +4,6 @@
   display: block;
 
   &.hasImage {
-    display: inline-block;
-    width: 50%;
     white-space: nowrap;
     text-overflow: ellipsis;
   }
@@ -25,6 +23,6 @@
     width: 32px;
     height: 32px;
     margin-right: 0.5em;
-    background: white;
+    background: transparent;
   }
 }

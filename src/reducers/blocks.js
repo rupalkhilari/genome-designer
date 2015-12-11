@@ -28,6 +28,7 @@ export default function blocks(state = initialState, action) {
   case ActionTypes.BLOCK_SET_SBOL :
   case ActionTypes.BLOCK_ANNOTATE :
   case ActionTypes.BLOCK_REMOVE_ANNOTATION :
+  case ActionTypes.BLOCK_SET_SEQUENCE :
   case ActionTypes.BLOCK_ADD_COMPONENT : {
     const { block } = action;
     return Object.assign({}, state, {[block.id]: block});

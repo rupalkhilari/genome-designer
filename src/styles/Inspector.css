@@ -2,6 +2,6 @@
 
 .Inspector {
   &-trigger {
-
+    background-image: url('/images/ui/inspector_icon.svg');
   }
 }

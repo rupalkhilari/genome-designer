@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import request from 'supertest';
 import { set as dbSet } from '../../../server/database';
-import { serverRoot, getSessionKey, login } from '../authentication';
+import { getSessionKey, login } from '../../../src/middleware/api';
 
 const devServer = require('../../../devServer');
 
@@ -27,18 +27,17 @@ describe('REST', () => {
         .expect(200, done);
     });
 
-    it('login() function shuold work', () => {
-      return login('user', 'password')
-        .then(resp => {
-          expect(resp.status).to.equal(200);
+    it('login() function shuold work', (done) => {
+      login('user', 'password')
+        .then(sessionkey => {
+          done();
         });
     });
 
     it('should return the session key', () => {
       return login('user', 'password')
-        .then(resp => resp.json())
-        .then(json => {
-          expect(typeof json.sessionkey).to.equal('string');
+        .then(sessionkey=> {
+          expect(typeof sessionkey).to.equal('string');
         });
     });
 
