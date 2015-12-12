@@ -1,0 +1,3 @@
+[submodule "src/extensions/onion2"]
+	path = src/extensions/onion2
+	url = https://git.cailab.org/isaac/onion2.git

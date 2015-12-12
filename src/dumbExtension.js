@@ -1,57 +1,71 @@
 import React from 'react';
 import { render as reactRender } from 'react-dom';
-
+import {SequenceEditor} from './extensions/onion2/SequenceEditor';
+import {onionFile} from './extensions/onion2/OnionFile';
 /* create simple component */
 
 class SimpleComponent extends React.Component {
-  componentWillMount() {
-    const self = this;
-    let lastBlockId;
+	componentWillMount() {
+		const self = this;
+		let lastBlockId;
 
-    this.setState({
-      block: null,
-      rendered: Date.now(),
-    });
+		this.setState({
+			block: null,
+			rendered: Date.now(),
+		});
 
-    const storeSubscriber = (store) => {
-      const { currentInstance } = store.ui;
-      const block = !!currentInstance ? store.blocks[currentInstance] : null;
+		const storeSubscriber = (store) => {
+			const { currentInstance } = store.ui;
+			const block = !!currentInstance ? store.blocks[currentInstance] : null;
 
-      if (block.id !== lastBlockId) {
-        //note that right now, blocks dont have a sequence... this will work but nothing will be returned
-        block.getSequence()
-          .then(sequence => {
-            self.setState({
-              block,
-              sequence,
-            });
-          });
-        lastBlockId = block.id;
-      }
-    };
+			if (block.id !== lastBlockId) {
+				//note that right now, blocks dont have a sequence... this will work but nothing will be returned
+				block.getSequence()
+					.then(sequence => {
+						self.setState({
+							block,
+							sequence,
+						});
+					});
+				lastBlockId = block.id;
+			}
+		};
 
-    this.subscriber = window.gd.store.subscribe(storeSubscriber);
-  }
+		this.subscriber = window.gd.store.subscribe(storeSubscriber);
+	}
 
-  componentWillUnmount() {
-    this.subscriber();
-  }
+	componentWillUnmount() {
+		this.subscriber();
+	}
 
-  render() {
-    return (
-      <div>
-        <p>Rendered at {new Date(this.state.rendered).toUTCString()}</p>
+	render() {
 
-        {this.state.block && (
-          <div>
-            <p>block: {this.state.block.metadata.name}</p>
-            <p>sequence: {this.state.sequence}</p>
-          </div>
-        )}
 
-      </div>
-    );
-  }
+		return (
+			<div
+				height = "50%"
+				style={{overflow:"scroll"}}
+			>
+				<div>
+					<p>Rendered at {new Date(this.state.rendered).toUTCString()}</p>
+
+					{this.state.block && (
+						<div>
+							<p>block: {this.state.block.metadata.name}</p>
+							<p>sequence: {this.state.sequence}</p>
+						</div>
+					)}
+					<SequenceEditor
+						sequence={onionFile.seq}
+						showComplement={true}
+						features={onionFile.features}
+					></SequenceEditor>
+				</div>
+
+
+			</div>
+		);
+	}
 }
 
 /* register with store */
@@ -61,13 +75,15 @@ class SimpleComponent extends React.Component {
 /* rendering + registering extension */
 
 const render = (container) => {
-  reactRender(<SimpleComponent />, container);
+	reactRender(<SimpleComponent />, container);
+	//reactRender(<OnionCommander></OnionCommander>, container)
+	//reactRender(<SequenceEditor>helloworld</SequenceEditor>, container)
 };
 
 const manifest = {
-  id: 'onion-0.0.0',
-  name: 'onion',
-  render,
+	id: 'onion-0.0.0',
+	name: 'onion',
+	render,
 };
 
 window.gd.registerExtension('sequenceDetail', manifest);

@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { registry } from '../extensions/index';
 
+
 import '../styles/ProjectDetailView.css';
 
 //todo - how should this be exposed so that React won't dump it away
@@ -28,6 +29,7 @@ export default class ProjectDetailView extends Component {
         </div>
         <div ref="extensionView"
              className="ProjectDetailView-extensionView"></div>
+
       </div>
     );
   }
