@@ -1,5 +1,4 @@
 import uuid from 'node-uuid';
-import deepFreeze from 'deep-freeze';
 import pathSet from 'lodash.set';
 import merge from 'lodash.merge';
 import cloneDeep from 'lodash.clonedeep';
@@ -39,20 +38,25 @@ export default class Instance {
     );
 
     if (process.env.NODE_ENV !== 'production') {
-      deepFreeze(this);
+      require('deep-freeze')(this);
     }
   }
 
+  //use cloneDeep and perform mutation prior to calling constructor because constructor may freeze object
+
   // returns a new instance
   // uses lodash _.set() for path, e.g. 'a.b[0].c'
-  // cloneDeep by default to handle deep properties that might not be handled properly by Object.assign
-  mutate(path, value, bypassCloning = false) {
-    const base = bypassCloning ? this : cloneDeep(this);
-    return pathSet(new this.constructor(base), path, value);
+  mutate(path, value) {
+    const base = cloneDeep(this);
+    pathSet(base, path, value);
+    return new this.constructor(base);
   }
 
   // returns a new instance
+  // deep merge using _.merge
   merge(obj) {
-    return merge(new this.constructor(cloneDeep(this)), obj);
+    const base = cloneDeep(this);
+    merge(base, obj);
+    return new this.constructor(base);
   }
 }

@@ -15,7 +15,7 @@ const SequenceDefinition = new SchemaDefinition({
   ],
 
   annotations: [
-    fields.arrayOf(AnnotationDefinition.validate),
+    fields.arrayOf(AnnotationDefinition.validate.bind(AnnotationDefinition)),
     `List of Annotations associated with the sequence`,
   ],
 
