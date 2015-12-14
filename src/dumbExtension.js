@@ -45,7 +45,13 @@ class SimpleComponent extends React.Component {
 
     render() {
         return (
-            <div>
+            <div
+                style={{
+                    height:"400",
+                    overflowY:"scroll",
+                    border:"1px solid black"
+                }}
+            >
                 <p>Rendered at {new Date(this.state.rendered).toUTCString()}</p>
                 {this.state.block && (
                     <div>
