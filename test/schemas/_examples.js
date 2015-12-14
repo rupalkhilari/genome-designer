@@ -35,17 +35,6 @@ export const Project = {
   settings: {},
 };
 
-export const Project = {
-  'id': uuid.v4(),
-  'metadata': {
-    'authors': [],
-    'version': '0.0.0',
-    'tags': {},
-  },
-  'components': [],
-  'settings': {},
-};
-
 export const Annotation = {
   id: uuid.v4(),
   description: 'example annotation',
