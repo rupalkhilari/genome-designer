@@ -20,6 +20,8 @@ export default class Instance {
       parsedInput = {};
     }
 
+    //todo - do we want to force a new ID?
+
     merge(this,
       subclassBase,
       {

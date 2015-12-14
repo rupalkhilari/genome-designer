@@ -1,50 +1,31 @@
-import fields from './fields';
+import fields from './fields/index';
 import * as validators from './fields/validators';
 import InstanceDefinition from './Instance';
+import SequenceDefinition from './Sequence';
 
 /**
  @name BlockDefinition
- @description A component of a construct, or construct itself
  @sbol Component
+ @description A component of a construct, or construct itself.
 
+ Blocks are hierarchically composable elements which make up large constructs of DNA. Hierarchy is established with the `components` field, whereby a block references its children.
+
+ Blocks may have a `sequence`, which is a reference to a file and associated annotations, and if so should reference their source (e.g. foundry, NCBI) whence they came.
+
+ Blocks can define `rules`, to which constitutive blocks must adhere. For example, bounds to GC content, or template grammar (e.g. position 0 must be a promoter). The type is the key, the rule is the value (heterogeneous formats)
+
+ List Blocks allow for combinatorial logic, where multiple blocks can be associated as combinatorial `options` for this block.
+
+ In addition to sequence annotations, a block may list `notes`, which are essentially annotations that do not specifically reference the sequence.
  */
-
-//SBOL has a field called role, particularly in defining modules. We may want to add this later. For now, this annotation can be a role per-component.
-export const enumRoles = [
-
-  //SBOL
-  'Promoter',
-  'RBS',
-  'CDS',
-  'Terminator',
-  'Gene',
-  'Engineered Gene',
-  'mRNA',
-
-  //others
-  'placeholder',
-];
-
-//todo - better define structure
-const ruleShape = validators.shape({
-  type: validators.string(),
-  params: validators.object(),
-});
-
-const annotationShape = validators.shape({
-  //todo - define structure
-});
 
 const BlockDefinition = InstanceDefinition.extend({
   /*
    Part-like fields for sequence and sequence annotations, inventory source
    */
   sequence: [
-    fields.shape({
-      id: validators.id(),
-      annotations: validators.array(annotationShape),
-    }),
-    `ID of the associated Sequence (not the sequence itself), and list of Annotations associated`,
+    SequenceDefinition,
+    `Associated Sequence (url, not the sequence itself), and Annotations etc. associated`,
   ],
   source: [
     fields.shape({
@@ -55,7 +36,7 @@ const BlockDefinition = InstanceDefinition.extend({
   ],
 
   rules: [
-    fields.arrayOf(ruleShape).required,
+    fields.object().required,
     `Grammar/rules governing the whole Block`,
   ],
 
@@ -73,14 +54,24 @@ const BlockDefinition = InstanceDefinition.extend({
     fields.object().required,
     `Notes about the whole Block`,
   ],
-
-  /*
-   //Avoiding this until good reason to include it
-   template: [
-   fields.id(),
-   `Reference to another Block to use as a template (i.e. validation, component rules)`,
-   ],
-   */
 });
 
 export default BlockDefinition;
+
+/*
+ //SBOL has a field called role, particularly in defining modules. We may want to add this later. For now, this annotation can be a role per-component.
+ export const enumRoles = [
+
+ //SBOL
+ 'Promoter',
+ 'RBS',
+ 'CDS',
+ 'Terminator',
+ 'Gene',
+ 'Engineered Gene',
+ 'mRNA',
+
+ //others
+ 'placeholder',
+ ];
+ */
