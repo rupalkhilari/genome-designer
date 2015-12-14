@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import SceneGraph2D from '../scenegraph2d/scenegraph2d';
+import Vector2D from '../geometry/vector2d';
 import Layout from './layout.js';
 import { DropTarget } from 'react-dnd';
 import { connect } from 'react-redux';
@@ -11,26 +12,12 @@ import ConstructViewerMenu from './constructviewermenu';
 import UserInterface from './constructvieweruserinterface';
 
 const constructTarget = {
-  drop(props, monitor) {
-    const { item, type } = monitor.getItem();
-    if (type === blockDragType) {
-      // fixme
-      // really, we just need to add it to the store...
-      // going to leave for now... let's discuss how to handle
-      // do we just want an action to associate a block with the store, since this isn't really creating it if its coming from the inventory?
-      // do we want to clone inventory?
-      // What happens when you pull something from inventory to associate with your project?
-      // doing this will use the provided ID, and cause problems in the store
-
-      const block = props.blockCreate(item);
-      props.blockAddComponent(props.construct.id, block.id);
-    } else if (type === sbolDragType) {
-      console.log(item); //eslint-disable-line
-      //todo - assign type to the block, likely using block.rules ...
-    } else {
-      // ?
-    }
+  drop(props, monitor, component) {
+    component.drop.call(component, monitor);
   },
+  hover(props, monitor, component) {
+    component.dragOver.call(component, monitor);
+  }
 };
 @DropTarget(inventoryItemDragType, constructTarget, (connect, monitor) => ({
   connectDropTarget: connect.dropTarget(),
@@ -100,7 +87,6 @@ export class ConstructViewer extends Component {
     });
     // the user interface will also need access to the layout component
     this.sg.ui.layout = this.layout;
-
     // initial render won't call componentDidUpdate so force an update to the layout/scenegraph
     this.update();
     // handle window resize to reflow the layout
@@ -108,12 +94,48 @@ export class ConstructViewer extends Component {
   }
 
   /**
+   * update drag state
+   */
+  componentWillReceiveProps(nextProps) {
+    if (this.props.isOver && !nextProps.isOver) {
+      this.sg.ui.dragLeave();
+    }
+    if (!this.props.isOver && nextProps.isOver) {
+      this.sg.ui.dragEnter();
+    }
+  }
+
+  /**
+   * drag over event
+   */
+  dragOver(monitor) {
+    const point = monitor.getClientOffset();
+    this.sg.ui.dragOver(new Vector2D(point.x, point.y));
+  }
+
+  /**
+   * something was dropped on us
+   * @param  {[type]} monitor [description]
+   * @return {[type]}         [description]
+   */
+  drop(monitor) {
+    const { item, type } = monitor.getItem();
+    if (type === blockDragType) {
+      const block = this.props.blockCreate(item);
+      this.props.blockAddComponent(this.props.construct.id, block.id);
+    } else if (type === sbolDragType) {
+      console.log(item); //eslint-disable-line
+      //todo - assign type to the block, likely using block.rules ...
+    } else {
+      // ?
+    }
+  }
+  /**
    * update scene graph after the react component updates`
    */
   componentDidUpdate() {
     this.update();
   }
-
   /**
    * update the layout and then the scene graph
    */
