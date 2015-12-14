@@ -270,7 +270,6 @@ class TestGenomeDesignerREST(unittest.TestCase):
     self.assertTrue("block" in res)
 
     block = parse(res["block"])
-    print(block["rules"])
     block["sequence"]["url"] = input1["sequence"]
 
     res = PUT(self.api_url + "block/" + block_id, data = json(block), headers=headers)
