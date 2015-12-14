@@ -17,7 +17,7 @@ export class SketchPart extends Component {
   }
 
   handleSelectPart = () => {
-    this.props.uiSetCurrent(this.props.part);
+    this.props.uiSetCurrent(this.props.part.id);
     this.props.inspectorToggleVisibility(true);
   }
 
@@ -37,6 +37,7 @@ export class SketchPart extends Component {
            onClick={this.handleSelectPart}
            className="SketchPart"
            style={{backgroundColor: color}}>
+        <span>{part.rules.sbol}</span>
         <SketchPartName partName={name}
                         onChange={this.handleRename}/>
       </div>

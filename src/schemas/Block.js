@@ -12,7 +12,7 @@ import SequenceDefinition from './Sequence';
 
  Blocks may have a `sequence`, which is a reference to a file and associated annotations, and if so should reference their source (e.g. foundry, NCBI) whence they came.
 
- Blocks can define `rules`, to which constitutive blocks must adhere. For example, bounds to GC content, or template grammar (e.g. position 0 must be a promoter)
+ Blocks can define `rules`, to which constitutive blocks must adhere. For example, bounds to GC content, or template grammar (e.g. position 0 must be a promoter). The type is the key, the rule is the value (heterogeneous formats)
 
  List Blocks allow for combinatorial logic, where multiple blocks can be associated as combinatorial `options` for this block.
 
@@ -49,7 +49,7 @@ const BlockDefinition = InstanceDefinition.extend({
   ],
 
   rules: [
-    fields.arrayOf(ruleShape).required,
+    fields.object().required,
     `Grammar/rules governing the whole Block`,
   ],
 

@@ -8,16 +8,31 @@ import uuid from 'node-uuid';
  */
 
 export const Block = {
-  'id': uuid.v4(),
-  'metadata': {
-    'authors': [],
-    'version': '0.0.0',
-    'tags': {},
+  id: uuid.v4(),
+  metadata: {
+    authors: [],
+    version: '0.0.0',
+    tags: {},
   },
-  'options': [],
-  'components': [],
-  'rules': [],
-  'notes': {},
+  sequence: {
+    annotations: [],
+  },
+  source: {},
+  options: [],
+  components: [],
+  rules: {},
+  notes: {},
+};
+
+export const Project = {
+  id: uuid.v4(),
+  metadata: {
+    authors: [],
+    version: '0.0.0',
+    tags: {},
+  },
+  components: [],
+  settings: {},
 };
 
 export const Project = {
