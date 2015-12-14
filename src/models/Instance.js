@@ -1,4 +1,5 @@
 import uuid from 'node-uuid';
+import deepFreeze from 'deep-freeze';
 import pathSet from 'lodash.set';
 import merge from 'lodash.merge';
 import cloneDeep from 'lodash.clonedeep';
@@ -36,6 +37,10 @@ export default class Instance {
       },
       parsedInput
     );
+
+    if (process.env.NODE_ENV !== 'production') {
+      deepFreeze(this);
+    }
   }
 
   // returns a new instance

@@ -28,16 +28,18 @@
   "peerDependencies": {
     "webpack": "*"
   },
-  "engines" : {
-    "node" : ">= 4.2.2"
+  "engines": {
+    "node": ">= 4.2.2"
   },
   "dependencies": {
+    "deep-freeze": "0.0.1",
     "history": "1.15.0",
     "immutable": "^3.7.5",
     "isomorphic-fetch": "^2.1.1",
     "lodash.clonedeep": "^3.0.2",
     "lodash.merge": "^3.3.2",
     "lodash.set": "^3.7.4",
+    "mkpath": "^1.0.0",
     "node-uuid": "^1.4.7",
     "normalize.css": "^3.0.3",
     "normalizr": "^1.2.0",
@@ -53,8 +55,7 @@
     "redux-router": "1.0.0-beta3",
     "redux-thunk": "^0.1.0",
     "semver-regex": "^1.0.0",
-    "url-regex": "^3.0.0",
-    "mkpath": "^1.0.0"
+    "url-regex": "^3.0.0"
   },
   "devDependencies": {
     "autoprefixer": "^6.0.3",

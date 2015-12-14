@@ -5,12 +5,14 @@ import dummyBlocks from '../inventory/dummyBlocks';
 import Block from '../models/Block';
 
 //testing, default should be {} (but need to hydrate to models)
-const [child1, child2, child3, child4, child5, ...rest] = dummyBlocks;
+const [child1, child2, child3, child4, child5] = dummyBlocks;
 const initialState = {
-  block1: Object.assign(new Block('block1'), {
+  block1: new Block({
+    id: 'block1',
     components: [child1.id, child2.id, child3.id],
   }),
-  block2: Object.assign(new Block('block2'), {
+  block2: new Block({
+    id: 'block2',
     components: [child4.id, child5.id],
   }),
   [child1.id]: new Block(child1),
@@ -31,14 +33,11 @@ export default function blocks(state = initialState, action) {
   case ActionTypes.BLOCK_ANNOTATE :
   case ActionTypes.BLOCK_REMOVE_ANNOTATION :
   case ActionTypes.BLOCK_SET_SEQUENCE :
-  case ActionTypes.BLOCK_ADD_COMPONENT :
-  {
+  case ActionTypes.BLOCK_ADD_COMPONENT : {
     const { block } = action;
     return Object.assign({}, state, {[block.id]: block});
   }
-
-  default :
-  {
+  default : {
     return state;
   }
   }
