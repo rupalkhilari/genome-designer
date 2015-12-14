@@ -47,19 +47,18 @@ class SimpleComponent extends React.Component {
         return (
             <div>
                 <p>Rendered at {new Date(this.state.rendered).toUTCString()}</p>
+                {this.state.block && (
+                    <div>
+                        <p>block: {this.state.block.metadata.name}</p>
+                        <p>sequence: {this.state.sequence}</p>
+                    </div>
+                )}
                 <SequenceEditor
                     sequence={onionFile.seq}
                     showComplement={true}
                     features={onionFile.features}
                 ></SequenceEditor>
-        {this.state.block && (
-            <div>
-                <p>block: {this.state.block.metadata.name}</p>
-                <p>sequence: {this.state.sequence}</p>
             </div>
-        )}
-
-    </div>
     );
     }
     }

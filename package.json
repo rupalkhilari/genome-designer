@@ -28,8 +28,8 @@
   "peerDependencies": {
     "webpack": "*"
   },
-  "engines" : {
-    "node" : ">= 4.2.2"
+  "engines": {
+    "node": ">= 4.2.2"
   },
   "dependencies": {
     "history": "1.15.0",
@@ -65,11 +65,13 @@
     "babel-plugin-react-transform": "^1.1.1",
     "body-parser": "^1.14.1",
     "chai": "^3.4.1",
+    "combokeys": "^2.4.4",
     "css-loader": "^0.23.0",
     "eslint": "^1.9.0",
     "eslint-config-airbnb": "^0.1.0",
     "eslint-plugin-react": "^3.7.1",
     "express": "^4.13.3",
+    "jquery": "^2.1.4",
     "jsdom": "^7.0.2",
     "mocha": "^2.2.5",
     "morgan": "^1.6.1",
