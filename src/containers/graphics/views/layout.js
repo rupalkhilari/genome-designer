@@ -69,23 +69,28 @@ export default class Layout {
    * @return {[type]}            [description]
    */
   partFactory(part, appearance) {
-
-    // random colors for nodes.
-    const colors = [
-      'rgb(199, 109, 107)', 'rgb(221, 196, 91)', 'rgb(212, 223, 84)', 'rgb(109, 181, 105)',
-      'rgb(74, 166, 71)', 'rgb(161, 196, 197)', 'rgb(83, 155, 163)', 'rgb(91, 145, 138)', 'rgb(139, 133, 124)',
-      'rgb(149, 150, 147)', 'rgb(183, 183, 178)'];
-
-    const color = colors[Math.floor(Math.random() * colors.length)];
-
+    // get metadata from the part id
+    const meta = this.blocks[part].metadata;
     if (!this.nodeFromElement(part)) {
       const node = new Node2D(Object.assign({
         sg: this.sceneGraph,
-        fill: color,
       }, appearance));
       this.sceneGraph.root.appendChild(node);
       this.map(part, node);
     }
+  }
+  /**
+   * return one of the meta data properties for a part.
+   */
+  partMeta(part, meta) {
+    return this.blocks[part].metadata[meta];
+  }
+  /**
+   * return the part ID or if metadata is available use the name property if available
+   */
+  partName(part) {
+    const metaname = this.partMeta(part, 'name');
+    return metaname || part;
   }
   /**
    * create the banner / bar for the construct ( contains the triangle )
@@ -178,9 +183,10 @@ export default class Layout {
    * display elements as required
    * @return {[type]} [description]
    */
-  update(construct, layoutAlgorithm) {
+  update(construct, layoutAlgorithm, blocks) {
     this.construct = construct;
     this.layoutAlgorithm = layoutAlgorithm;
+    this.blocks = blocks;
 
     switch (this.layoutAlgorithm) {
     case kT.layoutWrap:
@@ -284,7 +290,7 @@ export default class Layout {
       this.partFactory(part, kT.partAppearance);
 
       // measure element text or used condensed spacing
-      const td = this.measureText(this.nodeFromElement(part), part, layoutOptions.condensed);
+      const td = this.measureText(this.nodeFromElement(part), this.partName(part), layoutOptions.condensed);
 
       // if position would exceed x limit then wrap
       if (xp + td.x > mx) {
@@ -293,10 +299,11 @@ export default class Layout {
         row = this.rowFactory(new Box2D(xs, yp - kT.rowBarH, 0, kT.rowBarH));
       }
 
-      // update part
+      // update part, including its text and color
       this.nodeFromElement(part).set({
         bounds: new Box2D(xp, yp, td.x, kT.blockH),
-        text: part,
+        text: this.partName(part),
+        fill: this.partMeta(part, 'color'),
       });
 
       // set next part position

@@ -68,7 +68,8 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * @return {[type]} [description]
    */
   dragEnter() {
-    console.log('drag enter');
+    // reset insertion point
+    this.insertion = null;
   }
   /**
    * drag over comes with viewport/document relative point. We must convert
@@ -78,11 +79,9 @@ export default class ConstructViewerUserInterface extends UserInterface {
     const local = this.eventToLocal(point.x, point.y, this.el);
     const hit = this.topBlockAndVerticalEdgeAt(local);
     if (hit) {
-      console.log('drag over block:', hit.block, ' edge:', hit.edge);
       this.showInsertionPoint(hit.block, hit.edge);
     } else {
       this.hideInsertionPoint();
-      console.log('no block');
     }
   }
   /**
@@ -94,9 +93,18 @@ export default class ConstructViewerUserInterface extends UserInterface {
   /**
    * user dropped on the viewer
    */
-  drop() {
+  drop(monitor, blockCreate, blockAddComponent) {
+    const { item, type } = monitor.getItem();
+    if (type === blockDragType) {
+      const block = this.props.blockCreate(item);
+      this.props.blockAddComponent(this.props.construct.id, block.id);
+    } else if (type === sbolDragType) {
+      console.log(item); //eslint-disable-line
+
+    } else {
+
+    }
     this.hideInsertionPoint();
-    console.log('drop');
   }
   /**
    * show the insertion point at the given edge of the given block
@@ -111,10 +119,20 @@ export default class ConstructViewerUserInterface extends UserInterface {
     // get node representing this part and its AABB
     const node = this.layout.nodeFromElement(block);
     const AABB = node.getAABB();
-    const xposition = edge === 'left' ? AABB.x : AABB.right; //
+    const xposition = edge === 'left' ? AABB.x : AABB.right;
     // position insertion element at the appropriate edge
-    this.insertionEl.style.left = (xposition - 4) ç+ 'px';
+    this.insertionEl.style.left = (xposition - 4) + 'px';
     this.insertionEl.style.top = (AABB.y - 2) + 'px';
+
+    // save the current insertion point
+    this.insertion = {block, node, edge};
+  }
+  /**
+   * return the current insertion point if any
+   * @return {[type]} [description]
+   */
+  getInsertionPoint() {
+    return this.insertion;
   }
   /**
    * hide / deletion insertion point element
@@ -124,5 +142,6 @@ export default class ConstructViewerUserInterface extends UserInterface {
       this.el.removeChild(this.insertionEl);
       this.insertionEl = null;
     }
+    this.insertion = null;
   }
 }

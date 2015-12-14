@@ -17,7 +17,7 @@ const constructTarget = {
   },
   hover(props, monitor, component) {
     component.dragOver.call(component, monitor);
-  }
+  },
 };
 @DropTarget(inventoryItemDragType, constructTarget, (connect, monitor) => ({
   connectDropTarget: connect.dropTarget(),
@@ -119,15 +119,22 @@ export class ConstructViewer extends Component {
    * @return {[type]}         [description]
    */
   drop(monitor) {
-    const { item, type } = monitor.getItem();
-    if (type === blockDragType) {
-      const block = this.props.blockCreate(item);
-      this.props.blockAddComponent(this.props.construct.id, block.id);
-    } else if (type === sbolDragType) {
-      console.log(item); //eslint-disable-line
-      //todo - assign type to the block, likely using block.rules ...
-    } else {
-      // ?
+    // get the current insertion point
+    const insertionPoint = this.sg.ui.getInsertionPoint();
+    if (insertionPoint) {
+      console.log(`Insert at: node:${insertionPoint.node.uuid}, block:${insertionPoint.block}, edge:${insertionPoint.edge}`);
+      // because react / dnd is effite we need to construct the thing
+      // that was dropped here using the current insertion point
+      const { item, type } = monitor.getItem();
+      if (type === blockDragType) {
+        const block = this.props.blockCreate(item);
+        this.props.blockAddComponent(this.props.construct.id, block.id);
+      } else if (type === sbolDragType) {
+        console.log(item); //eslint-disable-line
+        //todo - assign type to the block, likely using block.rules ...
+      } else {
+        // ?
+      }
     }
   }
   /**
@@ -140,7 +147,7 @@ export class ConstructViewer extends Component {
    * update the layout and then the scene graph
    */
   update() {
-    this.layout.update(this.props.construct, this.props.layoutAlgorithm);
+    this.layout.update(this.props.construct, this.props.layoutAlgorithm, this.props.blocks);
     this.sg.update();
   }
   /**
@@ -160,7 +167,10 @@ export class ConstructViewer extends Component {
 }
 
 export default connect((state, props) => {
-  return {construct: state.blocks[props.constructId] };
+  return {
+    construct: state.blocks[props.constructId],
+    blocks: state.blocks,
+   };
 }, {
   blockCreate,
   blockAddComponent,
