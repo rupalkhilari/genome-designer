@@ -20,26 +20,18 @@ const initialState = {
 
 export default function blocks(state = initialState, action) {
   switch (action.type) {
-  case ActionTypes.BLOCK_CREATE : {
-    const { block } = action;
-    const blockId = block.id;
-
-    return Object.assign({}, state, {[blockId]: block});
-  }
-
-  case ActionTypes.BLOCK_RENAME : {
-    const { blockId, name } = action;
-    const oldBlock = state[blockId];
-    const newBlock = oldBlock.mutate('metadata.name', name);
-    return Object.assign({}, state, {[blockId]: newBlock});
-  }
-
+  case ActionTypes.BLOCK_CREATE :
+  case ActionTypes.BLOCK_SAVE :
+  case ActionTypes.BLOCK_MERGE :
+  case ActionTypes.BLOCK_RENAME :
+  case ActionTypes.BLOCK_CLONE :
+  case ActionTypes.BLOCK_SET_SBOL :
+  case ActionTypes.BLOCK_ANNOTATE :
+  case ActionTypes.BLOCK_REMOVE_ANNOTATION :
+  case ActionTypes.BLOCK_SET_SEQUENCE :
   case ActionTypes.BLOCK_ADD_COMPONENT : {
-    const { blockId, componentId } = action;
-    const oldBlock = state[blockId];
-    const newBlock = oldBlock.addComponents(componentId);
-
-    return Object.assign({}, state, {[blockId]: newBlock});
+    const { block } = action;
+    return Object.assign({}, state, {[block.id]: block});
   }
 
   default : {

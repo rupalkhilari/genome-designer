@@ -6,14 +6,14 @@ import InventoryGroupSbol from './InventoryGroupSbol';
 
 import '../../styles/InventoryGroups.css';
 
-//const inventoryGroupTypeToComponent = (type, props) => {
-//  if (type === 'sbol') {
-//    return (<InventoryGroupSbol {...props} />);
-//  } else if (type === 'block') {
-//    return (<InventoryGroupBlocks {...props} />);
-//  }
-//  throw new Error(`Type ${type} is not registered in InventoryGroups`);
-//};
+const inventoryGroupTypeToComponent = (type, props) => {
+  if (type === 'sbol') {
+    return (<InventoryGroupSbol {...props} />);
+  } else if (type === 'block') {
+    return (<InventoryGroupBlocks {...props} />);
+  }
+  throw new Error(`Type ${type} is not registered in InventoryGroups`);
+};
 
 export default class InventoryGroups extends Component {
   static propTypes = {
@@ -56,7 +56,7 @@ export default class InventoryGroups extends Component {
       <div className="InventoryGroups">
         <InventoryTabs tabs={groups}
                        activeTabIndex={currentTabIndex}
-                       onTabSelect={this.handleSelectTab} />
+                       onTabSelect={this.handleSelectTab}/>
         {currentGroupComponent}
       </div>
     );

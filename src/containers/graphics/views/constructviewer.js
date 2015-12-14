@@ -1,38 +1,52 @@
-import React, { Component, PropTypes } from 'react';
+import React, {
+  Component,
+  PropTypes
+} from 'react';
 import SceneGraph2D from '../scenegraph2d/scenegraph2d';
 import Vector2D from '../geometry/vector2d';
 import Layout from './layout.js';
-import { DropTarget } from 'react-dnd';
-import { connect } from 'react-redux';
-import { blockCreate, blockAddComponent } from '../../../actions/blocks';
-import { block as blockDragType, sbol as sbolDragType, inventoryItem as inventoryItemDragType } from '../../../constants/DragTypes';
+import {
+  DropTarget
+} from 'react-dnd';
+import {
+  connect
+} from 'react-redux';
+import {
+  blockCreate,
+  blockAddComponent,
+  blockClone,
+  blockSetSbol,
+} from '../../../actions/blocks';
+import {
+  block as blockDragType,
+  sbol as sbolDragType,
+  inventoryItem as inventoryItemDragType
+} from '../../../constants/DragTypes';
 import debounce from 'lodash.debounce';
-import { nodeIndex } from '../utils';
+import {
+  nodeIndex
+} from '../utils';
 import ConstructViewerMenu from './constructviewermenu';
 import UserInterface from './constructvieweruserinterface';
 
 const constructTarget = {
-  drop(props, monitor, component) {
+  drop (props, monitor, component) {
     component.drop.call(component, monitor);
   },
-  hover(props, monitor, component) {
+  hover (props, monitor, component) {
     component.dragOver.call(component, monitor);
-  },
+  }
 };
-@DropTarget(inventoryItemDragType, constructTarget, (connect, monitor) => ({
-  connectDropTarget: connect.dropTarget(),
-  isOver: monitor.isOver(),
-  canDrop: monitor.canDrop(),
-}))
+@DropTarget(inventoryItemDragType, constructTarget, (connect, monitor) => ({connectDropTarget: connect.dropTarget(), isOver: monitor.isOver(), canDrop: monitor.canDrop()}))
 export class ConstructViewer extends Component {
 
   static propTypes = {
     construct: PropTypes.object.isRequired,
     constructId: PropTypes.string.isRequired,
-    layoutAlgorithm: PropTypes.string.isRequired,
+    layoutAlgorithm: PropTypes.string.isRequired
   }
 
-  constructor(props) {
+  constructor (props) {
     super(props);
   }
 
@@ -40,7 +54,7 @@ export class ConstructViewer extends Component {
    * accessor that fetches the actual scene graph element within our DOM
    * @return {[type]} [description]
    */
-  get sceneGraphEl() {
+  get sceneGraphEl () {
     return this.dom.querySelector('.sceneGraph');
   }
 
@@ -48,7 +62,7 @@ export class ConstructViewer extends Component {
    * accessor for our DOM node.
    * @return {[type]} [description]
    */
-  get dom() {
+  get dom () {
     return React.findDOMNode(this);
   }
 
@@ -56,7 +70,7 @@ export class ConstructViewer extends Component {
    * window resize, update layout and scene graph with new dimensions
    * @return {[type]} [description]
    */
-  windowResized() {
+  windowResized () {
     this.sg.availableWidth = this.dom.clientWidth;
     this.sg.availableHeight = this.dom.clientHeight;
     this.update();
@@ -65,38 +79,31 @@ export class ConstructViewer extends Component {
   /**
    * setup the scene graph and layout component.
    */
-  componentDidMount() {
+  componentDidMount () {
 
     // select a base color based on our index in the parent
     const nindex = nodeIndex(this.dom);
     const baseColors = ['rgb(225, 163, 116)', 'rgb(199, 109, 107)', 'rgb(83, 155, 163)'];
 
     // create the scene graph we are going to use to display the construct
-    this.sg = new SceneGraph2D({
-      width: this.dom.clientWidth,
-      height: this.dom.clientHeight,
-      availableWidth: this.dom.clientWidth,
-      availableHeight: this.dom.clientHeight,
-      parent: this.sceneGraphEl,
-      userInterfaceConstructor: UserInterface,
-    });
+    this.sg = new SceneGraph2D({width: this.dom.clientWidth, height: this.dom.clientHeight, availableWidth: this.dom.clientWidth, availableHeight: this.dom.clientHeight, parent: this.sceneGraphEl, userInterfaceConstructor: UserInterface});
     // create the layout object
     this.layout = new Layout(this, this.sg, {
       layoutAlgorithm: this.props.layoutAlgorithm,
-      baseColor: baseColors[nindex % baseColors.length],
+      baseColor: baseColors[nindex % baseColors.length]
     });
     // the user interface will also need access to the layout component
     this.sg.ui.layout = this.layout;
     // initial render won't call componentDidUpdate so force an update to the layout/scenegraph
     this.update();
     // handle window resize to reflow the layout
-    window.addEventListener('resize', debounce(this.windowResized.bind(this), 100));
+    window.addEventListener('resize', debounce(this.windowResized.bind(this), 10));
   }
 
   /**
    * update drag state
    */
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps (nextProps) {
     if (this.props.isOver && !nextProps.isOver) {
       this.sg.ui.dragLeave();
     }
@@ -108,7 +115,7 @@ export class ConstructViewer extends Component {
   /**
    * drag over event
    */
-  dragOver(monitor) {
+  dragOver (monitor) {
     const point = monitor.getClientOffset();
     this.sg.ui.dragOver(new Vector2D(point.x, point.y));
   }
@@ -118,43 +125,49 @@ export class ConstructViewer extends Component {
    * @param  {[type]} monitor [description]
    * @return {[type]}         [description]
    */
-  drop(monitor) {
+  drop (monitor) {
     // get the current insertion point
     const insertionPoint = this.sg.ui.getInsertionPoint();
     if (insertionPoint) {
+      const index = this.props.construct.components.indexOf(insertionPoint.block) + (insertionPoint.edge === 'right' ? 1 : 0);
       console.log(`Insert at: node:${insertionPoint.node.uuid}, block:${insertionPoint.block}, edge:${insertionPoint.edge}`);
       // because react / dnd is effite we need to construct the thing
       // that was dropped here using the current insertion point
-      const { item, type } = monitor.getItem();
-      if (type === blockDragType) {
-        const block = this.props.blockCreate(item);
-        this.props.blockAddComponent(this.props.construct.id, block.id);
-      } else if (type === sbolDragType) {
-        console.log(item); //eslint-disable-line
-        //todo - assign type to the block, likely using block.rules ...
-      } else {
-        // ?
-      }
+      const {
+        item,
+        type
+      } = monitor.getItem();
+      this.props.blockClone(item).then(block => {
+        this.props.blockAddComponent(this.props.construct.id, block.id, index);
+      });
+    } else if (type === sbolDragType) {
+      const blockId = props.construct.components[0];
+      props.blockSetSbol(blockId, item.id);
+    } else {
+      // ?
     }
   }
+
   /**
    * update scene graph after the react component updates`
    */
-  componentDidUpdate() {
+  componentDidUpdate () {
     this.update();
   }
   /**
    * update the layout and then the scene graph
    */
-  update() {
+  update () {
     this.layout.update(this.props.construct, this.props.layoutAlgorithm, this.props.blocks);
     this.sg.update();
   }
   /**
    * render the component, the scene graph will render later when componentDidUpdate is called
    */
-  render() {
-    const { connectDropTarget } = this.props;
+  render () {
+    const {
+      connectDropTarget
+    } = this.props;
     return connectDropTarget(
       <div className="construct-viewer" key={this.props.construct.id}>
         <ConstructViewerMenu constructId={this.props.constructId} layoutAlgorithm={this.props.layoutAlgorithm}/>
@@ -169,9 +182,11 @@ export class ConstructViewer extends Component {
 export default connect((state, props) => {
   return {
     construct: state.blocks[props.constructId],
-    blocks: state.blocks,
-   };
+    blocks: state.blocks
+  };
 }, {
   blockCreate,
+  blockClone,
   blockAddComponent,
+  blockSetSbol,
 })(ConstructViewer);

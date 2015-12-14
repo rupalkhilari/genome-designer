@@ -13,4 +13,8 @@
     flex-grow: 1;
     width: 0; /* hack - flexbox will give it min-width */
   }
+
+  &-constructs {
+    flex-grow: 1;
+  }
 }
