@@ -2,9 +2,19 @@ import React from 'react';
 import { render as reactRender } from 'react-dom';
 import {SequenceEditor} from './extensions/onion2/SequenceEditor';
 import {onionFile} from './extensions/onion2/OnionFile';
+import {PlasmidViewer} from './extensions/onion2/PlasmidViewer';
 /* create simple component */
 
 class SimpleComponent extends React.Component {
+    constructor(props){
+        super(props);
+        this.state = {
+            pvCursorPos:0,
+            pvStartCursorPos:0
+        }
+    }
+
+
     componentWillMount() {
         const self = this;
         let lastBlock;
@@ -43,27 +53,79 @@ class SimpleComponent extends React.Component {
         this.subscriber();
     }
 
+    onSetCursor(pos){
+        this.setState({pvCursorPos:pos});
+    }
+    onSelecting(pos1,pos2){
+        this.setState({pvCursorPos:pos1,pvStartCursorPos:pos2});
+    }
+
     render() {
+        let divHeight = 400;
+        let pvPara = {theme:"default",
+            rotateAngle:0,
+            plasmidR:250,
+            cursorPos:0,
+            selectedFeature:-1,
+            seqLength:onionFile.seq.length,
+            features:onionFile.features,
+            enzymes:onionFile.enzymes,
+            plasmidName:onionFile.name}
         return (
-            <div
-                style={{
-                    height:"400",
-                    overflowY:"scroll",
-                    border:"1px solid black"
-                }}
-            >
-                <p>Rendered at {new Date(this.state.rendered).toUTCString()}</p>
-                {this.state.block && (
-                    <div>
-                        <p>block: {this.state.block.metadata.name}</p>
-                        <p>sequence: {this.state.sequence}</p>
-                    </div>
-                )}
-                <SequenceEditor
-                    sequence={onionFile.seq}
-                    showComplement={true}
-                    features={onionFile.features}
-                ></SequenceEditor>
+            <div>
+                <div
+                    style={{
+                        width:600,
+                        height:divHeight,
+                        overflowY:"scroll",
+                        border:"1px solid black",
+                        display:"inline-block"
+                    }}
+                >
+                    <p>Rendered at {new Date(this.state.rendered).toUTCString()}</p>
+                    {this.state.block && (
+                        <div>
+                            <p>block: {this.state.block.metadata.name}</p>
+                            <p>sequence: {this.state.sequence}</p>
+                        </div>
+                    )}
+                    <SequenceEditor
+                        sequence={onionFile.seq}
+                        showComplement={true}
+                        features={onionFile.features}
+                        onSetCursor={this.onSetCursor.bind(this)}
+                        onSelecting={this.onSelecting.bind(this)}
+                    ></SequenceEditor>
+                </div>
+                <div
+                    style={{
+                        width:400,
+                        height:divHeight,
+                        overflow:"hidden",
+                        border:"1px solid black",
+                        display:"inline-block"
+                    }}
+                >
+                    <PlasmidViewer
+                        mode={"normal"}
+                        plasmidR = {128}
+                        width={400}
+                        height={400}
+                        theme={"NAL"}
+                        rotateAngle={0}
+                        cursorPos={this.state.pvCursorPos}
+                        selectedFeature={-1}
+                        selectionStart={Math.min(this.state.pvCursorPos,this.state.pvStartCursorPos)}
+                        selectionLength={Math.abs(this.state.pvCursorPos-this.state.pvStartCursorPos)}
+                        features={onionFile.features}
+                        seqLength={onionFile.seq.length}
+                        enzymes={onionFile.enzymes}
+                        name={onionFile.name}
+                        showViewAngle={false}
+                        onWheel={()=>{}}
+                    ></PlasmidViewer>
+
+                </div>
             </div>
     );
     }
