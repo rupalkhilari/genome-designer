@@ -62,15 +62,6 @@ class SimpleComponent extends React.Component {
 
     render() {
         let divHeight = 400;
-        let pvPara = {theme:"default",
-            rotateAngle:0,
-            plasmidR:250,
-            cursorPos:0,
-            selectedFeature:-1,
-            seqLength:onionFile.seq.length,
-            features:onionFile.features,
-            enzymes:onionFile.enzymes,
-            plasmidName:onionFile.name}
         return (
             <div>
                 <div
