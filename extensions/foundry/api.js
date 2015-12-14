@@ -15,11 +15,10 @@ router.use(sessionMiddleware);
 
 router.get('/inventory/:id', jsonParser, (req, resp) => {
   const { id } = req.params;
-  const inputs = req.body;
   const key = req.headers["session-key"];
   var outputFiles = {};
 
-  var filename = dir + id + ".yaml";
+  var filename = dir + id + ".json";
 
   fs.readFile(filename, "utf8", (err, filestr) => {
     

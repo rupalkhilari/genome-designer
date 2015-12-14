@@ -28,7 +28,7 @@ class TestGenomeDesignerREST(unittest.TestCase):
         "tags": {}  },
       "options":[],
       "components":[],
-      "rules": [],
+      "rules": {},
       "notes": {}
     }
 
@@ -46,7 +46,7 @@ class TestGenomeDesignerREST(unittest.TestCase):
         "tags": {}  },
       "options":[],
       "components":[],
-      "rules": [],
+      "rules": {},
       "notes": {},
       "sequence": {
         "url": "/some/location",
@@ -77,7 +77,7 @@ class TestGenomeDesignerREST(unittest.TestCase):
       },
       "options":[],
       "components":[],
-      "rules": [],
+      "rules": {},
       "notes": {}
     }
     res = POST(url + "block", data = json(block2), headers=headers)
@@ -97,7 +97,7 @@ class TestGenomeDesignerREST(unittest.TestCase):
         id2
       ],
       "options":[],
-      "rules": [],
+      "rules": {},
       "notes": {}
     }
 
@@ -112,7 +112,7 @@ class TestGenomeDesignerREST(unittest.TestCase):
         id2
       ],
       "components":[],
-      "rules": [],
+      "rules": {},
       "notes": {}
     }
 
@@ -251,7 +251,7 @@ class TestGenomeDesignerREST(unittest.TestCase):
         "tags": {}  },
       "options":[],
       "components":[],
-      "rules": [],
+      "rules": {},
       "notes": {}
     }
     res = POST(self.api_url + "block", data = json(block1), headers=headers)
@@ -270,6 +270,7 @@ class TestGenomeDesignerREST(unittest.TestCase):
     self.assertTrue("block" in res)
 
     block = parse(res["block"])
+    print(block["rules"])
     block["sequence"]["url"] = input1["sequence"]
 
     res = PUT(self.api_url + "block/" + block_id, data = json(block), headers=headers)

@@ -72,7 +72,7 @@ block = {
         "tags": {}  },
       "options":[],
       "components":[],
-      "rules": [],
+      "rules": {},
       "notes": {},
       "sequence": { 
         "url": None,

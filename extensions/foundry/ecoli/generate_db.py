@@ -57,6 +57,9 @@ def json_to_redis(jsonfile, outfile):
     for block in blocks:
         bid = str(uuid.uuid4())
         block["id"] = bid
+        block["options"] = []
+        block["rules"] = {}
+        block["notes"] = {}
         seq = block["sequence"]
         seqfile = "./storage/" + bid + "/sequence"
         block["sequence"] = { "url" : seqfile, "annotations": [], "length": len(seq)  }
