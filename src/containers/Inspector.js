@@ -26,10 +26,10 @@ export class Inspector extends Component {
           <span className="SidePanel-heading-trigger Inspector-trigger"
                 onClick={() => inspectorToggleVisibility()} />
           <div className="SidePanel-heading-content">
-            <span className="SidePanel-title">Inspector</span>
-            <a className="SidePanel-close"
+            <span className="SidePanel-heading-title">Inspector</span>
+            <a className="SidePanel-heading-close"
                ref="close"
-               onClick={inspectorToggleVisibility.bind(null, false)}>&times;</a>
+               onClick={inspectorToggleVisibility.bind(null, false)} />
           </div>
         </div>
 
