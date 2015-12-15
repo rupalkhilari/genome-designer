@@ -1,21 +1,23 @@
 import * as ActionTypes from '../constants/ActionTypes';
+import dummyBlocks from '../inventory/dummyBlocks';
 
 //testing
 import Block from '../models/Block';
 
 //testing, default should be {} (but need to hydrate to models)
+const [child1, child2, child3, child4, child5, ...rest] = dummyBlocks;
 const initialState = {
   block1: Object.assign(new Block('block1'), {
-    components: ['block3', 'block4', 'block5'],
+    components: [child1.id, child2.id, child3.id],
   }),
   block2: Object.assign(new Block('block2'), {
-    components: ['block6', 'block7'],
+    components: [child4.id, child5.id],
   }),
-  block3: new Block('block3'),
-  block4: new Block('block4'),
-  block5: new Block('block5'),
-  block6: new Block('block6'),
-  block7: new Block('block7'),
+  [child1.id]: new Block(child1),
+  [child2.id]: new Block(child2),
+  [child3.id]: new Block(child3),
+  [child4.id]: new Block(child4),
+  [child5.id]: new Block(child5),
 };
 
 export default function blocks(state = initialState, action) {
@@ -29,12 +31,14 @@ export default function blocks(state = initialState, action) {
   case ActionTypes.BLOCK_ANNOTATE :
   case ActionTypes.BLOCK_REMOVE_ANNOTATION :
   case ActionTypes.BLOCK_SET_SEQUENCE :
-  case ActionTypes.BLOCK_ADD_COMPONENT : {
+  case ActionTypes.BLOCK_ADD_COMPONENT :
+  {
     const { block } = action;
     return Object.assign({}, state, {[block.id]: block});
   }
 
-  default : {
+  default :
+  {
     return state;
   }
   }
