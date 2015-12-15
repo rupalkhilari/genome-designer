@@ -50,7 +50,7 @@ describe('containers', () => {
       expect(props.isVisible).to.equal(true);
 
       //wrapping will break component refs
-      const closeButton = TestUtils.findRenderedDOMComponentWithClass(component, 'SidePanel-close');
+      const closeButton = TestUtils.findRenderedDOMComponentWithClass(component, 'SidePanel-heading-close');
 
       TestUtils.Simulate.click(closeButton);
       expect(toggleSpy).to.have.been.calledWith(false);
