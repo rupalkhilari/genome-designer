@@ -266,7 +266,6 @@ class TestGenomeDesignerREST(unittest.TestCase):
     self.assertTrue(res.status_code==200)
 
     res = res.json()
-    self.assertTrue("onion_data" in res)
     self.assertTrue("block" in res)
 
     block = parse(res["block"])

@@ -45,7 +45,7 @@ router.post('/:id', jsonParser, (req, resp) => {
   const { id } = req.params;
   const fileUrls = req.body;
   const dir = getNodeDir(id) + "/";
-  const key = req.headers["session-key"];
+  const key = req.headers["sessionkey"];
   var outputFiles = {};
 
   fs.readFile(dir + "workflow.yaml", "utf8", (err, filestr) => {

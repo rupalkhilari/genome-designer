@@ -4,9 +4,8 @@ from Bio import SeqIO
 import sys
 
 input_file = sys.argv[1]
-data_file = sys.argv[2]
-block_file = sys.argv[3]
-seq_file = sys.argv[4]
+block_file = sys.argv[2]
+seq_file = sys.argv[3]
 
 def genbank2Json(fname):
 	#data = { name:"",
@@ -85,6 +84,5 @@ fh = open(seq_file,"w")
 fh.write(data["seq"])  #sequence
 fh.close()
 
-json.dump( data, open(data_file,"w") )  #data
 json.dump( block, open(block_file,"w") )   #block - server will fix sequence URL
 
