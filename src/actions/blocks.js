@@ -105,7 +105,39 @@ export const blockAddComponent = (blockId, componentId, index) => {
     return Promise.resolve(block)
       .then((block) => {
         dispatch({
-          type: ActionTypes.BLOCK_ADD_COMPONENT,
+          type: ActionTypes.BLOCK_COMPONENT_ADD,
+          block,
+        });
+        return block;
+      });
+  };
+};
+
+export const blockRemoveComponent = (blockId, componentId) => {
+  return (dispatch, getState) => {
+    const oldBlock = getState().blocks[blockId];
+    const block = oldBlock.removeComponent(componentId);
+
+    return Promise.resolve(block)
+      .then((block) => {
+        dispatch({
+          type: ActionTypes.BLOCK_COMPONENT_REMOVE,
+          block,
+        });
+        return block;
+      });
+  };
+};
+
+export const blockMoveComponent = (blockId, componentId, newIndex) => {
+  return (dispatch, getState) => {
+    const oldBlock = getState().blocks[blockId];
+    const block = oldBlock.moveComponent(componentId, newIndex);
+
+    return Promise.resolve(block)
+      .then((block) => {
+        dispatch({
+          type: ActionTypes.BLOCK_COMPONENT_MOVE,
           block,
         });
         return block;
