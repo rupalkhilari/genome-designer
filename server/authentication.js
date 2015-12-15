@@ -18,7 +18,7 @@ export const validateSessionKey = (key) => {
 };
 
 /**
- * STUB
+ * STUB - this will create a new sha1 every time
  * @description validate a user name and password
  * @param user
  * @param pw

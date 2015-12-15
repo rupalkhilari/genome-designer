@@ -223,9 +223,8 @@ router.post('/clone/:id', (req, res) => {
 //All files are put in the storage folder (until platform comes along)
 const createFileUrl = (url) => './storage/' + url;
 
-router.get('/file/:url*', (req, res) => {
-  const { url } = req.params;
-  console.log('url', url);
+router.get('/file/*', (req, res) => {
+  const url = req.params[0];
   const filePath = createFileUrl(url);
 
   fs.readFile(filePath, 'utf8', (err, data) => {
@@ -237,10 +236,10 @@ router.get('/file/:url*', (req, res) => {
   });
 });
 
-router.post('/file/:url*', (req, res) => {
-  const { url } = req.params;
+router.post('/file/*', (req, res) => {
+  const url = req.params[0];
   const filePath = createFileUrl(url);
-  const path = filePath.substring(0, filePath.lastIndexOf('/') + 1);
+  const folderPath = filePath.substring(0, filePath.lastIndexOf('/') + 1);
 
   //assuming contents to be string
   let buffer = '';
@@ -253,7 +252,8 @@ router.post('/file/:url*', (req, res) => {
   //received all the data
   req.on('end', () => {
     //make folder if doesn't exists
-    mkpath(path, (err) => {
+    //todo - should ensure there isn't a file preventing directory creation
+    mkpath(folderPath, (err) => {
       if (err) {
         res.status(500).send(err.message);
       } else {
@@ -262,7 +262,7 @@ router.post('/file/:url*', (req, res) => {
           if (err) {
             res.status(500).send(err.message);
           } else {
-            res.send(filePath);
+            res.send(req.originalUrl);
           }
         });
       }
@@ -270,8 +270,8 @@ router.post('/file/:url*', (req, res) => {
   });
 });
 
-router.delete('file/:url*', (req, res) => {
-  const { url } = req.params;
+router.delete('/file/*', (req, res) => {
+  const url = req.params[0];
   const filePath = createFileUrl(url);
 
   fs.unlink(filePath, (err) => {
