@@ -37,11 +37,11 @@ describe('Model', () => {
     describe('Sequence', () => {
       const withoutSequence = new Block();
       const sequence = 'acgtacgt';
-      const sequenceUrl = 'block/blah/sequence';
+      const sequenceUrl = 'test/block/sequence';
       const withSequence = withoutSequence.mutate('sequence.url', sequenceUrl);
 
       before(() => {
-        return writeFile('block/blah/sequence', sequence);
+        return writeFile(sequenceUrl, sequence);
       });
 
       it('getSequenceUrl() opts for local sequence url over id', () => {
