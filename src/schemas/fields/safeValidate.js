@@ -21,7 +21,7 @@ export default function safeValidate(validator = noop, required = false, input) 
 
     if (isError(valid) && process.env.NODE_ENV !== 'production') {
       /* eslint no-console: [0] */
-      console.error(valid);
+      console.error(valid, input);
     }
 
     return !isError(valid) && valid !== false;

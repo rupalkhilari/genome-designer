@@ -4,6 +4,5 @@ node_modules
 npm-debug.log
 e2ereports
 selenium-debug.log
-/storage
 /redis-stable
 dump.rdb
