@@ -3,6 +3,7 @@ from requests import put as PUT
 from requests import post as POST
 from json import loads as parse
 from json import dumps as json
+from uuid import uuid4
 import unittest
 
 class TestGenomeDesignerREST(unittest.TestCase):
@@ -52,6 +53,7 @@ class TestGenomeDesignerREST(unittest.TestCase):
         "url": "/some/location",
         "annotations": [
           {
+            "id": str(uuid4()),
             "description" : "bla bla",
             "tags" : {},
             "sequence" : "ACGT",
@@ -235,10 +237,10 @@ class TestGenomeDesignerREST(unittest.TestCase):
     self.assertTrue(list(res.json().keys())[0]=='Protein')
     self.assertTrue(res.json()["Protein"]=="TYDYD*RLRA")
 
-    input1["Protein"] = "storage/myDir/Prot"
+    input1["Protein"] = "/api/file/myDir/Prot"
     res = POST(url + "translate_dna_example", data = json(input1), headers=headers)
     self.assertTrue(res.status_code==200)
-    self.assertTrue(res.json()["Protein"]=='storage/myDir/Prot')
+    self.assertTrue(res.json()["Protein"]=='/api/file/myDir/Prot')
 
   def test_genbank_extension(self):
     headers = self.headers
@@ -259,7 +261,7 @@ class TestGenomeDesignerREST(unittest.TestCase):
 
     input1 = {
       "genbank":"extensions/compute/genbank_to_block/sequence.gb", 
-      "sequence":"storage/block/"+block_id+"/sequence"
+      "sequence":"/api/file/block/"+block_id+"/sequence"
     }
 
     res = POST(url + "genbank_to_block", data = json(input1), headers=headers)

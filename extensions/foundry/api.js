@@ -9,26 +9,25 @@ const jsonParser = bodyParser.json({
   strict: false, //allow values other than arrays and objects
 });
 
-const dir = "extensions/foundry/"
+const dir = 'extensions/foundry/';
 
 router.use(sessionMiddleware);
 
 router.get('/inventory/:id', jsonParser, (req, resp) => {
-  const { id } = req.params;
-  const key = req.headers["session-key"];
+  const { id } = req.params;  
   var outputFiles = {};
 
-  var filename = dir + id + ".json";
+  var filename = dir + id + '.json';
 
-  fs.readFile(filename, "utf8", (err, filestr) => {
+  fs.readFile(filename, 'utf8', (err, filestr) => {
     
     if (err) {
 
-      console.log(filename + " could not be read: " + err);
+      console.log(filename + ' could not be read: ' + err);
 
     } else {
 
-      var data = yaml.parse(filestr);
+      let data = yaml.parse(filestr);
       resp.json(data);
 
     }  //read yaml file successful

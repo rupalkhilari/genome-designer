@@ -15,7 +15,7 @@ import SchemaDefinition from './SchemaDefinition';
  */
 const AnnotationDefinition = new SchemaDefinition({
   id: [
-    fields.id().required,
+    fields.id(),
     'ID of the annotation',
   ],
   tags: [
@@ -38,10 +38,6 @@ const AnnotationDefinition = new SchemaDefinition({
     fields.number({min: 0}),
     'Location of end of annotation',
   ],
-  strand: [
-    fields.string(),
-    'The strand that the annotation is referring to',
-  ]
 });
 
 export default AnnotationDefinition;

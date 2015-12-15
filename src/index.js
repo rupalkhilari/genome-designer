@@ -5,7 +5,7 @@ import { ReduxRouter } from 'redux-router';
 import * as actionTypes from './constants/ActionTypes';
 import actions from './actions/_expose';
 import store, { lastAction } from './store/index';
-import { login, runProcess } from './middleware/api';
+import { login, runExtension } from './middleware/api';
 
 render(
   <Provider store={store}>

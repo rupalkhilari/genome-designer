@@ -19,26 +19,13 @@ import SequenceDefinition from './Sequence';
  In addition to sequence annotations, a block may list `notes`, which are essentially annotations that do not specifically reference the sequence.
  */
 
-const ruleShape = validators.shape({
-  type: validators.string(),
-  params: validators.object(),
-});
-
-
-const annotationShape = validators.shape({
-  //todo - define structure
-});
-
 const BlockDefinition = InstanceDefinition.extend({
   /*
    Part-like fields for sequence and sequence annotations, inventory source
    */
   sequence: [
-    fields.shape({
-      url: validators.string(),
-      annotations: validators.array(annotationShape),
-    }),
-    `Reference to the associated Sequence (not the sequence itself), and list of Annotations associated`,
+    SequenceDefinition,
+    `Associated Sequence (url, not the sequence itself), and Annotations etc. associated`,
   ],
   source: [
     fields.shape({
