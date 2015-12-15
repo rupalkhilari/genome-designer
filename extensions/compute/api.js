@@ -153,7 +153,7 @@ router.post('/:id', jsonParser, (req, resp) => {
                 let outFile = fileUrls[outputs[i].id];
                 let contents = buffers[i];
                 if (outFile) {
-                  outFile = outFile.replace("/api/file/", "storage/");
+                  outFile = outFile.replace("storage/","/api/file/");
                   outputFiles[ outputs[i].id ] = outFile;
 
                   //create folder for outFile
