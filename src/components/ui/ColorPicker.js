@@ -1,14 +1,15 @@
 import React, { PropTypes } from 'react';
 import { colors } from '../../utils/generators/color';
 
+import '../../styles/Picker.css';
 import '../../styles/ColorPicker.css';
 
 export const ColorPicker = ({current, onSelect}) => {
   return (
-    <div className="ColorPicker">
-      <div className="ColorPicker-colors">
+    <div className="Picker ColorPicker">
+      <div className="Picker-content">
         {colors.map(color => {
-          return (<a className={'ColorPicker-color' + (current === color ? ' active' : '')}
+          return (<a className={'Picker-item' + (current === color ? ' active' : '')}
                      key={color}
                      onClick={onSelect.bind(this, color)}
                      style={{backgroundColor: color}}/>);
@@ -19,7 +20,7 @@ export const ColorPicker = ({current, onSelect}) => {
 };
 
 ColorPicker.propTypes = {
-  current: PropTypes.string.isRequired,
+  current: PropTypes.string,
   onSelect: PropTypes.func,
 };
 
