@@ -9,7 +9,6 @@ describe('REST', () => {
   const sessionkey = '123456';
   beforeEach('server setup', () => {
     server = devServer.listen();
-    return dbSet(sessionkey, {});
   });
   afterEach(() => {
     server.close();
