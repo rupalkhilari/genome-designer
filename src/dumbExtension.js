@@ -60,8 +60,38 @@ class SimpleComponent extends React.Component {
         this.setState({pvCursorPos:pos1,pvStartCursorPos:pos2});
     }
 
+    convertFeatures(block){
+        let src = block.sequence.annotations;
+        let dst = [];
+        for(let i in src){
+            let s = src[i];
+            dst.push({start:s.start,end:s.end,text:s.description,color:"#A5A6A2"})
+        }
+        return dst;
+
+
+
+    }
+
     render() {
+        console.log(this.state);
         let divHeight = 400;
+        let sequence;
+        let features;
+        if(this.state && this.state.sequence && this.state.block && this.state.block.sequence && this.state.block.sequence.annotations!=undefined) {
+            sequence = this.state.sequence ? this.state.sequence : onionFile.seq;
+            features = this.convertFeatures(this.state.block);
+            if (!sequence || !features) {
+                sequence = onionFile.seq;
+                features = onionFile.features;
+            }
+        }
+        else{
+            sequence = onionFile.seq;
+            features = onionFile.features;
+        }
+
+
         return (
             <div>
                 <div
@@ -75,15 +105,16 @@ class SimpleComponent extends React.Component {
                 >
                     <p>Rendered at {new Date(this.state.rendered).toUTCString()}</p>
                     {this.state.block && (
-                        <div>
-                            <p>block: {this.state.block.metadata.name}</p>
-                            <p>sequence: {this.state.sequence}</p>
-                        </div>
+                        false && <div>
+                        <p>block: {this.state.block.metadata.name}</p>
+                        <p>sequence: {this.state.sequence}</p>
+                    </div>
+
                     )}
                     <SequenceEditor
-                        sequence={onionFile.seq}
+                        sequence={sequence}
                         showComplement={true}
-                        features={onionFile.features}
+                        features={features}
                         onSetCursor={this.onSetCursor.bind(this)}
                         onSelecting={this.onSelecting.bind(this)}
                     ></SequenceEditor>
@@ -108,8 +139,8 @@ class SimpleComponent extends React.Component {
                         selectedFeature={-1}
                         selectionStart={Math.min(this.state.pvCursorPos,this.state.pvStartCursorPos)}
                         selectionLength={Math.abs(this.state.pvCursorPos-this.state.pvStartCursorPos)}
-                        features={onionFile.features}
-                        seqLength={onionFile.seq.length}
+                        features={features}
+                        seqLength={sequence.length}
                         enzymes={onionFile.enzymes}
                         name={onionFile.name}
                         showViewAngle={false}
