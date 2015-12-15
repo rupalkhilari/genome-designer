@@ -42,5 +42,5 @@ Object.assign(exposed, {
       });
     },
   },
-  runProcess
+  runExtension,
 });

@@ -80,7 +80,7 @@ export const saveBlock = (block) => {
   }
 };
 
-export const runProcess = (id, inputs) => {
+export const runExtension = (id, inputs) => {
   try {
     const stringified = JSON.stringify(inputs);
     return fetch(execPath(`${id}`), headersPost(stringified));
