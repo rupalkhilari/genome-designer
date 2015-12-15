@@ -1,0 +1,18 @@
+.ColorPicker {
+  line-height: 0;
+
+  &-color {
+    display: inline-block;
+    width: 4em;
+    height: 4em;
+    margin: 1px;
+    border: 2px solid transparent;
+    border-radius: 100%;
+    cursor: pointer;
+
+    &.active {
+      cursor: default;
+      border-color: white;
+    }
+  }
+}
