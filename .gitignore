@@ -6,3 +6,4 @@ e2ereports
 selenium-debug.log
 /redis-stable
 dump.rdb
+storage/test
