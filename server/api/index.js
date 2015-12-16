@@ -1,14 +1,15 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import uuid from 'node-uuid';
-import { createDescendant, record, getAncestors, getDescendantsRecursively } from '../history';
-import { get as dbGet, getSafe as dbGetSafe, set as dbSet } from '../database';
-import { errorDoesNotExist, errorNoIdProvided, errorInvalidSessionKey, errorInvalidModel, errorInvalidRoute } from '../errors';
-import { validateBlock, validateProject, assertValidId } from '../validation';
-import { validateSessionKey, validateLoginCredentials, sessionMiddleware } from '../authentication';
-import { getComponents } from '../getRecursively';
 import fs from 'fs';
 import mkpath from 'mkpath';
+
+import { createDescendant, record, getAncestors, getDescendantsRecursively } from './../utils/history';
+import { get as dbGet, getSafe as dbGetSafe, set as dbSet } from './../utils/database';
+import { errorDoesNotExist, errorNoIdProvided, errorInvalidSessionKey, errorInvalidModel, errorInvalidRoute } from './../utils/errors';
+import { validateBlock, validateProject } from './../utils/validation';
+import { sessionMiddleware } from './../utils/authentication';
+import { getComponents } from './../utils/getRecursively';
 
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
@@ -23,19 +24,7 @@ function paramIsTruthy(param) {
  Login and session validator
  ****************************/
 
-router.use(/^((?!login).)*$/, sessionMiddleware);
-
-//todo - likely want to move this out of the API itself and expose as root route. Don't need the regex above then for middleware
-router.get('/login', (req, res) => {
-  const { user, password } = req.query;
-  validateLoginCredentials(user, password)
-    .then(key => {
-      res.json({'sessionkey': key});
-    })
-    .catch(err => {
-      res.status(403).send(errorInvalidSessionKey);
-    });
-});
+router.use(sessionMiddleware);
 
 /*********************************
  GET

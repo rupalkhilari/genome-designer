@@ -1,6 +1,6 @@
+import crypto from 'crypto';
 import { getSafe as dbGetSafe, set as dbSet } from './database';
 import { errorInvalidSessionKey, errorSessionKeyNotValidated } from './errors';
-import crypto from 'crypto';
 
 /**
  * @description asserts valid session key

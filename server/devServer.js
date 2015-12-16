@@ -1,15 +1,19 @@
-var path = require('path');
-var express = require('express');
-var webpack = require('webpack');
-var morgan = require('morgan');
-var config = require('./webpack.config.dev');
-var DEFAULT_PORT = 3000;
-var port = parseInt(process.argv[2]) || process.env.PORT ||  DEFAULT_PORT;
-var hostname = '0.0.0.0';
-var apiRouter = require('./server/api');
+import path from 'path';
+import express from 'express';
+import webpack from 'webpack';
+import morgan from 'morgan';
+import config from './../webpack.config.dev.js';
+import apiRouter from './api/index';
 
-var app = express();
-var compiler = webpack(config);
+import { validateLoginCredentials } from './utils/authentication';
+import { errorInvalidSessionKey } from './utils/errors';
+
+const DEFAULT_PORT = 3000;
+const port = parseInt(process.argv[2]) || process.env.PORT ||  DEFAULT_PORT;
+const hostname = '0.0.0.0';
+
+const app = express();
+const compiler = webpack(config);
 
 //logging middleware
 app.use(morgan('dev'));
@@ -27,6 +31,17 @@ app.use(require('webpack-hot-middleware')(compiler));
 
 // Register API middleware
 // ----------------------------------------------------
+
+app.use('/login', (req, res) => {
+  const { user, password } = req.query;
+  validateLoginCredentials(user, password)
+    .then(key => {
+      res.json({'sessionkey': key});
+    })
+    .catch(err => {
+      res.status(403).send(errorInvalidSessionKey);
+    });
+});
 
 app.use('/api', apiRouter);
 
