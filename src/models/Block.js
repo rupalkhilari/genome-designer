@@ -29,10 +29,41 @@ export default class Block extends Instance {
     return saveBlock(this);
   }
 
-  addComponent(component, index) {
+  addComponent(componentId, index) {
     const spliceIndex = Number.isInteger(index) ? index : this.components.length;
     const newComponents = this.components.slice();
-    newComponents.splice(spliceIndex, 0, component);
+    newComponents.splice(spliceIndex, 0, componentId);
+    return this.mutate('components', newComponents);
+  }
+
+  removeComponent(componentId) {
+    const spliceIndex = this.components.findIndex(compId => compId === componentId);
+
+    if (spliceIndex < 0) {
+      console.warn('component not found'); // eslint-disable-line
+      return this;
+    }
+
+    const newComponents = this.components.slice();
+    newComponents.splice(spliceIndex, 1);
+    return this.mutate('components', newComponents);
+  }
+
+  //pass index to be at after spliced out
+  moveComponent(componentId, newIndex) {
+    const spliceFromIndex = this.components.findIndex(compId => compId === componentId);
+
+    if (spliceFromIndex < 0) {
+      console.warn('component not found'); // eslint-disable-line
+      return this;
+    }
+
+    const newComponents = this.components.slice();
+    newComponents.splice(spliceFromIndex, 1);
+    const spliceIntoIndex = (Number.isInteger(newIndex) && newIndex <= newComponents.length) ?
+      newIndex :
+      newComponents.length;
+    newComponents.splice(spliceIntoIndex, 0, componentId);
     return this.mutate('components', newComponents);
   }
 
@@ -90,7 +121,7 @@ export default class Block extends Instance {
     const annotations = this.sequence.annotations.slice();
     const toSplice = annotations.findIndex((ann) => ann.id === annotationId);
 
-    if (!Number.isInteger(toSplice)) {
+    if (toSplice < 0) {
       console.warn('annotation not found'); // eslint-disable-line
       return this;
     }

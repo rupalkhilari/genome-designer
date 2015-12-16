@@ -1,6 +1,6 @@
+import crypto from 'crypto';
 import { getSafe as dbGetSafe, set as dbSet } from './database';
 import { errorInvalidSessionKey, errorSessionKeyNotValidated } from './errors';
-import crypto from 'crypto';
 
 /**
  * @description asserts valid session key
@@ -12,13 +12,13 @@ export const validateSessionKey = (key) => {
   return dbGetSafe(key, null)
     .then(result => true)
     .catch(err => {
-      console.log('error getting key', err);
+      console.log('error getting key', err); //eslint-disable-line
       return Promise.reject(errorInvalidSessionKey);
     });
 };
 
 /**
- * STUB
+ * STUB - this will create a new sha1 every time
  * @description validate a user name and password
  * @param user
  * @param pw

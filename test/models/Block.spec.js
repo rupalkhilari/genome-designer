@@ -4,7 +4,7 @@ import { writeFile } from '../../src/middleware/api';
 import Block from '../../src/models/Block';
 import AnnotationDefinition from '../../src/schemas/Annotation';
 
-const { assert, expect } = chai;
+const { expect } = chai;
 
 describe('Model', () => {
   describe('Block', () => {
@@ -37,11 +37,11 @@ describe('Model', () => {
     describe('Sequence', () => {
       const withoutSequence = new Block();
       const sequence = 'acgtacgt';
-      const sequenceUrl = 'block/blah/sequence';
+      const sequenceUrl = 'test/block/sequence';
       const withSequence = withoutSequence.mutate('sequence.url', sequenceUrl);
 
       before(() => {
-        return writeFile('block/blah/sequence', sequence);
+        return writeFile(sequenceUrl, sequence);
       });
 
       it('getSequenceUrl() opts for local sequence url over id', () => {
