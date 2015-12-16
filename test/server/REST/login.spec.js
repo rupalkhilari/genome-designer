@@ -1,9 +1,9 @@
 import { expect } from 'chai';
 import request from 'supertest';
-import { set as dbSet } from '../../../server/database';
+import { set as dbSet } from '../../../server/utils/database';
 import { getSessionKey, login } from '../../../src/middleware/api';
 
-const devServer = require('../../../devServer');
+const devServer = require('../../../server/devServer');
 
 describe('REST', () => {
   describe('/login', () => {
@@ -13,9 +13,13 @@ describe('REST', () => {
       password: 'password',
     };
     const sessionkey = '123456';
+    const sessionKeyValue = {
+      user: dummyUser.user,
+      password: dummyUser.password,
+    };
     beforeEach('server setup', () => {
       server = devServer.listen();
-      return dbSet(sessionkey, {});
+      return dbSet(sessionkey, sessionKeyValue);
     });
     afterEach(() => {
       server.close();
@@ -27,20 +31,29 @@ describe('REST', () => {
         .expect(200, done);
     });
 
-    it('login() function shuold work', (done) => {
-      login('user', 'password')
+    it('login() function shouldnt error', (done) => {
+      login(dummyUser.user, dummyUser.password)
         .then(sessionkey => {
           done();
         });
     });
 
     it('should return the session key', () => {
-      return login('user', 'password')
+      return login(dummyUser.user, dummyUser.password)
         .then(sessionkey=> {
           expect(typeof sessionkey).to.equal('string');
         });
     });
 
+    it('getSessionKey() should return the same session key as login()', () => {
+      return login(dummyUser.user, dummyUser.password)
+        .then(sessionkey=> {
+          expect(getSessionKey()).to.equal(sessionkey);
+        });
+    });
+
+    it('[future] should return the session key in the database');
     it('[future] should ensure user exists');
+    it('[future] should error for invalid users');
   });
 });

@@ -1,14 +1,15 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import uuid from 'node-uuid';
-import { createDescendant, record, getAncestors, getDescendantsRecursively } from '../history';
-import { get as dbGet, getSafe as dbGetSafe, set as dbSet } from '../database';
-import { errorDoesNotExist, errorNoIdProvided, errorInvalidSessionKey, errorInvalidModel, errorInvalidRoute } from '../errors';
-import { validateBlock, validateProject, assertValidId } from '../validation';
-import { validateSessionKey, validateLoginCredentials, sessionMiddleware } from '../authentication';
-import { getComponents } from '../getRecursively';
 import fs from 'fs';
 import mkpath from 'mkpath';
+
+import { createDescendant, record, getAncestors, getDescendantsRecursively } from './../utils/history';
+import { get as dbGet, getSafe as dbGetSafe, set as dbSet } from './../utils/database';
+import { errorInvalidModel, errorInvalidRoute } from './../utils/errors';
+import { validateBlock, validateProject } from './../utils/validation';
+import { sessionMiddleware } from './../utils/authentication';
+import { getComponents } from './../utils/getRecursively';
 
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
@@ -23,19 +24,7 @@ function paramIsTruthy(param) {
  Login and session validator
  ****************************/
 
-router.use(/^((?!login).)*$/, sessionMiddleware);
-
-//todo - likely want to move this out of the API itself and expose as root route. Don't need the regex above then for middleware
-router.get('/login', (req, res) => {
-  const { user, password } = req.query;
-  validateLoginCredentials(user, password)
-    .then(key => {
-      res.json({'sessionkey': key});
-    })
-    .catch(err => {
-      res.status(403).send(errorInvalidSessionKey);
-    });
-});
+router.use(sessionMiddleware);
 
 /*********************************
  GET
@@ -184,7 +173,7 @@ router.put('/block/:id', jsonParser, (req, res) => {
     dbSet(id, data)
       .then(result => {
         console.log('result', result);
-        return res.json(result)
+        return res.json(result);
       })
       .catch(err => res.status(500).send(err.message));
   } else {
@@ -223,9 +212,8 @@ router.post('/clone/:id', (req, res) => {
 //All files are put in the storage folder (until platform comes along)
 const createFileUrl = (url) => './storage/' + url;
 
-router.get('/file/:url*', (req, res) => {
-  const { url } = req.params;
-  console.log('url', url);
+router.get('/file/*', (req, res) => {
+  const url = req.params[0];
   const filePath = createFileUrl(url);
 
   fs.readFile(filePath, 'utf8', (err, data) => {
@@ -237,10 +225,10 @@ router.get('/file/:url*', (req, res) => {
   });
 });
 
-router.post('/file/:url*', (req, res) => {
-  const { url } = req.params;
+router.post('/file/*', (req, res) => {
+  const url = req.params[0];
   const filePath = createFileUrl(url);
-  const path = filePath.substring(0, filePath.lastIndexOf('/') + 1);
+  const folderPath = filePath.substring(0, filePath.lastIndexOf('/') + 1);
 
   //assuming contents to be string
   let buffer = '';
@@ -253,7 +241,8 @@ router.post('/file/:url*', (req, res) => {
   //received all the data
   req.on('end', () => {
     //make folder if doesn't exists
-    mkpath(path, (err) => {
+    //todo - should ensure there isn't a file preventing directory creation
+    mkpath(folderPath, (err) => {
       if (err) {
         res.status(500).send(err.message);
       } else {
@@ -262,7 +251,7 @@ router.post('/file/:url*', (req, res) => {
           if (err) {
             res.status(500).send(err.message);
           } else {
-            res.send(filePath);
+            res.send(req.originalUrl);
           }
         });
       }
@@ -270,8 +259,8 @@ router.post('/file/:url*', (req, res) => {
   });
 });
 
-router.delete('file/:url*', (req, res) => {
-  const { url } = req.params;
+router.delete('/file/*', (req, res) => {
+  const url = req.params[0];
   const filePath = createFileUrl(url);
 
   fs.unlink(filePath, (err) => {

@@ -22,17 +22,18 @@ export default class SBOLGlyph2D extends Glyph2D {
     this.node.el.appendChild(this.el);
 
     let svgPath = '/images/sbolSymbols/';
+    
     switch (this.node.sbolName.toLowerCase()) {
       case 'cds': svgPath += 'cds.svg'; break;
       case 'insulator': svgPath += 'insulator.svg'; break;
       case 'operator': svgPath += 'operator.svg'; break;
-      case 'origin of replication': svgPath += 'originreplication.svg'; break;
+      case 'origin of replication': svgPath += 'originReplication.svg'; break;
       case 'promoter': svgPath += 'promoter.svg'; break;
       case 'protease': svgPath += 'protease.svg'; break;
       case 'protein stability': svgPath += 'proteinstability.svg'; break;
       case 'rbs': svgPath += 'rbs.svg'; break;
       case 'ribonuclease': svgPath += 'ribonuclease.svg'; break;
-      case 'rna stability': svgPath += 'rnastability.svg'; break;
+      case 'rna stability': svgPath += 'rnaStability.svg'; break;
       case 'terminator': svgPath += 'terminator.svg'; break;
     }
     this.img.setAttribute('src', svgPath);

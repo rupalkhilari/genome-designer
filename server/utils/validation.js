@@ -1,5 +1,5 @@
-import BlockDefinition from '../src/schemas/Block';
-import ProjectDefinition from '../src/schemas/Project';
+import BlockDefinition from '../../src/schemas/Block';
+import ProjectDefinition from '../../src/schemas/Project';
 
 import { errorNoIdProvided, errorIdTooShort } from './errors';
 

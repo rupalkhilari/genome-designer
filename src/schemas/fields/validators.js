@@ -187,7 +187,7 @@ export const oneOfType = (types, {required = false} = {}) => input => {
   const checker = type => {
     return isFunction(type) ?
       safeValidate(type, required, input) :
-    input instanceof type;
+      input instanceof type;
   };
 
   if (!types.some(checker)) {

@@ -35,6 +35,7 @@ export default(
              component={ConstructPage}/>
     </Route>
     <Redirect from="/project" to="/"/>
+    {/*<Route path="/scenegraph" component={SceneGraphPage}/>*/}
     <Route path="/dnd/:projectId" component={DnD}/>
   </Route>
 );
