@@ -54,7 +54,7 @@ app.use('/foundry', camRouter);
 // ----------------------------------------------------
 
 //Static Files
-app.use('/images', express.static('../src/images'));
+app.use('/images', express.static(path.join(__dirname, '../src/images')));
 
 //so that any routing is delegated to the client
 app.get('*', (req, res) => {

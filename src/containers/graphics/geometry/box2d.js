@@ -136,10 +136,22 @@ export default class Box2D {
   set r(_r) {
     this.w = _r - this.x;
   }
+  get right() {
+    return this.x + this.w;
+  }
+  set right(_r) {
+    this.w = _r - this.x;
+  }
   get b() {
     return this.y + this.h;
   }
   set b(_b) {
+    this.h = _b - this.y;
+  }
+  get bottom() {
+    return this.y + this.h;
+  }
+  set bottom(_b) {
     this.h = _b - this.y;
   }
   get cx() {

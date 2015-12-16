@@ -208,11 +208,13 @@ export const blockSetSequence = (blockId, sequence) => {
     // If we are editing the sequence, or sequence doesn't exist, we want to set the sequence for the child block, not change the sequence of the parent part.
     // When setting, it doesn't really matter, we just always want to set via filename which matches this block.
     const sequenceUrl = oldBlock.getSequenceUrl(true);
+    const sequenceLength = sequence.length;
 
     return writeFile(sequenceUrl, sequence)
       .then(() => {
          //const unannotated = oldBlock.mutate('sequence.annotations', []);
-        const block = oldBlock.setSequenceUrl(sequenceUrl);
+        const withUrl = oldBlock.setSequenceUrl(sequenceUrl);
+        const block = withUrl.mutate('sequence.length', sequenceLength);
         dispatch({
           type: ActionTypes.BLOCK_SET_SEQUENCE,
           block,

@@ -23,6 +23,11 @@ export default class SceneGraph2D {
     this.scrollOffset = new Vector2D();
   }
 
+  /**
+   * generic in-order traversal of the nodes of the graph.
+   * @param  {Function} callback
+   * @param  {this}   context
+   */
   traverse(callback, context) {
     let stack = [this.root];
     while (stack.length) {
@@ -33,10 +38,27 @@ export default class SceneGraph2D {
   }
 
   /**
+   * return the union of the AABB of all nodes in the scenegraph
+   * except the root node
+   * @return {Box2D}
+   */
+  getAABB() {
+    let aabb = null;
+    this.traverse( node => {
+      // ignore the root, which we can identify because it has no parent
+      if (node.parent) {
+        const nodeAABB = node.getAABB();
+        aabb = aabb ? aabb.union(nodeAABB) : nodeAABB;
+      }
+    });
+    return aabb;
+  }
+
+  /**
    * update involves re-rendering by our owner
    */
   update() {
-    this.props.owner.forceUpdate();
+    //this.props.owner.forceUpdate();
   }
 
   /**
@@ -70,6 +92,15 @@ export default class SceneGraph2D {
    */
   getSize() {
     return new Vector2D(this.props.w, this.props.h);
+  }
+
+  /**
+   * set size of the scenegraph
+   * @param {[type]} v [description]
+   */
+  setSize(v) {
+    this.props.w = v.x;
+    this.props.h = v.y;
   }
 
   /**
@@ -113,8 +144,6 @@ export default class SceneGraph2D {
     const leftTop = p.sub(w.divide(2));
     // set scroll position
     this.setScrollPosition(new Vector2D(leftTop.x * this.getScale(), leftTop.y * this.getScale()));
-    // must redraw for this to take effect
-    this.update();
   }
 
   /**
@@ -133,6 +162,7 @@ export default class SceneGraph2D {
   render() {
     const ui = this.props.userInterface ? this.props.userInterface.render() : null;
     return (<SceneGraph2DReact
+      key={this.props.uuid}
       scrollOffset={this.scrollOffset}
       scale={this.root.props.scale}
       uuid={this.props.uuid}

@@ -14,6 +14,11 @@ export default class SceneGraph2D extends Component {
     ui: PropTypes.object,
   }
 
+  constructor(props) {
+    super(props);
+    console.log('SceneGraph created:', new Date().getTime());
+  }
+
   componentDidUpdate() {
     const dom = React.findDOMNode(this);
     dom.scrollLeft = this.props.scrollOffset.x;
@@ -38,11 +43,6 @@ export default class SceneGraph2D extends Component {
    * @return {[type]} [description]
    */
   render() {
-    // container style
-    const cstyle = {
-      width: this.props.w + 'px',
-      height: this.props.h + 'px',
-    };
     // width and height of the scenegraph should match our size * view scale
     const style = {
       width: (this.props.w * this.props.scale) + 'px',
@@ -50,8 +50,8 @@ export default class SceneGraph2D extends Component {
     };
 
     return (
-      <div className="sceneGraphContainer" style={cstyle} ref="sceneGraphContainer" onScroll={this.onScroll}>
-        <div style={style} key={this.props.uuid} ref="sceneGraph" className="sceneGraph">
+      <div className="sceneGraphContainer" key={this.props.uuid} ref="sceneGraphContainer" onScroll={this.onScroll}>
+        <div style={style} ref="sceneGraph" className="sceneGraph">
           {this.props.children}
         </div>
         {this.props.ui}
