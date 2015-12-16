@@ -4,7 +4,7 @@ import { writeFile } from '../../src/middleware/api';
 import Block from '../../src/models/Block';
 import AnnotationDefinition from '../../src/schemas/Annotation';
 
-const { assert, expect } = chai;
+const { expect } = chai;
 
 describe('Model', () => {
   describe('Block', () => {

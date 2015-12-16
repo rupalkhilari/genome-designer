@@ -1,9 +1,9 @@
 import { expect } from 'chai';
 import request from 'supertest';
-import { set as dbSet } from '../../../server/database';
+import { set as dbSet } from '../../../server/utils/database';
 import { getSessionKey, login } from '../../../src/middleware/api';
 
-const devServer = require('../../../devServer');
+const devServer = require('../../../server/devServer');
 
 describe('REST', () => {
   describe('/login', () => {
@@ -31,7 +31,7 @@ describe('REST', () => {
         .expect(200, done);
     });
 
-    it('login() function shouldnt error work', (done) => {
+    it('login() function shouldnt error', (done) => {
       login(dummyUser.user, dummyUser.password)
         .then(sessionkey => {
           done();

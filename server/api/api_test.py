@@ -13,8 +13,7 @@ class TestGenomeDesignerREST(unittest.TestCase):
       self.run_url = "http://0.0.0.0:3000/exec/"
       self.foundry_url = "http://0.0.0.0:3000/foundry/"
 
-      url = self.api_url
-      login = GET(url + "login", params={"user":"", "password":""})
+      login = GET("http://0.0.0.0:3000/login", params={"user":"", "password":""})
       self.headers = {  "Content-type": "application/json", "sessionkey": login.json()["sessionkey"] }
 
   def test_invalid_session_key(self):

@@ -15,6 +15,9 @@ const hostname = '0.0.0.0';
 const app = express();
 const compiler = webpack(config);
 
+const extRouter = require('../extensions/compute/api');
+const camRouter = require('../extensions/foundry/api');
+
 //logging middleware
 app.use(morgan('dev'));
 
@@ -44,7 +47,8 @@ app.use('/login', (req, res) => {
 });
 
 app.use('/api', apiRouter);
-
+app.use('/exec', extRouter);
+app.use('/foundry', camRouter);
 
 // Register Client Requests, delegate routing to client
 // ----------------------------------------------------

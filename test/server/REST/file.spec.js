@@ -1,10 +1,8 @@
 import { expect } from 'chai';
 import request from 'supertest';
 import fs from 'fs';
-import { set as dbSet } from '../../../server/database';
-import { readFile, writeFile } from '../../../src/middleware/api';
 
-const devServer = require('../../../devServer');
+const devServer = require('../../../server/devServer');
 
 describe('REST', () => {
   describe('Files', () => {

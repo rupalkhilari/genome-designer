@@ -1,7 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import { runNode, getNodeDir, buildNodeContainer } from './runNode';
-import { sessionMiddleware } from '../../server/authentication';
+import { sessionMiddleware } from '../../server/utils/authentication';
 
 const mkpath = require('mkpath');
 const fs = require('fs'), path = require('path');

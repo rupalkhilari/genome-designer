@@ -7,11 +7,9 @@ import BlockDefinition from '../schemas/Block';
  Utils
  *************************/
 
-const serverRoot = ''; //fetch only supports absolute paths
-
+const serverRoot = 'http://localhost:3000/'; //fetch only supports absolute paths
 const execPath = (path) => serverRoot + 'exec/' + path;
-
-export const apiPath = (path) => serverRoot + '/api/' + path;
+export const apiPath = (path) => serverRoot + 'api/' + path;
 
 //hack - set testing stub from start for now so all requests work
 let sessionKey = 'testingStub';
@@ -57,7 +55,7 @@ const headersDelete = () => ({
  *************************/
 
 export const login = (user, password) => {
-  return fetch(apiPath(`login?user=${user}&password=${password}`), headersGet())
+  return fetch(serverRoot + `login?user=${user}&password=${password}`, headersGet())
     .then(resp => resp.json())
     .then(json => {
       sessionKey = json.sessionkey;

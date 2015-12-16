@@ -17,7 +17,7 @@ const stringifier = JSON.stringify;
 
 //subscribe to all errors...
 client.on('error', (err) => {
-  console.error(err);
+  console.error(err); //eslint-disable-line
 });
 
 /**

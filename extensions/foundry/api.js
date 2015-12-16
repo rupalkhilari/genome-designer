@@ -1,6 +1,6 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import { sessionMiddleware } from '../../server/authentication';
+import { sessionMiddleware } from '../../server/utils/authentication';
 
 const fs = require('fs'), path = require('path');
 const yaml = require('yamljs');
