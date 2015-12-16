@@ -1,8 +1,6 @@
 import { expect } from 'chai';
 import request from 'supertest';
 import fs from 'fs';
-import { set as dbSet } from '../../../server/utils/database';
-import { readFile, writeFile } from '../../../src/middleware/api';
 
 const devServer = require('../../../server/devServer');
 

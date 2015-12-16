@@ -9,7 +9,7 @@ import { validateLoginCredentials } from './utils/authentication';
 import { errorInvalidSessionKey } from './utils/errors';
 
 const DEFAULT_PORT = 3000;
-const port = parseInt(process.argv[2]) || process.env.PORT ||  DEFAULT_PORT;
+const port = parseInt(process.argv[2], 10) || process.env.PORT || DEFAULT_PORT;
 const hostname = '0.0.0.0';
 
 const app = express();
@@ -23,7 +23,7 @@ app.use(morgan('dev'));
 
 app.use(require('webpack-dev-middleware')(compiler, {
   noInfo: true,
-  publicPath: config.output.publicPath
+  publicPath: config.output.publicPath,
 }));
 
 app.use(require('webpack-hot-middleware')(compiler));
@@ -53,11 +53,11 @@ app.use('/api', apiRouter);
 app.use('/images', express.static('src/images'));
 
 //so that any routing is delegated to the client
-app.get('*', function(req, res) {
+app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'src/index.html'));
 });
 
-app.listen(port, hostname, function(err) {
+app.listen(port, hostname, (err) => {
   if (err) {
     console.log(err);
     return;
@@ -66,4 +66,4 @@ app.listen(port, hostname, function(err) {
   console.log('Building, will serve at http://' + hostname + ':' + port);
 });
 
-module.exports = app;
+export default app;

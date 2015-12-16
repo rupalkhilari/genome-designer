@@ -12,7 +12,7 @@ export const validateSessionKey = (key) => {
   return dbGetSafe(key, null)
     .then(result => true)
     .catch(err => {
-      console.log('error getting key', err);
+      console.log('error getting key', err); //eslint-disable-line
       return Promise.reject(errorInvalidSessionKey);
     });
 };

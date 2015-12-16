@@ -6,7 +6,7 @@ import mkpath from 'mkpath';
 
 import { createDescendant, record, getAncestors, getDescendantsRecursively } from './../utils/history';
 import { get as dbGet, getSafe as dbGetSafe, set as dbSet } from './../utils/database';
-import { errorDoesNotExist, errorNoIdProvided, errorInvalidSessionKey, errorInvalidModel, errorInvalidRoute } from './../utils/errors';
+import { errorInvalidModel, errorInvalidRoute } from './../utils/errors';
 import { validateBlock, validateProject } from './../utils/validation';
 import { sessionMiddleware } from './../utils/authentication';
 import { getComponents } from './../utils/getRecursively';
@@ -173,7 +173,7 @@ router.put('/block/:id', jsonParser, (req, res) => {
     dbSet(id, data)
       .then(result => {
         console.log('result', result);
-        return res.json(result)
+        return res.json(result);
       })
       .catch(err => res.status(500).send(err.message));
   } else {

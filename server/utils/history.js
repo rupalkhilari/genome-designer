@@ -1,6 +1,6 @@
 import uuid from 'node-uuid';
 import getRecursively from './getRecursively';
-import { get, getSafe, set } from './database';
+import { getSafe, set } from './database';
 
 export const makeHistoryKey = (id) => id + '-history';
 
