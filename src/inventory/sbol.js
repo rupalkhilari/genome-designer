@@ -12,8 +12,8 @@ const symbolMap = {
   'rnaStability': 'RNA stability',
 };
 
-function makeImagePath(fileName) {
-  return '/images/sbolSymbols/' + fileName + '.svg';
+function makeImagePath(fileName, folder = 'thin') {
+  return '/images/sbolSymbols/' + folder + '/' + fileName + '.svg';
 }
 
 const symbols = Object.keys(symbolMap).map(key => ({
