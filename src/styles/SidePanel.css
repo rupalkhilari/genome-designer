@@ -10,7 +10,6 @@
   overflow-x: hidden;
   top: 0;
   bottom: 0;
-  padding: 0.5em;
   background: var(--background-dark-semiTransparent);
   color: var(--colors-white);
   transition-property: width, opacity;
@@ -21,13 +20,30 @@
     width: var(--width-SidePanel-open);
   }
 
+  &-heading,
+  &-content {
+    padding: 0.5em;
+  }
+
   &-heading {
     width: 100%;
     position: relative;
-    margin: 0 0 0.25em;
     display: flex;
+    align-items: center;
 
-    &-trigger {
+    &-content {
+      display: none;
+      flex-grow: 1;
+      justify-content: space-between;
+      align-items: center;
+
+      .visible & {
+        display: flex;
+      }
+    }
+
+    &-trigger,
+    &-close {
       width: var(--SidePanel-trigger-width);
       height: var(--SidePanel-trigger-width);
       min-width: var(--SidePanel-trigger-width);
@@ -37,40 +53,27 @@
       background-size: contain;
     }
 
-    &-content {
-      display: none;
+    &-trigger {
 
-      .visible & {
-        display: block;
-      }
+    }
+
+    &-title {
+      text-transform: uppercase;
+      font-weight: 200;
+    }
+
+    &-close {
+      align-self: flex-end;
+      background-image: url('/images/ui/close_icon.svg');
     }
   }
 
-  &-trigger {
-    width: var(--SidePanel-trigger-width);
-    /* temp */
-    text-align: center;
-    border-radius: 50%;
-    border: 1px solid white;
-  }
-
-  &-title {
-    text-transform: uppercase;
-    font-weight: 200;
-  }
-
-  &-close {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 20px;
-  }
-
   &-content {
-    opacity: 0;
     display: flex;
     flex-grow: 1;
+    width: var(--width-SidePanel-open);
+    padding-top: 0;
+    opacity: 0;
 
     .visible & {
       opacity: 1;

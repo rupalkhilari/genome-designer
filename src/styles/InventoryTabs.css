@@ -7,20 +7,22 @@
   border-bottom: 1px solid var(--colors-selected);
 
   &-tab {
-    flex-grow: 1;
     text-align: center;
     padding: 0.25em 0.5em;
+    margin-right: 0.5em;
     border-bottom: 2px solid transparent;
     transition-duration: var(--timing-fast);
     transition-property: color, border;
+    color: var(--colors-grey);
+    font-weight: 400;
 
     &:hover {
       color: var(--colors-selected);
     }
 
     &.active {
-      font-weight: bold;
       color: white;
+      font-weight: 600;
       border-bottom-color: var(--colors-selected);
     }
   }
