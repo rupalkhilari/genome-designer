@@ -32,6 +32,9 @@ export class InspectorContent extends Component {
         <h4 className="InspectorContent-heading">Description</h4>
         <p>{instance.metadata.description || 'No Description'}</p>
 
+        <h4 className="InspectorContent-heading">Sequence Length</h4>
+        <p>{instance.sequence.length ? (instance.sequence.length + ' bp') : 'No Sequence'}</p>
+
         <h4 className="InspectorContent-heading">Color</h4>
         <ColorPicker current={instance.metadata.color}
                      onSelect={this.selectColor}/>
