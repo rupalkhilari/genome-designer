@@ -2,6 +2,7 @@ import requests
 import json
 from Bio import SeqIO
 import sys
+import uuid
 
 input_file = sys.argv[1]
 block_file = sys.argv[2]
@@ -54,7 +55,7 @@ def genbank2Json(fname):
 						elif sp[0].strip() == 'direction':
 							strand = "."#strandSignGbk(sp[1].strip())
 
-		feature = {"start":f.location.start.position, "end":f.location.end.position, "strand":strand, "row":0, "color":color, "text":title, "textColor":"black", "isORF":False}
+		feature = {"start":f.location.start.position, "end":f.location.end.position, "strand":strand, "row":0, "color":color, "text":title, "textColor":"black", "isORF":False, "id": str(uuid.uuid4())}
 		data["features"].append(feature)
 		data["name"]=fname.split("/")[-1].split(".")[0]
 

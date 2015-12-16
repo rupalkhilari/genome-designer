@@ -4,6 +4,7 @@ RUN mkdir /inputs
 RUN mkdir /outputs
 
 RUN pip3 install requests
+RUN pip3 install uuid
 
 WORKDIR /
 COPY ./read_genbank.py /read_genbank.py
