@@ -8,6 +8,7 @@
   /* left side */
   &-info {
     display: flex;
+    align-items: center;
   }
 
   &-icon {
@@ -18,7 +19,7 @@
   }
 
   &-text {
-    padding: 1rem;
+    padding: 0 1em;
   }
 
   &-title {

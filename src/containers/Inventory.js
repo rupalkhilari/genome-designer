@@ -13,12 +13,12 @@ import '../styles/SidePanel.css';
 // should also better enumerate types...
 const inventoryData = [
   {
-    name: 'EGF',
+    name: 'Foundry',
     type: 'block',
     items: andreaBlocks,
   },
   {
-    name: 'sbol',
+    name: 'Symbols',
     type: 'sbol',
     items: inventorySbol,
   },
