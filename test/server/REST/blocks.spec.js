@@ -1,8 +1,7 @@
 import { expect } from 'chai';
 import { Block as exampleBlock } from '../../schemas/_examples';
-import { set as dbSet } from '../../../server/database';
 import request from 'supertest';
-import devServer from '../../../devServer';
+import devServer from '../../../server/devServer';
 
 describe('REST', () => {
   let server;
