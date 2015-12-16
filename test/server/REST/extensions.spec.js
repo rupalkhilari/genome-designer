@@ -18,7 +18,7 @@ describe('REST', () => {
 
   describe('Genbank extension', () => {
     //use old function syntax to create new scope so can call this.timeout
-    it('accepts input and generates correct output', function historyAncestryTest(done) {
+    it('accepts input and generates correct output', function genbankTest(done) {
       this.timeout(10000);
 
       let block1 = exampleBlock;
@@ -34,7 +34,7 @@ describe('REST', () => {
           bid1 = block.id;
           input1 = {
             'genbank': 'extensions/compute/genbank_to_block/sequence.gb',
-            'sequence': 'storage/block/' + bid1 + '/sequence',
+            'sequence': '/api/file/block/' + bid1 + '/sequence',
           };
         })
         .expect(200, callExtension);

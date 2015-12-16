@@ -63,6 +63,16 @@ export const login = (user, password) => {
     });
 };
 
+export const createBlock = (block) => {
+  invariant(BlockDefinition.validate(block), 'Block does not pass validation: ' + block);
+  try {
+    const stringified = JSON.stringify(block);
+    return fetch(apiPath(`block/`), headersPost(stringified));
+  } catch (err) {
+    return Promise.reject('error stringifying block');
+  }
+};
+
 export const retrieveBlock = (id) => {
   return fetch(apiPath(`block/${id}`), headersGet())
     .then(resp => resp.json());
