@@ -149,40 +149,57 @@ router.post('/:id', jsonParser, (req, resp) => {
 
               //get values from files into object
               //TODO - select only json-suitable output fields
+
+              let outputFileWrites = [];
               for (let i=0; i < outputFileNames.length; ++i) {
+                
                 let outFile = fileUrls[outputs[i].id];
                 let contents = buffers[i];
-                if (outFile) {
-                  outputFiles[ outputs[i].id ] = outFile;
-                  outFile = outFile.replace("/api/file/","storage/");
+
+                outputFileWrites.push(
+                  new Promise((resolve, reject) => {
+
+                    if (outFile) {
+                      outputFiles[ outputs[i].id ] = outFile;
+                      outFile = outFile.replace("/api/file/","storage/");
                   
-                  //create folder for outFile
-                  let path = outFile.substring(0,outFile.lastIndexOf('/')+1);
-                  mkpath(path, (err) => {
+                          //create folder for outFile
+                          let path = outFile.substring(0,outFile.lastIndexOf('/')+1);
+                          mkpath(path, (err) => {
 
-                    if (err) {
-                      console.log(err.message);
-                      //resp.status(500).send(err.message);
-                    } else {
-
-                      fs.writeFile(outFile, contents , 'utf8', err => {
                         if (err) {
                           console.log(err.message);
-                        } else {  
-                          console.log('Wrote ' + outFile);
-                          //TODO: should be finished before resp.json
-                        }
-                      }); //fs.writeFile
+                          reject(err.message);
+                        } else {
 
+                          fs.writeFile(outFile, contents , 'utf8', err => {
+                            if (err) {
+                              console.log(err.message);
+                            } else {  
+                              console.log('Wrote ' + outFile);
+                              //TODO: should be finished before resp.json
+                            }
+                          }); //fs.writeFile
+
+                        }
+                      }); //make path                      
+                      resolve(outFile);
+                    } else { //if not writing to output file, return in json
+                      outputFiles[ outputs[i].id ] = contents;
+                      resolve(contents);
                     }
-                  }); //make path
-                } else { //if not writing to output file, return in json
-                  outputFiles[ outputs[i].id ] = contents;
-                }
+                  }));
               }
 
-              //return object
-              resp.json(outputFiles);
+              Promise.all(outputFileWrites)
+                .then(result => {
+                  //return object
+                  resp.json(outputFiles);
+                })
+                .catch(err => {
+                  resp.status(500).send(err.message);
+                });
+              
 
             }); //readMultipleFiles
           }); //runNode
