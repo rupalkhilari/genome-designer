@@ -1,4 +1,4 @@
-const blockH = 24;
+const blockH = 30;
 // width of blocks
 const blockW = 70;
 // width of title
@@ -11,7 +11,7 @@ const rowBarH = 4;
 // vertical bar width
 const rowBarW = 3;
 // padding around text on blocks
-const textPad = 16;
+const textPad = 8;
 // width of condensed text blocks
 const condensedText = 40;
 // height of banner bar above construct name
@@ -26,7 +26,8 @@ const blockFontSize = '12px';
 const minWidth = 400;
 // background
 const background = 'rgb(52, 57, 77)';
-
+// size of sbol icons
+const sbolIcon = 27;
 
 export default {
   // layout algorithms
@@ -48,6 +49,7 @@ export default {
   insetY: insetY,
   minWidth: minWidth,
   bannerHeight: bannerHeight,
+  sbolIcon: sbolIcon,
 
   // display properties for various elements
   titleAppearance: {

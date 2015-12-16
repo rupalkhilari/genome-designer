@@ -1,6 +1,6 @@
 import Glyph2D from '../glyph2d';
 
-export default class Rectangle2D extends Glyph2D {
+export default class RectangleGlyph2D extends Glyph2D {
 
   /**
    * Simple HTML based rectangle. The only complexity is that we carefully

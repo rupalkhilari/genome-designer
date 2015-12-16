@@ -16,6 +16,7 @@ import {
   blockAddComponent,
   blockClone,
   blockSetSbol,
+  blockRename,
 } from '../../../actions/blocks';
 import {
   block as blockDragType,
@@ -97,7 +98,7 @@ export class ConstructViewer extends Component {
     // initial render won't call componentDidUpdate so force an update to the layout/scenegraph
     this.update();
     // handle window resize to reflow the layout
-    window.addEventListener('resize', debounce(this.windowResized.bind(this), 10));
+    window.addEventListener('resize', debounce(this.windowResized.bind(this), 15));
   }
 
   /**
@@ -128,24 +129,35 @@ export class ConstructViewer extends Component {
   drop (monitor) {
     // get the current insertion point
     const insertionPoint = this.sg.ui.getInsertionPoint();
-    if (insertionPoint) {
-      const index = this.props.construct.components.indexOf(insertionPoint.block) + (insertionPoint.edge === 'right' ? 1 : 0);
-      console.log(`Insert at: node:${insertionPoint.node.uuid}, block:${insertionPoint.block}, edge:${insertionPoint.edge}`);
-      // because react / dnd is effite we need to construct the thing
-      // that was dropped here using the current insertion point
-      const {
-        item,
-        type
-      } = monitor.getItem();
+    // construct object that was dropped
+    const { item, type } = monitor.getItem();
+    if (type === sbolDragType) {
+      // must have an insertion point for sbol
+      if (insertionPoint) {
+        // change to the sbol type
+        this.props.blockSetSbol(insertionPoint.block, item.id);
+      }
+    } else {
+      // get index of insertion allowing for the edge closest to the drop
+      let index = this.props.construct.components.length;
+      if (insertionPoint) {
+        index = this.props.construct.components.indexOf(insertionPoint.block) + (insertionPoint.edge === 'right' ? 1 : 0);
+      }
+      // clone and add the block
       this.props.blockClone(item).then(block => {
         this.props.blockAddComponent(this.props.construct.id, block.id, index);
       });
-    } else if (type === sbolDragType) {
-      const blockId = props.construct.components[0];
-      props.blockSetSbol(blockId, item.id);
-    } else {
-      // ?
     }
+  }
+
+  /**
+   * rename one of our blocks
+   * @param  {[type]} blockId [description]
+   * @param  {[type]} newName [description]
+   * @return {[type]}         [description]
+   */
+  blockRename(blockId, newName) {
+
   }
 
   /**
@@ -189,4 +201,5 @@ export default connect((state, props) => {
   blockClone,
   blockAddComponent,
   blockSetSbol,
+  blockRename,
 })(ConstructViewer);

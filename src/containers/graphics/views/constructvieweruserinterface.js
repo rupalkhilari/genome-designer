@@ -91,22 +91,6 @@ export default class ConstructViewerUserInterface extends UserInterface {
     this.hideInsertionPoint();
   }
   /**
-   * user dropped on the viewer
-   */
-  drop(monitor, blockCreate, blockAddComponent) {
-    const { item, type } = monitor.getItem();
-    if (type === blockDragType) {
-      const block = this.props.blockCreate(item);
-      this.props.blockAddComponent(this.props.construct.id, block.id);
-    } else if (type === sbolDragType) {
-      console.log(item); //eslint-disable-line
-
-    } else {
-
-    }
-    this.hideInsertionPoint();
-  }
-  /**
    * show the insertion point at the given edge of the given block
    */
   showInsertionPoint(block, edge) {

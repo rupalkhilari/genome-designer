@@ -1,7 +1,14 @@
 import Vector2D from '../geometry/vector2d';
 import Box2D from '../geometry/box2d';
 import Node2D from '../scenegraph2d/node2d';
+import Block2D from '../scenegraph2d/block2d';
+import SBOL2D from '../scenegraph2d/sbol2d';
 import kT from './layoutconstants';
+import invariant from '../../../utils/environment/invariant';
+
+// just for internal tracking of what type of block a node represents.
+const blockType = 'block';
+const sbolType = 'sbol';
 
 /**
  * layout and scene graph manager for the construct viewer
@@ -20,8 +27,9 @@ export default class Layout {
 
     // prep data structures for layout
     this.rows = [];
-    this.nodes2elements = {};
-    this.elements2nodes = {};
+    this.nodes2parts = {};
+    this.parts2nodes = {};
+    this.partTypes = {};
   }
   /**
    * size the scene graph to just accomodate all the nodes that are present.
@@ -42,8 +50,21 @@ export default class Layout {
    * @return {[type]}      [description]
    */
   map(part, node) {
-    this.nodes2elements[node.uuid] = part;
-    this.elements2nodes[part] = node;
+    this.nodes2parts[node.uuid] = part;
+    this.parts2nodes[part] = node;
+    this.partTypes[part] = this.isSBOL(part) ? sbolType : blockType;
+  }
+
+  /**
+   * remove the part, node and unmap
+   */
+  removePart(part) {
+    const node = this.nodeFromElement(part);
+    invariant(node, 'expected a matching node');
+    delete this.nodes2parts[node.uuid];
+    delete this.parts2nodes[part];
+    delete this.partTypes[part];
+    node.parent.removeChild(node);
   }
   /**
    * return the element from the data represented by the given node uuid
@@ -51,7 +72,7 @@ export default class Layout {
    * @return {[type]}      [description]
    */
   elementFromNode(node) {
-    return this.nodes2elements[node.uuid];
+    return this.nodes2parts[node.uuid];
   }
   /**
    * reverse mapping from anything with an 'uuid' property to a node
@@ -59,7 +80,7 @@ export default class Layout {
    * @return {[type]}         [description]
    */
   nodeFromElement(element) {
-    return this.elements2nodes[element];
+    return this.parts2nodes[element];
   }
   /**
    * create a node, if not already created for the given piece.
@@ -69,12 +90,26 @@ export default class Layout {
    * @return {[type]}            [description]
    */
   partFactory(part, appearance) {
+
+    // if the part type has changed remove it before updating to a new node/glyph
+    const partType = this.isSBOL(part) ? sbolType : blockType;
+    if (this.partTypes[part] && this.partTypes[part] !== partType) {
+      this.removePart(part);
+    }
+
     // get metadata from the part id
     const meta = this.blocks[part].metadata;
     if (!this.nodeFromElement(part)) {
-      const node = new Node2D(Object.assign({
+      let props = Object.assign({}, {
         sg: this.sceneGraph,
-      }, appearance));
+      }, appearance);
+      let node = null;
+      if (this.isSBOL(part)) {
+        props.sbolName = this.blocks[part].rules.sbol;
+        node = new SBOL2D(props);
+      } else {
+        node = new Block2D(props);
+      }
       this.sceneGraph.root.appendChild(node);
       this.map(part, node);
     }
@@ -85,12 +120,36 @@ export default class Layout {
   partMeta(part, meta) {
     return this.blocks[part].metadata[meta];
   }
+
   /**
-   * return the part ID or if metadata is available use the name property if available
+   * return the property within the rule part of the blocks data
+   * @param  {[type]} part [description]
+   * @param  {[type]} name [description]
+   * @return {[type]}      [description]
+   */
+  partRule(part, name) {
+    return this.blocks[part].rules[name];
+  }
+
+  /**
+   * return true if the block appears to be an SBOL symbol
+   * @param  {[type]}  part [description]
+   * @return {Boolean}      [description]
+   */
+  isSBOL(part) {
+    return !!this.blocks[part].rules.sbol;
+  }
+
+  /**
+   * return the part ID or if metadata is available use the name property if available.
+   * If the part is an SBOL symbol then use the symbol name preferentially
    */
   partName(part) {
-    const metaname = this.partMeta(part, 'name');
-    return metaname || part;
+    if (this.isSBOL(part)) {
+      return this.partRule(part, 'sbol');
+    }
+    // return meta data name if present or just the ID of the part if it is not.
+    return this.partMeta(part, 'name') || part;
   }
   /**
    * create the banner / bar for the construct ( contains the triangle )
@@ -229,18 +288,12 @@ export default class Layout {
       condensed: true,
     });
   }
-
   /**
    * measure the given text or return its condensed size
    */
   measureText(node, str, condensed) {
-    if (condensed) {
-      return new Vector2D(kT.condensedText, kT.blockH);
-    }
-    // measure actual text plus some padding
-    return node.measureText(str).add(new Vector2D(kT.textPad, 0));
+    return node.getPreferredSize(str, condensed);
   }
-
   /**
    * layout, configured with various options:
    * xlimit: maximum x extent

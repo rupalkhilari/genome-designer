@@ -20,6 +20,7 @@ export default class Node2DText {
     this.el.style.fontFamily = this.node.fontFamily;
     this.el.style.color = this.node.color;
     this.el.style.textAlign = this.node.textAlign;
+    this.el.style.textIndent = this.node.textIndent + 'px';
     this.el.innerHTML = this.node.text || '';
   }
 }

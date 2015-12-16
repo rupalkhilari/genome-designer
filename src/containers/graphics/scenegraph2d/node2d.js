@@ -4,7 +4,8 @@ import Box2D from '../geometry/box2d';
 import Transform2D from '../geometry/transform2d';
 import invariant from '../../../utils/environment/invariant';
 import NodeText2D from './nodetext2d';
-import Rectangle2D from './glyphs/html/rectangle2d';
+import RectangleGlyph2D from './glyphs/html/rectangleglyph2d';
+import SBOLGlyph2D from './glyphs/html/sbolglyph2d';
 import ConstructBanner from './glyphs/canvas/constructbanner';
 /**
  * shared DIV for measuring text,
@@ -44,6 +45,7 @@ export default class Node2D {
       uuid: uuid.v4(),
       glyph: 'none',
       textAlign: 'center',
+      textIndent: 0,
     }, props));
 
     // we must belong to a scene graph
@@ -52,10 +54,13 @@ export default class Node2D {
     // create our glyph at the same time
     switch (this.glyph) {
     case 'rectangle':
-      this.glyphObject = new Rectangle2D(this);
+      this.glyphObject = new RectangleGlyph2D(this);
       break;
     case 'construct-banner':
       this.glyphObject = new ConstructBanner(this);
+      break;
+    case 'sbol':
+      this.glyphObject = new SBOLGlyph2D(this);
       break;
     case 'none':
       break;

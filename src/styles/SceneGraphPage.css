@@ -6,7 +6,7 @@
 }
 /* any element with an animated transform */
 .transform-animated {
-  /*transition: transform 400ms ease, width 400ms ease;*/
+  /*transition: transform 1000ms ease, width 1000ms ease;*/
 }
 
 .sceneGraph {
@@ -36,6 +36,20 @@
     display: inline-block;
     box-sizing: border-box;
   }
+
+  /*base class for html based glyph*/
+  .sbol-glyph {
+    position: absolute;
+    display: inline-block;
+    box-sizing: border-box;
+  }
+  .sbol-icon {
+    position: absolute;
+    display: inline-block;
+    box-sizing: border-box;
+    background-color: black;
+  }
+
   .canvas-glyph {
     position: absolute;
     display: inline-block;
@@ -69,7 +83,7 @@
     position: absolute;
     box-sizing: border-box;
     width: 8px;
-    height: 30px;
+    height: 36px;
     border-top: 2px solid white;
     border-bottom: 2px solid white;
     background-color: white;

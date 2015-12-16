@@ -42,7 +42,7 @@ export default class SceneGraph2D {
 
     // if you want an immediate update call this._update(). The this.update()
     // method is debounced since React tends to over send updates.
-    this.updateDebounced = debounce(this._update, 10);
+    this.updateDebounced = debounce(this._update, 15);
   }
 
 
