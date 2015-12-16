@@ -97,6 +97,22 @@ export const blockRename = (blockId, name) => {
   };
 };
 
+export const blockSetColor = (blockId, color) => {
+  return (dispatch, getState) => {
+    const oldBlock = getState().blocks[blockId];
+    const block = oldBlock.mutate('metadata.color', color);
+
+    return Promise.resolve(block)
+      .then((block) => {
+        dispatch({
+          type: ActionTypes.BLOCK_SET_COLOR,
+          block,
+        });
+        return block;
+      });
+  };
+};
+
 export const blockAddComponent = (blockId, componentId, index) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
