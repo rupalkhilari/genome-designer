@@ -153,14 +153,16 @@ router.post('/:id', jsonParser, (req, resp) => {
                 let outFile = fileUrls[outputs[i].id];
                 let contents = buffers[i];
                 if (outFile) {
-                  outputFiles[ outputs[i].id ] = outFile.replace("storage/","/api/file/");;
-
+                  outputFiles[ outputs[i].id ] = outFile;
+                  outFile = outFile.replace("/api/file/","storage/");
+                  
                   //create folder for outFile
                   let path = outFile.substring(0,outFile.lastIndexOf('/')+1);
                   mkpath(path, (err) => {
 
                     if (err) {
-                      resp.status(500).send(err.message);
+                      console.log(err.message);
+                      //resp.status(500).send(err.message);
                     } else {
 
                       fs.writeFile(outFile, contents , 'utf8', err => {
