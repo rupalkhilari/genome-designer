@@ -170,17 +170,26 @@ export class ConstructViewer extends Component {
    * update the layout and then the scene graph
    */
   update () {
+
+    console.count('Construct Viewer Updates');
+
+    console.time('Layout update');
     this.layout.update(this.props.construct, this.props.layoutAlgorithm, this.props.blocks);
+    console.timeEnd('Layout update');
+
+    console.time('Scenegraph Update');
     this.sg.update();
+    console.timeEnd('Scenegraph Update');
   }
   /**
    * render the component, the scene graph will render later when componentDidUpdate is called
    */
   render () {
+    console.time('Construct Viewer REACT render');
     const {
       connectDropTarget
     } = this.props;
-    return connectDropTarget(
+    const rendered = connectDropTarget(
       <div className="construct-viewer" key={this.props.construct.id}>
         <ConstructViewerMenu constructId={this.props.constructId} layoutAlgorithm={this.props.layoutAlgorithm}/>
         <div className="sceneGraphContainer">
@@ -188,6 +197,8 @@ export class ConstructViewer extends Component {
         </div>
       </div>
     );
+    console.timeEnd('Construct Viewer REACT render');
+    return rendered;
   }
 }
 
