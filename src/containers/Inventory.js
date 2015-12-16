@@ -22,7 +22,6 @@ const inventoryData = [
     type: 'sbol',
     items: inventorySbol,
   },
-
 ];
 
 export class Inventory extends Component {
@@ -36,8 +35,6 @@ export class Inventory extends Component {
 
     return (
       <div className={'SidePanel Inventory' + (isVisible ? ' visible' : '')}>
-
-
         <div className="SidePanel-heading">
           <span className="SidePanel-heading-trigger Inventory-trigger"
                 onClick={() => inventoryToggleVisibility()} />

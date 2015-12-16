@@ -1,5 +1,5 @@
 import * as ActionTypes from '../constants/ActionTypes';
-import dummyBlocks from '../inventory/dummyBlocks';
+import dummyBlocks from '../inventory/andrea';
 
 //testing
 import Block from '../models/Block';

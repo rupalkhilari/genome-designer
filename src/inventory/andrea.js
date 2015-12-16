@@ -12,7 +12,9 @@ const parts = [
     rules: {
       sbol: null,
     },
-    sequence: "andrea/3699b698-b571-4e02-b316-449be3100ea0",
+    sequence: {
+      url: "andrea/3699b698-b571-4e02-b316-449be3100ea0",
+    },
     tags: {
       position: "1",
       flanks: "TAGG-ATGG",
@@ -27,7 +29,9 @@ const parts = [
     rules: {
       sbol: null,
     },
-    sequence: "andrea/6f19d954-9bb5-4bad-81c2-160192dcf3b6",
+    sequence: {
+      url: "andrea/6f19d954-9bb5-4bad-81c2-160192dcf3b6",
+    },
     tags: {
       position: "24",
       flanks: "CACG-ACTG",
@@ -42,7 +46,9 @@ const parts = [
     rules: {
       sbol: "insulator",
     },
-    sequence: "andrea/946728f7-56ea-4de7-a254-e98cbbcfed00",
+    sequence: {
+      url: "andrea/946728f7-56ea-4de7-a254-e98cbbcfed00",
+    },
     tags: {
       position: "2",
       flanks: "ATGG-GACT",
@@ -57,7 +63,9 @@ const parts = [
     rules: {
       sbol: "insulator",
     },
-    sequence: "andrea/4d291ac3-93b0-4446-8944-ed10295a50f3",
+    sequence: {
+      url: "andrea/4d291ac3-93b0-4446-8944-ed10295a50f3",
+    },
     tags: {
       position: "23",
       flanks: "CGAA-CACG",
@@ -72,7 +80,9 @@ const parts = [
     rules: {
       sbol: "insulator",
     },
-    sequence: "andrea/39481d3b-a332-473a-a08e-16c107322b21",
+    sequence: {
+      url: "andrea/39481d3b-a332-473a-a08e-16c107322b21",
+    },
     tags: {
       position: "2",
       flanks: "ATGG-GACT",
@@ -87,7 +97,9 @@ const parts = [
     rules: {
       sbol: "insulator",
     },
-    sequence: "andrea/00c96f0f-7217-430c-b019-c2f00c691d04",
+    sequence: {
+      url: "andrea/00c96f0f-7217-430c-b019-c2f00c691d04",
+    },
     tags: {
       position: "2",
       flanks: "ATGG-GACT",
@@ -102,7 +114,9 @@ const parts = [
     rules: {
       sbol: "promoter",
     },
-    sequence: "andrea/8ad0e972-8d51-48e9-96a2-a126bacd6127",
+    sequence: {
+      url: "andrea/8ad0e972-8d51-48e9-96a2-a126bacd6127",
+    },
     tags: {
       position: "3",
       flanks: "GACT-GGAC",
@@ -117,7 +131,9 @@ const parts = [
     rules: {
       sbol: "promoter",
     },
-    sequence: "andrea/1eb0b8f2-8218-43c7-becf-694b23077ed6",
+    sequence: {
+      url: "andrea/1eb0b8f2-8218-43c7-becf-694b23077ed6",
+    },
     tags: {
       position: "14",
       flanks: "CTAC-GCAA",
@@ -132,7 +148,9 @@ const parts = [
     rules: {
       sbol: "promoter",
     },
-    sequence: "andrea/70eb52ca-5324-4caf-a5ac-7dbd62195255",
+    sequence: {
+      url: "andrea/70eb52ca-5324-4caf-a5ac-7dbd62195255",
+    },
     tags: {
       position: "18",
       flanks: "CGGT-GTGC",
@@ -147,7 +165,9 @@ const parts = [
     rules: {
       sbol: "promoter",
     },
-    sequence: "andrea/56aa560a-fb74-40f9-88bb-6fd87402ce25",
+    sequence: {
+      url: "andrea/56aa560a-fb74-40f9-88bb-6fd87402ce25",
+    },
     tags: {
       position: "18",
       flanks: "CGGT-GTGC",
@@ -162,7 +182,9 @@ const parts = [
     rules: {
       sbol: "promoter",
     },
-    sequence: "andrea/8203f39f-d750-4d58-ba2a-452acdae1a85",
+    sequence: {
+      url: "andrea/8203f39f-d750-4d58-ba2a-452acdae1a85",
+    },
     tags: {
       position: "3",
       flanks: "GACT-GGAC",
@@ -177,7 +199,9 @@ const parts = [
     rules: {
       sbol: "promoter",
     },
-    sequence: "andrea/510135fe-e1e3-4e6b-8291-c9acdaf4822a",
+    sequence: {
+      url: "andrea/510135fe-e1e3-4e6b-8291-c9acdaf4822a",
+    },
     tags: {
       position: "3",
       flanks: "GACT-GGAC",
@@ -192,7 +216,9 @@ const parts = [
     rules: {
       sbol: "rnaStability",
     },
-    sequence: "andrea/97b5abee-1bde-4570-bcea-b648593d854f",
+    sequence: {
+      url: "andrea/97b5abee-1bde-4570-bcea-b648593d854f",
+    },
     tags: {
       position: "4",
       flanks: "GGAC-TCCG",
@@ -207,7 +233,9 @@ const parts = [
     rules: {
       sbol: "rnaStability",
     },
-    sequence: "andrea/483fa0fd-9141-4926-8f0e-18e0aa74831f",
+    sequence: {
+      url: "andrea/483fa0fd-9141-4926-8f0e-18e0aa74831f",
+    },
     tags: {
       position: "4",
       flanks: "GGAC-TCCG",
@@ -222,7 +250,9 @@ const parts = [
     rules: {
       sbol: null,
     },
-    sequence: "andrea/2f663c8d-7cbb-4d90-83ba-eee792340f92",
+    sequence: {
+      url: "andrea/2f663c8d-7cbb-4d90-83ba-eee792340f92",
+    },
     tags: {
       position: "5",
       flanks: "TCCG-CCAG",
@@ -237,7 +267,9 @@ const parts = [
     rules: {
       sbol: null,
     },
-    sequence: "andrea/22a5fd32-2b6e-4301-a32c-d0e3a718bde5",
+    sequence: {
+      url: "andrea/22a5fd32-2b6e-4301-a32c-d0e3a718bde5",
+    },
     tags: {
       position: "6",
       flanks: "CCAG-CAGC",
@@ -252,7 +284,9 @@ const parts = [
     rules: {
       sbol: null,
     },
-    sequence: "andrea/bb36711d-d62d-42f1-8d32-3aad7f3a34d8",
+    sequence: {
+      url: "andrea/bb36711d-d62d-42f1-8d32-3aad7f3a34d8",
+    },
     tags: {
       position: "6",
       flanks: "CCAG-CAGC",
@@ -267,7 +301,9 @@ const parts = [
     rules: {
       sbol: null,
     },
-    sequence: "andrea/fa57ebb1-db51-4969-8fdb-d37ef3c77180",
+    sequence: {
+      url: "andrea/fa57ebb1-db51-4969-8fdb-d37ef3c77180",
+    },
     tags: {
       position: "6",
       flanks: "CCAG-CAGC",
@@ -282,7 +318,9 @@ const parts = [
     rules: {
       sbol: null,
     },
-    sequence: "andrea/49aa354e-5a4f-4be0-866c-80058b6df104",
+    sequence: {
+      url: "andrea/49aa354e-5a4f-4be0-866c-80058b6df104",
+    },
     tags: {
       position: "6",
       flanks: "CCAG-CAGC",
@@ -297,7 +335,9 @@ const parts = [
     rules: {
       sbol: null,
     },
-    sequence: "andrea/d56dd515-2257-42b6-bbe1-0d5f2bd797f5",
+    sequence: {
+      url: "andrea/d56dd515-2257-42b6-bbe1-0d5f2bd797f5",
+    },
     tags: {
       position: "6",
       flanks: "CCAG-CAGC",
@@ -312,7 +352,9 @@ const parts = [
     rules: {
       sbol: null,
     },
-    sequence: "andrea/7891b07c-163b-429c-8401-5e90f52dad7e",
+    sequence: {
+      url: "andrea/7891b07c-163b-429c-8401-5e90f52dad7e",
+    },
     tags: {
       position: "6",
       flanks: "CCAG-CAGC",
@@ -327,7 +369,9 @@ const parts = [
     rules: {
       sbol: null,
     },
-    sequence: "andrea/acf519a1-5ed7-4811-90b5-ac73af83f6e6",
+    sequence: {
+      url: "andrea/acf519a1-5ed7-4811-90b5-ac73af83f6e6",
+    },
     tags: {
       position: "8a",
       flanks: "AGGC-ATCC",
@@ -342,7 +386,9 @@ const parts = [
     rules: {
       sbol: null,
     },
-    sequence: "andrea/ccce1b06-8f6a-4570-bcb7-c862dc321f2a",
+    sequence: {
+      url: "andrea/ccce1b06-8f6a-4570-bcb7-c862dc321f2a",
+    },
     tags: {
       position: "20-21",
       flanks: "AGCG-GTTG",
@@ -357,7 +403,9 @@ const parts = [
     rules: {
       sbol: "cds",
     },
-    sequence: "andrea/c5c3b2e5-e4bd-4bcd-9ad2-1f39335d97a1",
+    sequence: {
+      url: "andrea/c5c3b2e5-e4bd-4bcd-9ad2-1f39335d97a1",
+    },
     tags: {
       position: "7",
       flanks: "CAGC-AGGC",
@@ -372,7 +420,9 @@ const parts = [
     rules: {
       sbol: "cds",
     },
-    sequence: "andrea/1edf18d8-e962-4643-9996-981be9538b78",
+    sequence: {
+      url: "andrea/1edf18d8-e962-4643-9996-981be9538b78",
+    },
     tags: {
       position: "7",
       flanks: "CAGC-AGGC",
@@ -387,7 +437,9 @@ const parts = [
     rules: {
       sbol: "cds",
     },
-    sequence: "andrea/adc07c78-8391-4e59-8ac9-43f3c6e2ef13",
+    sequence: {
+      url: "andrea/adc07c78-8391-4e59-8ac9-43f3c6e2ef13",
+    },
     tags: {
       position: "7",
       flanks: "CAGC-AGGC",
@@ -402,7 +454,9 @@ const parts = [
     rules: {
       sbol: "cds",
     },
-    sequence: "andrea/9e0de678-ccd1-45c1-a0a9-a3b14d639ae2",
+    sequence: {
+      url: "andrea/9e0de678-ccd1-45c1-a0a9-a3b14d639ae2",
+    },
     tags: {
       position: "9",
       flanks: "GCGT-TGCT",
@@ -417,7 +471,9 @@ const parts = [
     rules: {
       sbol: "cds",
     },
-    sequence: "andrea/8fc2fee4-1f48-4840-ad5f-79d28d1bffa1",
+    sequence: {
+      url: "andrea/8fc2fee4-1f48-4840-ad5f-79d28d1bffa1",
+    },
     tags: {
       position: "9",
       flanks: "GCGT-TGCT",
@@ -432,7 +488,9 @@ const parts = [
     rules: {
       sbol: "cds",
     },
-    sequence: "andrea/32a4df46-cd6c-4c8a-945c-e4083a608492",
+    sequence: {
+      url: "andrea/32a4df46-cd6c-4c8a-945c-e4083a608492",
+    },
     tags: {
       position: "9",
       flanks: "GCGT-TGCT",
@@ -447,7 +505,9 @@ const parts = [
     rules: {
       sbol: "cds",
     },
-    sequence: "andrea/afc92218-9f0a-4835-a559-fe0495064861",
+    sequence: {
+      url: "andrea/afc92218-9f0a-4835-a559-fe0495064861",
+    },
     tags: {
       position: "19",
       flanks: "GTGC-AGCG",
@@ -462,7 +522,9 @@ const parts = [
     rules: {
       sbol: "cds",
     },
-    sequence: "andrea/ec1118cc-147c-435c-a9f1-92c926ddcead",
+    sequence: {
+      url: "andrea/ec1118cc-147c-435c-a9f1-92c926ddcead",
+    },
     tags: {
       position: "19",
       flanks: "GTGC-AGCG",
@@ -477,7 +539,9 @@ const parts = [
     rules: {
       sbol: "cds",
     },
-    sequence: "andrea/72b6f3ea-f0a9-47c8-a0a8-03a08344cd18",
+    sequence: {
+      url: "andrea/72b6f3ea-f0a9-47c8-a0a8-03a08344cd18",
+    },
     tags: {
       position: "19",
       flanks: "GTGC-AGCG",
@@ -492,7 +556,9 @@ const parts = [
     rules: {
       sbol: "cds",
     },
-    sequence: "andrea/4ac5d78b-ad39-4c0d-ac3d-5316b100589d",
+    sequence: {
+      url: "andrea/4ac5d78b-ad39-4c0d-ac3d-5316b100589d",
+    },
     tags: {
       position: "19",
       flanks: "GTGC-AGCG",
@@ -507,7 +573,9 @@ const parts = [
     rules: {
       sbol: "cds",
     },
-    sequence: "andrea/e01d6c60-496e-438d-980a-857b6d0bab1a",
+    sequence: {
+      url: "andrea/e01d6c60-496e-438d-980a-857b6d0bab1a",
+    },
     tags: {
       position: "7",
       flanks: "CAGC-AGGC",
@@ -522,7 +590,9 @@ const parts = [
     rules: {
       sbol: "cds",
     },
-    sequence: "andrea/14bbec9a-6126-414b-ab63-d21c1bdc6f7c",
+    sequence: {
+      url: "andrea/14bbec9a-6126-414b-ab63-d21c1bdc6f7c",
+    },
     tags: {
       position: "9",
       flanks: "GCGT-TGCT",
@@ -537,7 +607,9 @@ const parts = [
     rules: {
       sbol: "cds",
     },
-    sequence: "andrea/6d8febae-9b16-4c63-9949-11a3c326fada",
+    sequence: {
+      url: "andrea/6d8febae-9b16-4c63-9949-11a3c326fada",
+    },
     tags: {
       position: "9",
       flanks: "GCGT-TGCT",
@@ -552,7 +624,9 @@ const parts = [
     rules: {
       sbol: "cds",
     },
-    sequence: "andrea/da7c669f-80e7-435e-9f24-260ca10cc395",
+    sequence: {
+      url: "andrea/da7c669f-80e7-435e-9f24-260ca10cc395",
+    },
     tags: {
       position: "15",
       flanks: "GCAA-CCCT",
@@ -567,7 +641,9 @@ const parts = [
     rules: {
       sbol: "cds",
     },
-    sequence: "andrea/a7ec5d0e-c30c-42ef-bb15-30cacdf96207",
+    sequence: {
+      url: "andrea/a7ec5d0e-c30c-42ef-bb15-30cacdf96207",
+    },
     tags: {
       position: "21",
       flanks: "TGGA-GTTG",
@@ -582,7 +658,9 @@ const parts = [
     rules: {
       sbol: "cds",
     },
-    sequence: "andrea/51baef4f-aa1c-49c6-b88f-2126ad82e25b",
+    sequence: {
+      url: "andrea/51baef4f-aa1c-49c6-b88f-2126ad82e25b",
+    },
     tags: {
       position: "9",
       flanks: "GCGT-TGCT",
@@ -597,7 +675,9 @@ const parts = [
     rules: {
       sbol: "cds",
     },
-    sequence: "andrea/8c938562-0846-4cc7-a07f-bd3df2644196",
+    sequence: {
+      url: "andrea/8c938562-0846-4cc7-a07f-bd3df2644196",
+    },
     tags: {
       position: "21",
       flanks: "TGGA-GTTG",
@@ -612,7 +692,9 @@ const parts = [
     rules: {
       sbol: "cds",
     },
-    sequence: "andrea/bb86088c-1ea6-401d-805e-cdca1a8b3dec",
+    sequence: {
+      url: "andrea/bb86088c-1ea6-401d-805e-cdca1a8b3dec",
+    },
     tags: {
       position: "7",
       flanks: "CAGC-AGGC",
@@ -627,7 +709,9 @@ const parts = [
     rules: {
       sbol: null,
     },
-    sequence: "andrea/87acbec7-26b1-40fc-9d5f-f2c7164cd56c",
+    sequence: {
+      url: "andrea/87acbec7-26b1-40fc-9d5f-f2c7164cd56c",
+    },
     tags: {
       position: "8",
       flanks: "AGGC-GCGT",
@@ -642,7 +726,9 @@ const parts = [
     rules: {
       sbol: null,
     },
-    sequence: "andrea/9e085e2e-4afa-42cd-855f-94e1de6a27a2",
+    sequence: {
+      url: "andrea/9e085e2e-4afa-42cd-855f-94e1de6a27a2",
+    },
     tags: {
       position: "20",
       flanks: "AGCG-TGGA",
@@ -657,7 +743,9 @@ const parts = [
     rules: {
       sbol: null,
     },
-    sequence: "andrea/50908c51-7a25-4eec-aab3-826e651e5d04",
+    sequence: {
+      url: "andrea/50908c51-7a25-4eec-aab3-826e651e5d04",
+    },
     tags: {
       position: "8",
       flanks: "AGGC-GCGT",
@@ -672,7 +760,9 @@ const parts = [
     rules: {
       sbol: null,
     },
-    sequence: "andrea/2bb633ba-26ee-410d-b610-a11297e9cf61",
+    sequence: {
+      url: "andrea/2bb633ba-26ee-410d-b610-a11297e9cf61",
+    },
     tags: {
       position: "8",
       flanks: "AGGC-GCGT",
@@ -687,7 +777,9 @@ const parts = [
     rules: {
       sbol: null,
     },
-    sequence: "andrea/a974dcfe-8b34-4ba6-b7d2-16e390b69c45",
+    sequence: {
+      url: "andrea/a974dcfe-8b34-4ba6-b7d2-16e390b69c45",
+    },
     tags: {
       position: "8",
       flanks: "AGGC-GCGT",
@@ -702,7 +794,9 @@ const parts = [
     rules: {
       sbol: null,
     },
-    sequence: "andrea/4c2c4eea-5b01-4994-b9ef-55c9cc1e2110",
+    sequence: {
+      url: "andrea/4c2c4eea-5b01-4994-b9ef-55c9cc1e2110",
+    },
     tags: {
       position: "8b",
       flanks: "ATCC-GCGT",
@@ -717,7 +811,9 @@ const parts = [
     rules: {
       sbol: null,
     },
-    sequence: "andrea/54edc24e-ad6d-40c8-9bbb-6903086de9ca",
+    sequence: {
+      url: "andrea/54edc24e-ad6d-40c8-9bbb-6903086de9ca",
+    },
     tags: {
       position: "10",
       flanks: "TGCT-GGTA",
@@ -732,7 +828,9 @@ const parts = [
     rules: {
       sbol: "terminator",
     },
-    sequence: "andrea/3e9eead5-e05f-4f7c-bf10-d089ed56a8fa",
+    sequence: {
+      url: "andrea/3e9eead5-e05f-4f7c-bf10-d089ed56a8fa",
+    },
     tags: {
       position: "11",
       flanks: "GGTA-CGTC",
@@ -747,7 +845,9 @@ const parts = [
     rules: {
       sbol: "terminator",
     },
-    sequence: "andrea/a3529a1c-ecf9-49cb-bfcc-d5b63813c31e",
+    sequence: {
+      url: "andrea/a3529a1c-ecf9-49cb-bfcc-d5b63813c31e",
+    },
     tags: {
       position: "16",
       flanks: "CCCT-GCTC",
@@ -762,7 +862,9 @@ const parts = [
     rules: {
       sbol: "terminator",
     },
-    sequence: "andrea/692b3588-969d-4b89-9d52-1107c425377c",
+    sequence: {
+      url: "andrea/692b3588-969d-4b89-9d52-1107c425377c",
+    },
     tags: {
       position: "22",
       flanks: "GTTG-CGAA",
@@ -777,7 +879,9 @@ const parts = [
     rules: {
       sbol: "originReplication",
     },
-    sequence: "andrea/56b35617-9a76-4647-b2ac-ccd0b36c3d82",
+    sequence: {
+      url: "andrea/56b35617-9a76-4647-b2ac-ccd0b36c3d82",
+    },
     tags: {
       position: "25",
       flanks: "ACTG-ACGA",
