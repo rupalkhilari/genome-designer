@@ -16,11 +16,12 @@ describe('Model', () => {
     describe('Annotations', () => {
       const annotation = AnnotationDefinition.scaffold();
 
+      /*
       it('annotate() should validate invalid annotations', () => {
         const clone = Object.assign({}, annotation);
         delete clone.id;
         expect(block.annotate.bind(block, clone)).to.throw();
-      });
+      });*/
 
       it('annotate() should add the annotation', () => {
         const annotated = block.annotate(annotation);
