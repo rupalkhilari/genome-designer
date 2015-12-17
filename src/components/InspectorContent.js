@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
-import { blockSetColor, blockSetSbol } from '../actions/blocks';
 import { connect } from 'react-redux';
+import { blockMerge, blockSetColor, blockSetSbol, blockRename } from '../actions/blocks';
+import InputSimple from './InputSimple';
 import ColorPicker from './ui/ColorPicker';
 import SymbolPicker from './ui/SymbolPicker';
 
@@ -11,6 +12,18 @@ export class InspectorContent extends Component {
     instance: PropTypes.object.isRequired,
     blockSetColor: PropTypes.func.isRequired,
     blockSetSbol: PropTypes.func.isRequired,
+    blockMerge: PropTypes.func.isRequired,
+    blockRename: PropTypes.func.isRequired,
+  }
+
+  setBlockName = (name) => {
+    this.props.blockRename(this.props.instance.id, name);
+  }
+
+  setBlockDescription = (description) => {
+    if (description !== this.props.instance.metadata.description) {
+      this.props.blockMerge(this.props.instance.id, {metadata: {description}});
+    }
   }
 
   selectColor = (color) => {
@@ -27,10 +40,19 @@ export class InspectorContent extends Component {
     return (
       <div className="InspectorContent InspectorContentBlock">
         <h4 className="InspectorContent-heading">Name</h4>
-        <p>{instance.metadata.name || 'Unnamed'}</p>
+        <InputSimple placeholder="Part Name"
+                     onChange={this.setBlockName}
+                     value={instance.metadata.name}/>
 
         <h4 className="InspectorContent-heading">Description</h4>
-        <p>{instance.metadata.description || 'No Description'}</p>
+        <InputSimple placeholder="Part Description"
+                     useTextarea
+                     onChange={this.setBlockDescription}
+                     updateOnBlur
+                     value={instance.metadata.description}/>
+
+        <h4 className="InspectorContent-heading">Sequence Length</h4>
+        <p><strong>{instance.sequence.length ? (instance.sequence.length + ' bp') : 'No Sequence'}</strong></p>
 
         <h4 className="InspectorContent-heading">Color</h4>
         <ColorPicker current={instance.metadata.color}
@@ -49,4 +71,6 @@ export class InspectorContent extends Component {
 export default connect(() => ({}), {
   blockSetColor,
   blockSetSbol,
+  blockRename,
+  blockMerge,
 })(InspectorContent);

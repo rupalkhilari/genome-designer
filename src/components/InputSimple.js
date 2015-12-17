@@ -36,7 +36,7 @@ export default class InputSimple extends Component {
   }
 
   handleKeyUp = (event) => {
-    if (event.keyCode === 13) {
+    if (event.keyCode === 13 || !this.props.updateOnBlur) {
       this.handleSubmission();
     }
   }
@@ -49,22 +49,23 @@ export default class InputSimple extends Component {
     return (
       <div className="InputSimple">
         {(this.props.useTextarea) &&
-        <textarea rows="2"
-               ref="input"
-               className="InputSimple-input"
-               placeholder={this.props.placeholder}
-               defaultValue={this.props.value || this.props.default}
-               onBlur={this.handleBlur}
-               onKeyUp={this.handleKeyUp}/>
+        <textarea
+          ref="input"
+          className="InputSimple-input"
+          placeholder={this.props.placeholder}
+          defaultValue={this.props.value || this.props.default}
+          onBlur={this.handleBlur}
+          onKeyUp={this.handleKeyUp}/>
         }
         {(!this.props.useTextarea) &&
-        <input size="30"
-               ref="input"
-               className="InputSimple-input"
-               placeholder={this.props.placeholder}
-               defaultValue={this.props.value || this.props.default}
-               onBlur={this.handleBlur}
-               onKeyUp={this.handleKeyUp}/>
+        <input
+          size="30"
+          ref="input"
+          className="InputSimple-input"
+          placeholder={this.props.placeholder}
+          defaultValue={this.props.value || this.props.default}
+          onBlur={this.handleBlur}
+          onKeyUp={this.handleKeyUp}/>
         }
       </div>
     );
