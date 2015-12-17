@@ -47,7 +47,6 @@
     position: absolute;
     display: inline-block;
     box-sizing: border-box;
-    background-color: black;
   }
 
   .canvas-glyph {
@@ -82,13 +81,9 @@
   .block-insertion-point {
     position: absolute;
     box-sizing: border-box;
-    width: 8px;
     height: 36px;
-    border-top: 2px solid white;
-    border-bottom: 2px solid white;
+    width: 4px;
     background-color: white;
-    border-left: 3px solid black;
-    border-right: 3px solid black;
   }
 
   .sceneGraphContainer {

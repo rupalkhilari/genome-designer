@@ -9,7 +9,7 @@ const rowH = 60;
 // row header bar height
 const rowBarH = 4;
 // vertical bar width
-const rowBarW = 3;
+const rowBarW = 2;
 // padding around text on blocks
 const textPad = 8;
 // width of condensed text blocks

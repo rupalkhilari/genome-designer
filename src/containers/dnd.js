@@ -5,6 +5,7 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import { DragDropContext } from 'react-dnd';
 import ConstructViewer from './graphics/views/constructviewer';
 import Inventory from './Inventory';
+import Inspector from './Inspector';
 import '../styles/SceneGraphPage.css';
 import MenuBar from '../components/Menu/MenuBar';
 import Menu from '../components/Menu/Menu';
@@ -54,6 +55,7 @@ class DnD extends Component {
           </div>
           {constructViewers}
         </div>
+        <Inspector/>
       </div>
     );
   }

@@ -17,6 +17,7 @@ import {
   blockClone,
   blockSetSbol,
   blockRename,
+  blockRemoveComponent,
 } from '../../../actions/blocks';
 import {
   block as blockDragType,
@@ -29,6 +30,8 @@ import {
 } from '../utils';
 import ConstructViewerMenu from './constructviewermenu';
 import UserInterface from './constructvieweruserinterface';
+import { inspectorToggleVisibility } from '../../../actions/inspector';
+import { uiSetCurrent } from '../../../actions/ui';
 
 const constructTarget = {
   drop (props, monitor, component) {
@@ -44,7 +47,9 @@ export class ConstructViewer extends Component {
   static propTypes = {
     construct: PropTypes.object.isRequired,
     constructId: PropTypes.string.isRequired,
-    layoutAlgorithm: PropTypes.string.isRequired
+    layoutAlgorithm: PropTypes.string.isRequired,
+    uiSetCurrent: PropTypes.func.isRequired,
+    inspectorToggleVisibility: PropTypes.func.isRequired,
   }
 
   constructor (props) {
@@ -87,7 +92,14 @@ export class ConstructViewer extends Component {
     const baseColors = ['rgb(225, 163, 116)', 'rgb(199, 109, 107)', 'rgb(83, 155, 163)'];
 
     // create the scene graph we are going to use to display the construct
-    this.sg = new SceneGraph2D({width: this.dom.clientWidth, height: this.dom.clientHeight, availableWidth: this.dom.clientWidth, availableHeight: this.dom.clientHeight, parent: this.sceneGraphEl, userInterfaceConstructor: UserInterface});
+    this.sg = new SceneGraph2D({
+      width: this.dom.clientWidth,
+      height: this.dom.clientHeight,
+      availableWidth: this.dom.clientWidth,
+      availableHeight: this.dom.clientHeight,
+      parent: this.sceneGraphEl,
+      userInterfaceConstructor: UserInterface
+    });
     // create the layout object
     this.layout = new Layout(this, this.sg, {
       layoutAlgorithm: this.props.layoutAlgorithm,
@@ -95,10 +107,20 @@ export class ConstructViewer extends Component {
     });
     // the user interface will also need access to the layout component
     this.sg.ui.layout = this.layout;
+    // getting more ugly, the UI needs access to ourselves, the constructviewer
+    this.sg.ui.constructViewer = this;
     // initial render won't call componentDidUpdate so force an update to the layout/scenegraph
     this.update();
     // handle window resize to reflow the layout
     window.addEventListener('resize', debounce(this.windowResized.bind(this), 15));
+  }
+
+  /**
+   * select the given block
+   */
+  blockSelected(partId) {
+    this.props.uiSetCurrent(partId);
+    this.props.inspectorToggleVisibility(true);
   }
 
   /**
@@ -149,6 +171,13 @@ export class ConstructViewer extends Component {
       });
     }
   }
+  /**
+   * remove the given block, which we assume if part of our construct
+   */
+  removePart(partId) {
+    this.layout.removePart(partId);
+    this.props.blockRemoveComponent(this.props.construct.id, partId);
+  }
 
   /**
    * rename one of our blocks
@@ -185,7 +214,6 @@ export class ConstructViewer extends Component {
    * render the component, the scene graph will render later when componentDidUpdate is called
    */
   render () {
-    console.time('Construct Viewer REACT render');
     const {
       connectDropTarget
     } = this.props;
@@ -197,7 +225,6 @@ export class ConstructViewer extends Component {
         </div>
       </div>
     );
-    console.timeEnd('Construct Viewer REACT render');
     return rendered;
   }
 }
@@ -211,6 +238,9 @@ export default connect((state, props) => {
   blockCreate,
   blockClone,
   blockAddComponent,
+  blockRemoveComponent,
   blockSetSbol,
   blockRename,
+  uiSetCurrent,
+  inspectorToggleVisibility,
 })(ConstructViewer);

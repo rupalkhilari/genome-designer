@@ -53,13 +53,16 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * mouse down handler
    */
   mouseDown(point, e) {
+    e.preventDefault();
     const block = this.topBlockAt(point);
     if (block) {
       const node = this.layout.nodeFromElement(block);
       if (e.shiftKey) {
-        this.addToSelections(node);
+        this.setSelections();
+        this.constructViewer.removePart(block);
       } else {
         this.setSelections([node]);
+        this.constructViewer.blockSelected(block);
       }
     }
   }
@@ -105,7 +108,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
     const AABB = node.getAABB();
     const xposition = edge === 'left' ? AABB.x : AABB.right;
     // position insertion element at the appropriate edge
-    this.insertionEl.style.left = (xposition - 4) + 'px';
+    this.insertionEl.style.left = (xposition - 1) + 'px';
     this.insertionEl.style.top = (AABB.y - 2) + 'px';
 
     // save the current insertion point
