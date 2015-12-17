@@ -18,17 +18,17 @@ import '../styles/SceneGraphPage.css';
  import MenuSeparator from '../components/Menu/MenuSeparator';
  */
 
-/**
- * just for testing bootstrap, hence the lack of comments
- */
+//todo - should abstract away component which has dragDropContext, inventory, inspector
+
 @DragDropContext(HTML5Backend)
 class DnD extends Component {
 
   static propTypes = {
     project: PropTypes.object.isRequired,
     projectId: PropTypes.string.isRequired,
-    children: PropTypes.object,
     constructs: PropTypes.array.isRequired,
+
+    pushState: PropTypes.func.isRequired,
   }
 
   constructor(props) {
@@ -43,6 +43,12 @@ class DnD extends Component {
 
   render() {
     const { project, constructs } = this.props;
+
+    //todo - need error handling here. Should be in route transition probably?
+    //right now there is some handling in GlobalNav when using ProjectSelect. Doesn't handle request of the URL.
+    if (!project || !project.metadata) {
+      return <p>todo - need to handle this (direct request)</p>;
+    }
 
     const constructViewers = constructs.map(construct => {
       return (
