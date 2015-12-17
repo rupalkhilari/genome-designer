@@ -56,7 +56,8 @@ export default class Layout {
   }
 
   /**
-   * remove the part, node and unmap
+   * remove the part, node and unmap. Return the node ( its isn't disposed )
+   * so that is can be reused.
    */
   removePart(part) {
     const node = this.nodeFromElement(part);
@@ -65,6 +66,7 @@ export default class Layout {
     delete this.parts2nodes[part];
     delete this.partTypes[part];
     node.parent.removeChild(node);
+    return node;
   }
   /**
    * return the element from the data represented by the given node uuid

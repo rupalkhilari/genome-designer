@@ -25,16 +25,16 @@ export default class ConstructViewerMenu extends Component {
     const fitStyle = this.props.layoutAlgorithm === kT.layoutFit ? 'link checked' : 'link'
     return (
       <div className="construct-viewer-menu">
-        <a className="link icon">＋</a>
+        <a className="link">＋</a>
         <a className="link">Construct</a>
         <a className="link">Instance</a>
         <a className="link">Block</a>
         <a className="link">List</a>
-        <a className="link icon">↔</a>
+        <a className="link">↔</a>
         <a onClick={this.fullClicked} className={fullStyle}>Full</a>
         <a className={wrapStyle}>Wrap</a>
         <a className={fitStyle}>Fit</a>
-        <a className="link icon">✂</a>
+        <a className="link">✂</a>
         <a className="link">Splice</a>
         <a className="link">Crop</a>
       </div>

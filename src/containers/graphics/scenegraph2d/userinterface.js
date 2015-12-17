@@ -16,8 +16,8 @@ export default class UserInterface {
     this.sg.parent.parentNode.insertBefore(this.el, this.sg.parent.nextSibiling);
     // sink mouse events
     this.el.addEventListener('mousedown', this.onMouseDown);
-    this.el.addEventListener('mousedown', this.onMouseMove);
-    this.el.addEventListener('mousedown', this.onMouseUp);
+    this.el.addEventListener('mousemove', this.onMouseMove);
+    this.el.addEventListener('mouseup', this.onMouseUp);
     // base class can handle simple selections based on the AABB of nodes
     this.selections = [];
     // maps selected node UUID's to their display glyph
