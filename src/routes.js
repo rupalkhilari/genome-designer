@@ -4,10 +4,8 @@ import { Route, IndexRoute, Redirect } from 'react-router';
 import App from './containers/App';
 import DashboardPage from './containers/DashboardPage';
 import ProjectPage from './containers/ProjectPage';
-import ConstructPage from './containers/ConstructPage';
 import AboutPage from './components/AboutPage';
 import SupportPage from './components/SupportPage';
-import DnD from './containers/dnd';
 
 //Routes are specified as a separate component so they can hotloaded
 //see: https://github.com/rackt/redux-router/issues/44#issuecomment-140198502
@@ -34,6 +32,5 @@ export default(
 
     <Redirect from="/project" to="/"/>
     {/*<Route path="/scenegraph" component={SceneGraphPage}/>*/}
-    <Route path="/dnd/:projectId" component={DnD}/>
   </Route>
 );

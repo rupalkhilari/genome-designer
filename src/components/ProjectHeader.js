@@ -19,16 +19,6 @@ export default class ProjectHeader extends Component {
     });
   }
 
-  handleProjectRename = (nextValue) => {
-    //todo - should be an action
-    this.props.project.mutate('metadata.name', nextValue);
-  }
-
-  handleProjectDescriptionChange = (nextValue) => {
-    //todo - should be an action
-    this.props.project.mutate('metadata.description', nextValue);
-  }
-
   render() {
     const { project } = this.props;
 
