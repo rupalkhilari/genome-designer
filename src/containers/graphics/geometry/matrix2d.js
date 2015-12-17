@@ -10,10 +10,10 @@ export default class Matrix2D {
    * @constructor
    * @param {undefined || Array}
    */
-  constructor(v) {
-    invariant(v === undefined || Array.isArray(v), 'invalid parameter');
-    if (v) {
-      this._v = v.slice();
+  constructor(vector) {
+    invariant(vector === undefined || Array.isArray(vector), 'invalid parameter');
+    if (vector) {
+      this._v = vector.slice();
     } else {
       // matrix defaults to the identity matrix with 1,1,1, from top left to bottom right
       this._v = [1, 0, 0, 0, 1, 0, 0, 0, 1];
@@ -106,15 +106,15 @@ export default class Matrix2D {
 
   /**
    * construct a translation matrix
-   * @param  {number} x
-   * @param  {number} y
+   * @param  {number} xv
+   * @param  {number} yv
    * @return {Matrix2D}
    */
-  static translate(x, y) {
-    const m = new Matrix2D();
-    m._v[2] = x;
-    m._v[5] = y;
-    return m;
+  static translate(xv, yv) {
+    const mtx = new Matrix2D();
+    mtx._v[2] = xv;
+    mtx._v[5] = yv;
+    return mtx;
   }
 
   /**
@@ -124,10 +124,10 @@ export default class Matrix2D {
    * @return {Matrix2D}
    */
   static scale(x, y) {
-    const m = new Matrix2D();
-    m._v[0] = x;
-    m._v[4] = y;
-    return m;
+    const mtx = new Matrix2D();
+    mtx._v[0] = x;
+    mtx._v[4] = y;
+    return mtx;
   }
   /**
    * construct a rotation matrix
@@ -135,13 +135,13 @@ export default class Matrix2D {
    * @return {Matrix2D}
    */
   static rotate(degrees) {
-    const m = new Matrix2D();
-    const r = deg2rad(degrees);
-    m._v[0] = Math.cos(r);
-    m._v[1] = -Math.sin(r);
-    m._v[3] = Math.sin(r);
-    m._v[4] = Math.cos(r);
-    return m;
+    const mtx = new Matrix2D();
+    const radians = deg2rad(degrees);
+    mtx._v[0] = Math.cos(radians);
+    mtx._v[1] = -Math.sin(radians);
+    mtx._v[3] = Math.sin(radians);
+    mtx._v[4] = Math.cos(radians);
+    return mtx;
   }
   /**
    * multiply a vector by this matrix, returning a new vector
@@ -158,29 +158,29 @@ export default class Matrix2D {
 
   /**
    * multiply this matrix by another
-   * @param {Matrix2D} m
+   * @param {Matrix2D} mtx
    * @param Matrix2D
    */
-  multiplyMatrix(m) {
-    const o = new Matrix2D();
-    const a = this._v;
-    const b = m._v;
-    const c = o._v;
+  multiplyMatrix(mtx) {
+    const result = new Matrix2D();
+    const _a = this._v;
+    const _b = mtx._v;
+    const _c = result._v;
     // dot product of first row with each column of m
-    c[0] = a[0] * b[0] + a[1] * b[3] + a[2] * b[6];
-    c[1] = a[0] * b[1] + a[1] * b[4] + a[2] * b[7];
-    c[2] = a[0] * b[2] + a[1] * b[5] + a[2] * b[8];
+    _c[0] = _a[0] * _b[0] + _a[1] * _b[3] + _a[2] * _b[6];
+    _c[1] = _a[0] * _b[1] + _a[1] * _b[4] + _a[2] * _b[7];
+    _c[2] = _a[0] * _b[2] + _a[1] * _b[5] + _a[2] * _b[8];
     // dot product of second row with each column of m
-    c[3] = a[3] * b[0] + a[4] * b[3] + a[5] * b[6];
-    c[4] = a[3] * b[1] + a[4] * b[4] + a[5] * b[7];
-    c[5] = a[3] * b[2] + a[4] * b[5] + a[5] * b[8];
+    _c[3] = _a[3] * _b[0] + _a[4] * _b[3] + _a[5] * _b[6];
+    _c[4] = _a[3] * _b[1] + _a[4] * _b[4] + _a[5] * _b[7];
+    _c[5] = _a[3] * _b[2] + _a[4] * _b[5] + _a[5] * _b[8];
     // dot product of third row with each column of m
-    c[6] = a[6] * b[0] + a[7] * b[3] + a[8] * b[6];
-    c[7] = a[6] * b[1] + a[7] * b[4] + a[8] * b[7];
-    c[8] = a[6] * b[2] + a[7] * b[5] + a[8] * b[8];
+    _c[6] = _a[6] * _b[0] + _a[7] * _b[3] + _a[8] * _b[6];
+    _c[7] = _a[6] * _b[1] + _a[7] * _b[4] + _a[8] * _b[7];
+    _c[8] = _a[6] * _b[2] + _a[7] * _b[5] + _a[8] * _b[8];
     // validate
-    invariant(o.validate(), 'Bad Matrix');
-    return o;
+    invariant(result.validate(), 'Bad Matrix');
+    return result;
   }
 
   /**
@@ -188,24 +188,24 @@ export default class Matrix2D {
    * @return Matrix2D
    */
   inverse() {
-    const v = this._v;
+    const _v = this._v;
     // computes the inverse of a matrix m
     // 1. calculate the determinant http://en.wikipedia.org/wiki/Determinant#3.C2.A0.C3.97.C2.A03_matrices
-    const det = v[0] * (v[4] * v[8] - v[7] * v[5]) -
-      v[1] * (v[3] * v[8] - v[5] * v[6]) +
-      v[2] * (v[3] * v[7] - v[4] * v[6]);
+    const det = _v[0] * (_v[4] * _v[8] - _v[7] * _v[5]) -
+      _v[1] * (_v[3] * _v[8] - _v[5] * _v[6]) +
+      _v[2] * (_v[3] * _v[7] - _v[4] * _v[6]);
     const invdet = 1 / det;
     const out = new Matrix2D();
-    const o = out._v;
-    o[0] = (v[4] * v[8] - v[7] * v[5]) * invdet;
-    o[1] = (v[2] * v[7] - v[1] * v[8]) * invdet;
-    o[2] = (v[1] * v[5] - v[2] * v[4]) * invdet;
-    o[3] = (v[5] * v[6] - v[3] * v[8]) * invdet;
-    o[4] = (v[0] * v[8] - v[2] * v[6]) * invdet;
-    o[5] = (v[3] * v[2] - v[0] * v[5]) * invdet;
-    o[6] = (v[3] * v[7] - v[6] * v[4]) * invdet;
-    o[7] = (v[6] * v[1] - v[0] * v[7]) * invdet;
-    o[8] = (v[0] * v[4] - v[3] * v[1]) * invdet;
+    const _o = out._v;
+    _o[0] = (_v[4] * _v[8] - _v[7] * _v[5]) * invdet;
+    _o[1] = (_v[2] * _v[7] - _v[1] * _v[8]) * invdet;
+    _o[2] = (_v[1] * _v[5] - _v[2] * _v[4]) * invdet;
+    _o[3] = (_v[5] * _v[6] - _v[3] * _v[8]) * invdet;
+    _o[4] = (_v[0] * _v[8] - _v[2] * _v[6]) * invdet;
+    _o[5] = (_v[3] * _v[2] - _v[0] * _v[5]) * invdet;
+    _o[6] = (_v[3] * _v[7] - _v[6] * _v[4]) * invdet;
+    _o[7] = (_v[6] * _v[1] - _v[0] * _v[7]) * invdet;
+    _o[8] = (_v[0] * _v[4] - _v[3] * _v[1]) * invdet;
     invariant(out.validate(), 'Bad Matrix');
     return out;
   }
@@ -233,7 +233,7 @@ export default class Matrix2D {
    * @return string
    */
   toCSSString() {
-    const v = this._v;
-    return `matrix(${v[0]}, ${v[3]}, ${v[1]}, ${v[4]}, ${v[2]}, ${v[5]})`;
+    const _v = this._v;
+    return `matrix(${_v[0]}, ${_v[3]}, ${_v[1]}, ${_v[4]}, ${_v[2]}, ${_v[5]})`;
   }
 }

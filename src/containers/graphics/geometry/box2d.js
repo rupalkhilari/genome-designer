@@ -74,9 +74,9 @@ export default class Box2D {
   /**
    * construct a box from a string, opposite of toString
    */
-  static fromString(s) {
-    invariant(s, 'Bad parameter');
-    const values = s.split(',');
+  static fromString(str) {
+    invariant(str, 'Bad parameter');
+    const values = str.split(',');
     invariant(values && values.length === 4, 'Unexpected format');
     return new Box2D(parseFloat(values[0]), parseFloat(values[1]), parseFloat(values[2]), parseFloat(values[3]));
   }
@@ -84,20 +84,20 @@ export default class Box2D {
   /**
    * return an AABB defined by the limits of this point
    * and another point
-   * @param  {[Vector2D} a
+   * @param  {[Vector2D} ary
    * @return {Box2D}
    */
-  static boxFromPoints(a) {
+  static boxFromPoints(ary) {
     let xmin = Number.MAX_VALUE;
     let ymin = Number.MAX_VALUE;
     let xmax = -Number.MAX_VALUE;
     let ymax = -Number.MAX_VALUE;
 
-    for (let i = 0; i < a.length; i += 1) {
-      xmin = Math.min(xmin, a[i].x);
-      ymin = Math.min(ymin, a[i].y);
-      xmax = Math.max(xmax, a[i].x);
-      ymax = Math.max(ymax, a[i].y);
+    for (let i = 0; i < ary.length; i += 1) {
+      xmin = Math.min(xmin, ary[i].x);
+      ymin = Math.min(ymin, ary[i].y);
+      xmax = Math.max(xmax, ary[i].x);
+      ymax = Math.max(ymax, ary[i].y);
     }
 
     return new Box2D(xmin, ymin, xmax - xmin, ymax - ymin);
@@ -130,23 +130,11 @@ export default class Box2D {
   set top(_y) {
     this.y = _y;
   }
-  get r() {
-    return this.x + this.w;
-  }
-  set r(_r) {
-    this.w = _r - this.x;
-  }
   get right() {
     return this.x + this.w;
   }
   set right(_r) {
     this.w = _r - this.x;
-  }
-  get b() {
-    return this.y + this.h;
-  }
-  set b(_b) {
-    this.h = _b - this.y;
   }
   get bottom() {
     return this.y + this.h;
@@ -169,37 +157,37 @@ export default class Box2D {
   get center() {
     return new Vector2D(this.cx, this.cy);
   }
-  set center(v) {
-    this.cx = v.x;
-    this.cy = v.y;
+  set center(vector) {
+    this.cx = vector.x;
+    this.cy = vector.y;
   }
   get topLeft() {
     return new Vector2D(this.x, this.y);
   }
-  set topLeft(v) {
-    this.x = v.x;
-    this.y = v.y;
+  set topLeft(vector) {
+    this.x = vector.x;
+    this.y = vector.y;
   }
   get topRight() {
-    return new Vector2D(this.r, this.y);
+    return new Vector2D(this.right, this.y);
   }
-  set topRight(v) {
-    this.r = v.x;
-    this.y = v.y;
+  set topRight(vector) {
+    this.right = vector.x;
+    this.y = vector.y;
   }
   get bottomRight() {
-    return new Vector2D(this.r, this.b);
+    return new Vector2D(this.right, this.bottom);
   }
-  set bottomRight(v) {
-    this.r = v.x;
-    this.b = v.y;
+  set bottomRight(vector) {
+    this.right = vector.x;
+    this.bottom = vector.y;
   }
   get bottomLeft() {
-    return new Vector2D(this.x, this.b);
+    return new Vector2D(this.x, this.bottom);
   }
-  set bottomLeft(v) {
-    this.x = v.x;
-    this.b = v.y;
+  set bottomLeft(vector) {
+    this.x = vector.x;
+    this.bottom = vector.y;
   }
 
   /**
@@ -215,8 +203,8 @@ export default class Box2D {
    */
   normalize() {
     return new Box2D(
-      Math.min(this.x, this.r),
-      Math.min(this.y, this.b),
+      Math.min(this.x, this.right),
+      Math.min(this.y, this.bottom),
       Math.abs(this.w),
       Math.abs(this.h)
     );
@@ -228,10 +216,10 @@ export default class Box2D {
    * @param {number} inflateY
    */
   inflate(inflateX, inflateY) {
-    const b = new Box2D(this.x, this.y, this.w + inflateX * 2, this.h + inflateY * 2);
-    b.cx = this.cx;
-    b.cy = this.cy;
-    return b;
+    const box = new Box2D(this.x, this.y, this.w + inflateX * 2, this.h + inflateY * 2);
+    box.cx = this.cx;
+    box.cy = this.cy;
+    return box;
   }
 
   /**
@@ -249,18 +237,18 @@ export default class Box2D {
 
   /**
    * return a new box that is this box * e
-   * @param e
+   * @param multiplier
    */
-  multiply(e) {
-    return new Box2D(this.x * e, this.y * e, this.width * e, this.height * e);
+  multiply(multiplier) {
+    return new Box2D(this.x * multiplier, this.y * multiplier, this.width * multiplier, this.height * multiplier);
   }
 
   /**
    * return a new box that is this box / e
-   * @param e
+   * @param divisor
    */
-  divide(e) {
-    return new Box2D(this.x / e, this.y / e, this.width / e, this.height / e);
+  divide(divisor) {
+    return new Box2D(this.x / divisor, this.y / divisor, this.width / divisor, this.height / divisor);
   }
 
   /**
@@ -281,16 +269,16 @@ export default class Box2D {
    * @returns Box2D - the union of this and box
    */
   union(box) {
-    const u = new Box2D(
+    const uni = new Box2D(
       Math.min(this.x, box.x),
       Math.min(this.y, box.y),
       0, 0
     );
 
-    u.r = Math.max(this.r, box.x + box.w);
-    u.b = Math.max(this.b, box.y + box.h);
+    uni.right = Math.max(this.right, box.x + box.w);
+    uni.bottom = Math.max(this.bottom, box.y + box.h);
 
-    return u;
+    return uni;
   }
 
   /**
@@ -299,19 +287,19 @@ export default class Box2D {
    * 1: top right -> bottom right
    * 2: bottom right -> bottom left
    * 3: bottom left -> top left
-   * @param {Number} n
+   * @param {Number} nth
    */
-  getEdge(n) {
-    invariant(n >= 0 && n < 4, 'Bad parameter');
-    switch (n) {
+  getEdge(nth) {
+    invariant(nth >= 0 && nth < 4, 'Bad parameter');
+    switch (nth) {
     case 0:
-      return new Line2D(new Vector2D(this.x, this.y), new Vector2D(this.r, this.y));
+      return new Line2D(new Vector2D(this.x, this.y), new Vector2D(this.right, this.y));
     case 1:
-      return new Line2D(new Vector2D(this.r, this.y), new Vector2D(this.r, this.b));
+      return new Line2D(new Vector2D(this.right, this.y), new Vector2D(this.right, this.bottom));
     case 2:
-      return new Line2D(new Vector2D(this.r, this.b), new Vector2D(this.x, this.b));
+      return new Line2D(new Vector2D(this.right, this.bottom), new Vector2D(this.x, this.bottom));
     default:
-      return new Line2D(new Vector2D(this.x, this.b), new Vector2D(this.x, this.y));
+      return new Line2D(new Vector2D(this.x, this.bottom), new Vector2D(this.x, this.y));
     }
   }
 
@@ -320,15 +308,15 @@ export default class Box2D {
    * @static
    */
   static union(boxes) {
-    const u = new Box2D(0, 0, 0, 0);
+    const uni = new Box2D(0, 0, 0, 0);
 
     if (boxes && boxes.length) {
-      u.x = Math.min.apply(null, boxes.map(box => box.x));
-      u.y = Math.min.apply(null, boxes.map(box => box.y));
-      u.r = Math.min.apply(null, boxes.map(box => box.r));
-      u.b = Math.min.apply(null, boxes.map(box => box.b));
+      uni.x = Math.min.apply(null, boxes.map(box => box.x));
+      uni.y = Math.min.apply(null, boxes.map(box => box.y));
+      uni.r = Math.min.apply(null, boxes.map(box => box.r));
+      uni.b = Math.min.apply(null, boxes.map(box => box.b));
     }
-    return u;
+    return uni;
   }
 
   /**
@@ -337,11 +325,11 @@ export default class Box2D {
    */
   intersectWithBox(box) {
     // minimum of right edges
-    const minx = Math.min(this.r, box.r);
+    const minx = Math.min(this.right, box.right);
     // maximum of left edges
     const maxx = Math.max(this.x, box.x);
     // minimum of bottom edges
-    const miny = Math.min(this.b, box.b);
+    const miny = Math.min(this.bottom, box.bottom);
     // maximum of top edges
     const maxy = Math.max(this.y, box.y);
     // if area is greater than zero there is an intersection
@@ -362,16 +350,16 @@ export default class Box2D {
   isInside(other) {
     return this.x >= other.x &&
       this.y >= other.y &&
-      this.r <= other.r &&
-      this.b <= other.b;
+      this.right <= other.right &&
+      this.bottom <= other.bottom;
   }
 
   /**
    * return true if the given point ( anything with x/y properties ) is inside the box
-   * @param p
+   * @param point
    */
-  pointInBox(p) {
-    return p.x >= this.x && p.y >= this.y && p.x < this.r && p.y < this.b;
+  pointInBox(point) {
+    return point.x >= this.x && point.y >= this.y && point.x < this.right && point.y < this.bottom;
   }
 
   /**
