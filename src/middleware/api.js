@@ -8,7 +8,7 @@ import BlockDefinition from '../schemas/Block';
  *************************/
 
 const serverRoot = 'http://localhost:3000/'; //fetch only supports absolute paths
-
+const execPath = (path) => serverRoot + 'exec/' + path;
 export const apiPath = (path) => serverRoot + 'api/' + path;
 
 //hack - set testing stub from start for now so all requests work
@@ -63,6 +63,16 @@ export const login = (user, password) => {
     });
 };
 
+export const createBlock = (block) => {
+  invariant(BlockDefinition.validate(block), 'Block does not pass validation: ' + block);
+  try {
+    const stringified = JSON.stringify(block);
+    return fetch(apiPath(`block/`), headersPost(stringified));
+  } catch (err) {
+    return Promise.reject('error stringifying block');
+  }
+};
+
 export const retrieveBlock = (id) => {
   return fetch(apiPath(`block/${id}`), headersGet())
     .then(resp => resp.json());
@@ -75,6 +85,15 @@ export const saveBlock = (block) => {
     return fetch(apiPath(`block/${block.id}`), headersPut(stringified));
   } catch (err) {
     return Promise.reject('error stringifying block');
+  }
+};
+
+export const runExtension = (id, inputs) => {
+  try {
+    const stringified = JSON.stringify(inputs);
+    return fetch(execPath(`${id}`), headersPost(stringified));
+  } catch (err) {
+    return Promise.reject('error stringifying input object');
   }
 };
 

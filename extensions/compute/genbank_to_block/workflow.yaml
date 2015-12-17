@@ -1,0 +1,10 @@
+inputs:
+    - id: genbank
+      type: string
+
+outputs:
+    - id: block
+      type: string
+    - id: sequence
+      type: string
+

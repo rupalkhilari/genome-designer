@@ -106,7 +106,6 @@ router.get('/descendants/:id', (req, res) => {
  *********************************/
 
 router.post('/project', jsonParser, (req, res) => {
-  console.log('hit project');
   const data = req.body;
   const id = uuid.v4();
   Object.assign(data, {
@@ -123,7 +122,6 @@ router.post('/project', jsonParser, (req, res) => {
 });
 
 router.post('/block', jsonParser, (req, res) => {
-  console.log('hit block');
   const data = req.body;
   const id = uuid.v4();
   Object.assign(data, {

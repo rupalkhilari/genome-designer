@@ -1,6 +1,7 @@
 import chai from 'chai';
 import fs from 'fs';
-import { apiPath, getSessionKey, writeFile, readFile } from '../../src/middleware/api';
+import { Block as exampleBlock } from '../schemas/_examples';
+import { apiPath, getSessionKey, writeFile, readFile, runExtension, createBlock, saveBlock } from '../../src/middleware/api';
 const { expect } = chai;
 
 const fileStoragePath = './storage/';
@@ -80,7 +81,9 @@ describe('Middleware', () => {
   });
 
   it('should work with multiple files', function multipleFiles(done) {
-    this.timeout(5000);
+
+    //only takes a long time the first time docker build is run
+    this.timeout(500000);
 
     const file1Path = 'test/file1';
     const file1Contents = 'exhibit a';
@@ -115,4 +118,41 @@ describe('Middleware', () => {
       done();
     });
   });
+
+  it('runExtension() works', function genbankTest(done) {
+    this.timeout(100000);
+    let block1 = exampleBlock;
+    let bid1;
+    let input1;
+
+    createBlock(block1)
+      .then((res) => {
+        bid1 = res.id;
+
+        input1 = {
+          'genbank': 'extensions/compute/genbank_to_block/sequence.gb',
+          'sequence': '/api/file/block/' + bid1 + '/sequence',
+        };
+
+        return res;
+      })
+      .then((res) => {
+        return runExtension('genbank_to_block', input1);
+      })
+      .then((output) => {
+        expect(output.block !== undefined);          
+        const block = JSON.parse(output.block);
+        block1.sequence.url = input1.sequence;
+        return saveBlock(block1);
+      })
+      .then((block) => {
+        expect(block.id === bid1);
+        expect(block.sequence.url === input1.sequence);
+        done();
+      })
+      .catch((err) => {
+        expect(false);
+        done();
+      });
+    });
 });
