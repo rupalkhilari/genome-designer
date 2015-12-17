@@ -1,9 +1,9 @@
 import invariant from '../../../../utils/environment/invariant';
-import { Component } from 'react';
+
 /**
  * base class for all glyphs.
  */
-export default class Glyph2D extends Component {
+export default class Glyph2D {
 
   /**
    * base class for all glyphs
@@ -11,11 +11,14 @@ export default class Glyph2D extends Component {
    */
   constructor(node) {
     invariant(node, 'Expected a parent node');
-    super();
-    this.nodes = node;
+    this.node = node;
   }
 
-  render() {
+  /**
+   * you can't update the base class
+   * @return {[type]} [description]
+   */
+  update() {
     invariant(false, 'Inheriting class must define the render method');
   }
 }

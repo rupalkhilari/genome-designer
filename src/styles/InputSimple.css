@@ -5,13 +5,17 @@
 
   &-input {
     cursor: pointer;
+    background: transparent;
+    padding: 0;
     outline: 0;
     border: 0;
-    font-size: 0.75em;
     width: 100%;
+    color: inherit;
     
     &:focus {
       cursor: text;
+      background: white;
+      color: black;
     }
   }
 }

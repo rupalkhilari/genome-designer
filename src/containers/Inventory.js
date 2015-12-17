@@ -13,12 +13,12 @@ import '../styles/SidePanel.css';
 // should also better enumerate types...
 const inventoryData = [
   {
-    name: 'EGF',
+    name: 'Foundry',
     type: 'block',
     items: andreaBlocks,
   },
   {
-    name: 'sbol',
+    name: 'Symbols',
     type: 'sbol',
     items: inventorySbol,
   },
@@ -30,6 +30,13 @@ export class Inventory extends Component {
     inventoryToggleVisibility: PropTypes.func.isRequired,
   }
 
+  toggle = (forceVal) => {
+    this.props.inventoryToggleVisibility.call(null, forceVal);
+    window.setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+    }, 300);
+  }
+
   render() {
     const { isVisible, inventoryToggleVisibility } = this.props;
 
@@ -37,12 +44,12 @@ export class Inventory extends Component {
       <div className={'SidePanel Inventory' + (isVisible ? ' visible' : '')}>
         <div className="SidePanel-heading">
           <span className="SidePanel-heading-trigger Inventory-trigger"
-                onClick={() => inventoryToggleVisibility()} />
+                onClick={this.toggle} />
           <div className="SidePanel-heading-content">
             <span className="SidePanel-heading-title">Inventory</span>
             <a className="SidePanel-heading-close"
                ref="close"
-               onClick={inventoryToggleVisibility.bind(null, false)} />
+               onClick={this.toggle.bind(this, false)}></a>
           </div>
         </div>
 

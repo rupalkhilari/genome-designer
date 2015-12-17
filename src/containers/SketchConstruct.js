@@ -21,6 +21,7 @@ const constructTarget = {
       });
     } else if (type === sbolDragType) {
       const blockId = props.construct.components[0]; //todo - get the right block
+      console.log('SBOL:', blockId, ' ', item.id);
       props.blockSetSbol(blockId, item.id);
     } else {
       // ?

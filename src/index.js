@@ -5,7 +5,7 @@ import { ReduxRouter } from 'redux-router';
 import * as actionTypes from './constants/ActionTypes';
 import actions from './actions/_expose';
 import store, { lastAction } from './store/index';
-import { login, runExtension } from './middleware/api';
+import * as api from './middleware/api';
 
 render(
   <Provider store={store}>
@@ -14,7 +14,7 @@ render(
   document.getElementById('root')
 );
 
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.USER === 'maxwellbates') {
   // Use require because imports can't be conditional.
   // In production, you should ensure process.env.NODE_ENV
   // is envified so that Uglify can eliminate this
@@ -25,7 +25,7 @@ if (process.env.NODE_ENV !== 'production') {
 // login on app start by default for all subsequent API requests...
 // need to handle this much better. this is so lame.
 // really, this isnt necessary yet, as there is a testingStub Key in middleware/api.js for now
-login();
+api.login();
 
 //expose various things on the window, e.g. for extensions
 const exposed = global.gd = {};
@@ -42,5 +42,5 @@ Object.assign(exposed, {
       });
     },
   },
-  runExtension,
+  api,
 });

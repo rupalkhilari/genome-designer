@@ -50,7 +50,7 @@ class GlobalNav extends Component {
     return (
       <div className="GlobalNav">
         <Link className="GlobalNav-title"
-              to="/">Home</Link>
+              to="/">GD</Link>
         <a className="GlobalNav-action"
            disabled={!currentProjectId}
            onClick={this.handleClickInventory}>

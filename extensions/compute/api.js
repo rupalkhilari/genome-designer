@@ -163,30 +163,30 @@ router.post('/:id', jsonParser, (req, resp) => {
                       outputFiles[ outputs[i].id ] = outFile;
                       outFile = outFile.replace("/api/file/","storage/");
                   
-                          //create folder for outFile
-                          let path = outFile.substring(0,outFile.lastIndexOf('/')+1);
-                          mkpath(path, (err) => {
+                        //create folder for outFile
+                        let path = outFile.substring(0,outFile.lastIndexOf('/')+1);
+                        mkpath(path, (err) => {
 
-                        if (err) {
-                          console.log(err.message);
-                          reject(err.message);
-                        } else {
+                          if (err) {
+                            console.log(err.message);
+                            return reject(err.message);
+                          } else {
 
-                          fs.writeFile(outFile, contents , 'utf8', err => {
-                            if (err) {
-                              console.log(err.message);
-                            } else {  
-                              console.log('Wrote ' + outFile);
-                              //TODO: should be finished before resp.json
-                            }
-                          }); //fs.writeFile
+                            fs.writeFile(outFile, contents , 'utf8', err => {
+                              if (err) {
+                                console.log(err.message);
+                                reject(err.message);
+                              } else {  
+                                console.log('Wrote ' + outFile);
+                                return resolve(outFile);
+                              }
+                            }); //fs.writeFile
 
-                        }
-                      }); //make path                      
-                      resolve(outFile);
+                          }
+                        }); //make path                      
                     } else { //if not writing to output file, return in json
                       outputFiles[ outputs[i].id ] = contents;
-                      resolve(contents);
+                      return resolve(contents);
                     }
                   }));
               }

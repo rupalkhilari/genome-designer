@@ -23,7 +23,6 @@ export default class FiniteStateMachine {
    * @param  {String} toStateName
    */
   transition(toStateName) {
-
     // the next state name MUST match one of the current states transitions
     invariant(this.canTransition(toStateName), 'there is no transition to that state');
 
