@@ -1,4 +1,5 @@
 import Vector2D from '../geometry/vector2d';
+import Line2D from '../geometry/line2d';
 import Box2D from '../geometry/box2d';
 import UserInterface from '../scenegraph2d/userinterface';
 import invariant from '../../../utils/environment/invariant';
@@ -61,11 +62,55 @@ export default class ConstructViewerUserInterface extends UserInterface {
         this.setSelections();
         this.constructViewer.removePart(block);
       } else {
+        // single select the node and track the mouse
         this.setSelections([node]);
         this.constructViewer.blockSelected(block);
+        this.drag = {
+          dragStart: point.clone(),
+          block: block,
+        }
       }
     }
   }
+  /**
+   * move handler
+   */
+  mouseMove(point, e) {
+    if (this.drag) {
+      // get delta to start position to determine if the user started a drag
+      const line = new Line2D(this.drag.dragStart, point);
+      if (line.len() > 8) {
+        // drag off started
+        this.setSelections();
+        const node = this.constructViewer.removePart(this.drag.block);
+        this.sg.simulateDrag(node);
+        this.localBlock = this.drag.block;
+        this.drag = null;
+      }
+    }
+    // for now the scenegraph also does dragging
+    this.sg.dragMove(point);
+    if (this.sg.sdrag) {
+      const hit = this.topBlockAndVerticalEdgeAt(point);
+      if (hit) {
+        this.showInsertionPoint(hit.block, hit.edge);
+      } else {
+        this.hideInsertionPoint();
+      }
+    }
+  }
+  /**
+   * mouse up handler
+   */
+  mouseUp(point, e) {
+    this.drag = null;
+    if (this.sg.sdrag) {
+      this.constructViewer.localDrop(this.localBlock);
+      this.sg.dragUp(point);
+      this.hideInsertionPoint();
+    }
+  }
+
   /**
    * drag events
    * @return {[type]} [description]
