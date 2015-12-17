@@ -5,3 +5,9 @@
     background-image: url('/images/ui/inspector_icon.svg');
   }
 }
+
+.InspectorContent {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
