@@ -4,30 +4,46 @@ import { pushState } from 'redux-router';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { DragDropContext } from 'react-dnd';
 
-import Inventory from './Inventory';
-import Inspector from './Inspector';
+import ConstructViewer from './graphics/views/constructviewer';
 import ProjectDetailView from '../components/ProjectDetailView';
 import ProjectHeader from '../components/ProjectHeader';
-import SketchConstruct from './SketchConstruct';
+import Inventory from './Inventory';
+import Inspector from './Inspector';
 
 import '../styles/ProjectPage.css';
+import '../styles/SceneGraphPage.css';
+/*
+ import MenuBar from '../components/Menu/MenuBar';
+ import Menu from '../components/Menu/Menu';
+ import MenuItem from '../components/Menu/MenuItem';
+ import MenuSeparator from '../components/Menu/MenuSeparator';
+ */
 
 //todo - should abstract away component which has dragDropContext, inventory, inspector
 
 @DragDropContext(HTML5Backend)
-export class ProjectPage extends Component {
+class DnD extends Component {
+
   static propTypes = {
-    constructs: PropTypes.array.isRequired,
     project: PropTypes.object.isRequired,
     projectId: PropTypes.string.isRequired,
-    constructId: PropTypes.string, //only visible if a construct is selected
+    constructs: PropTypes.array.isRequired,
 
-    children: PropTypes.func, //react-router
     pushState: PropTypes.func.isRequired,
   }
 
+  constructor(props) {
+    super(props);
+    this.layoutAlgorithm = 'wrap';
+  }
+
+  onLayoutChanged = () => {
+    this.layoutAlgorithm = this.refs.layoutSelector.value;
+    this.forceUpdate();
+  }
+
   render() {
-    const { children, constructId, project, constructs } = this.props;
+    const { project, constructs } = this.props;
 
     //todo - need error handling here. Should be in route transition probably?
     //right now there is some handling in GlobalNav when using ProjectSelect. Doesn't handle request of the URL.
@@ -35,30 +51,31 @@ export class ProjectPage extends Component {
       return <p>todo - need to handle this (direct request)</p>;
     }
 
-    const constructSelected = !!constructId;
+    const constructViewers = constructs.map(construct => {
+      return (
+        <ConstructViewer key={construct.id}
+                         constructId={construct.id}
+                         layoutAlgorithm={this.layoutAlgorithm}/>
+      );
+    });
 
     return (
       <div className="ProjectPage">
         <Inventory />
 
         <div className="ProjectPage-content">
+          <div style={{margin:"1rem 0 1rem 1rem;padding-right:1rem;text-align:right; position: absolute; top: 0; right: 0;"}}>
+            <select ref="layoutSelector" onChange={this.onLayoutChanged}>
+              <option value="wrap">Wrap</option>
+              <option value="full">Full</option>
+              <option value="fit">Fit</option>
+            </select>
+          </div>
+
           <ProjectHeader project={project}/>
 
           <div className="ProjectPage-constructs">
-
-            {/* if viewing specific construct, let routing take over*//* if viewing specific construct, let routing take over*/}
-            {constructSelected && children}
-
-            {/* otherwise, show all the constructs... *//* otherwise, show all the constructs... */}
-            {!constructSelected && constructs.map(construct => {
-              return (
-                <div key={construct.id}>
-                  <h3>Construct {construct.metadata.name}</h3>
-
-                  <SketchConstruct construct={construct}/>
-                </div>
-              );
-            })}
+            {constructViewers}
           </div>
 
           <ProjectDetailView project={project}/>
@@ -85,4 +102,4 @@ function mapStateToProps(state) {
 
 export default connect(mapStateToProps, {
   pushState,
-})(ProjectPage);
+})(DnD);

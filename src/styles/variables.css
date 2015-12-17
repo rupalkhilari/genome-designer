@@ -12,6 +12,8 @@
   --colors-greyLight: #e6e6e6;
   --colors-selected: #88aaff;
 
+  --colors-text: #222;
+
   --font-size-text: 12px;
   --font-size-heading: 11px;
 
@@ -36,6 +38,8 @@
   --SidePanel-trigger-width: 17px;
   --width-SidePanel-closed: 37px;
   --width-SidePanel-open: 300px;
+
+  --GlobalNav-width-chrome: 48px;
 
   /* Backgrounds
  ==================== */
