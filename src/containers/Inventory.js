@@ -39,10 +39,10 @@ export class Inventory extends Component {
           <span className="SidePanel-heading-trigger Inventory-trigger"
                 onClick={() => inventoryToggleVisibility()} />
           <div className="SidePanel-heading-content">
-            <span className="SidePanel-title">Inventory</span>
-            <a className="SidePanel-close"
+            <span className="SidePanel-heading-title">Inventory</span>
+            <a className="SidePanel-heading-close"
                ref="close"
-               onClick={inventoryToggleVisibility.bind(null, false)}>&times;</a>
+               onClick={inventoryToggleVisibility.bind(null, false)} />
           </div>
         </div>
 

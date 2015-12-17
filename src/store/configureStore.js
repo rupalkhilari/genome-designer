@@ -35,8 +35,10 @@ if (process.env.NODE_ENV !== 'production') {
 
 finalCreateStore = reduxReactRouter({ routes, createHistory })(finalCreateStore);
 
-export default function configureStore(initialState) {
-  const store = finalCreateStore(rootReducer, initialState);
+// expose reducer so you can pass in only one reducer for tests
+// (probably need to compose the way rootReducer does)
+export default function configureStore(initialState, reducer = rootReducer) {
+  const store = finalCreateStore(reducer, initialState);
 
   if (module.hot) {
     // Enable Webpack hot module replacement for reducers
