@@ -1,6 +1,5 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
-import InputSimple from './InputSimple';
 
 import '../styles/ProjectHeader.css';
 
@@ -35,38 +34,18 @@ export default class ProjectHeader extends Component {
 
     return (
       <div className="ProjectHeader">
-
         <div className="ProjectHeader-info">
-          <div className="ProjectHeader-icon"
-               style={{
-                 backgroundImage: `url(${project.metadata.image})`,
-               }}></div>
-          <div className="ProjectHeader-text">
+          <div className="ProjectHeader-breadcrumbs">
+            <Link to={`/projects/`}
+                  className="ProjectHeader-breadcrumb ProjectHeader-lead">Projects</Link>
+            <span className="ProjectHeader-breadcrumb-separator">&#10095;</span>
             <Link to={`/project/${project.id}`}
-                  className="ProjectHeader-title">
-              <InputSimple
-                onChange={this.handleProjectRename}
-                placeholder="Project Name"
-                default="My Project"
-                updateOnBlur
-                value={project.metadata.name}/>
-            </Link>
-            {this.state.detailVisible &&
-              <InputSimple
-                onChange={this.handleProjectDescriptionChange}
-                placeholder="Project Description"
-                default=""
-                updateOnBlur
-                useTextarea
-                value={project.metadata.description}/>
-            }
+                  className="ProjectHeader-breadcrumb ProjectHeader-title">{project.metadata.name}</Link>
           </div>
+          <div className="ProjectHeader-description">{project.metadata.description}</div>
         </div>
 
-        <div className="ProjectHeader-actions">
-          <span className="ProjectHeader-detailToggle"
-                onClick={this.handleToggleDetail}>V</span>
-        </div>
+        <div className="ProjectHeader-actions"></div>
       </div>
     );
   }

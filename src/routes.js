@@ -16,7 +16,7 @@ export default(
   <Route path="/" component={App}>
 
     {/* todo - signout page w/ dynamic routing */
-    /* todo - signout page w/ dynamic routing */}
+      /* todo - signout page w/ dynamic routing */}
 
     {/* this is temporary pending splash page */}
     <IndexRoute component={DashboardPage}/>
@@ -30,10 +30,8 @@ export default(
            component={DashboardPage}/>
 
     <Route path="/project/:projectId"
-           component={ProjectPage}>
-      <Route path="/project/:projectId/:constructId"
-             component={ConstructPage}/>
-    </Route>
+           component={ProjectPage}/>
+
     <Redirect from="/project" to="/"/>
     {/*<Route path="/scenegraph" component={SceneGraphPage}/>*/}
     <Route path="/dnd/:projectId" component={DnD}/>

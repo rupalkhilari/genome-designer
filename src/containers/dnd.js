@@ -3,16 +3,20 @@ import { connect } from 'react-redux';
 import { pushState } from 'redux-router';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { DragDropContext } from 'react-dnd';
+
 import ConstructViewer from './graphics/views/constructviewer';
+import ProjectDetailView from '../components/ProjectDetailView';
+import ProjectHeader from '../components/ProjectHeader';
 import Inventory from './Inventory';
 import Inspector from './Inspector';
+
 import '../styles/SceneGraphPage.css';
 /*
-import MenuBar from '../components/Menu/MenuBar';
-import Menu from '../components/Menu/Menu';
-import MenuItem from '../components/Menu/MenuItem';
-import MenuSeparator from '../components/Menu/MenuSeparator';
-*/
+ import MenuBar from '../components/Menu/MenuBar';
+ import Menu from '../components/Menu/Menu';
+ import MenuItem from '../components/Menu/MenuItem';
+ import MenuSeparator from '../components/Menu/MenuSeparator';
+ */
 
 /**
  * just for testing bootstrap, hence the lack of comments
@@ -38,26 +42,38 @@ class DnD extends Component {
   }
 
   render() {
-    const { children, constructs } = this.props;
+    const { project, constructs } = this.props;
 
-    let constructViewers = constructs.map(construct => {
-      return <ConstructViewer key={construct.id} constructId={construct.id} layoutAlgorithm={this.layoutAlgorithm}/>;
+    const constructViewers = constructs.map(construct => {
+      return (
+        <ConstructViewer key={construct.id}
+                              constructId={construct.id}
+                              layoutAlgorithm={this.layoutAlgorithm}/>
+      );
     });
 
     return (
       <div className="ProjectPage">
         <Inventory />
+
         <div className="ProjectPage-content">
-          <div style={{margin:"1rem 0 1rem 1rem;padding-right:1rem;text-align:right"}}>
-            <select ref="layoutSelector" onChange={this.onLayoutChanged}>
-              <option value="wrap">Wrap</option>
-              <option value="full">Full</option>
-              <option value="fit">Fit</option>
-            </select>
+          <ProjectHeader project={project}/>
+
+          <div className="ProjectPage-constructs">
+            <div style={{margin:"1rem 0 1rem 1rem;padding-right:1rem;text-align:right"}}>
+              <select ref="layoutSelector" onChange={this.onLayoutChanged}>
+                <option value="wrap">Wrap</option>
+                <option value="full">Full</option>
+                <option value="fit">Fit</option>
+              </select>
+            </div>
+            {constructViewers}
           </div>
-          {constructViewers}
+
+          <ProjectDetailView project={project}/>
         </div>
-        <Inspector/>
+
+        <Inspector />
       </div>
     );
   }

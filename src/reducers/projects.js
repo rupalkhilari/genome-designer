@@ -6,7 +6,7 @@ const initialState = {
     id: 'test',
     metadata: {
       name: 'My Test Project',
-      description: 'Growing hairless humans for the next line of Calvin Klein models.',
+      description: 'Create a versatile and robust templating system for combinatorial recombinant designs using Yeast parts from EGF.',
     },
     components: ['block1', 'block2'],
   }),
