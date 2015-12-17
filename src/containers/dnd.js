@@ -7,10 +7,12 @@ import ConstructViewer from './graphics/views/constructviewer';
 import Inventory from './Inventory';
 import Inspector from './Inspector';
 import '../styles/SceneGraphPage.css';
+/*
 import MenuBar from '../components/Menu/MenuBar';
 import Menu from '../components/Menu/Menu';
 import MenuItem from '../components/Menu/MenuItem';
 import MenuSeparator from '../components/Menu/MenuSeparator';
+*/
 
 /**
  * just for testing bootstrap, hence the lack of comments
