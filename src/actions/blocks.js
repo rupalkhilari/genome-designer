@@ -33,10 +33,10 @@ export const blockClone = (blockInput) => {
     }
 
     //hack - should hit the server
-    const cloneStub = Object.assign({}, oldBlock, {
+    const cloneStub = new Block(Object.assign({}, oldBlock, {
       id: uuid.v4(),
       parent: oldBlock.id,
-    });
+    }));
 
     return Promise.resolve(cloneStub)
       .then((block) => {

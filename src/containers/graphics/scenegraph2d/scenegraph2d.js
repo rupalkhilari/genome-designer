@@ -1,26 +1,61 @@
 import uuid from 'node-uuid';
-import React from 'react';
-import Node2D from '../scenegraph2d/node2d';
-import SceneGraph2DReact from '../scenegraph2d_react/scenegraph2d';
-import Vector2D from '../geometry/vector2d';
-import Box2D from '../geometry/box2d';
+import Node2D from './node2d';
+import UserInterface from './userinterface';
+import invariant from '../../../utils/environment/invariant';
+import debounce from 'lodash.debounce';
 
 export default class SceneGraph2D {
 
   constructor(props) {
-    // extend default options with the given options
-    this.props = Object.assign({
-      w: 800,
-      h: 600,
+    // extend this with defaults and supplied properties.
+    // width / height are the actual dimensions of the scene graph.
+    // availableWidth, availableHeight are the dimensions of the window we are in.
+    Object.assign(this, {
+      width: 800,
+      height: 600,
+      availableWidth: 800,
+      availableHeight: 600,
       uuid: uuid.v4(),
+      userInterfaceConstructor: null,
     }, props);
+
+    // we must have a parent before being created
+    invariant(this.parent, 'expected a parent DOM element');
+
+    // ensure our parent element has the scene graph class
+    this.parent.classList.add('sceneGraph');
 
     // create our root node, which represents the view matrix and to which
     // all other nodes in the graph are ultimately attached.
-    this.root = new Node2D();
+    this.root = new Node2D({sg: this});
 
-    // scroll offset defaults to 0,0
-    this.scrollOffset = new Vector2D();
+    // root is appended directly to the scene graph BUT without setting a parent node.
+    this.parent.appendChild(this.root.el);
+
+    // create the user interface layer as required
+    if (this.userInterfaceConstructor) {
+      this.ui = new this.userInterfaceConstructor(this);
+    }
+
+    // size our element to initial scene graph size
+    this.updateSize();
+
+    // if you want an immediate update call this._update(). The this.update()
+    // method is debounced since React tends to over send updates.
+    this.updateDebounced = debounce(this._update, 15);
+  }
+
+
+  /**
+   * update our element to the current scene graph size
+   * @return {[type]} [description]
+   */
+  updateSize() {
+    this.parent.style.width = this.width + 'px';
+    this.parent.style.height = this.height + 'px';
+    if (this.ui) {
+      this.ui.updateSize();
+    }
   }
 
   /**
@@ -35,6 +70,22 @@ export default class SceneGraph2D {
       callback.call(context, next);
       stack = stack.concat(next.children);
     }
+  }
+
+  /**
+   * return a list of nodes at the given location, the higest in the z-order
+   * will be towards tht end of the list, the top most node is the last.
+   * @param  {Vector2D} point
+   * @return {[Node2D]}
+   */
+  findNodesAt(point) {
+    let hits = [];
+    this.traverse( node => {
+      if (node.parent && node.containsGlobalPoint(point)) {
+        hits.push(node);
+      }
+    }, this);
+    return hits;
   }
 
   /**
@@ -55,122 +106,16 @@ export default class SceneGraph2D {
   }
 
   /**
-   * update involves re-rendering by our owner
+   * updating the entire graph just involves updating the entire root node branch
+   * @return {[type]} [description]
    */
   update() {
-    //this.props.owner.forceUpdate();
+    this.updateDebounced();
   }
-
-  /**
-   * when our underlying element is scrolled / panned. We will sometimes
-   * need to know the scroll offset e.g. when the user wants to scroll to
-   * a specific position.
-   * @param  {Vector2D} vector
-   */
-  onScrolled = (vector) => {
-    this.scrollOffset = vector.clone();
-  }
-  /**
-   * the current (raw) scroll position i.e. not adjusted for scaling.
-   * @return {Vector2D}
-   */
-  getScrollPosition() {
-    return this.scrollOffset.clone();
-  }
-
-  /**
-   * set the scroll position
-   * @param {[type]} v [description]
-   */
-  setScrollPosition(v) {
-    this.scrollOffset = v.clone();
-  }
-
-  /**
-   * get the measure dimensions of our container
-   * @return {Vector2D}
-   */
-  getSize() {
-    return new Vector2D(this.props.w, this.props.h);
-  }
-
-  /**
-   * set size of the scenegraph
-   * @param {[type]} v [description]
-   */
-  setSize(v) {
-    this.props.w = v.x;
-    this.props.h = v.y;
-  }
-
-  /**
-   * return the visible bounds of the scene graph
-   * @return {[type]} [description]
-   */
-  getVisibleBounds() {
-    const sp = this.getScrollPosition();
-    const w = this.getSize();
-    return new Box2D(sp.x, sp.y, w.x, w.y).divide(this.getScale());
-  }
-
-  /**
-   * set the current scaling of the scenegraph view. This is performed
-   * by just changing the scaling of our root node.
-   * @param {[type]} s [description]
-   */
-  setScale(s) {
-    // remember the current center
-    let center = this.getVisibleBounds().center;
-
-    // apply to root node
-    this.root.set({
-      scale: s,
-    });
-
-    // keep the old center
-    this.centerOn(center);
-    center = this.getVisibleBounds().center;
-  }
-
-  /**
-   * center on the given global point
-   * @param  {[type]} p [description]
-   * @return {[type]}   [description]
-   */
-  centerOn(p) {
-    // size of window in graph coordinates
-    const w = this.getSize().divide(this.getScale());
-    // top/left edge required
-    const leftTop = p.sub(w.divide(2));
-    // set scroll position
-    this.setScrollPosition(new Vector2D(leftTop.x * this.getScale(), leftTop.y * this.getScale()));
-  }
-
-  /**
-   * return our scale
-   * @return {number}
-   */
-  getScale() {
-    return this.root.props.scale;
-  }
-
-  /**
-   * render the scenegraph and its root node ( which recursively renders it children )
-   * If there is a UI element, then render it on top of everything
-   * @return {[type]} [description]
-   */
-  render() {
-    const ui = this.props.userInterface ? this.props.userInterface.render() : null;
-    return (<SceneGraph2DReact
-      key={this.props.uuid}
-      scrollOffset={this.scrollOffset}
-      scale={this.root.props.scale}
-      uuid={this.props.uuid}
-      w={this.props.w}
-      h={this.props.h}
-      ui={ui}
-      onScrolled={this.onScrolled}>
-      {this.root.render()}
-    </SceneGraph2DReact>);
+  _update() {
+    this.root.updateBranch();
+    if (this.ui) {
+      this.ui.update();
+    }
   }
 }

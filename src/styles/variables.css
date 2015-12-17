@@ -5,6 +5,8 @@
 
   --colors-white: #ffffff;
   --colors-greyDark: #666666;
+  --colors-grey-duncan: #cccccc;
+  --colors-greyLight-duncan: rgb(55,57,77);
   --colors-grey: #808080;
   --colors-greyMedLight: #999999;
   --colors-greyLight: #e6e6e6;
@@ -16,7 +18,7 @@
   /* Typography
   ==================== */
 
-  --font-family-base: 'Helvetica', sans-serif;
+  --font-family-base: Helvetica, sans-serif;
 
   /* Media queries breakpoints
   ==================== */

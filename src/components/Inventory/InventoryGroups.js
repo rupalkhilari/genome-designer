@@ -34,11 +34,20 @@ export default class InventoryGroups extends Component {
     });
   }
 
+  inventoryGroupTypeToComponent(type, props) {
+    if (type === 'sbol') {
+      return (<InventoryGroupSbol {...props} />);
+    } else if (type === 'block') {
+      return (<InventoryGroupBlocks {...props} />);
+    }
+    throw new Error(`Type ${type} is not registered in InventoryGroups`);
+  }
+
   render() {
     const { currentTabIndex } = this.state;
     const { groups } = this.props;
     const currentGroup = groups[currentTabIndex];
-    const currentGroupComponent = inventoryGroupTypeToComponent(currentGroup.type, {
+    const currentGroupComponent = this.inventoryGroupTypeToComponent(currentGroup.type, {
       key: currentGroup.name,
       items: currentGroup.items,
     });
