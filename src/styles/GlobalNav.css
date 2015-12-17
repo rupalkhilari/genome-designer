@@ -7,7 +7,6 @@
 .GlobalNav {
 
   display: flex;
-  justify-content: space-between;
   background-color: white;
 
   &-title {
@@ -16,7 +15,7 @@
     text-align: center;
     height: var(--GlobalNav-width-chrome);
     width: var(--GlobalNav-width-chrome);
-    line-height: var(--GlobalNav-width-chrome);
+    line-height: var(--GlobalNav-width-chrome + 4px);
     text-decoration: none;
     font-size: 1.5rem;
     font-weight: 100;

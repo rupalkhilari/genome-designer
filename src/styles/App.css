@@ -5,7 +5,7 @@
 .App {
   display: flex;
   flex-direction: column;
-  background-color: var(--colors-greyLight);
+  background-color: #333; /*var(--colors-greyLight);*/
   height: 100vh;
   overflow: hidden;
 }
