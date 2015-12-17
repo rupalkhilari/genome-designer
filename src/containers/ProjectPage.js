@@ -12,12 +12,7 @@ import Inspector from './Inspector';
 
 import '../styles/ProjectPage.css';
 import '../styles/SceneGraphPage.css';
-/*
- import MenuBar from '../components/Menu/MenuBar';
- import Menu from '../components/Menu/Menu';
- import MenuItem from '../components/Menu/MenuItem';
- import MenuSeparator from '../components/Menu/MenuSeparator';
- */
+
 
 //todo - should abstract away component which has dragDropContext, inventory, inspector
 

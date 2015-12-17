@@ -137,6 +137,7 @@
 .menu-dropdown {
   display: inline-block;
   position: relative;
+  margin-left: 4rem;
 }
 .menu-header {
   display: inline-block;
