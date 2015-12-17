@@ -4,9 +4,13 @@ export const getNodeDir = (id) => {
     return process.cwd() + '/extensions/compute/' + id;
 };
 
+let nodesStartedBuilding = {};
 let nodesDoneBuilding = {};
 
 export const buildNodeContainer = (id) => {
+
+  if (nodesStartedBuilding[id]) return nodesStartedBuilding[id];
+
   let dir = getNodeDir(id);
 
   if (nodesDoneBuilding[id]) {
@@ -16,13 +20,15 @@ export const buildNodeContainer = (id) => {
 
   let cmdBuild = 'docker build -t \'' + id + '\' ' + dir;  
   console.log('Start building ' + id + '...');
-  return exec(cmdBuild).then(result => {
+  nodesStartedBuilding[id] = exec(cmdBuild).then(result => {
       nodesDoneBuilding[id] = true;
       return Promise.resolve(result);
     }).catch(err => {
       console.log(id + ' build failed: ' + err.string);
       return Promise.reject(err);
     });
+
+  return nodesStartedBuilding[id];
 };
 
 /**

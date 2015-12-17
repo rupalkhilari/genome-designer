@@ -19,7 +19,11 @@ describe('REST', () => {
   describe('Genbank extension', () => {
     //use old function syntax to create new scope so can call this.timeout
     it('accepts input and generates correct output', function genbankTest(done) {
-      this.timeout(10000);
+
+      const reallyLongTime = 1000000000;
+
+    //only takes a long time the first time docker build is run
+    this.timeout(reallyLongTime);
 
       let block1 = exampleBlock;
       let bid1;

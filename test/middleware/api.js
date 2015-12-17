@@ -81,7 +81,9 @@ describe('Middleware', () => {
   });
 
   it('should work with multiple files', function multipleFiles(done) {
-    this.timeout(5000);
+
+    //only takes a long time the first time docker build is run
+    this.timeout(500000);
 
     const file1Path = 'test/file1';
     const file1Contents = 'exhibit a';
@@ -118,7 +120,7 @@ describe('Middleware', () => {
   });
 
   it('runExtension() works', function genbankTest(done) {
-    this.timeout(10000);
+    this.timeout(100000);
     let block1 = exampleBlock;
     let bid1;
     let input1;
