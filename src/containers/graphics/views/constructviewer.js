@@ -177,9 +177,9 @@ export class ConstructViewer extends Component {
     let index = this.props.construct.components.length;
     if (insertionPoint) {
       index = this.props.construct.components.indexOf(insertionPoint.block) + (insertionPoint.edge === 'right' ? 1 : 0);
-      this.props.blockClone(part).then(block => {
-        this.props.blockAddComponent(this.props.construct.id, block.id, index);
-      });
+      //this.props.blockClone(part).then(block => {
+        this.props.blockAddComponent(this.props.construct.id, part, index);
+      //});
     }
   }
   /**
