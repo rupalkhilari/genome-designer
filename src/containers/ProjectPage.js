@@ -13,7 +13,6 @@ import Inspector from './Inspector';
 import '../styles/ProjectPage.css';
 import '../styles/SceneGraphPage.css';
 
-
 //todo - should abstract away component which has dragDropContext, inventory, inspector
 
 @DragDropContext(HTML5Backend)
@@ -59,7 +58,13 @@ class DnD extends Component {
         <Inventory />
 
         <div className="ProjectPage-content">
-          <div style={{margin:"1rem 0 1rem 1rem;padding-right:1rem;text-align:right; position: absolute; top: 0; right: 0;"}}>
+          <div
+            style={{margin: '1rem 0 1rem 1rem',
+            paddingRight: '1rem',
+            textAlign: 'right',
+            position: 'absolute',
+            top: '0',
+            right: '0'}}>
             <select ref="layoutSelector" onChange={this.onLayoutChanged}>
               <option value="wrap">Wrap</option>
               <option value="full">Full</option>

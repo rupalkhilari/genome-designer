@@ -19,7 +19,7 @@
 
   &-breadcrumb {
     text-decoration: none;
-    color: var(--colors-greyDark);
+    color: var(--colors-greyMedLight);
   }
 
   &-lead {
@@ -29,7 +29,7 @@
   &-breadcrumb-separator {
     margin: 0 0.5em;
     font-weight: 100;
-    color: var(--colors-greyMedLight);
+    color: var(--colors-grey);
   }
 
   &-title {
@@ -37,7 +37,7 @@
   }
 
   &-description {
-    color: var(--colors-greyDark);
+    color: var(--colors-greyMedLight);
   }
 
   /* right side */
