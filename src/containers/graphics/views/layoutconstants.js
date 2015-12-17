@@ -1,34 +1,45 @@
-const blockH = 24;
+const blockH = 30;
 // width of blocks
 const blockW = 70;
 // width of title
 const titleW = 200;
+const titleH = 40;
 // total height of each row
 const rowH = 60;
 // row header bar height
-const rowBarH = 3;
+const rowBarH = 4;
 // vertical bar width
-const rowBarW = 3;
+const rowBarW = 2;
 // padding around text on blocks
-const textPad = 16;
+const textPad = 8;
 // width of condensed text blocks
-const condensedText = 25;
+const condensedText = 40;
+// height of banner bar above construct name
+const bannerHeight = 18;
 // inset of layout in graph
-const insetX = 50;
-const insetY = 50;
-
+const insetX = 0;
+const insetY = bannerHeight;
+// font size
+const titleFontSize = '20px';
+const blockFontSize = '12px';
+// minimum width for layouts
+const minWidth = 400;
+// background
+const background = 'rgb(52, 57, 77)';
+// size of sbol icons
+const sbolIcon = 27;
 
 export default {
   // layout algorithms
   layoutWrap: 'wrap',
-  layoutWrapCondensed: 'wrap-condensed',
+  layoutFit: 'fit',
   layoutFull: 'full',
-  layoutFullCondensed: 'full-condensed',
 
   // layout metrics
   blockH: blockH,
   blockW: blockW,
   titleW: titleW,
+  titleH: titleH,
   rowH: rowH,
   rowBarH: rowBarH,
   rowBarW: rowBarW,
@@ -36,22 +47,27 @@ export default {
   condensedText: condensedText,
   insetX: insetX,
   insetY: insetY,
+  minWidth: minWidth,
+  bannerHeight: bannerHeight,
+  sbolIcon: sbolIcon,
+
   // display properties for various elements
   titleAppearance: {
-    fill: 'black',
-    color: 'white',
+    fill: 'transparent',
     glyph: 'rectangle',
     strokeWidth: 0,
+    fontSize: titleFontSize,
+    textAlign: 'left',
+    height: titleH,
   },
+  // row bar
   rowAppearance: {
-    h: rowBarH,
-    fill: 'black',
+    height: rowBarH,
     glyph: 'rectangle',
     strokeWidth: 0,
   },
   verticalAppearance: {
-    w: rowBarW,
-    fill: 'black',
+    width: rowBarW,
     glyph: 'rectangle',
     strokeWidth: 0,
   },
@@ -60,7 +76,8 @@ export default {
     glyph: 'rectangle',
     fontWeight: 'bold',
     strokeWidth: 1,
-    stroke: 'gray',
+    stroke: background,
+    fontSize: blockFontSize,
     classes: 'transform-animated',
   },
   connectorAppearance: {
@@ -69,7 +86,7 @@ export default {
     stroke: 'gray',
     fill: 'whitesmoke',
     fontWeight: 'bold',
-    fontSize: '10px',
+    fontSize: blockFontSize,
     color: 'gray',
     classes: 'transform-animated',
   },

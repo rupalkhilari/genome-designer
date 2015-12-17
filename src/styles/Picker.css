@@ -1,14 +1,23 @@
 .Picker {
   line-height: 0;
+  display: flex;
 
   &-content {
+    display: inline-block;
+    margin: 0 auto;
 
+    //clearfix
+    &:after {
+      content: "";
+      display: table;
+      clear: both;
+    }
   }
 
   &-item {
-    display: inline-block;
-    width: 4em;
-    height: 4em;
+    float: left;
+    width: 54px;
+    height: 54px;
     margin: 1px;
     border: 2px solid transparent;
     border-radius: 100%;
@@ -16,6 +25,10 @@
     background-color: rgba(255,255,255,0.2);
     background-size: contain;
     text-align:center;
+
+    &:nth-child(4n + 1) {
+      clear: left;
+    }
 
     &.active {
       cursor: default;

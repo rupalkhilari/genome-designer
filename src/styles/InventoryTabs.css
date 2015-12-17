@@ -9,12 +9,13 @@
   &-tab {
     text-align: center;
     padding: 0.25em 0.5em;
-    margin-right: 0.5em;
+    margin-right: 0.75em;
     border-bottom: 2px solid transparent;
     transition-duration: var(--timing-fast);
     transition-property: color, border;
     color: var(--colors-grey);
-    font-weight: 400;
+    font-size: var(--font-size-heading);
+    font-weight: 600;
 
     &:hover {
       color: var(--colors-selected);
@@ -22,7 +23,6 @@
 
     &.active {
       color: white;
-      font-weight: 600;
       border-bottom-color: var(--colors-selected);
     }
   }

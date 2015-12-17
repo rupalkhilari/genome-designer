@@ -16,6 +16,13 @@ export class Inspector extends Component {
     block: PropTypes.object,
   }
 
+  toggle() {
+    this.props.inspectorToggleVisibility.call(null);
+    window.setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+    }, 300);
+  }
+
   render() {
     const { isVisible, currentInstance, block, project, inspectorToggleVisibility } = this.props;
 
@@ -24,12 +31,12 @@ export class Inspector extends Component {
 
         <div className="SidePanel-heading">
           <span className="SidePanel-heading-trigger Inspector-trigger"
-                onClick={() => inspectorToggleVisibility()} />
+                onClick={this.toggle.bind(this)} />
           <div className="SidePanel-heading-content">
             <span className="SidePanel-heading-title">Inspector</span>
             <a className="SidePanel-heading-close"
                ref="close"
-               onClick={inspectorToggleVisibility.bind(null, false)} />
+               onClick={this.toggle.bind(this)}></a>
           </div>
         </div>
 
