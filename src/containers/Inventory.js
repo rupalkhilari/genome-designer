@@ -30,8 +30,8 @@ export class Inventory extends Component {
     inventoryToggleVisibility: PropTypes.func.isRequired,
   }
 
-  toggle = () => {
-    this.props.inventoryToggleVisibility.call(null);
+  toggle = (forceVal) => {
+    this.props.inventoryToggleVisibility.call(null, forceVal);
     window.setTimeout(() => {
       window.dispatchEvent(new Event('resize'));
     }, 300);
@@ -49,7 +49,7 @@ export class Inventory extends Component {
             <span className="SidePanel-heading-title">Inventory</span>
             <a className="SidePanel-heading-close"
                ref="close"
-               onClick={this.toggle}></a>
+               onClick={this.toggle.bind(this, false)}></a>
           </div>
         </div>
 

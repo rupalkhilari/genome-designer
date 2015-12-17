@@ -16,8 +16,8 @@ export class Inspector extends Component {
     block: PropTypes.object,
   }
 
-  toggle() {
-    this.props.inspectorToggleVisibility.call(null);
+  toggle = (forceVal) => {
+    this.props.inspectorToggleVisibility.call(null, forceVal);
     window.setTimeout(() => {
       window.dispatchEvent(new Event('resize'));
     }, 300);
@@ -31,12 +31,12 @@ export class Inspector extends Component {
 
         <div className="SidePanel-heading">
           <span className="SidePanel-heading-trigger Inspector-trigger"
-                onClick={this.toggle.bind(this)} />
+                onClick={this.toggle} />
           <div className="SidePanel-heading-content">
             <span className="SidePanel-heading-title">Inspector</span>
             <a className="SidePanel-heading-close"
                ref="close"
-               onClick={this.toggle.bind(this)}></a>
+               onClick={this.toggle.bind(this, false)}></a>
           </div>
         </div>
 
