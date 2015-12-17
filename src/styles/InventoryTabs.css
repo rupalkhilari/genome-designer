@@ -22,7 +22,7 @@
 
     &.active {
       color: white;
-      font-weight: 600;
+      font-weight: 500;
       border-bottom-color: var(--colors-selected);
     }
   }
