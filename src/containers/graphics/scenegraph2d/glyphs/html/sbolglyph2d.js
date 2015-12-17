@@ -1,5 +1,6 @@
 import Glyph2D from '../glyph2d';
 import kT from '../../../views/layoutconstants';
+import symbols from '../../../../../inventory/sbol'
 
 
 export default class SBOLGlyph2D extends Glyph2D {
@@ -20,24 +21,6 @@ export default class SBOLGlyph2D extends Glyph2D {
     this.img.setAttribute('src', '/images/sbolSymbols/terminator.svg');
     this.el.appendChild(this.img);
     this.node.el.appendChild(this.el);
-
-    let svgPath = '/images/sbolSymbols/thick/';
-
-    switch (this.node.sbolName.toLowerCase()) {
-      case 'cds': svgPath += 'symbols-01.svg'; break;
-      case 'insulator': svgPath += 'symbols-03.svg'; break;
-      case 'operator': svgPath += 'symbols-05.svg'; break;
-      case 'origin of replication': svgPath += 'symbols-07.svg'; break;
-      case 'promoter': svgPath += 'symbols-09.svg'; break;
-      case 'protease': svgPath += 'symbols-11.svg'; break;
-      case 'protein stability': svgPath += 'symbols-13.svg'; break;
-      case 'rbs': svgPath += 'symbols-15.svg'; break;
-      case 'ribonuclease': svgPath += 'symbols-17.svg'; break;
-      case 'rna stability': svgPath += 'symbols-19.svg'; break;
-      case 'terminator': svgPath += 'symbols-21.svg'; break;
-    }
-    this.img.setAttribute('src', svgPath);
-
   }
 
   /**
@@ -56,5 +39,8 @@ export default class SBOLGlyph2D extends Glyph2D {
     this.img.style.left = (this.node.width - kT.sbolIcon - 2) + 'px';
     this.img.style.maxWidth = kT.sbolIcon + 'px';
     this.img.style.top = (this.node.height / 2 - kT.sbolIcon / 2) + 'px';
+
+    let svgPath = symbols.find(symbol => symbol.id === this.node.sbolName).metadata.imageThick;
+    this.img.setAttribute('src', svgPath);
   }
 }

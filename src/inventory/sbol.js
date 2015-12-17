@@ -20,7 +20,8 @@ const symbols = Object.keys(symbolMap).map(key => ({
   id: key,
   metadata: {
     name: symbolMap[key],
-    image: makeImagePath(key),
+    image: makeImagePath(key, 'thin'),
+    imageThick: makeImagePath(key, 'thick'),
   },
 }));
 

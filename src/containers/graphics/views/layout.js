@@ -359,6 +359,12 @@ export default class Layout {
         fill: this.partMeta(part, 'color'),
       });
 
+      if (this.isSBOL(part)) {
+        this.nodeFromElement(part).set({
+          sbolName: this.blocks[part].rules.sbol,
+        });
+      }
+
       // set next part position
       xp += td.x;
     });
