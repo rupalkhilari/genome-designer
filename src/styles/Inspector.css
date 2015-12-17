@@ -10,4 +10,12 @@
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+  color: var(--colors-greyLight);
+
+  &-heading {
+    font-size: var(--font-size-heading);
+    color: var(--colors-greyMedLight);
+    font-weight: 500;
+    margin: 1.25em 0 0.4em;
+  }
 }

@@ -3,7 +3,6 @@
 .InputSimple {
   width: 100%;
 
-
   &-input {
     cursor: pointer;
     background: transparent;
@@ -11,6 +10,7 @@
     outline: 0;
     border: 0;
     width: 100%;
+    color: inherit;
     
     &:focus {
       cursor: text;

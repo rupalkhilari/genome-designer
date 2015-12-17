@@ -2,6 +2,7 @@
 
 .InventoryItem {
   display: block;
+  font-size: 12px;
 
   &.hasImage {
     white-space: nowrap;

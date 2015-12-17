@@ -21,7 +21,9 @@ export class InspectorContent extends Component {
   }
 
   setBlockDescription = (description) => {
-    this.props.blockMerge(this.props.instance.id, {metadata: { description }});
+    if (description !== this.props.instance.metadata.description) {
+      this.props.blockMerge(this.props.instance.id, {metadata: {description}});
+    }
   }
 
   selectColor = (color) => {
@@ -50,7 +52,7 @@ export class InspectorContent extends Component {
                      value={instance.metadata.description}/>
 
         <h4 className="InspectorContent-heading">Sequence Length</h4>
-        <p>{instance.sequence.length ? (instance.sequence.length + ' bp') : 'No Sequence'}</p>
+        <p><strong>{instance.sequence.length ? (instance.sequence.length + ' bp') : 'No Sequence'}</strong></p>
 
         <h4 className="InspectorContent-heading">Color</h4>
         <ColorPicker current={instance.metadata.color}
@@ -70,5 +72,5 @@ export default connect(() => ({}), {
   blockSetColor,
   blockSetSbol,
   blockRename,
-  blockMerge
+  blockMerge,
 })(InspectorContent);
