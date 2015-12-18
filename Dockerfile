@@ -19,8 +19,12 @@ RUN apt-get install -y --force-yes docker-engine
 
 #setup node
 ADD package.json /app/package.json
-RUN cd /app && npm install
 RUN npm update -g npm
+RUN cd /app && npm install
+
+#install extensions
+RUN git submodule init
+RUN git submodule update
 
 EXPOSE 3000
 ENV PORT=3000
