@@ -11,6 +11,8 @@ export const SymbolPicker = ({current, onSelect}) => {
         {symbols.map(symbolObj => {
           const symbol = symbolObj.id;
           return (<a className={'Picker-item' + (current === symbol ? ' active' : '')}
+                     alt={symbolObj.metadata.name}
+                     title={symbolObj.metadata.name}
                      key={symbol}
                      onClick={onSelect.bind(this, symbol)}
                      style={{backgroundImage: `url(${symbolObj.metadata.imageThin})`}}/>);
