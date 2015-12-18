@@ -20,8 +20,10 @@ const symbols = Object.keys(symbolMap).map(key => ({
   id: key,
   metadata: {
     name: symbolMap[key],
-    image: makeImagePath(key, 'thin'),
-    imageThick: makeImagePath(key, 'thick'),
+    image: makeImagePath(key, 'thickLight'), //inventory pinned to this
+    imageThin: makeImagePath(key, 'thin'),
+    imageThick: makeImagePath(key, 'thickDark'),
+    imageThickLight: makeImagePath(key, 'thickLight'),
   },
 }));
 
