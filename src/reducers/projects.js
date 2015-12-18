@@ -16,6 +16,7 @@ export default function projects(state = initialState, action) {
   switch (action.type) {
   case ActionTypes.PROJECT_CREATE :
   case ActionTypes.PROJECT_MERGE :
+  case ActionTypes.PROJECT_RENAME :
   case ActionTypes.PROJECT_ADD_CONSTRUCT : {
     const { project } = action;
     return Object.assign({}, state, {[project.id]: project});

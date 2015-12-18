@@ -31,7 +31,7 @@ export class Inventory extends Component {
   }
 
   toggle = (forceVal) => {
-    this.props.inventoryToggleVisibility.call(null, forceVal);
+    this.props.inventoryToggleVisibility(forceVal);
     window.setTimeout(() => {
       window.dispatchEvent(new Event('resize'));
     }, 300);
@@ -44,12 +44,12 @@ export class Inventory extends Component {
       <div className={'SidePanel Inventory' + (isVisible ? ' visible' : '')}>
         <div className="SidePanel-heading">
           <span className="SidePanel-heading-trigger Inventory-trigger"
-                onClick={this.toggle} />
+                onClick={() => this.toggle()} />
           <div className="SidePanel-heading-content">
             <span className="SidePanel-heading-title">Inventory</span>
             <a className="SidePanel-heading-close"
                ref="close"
-               onClick={this.toggle.bind(this, false)}></a>
+               onClick={() => this.toggle(false)} />
           </div>
         </div>
 
