@@ -10,6 +10,9 @@
   --colors-grey: #808080;
   --colors-greyMedLight: #999999;
   --colors-greyLight: #e6e6e6;
+  --colors-bluegrey: #292D40; /*canvas*/
+  --colors-bluegreyLight: #444753; /*detail*/
+  --colors-bluegreyDark: #181B26; /*sides*/
   --colors-selected: #88aaff;
 
   --colors-text: #222;

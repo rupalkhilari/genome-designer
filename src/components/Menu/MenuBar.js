@@ -1,6 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import Menu from './Menu';
 
+import '../../styles/Menu.css';
+
 export default class MenuBar extends Component {
   static propTypes = {
     menus: PropTypes.array.isRequired,

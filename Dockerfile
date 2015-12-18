@@ -17,16 +17,21 @@ RUN echo "deb https://apt.dockerproject.org/repo debian-wheezy main" >> /etc/apt
 RUN apt-get update
 RUN apt-get install -y --force-yes docker-engine
 
+ADD . /app
+
+#install extensions
+RUN cd /app && git submodule init
+RUN cd /app && git submodule update
+
 #setup node
 ADD package.json /app/package.json
-RUN cd /app && npm install
 RUN npm update -g npm
+RUN cd /app && npm install
 
 EXPOSE 3000
 ENV PORT=3000
 
 WORKDIR /app
-ADD . /app
 
 #start redis, docker, and then node server
 RUN touch /redis.conf

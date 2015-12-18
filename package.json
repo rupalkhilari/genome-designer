@@ -37,6 +37,7 @@
     "deep-freeze": "0.0.1",
     "history": "1.13.1",
     "isomorphic-fetch": "^2.1.1",
+    "jquery": "^2.1.4",
     "lodash.clonedeep": "^3.0.2",
     "lodash.debounce": "^3.1.1",
     "lodash.merge": "^3.3.2",
@@ -61,8 +62,7 @@
     "redux-router": "1.0.0-beta5",
     "redux-thunk": "^0.1.0",
     "semver-regex": "^1.0.0",
-    "url-regex": "^3.0.0",
-    "yamljs": "^0.2.4 "
+    "url-regex": "^3.0.0"
   },
   "devDependencies": {
     "autoprefixer": "^6.0.3",
@@ -73,6 +73,7 @@
     "babel-plugin-react-transform": "^1.1.1",
     "body-parser": "^1.14.1",
     "chai": "^3.4.1",
+    "combokeys": "^2.4.4",
     "css-loader": "^0.23.0",
     "eslint": "^1.9.0",
     "eslint-config-airbnb": "^0.1.0",
