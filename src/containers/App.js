@@ -4,7 +4,6 @@ import GlobalNav from './GlobalNav';
 
 import '../styles/App.css';
 
-
 export class App extends Component {
   static propTypes = {
     children: PropTypes.node, // Injected by React Router

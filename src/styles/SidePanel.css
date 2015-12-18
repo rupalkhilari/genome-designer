@@ -10,7 +10,7 @@
   overflow-x: hidden;
   top: 0;
   bottom: 0;
-  background: var(--background-dark-semiTransparent);
+  background: var(--colors-bluegreyDark);
   color: var(--colors-white);
   transition-property: width, opacity;
   transition-duration: var(--timing-fast);

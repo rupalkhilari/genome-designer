@@ -48,4 +48,4 @@ Object.assign(exposed, {
 });
 
 //testing - how do we async trigger this?
-require('./dumbExtension.js');
+require('./onionExtension.js');

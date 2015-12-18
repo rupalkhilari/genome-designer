@@ -5,7 +5,7 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import { DragDropContext } from 'react-dnd';
 
 import ConstructViewer from './graphics/views/constructviewer';
-import ProjectDetailView from '../components/ProjectDetailView';
+import ProjectDetail from '../components/ProjectDetail';
 import ProjectHeader from '../components/ProjectHeader';
 import Inventory from './Inventory';
 import Inspector from './Inspector';
@@ -78,7 +78,7 @@ class DnD extends Component {
             {constructViewers}
           </div>
 
-          <ProjectDetailView project={project}/>
+          <ProjectDetail project={project}/>
         </div>
 
         <Inspector />
