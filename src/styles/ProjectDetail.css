@@ -29,13 +29,10 @@
     &-toggle {
       align-self: flex-start;
       color: white;
+      background-image: url('/images/ui/caret_open_light.svg');
 
-      &:after {
-        content: '^';
-
-        .visible & {
-          content: 'v';
-        }
+      .visible & {
+        transform: rotateX(180deg);
       }
     }
 
@@ -64,7 +61,7 @@
 
     &-close {
       align-self: flex-end;
-      background-image: url('/images/ui/close_icon.svg');
+      background-image: url('/images/ui/close_icon_dark.svg');
     }
   }
 

@@ -10,7 +10,10 @@ import '../styles/ProjectDetail.css';
 export class ProjectDetail extends Component {
   componentDidMount() {
     //hack - load in Onion
-    setTimeout(() => this.forceUpdate(), 500);
+    setTimeout(() => {
+      this.forceUpdate();
+      registry.sequenceDetail[0].render(this.refs.extensionView);
+    }, 500);
   }
 
   static propTypes = {
@@ -49,11 +52,11 @@ export class ProjectDetail extends Component {
                    onClick={this.loadExtension.bind(null, manifest)}>{manifest.name}</a>
               );
             })}
+
             {!this.props.isVisible && ( <a className="ProjectDetail-heading-extension disabled">3D Protein Preview</a>)}
             {!this.props.isVisible && ( <a className="ProjectDetail-heading-extension disabled">Promoter Structure
 Prediction</a>)}
             {!this.props.isVisible && ( <a className="ProjectDetail-heading-extension disabled">CRISPR</a>)}
-
           </div>
 
           {this.props.isVisible && (<a ref="close"
