@@ -9,19 +9,14 @@ import React, { Component, PropTypes } from 'react';
  * {ReactElement} client - element to place in the client area
  */
 export default class MenuItem extends Component {
-
-  constructor(props) {
-    super(props);
-  }
-
   static propTypes = {
-    text      : PropTypes.string.isRequired,
-    onClick   : PropTypes.func.isRequired
+    text: PropTypes.string.isRequired,
+    action: PropTypes.func.isRequired,
   }
 
   render() {
     return (
-      <div className="menu-item" onClick={this.props.onClick}>{this.props.text}</div>
+      <div className="menu-item" onClick={this.props.action}>{this.props.text}</div>
     );
   }
 }

@@ -1,16 +1,9 @@
-import React, {
-  Component,
-  PropTypes
-} from 'react';
+import React, { Component, PropTypes } from 'react';
 import SceneGraph2D from '../scenegraph2d/scenegraph2d';
 import Vector2D from '../geometry/vector2d';
 import Layout from './layout.js';
-import {
-  DropTarget
-} from 'react-dnd';
-import {
-  connect
-} from 'react-redux';
+import { DropTarget } from 'react-dnd';
+import {connect } from 'react-redux';
 import {
   blockCreate,
   blockAddComponent,
@@ -19,29 +12,28 @@ import {
   blockRename,
   blockRemoveComponent,
 } from '../../../actions/blocks';
-import {
-  block as blockDragType,
-  sbol as sbolDragType,
-  inventoryItem as inventoryItemDragType
-} from '../../../constants/DragTypes';
+import { block as blockDragType, sbol as sbolDragType, inventoryItem as inventoryItemDragType } from '../../../constants/DragTypes';
 import debounce from 'lodash.debounce';
-import {
-  nodeIndex
-} from '../utils';
+import { nodeIndex } from '../utils';
 import ConstructViewerMenu from './constructviewermenu';
 import UserInterface from './constructvieweruserinterface';
 import { inspectorToggleVisibility } from '../../../actions/inspector';
 import { uiSetCurrent } from '../../../actions/ui';
 
 const constructTarget = {
-  drop (props, monitor, component) {
+  drop(props, monitor, component) {
     component.drop.call(component, monitor);
   },
-  hover (props, monitor, component) {
+
+  hover(props, monitor, component) {
     component.dragOver.call(component, monitor);
-  }
+  },
 };
-@DropTarget(inventoryItemDragType, constructTarget, (connect, monitor) => ({connectDropTarget: connect.dropTarget(), isOver: monitor.isOver(), canDrop: monitor.canDrop()}))
+@DropTarget(inventoryItemDragType, constructTarget, (connect, monitor) => ({
+  connectDropTarget: connect.dropTarget(),
+  isOver: monitor.isOver(),
+  canDrop: monitor.canDrop(),
+}))
 export class ConstructViewer extends Component {
 
   static propTypes = {
@@ -52,7 +44,7 @@ export class ConstructViewer extends Component {
     inspectorToggleVisibility: PropTypes.func.isRequired,
   }
 
-  constructor (props) {
+  constructor(props) {
     super(props);
   }
 
@@ -60,7 +52,7 @@ export class ConstructViewer extends Component {
    * accessor that fetches the actual scene graph element within our DOM
    * @return {[type]} [description]
    */
-  get sceneGraphEl () {
+  get sceneGraphEl() {
     return this.dom.querySelector('.sceneGraph');
   }
 
@@ -68,7 +60,7 @@ export class ConstructViewer extends Component {
    * accessor for our DOM node.
    * @return {[type]} [description]
    */
-  get dom () {
+  get dom() {
     return React.findDOMNode(this);
   }
 
@@ -76,7 +68,7 @@ export class ConstructViewer extends Component {
    * window resize, update layout and scene graph with new dimensions
    * @return {[type]} [description]
    */
-  windowResized () {
+  windowResized() {
     this.sg.availableWidth = this.dom.clientWidth;
     this.sg.availableHeight = this.dom.clientHeight;
     this.update();
@@ -85,7 +77,7 @@ export class ConstructViewer extends Component {
   /**
    * setup the scene graph and layout component.
    */
-  componentDidMount () {
+  componentDidMount() {
 
     // select a base color based on our index in the parent
     const nindex = nodeIndex(this.dom);
@@ -98,12 +90,12 @@ export class ConstructViewer extends Component {
       availableWidth: this.dom.clientWidth,
       availableHeight: this.dom.clientHeight,
       parent: this.sceneGraphEl,
-      userInterfaceConstructor: UserInterface
+      userInterfaceConstructor: UserInterface,
     });
     // create the layout object
     this.layout = new Layout(this, this.sg, {
       layoutAlgorithm: this.props.layoutAlgorithm,
-      baseColor: baseColors[nindex % baseColors.length]
+      baseColor: baseColors[nindex % baseColors.length],
     });
     // the user interface will also need access to the layout component
     this.sg.ui.layout = this.layout;
@@ -126,10 +118,11 @@ export class ConstructViewer extends Component {
   /**
    * update drag state
    */
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps(nextProps) {
     if (this.props.isOver && !nextProps.isOver) {
       this.sg.ui.dragLeave();
     }
+
     if (!this.props.isOver && nextProps.isOver) {
       this.sg.ui.dragEnter();
     }
@@ -138,7 +131,7 @@ export class ConstructViewer extends Component {
   /**
    * drag over event
    */
-  dragOver (monitor) {
+  dragOver(monitor) {
     const point = monitor.getClientOffset();
     this.sg.ui.dragOver(new Vector2D(point.x, point.y));
   }
@@ -148,7 +141,7 @@ export class ConstructViewer extends Component {
    * @param  {[type]} monitor [description]
    * @return {[type]}         [description]
    */
-  drop (monitor) {
+  drop(monitor) {
     // get the current insertion point
     const insertionPoint = this.sg.ui.getInsertionPoint();
     // construct object that was dropped
@@ -178,10 +171,11 @@ export class ConstructViewer extends Component {
     if (insertionPoint) {
       index = this.props.construct.components.indexOf(insertionPoint.block) + (insertionPoint.edge === 'right' ? 1 : 0);
       //this.props.blockClone(part).then(block => {
-        this.props.blockAddComponent(this.props.construct.id, part, index);
+      this.props.blockAddComponent(this.props.construct.id, part, index);
       //});
     }
   }
+
   /**
    * remove the given block, which we assume if part of our construct
    */
@@ -204,13 +198,14 @@ export class ConstructViewer extends Component {
   /**
    * update scene graph after the react component updates`
    */
-  componentDidUpdate () {
+  componentDidUpdate() {
     this.update();
   }
+
   /**
    * update the layout and then the scene graph
    */
-  update () {
+  update() {
 
     console.count('Construct Viewer Updates');
 
@@ -222,13 +217,14 @@ export class ConstructViewer extends Component {
     this.sg.update();
     console.timeEnd('Scenegraph Update');
   }
+
   /**
    * render the component, the scene graph will render later when componentDidUpdate is called
    */
-  render () {
+  render() {
     const {
-      connectDropTarget
-    } = this.props;
+      connectDropTarget,
+      } = this.props;
     const rendered = connectDropTarget(
       <div className="construct-viewer" key={this.props.construct.id}>
         <ConstructViewerMenu constructId={this.props.constructId} layoutAlgorithm={this.props.layoutAlgorithm}/>
@@ -244,9 +240,10 @@ export class ConstructViewer extends Component {
 export default connect((state, props) => {
   return {
     construct: state.blocks[props.constructId],
-    blocks: state.blocks
+    blocks: state.blocks,
   };
 }, {
+
   blockCreate,
   blockClone,
   blockAddComponent,

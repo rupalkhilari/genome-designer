@@ -7,7 +7,7 @@ import SymbolPicker from './ui/SymbolPicker';
 
 //for now, assumes only blocks. Later, may need to pass a type as well
 
-export class InspectorContent extends Component {
+export class InspectorBlock extends Component {
   static propTypes = {
     instance: PropTypes.object.isRequired,
     blockSetColor: PropTypes.func.isRequired,
@@ -73,4 +73,4 @@ export default connect(() => ({}), {
   blockSetSbol,
   blockRename,
   blockMerge,
-})(InspectorContent);
+})(InspectorBlock);

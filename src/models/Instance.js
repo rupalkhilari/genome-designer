@@ -59,4 +59,6 @@ export default class Instance {
     merge(base, obj);
     return new this.constructor(base);
   }
+
+
 }

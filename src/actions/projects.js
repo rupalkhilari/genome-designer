@@ -36,6 +36,22 @@ export const projectMerge = (projectId, toMerge) => {
   };
 };
 
+export const projectRename = (projectId, newName) => {
+  return (dispatch, getState) => {
+    const oldProject = getState().projects[projectId];
+    const project = oldProject.mutate('metadata.name', newName);
+
+    return Promise.resolve(project)
+      .then((project) => {
+        dispatch({
+          type: ActionTypes.PROJECT_RENAME,
+          project,
+        });
+        return project;
+      });
+  };
+};
+
 //Adds a construct to a project. Does not create the construct. Use blocks.js
 export const projectAddConstruct = (projectId, componentId) => {
   return (dispatch, getState) => {

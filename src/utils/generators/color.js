@@ -20,7 +20,7 @@ export const colors = [
 let lastIndex = 0;
 export default function color() {
   const next = colors[lastIndex];
-  lastIndex++;
+  lastIndex = (lastIndex + 1) % colors.length;
   return next;
 }
 

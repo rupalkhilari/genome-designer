@@ -11,12 +11,15 @@ export const SymbolPicker = ({current, onSelect}) => {
         {symbols.map(symbolObj => {
           const symbol = symbolObj.id;
           return (<a className={'Picker-item' + (current === symbol ? ' active' : '')}
+                     alt={symbolObj.metadata.name}
+                     title={symbolObj.metadata.name}
                      key={symbol}
                      onClick={onSelect.bind(this, symbol)}
-                     style={{backgroundImage: `url(${symbolObj.metadata.image})`}} />);
+                     style={{backgroundImage: `url(${symbolObj.metadata.imageThin})`}}/>);
         })}
         <a className={'Picker-item' + (!current ? ' active' : '')}
-            onClick={onSelect.bind(this, null)} />
+           style={{backgroundImage: `url(/images/sbolSymbols/thin/no_symbol.svg)`}}
+           onClick={onSelect.bind(this, null)}/>
       </div>
     </div>
   );
