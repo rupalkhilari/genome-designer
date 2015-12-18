@@ -6,6 +6,7 @@ import * as actionTypes from './constants/ActionTypes';
 import actions from './actions/_expose';
 import store, { lastAction } from './store/index';
 import * as api from './middleware/api';
+import { registerExtension } from './extensions/index';
 
 render(
   <Provider store={store}>
@@ -30,6 +31,7 @@ api.login();
 //expose various things on the window, e.g. for extensions
 const exposed = global.gd = {};
 Object.assign(exposed, {
+  registerExtension,
   actionTypes,
   actions,
   store: {
@@ -44,3 +46,6 @@ Object.assign(exposed, {
   },
   api,
 });
+
+//testing - how do we async trigger this?
+require('./dumbExtension.js');
