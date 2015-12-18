@@ -26,6 +26,7 @@
     position: relative;
     display: flex;
     align-items: center;
+    justify-content: center;
 
     &-content {
       display: none;
@@ -50,7 +51,11 @@
     }
 
     &-trigger {
-      margin-right: var(--SidePanel-width-padding-heading);
+      margin: 0;
+
+      .visible & {
+        margin-right: var(--SidePanel-width-padding-heading);
+      }
     }
 
     &-title {
