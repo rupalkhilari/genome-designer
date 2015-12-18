@@ -1,6 +1,6 @@
 import Instance from './Instance';
 import invariant from '../utils/environment/invariant';
-import randomColor from '../utils/generators/color';
+import color from '../utils/generators/color';
 import { saveBlock, readFile } from '../middleware/api';
 import AnnotationDefinition from '../schemas/Annotation';
 
@@ -12,7 +12,7 @@ export default class Block extends Instance {
   constructor(...args) {
     super(...args, {
       metadata: {
-        color: randomColor(),
+        color: color(),
       },
       sequence: {
         annotations: [],
