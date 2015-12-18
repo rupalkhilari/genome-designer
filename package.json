@@ -62,7 +62,8 @@
     "redux-router": "1.0.0-beta5",
     "redux-thunk": "^0.1.0",
     "semver-regex": "^1.0.0",
-    "url-regex": "^3.0.0"
+    "url-regex": "^3.0.0",
+    "yamljs": "^0.2.4"
   },
   "devDependencies": {
     "autoprefixer": "^6.0.3",
