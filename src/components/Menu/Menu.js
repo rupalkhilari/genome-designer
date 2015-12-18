@@ -18,7 +18,8 @@ export default class Menu extends Component {
 
   render() {
     return (
-      <div className="menu-dropdown">
+      <div className="menu-dropdown"
+           onMouseLeave={() => this.toggle(false)}>
         <div className={this.props.isOpen ? 'menu-header menu-header-open' : 'menu-header'}
              onClick={this.toggle}>
           {this.props.title}
@@ -26,9 +27,13 @@ export default class Menu extends Component {
         {this.props.isOpen && (
           <div className="menu-dropdown-container">
             {this.props.menuItems.map(item => {
+              const boundAction = () => {
+                item.action();
+                this.toggle(false);
+              };
               return (
                 item.text ?
-                  (<MenuItem text={item.text} action={item.action}/>) :
+                  (<MenuItem text={item.text} action={boundAction}/>) :
                   (<MenuSeparator />)
                 );
             })}
