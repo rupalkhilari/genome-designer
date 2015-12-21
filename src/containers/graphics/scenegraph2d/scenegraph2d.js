@@ -2,7 +2,6 @@ import uuid from 'node-uuid';
 import Node2D from './node2d';
 import UserInterface from './userinterface';
 import invariant from '../../../utils/environment/invariant';
-import debounce from 'lodash.debounce';
 import Box2D from '../geometry/box2d';
 
 export default class SceneGraph2D {
@@ -41,9 +40,6 @@ export default class SceneGraph2D {
     // size our element to initial scene graph size
     this.updateSize();
 
-    // if you want an immediate update call this._update(). The this.update()
-    // method is debounced since React tends to over send updates.
-    this.updateDebounced = debounce(this._update, 15);
   }
 
 
@@ -111,41 +107,6 @@ export default class SceneGraph2D {
    * @return {[type]} [description]
    */
   update() {
-    this.updateDebounced();
-  }
-  _update() {
     this.root.updateBranch();
-    if (this.ui) {
-      this.ui.update();
-    }
-  }
-
-  /**
-   * start a drag using the detached node at its last position / size
-   */
-  simulateDrag(node) {
-    this.sdrag = {
-      node: node,
-      translateX: node.translateX,
-      translateY: node.translateY,
-    }
-    this.root.appendChild(node);
-    node.update();
-  }
-  dragMove(point) {
-    console.log('drag move ', point.toString());
-    if (this.sdrag) {
-      this.sdrag.node.set({
-        translateX: point.x,
-        translateY: point.y,
-      });
-      this.sdrag.node.update();
-    }
-  }
-  dragUp(point) {
-    if (this.sdrag) {
-      this.sdrag.node.parent.removeChild(this.sdrag.node);
-      this.sdrag = null;
-    }
   }
 }

@@ -42,6 +42,7 @@ export class ConstructViewer extends Component {
     layoutAlgorithm: PropTypes.string.isRequired,
     uiSetCurrent: PropTypes.func.isRequired,
     inspectorToggleVisibility: PropTypes.func.isRequired,
+    currentBlock: PropTypes.string,
   }
 
   constructor(props) {
@@ -165,7 +166,12 @@ export class ConstructViewer extends Component {
     }
   }
 
-  localDrop(part) {
+  /**
+   * part of the DEMO hack, soon to be remove
+   * @param  {[type]} part [description]
+   * @return {[type]}      [description]
+   */
+  localDropXXX(part) {
     const insertionPoint = this.sg.ui.getInsertionPoint();
     let index = this.props.construct.components.length;
     if (insertionPoint) {
@@ -206,25 +212,16 @@ export class ConstructViewer extends Component {
    * update the layout and then the scene graph
    */
   update() {
-
-    console.count('Construct Viewer Updates');
-
-    console.time('Layout update');
-    this.layout.update(this.props.construct, this.props.layoutAlgorithm, this.props.blocks);
-    console.timeEnd('Layout update');
-
-    console.time('Scenegraph Update');
+    this.layout.update(this.props.construct, this.props.layoutAlgorithm, this.props.blocks, this.props.currentBlock.currentBlock);
     this.sg.update();
-    console.timeEnd('Scenegraph Update');
+    this.sg.ui.update();
   }
 
   /**
    * render the component, the scene graph will render later when componentDidUpdate is called
    */
   render() {
-    const {
-      connectDropTarget,
-      } = this.props;
+    const {connectDropTarget} = this.props;
     const rendered = connectDropTarget(
       <div className="construct-viewer" key={this.props.construct.id}>
         <ConstructViewerMenu constructId={this.props.constructId} layoutAlgorithm={this.props.layoutAlgorithm}/>
@@ -237,13 +234,15 @@ export class ConstructViewer extends Component {
   }
 }
 
-export default connect((state, props) => {
+function mapStateToProps(state, props) {
   return {
+    currentBlock: state.ui,
     construct: state.blocks[props.constructId],
     blocks: state.blocks,
-  };
-}, {
+  }
+}
 
+export default connect(mapStateToProps, {
   blockCreate,
   blockClone,
   blockAddComponent,

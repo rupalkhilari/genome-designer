@@ -244,10 +244,11 @@ export default class Layout {
    * display elements as required
    * @return {[type]} [description]
    */
-  update(construct, layoutAlgorithm, blocks) {
+  update(construct, layoutAlgorithm, blocks, currentBlockId) {
     this.construct = construct;
     this.layoutAlgorithm = layoutAlgorithm;
     this.blocks = blocks;
+    this.currentBlockId = currentBlockId;
 
     switch (this.layoutAlgorithm) {
     case kT.layoutWrap:
@@ -388,5 +389,12 @@ export default class Layout {
     this.vertical.set({
       bounds: new Box2D(xs, ys + kT.titleH + kT.rowBarH, kT.rowBarW, vh),
     });
+
+    // update selection
+    if (this.currentBlockId && this.nodeFromElement(this.currentBlockId)) {
+      this.sceneGraph.ui.setSelections([this.nodeFromElement(this.currentBlockId)]);
+    } else {
+      this.sceneGraph.ui.setSelections([]);
+    }
   }
 }
