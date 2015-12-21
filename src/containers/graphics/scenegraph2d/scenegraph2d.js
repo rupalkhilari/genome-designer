@@ -3,6 +3,7 @@ import Node2D from './node2d';
 import UserInterface from './userinterface';
 import invariant from '../../../utils/environment/invariant';
 import Box2D from '../geometry/box2d';
+import Vector2D from '../geometry/vector2d';
 
 export default class SceneGraph2D {
 
@@ -53,6 +54,13 @@ export default class SceneGraph2D {
     if (this.ui) {
       this.ui.updateSize();
     }
+  }
+
+  /**
+   * current size of the graph, unscaled
+   */
+  getSize() {
+    return new Vector2D(this.width, this.height);
   }
 
   /**

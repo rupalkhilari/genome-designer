@@ -76,6 +76,7 @@
   width: calc(100% - 2rem);
   overflow: hidden;
   background: transparent;
+  position: relative;
 
   /* block insertion point, position via center */
   .block-insertion-point {

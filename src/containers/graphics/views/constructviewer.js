@@ -20,6 +20,8 @@ import UserInterface from './constructvieweruserinterface';
 import { inspectorToggleVisibility } from '../../../actions/inspector';
 import { uiSetCurrent } from '../../../actions/ui';
 
+import SourceOverlay from './sourceoverlay';
+
 const constructTarget = {
   drop(props, monitor, component) {
     component.drop.call(component, monitor);
@@ -72,7 +74,7 @@ export class ConstructViewer extends Component {
   windowResized() {
     this.sg.availableWidth = this.dom.clientWidth;
     this.sg.availableHeight = this.dom.clientHeight;
-    this.update();
+    this.forceUpdate();
   }
 
   /**
@@ -221,12 +223,20 @@ export class ConstructViewer extends Component {
    * render the component, the scene graph will render later when componentDidUpdate is called
    */
   render() {
+
+    this.layout && this.layout.update(this.props.construct, this.props.layoutAlgorithm, this.props.blocks, this.props.currentBlock.currentBlock);
+
+    const width = this.sg ? this.sg.width + 'px' : '100%';
+    const height = this.sg ? this.sg.height + 'px' : '100%';
+
     const {connectDropTarget} = this.props;
+
     const rendered = connectDropTarget(
       <div className="construct-viewer" key={this.props.construct.id}>
         <ConstructViewerMenu constructId={this.props.constructId} layoutAlgorithm={this.props.layoutAlgorithm}/>
         <div className="sceneGraphContainer">
           <div className="sceneGraph"/>
+          <SourceOverlay width={width} height={height}></SourceOverlay>
         </div>
       </div>
     );
