@@ -16,8 +16,8 @@ export default class UserInterface {
     this.sg.parent.parentNode.insertBefore(this.el, this.sg.parent.nextSibiling);
     // sink mouse events
     this.el.addEventListener('mousedown', this.onMouseDown);
-    this.el.addEventListener('mousemove', this.onMouseMove);
-    this.el.addEventListener('mouseup', this.onMouseUp);
+    // this.el.addEventListener('mousemove', this.onMouseMove);
+    // this.el.addEventListener('mouseup', this.onMouseUp);
     // base class can handle simple selections based on the AABB of nodes
     this.selections = [];
     // maps selected node UUID's to their display glyph
@@ -109,7 +109,11 @@ export default class UserInterface {
    * mousedown event binding
    */
   onMouseDown = (e) => {
-    this.mouseDown(this.eventToLocal(e.clientX, e.clientY, e.currentTarget), e);
+    this.mouseDown(this.mouseToLocal(e, e.currentTarget), e);
+    this.dragging = {
+      move: document.addEventListener('mousemove', this.onMouseMove),
+      up:   document.addEventListener('mouseup', this.onMouseUp),
+    };
   }
   /**
    * this is the actual mouse down event you should override in descendant classes
@@ -119,7 +123,8 @@ export default class UserInterface {
    * mousemove event binding
    */
   onMouseMove = (e) => {
-    this.mouseMove(this.eventToLocal(e.clientX, e.clientY, e.currentTarget), e);
+    invariant(this.dragging, 'only expect mouse moves during a drag');
+    this.mouseMove(this.mouseToLocal(e, e.currentTarget), e);
   }
   /**
    * this is the actual mouse move event you should override in descendant classes
@@ -129,7 +134,11 @@ export default class UserInterface {
    * mouseup event binding
    */
   onMouseUp = (e) => {
-    this.mouseUp(this.eventToLocal(e.clientX, e.clientY, e.currentTarget), e);
+    invariant(this.dragging, 'only expect mouse moves during a drag');
+    this.mouseUp(this.mouseToLocal(e, e.currentTarget), e);
+    document.removeEventListener('mousemove', this.onMouseMove);
+    document.removeEventListener('mouseup', this.onMouseUp);
+    this.dragging = null;
   }
   /**
    * this is the actual mouse up event you should override in descendant classes
@@ -137,26 +146,58 @@ export default class UserInterface {
   mouseUp(point, e) {}
 
   /**
-   * [eventToLocal description]
-   * @param  {Number} clientX
-   * @param  {Number} clientY
-   * @param  {Node} target
-   * @return {Vector2D}
+   * Get the client area coordinates for a given mouse event and HTML element.
+   * @param {MouseEvent} e - mouse event you are interested in
+   * @param {HTMLElement} element - element for which you want local coordinates
    */
-  eventToLocal(clientX, clientY, target) {
-    function getPosition(element) {
-      let xPosition = 0;
-      let yPosition = 0;
-      let el = element;
-      while (el) {
-        xPosition += (el.offsetLeft - el.scrollLeft + el.clientLeft);
-        yPosition += (el.offsetTop - el.scrollTop + el.clientTop);
-        el = el.offsetParent;
-      }
-      return new Vector2D(xPosition, yPosition);
+   mouseToLocal(e, element) {
+    invariant(e && element, 'Bad parameters');
+    // get the position in document coordinates, allowing for browsers that don't have pageX/pageY
+    var pageX = e.pageX;
+    var pageY = e.pageY;
+    if (pageX === undefined) {
+      pageX = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+      pageY = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
     }
-    const parentPosition = getPosition(target);
-    return new Vector2D(clientX, clientY).sub(parentPosition);
+    return this.globalToLocal(new Vector2D(pageX, pageY), element);
+  }
+
+  /**
+   * convert page coordinates into local coordinates
+   * @param v
+   * @param element
+   * @returns {G.Vector2D}
+   */
+  globalToLocal(v, element) {
+    invariant(v && element, 'Bad parameters');
+    var p = this.documentOffset(element);
+    return new Vector2D(v.x - p.left, v.y - p.top);
+  }
+
+  /**
+ * return the top/left of the element relative to the document. Includes any scrolling.
+ * @param {HTMLElement} element
+ * @returns {{left: Number, top: Number}}
+ */
+ documentOffset(element) {
+    invariant(element, 'Bad parameter');
+    // if element is the document there is no offset
+    if (element.isSameNode(document)) {
+      return {left: 0, top: 0};
+    }
+    // use the elements offset + the nearest positioned element, back to the root to find
+    // the absolute position of the element
+    let curleft = element.offsetLeft;
+    let curtop = element.offsetTop;
+    while (element.offsetParent) {
+      element = element.offsetParent;
+      curleft += element.offsetLeft;
+      curtop += element.offsetTop;
+    }
+    return {
+      left: curleft,
+      top: curtop
+    };
   }
 
   /**

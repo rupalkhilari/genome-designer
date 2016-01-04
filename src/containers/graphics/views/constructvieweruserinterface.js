@@ -94,7 +94,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * to our local client coordinates, just like a mouse event
    */
   dragOver(point) {
-    const local = this.eventToLocal(point.x, point.y, this.el);
+    const local = this.mouseToLocal({pageX: point.x, pageY:point.y}, this.el);
     const hit = this.topBlockAndVerticalEdgeAt(local);
     if (hit) {
       this.showInsertionPoint(hit.block, hit.edge);
