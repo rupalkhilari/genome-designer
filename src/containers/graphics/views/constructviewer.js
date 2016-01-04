@@ -20,8 +20,6 @@ import UserInterface from './constructvieweruserinterface';
 import { inspectorToggleVisibility } from '../../../actions/inspector';
 import { uiSetCurrent } from '../../../actions/ui';
 
-import SourceOverlay from './sourceoverlay';
-
 const constructTarget = {
   drop(props, monitor, component) {
     component.drop.call(component, monitor);
@@ -169,22 +167,6 @@ export class ConstructViewer extends Component {
   }
 
   /**
-   * part of the DEMO hack, soon to be remove
-   * @param  {[type]} part [description]
-   * @return {[type]}      [description]
-   */
-  localDropXXX(part) {
-    const insertionPoint = this.sg.ui.getInsertionPoint();
-    let index = this.props.construct.components.length;
-    if (insertionPoint) {
-      index = this.props.construct.components.indexOf(insertionPoint.block) + (insertionPoint.edge === 'right' ? 1 : 0);
-      //this.props.blockClone(part).then(block => {
-      this.props.blockAddComponent(this.props.construct.id, part, index);
-      //});
-    }
-  }
-
-  /**
    * remove the given block, which we assume if part of our construct
    */
   removePart(partId) {
@@ -236,7 +218,6 @@ export class ConstructViewer extends Component {
         <ConstructViewerMenu constructId={this.props.constructId} layoutAlgorithm={this.props.layoutAlgorithm}/>
         <div className="sceneGraphContainer">
           <div className="sceneGraph"/>
-          <SourceOverlay width={width} height={height}></SourceOverlay>
         </div>
       </div>
     );
