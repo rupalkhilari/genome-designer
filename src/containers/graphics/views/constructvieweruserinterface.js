@@ -4,6 +4,9 @@ import Box2D from '../geometry/box2d';
 import UserInterface from '../scenegraph2d/userinterface';
 import invariant from '../../../utils/environment/invariant';
 
+// # of pixels of mouse movement before a drag is triggered.
+const kDRAG_THRESHOLD = 4;
+
 /**
  * user interface overlay for construct viewer
  */
@@ -53,7 +56,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
   /**
    * mouse down handler
    */
-  mouseDown(point, e) {
+  mouseDown(e, point) {
     e.preventDefault();
     const block = this.topBlockAt(point);
     if (block) {
@@ -71,14 +74,15 @@ export default class ConstructViewerUserInterface extends UserInterface {
   /**
    * move handler
    */
-  mouseMove(point, e) {
-
-  }
-  /**
-   * mouse up handler
-   */
-  mouseUp(point, e) {
-
+  mouseDrag(e, point, startPoint, distance) {
+    if (distance > kDRAG_THRESHOLD) {
+      // start a block drag if we have one
+      const block = this.topBlockAt(startPoint);
+      if (block) {
+        this.mouseTrap.cancelDrag();
+        alert('Block dragged');
+      }
+    }
   }
 
   /**
@@ -94,7 +98,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * to our local client coordinates, just like a mouse event
    */
   dragOver(point) {
-    const local = this.mouseToLocal({pageX: point.x, pageY:point.y}, this.el);
+    const local = this.mouseTrap.mouseToLocal({pageX: point.x, pageY:point.y}, this.el);
     const hit = this.topBlockAndVerticalEdgeAt(local);
     if (hit) {
       this.showInsertionPoint(hit.block, hit.edge);

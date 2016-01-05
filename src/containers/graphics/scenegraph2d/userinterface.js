@@ -1,7 +1,10 @@
 import uuid from 'node-uuid';
 import Node2D from './node2d';
 import Vector2D from '../geometry/vector2d';
+import MouseTrap from '../mousetrap';
 import invariant from '../../../utils/environment/invariant';
+
+const kDRAG_THRESHOLD = 4;
 
 export default class UserInterface {
 
@@ -22,6 +25,14 @@ export default class UserInterface {
     this.selections = [];
     // maps selected node UUID's to their display glyph
     this.selectionMap = {};
+    // mouse tracker
+    this.mouseTrap = new MouseTrap({
+      element: this.el,
+      mouseDown: this.mouseDown.bind(this),
+      mouseMove: this.mouseMove.bind(this),
+      mouseDrag: this.mouseDrag.bind(this),
+      mouseUp: this.mouseUp.bind(this),
+    })
   }
   /**
    * replace current selections, call with falsey to reset selections
@@ -106,99 +117,21 @@ export default class UserInterface {
   }
 
   /**
-   * mousedown event binding
-   */
-  onMouseDown = (e) => {
-    this.mouseDown(this.mouseToLocal(e, e.currentTarget), e);
-    this.dragging = {
-      move: document.addEventListener('mousemove', this.onMouseMove),
-      up:   document.addEventListener('mouseup', this.onMouseUp),
-    };
-  }
-  /**
    * this is the actual mouse down event you should override in descendant classes
    */
   mouseDown(point, e) {}
-  /**
-   * mousemove event binding
-   */
-  onMouseMove = (e) => {
-    invariant(this.dragging, 'only expect mouse moves during a drag');
-    this.mouseMove(this.mouseToLocal(e, e.currentTarget), e);
-  }
   /**
    * this is the actual mouse move event you should override in descendant classes
    */
   mouseMove(point, e) {}
   /**
-   * mouseup event binding
+   * this is the actual mouse drag event you should override in descendant classes
    */
-  onMouseUp = (e) => {
-    invariant(this.dragging, 'only expect mouse moves during a drag');
-    this.mouseUp(this.mouseToLocal(e, e.currentTarget), e);
-    document.removeEventListener('mousemove', this.onMouseMove);
-    document.removeEventListener('mouseup', this.onMouseUp);
-    this.dragging = null;
-  }
+  mouseDrag(point, e) {}
   /**
    * this is the actual mouse up event you should override in descendant classes
    */
   mouseUp(point, e) {}
-
-  /**
-   * Get the client area coordinates for a given mouse event and HTML element.
-   * @param {MouseEvent} e - mouse event you are interested in
-   * @param {HTMLElement} element - element for which you want local coordinates
-   */
-   mouseToLocal(e, element) {
-    invariant(e && element, 'Bad parameters');
-    // get the position in document coordinates, allowing for browsers that don't have pageX/pageY
-    var pageX = e.pageX;
-    var pageY = e.pageY;
-    if (pageX === undefined) {
-      pageX = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
-      pageY = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
-    }
-    return this.globalToLocal(new Vector2D(pageX, pageY), element);
-  }
-
-  /**
-   * convert page coordinates into local coordinates
-   * @param v
-   * @param element
-   * @returns {G.Vector2D}
-   */
-  globalToLocal(v, element) {
-    invariant(v && element, 'Bad parameters');
-    var p = this.documentOffset(element);
-    return new Vector2D(v.x - p.left, v.y - p.top);
-  }
-
-  /**
- * return the top/left of the element relative to the document. Includes any scrolling.
- * @param {HTMLElement} element
- * @returns {{left: Number, top: Number}}
- */
- documentOffset(element) {
-    invariant(element, 'Bad parameter');
-    // if element is the document there is no offset
-    if (element.isSameNode(document)) {
-      return {left: 0, top: 0};
-    }
-    // use the elements offset + the nearest positioned element, back to the root to find
-    // the absolute position of the element
-    let curleft = element.offsetLeft;
-    let curtop = element.offsetTop;
-    while (element.offsetParent) {
-      element = element.offsetParent;
-      curleft += element.offsetLeft;
-      curtop += element.offsetTop;
-    }
-    return {
-      left: curleft,
-      top: curtop
-    };
-  }
 
   /**
    * general update, called whenever our scenegraph updates
