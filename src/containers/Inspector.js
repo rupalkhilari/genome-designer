@@ -12,6 +12,7 @@ export class Inspector extends Component {
   static propTypes = {
     isVisible: PropTypes.bool.isRequired,
     inspectorToggleVisibility: PropTypes.func.isRequired,
+    forceBlock: PropTypes.object,
     currentBlock: PropTypes.string,
     project: PropTypes.object,
     block: PropTypes.object,
@@ -25,7 +26,18 @@ export class Inspector extends Component {
   }
 
   render() {
-    const { isVisible, currentBlock, block, project } = this.props;
+    const { isVisible, forceBlock, currentBlock, block, project } = this.props;
+
+    let content = null;
+    if (!!forceBlock) {
+      content = <InspectorBlock instance={forceBlock}/>;
+    } else {
+      if (!!currentBlock) {
+        content = (<InspectorBlock instance={block}/>);
+      } else if (!!project) {
+        content = (<InspectorProject instance={project}/>);
+      }
+    }
 
     return (
       <div className={'SidePanel Inspector' + (isVisible ? ' visible' : '')}>
@@ -42,9 +54,7 @@ export class Inspector extends Component {
         </div>
 
         <div className="SidePanel-content">
-          {!!currentBlock ?
-            (<InspectorBlock instance={block}/>) :
-            (<InspectorProject instance={project}/>) }
+          {content}
         </div>
       </div>
     );
