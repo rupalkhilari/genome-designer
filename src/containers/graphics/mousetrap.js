@@ -29,7 +29,6 @@ export default class MouseTrap {
     // mouseMove: Function - callback for mousemove event (point, event)
     // mouseDrag: Function - callback for mousemove with button help down event (point, event)
     // mouseUp: Function - callback for mouseup event (point, event)
-    debugger;
     this.options = Object.assign({}, options);
     invariant(this.options.element, 'options must contain an element');
     this.element = options.element;
@@ -134,12 +133,9 @@ export default class MouseTrap {
   }
 
   /**
-   * Get the client area coordinates for a given mouse event and HTML element.
-   * @param {MouseEvent} e - mouse event you are interested in
-   * @param {HTMLElement} element - element for which you want local coordinates
+   * x-browser solution for the global mouse position
    */
-   mouseToLocal(e, element) {
-    invariant(e && element, 'Bad parameters');
+  mouseToGlobal(e) {
     // get the position in document coordinates, allowing for browsers that don't have pageX/pageY
     var pageX = e.pageX;
     var pageY = e.pageY;
@@ -147,7 +143,16 @@ export default class MouseTrap {
       pageX = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
       pageY = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
     }
-    return this.globalToLocal(new Vector2D(pageX, pageY), element);
+    return new Vector2D(pageX, pageY);
+  }
+  /**
+   * Get the client area coordinates for a given mouse event and HTML element.
+   * @param {MouseEvent} e - mouse event you are interested in
+   * @param {HTMLElement} element - element for which you want local coordinates
+   */
+   mouseToLocal(e, element) {
+    invariant(e && element, 'Bad parameters');
+    return this.globalToLocal(this.mouseToGlobal(e), element);
   }
 
   /**

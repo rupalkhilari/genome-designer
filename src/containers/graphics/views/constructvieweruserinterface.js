@@ -3,6 +3,7 @@ import Line2D from '../geometry/line2d';
 import Box2D from '../geometry/box2d';
 import UserInterface from '../scenegraph2d/userinterface';
 import invariant from '../../../utils/environment/invariant';
+import DnD from '../dnd/dnd';
 
 // # of pixels of mouse movement before a drag is triggered.
 const kDRAG_THRESHOLD = 4;
@@ -13,6 +14,8 @@ const kDRAG_THRESHOLD = 4;
 export default class ConstructViewerUserInterface extends UserInterface {
   constructor(sg) {
     super(sg);
+    // register ourselves as a drop target
+    DnD.registerTarget(this.el);
   }
 
   /**
@@ -72,15 +75,24 @@ export default class ConstructViewerUserInterface extends UserInterface {
     }
   }
   /**
-   * move handler
+   * move drag handler, if the user initiates a drag of a block hand over
+   * to the DND manager to handle
    */
   mouseDrag(e, point, startPoint, distance) {
     if (distance > kDRAG_THRESHOLD) {
       // start a block drag if we have one
       const block = this.topBlockAt(startPoint);
       if (block) {
+        // cancel our own mouse operations for now
         this.mouseTrap.cancelDrag();
-        alert('Block dragged');
+        // get global point as starting point for drag
+        const globalPoint = this.mouseTrap.mouseToGlobal(e);
+        // create proxy and drag
+        const d = document.createElement('div');
+        d.style.width = '100px';
+        d.style.height = '30px';
+        d.style.backgroundColor = 'red';
+        DnD.startDrag(d, globalPoint, {});
       }
     }
   }

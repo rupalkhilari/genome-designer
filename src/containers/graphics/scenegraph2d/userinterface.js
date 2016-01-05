@@ -32,7 +32,7 @@ export default class UserInterface {
       mouseMove: this.mouseMove.bind(this),
       mouseDrag: this.mouseDrag.bind(this),
       mouseUp: this.mouseUp.bind(this),
-    })
+    });
   }
   /**
    * replace current selections, call with falsey to reset selections
