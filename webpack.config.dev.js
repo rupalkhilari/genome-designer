@@ -32,7 +32,11 @@ module.exports = Object.assign({}, webpackBase, {
         exclude: /node_modules/
       },
       {
-        test  : /\.css$/,
+        test: /\.css$/,
+        loader: 'style-loader!css-loader!postcss-loader'
+      },
+      {
+        test:/\.scss$/,
         loader: 'style-loader!css-loader!postcss-loader'
       }
     ]
