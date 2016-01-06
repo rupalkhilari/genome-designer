@@ -2,7 +2,7 @@ import Vector2D from '../geometry/vector2d';
 import Line2D from '../geometry/line2d';
 import Box2D from '../geometry/box2d';
 import UserInterface from '../scenegraph2d/userinterface';
-import invariant from '../../../utils/environment/invariant';
+import invariant from 'invariant';
 
 /**
  * user interface overlay for construct viewer

@@ -1,4 +1,4 @@
-import invariant from '../../../../utils/environment/invariant';
+import invariant from 'invariant';
 
 /**
  * base class for all glyphs.
