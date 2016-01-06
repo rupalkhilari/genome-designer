@@ -165,6 +165,21 @@ export class ConstructViewer extends Component {
       });
     }
   }
+  /**
+   * add the given item using an insertion point from the constructviewer user interface.
+   * Insertion point may be null, in which the block is added at the end
+   */
+  addItemAtInsertionPoint(item, insertionPoint) {
+    // get index of insertion allowing for the edge closest to the drop
+    let index = this.props.construct.components.length;
+    if (insertionPoint) {
+      index = this.props.construct.components.indexOf(insertionPoint.block) + (insertionPoint.edge === 'right' ? 1 : 0);
+    }
+    // clone and add the block
+    this.props.blockClone(item).then(block => {
+      this.props.blockAddComponent(this.props.construct.id, block.id, index);
+    });
+  }
 
   /**
    * remove the given block, which we assume if part of our construct

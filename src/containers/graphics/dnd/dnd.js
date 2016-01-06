@@ -29,6 +29,9 @@ class DnD {
     this.proxy.style.position = 'absolute';
     // http://www.puidokas.com/max-z-index/
     this.proxy.style.zIndex = 2147483647;
+    // remove any transform from proxy and make semi-transparent
+    this.proxy.style.transform = null;
+    this.proxy.style.opacity = 2/3;
 
     document.body.appendChild(this.proxy);
 

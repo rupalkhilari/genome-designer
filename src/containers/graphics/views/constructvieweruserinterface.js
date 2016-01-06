@@ -93,11 +93,13 @@ export default class ConstructViewerUserInterface extends UserInterface {
         // get global point as starting point for drag
         const globalPoint = this.mouseTrap.mouseToGlobal(e);
         // create proxy and drag
-        const d = document.createElement('div');
-        d.style.width = '100px';
-        d.style.height = '30px';
-        d.style.backgroundColor = 'red';
-        DnD.startDrag(d, globalPoint, {});
+        const node = this.layout.nodeFromElement(block);
+        // the proxy is actual a clone of scene graphs DOM element.
+        const proxy = node.el.cloneNode(true);
+        // remove the block
+        this.constructViewer.removePart(block);
+        // start the drag with the proxy and the removed block as the payload
+        DnD.startDrag(proxy, globalPoint, block);
       }
     }
   }
@@ -139,10 +141,11 @@ export default class ConstructViewerUserInterface extends UserInterface {
     }
   }
   /**
-   * user dropped the payload on us at the given position
+   * user dropped the payload on us at the given position. Defer the insertion
+   * to our actual constructViewer which has all the necessary props
    */
   onDrop(globalPosition, payload) {
-    console.log('Dropped:', globalPosition.toString());
+    this.constructViewer.addItemAtInsertionPoint(payload, this.insertion);
   }
 
   /**
