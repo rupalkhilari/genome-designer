@@ -90,6 +90,12 @@ class OnionViewer extends React.Component {
       features = onionFile.features;
     }
 
+    //if sequence has been changed, cursor should be reset
+    if(this.state && this.state.sequence && (this.state.pvCursorPos>this.state.sequence.length || this.state.pvStartCursorPos>this.state.sequence.length)){
+      this.state.pvCursorPos = 0;
+      this.state.pvStartCursorPos = 0;
+    }
+
     return (
       <div style={{minWidth: '1000px'}}>
         <div style={{
