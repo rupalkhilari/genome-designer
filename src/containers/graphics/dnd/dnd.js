@@ -4,6 +4,7 @@ import invariant from '../../../utils/environment/invariant';
 
 /**
  * actual Drag and Drop manager.
+ *
  */
 class DnD {
 
@@ -37,19 +38,36 @@ class DnD {
 
     // initial update of proxy
     this.updateProxyPosition(globalPosition);
+
+    // set initial target we are over, necessary for dragEnter, dragLeave callbacks
+    this.lastTarget = null;
+
+    // save the payload for dropping
+    this.payload = payload;
   }
 
   /**
    * mouse move during drag
    */
   onMouseMove(e) {
+    // first get the target at the current location
     invariant(this.proxy, 'not expecting mouse events when not dragging');
-    this.updateProxyPosition(this.mouseToGlobal(e));
-    const element = this.findTargetAt(e);
-    if (element) {
-      console.log("Hit at:", this.mouseToGlobal(e).toString());
-    } else {
-      console.log('No target');
+    const globalPosition = this.mouseToGlobal(e);
+    this.updateProxyPosition(globalPosition);
+    const target = this.findTargetAt(e);
+    // dragLeave callback as necessary
+    if (target !== this.lastTarget && this.lastTarget && this.lastTarget.options.dragLeave) {
+      this.lastTarget.options.dragLeave.call(this, globalPosition, this.las);
+    }
+    // drag enter callback as necessary
+    if (target !== this.lastTarget && target && target.options.dragEnter) {
+      target.options.dragEnter.call(this, globalPosition, this.payload);
+    }
+    this.lastTarget = target;
+
+    // given current target a drag over is necessary
+    if (target && target.options && target.options.dragOver) {
+      target.options.dragOver.call(this, globalPosition, this.payload);
     }
   }
   /**
@@ -57,6 +75,16 @@ class DnD {
    */
   onMouseUp(e) {
     invariant(this.proxy, 'not expecting mouse events when not dragging');
+    const target = this.findTargetAt(e);
+    if (target && target.options && target.options.drop) {
+      const globalPosition = this.mouseToGlobal(e);
+      target.options.drop.call(this, globalPosition, this.payload);
+    }
+    // ensure lastTarget gets a dragLeave incase they rely on it for cleanup
+    if (this.lastTarget && this.lastTarget.options.dragLeave) {
+      this.lastTarget.options.dragLeave.call(this);
+    }
+
     this.cancelDrag();
   }
 
@@ -78,6 +106,8 @@ class DnD {
       document.body.removeEventListener('mouseup', this.mouseUp);
       this.proxy.parentElement.removeChild(this.proxy);
       this.proxy = null;
+      this.payload = null;
+      this.lastTarget = null;
     }
   }
 
@@ -91,27 +121,31 @@ class DnD {
    */
   findTargetAt(event) {
     const globalPoint = this.mouseToGlobal(event);
-    return this.targets.find(element => {
-      return this.getDocumentBounds(element).pointInBox(globalPoint);
+    return this.targets.find(options => {
+      return this.getDocumentBounds(options.element).pointInBox(globalPoint);
     });
   }
 
   /**
-   * register a target for drop events
+   * register a target for drop events.
+   * The options block should contain the callbacks you are interested in:
+   * dragEnter(globalPosition, payload) - when a drag enters the target
+   * dragOver(globalPosition, payload) - when a drag moves over the target, dragEnter is always called first
+   * dragLeave(globalPosition, payload) - when a drag leaves the target, if dragEnter was called before NOTE: dragLeave is called even after a successful drop
+   * drop(globalPosition, payload) - when a drop occurs - alway follows a dragEnter, dragOver
    */
-  registerTarget(element) {
+  registerTarget(element, options) {
     invariant(element, 'expected an element to register');
-    invariant(this.targets.indexOf(element) < 0, 'element already registered');
-    this.targets.push(element);
+    this.targets.push({element, options});
   }
 
   /**
-   * unregister a drop target
+   * unregister a drop target via the registered element
    */
   unregisterTarget(element) {
-    const index = this.targets.indexOf(element);
-    invariant(index >= 0, 'element not registered');
-    this.targets.splice(index, 1);
+    const targetIndex = this.targets.find(obj => obj.element);
+    invariant(targetIndex >= 0, 'element is not registered');
+    this.targets.splice(targetIndex, 1);
   }
 
   /**

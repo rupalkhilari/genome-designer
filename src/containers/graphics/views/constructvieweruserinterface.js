@@ -15,7 +15,12 @@ export default class ConstructViewerUserInterface extends UserInterface {
   constructor(sg) {
     super(sg);
     // register ourselves as a drop target
-    DnD.registerTarget(this.el);
+    DnD.registerTarget(this.el, {
+      dragEnter: this.onDragEnter.bind(this),
+      dragLeave: this.onDragLeave.bind(this),
+      dragOver: this.onDragOver.bind(this),
+      drop: this.onDrop.bind(this),
+    });
   }
 
   /**
@@ -105,6 +110,41 @@ export default class ConstructViewerUserInterface extends UserInterface {
     // reset insertion point
     this.insertion = null;
   }
+
+  /**
+   * a drag entered the construct viewer
+   */
+  onDragEnter() {
+    console.log('Drag Enter');
+    this.hideInsertionPoint();
+  }
+  /**
+   * drag left the construct viewer
+   */
+  onDragLeave() {
+    console.log('Drag Leave');
+    this.hideInsertionPoint();
+  }
+  /**
+   * drag over event
+   */
+  onDragOver(globalPosition, payload) {
+    // convert global point to local space via our mousetrap
+    const localPosition = this.mouseTrap.globalToLocal(globalPosition, this.el);
+    const hit = this.topBlockAndVerticalEdgeAt(localPosition);
+    if (hit) {
+      this.showInsertionPoint(hit.block, hit.edge);
+    } else {
+      this.hideInsertionPoint();
+    }
+  }
+  /**
+   * user dropped the payload on us at the given position
+   */
+  onDrop(globalPosition, payload) {
+    console.log('Dropped:', globalPosition.toString());
+  }
+
   /**
    * drag over comes with viewport/document relative point. We must convert
    * to our local client coordinates, just like a mouse event
