@@ -54,7 +54,7 @@ class OnionViewer extends React.Component {
   }
 
   onSetCursor(pos) {
-    this.setState({pvCursorPos: pos});
+    this.setState({pvCursorPos: pos,pvStartCursorPos:pos});
   }
 
   onSelecting(pos1, pos2) {
