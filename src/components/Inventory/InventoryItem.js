@@ -30,7 +30,10 @@ export default class InventoryItem extends Component {
     // get global point as starting point for drag
     const globalPoint = this.mouseTrap.mouseToGlobal(e);
     // start DND
-    DnD.startDrag(this.makeDnDProxy(), globalPoint, this.props.item);
+    DnD.startDrag(this.makeDnDProxy(), globalPoint, {
+      item: this.props.item,
+      type: this.props.inventoryType,
+    });
   }
 
   /**

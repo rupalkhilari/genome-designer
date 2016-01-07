@@ -58,8 +58,22 @@ export default class ConstructViewerUserInterface extends UserInterface {
         edge: point.x < AABB.cx ? 'left' : 'right',
       }
     }
-    // if here no hit
+    // if no edit then return the right edge of the last block
+    const n = this.construct.components.length;
+    if (n) {
+      return {
+        block: this.construct.components[n-1],
+        edge: 'right',
+      }
+    }
+    // construct is empty, we should an insertion point but for now we don't.
     return null;
+  }
+  /**
+   * accessor for the construct in our constructviewer owner
+   */
+  get construct() {
+    return this.constructViewer.props.construct;
   }
   /**
    * mouse down handler
@@ -99,7 +113,9 @@ export default class ConstructViewerUserInterface extends UserInterface {
         // remove the block
         this.constructViewer.removePart(block);
         // start the drag with the proxy and the removed block as the payload
-        DnD.startDrag(proxy, globalPoint, block);
+        DnD.startDrag(proxy, globalPoint, {
+          item: block,
+        });
       }
     }
   }

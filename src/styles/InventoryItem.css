@@ -12,11 +12,13 @@
   background-color: white;
   color: black;
   padding: 0 2rem 0 2rem;
+  cursor: pointer;
 }
 
 .InventoryItem {
   display: block;
   font-size: 12px;
+  cursor: default;
 
   &.hasImage {
     white-space: nowrap;

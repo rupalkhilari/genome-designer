@@ -2,7 +2,6 @@ import React, { Component, PropTypes } from 'react';
 import SceneGraph2D from '../scenegraph2d/scenegraph2d';
 import Vector2D from '../geometry/vector2d';
 import Layout from './layout.js';
-import { DropTarget } from 'react-dnd';
 import {connect } from 'react-redux';
 import {
   blockCreate,
@@ -20,20 +19,6 @@ import UserInterface from './constructvieweruserinterface';
 import { inspectorToggleVisibility } from '../../../actions/inspector';
 import { uiSetCurrent } from '../../../actions/ui';
 
-const constructTarget = {
-  drop(props, monitor, component) {
-    component.drop.call(component, monitor);
-  },
-
-  hover(props, monitor, component) {
-    component.dragOver.call(component, monitor);
-  },
-};
-@DropTarget(inventoryItemDragType, constructTarget, (connect, monitor) => ({
-  connectDropTarget: connect.dropTarget(),
-  isOver: monitor.isOver(),
-  canDrop: monitor.canDrop(),
-}))
 export class ConstructViewer extends Component {
 
   static propTypes = {
@@ -138,15 +123,11 @@ export class ConstructViewer extends Component {
   }
 
   /**
-   * something was dropped on us
-   * @param  {[type]} monitor [description]
-   * @return {[type]}         [description]
+   * add the given item using an insertion point from the constructviewer user interface.
+   * Insertion point may be null, in which the block is added at the end
    */
-  drop(monitor) {
-    // get the current insertion point
-    const insertionPoint = this.sg.ui.getInsertionPoint();
-    // construct object that was dropped
-    const { item, type } = monitor.getItem();
+  addItemAtInsertionPoint(payload, insertionPoint) {
+    const { item, type } = payload;
     if (type === sbolDragType) {
       // must have an insertion point for sbol
       if (insertionPoint) {
@@ -164,21 +145,6 @@ export class ConstructViewer extends Component {
         this.props.blockAddComponent(this.props.construct.id, block.id, index);
       });
     }
-  }
-  /**
-   * add the given item using an insertion point from the constructviewer user interface.
-   * Insertion point may be null, in which the block is added at the end
-   */
-  addItemAtInsertionPoint(item, insertionPoint) {
-    // get index of insertion allowing for the edge closest to the drop
-    let index = this.props.construct.components.length;
-    if (insertionPoint) {
-      index = this.props.construct.components.indexOf(insertionPoint.block) + (insertionPoint.edge === 'right' ? 1 : 0);
-    }
-    // clone and add the block
-    this.props.blockClone(item).then(block => {
-      this.props.blockAddComponent(this.props.construct.id, block.id, index);
-    });
   }
 
   /**
@@ -228,7 +194,7 @@ export class ConstructViewer extends Component {
 
     const {connectDropTarget} = this.props;
 
-    const rendered = connectDropTarget(
+    const rendered = (
       <div className="construct-viewer" key={this.props.construct.id}>
         <ConstructViewerMenu constructId={this.props.constructId} layoutAlgorithm={this.props.layoutAlgorithm}/>
         <div className="sceneGraphContainer">

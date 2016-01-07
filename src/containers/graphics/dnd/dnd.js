@@ -32,6 +32,8 @@ class DnD {
     // remove any transform from proxy and make semi-transparent
     this.proxy.style.transform = null;
     this.proxy.style.opacity = 2/3;
+    // give the proxy the hand cursor
+    this.proxy.style.cursor = 'pointer';
 
     document.body.appendChild(this.proxy);
 
