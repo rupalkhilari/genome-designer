@@ -1,6 +1,6 @@
 import uuid from 'node-uuid';
 import 'isomorphic-fetch';
-import invariant from '../utils/environment/invariant';
+import invariant from 'invariant';
 import BlockDefinition from '../schemas/Block';
 
 /*************************

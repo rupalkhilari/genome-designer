@@ -1,7 +1,7 @@
 import uuid from 'node-uuid';
 import Node2D from './node2d';
 import Vector2D from '../geometry/vector2d';
-import invariant from '../../../utils/environment/invariant';
+import invariant from 'invariant';
 
 export default class UserInterface {
 
