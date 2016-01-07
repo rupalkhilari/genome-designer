@@ -4,6 +4,7 @@ import { render as reactRender } from 'react-dom';
 import {SequenceEditor} from './extensions/onion2/SequenceEditor';
 import {onionFile} from './extensions/onion2/OnionFile';
 import {PlasmidViewer} from './extensions/onion2/PlasmidViewer';
+import {InfoBar} from './extensions/onion2/InfoBar';
 /* create simple component */
 
 class OnionViewer extends React.Component {
@@ -74,7 +75,7 @@ class OnionViewer extends React.Component {
   }
 
   render() {
-    console.log(this.state);
+    //console.log(this.state);
     let divHeight = 400;
     let sequence;
     let features;
@@ -95,12 +96,16 @@ class OnionViewer extends React.Component {
       this.state.pvCursorPos = 0;
       this.state.pvStartCursorPos = 0;
     }
+   // console.log(this.state.block);
 
+	  let selectionStart = Math.min(this.state.pvCursorPos, this.state.pvStartCursorPos);
+	  let selectionLength = Math.abs(this.state.pvCursorPos - this.state.pvStartCursorPos);
+	  let selectedSeq = sequence.substr(selectionStart,selectionLength);
     return (
       <div style={{minWidth: '1000px'}}>
         <div style={{
           width:600,
-          height:divHeight,
+          height:divHeight-30,
           overflowY:"scroll",
           border:"1px solid black",
           display:"inline-block",
@@ -115,7 +120,7 @@ class OnionViewer extends React.Component {
 
         <div style={{
           width:400,
-          height:divHeight,
+          height:divHeight-30,
           overflow:"hidden",
           border:"1px solid black",
           display:"inline-block",
@@ -129,8 +134,8 @@ class OnionViewer extends React.Component {
             rotateAngle={0}
             cursorPos={this.state.pvCursorPos}
             selectedFeature={-1}
-            selectionStart={Math.min(this.state.pvCursorPos, this.state.pvStartCursorPos)}
-            selectionLength={Math.abs(this.state.pvCursorPos - this.state.pvStartCursorPos)}
+            selectionStart={selectionStart}
+            selectionLength={selectionLength}
             features={features}
             seqLength={sequence.length}
             enzymes={onionFile.enzymes}
@@ -139,6 +144,12 @@ class OnionViewer extends React.Component {
             onWheel={()=> {}}/>
 
         </div>
+		<InfoBar
+			width="1000"
+		  	startPos={selectionStart}
+			endPos={selectionStart+selectionLength}
+			seq={selectedSeq}
+		></InfoBar>
       </div>
     );
   }
