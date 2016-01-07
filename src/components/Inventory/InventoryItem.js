@@ -25,15 +25,22 @@ export default class InventoryItem extends Component {
   }
 
   mouseDrag(e, localPosition, startPosition, distance) {
-    console.log('Mouse Drag!');
+    // cancel mouse drag and start a drag and drop
     this.mouseTrap.cancelDrag();
     // get global point as starting point for drag
     const globalPoint = this.mouseTrap.mouseToGlobal(e);
+    // start DND
+    DnD.startDrag(this.makeDnDProxy(), globalPoint, this.props.item);
+  }
+
+  /**
+   * make a drag and drop proxy for the item
+   */
+  makeDnDProxy() {
     const proxy = document.createElement('span');
+    proxy.classList.add('InventoryItemProxy');
     proxy.innerHTML = this.props.item.metadata.name;
-    proxy.style.backgroundColor = 'white';
-    proxy.style.color = 'black';
-    DnD.startDrag(proxy, globalPoint, this.props.item);
+    return proxy;
   }
 
   render() {

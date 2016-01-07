@@ -6,7 +6,7 @@
 }
 /* any element with an animated transform */
 .transform-animated {
-  /*transition: transform 1000ms ease, width 1000ms ease;*/
+  transition: transform 1000ms ease, width 1000ms ease;
 }
 
 /* base node type in scene graph*/
