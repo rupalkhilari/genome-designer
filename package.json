@@ -36,6 +36,7 @@
   "dependencies": {
     "deep-freeze": "0.0.1",
     "history": "1.13.1",
+    "invariant": "^2.2.0",
     "isomorphic-fetch": "^2.1.1",
     "jquery": "^2.1.4",
     "lodash.clonedeep": "^3.0.2",

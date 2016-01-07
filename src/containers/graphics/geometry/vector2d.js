@@ -1,4 +1,4 @@
-import invariant from '../../../utils/environment/invariant';
+import invariant from 'invariant';
 import { isRealNumber, deg2rad, rad2deg } from '../utils';
 import Line2D from './line2d';
 /**

@@ -1,7 +1,7 @@
 import uuid from 'node-uuid';
 import Node2D from './node2d';
 import UserInterface from './userinterface';
-import invariant from '../../../utils/environment/invariant';
+import invariant from 'invariant';
 import debounce from 'lodash.debounce';
 import Box2D from '../geometry/box2d';
 
