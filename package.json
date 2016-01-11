@@ -7,7 +7,7 @@
     "clean": "rimraf lib dist coverage",
     "check": "npm run lint && npm run test",
     "start": "babel-node server/devServer.js",
-    "lint": "eslint src server test; exit 0;",
+    "lint": "eslint src server; exit 0;",
     "lint-jscs": "jscs src",
     "test": "NODE_ENV=test mocha --recursive --compilers js:babel-core/register,css:test/css-null-compiler.js --require ./test/setup.js",
     "test:watch": "npm test -- --watch",
