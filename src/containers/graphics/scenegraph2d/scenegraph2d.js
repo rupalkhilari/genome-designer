@@ -1,8 +1,6 @@
 import uuid from 'node-uuid';
 import Node2D from './node2d';
-import UserInterface from './userinterface';
 import invariant from '../../../utils/environment/invariant';
-import Box2D from '../geometry/box2d';
 import Vector2D from '../geometry/vector2d';
 
 export default class SceneGraph2D {
@@ -35,15 +33,12 @@ export default class SceneGraph2D {
 
     // create the user interface layer as required
     if (this.userInterfaceConstructor) {
-      this.ui = new this.userInterfaceConstructor(this);
+      this.ui = new this.userInterfaceConstructor(this); //eslint-disable-line new-cap
     }
 
     // size our element to initial scene graph size
     this.updateSize();
-
   }
-
-
   /**
    * update our element to the current scene graph size
    * @return {[type]} [description]
@@ -84,7 +79,7 @@ export default class SceneGraph2D {
    * @return {[Node2D]}
    */
   findNodesAt(point) {
-    let hits = [];
+    const hits = [];
     this.traverse( node => {
       if (node.parent && node.containsGlobalPoint(point)) {
         hits.push(node);

@@ -1,10 +1,5 @@
-import uuid from 'node-uuid';
-import Node2D from './node2d';
-import Vector2D from '../geometry/vector2d';
 import MouseTrap from '../mousetrap';
 import invariant from '../../../utils/environment/invariant';
-
-const kDRAG_THRESHOLD = 4;
 
 export default class UserInterface {
 
@@ -111,27 +106,27 @@ export default class UserInterface {
    * @param  {Node2D} node
    */
   createSelectionElement(node) {
-    const d = document.createElement('div');
-    d.className = 'scenegraph-userinterface-selection';
-    return d;
+    const div = document.createElement('div');
+    div.className = 'scenegraph-userinterface-selection';
+    return div;
   }
 
   /**
    * this is the actual mouse down event you should override in descendant classes
    */
-  mouseDown(point, e) {}
+  mouseDown(point, event) {}
   /**
    * this is the actual mouse move event you should override in descendant classes
    */
-  mouseMove(point, e) {}
+  mouseMove(point, event) {}
   /**
    * this is the actual mouse drag event you should override in descendant classes
    */
-  mouseDrag(point, e) {}
+  mouseDrag(point, event) {}
   /**
    * this is the actual mouse up event you should override in descendant classes
    */
-  mouseUp(point, e) {}
+  mouseUp(point, event) {}
 
   /**
    * general update, called whenever our scenegraph updates

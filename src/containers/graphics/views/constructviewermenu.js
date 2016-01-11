@@ -13,16 +13,15 @@ export default class ConstructViewerMenu extends Component {
   }
 
   fullClicked = () => {
-    alert('full');
   }
 
   /**
    * render the component, the scene graph will render later when componentDidUpdate is called
    */
   render() {
-    const wrapStyle = this.props.layoutAlgorithm === kT.layoutWrap ? 'link checked' : 'link'
-    const fullStyle = this.props.layoutAlgorithm === kT.layoutFull ? 'link checked' : 'link'
-    const fitStyle = this.props.layoutAlgorithm === kT.layoutFit ? 'link checked' : 'link'
+    const wrapStyle = this.props.layoutAlgorithm === kT.layoutWrap ? 'link checked' : 'link';
+    const fullStyle = this.props.layoutAlgorithm === kT.layoutFull ? 'link checked' : 'link';
+    const fitStyle = this.props.layoutAlgorithm === kT.layoutFit ? 'link checked' : 'link';
     return (
       <div className="construct-viewer-menu">
         <a className="link">＋</a>

@@ -18,7 +18,6 @@ class DnD {
   // and starting from the given global position. Payload is any object representing
   // what is being dragged
   startDrag(elementProxy, globalPosition, payload) {
-
     // the body must have position relative for this to work ( or we could add
     // an element to act as a drag surface but that seems like overkill )
     document.body.style.position = 'relative';
@@ -31,7 +30,7 @@ class DnD {
     this.proxy.style.zIndex = 2147483647;
     // remove any transform from proxy and make semi-transparent
     this.proxy.style.transform = null;
-    this.proxy.style.opacity = 2/3;
+    this.proxy.style.opacity = 2 / 3;
     // give the proxy the hand cursor
     this.proxy.style.cursor = 'pointer';
 
@@ -54,15 +53,15 @@ class DnD {
   /**
    * mouse move during drag
    */
-  onMouseMove(e) {
+  onMouseMove(evt) {
     // first get the target at the current location
     invariant(this.proxy, 'not expecting mouse events when not dragging');
-    const globalPosition = this.mouseToGlobal(e);
+    const globalPosition = this.mouseToGlobal(evt);
     this.updateProxyPosition(globalPosition);
-    const target = this.findTargetAt(e);
+    const target = this.findTargetAt(evt);
     // dragLeave callback as necessary
     if (target !== this.lastTarget && this.lastTarget && this.lastTarget.options.dragLeave) {
-      this.lastTarget.options.dragLeave.call(this, globalPosition, this.las);
+      this.lastTarget.options.dragLeave.call(this, globalPosition, this.payload);
     }
     // drag enter callback as necessary
     if (target !== this.lastTarget && target && target.options.dragEnter) {
@@ -78,11 +77,11 @@ class DnD {
   /**
    * mouse up during drag
    */
-  onMouseUp(e) {
+  onMouseUp(evt) {
     invariant(this.proxy, 'not expecting mouse events when not dragging');
-    const target = this.findTargetAt(e);
+    const target = this.findTargetAt(evt);
     if (target && target.options && target.options.drop) {
-      const globalPosition = this.mouseToGlobal(e);
+      const globalPosition = this.mouseToGlobal(evt);
       target.options.drop.call(this, globalPosition, this.payload);
     }
     // ensure lastTarget gets a dragLeave incase they rely on it for cleanup
@@ -156,12 +155,12 @@ class DnD {
   /**
    * return the bounds of the element in document coordinates.
    */
-  getDocumentBounds(e) {
+  getDocumentBounds(_element) {
     // first get the elements document position.
-    invariant(e, 'Bad parameter');
+    invariant(_element, 'Bad parameter');
     // use the elements offset + the nearest positioned element, back to the root to find
     // the absolute position of the element
-    let element = e;
+    let element = _element;
     let curleft = element.offsetLeft;
     let curtop = element.offsetTop;
     while (element.offsetParent) {
@@ -170,20 +169,20 @@ class DnD {
       curtop += element.offsetTop;
     }
     // curLeft, curTop are the position,  now get the viewport size
-    const bounds = e.getBoundingClientRect();
+    const bounds = _element.getBoundingClientRect();
     // now we can return the document size
     return new Box2D(curleft, curtop, bounds.width, bounds.height);
   }
   /**
    * x-browser solution for the document coordinates of the given mouse event
    */
-  mouseToGlobal(e) {
+  mouseToGlobal(evt) {
     // get the position in document coordinates, allowing for browsers that don't have pageX/pageY
-    var pageX = e.pageX;
-    var pageY = e.pageY;
+    let pageX = evt.pageX;
+    let pageY = evt.pageY;
     if (pageX === undefined) {
-      pageX = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
-      pageY = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+      pageX = evt.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+      pageY = evt.clientY + document.body.scrollTop + document.documentElement.scrollTop;
     }
     return new Vector2D(pageX, pageY);
   }

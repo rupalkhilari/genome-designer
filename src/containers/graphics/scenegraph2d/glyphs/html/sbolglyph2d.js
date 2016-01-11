@@ -1,6 +1,6 @@
 import Glyph2D from '../glyph2d';
 import kT from '../../../views/layoutconstants';
-import symbols from '../../../../../inventory/sbol'
+import symbols from '../../../../../inventory/sbol';
 
 
 export default class SBOLGlyph2D extends Glyph2D {
@@ -40,7 +40,7 @@ export default class SBOLGlyph2D extends Glyph2D {
     this.img.style.maxWidth = kT.sbolIcon + 'px';
     this.img.style.top = (this.node.height / 2 - kT.sbolIcon / 2) + 'px';
 
-    let svgPath = symbols.find(symbol => symbol.id === this.node.sbolName).metadata.imageThick;
+    const svgPath = symbols.find(symbol => symbol.id === this.node.sbolName).metadata.imageThick;
     this.img.setAttribute('src', svgPath);
   }
 }

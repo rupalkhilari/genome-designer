@@ -1,5 +1,4 @@
 import React, { Component, PropTypes } from 'react';
-import { inventoryItem as inventoryItemDragType } from '../../constants/DragTypes';
 import DnD from '../../containers/graphics/dnd/dnd';
 import MouseTrap from '../../containers/graphics/mousetrap';
 
@@ -24,11 +23,11 @@ export default class InventoryItem extends Component {
     });
   }
 
-  mouseDrag(e, localPosition, startPosition, distance) {
+  mouseDrag(event, localPosition, startPosition, distance) {
     // cancel mouse drag and start a drag and drop
     this.mouseTrap.cancelDrag();
     // get global point as starting point for drag
-    const globalPoint = this.mouseTrap.mouseToGlobal(e);
+    const globalPoint = this.mouseTrap.mouseToGlobal(event);
     // start DND
     DnD.startDrag(this.makeDnDProxy(), globalPoint, {
       item: this.props.item,
@@ -47,7 +46,7 @@ export default class InventoryItem extends Component {
   }
 
   render() {
-    const item= this.props.item;
+    const item = this.props.item;
     const imagePath = item.metadata.image;
 
     return (

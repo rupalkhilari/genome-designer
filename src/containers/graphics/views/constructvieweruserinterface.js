@@ -1,12 +1,8 @@
-import Vector2D from '../geometry/vector2d';
-import Line2D from '../geometry/line2d';
-import Box2D from '../geometry/box2d';
 import UserInterface from '../scenegraph2d/userinterface';
-import invariant from '../../../utils/environment/invariant';
 import DnD from '../dnd/dnd';
 
 // # of pixels of mouse movement before a drag is triggered.
-const kDRAG_THRESHOLD = 4;
+const dragThreshold = 4;
 
 /**
  * user interface overlay for construct viewer
@@ -56,15 +52,15 @@ export default class ConstructViewerUserInterface extends UserInterface {
       return {
         block: block,
         edge: point.x < AABB.cx ? 'left' : 'right',
-      }
+      };
     }
     // if no edit then return the right edge of the last block
-    const n = this.construct.components.length;
-    if (n) {
+    const count = this.construct.components.length;
+    if (count) {
       return {
-        block: this.construct.components[n-1],
+        block: this.construct.components[count - 1],
         edge: 'right',
-      }
+      };
     }
     // construct is empty, we should an insertion point but for now we don't.
     return null;
@@ -78,12 +74,12 @@ export default class ConstructViewerUserInterface extends UserInterface {
   /**
    * mouse down handler
    */
-  mouseDown(e, point) {
-    e.preventDefault();
+  mouseDown(evt, point) {
+    evt.preventDefault();
     const block = this.topBlockAt(point);
     if (block) {
       const node = this.layout.nodeFromElement(block);
-      if (e.shiftKey) {
+      if (evt.shiftKey) {
         this.setSelections();
         this.constructViewer.removePart(block);
       } else {
@@ -97,15 +93,15 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * move drag handler, if the user initiates a drag of a block hand over
    * to the DND manager to handle
    */
-  mouseDrag(e, point, startPoint, distance) {
-    if (distance > kDRAG_THRESHOLD) {
+  mouseDrag(evt, point, startPoint, distance) {
+    if (distance > dragThreshold) {
       // start a block drag if we have one
       const block = this.topBlockAt(startPoint);
       if (block) {
         // cancel our own mouse operations for now
         this.mouseTrap.cancelDrag();
         // get global point as starting point for drag
-        const globalPoint = this.mouseTrap.mouseToGlobal(e);
+        const globalPoint = this.mouseTrap.mouseToGlobal(evt);
         // create proxy and drag
         const node = this.layout.nodeFromElement(block);
         // the proxy is actual a clone of scene graphs DOM element.
@@ -133,14 +129,12 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * a drag entered the construct viewer
    */
   onDragEnter() {
-    console.log('Drag Enter');
     this.hideInsertionPoint();
   }
   /**
    * drag left the construct viewer
    */
   onDragLeave() {
-    console.log('Drag Leave');
     this.hideInsertionPoint();
   }
   /**
@@ -169,7 +163,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * to our local client coordinates, just like a mouse event
    */
   dragOver(point) {
-    const local = this.mouseTrap.mouseToLocal({pageX: point.x, pageY:point.y}, this.el);
+    const local = this.mouseTrap.mouseToLocal({pageX: point.x, pageY: point.y}, this.el);
     const hit = this.topBlockAndVerticalEdgeAt(local);
     if (hit) {
       this.showInsertionPoint(hit.block, hit.edge);

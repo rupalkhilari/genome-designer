@@ -1,10 +1,4 @@
-import uuid from 'node-uuid';
 import Vector2D from '../geometry/vector2d';
-import Box2D from '../geometry/box2d';
-import Transform2D from '../geometry/transform2d';
-import invariant from '../../../utils/environment/invariant';
-import NodeText2D from './nodetext2d';
-import ConstructBanner from './glyphs/canvas/constructbanner';
 import Node2D from './node2d';
 import kT from '../views/layoutconstants.js';
 

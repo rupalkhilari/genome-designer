@@ -1,4 +1,3 @@
-import Vector2D from '../geometry/vector2d';
 import Box2D from '../geometry/box2d';
 import Node2D from '../scenegraph2d/node2d';
 import Block2D from '../scenegraph2d/block2d';
@@ -92,17 +91,14 @@ export default class Layout {
    * @return {[type]}            [description]
    */
   partFactory(part, appearance) {
-
     // if the part type has changed remove it before updating to a new node/glyph
     const partType = this.isSBOL(part) ? sbolType : blockType;
     if (this.partTypes[part] && this.partTypes[part] !== partType) {
       this.removePart(part);
     }
 
-    // get metadata from the part id
-    const meta = this.blocks[part].metadata;
     if (!this.nodeFromElement(part)) {
-      let props = Object.assign({}, {
+      const props = Object.assign({}, {
         sg: this.sceneGraph,
       }, appearance);
       let node = null;
@@ -308,7 +304,7 @@ export default class Layout {
     // construct the banner
     this.bannerFactory();
     this.banner.set({
-      bounds: new Box2D(0,0,this.sceneGraph.availableWidth, kT.bannerHeight),
+      bounds: new Box2D(0, 0, this.sceneGraph.availableWidth, kT.bannerHeight),
     });
     // top left of our area to render in
     const xs = kT.insetX;
