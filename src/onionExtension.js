@@ -5,6 +5,8 @@ import {SequenceEditor} from './extensions/onion2/SequenceEditor';
 import {onionFile} from './extensions/onion2/OnionFile';
 import {PlasmidViewer} from './extensions/onion2/PlasmidViewer';
 import {InfoBar} from './extensions/onion2/InfoBar';
+import {Emzyme, loadEnzymeList} from './extensions/onion2/Bio/Enzyme';
+import jQuery from 'jQuery';
 /* create simple component */
 
 class OnionViewer extends React.Component {
@@ -13,7 +15,11 @@ class OnionViewer extends React.Component {
     this.state = {
       pvCursorPos: 0,
       pvStartCursorPos: 0,
+      width: props.container.offsetWidth,
     };
+
+    this.enzymeList = loadEnzymeList();
+    //console.log(this.enzymeList);
   }
 
   componentWillMount() {
@@ -23,6 +29,7 @@ class OnionViewer extends React.Component {
     this.setState({
       block: null,
       rendered: Date.now(),
+
     });
 
     const storeSubscriber = (store) => {
@@ -48,10 +55,21 @@ class OnionViewer extends React.Component {
     };
 
     this.subscriber = window.gd.store.subscribe(storeSubscriber);
+    this.updateDimensions();
+  }
+
+  updateDimensions(){
+    let width = this.props.container.offsetWidth;
+    this.setState({width: width});
+  }
+
+  componentDidMount() {
+    window.addEventListener("resize", this.updateDimensions.bind(this));
   }
 
   componentWillUnmount() {
     this.subscriber();
+    window.removeEventListener("resize", this.updateDimensions.bind(this));
   }
 
   onSetCursor(pos) {
@@ -101,10 +119,16 @@ class OnionViewer extends React.Component {
 	  let selectionStart = Math.min(this.state.pvCursorPos, this.state.pvStartCursorPos);
 	  let selectionLength = Math.abs(this.state.pvCursorPos - this.state.pvStartCursorPos);
 	  let selectedSeq = sequence.substr(selectionStart,selectionLength);
+
+
+    //console.log("width",this.props.container,width)
+    let width = this.state.width;
     return (
-      <div style={{minWidth: '1000px'}}>
+      <div
+        style={{width:"100%"}}
+      >
         <div style={{
-          width:600,
+          width:width,
           height:divHeight-30,
           overflowY:"scroll",
           border:"1px solid black",
@@ -115,35 +139,40 @@ class OnionViewer extends React.Component {
             showComplement={true}
             features={features}
             onSetCursor={this.onSetCursor.bind(this)}
-            onSelecting={this.onSelecting.bind(this)}/>
+            onSelecting={this.onSelecting.bind(this)}
+            enzymeList={this.enzymeList}
+            width={width}
+          />
         </div>
 
-        <div style={{
+        {false &&<div style={{
           width:400,
           height:divHeight-30,
           overflow:"hidden",
           border:"1px solid black",
           display:"inline-block",
         }}>
-          <PlasmidViewer
-            mode={"normal"}
-            plasmidR={128}
-            width={400}
-            height={400}
-            theme={"NAL"}
-            rotateAngle={0}
-            cursorPos={this.state.pvCursorPos}
-            selectedFeature={-1}
-            selectionStart={selectionStart}
-            selectionLength={selectionLength}
-            features={features}
-            seqLength={sequence.length}
-            enzymes={onionFile.enzymes}
-            name={onionFile.name}
-            showViewAngle={false}
-            onWheel={()=> {}}/>
+        <PlasmidViewer
+              mode={"normal"}
+              plasmidR={128}
+              width={400}
+              height={400}
+              theme={"NAL"}
+              rotateAngle={0}
+              cursorPos={this.state.pvCursorPos}
+              selectedFeature={-1}
+              selectionStart={selectionStart}
+              selectionLength={selectionLength}
+              features={features}
+              seqLength={sequence.length}
+              enzymes={onionFile.enzymes}
+              name={onionFile.name}
+              showViewAngle={false}
+              onWheel={()=> {}}/>
+
 
         </div>
+        }
 		<InfoBar
 			width="1000"
 		  	startPos={selectionStart}
@@ -162,7 +191,10 @@ class OnionViewer extends React.Component {
 /* rendering + registering extension */
 
 const render = (container) => {
-  reactRender(<OnionViewer />, container);
+  container.className += " onionContainer";
+  reactRender(<OnionViewer
+      container={container}
+  />, container);
 };
 
 const manifest = {
