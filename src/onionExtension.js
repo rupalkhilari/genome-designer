@@ -6,6 +6,7 @@ import {onionFile} from './extensions/onion2/OnionFile';
 import {PlasmidViewer} from './extensions/onion2/PlasmidViewer';
 import {InfoBar} from './extensions/onion2/InfoBar';
 import {Emzyme, loadEnzymeList} from './extensions/onion2/Bio/Enzyme';
+import {MenuBar} from './extensions/onion2/MenuBar';
 import jQuery from 'jQuery';
 /* create simple component */
 
@@ -16,6 +17,11 @@ class OnionViewer extends React.Component {
       pvCursorPos: 0,
       pvStartCursorPos: 0,
       width: props.container.offsetWidth,
+      showEnzymes:true,
+    showLadder:true,
+    showRS:true,
+    showFeatures:true,
+    showRuler:true,
     };
 
     this.enzymeList = loadEnzymeList();
@@ -92,8 +98,16 @@ class OnionViewer extends React.Component {
 
   }
 
+  selectLayer(a,k,v){
+    console.log(k,v);
+    let dict = {};
+    dict[k[0]] = k[1];
+    this.setState(dict);
+  }
+
   render() {
     //console.log(this.state);
+    let {showEnzymes, showLadder, showRS, showFeatures, showRuler} = this.state;
     let divHeight = 400;
     let sequence;
     let features;
@@ -127,6 +141,14 @@ class OnionViewer extends React.Component {
       <div
         style={{width:"100%"}}
       >
+        <MenuBar
+            showEnzymes={showEnzymes}
+            showLadder={showLadder}
+            showRS={showRS}
+            showFeatures={showFeatures}
+            showRuler={showRuler}
+            onSelect = {this.selectLayer.bind(this)}
+        ></MenuBar>
         <div style={{
           width:width,
           height:divHeight-30,
@@ -134,6 +156,7 @@ class OnionViewer extends React.Component {
           border:"1px solid black",
           display:"inline-block",
         }}>
+
           <SequenceEditor
             sequence={sequence}
             showComplement={true}
@@ -142,6 +165,11 @@ class OnionViewer extends React.Component {
             onSelecting={this.onSelecting.bind(this)}
             enzymeList={this.enzymeList}
             width={width}
+            showEnzymes={showEnzymes}
+            showLadder={showLadder}
+            showRS={showRS}
+            showFeatures={showFeatures}
+            showRuler={showRuler}
           />
         </div>
 
