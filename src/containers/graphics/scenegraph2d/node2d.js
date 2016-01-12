@@ -2,7 +2,7 @@ import uuid from 'node-uuid';
 import Vector2D from '../geometry/vector2d';
 import Box2D from '../geometry/box2d';
 import Transform2D from '../geometry/transform2d';
-import invariant from '../../../utils/environment/invariant';
+import invariant from 'invariant';
 import NodeText2D from './nodetext2d';
 import RectangleGlyph2D from './glyphs/html/rectangleglyph2d';
 import SBOLGlyph2D from './glyphs/html/sbolglyph2d';

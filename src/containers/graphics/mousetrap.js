@@ -1,5 +1,5 @@
 import Vector2D from './geometry/vector2d';
-import invariant from '../../utils/environment/invariant';
+import invariant from 'invariant';
 
 /**
  * handle mousedown,mousemove,mouseup events for the given element including

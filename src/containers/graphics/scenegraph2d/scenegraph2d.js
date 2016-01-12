@@ -1,6 +1,6 @@
 import uuid from 'node-uuid';
 import Node2D from './node2d';
-import invariant from '../../../utils/environment/invariant';
+import invariant from 'invariant';
 import Vector2D from '../geometry/vector2d';
 
 export default class SceneGraph2D {

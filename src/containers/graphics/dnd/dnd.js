@@ -1,6 +1,6 @@
 import Vector2D from '../geometry/vector2d';
 import Box2D from '../geometry/box2d';
-import invariant from '../../../utils/environment/invariant';
+import invariant from 'invariant';
 
 /**
  * actual Drag and Drop manager.

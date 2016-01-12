@@ -3,7 +3,7 @@ import Node2D from '../scenegraph2d/node2d';
 import Block2D from '../scenegraph2d/block2d';
 import SBOL2D from '../scenegraph2d/sbol2d';
 import kT from './layoutconstants';
-import invariant from '../../../utils/environment/invariant';
+import invariant from 'invariant';
 
 // just for internal tracking of what type of block a node represents.
 const blockType = 'block';

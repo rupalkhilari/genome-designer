@@ -1,5 +1,5 @@
 import MouseTrap from '../mousetrap';
-import invariant from '../../../utils/environment/invariant';
+import invariant from 'invariant';
 
 export default class UserInterface {
 
