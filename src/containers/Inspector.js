@@ -52,7 +52,6 @@ export class Inspector extends Component {
 }
 
 function mapStateToProps(state, props) {
-  debugger;
   const { isVisible } = state.inspector;
   const { currentBlocks } = state.ui;
   const block = currentBlocks && currentBlocks.length ? state.blocks[currentBlocks[0]] : null;

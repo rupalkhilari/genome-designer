@@ -17,7 +17,7 @@ import { nodeIndex } from '../utils';
 import ConstructViewerMenu from './constructviewermenu';
 import UserInterface from './constructvieweruserinterface';
 import { inspectorToggleVisibility } from '../../../actions/inspector';
-import { uiSetCurrent } from '../../../actions/ui';
+import { uiSetCurrent, uiAddCurrent } from '../../../actions/ui';
 
 export class ConstructViewer extends Component {
 
@@ -25,6 +25,7 @@ export class ConstructViewer extends Component {
     construct: PropTypes.object.isRequired,
     constructId: PropTypes.string.isRequired,
     layoutAlgorithm: PropTypes.string.isRequired,
+    uiAddCurrent: PropTypes.func.isRequired,
     uiSetCurrent: PropTypes.func.isRequired,
     inspectorToggleVisibility: PropTypes.func.isRequired,
     currentBlock: PropTypes.array,
@@ -148,10 +149,19 @@ export class ConstructViewer extends Component {
   /**
    * select the given block
    */
-  blockSelected(partId) {
-    this.props.uiSetCurrent(partId);
+  blockSelected(partIds) {
+    this.props.uiSetCurrent(partIds);
     this.props.inspectorToggleVisibility(true);
   }
+
+  /**
+   * add the given part by ID to the selections
+   */
+  blockAddToSelections(partIds) {
+    this.props.uiAddCurrent(partIds);
+    this.props.inspectorToggleVisibility(true);
+  }
+
   /**
    * window resize, update layout and scene graph with new dimensions
    * @return {[type]} [description]
@@ -221,6 +231,7 @@ export default connect(mapStateToProps, {
   blockRemoveComponent,
   blockSetSbol,
   blockRename,
+  uiAddCurrent,
   uiSetCurrent,
   inspectorToggleVisibility,
 })(ConstructViewer);

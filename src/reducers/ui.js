@@ -7,6 +7,19 @@ export const initialState = {
 
 export default function inventory(state = initialState, action) {
   switch (action.type) {
+
+  case ActionTypes.UI_ADD_CURRENT : {
+    const { blocks } = action;
+    // merge new blocks with current blocks, ignoring duplicates
+    const newBlocks = state.currentBlocks || [];
+    (blocks || []).forEach(blockId => {
+      if (!newBlocks.includes(blockId)) {
+        newBlocks.push(blockId);
+      }
+    });
+
+    return Object.assign({}, state, {currentBlocks: newBlocks});
+  }
   case ActionTypes.UI_SET_CURRENT : {
     const { blocks } = action;
     return Object.assign({}, state, {currentBlocks: blocks});
