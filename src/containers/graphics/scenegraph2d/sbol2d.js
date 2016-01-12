@@ -33,4 +33,13 @@ export default class SBOL2D extends Node2D {
     // measure actual text plus some padding
     return this.measureText(str).add(new Vector2D(kT.textPad * 3 + kT.sbolIcon, 0));
   }
+
+  update() {
+    // base class
+    const el = Node2D.prototype.update.call(this);
+    // add our uuid as data-testblock for easier testing
+    el.setAttribute('data-testsbol', this.uuid);
+    // return as per base class
+    return el;
+  }
 }
