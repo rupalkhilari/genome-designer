@@ -22,23 +22,6 @@ function getDirectories(srcpath) {
   });
 }
 
-/*
-Start building all docker containers before hand
-*/
-function startAllDockerBuildsAsync(dir) {
-  const lst = getDirectories(dir);
-  lst.forEach(
-    function(id) {
-      buildNodeContainer(id).then(result => {
-        console.log('done building ' + id);
-      });
-    }
-  );
-
-}
-
-startAllDockerBuildsAsync('extensions/compute'); //start loading
-
 router.use(sessionMiddleware);
 
 router.post('/:id', jsonParser, (req, resp) => {
@@ -57,6 +40,7 @@ router.post('/:id', jsonParser, (req, resp) => {
       let data = yaml.parse(filestr);
       let inputs = data.inputs;
       let outputs = data.outputs;
+      let cmd = data.command;
       let outputFileNames = [];
       let i,j;
 
@@ -138,7 +122,7 @@ router.post('/:id', jsonParser, (req, resp) => {
           }
 
           //run the node
-          runNode(id).then( res => {
+          runNode(id,cmd).then( res => {
 
             //read the output files
             readMultipleFiles(outputFileNames, 'utf8', (err, buffers) => {

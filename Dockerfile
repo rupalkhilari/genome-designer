@@ -39,3 +39,6 @@ RUN usermod -aG docker root
 
 ENTRYPOINT service docker start && redis-server /redis.conf & npm run start
 
+#everything needed by extensions
+RUN apt-get install -y python3 python3-pip
+RUN yes | pip3 install biopython
