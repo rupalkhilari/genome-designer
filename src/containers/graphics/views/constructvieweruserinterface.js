@@ -79,14 +79,10 @@ export default class ConstructViewerUserInterface extends UserInterface {
     const block = this.topBlockAt(point);
     if (block) {
       const node = this.layout.nodeFromElement(block);
-      if (evt.shiftKey) {
-        this.setSelections();
-        this.constructViewer.removePart(block);
-      } else {
-        // single select the node and track the mouse
-        this.setSelections([node]);
-        this.constructViewer.blockSelected(block);
-      }
+      // single select the node and track the mouse
+      this.setSelections([node]);
+      this.constructViewer.blockSelected([block]);
+
     }
   }
   /**

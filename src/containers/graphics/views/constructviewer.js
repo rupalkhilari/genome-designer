@@ -27,7 +27,7 @@ export class ConstructViewer extends Component {
     layoutAlgorithm: PropTypes.string.isRequired,
     uiSetCurrent: PropTypes.func.isRequired,
     inspectorToggleVisibility: PropTypes.func.isRequired,
-    currentBlock: PropTypes.string,
+    currentBlock: PropTypes.array,
     isOver: PropTypes.boolean,
     blockSetSbol: PropTypes.func,
     blockClone: PropTypes.func,
@@ -110,7 +110,7 @@ export class ConstructViewer extends Component {
       if (insertionPoint) {
         // change to the sbol type
         this.props.blockSetSbol(insertionPoint.block, item.id);
-        this.blockSelected(insertionPoint.block.id);
+        this.blockSelected([insertionPoint.block.id]);
       }
     } else {
       // get index of insertion allowing for the edge closest to the drop
@@ -121,7 +121,7 @@ export class ConstructViewer extends Component {
       // clone and add the block
       this.props.blockClone(item).then(block => {
         this.props.blockAddComponent(this.props.construct.id, block.id, index);
-        this.blockSelected(block.id);
+        this.blockSelected([block.id]);
       });
     }
   }
@@ -181,7 +181,7 @@ export class ConstructViewer extends Component {
    * update the layout and then the scene graph
    */
   update() {
-    this.layout.update(this.props.construct, this.props.layoutAlgorithm, this.props.blocks, this.props.currentBlock.currentBlock);
+    this.layout.update(this.props.construct, this.props.layoutAlgorithm, this.props.blocks, this.props.ui.currentBlocks);
     this.sg.update();
     this.sg.ui.update();
   }
@@ -191,7 +191,7 @@ export class ConstructViewer extends Component {
    */
   render() {
     if (this.layout) {
-      this.layout.update(this.props.construct, this.props.layoutAlgorithm, this.props.blocks, this.props.currentBlock.currentBlock);
+      this.layout.update(this.props.construct, this.props.layoutAlgorithm, this.props.blocks, this.props.ui.currentBlocks);
     }
 
     const rendered = (
@@ -208,7 +208,7 @@ export class ConstructViewer extends Component {
 
 function mapStateToProps(state, props) {
   return {
-    currentBlock: state.ui,
+    ui: state.ui,
     construct: state.blocks[props.constructId],
     blocks: state.blocks,
   };

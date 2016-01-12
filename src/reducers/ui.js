@@ -1,15 +1,15 @@
 import * as ActionTypes from '../constants/ActionTypes';
 
 export const initialState = {
-  currentBlock: null,
+  currentBlocks: null,
   detailViewVisible: false,
 };
 
 export default function inventory(state = initialState, action) {
   switch (action.type) {
   case ActionTypes.UI_SET_CURRENT : {
-    const { blockId } = action;
-    return Object.assign({}, state, {currentBlock: blockId});
+    const { blocks } = action;
+    return Object.assign({}, state, {currentBlocks: blocks});
   }
   case ActionTypes.UI_TOGGLE_DETAIL_VIEW : {
     const { forceState } = action;

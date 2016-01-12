@@ -15,7 +15,7 @@ render(
   document.getElementById('root')
 );
 
-if (process.env.USER === 'maxwellbates') {
+if (true) {
   // Use require because imports can't be conditional.
   // In production, you should ensure process.env.NODE_ENV
   // is envified so that Uglify can eliminate this

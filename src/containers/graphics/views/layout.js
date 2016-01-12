@@ -240,11 +240,11 @@ export default class Layout {
    * display elements as required
    * @return {[type]} [description]
    */
-  update(construct, layoutAlgorithm, blocks, currentBlockId) {
+  update(construct, layoutAlgorithm, blocks, currentBlocks) {
     this.construct = construct;
     this.layoutAlgorithm = layoutAlgorithm;
     this.blocks = blocks;
-    this.currentBlockId = currentBlockId;
+    this.currentBlocks = currentBlocks;
 
     switch (this.layoutAlgorithm) {
     case kT.layoutWrap:
@@ -385,12 +385,18 @@ export default class Layout {
     this.vertical.set({
       bounds: new Box2D(xs, ys + kT.titleH + kT.rowBarH, kT.rowBarW, vh),
     });
-
-    // update selection
-    if (this.currentBlockId && this.nodeFromElement(this.currentBlockId)) {
-      this.sceneGraph.ui.setSelections([this.nodeFromElement(this.currentBlockId)]);
-    } else {
-      this.sceneGraph.ui.setSelections([]);
+    // filter the selections so that we eliminate those block we don't contain
+    let selectedNodes = [];
+    if (this.currentBlocks) {
+      const containedBlockIds = this.currentBlocks.filter(blockId => {
+        return !!this.nodeFromElement(blockId);
+      });
+      // get nodes for selected blocks
+      selectedNodes = containedBlockIds.map(blockId => {
+        return this.nodeFromElement(blockId);
+      });
     }
+    // apply selections to scene graph
+    this.sceneGraph.ui.setSelections(selectedNodes);
   }
 }
