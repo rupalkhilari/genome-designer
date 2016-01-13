@@ -7,7 +7,12 @@ import {PlasmidViewer} from './extensions/onion2/PlasmidViewer';
 import {InfoBar} from './extensions/onion2/InfoBar';
 import {Emzyme, loadEnzymeList} from './extensions/onion2/Bio/Enzyme';
 import {MenuBar} from './extensions/onion2/MenuBar';
-import jQuery from 'jQuery';
+
+var $ = require('jquery');
+window.$ = $;
+global.jQuery = $;
+require('bootstrap');
+
 /* create simple component */
 
 class OnionViewer extends React.Component {
@@ -24,7 +29,7 @@ class OnionViewer extends React.Component {
     showRuler:true,
     };
 
-    this.enzymeList = loadEnzymeList();
+    this.enzymeList = loadEnzymeList("cailab");
     //console.log(this.enzymeList);
   }
 
