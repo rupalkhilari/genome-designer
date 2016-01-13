@@ -12,6 +12,8 @@ var $ = require('jquery');
 window.$ = $;
 global.jQuery = $;
 require('bootstrap');
+import './styles/GoogleFonts.css';
+
 
 /* create simple component */
 
