@@ -1,4 +1,5 @@
 import UserInterface from '../scenegraph2d/userinterface';
+import { sbol as sbolDragType } from '../../../constants/DragTypes';
 import DnD from '../dnd/dnd';
 
 // # of pixels of mouse movement before a drag is triggered.
@@ -128,7 +129,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
   /**
    * a drag entered the construct viewer
    */
-  onDragEnter() {
+  onDragEnter(globalPoint, payload) {
     this.hideInsertionPoint();
   }
   /**
@@ -143,11 +144,24 @@ export default class ConstructViewerUserInterface extends UserInterface {
   onDragOver(globalPosition, payload) {
     // convert global point to local space via our mousetrap
     const localPosition = this.mouseTrap.globalToLocal(globalPosition, this.el);
-    const hit = this.topBlockAndVerticalEdgeAt(localPosition);
-    if (hit) {
-      this.showInsertionPoint(hit.block, hit.edge);
+    // there is a different highlight / UX experience depending on what is being dragged
+    const { item, type } = payload;
+    if (type === sbolDragType) {
+      // sbol symbol so we highlight the targeted block
+      const block = this.topBlockAt(localPosition);
+      if (block) {
+        this.showInsertionPointForBlock(block);
+      } else {
+        this.hideInsertionPoint();
+      }
     } else {
-      this.hideInsertionPoint();
+      // block, so we highlight the insertion point
+      const hit = this.topBlockAndVerticalEdgeAt(localPosition);
+      if (hit) {
+        this.showInsertionPointForEdge(hit.block, hit.edge);
+      } else {
+        this.hideInsertionPoint();
+      }
     }
   }
   /**
@@ -157,34 +171,15 @@ export default class ConstructViewerUserInterface extends UserInterface {
   onDrop(globalPosition, payload) {
     this.constructViewer.addItemAtInsertionPoint(payload, this.insertion);
   }
-
   /**
-   * drag over comes with viewport/document relative point. We must convert
-   * to our local client coordinates, just like a mouse event
+   * show the insertion point at the given edge of the given block...usually
+   * used when dropping a new block(s) into the construct
    */
-  dragOver(point) {
-    const local = this.mouseTrap.mouseToLocal({pageX: point.x, pageY: point.y}, this.el);
-    const hit = this.topBlockAndVerticalEdgeAt(local);
-    if (hit) {
-      this.showInsertionPoint(hit.block, hit.edge);
-    } else {
-      this.hideInsertionPoint();
-    }
-  }
-  /**
-   * user dragged out of the viewer
-   */
-  dragLeave() {
-    this.hideInsertionPoint();
-  }
-  /**
-   * show the insertion point at the given edge of the given block
-   */
-  showInsertionPoint(block, edge) {
+  showInsertionPointForEdge(block, edge) {
     // create insertion point as necessary
     if (!this.insertionEl) {
       this.insertionEl = document.createElement('div');
-      this.insertionEl.className = 'block-insertion-point';
+      this.insertionEl.className = 'edge-insertion-point';
       this.el.appendChild(this.insertionEl);
     }
     // get node representing this part and its AABB
@@ -197,6 +192,29 @@ export default class ConstructViewerUserInterface extends UserInterface {
 
     // save the current insertion point
     this.insertion = {block, node, edge};
+  }
+ /**
+  * show the insertion point over the given block, usually used when dropping
+  * an SBOL symbol onto an existing block.
+  */
+  showInsertionPointForBlock(block, edge) {
+    // create insertion point as necessary
+    if (!this.insertionEl) {
+      this.insertionEl = document.createElement('div');
+      this.insertionEl.className = 'block-insertion-point';
+      this.el.appendChild(this.insertionEl);
+    }
+    // get node representing this part and its AABB
+    const node = this.layout.nodeFromElement(block);
+    const AABB = node.getAABB();
+    // position insertion element at the appropriate edge
+    this.insertionEl.style.left = AABB.x + 'px';
+    this.insertionEl.style.top = AABB.y + 'px';
+    this.insertionEl.style.width = AABB.w + 'px';
+    this.insertionEl.style.height = AABB.h + 'px';
+
+    // save the current insertion point
+    this.insertion = {block, node};
   }
   /**
    * return the current insertion point if any

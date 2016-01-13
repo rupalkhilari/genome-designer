@@ -77,13 +77,20 @@
   background: transparent;
   position: relative;
 
-  /* block insertion point, position via center */
-  .block-insertion-point {
+  /* edge insertion point for DND */
+  .edge-insertion-point {
     position: absolute;
     box-sizing: border-box;
     height: 36px;
     width: 4px;
-    background-color: white;
+    background-color: dodgerblue;
+  }
+  /* block insertion point for DND */
+  .block-insertion-point {
+    position: absolute;
+    box-sizing: border-box;
+    border: 4px solid dodgerblue;
+    background-color: transparent;
   }
 
   .sceneGraphContainer {
