@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 /**
  * Popup window class. Accepts any component as it client.
  * Required properties:
@@ -8,7 +8,6 @@ import React, { Component, PropTypes } from 'react';
  * {ReactElement} client - element to place in the client area
  */
 export default class MenuSeparator extends Component {
-
   render() {
     return (
       <hr></hr>

@@ -6,55 +6,54 @@
 }
 /* any element with an animated transform */
 .transform-animated {
-  /*transition: transform 1000ms ease, width 1000ms ease;*/
+  /*transition: transform 100ms ease, width 100ms ease;*/
 }
 
-.sceneGraph {
-  /*ase node type in scene graph*/
-  .node {
-    position: absolute;
-    display: inline-block;
-    transform-origin: 0 0;
-  }
-  /*text overlay for nodes*/
-  .nodetext {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    display: inline-block;
-    transform: translate(-50%, -50%);
-    color: white;
-    user-select: none;
-    pointer-events: none;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
-  }
-  /*base class for html based glyph*/
-  .html-glyph {
-    position: absolute;
-    display: inline-block;
-    box-sizing: border-box;
-  }
-
-  /*base class for html based glyph*/
-  .sbol-glyph {
-    position: absolute;
-    display: inline-block;
-    box-sizing: border-box;
-  }
-  .sbol-icon {
-    position: absolute;
-    display: inline-block;
-    box-sizing: border-box;
-  }
-
-  .canvas-glyph {
-    position: absolute;
-    display: inline-block;
-    box-sizing: border-box;
-  }
+/* base node type in scene graph*/
+.node {
+  position: absolute;
+  display: inline-block;
+  transform-origin: 0 0;
 }
+/*text overlay for nodes*/
+.nodetext {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: inline-block;
+  transform: translate(-50%, -50%);
+  color: white;
+  user-select: none;
+  pointer-events: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+/*base class for html based glyph*/
+.html-glyph {
+  position: absolute;
+  display: inline-block;
+  box-sizing: border-box;
+}
+
+/*base class for html based glyph*/
+.sbol-glyph {
+  position: absolute;
+  display: inline-block;
+  box-sizing: border-box;
+}
+.sbol-icon {
+  position: absolute;
+  display: inline-block;
+  box-sizing: border-box;
+}
+
+.canvas-glyph {
+  position: absolute;
+  display: inline-block;
+  box-sizing: border-box;
+}
+
 /* overlaid panel for handling mouse inputs and displaying overlaid UI affordances/glyphs */
 .scenegraph-userinterface {
   position: absolute;
@@ -76,6 +75,7 @@
   width: calc(100% - 2rem);
   overflow: hidden;
   background: transparent;
+  position: relative;
 
   /* block insertion point, position via center */
   .block-insertion-point {

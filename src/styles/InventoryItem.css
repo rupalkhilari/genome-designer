@@ -1,8 +1,24 @@
 @import 'variables.css';
 
+/**
+ * proxy item for DND operations
+ */
+.InventoryItemProxy {
+  height: 30px;
+  line-height: 30px;
+  font-size: 12px;
+  font-weight: bolder;
+  border: 1px solid black;
+  background-color: white;
+  color: black;
+  padding: 0 2rem 0 2rem;
+  cursor: pointer;
+}
+
 .InventoryItem {
   display: block;
   font-size: 12px;
+  cursor: default;
 
   &.hasImage {
     white-space: nowrap;

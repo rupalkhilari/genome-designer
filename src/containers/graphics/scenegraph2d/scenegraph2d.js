@@ -1,9 +1,7 @@
 import uuid from 'node-uuid';
 import Node2D from './node2d';
-import UserInterface from './userinterface';
 import invariant from 'invariant';
-import debounce from 'lodash.debounce';
-import Box2D from '../geometry/box2d';
+import Vector2D from '../geometry/vector2d';
 
 export default class SceneGraph2D {
 
@@ -35,18 +33,12 @@ export default class SceneGraph2D {
 
     // create the user interface layer as required
     if (this.userInterfaceConstructor) {
-      this.ui = new this.userInterfaceConstructor(this);
+      this.ui = new this.userInterfaceConstructor(this); //eslint-disable-line new-cap
     }
 
     // size our element to initial scene graph size
     this.updateSize();
-
-    // if you want an immediate update call this._update(). The this.update()
-    // method is debounced since React tends to over send updates.
-    this.updateDebounced = debounce(this._update, 15);
   }
-
-
   /**
    * update our element to the current scene graph size
    * @return {[type]} [description]
@@ -57,6 +49,13 @@ export default class SceneGraph2D {
     if (this.ui) {
       this.ui.updateSize();
     }
+  }
+
+  /**
+   * current size of the graph, unscaled
+   */
+  getSize() {
+    return new Vector2D(this.width, this.height);
   }
 
   /**
@@ -80,7 +79,7 @@ export default class SceneGraph2D {
    * @return {[Node2D]}
    */
   findNodesAt(point) {
-    let hits = [];
+    const hits = [];
     this.traverse( node => {
       if (node.parent && node.containsGlobalPoint(point)) {
         hits.push(node);
@@ -111,41 +110,6 @@ export default class SceneGraph2D {
    * @return {[type]} [description]
    */
   update() {
-    this.updateDebounced();
-  }
-  _update() {
     this.root.updateBranch();
-    if (this.ui) {
-      this.ui.update();
-    }
-  }
-
-  /**
-   * start a drag using the detached node at its last position / size
-   */
-  simulateDrag(node) {
-    this.sdrag = {
-      node: node,
-      translateX: node.translateX,
-      translateY: node.translateY,
-    }
-    this.root.appendChild(node);
-    node.update();
-  }
-  dragMove(point) {
-    console.log('drag move ', point.toString());
-    if (this.sdrag) {
-      this.sdrag.node.set({
-        translateX: point.x,
-        translateY: point.y,
-      });
-      this.sdrag.node.update();
-    }
-  }
-  dragUp(point) {
-    if (this.sdrag) {
-      this.sdrag.node.parent.removeChild(this.sdrag.node);
-      this.sdrag = null;
-    }
   }
 }
