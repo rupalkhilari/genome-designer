@@ -1,0 +1,9 @@
+command: python3 translate.py inputs/block outputs/genbank
+inputs:
+    - id: block
+      type: string
+
+outputs:
+    - id: genbank
+      type: string
+
