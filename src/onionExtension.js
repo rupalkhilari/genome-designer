@@ -94,6 +94,7 @@ class OnionViewer extends React.Component {
   }
 
   convertFeatures(block) {
+    console.log(block);
     let src = block.sequence.annotations;
     let dst = [];
     for (let i in src) {
@@ -112,15 +113,27 @@ class OnionViewer extends React.Component {
     this.setState(dict);
   }
 
+  convertBlocks(block){
+    let re = [];
+    let color = block.metadata.color
+    let name = block.metadata.name
+    let start = 0;
+    let length = block.sequence.length;
+    re.push({color,name,start,length});
+    return re;
+  }
+
   render() {
     //console.log(this.state);
     let {showEnzymes, showLadder, showRS, showFeatures, showRuler} = this.state;
     let divHeight = 400;
     let sequence;
     let features;
+    let blocks;
     if (this.state && this.state.sequence && this.state.block && this.state.block.sequence && this.state.block.sequence.annotations != undefined) {
       sequence = this.state.sequence ? this.state.sequence : onionFile.seq;
       features = this.convertFeatures(this.state.block);
+      blocks = this.convertBlocks(this.state.block);
       if (!sequence || !features) {
         sequence = onionFile.seq;
         features = onionFile.features;
@@ -177,6 +190,7 @@ class OnionViewer extends React.Component {
             showRS={showRS}
             showFeatures={showFeatures}
             showRuler={showRuler}
+            blocks = {blocks}
           />
         </div>
 
