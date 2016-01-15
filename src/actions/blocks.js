@@ -109,10 +109,13 @@ export const blockAddComponent = (blockId, componentId, index) => {
   };
 };
 
-export const blockRemoveComponent = (blockId, componentId) => {
+export const blockRemoveComponent = (blockId, ...componentIds) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
-    const block = oldBlock.removeComponent(componentId);
+    const block = componentIds.reduce((acc, currentId) => {
+      return acc.removeComponent(currentId);
+    }, oldBlock);
+
     dispatch({
       type: ActionTypes.BLOCK_COMPONENT_REMOVE,
       block,
