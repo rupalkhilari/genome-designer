@@ -13,11 +13,17 @@ describe('Block Actions', () => {
   };
   const blockStore = simpleStore(initialState, blocksReducer, 'blocks');
 
+  it('blockCreate() adds a block', () => {
+    const created = blockStore.dispatch(actions.blockCreate());
+    const inStore = blockStore.getState().blocks[created.id];
+
+    expect(inStore).to.eql(created);
+  });
+
   it('blockSetSequence() sets the length', () => {
     const sequence = 'acgtacgtacgt';
-    blockStore.dispatch(actions.blockSetSequence(storeBlock.id, sequence))
-      .then(block => {
-        expect(block.sequence.length).to.equal(sequence.length);
-      });
+    blockStore.dispatch(actions.blockSetSequence(storeBlock.id, sequence));
+    const newBlock = blockStore.getState().blocks[storeBlock.id];
+    expect(newBlock.sequence.length).to.equal(sequence.length);
   });
 });
