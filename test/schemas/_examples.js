@@ -9,6 +9,7 @@ import uuid from 'node-uuid';
 
 export const Block = {
   id: uuid.v4(),
+  parents: [],
   metadata: {
     authors: [],
     version: '0.0.0',
@@ -26,6 +27,7 @@ export const Block = {
 
 export const Project = {
   id: uuid.v4(),
+  parents: [],
   metadata: {
     authors: [],
     version: '0.0.0',
