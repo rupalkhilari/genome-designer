@@ -75,7 +75,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
   /**
    * mouse down handler
    */
-  mouseDown(evt, point) {
+  mouseUp(evt, point) {
     evt.preventDefault();
     const block = this.topBlockAt(point);
     if (block) {
@@ -90,11 +90,48 @@ export default class ConstructViewerUserInterface extends UserInterface {
       }
     }
   }
+
+  /**
+   * list of all selected blocks, based on our selected scenegraph blocks
+   * @return {[type]} [description]
+   */
+  get selectedElements() {
+    return this.selections.map((node) => {
+      return this.layout.elementFromNode(node)
+    });
+  }
+
   /**
    * move drag handler, if the user initiates a drag of a block hand over
    * to the DND manager to handle
    */
   mouseDrag(evt, point, startPoint, distance) {
+    if (distance > dragThreshold) {
+      // start a block drag if we have one
+      const block = this.topBlockAt(startPoint);
+      if (block) {
+        // cancel our own mouse operations for now
+        this.mouseTrap.cancelDrag();
+        // get global point as starting point for drag
+        const globalPoint = this.mouseTrap.mouseToGlobal(evt);
+        // create proxy and drag
+        const node = this.layout.nodeFromElement(block);
+        // the proxy is actual a clone of scene graphs DOM element.
+        const proxy = node.el.cloneNode(true);
+        // remove the blocks
+        const s = this.selectedElements;
+        this.selectedElements.forEach(element => {
+          this.constructViewer.removePart(element);
+        });
+        // start the drag with the proxy and the removed block as the payload
+        DnD.startDrag(proxy, globalPoint, {
+          item: block,
+        });
+      }
+    }
+  }
+
+  mouseDragXXX(evt, point, startPoint, distance) {
     if (distance > dragThreshold) {
       // start a block drag if we have one
       const block = this.topBlockAt(startPoint);

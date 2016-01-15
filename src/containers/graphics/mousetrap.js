@@ -115,8 +115,10 @@ export default class MouseTrap {
   /**
    * if given, invoke one of the named optional callbacks with a clone of the local point
    */
-  callback(eventName) {
+  callback(eventName, event) {
     if (this.options[eventName]) {
+      // if the client wants a callback preventDefault
+      event.preventDefault();
       // slice the event name off the arguments but forward everything else
       const args = Array.prototype.slice.call(arguments, 1);
       this.options[eventName].apply(this, args);

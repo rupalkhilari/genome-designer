@@ -327,7 +327,6 @@ export default class Layout {
 
     // used to determine when we need a new row
     let row = null;
-
     // update / make all the parts
     ct.components.forEach(part => {
       // create a row bar as neccessary
