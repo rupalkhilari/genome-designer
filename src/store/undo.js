@@ -1,5 +1,12 @@
 import invariant from 'invariant';
 
+/* inspiration
+
+ https://github.com/omnidan/redux-undo/blob/master/src/index.js
+ https://github.com/gaearon/redux-devtools/blob/master/src/instrument.js
+ https://github.com/rackt/redux/blob/master/src/applyMiddleware.js
+ */
+
 /*** ideal API ***/
 
 //by default, all actions automatically undo-able
