@@ -24,6 +24,22 @@ export default function inventory(state = initialState, action) {
     const { blocks } = action;
     return Object.assign({}, state, {currentBlocks: blocks});
   }
+
+  case ActionTypes.UI_TOGGLE_CURRENT : {
+    const { blocks } = action;
+    const newCurrent = state.currentBlocks.slice(0);
+    blocks.forEach(block => {
+      const index = newCurrent.indexOf(block);
+      if (index < 0) {
+        newCurrent.push(block);
+      } else {
+        newCurrent.splice(index, 1);
+      }
+    })
+
+    return Object.assign({}, state, {currentBlocks: newCurrent});
+  }
+
   case ActionTypes.UI_TOGGLE_DETAIL_VIEW : {
     const { forceState } = action;
     const nextState = (forceState !== undefined) ? !!forceState : !state.detailViewVisible;

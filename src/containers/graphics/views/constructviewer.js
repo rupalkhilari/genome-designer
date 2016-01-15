@@ -17,7 +17,7 @@ import { nodeIndex } from '../utils';
 import ConstructViewerMenu from './constructviewermenu';
 import UserInterface from './constructvieweruserinterface';
 import { inspectorToggleVisibility } from '../../../actions/inspector';
-import { uiSetCurrent, uiAddCurrent } from '../../../actions/ui';
+import { uiToggleCurrent, uiSetCurrent, uiAddCurrent } from '../../../actions/ui';
 
 export class ConstructViewer extends Component {
 
@@ -27,6 +27,7 @@ export class ConstructViewer extends Component {
     layoutAlgorithm: PropTypes.string.isRequired,
     uiAddCurrent: PropTypes.func.isRequired,
     uiSetCurrent: PropTypes.func.isRequired,
+    uiToggleCurrent: PropTypes.func.isRequired,
     inspectorToggleVisibility: PropTypes.func.isRequired,
     currentBlock: PropTypes.array,
     isOver: PropTypes.boolean,
@@ -111,7 +112,8 @@ export class ConstructViewer extends Component {
       if (insertionPoint) {
         // change to the sbol type
         this.props.blockSetSbol(insertionPoint.block, item.id);
-        this.blockSelected([insertionPoint.block.id]);
+        // return the blocked dropped on
+        return [insertionPoint.block];
       }
     } else {
       // get index of insertion allowing for the edge closest to the drop
@@ -121,10 +123,14 @@ export class ConstructViewer extends Component {
       }
       // add all blocks in the payload
       const blocks = Array.isArray(payload.item) ? payload.item : [payload.item];
+      const clones = [];
       blocks.forEach(block => {
         const clone = this.props.blockClone(block);
         this.props.blockAddComponent(this.props.construct.id, clone.id, index++);
+        clones.push(clone.id);
       });
+      // return all the newly inserted blocks
+      return clones;
     }
   }
 
@@ -152,6 +158,14 @@ export class ConstructViewer extends Component {
    */
   blockSelected(partIds) {
     this.props.uiSetCurrent(partIds);
+    this.props.inspectorToggleVisibility(true);
+  }
+
+  /**
+   * select the given block
+   */
+  blockToggleSelected(partIds) {
+    this.props.uiToggleCurrent(partIds);
     this.props.inspectorToggleVisibility(true);
   }
 
@@ -234,5 +248,6 @@ export default connect(mapStateToProps, {
   blockRename,
   uiAddCurrent,
   uiSetCurrent,
+  uiToggleCurrent,
   inspectorToggleVisibility,
 })(ConstructViewer);

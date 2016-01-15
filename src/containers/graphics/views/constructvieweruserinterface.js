@@ -88,8 +88,14 @@ export default class ConstructViewerUserInterface extends UserInterface {
     if (block) {
       const node = this.layout.nodeFromElement(block);
       if (evt.shiftKey) {
+        // range select
         this.constructViewer.blockAddToSelections([block]);
+      } else
+      if (evt.metaKey || evt.altKey){
+        // toggle block in selections
+        this.constructViewer.blockToggleSelected([block]);
       } else {
+        // otherwise single select the block
         this.constructViewer.blockSelected([block]);
       }
     }
@@ -222,7 +228,8 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * to our actual constructViewer which has all the necessary props
    */
   onDrop(globalPosition, payload) {
-    this.constructViewer.addItemAtInsertionPoint(payload, this.insertion);
+    const blocks = this.constructViewer.addItemAtInsertionPoint(payload, this.insertion);
+    this.constructViewer.blockSelected(blocks);
   }
   /**
    * show the insertion point at the top left of an empty construct.
