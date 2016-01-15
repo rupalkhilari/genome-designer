@@ -1,9 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { pushState } from 'redux-router';
-import HTML5Backend from 'react-dnd-html5-backend';
-import { DragDropContext } from 'react-dnd';
-
 import ConstructViewer from './graphics/views/constructviewer';
 import ProjectDetail from '../components/ProjectDetail';
 import ProjectHeader from '../components/ProjectHeader';
@@ -13,16 +10,12 @@ import Inspector from './Inspector';
 import '../styles/ProjectPage.css';
 import '../styles/SceneGraphPage.css';
 
-//todo - should abstract away component which has dragDropContext, inventory, inspector
-
-@DragDropContext(HTML5Backend)
-class DnD extends Component {
+class ProjectPage extends Component {
 
   static propTypes = {
     project: PropTypes.object.isRequired,
     projectId: PropTypes.string.isRequired,
     constructs: PropTypes.array.isRequired,
-
     pushState: PropTypes.func.isRequired,
   }
 
@@ -102,4 +95,4 @@ function mapStateToProps(state) {
 
 export default connect(mapStateToProps, {
   pushState,
-})(DnD);
+})(ProjectPage);

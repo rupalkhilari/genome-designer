@@ -1,7 +1,6 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import TestUtils from 'react-addons-test-utils';
-import wrapInDragTestContext from '../utils/wrapInDragTestContext';
 import { createStore } from 'redux';
 import rootReducer from '../../src/reducers/index';
 import chai from 'chai';
@@ -28,9 +27,7 @@ function setup(propOverrides = {}) {
     searchTerm: '',
   }, propOverrides);
 
-  // Render with the testing backend
-  const InventoryDragContext = wrapInDragTestContext(Inventory);
-  const component = TestUtils.renderIntoDocument(<Provider store={store}><InventoryDragContext {...props} /></Provider>);
+  const component = TestUtils.renderIntoDocument(<Provider store={store}><Inventory {...props} /></Provider>);
 
   return {
     props,

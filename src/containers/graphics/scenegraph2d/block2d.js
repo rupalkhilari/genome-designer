@@ -1,10 +1,4 @@
-import uuid from 'node-uuid';
 import Vector2D from '../geometry/vector2d';
-import Box2D from '../geometry/box2d';
-import Transform2D from '../geometry/transform2d';
-import invariant from 'invariant';
-import NodeText2D from './nodetext2d';
-import ConstructBanner from './glyphs/canvas/constructbanner';
 import Node2D from './node2d';
 import kT from '../views/layoutconstants.js';
 
@@ -36,5 +30,17 @@ export default class Block2D extends Node2D {
     }
     // measure actual text plus some padding
     return this.measureText(str).add(new Vector2D(kT.textPad * 2, 0));
+  }
+
+  /**
+   * overwrite rendering just so we can identify the block for testing.
+   */
+  update() {
+    // base class
+    const el = Node2D.prototype.update.call(this);
+    // add our uuid as data-testblock for easier testing
+    el.setAttribute('data-testblock', this.uuid);
+    // return as per base class
+    return el;
   }
 }

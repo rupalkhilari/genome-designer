@@ -36,7 +36,7 @@ export const nodeIndex = (node) => {
     }
     i += 1;
   }
-}
+};
 
 /**
  * true if ~0

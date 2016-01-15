@@ -1,8 +1,8 @@
-import Vector2D from '../geometry/vector2d';
-import Line2D from '../geometry/line2d';
-import Box2D from '../geometry/box2d';
 import UserInterface from '../scenegraph2d/userinterface';
-import invariant from 'invariant';
+import DnD from '../dnd/dnd';
+
+// # of pixels of mouse movement before a drag is triggered.
+const dragThreshold = 4;
 
 /**
  * user interface overlay for construct viewer
@@ -10,6 +10,13 @@ import invariant from 'invariant';
 export default class ConstructViewerUserInterface extends UserInterface {
   constructor(sg) {
     super(sg);
+    // register ourselves as a drop target
+    DnD.registerTarget(this.el, {
+      dragEnter: this.onDragEnter.bind(this),
+      dragLeave: this.onDragLeave.bind(this),
+      dragOver: this.onDragOver.bind(this),
+      drop: this.onDrop.bind(this),
+    });
   }
 
   /**
@@ -45,69 +52,67 @@ export default class ConstructViewerUserInterface extends UserInterface {
       return {
         block: block,
         edge: point.x < AABB.cx ? 'left' : 'right',
-      }
+      };
     }
-    // if here no hit
+    // if no edit then return the right edge of the last block
+    const count = this.construct.components.length;
+    if (count) {
+      return {
+        block: this.construct.components[count - 1],
+        edge: 'right',
+      };
+    }
+    // construct is empty, we should an insertion point but for now we don't.
     return null;
+  }
+  /**
+   * accessor for the construct in our constructviewer owner
+   */
+  get construct() {
+    return this.constructViewer.props.construct;
   }
   /**
    * mouse down handler
    */
-  mouseDown(point, e) {
-    e.preventDefault();
+  mouseDown(evt, point) {
+    evt.preventDefault();
     const block = this.topBlockAt(point);
     if (block) {
       const node = this.layout.nodeFromElement(block);
-      if (e.shiftKey) {
+      if (evt.shiftKey) {
         this.setSelections();
         this.constructViewer.removePart(block);
       } else {
         // single select the node and track the mouse
         this.setSelections([node]);
         this.constructViewer.blockSelected(block);
-        this.drag = {
-          dragStart: point.clone(),
-          block: block,
-        }
       }
     }
   }
   /**
-   * move handler
+   * move drag handler, if the user initiates a drag of a block hand over
+   * to the DND manager to handle
    */
-  mouseMove(point, e) {
-    if (this.drag) {
-      // get delta to start position to determine if the user started a drag
-      const line = new Line2D(this.drag.dragStart, point);
-      if (line.len() > 8) {
-        // drag off started
-        this.setSelections();
-        const node = this.constructViewer.removePart(this.drag.block);
-        this.sg.simulateDrag(node);
-        this.localBlock = this.drag.block;
-        this.drag = null;
+  mouseDrag(evt, point, startPoint, distance) {
+    if (distance > dragThreshold) {
+      // start a block drag if we have one
+      const block = this.topBlockAt(startPoint);
+      if (block) {
+        // cancel our own mouse operations for now
+        this.mouseTrap.cancelDrag();
+        // get global point as starting point for drag
+        const globalPoint = this.mouseTrap.mouseToGlobal(evt);
+        // create proxy and drag
+        const node = this.layout.nodeFromElement(block);
+        // the proxy is actual a clone of scene graphs DOM element.
+        const proxy = node.el.cloneNode(true);
+        // remove the block
+        this.constructViewer.removePart(block);
+        // start the drag with the proxy and the removed block as the payload
+        DnD.startDrag(proxy, globalPoint, {
+          item: block,
+        });
       }
-    }
-    // for now the scenegraph also does dragging
-    this.sg.dragMove(point);
-    if (this.sg.sdrag) {
-      const hit = this.topBlockAndVerticalEdgeAt(point);
-      if (hit) {
-        this.showInsertionPoint(hit.block, hit.edge);
-      } else {
-        this.hideInsertionPoint();
-      }
-    }
-  }
-  /**
-   * mouse up handler
-   */
-  mouseUp(point, e) {
-    this.drag = null;
-    if (this.sg.sdrag) {
-      this.constructViewer.localDrop(this.localBlock);
-      this.sg.dragUp(point);
-      this.hideInsertionPoint();
     }
   }
 
@@ -119,12 +124,46 @@ export default class ConstructViewerUserInterface extends UserInterface {
     // reset insertion point
     this.insertion = null;
   }
+
+  /**
+   * a drag entered the construct viewer
+   */
+  onDragEnter() {
+    this.hideInsertionPoint();
+  }
+  /**
+   * drag left the construct viewer
+   */
+  onDragLeave() {
+    this.hideInsertionPoint();
+  }
+  /**
+   * drag over event
+   */
+  onDragOver(globalPosition, payload) {
+    // convert global point to local space via our mousetrap
+    const localPosition = this.mouseTrap.globalToLocal(globalPosition, this.el);
+    const hit = this.topBlockAndVerticalEdgeAt(localPosition);
+    if (hit) {
+      this.showInsertionPoint(hit.block, hit.edge);
+    } else {
+      this.hideInsertionPoint();
+    }
+  }
+  /**
+   * user dropped the payload on us at the given position. Defer the insertion
+   * to our actual constructViewer which has all the necessary props
+   */
+  onDrop(globalPosition, payload) {
+    this.constructViewer.addItemAtInsertionPoint(payload, this.insertion);
+  }
+
   /**
    * drag over comes with viewport/document relative point. We must convert
    * to our local client coordinates, just like a mouse event
    */
   dragOver(point) {
-    const local = this.eventToLocal(point.x, point.y, this.el);
+    const local = this.mouseTrap.mouseToLocal({pageX: point.x, pageY: point.y}, this.el);
     const hit = this.topBlockAndVerticalEdgeAt(local);
     if (hit) {
       this.showInsertionPoint(hit.block, hit.edge);
