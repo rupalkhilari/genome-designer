@@ -20,8 +20,8 @@ RUN apt-get install -y --force-yes docker-engine
 ADD . /app
 
 #install extensions
-RUN cd /app && git submodule init
-RUN cd /app && git submodule update
+RUN cd /app && git -c http.sslVerify=false submodule init
+RUN cd /app && git -c http.sslVerify=false submodule update
 
 #setup node
 ADD package.json /app/package.json

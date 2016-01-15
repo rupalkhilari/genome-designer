@@ -15,7 +15,7 @@ const middleware = [
   // middleware like thunk (async, promises) should come first in the chain
   thunk,
 
-  saveLastActionMiddleware(),
+  saveLastActionMiddleware,
 
   //logging middleware
   // createLogger({
@@ -27,6 +27,7 @@ let finalCreateStore;
 if (process.env.NODE_ENV !== 'production') {
   finalCreateStore = compose(
     applyMiddleware(...middleware),
+    //todo - condition import: http://rackt.org/redux/docs/api/applyMiddleware.html
     devTools()
   )(createStore);
 } else {

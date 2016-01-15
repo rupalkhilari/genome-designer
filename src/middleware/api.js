@@ -1,6 +1,7 @@
 import uuid from 'node-uuid';
 import 'isomorphic-fetch';
 import invariant from 'invariant';
+import ProjectDefinition from '../schemas/Project';
 import BlockDefinition from '../schemas/Block';
 
 /*************************
@@ -85,6 +86,16 @@ export const saveBlock = (block) => {
     return fetch(apiPath(`block/${block.id}`), headersPut(stringified));
   } catch (err) {
     return Promise.reject('error stringifying block');
+  }
+};
+
+export const saveProject = (project) => {
+  invariant(ProjectDefinition.validate(project), 'Project does not pass validation: ' + project);
+  try {
+    const stringified = JSON.stringify(project);
+    return fetch(apiPath(`project/${project.id}`), headersPut(stringified));
+  } catch (err) {
+    return Promise.reject('error stringifying project');
   }
 };
 

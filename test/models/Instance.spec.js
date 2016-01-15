@@ -46,7 +46,7 @@ describe('Model', () => {
       });
     });
 
-    it('should return a new object when mutated', () => {
+    it('should return a new object when mutated, not mutate the prior instance', () => {
       const inst = new Instance();
       const newInst = inst.mutate('meaning.oflife', 42);
 
@@ -55,8 +55,21 @@ describe('Model', () => {
       expect(newInst.meaning.oflife).to.equal(42);
     });
 
-    it('should not mutate the prior instance', () => {
-      //todo
+    it('should be immutable', () => {
+      const inst = new Instance({
+        prior: 'field',
+      });
+
+      const mutator = () => {
+        inst.prior = 'newvalue';
+      };
+
+      const adder = () => {
+        inst.newfield = 'value';
+      };
+
+      expect(adder).to.throw;
+      expect(mutator).to.throw;
     });
   });
 });
