@@ -25,10 +25,12 @@ class OnionViewer extends React.Component {
       pvStartCursorPos: 0,
       width: props.container.offsetWidth,
       showEnzymes:true,
-    showLadder:true,
-    showRS:true,
-    showFeatures:true,
-    showRuler:true,
+      showLadder:true,
+      showRS:true,
+      showFeatures:true,
+      showRuler:true,
+      showBlockBar:true,
+      blocks:onionFile.blocks,
     };
 
     this.enzymeList = loadEnzymeList("cailab");
@@ -125,11 +127,11 @@ class OnionViewer extends React.Component {
 
   render() {
     //console.log(this.state);
-    let {showEnzymes, showLadder, showRS, showFeatures, showRuler} = this.state;
+    let {showEnzymes, showLadder, showRS, showFeatures, showRuler,showBlockBar} = this.state;
     let divHeight = 400;
     let sequence;
     let features;
-    let blocks;
+    let blocks = this.state.blocks;
     if (this.state && this.state.sequence && this.state.block && this.state.block.sequence && this.state.block.sequence.annotations != undefined) {
       sequence = this.state.sequence ? this.state.sequence : onionFile.seq;
       features = this.convertFeatures(this.state.block);
@@ -167,6 +169,7 @@ class OnionViewer extends React.Component {
             showRS={showRS}
             showFeatures={showFeatures}
             showRuler={showRuler}
+            showBlockBar={showBlockBar}
             onSelect = {this.selectLayer.bind(this)}
         ></MenuBar>
         <div style={{
@@ -190,6 +193,7 @@ class OnionViewer extends React.Component {
             showRS={showRS}
             showFeatures={showFeatures}
             showRuler={showRuler}
+            showBlockBar={showBlockBar}
             blocks = {blocks}
           />
         </div>
