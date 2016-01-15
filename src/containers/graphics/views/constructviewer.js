@@ -119,10 +119,11 @@ export class ConstructViewer extends Component {
       if (insertionPoint) {
         index = this.props.construct.components.indexOf(insertionPoint.block) + (insertionPoint.edge === 'right' ? 1 : 0);
       }
-      // clone and add the block
-      this.props.blockClone(item).then(block => {
-        this.props.blockAddComponent(this.props.construct.id, block.id, index);
-        this.blockSelected([block.id]);
+      // add all blocks in the payload
+      const blocks = Array.isArray(payload.item) ? payload.item : [payload.item];
+      blocks.forEach(block => {
+        const clone = this.props.blockClone(block);
+        this.props.blockAddComponent(this.props.construct.id, clone.id, index++);
       });
     }
   }

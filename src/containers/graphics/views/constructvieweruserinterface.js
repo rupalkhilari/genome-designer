@@ -3,7 +3,7 @@ import { sbol as sbolDragType } from '../../../constants/DragTypes';
 import DnD from '../dnd/dnd';
 
 // # of pixels of mouse movement before a drag is triggered.
-const dragThreshold = 4;
+const dragThreshold = 8;
 
 /**
  * user interface overlay for construct viewer
@@ -76,16 +76,20 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * mouse down handler
    */
   mouseUp(evt, point) {
+    this.mouseSelect(evt, point);
+  }
+  /**
+   * mouse section can occur by click or when a drag is started so it gets
+   * its own method.
+   */
+  mouseSelect(evt, point) {
     evt.preventDefault();
     const block = this.topBlockAt(point);
     if (block) {
       const node = this.layout.nodeFromElement(block);
-      // single select the node and track the mouse
       if (evt.shiftKey) {
-        this.addToSelections([node]);
         this.constructViewer.blockAddToSelections([block]);
       } else {
-        this.setSelections([node]);
         this.constructViewer.blockSelected([block]);
       }
     }
@@ -112,48 +116,57 @@ export default class ConstructViewerUserInterface extends UserInterface {
       if (block) {
         // cancel our own mouse operations for now
         this.mouseTrap.cancelDrag();
+        // ensure the block being dragged is selected
+        this.constructViewer.blockAddToSelections([block]);
         // get global point as starting point for drag
         const globalPoint = this.mouseTrap.mouseToGlobal(evt);
         // create proxy and drag
         const node = this.layout.nodeFromElement(block);
-        // the proxy is actual a clone of scene graphs DOM element.
-        const proxy = node.el.cloneNode(true);
+        // proxy representing 1 ore more blocks
+        const proxy = this.makeDragProxy();
         // remove the blocks
-        const s = this.selectedElements;
-        this.selectedElements.forEach(element => {
+        const elements = this.selectedElements.slice(0);
+        elements.forEach(element => {
           this.constructViewer.removePart(element);
         });
         // start the drag with the proxy and the removed block as the payload
         DnD.startDrag(proxy, globalPoint, {
-          item: block,
+          item: elements,
         });
       }
     }
   }
-
-  mouseDragXXX(evt, point, startPoint, distance) {
-    if (distance > dragThreshold) {
-      // start a block drag if we have one
-      const block = this.topBlockAt(startPoint);
-      if (block) {
-        // cancel our own mouse operations for now
-        this.mouseTrap.cancelDrag();
-        // get global point as starting point for drag
-        const globalPoint = this.mouseTrap.mouseToGlobal(evt);
-        // create proxy and drag
-        const node = this.layout.nodeFromElement(block);
-        // the proxy is actual a clone of scene graphs DOM element.
-        const proxy = node.el.cloneNode(true);
-        // remove the block
-        this.constructViewer.removePart(block);
-        // start the drag with the proxy and the removed block as the payload
-        DnD.startDrag(proxy, globalPoint, {
-          item: block,
-        });
-      }
+  /**
+   * make a drag proxy by gathering all the selected blocks into a group ( up to
+   * a limit )
+   */
+  makeDragProxy() {
+    // create a div to hold the first five blocks at most
+    const div = document.createElement('div');
+    div.style.display = 'inline-block';
+    div.style.position = 'relative';
+    const nodes = this.selectedElements.map(e => this.layout.nodeFromElement(e));
+    const limit = Math.min(5, nodes.length);
+    let x = 0;
+    let width = 0;
+    let height = 0;
+    for(var i = 0; i < limit; i += 1) {
+      const node = nodes[i].el;
+      const clone = node.cloneNode(true);
+      clone.style.position = 'absolute';
+      clone.style.left = `${x}px`;
+      clone.style.top = `0px`;
+      clone.style.transform = null;
+      clone.style.opacity = (1 / limit) * (limit - i);
+      div.appendChild(clone);
+      width += node.clientWidth;
+      height = Math.max(height, node.clientHeight);
+      x += node.clientWidth;
     }
+    div.style.width = `${width}px`;
+    div.style.height = `${height}px`;
+    return div;
   }
-
   /**
    * drag events
    * @return {[type]} [description]
@@ -167,13 +180,15 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * a drag entered the construct viewer
    */
   onDragEnter(globalPoint, payload) {
-    this.hideInsertionPoint();
+    this.hideEdgeInsertionPoint();
+    this.hideBlockInsertionPoint();
   }
   /**
    * drag left the construct viewer
    */
   onDragLeave() {
-    this.hideInsertionPoint();
+    this.hideEdgeInsertionPoint();
+    this.hideBlockInsertionPoint();
   }
   /**
    * drag over event
@@ -189,7 +204,8 @@ export default class ConstructViewerUserInterface extends UserInterface {
       if (block) {
         this.showInsertionPointForBlock(block);
       } else {
-        this.hideInsertionPoint();
+        this.hideBlockInsertionPoint();
+        this.hideEdgeInsertionPoint();
       }
     } else {
       // block, so we highlight the insertion point
@@ -197,7 +213,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
       if (hit) {
         this.showInsertionPointForEdge(hit.block, hit.edge);
       } else {
-        this.hideInsertionPoint();
+        this.showDefaultInsertPoint();
       }
     }
   }
@@ -209,46 +225,65 @@ export default class ConstructViewerUserInterface extends UserInterface {
     this.constructViewer.addItemAtInsertionPoint(payload, this.insertion);
   }
   /**
+   * show the insertion point at the top left of an empty construct.
+   */
+  showDefaultInsertPoint() {
+    // insertion point may alternate so ensure we remove the block cursor
+    this.hideBlockInsertionPoint();
+    const point = this.layout.getInitialLayoutPoint();
+    this.showInsertionPointForEdgeAt(point.x, point.y);
+  }
+  /**
    * show the insertion point at the given edge of the given block...usually
    * used when dropping a new block(s) into the construct
    */
   showInsertionPointForEdge(block, edge) {
-    // create insertion point as necessary
-    if (!this.insertionEl) {
-      this.insertionEl = document.createElement('div');
-      this.insertionEl.className = 'edge-insertion-point';
-      this.el.appendChild(this.insertionEl);
-    }
+    // insertion point may alternate so ensure we remove the block cursor
+    this.hideBlockInsertionPoint();
+
     // get node representing this part and its AABB
     const node = this.layout.nodeFromElement(block);
     const AABB = node.getAABB();
     const xposition = edge === 'left' ? AABB.x : AABB.right;
-    // position insertion element at the appropriate edge
-    this.insertionEl.style.left = (xposition - 1) + 'px';
-    this.insertionEl.style.top = (AABB.y - 2) + 'px';
+    this.showInsertionPointForEdgeAt(xposition - 1, AABB.y + 1);
 
     // save the current insertion point
     this.insertion = {block, node, edge};
+  }
+  /**
+   * create and show insertion point for edge at the given position
+   */
+  showInsertionPointForEdgeAt(x, y) {
+    // create insertion point as necessary
+    if (!this.insertionEdgeEl) {
+      this.insertionEdgeEl = document.createElement('div');
+      this.insertionEdgeEl.className = 'edge-insertion-point';
+      this.el.appendChild(this.insertionEdgeEl);
+    }
+    this.insertionEdgeEl.style.left = x + 'px';
+    this.insertionEdgeEl.style.top = y + 'px';
   }
  /**
   * show the insertion point over the given block, usually used when dropping
   * an SBOL symbol onto an existing block.
   */
   showInsertionPointForBlock(block, edge) {
+    // insertion point may alternate so ensure we remove the block cursor
+    this.hideEdgeInsertionPoint();
     // create insertion point as necessary
-    if (!this.insertionEl) {
-      this.insertionEl = document.createElement('div');
-      this.insertionEl.className = 'block-insertion-point';
-      this.el.appendChild(this.insertionEl);
+    if (!this.insertionBlockEl) {
+      this.insertionBlockEl = document.createElement('div');
+      this.insertionBlockEl.className = 'block-insertion-point';
+      this.el.appendChild(this.insertionBlockEl);
     }
     // get node representing this part and its AABB
     const node = this.layout.nodeFromElement(block);
     const AABB = node.getAABB();
     // position insertion element at the appropriate edge
-    this.insertionEl.style.left = AABB.x + 'px';
-    this.insertionEl.style.top = AABB.y + 'px';
-    this.insertionEl.style.width = AABB.w + 'px';
-    this.insertionEl.style.height = AABB.h + 'px';
+    this.insertionBlockEl.style.left = AABB.x + 'px';
+    this.insertionBlockEl.style.top = AABB.y + 'px';
+    this.insertionBlockEl.style.width = AABB.w + 'px';
+    this.insertionBlockEl.style.height = AABB.h + 'px';
 
     // save the current insertion point
     this.insertion = {block, node};
@@ -263,10 +298,17 @@ export default class ConstructViewerUserInterface extends UserInterface {
   /**
    * hide / deletion insertion point element
    */
-  hideInsertionPoint() {
-    if (this.insertionEl) {
-      this.el.removeChild(this.insertionEl);
-      this.insertionEl = null;
+  hideBlockInsertionPoint() {
+    if (this.insertionBlockEl) {
+      this.el.removeChild(this.insertionBlockEl);
+      this.insertionBlockEl = null;
+    }
+    this.insertion = null;
+  }
+  hideEdgeInsertionPoint() {
+    if (this.insertionEdgeEl) {
+      this.el.removeChild(this.insertionEdgeEl);
+      this.insertionEdgeEl = null;
     }
     this.insertion = null;
   }

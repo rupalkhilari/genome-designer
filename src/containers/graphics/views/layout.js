@@ -1,4 +1,5 @@
 import Box2D from '../geometry/box2d';
+import Vector2D from '../geometry/vector2d';
 import Node2D from '../scenegraph2d/node2d';
 import Block2D from '../scenegraph2d/block2d';
 import SBOL2D from '../scenegraph2d/sbol2d';
@@ -292,6 +293,13 @@ export default class Layout {
    */
   measureText(node, str, condensed) {
     return node.getPreferredSize(str, condensed);
+  }
+  /**
+   * return the point where layout of actual blocks begins
+   * @return {[type]} [description]
+   */
+  getInitialLayoutPoint() {
+    return new Vector2D(kT.insetX + kT.rowBarW, kT.insetY + kT.titleH + kT.rowBarH);
   }
   /**
    * layout, configured with various options:
