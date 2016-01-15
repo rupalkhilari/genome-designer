@@ -44,7 +44,7 @@ def get_sequence_and_features(block, allblocks):
                 })
         return { "sequence": seq, "features": features }
 
-def block_to_genbank(filename, block, allblocks):  
+def block_to_genbank(filename, block, allblocks):
     output = get_sequence_and_features(block, allblocks)
     seq = output["sequence"]
     features = output["features"]
@@ -60,80 +60,7 @@ def block_to_genbank(filename, block, allblocks):
 
     SeqIO.write(seq_obj, open(filename, "w"), "genbank")
 
-def genbank_to_block(filename):
-    all_blocks = {}
-    block_parents = {}
-    block_start_pos = {}
-    features = []
-
-    generator = SeqIO.parse(open(filename,"r"),"genbank")
-    for record in generator:
-        gb = record
-        break
-
-    sequence = str(gb.seq)
-
-    block = {
-        "id": gb.id,
-        "components": [],
-        "sequence" : {
-            "sequence": sequence,
-            "features": []
-        }
-      }
-
-    all_blocks[gb.id] = block
-
-    for f in gb.features:
-        q = f.qualifiers
-        
-        start = f.location.start.position
-        end = f.location.end.position
-
-        if "block_id" in q:
-            block_id = q["block_id"][0]
-            if f.type == 'source':
-                continue           
-
-            if f.type == "block":
-                child_block = {
-                    "id": block_id,
-                    "components": [],
-                    "sequence" : {
-                        "sequence": sequence[start:end],
-                        "features": []
-                    }
-                  }
-                if q.get("parent_block",None):
-                    words = q["parent_block"][0].split(",")
-                    block_parents[block_id] = { 
-                        "id" : words[0],
-                        "index" : int(words[1]) 
-                    }
-
-                all_blocks[block_id] = child_block
-            else:
-                feature = { "block_id": block_id, "start": start, "end": end, "strand": f.location.strand, "type": f.type }
-                features.append(feature)
-        else:
-            feature = { "block_id": gb.id, "start": start, "end": end, "strand": f.location.strand, "type": f.type }
-            features.append(feature)
-
-    for block_id in block_parents:
-        parent = block_parents[ block_id ]
-        if block_id in all_blocks and parent["id"] in all_blocks:
-            all_blocks[ parent["id"] ]["components"].insert(int(parent["index"]), block_id)
-            all_blocks[ parent["id"] ]["sequence"]["sequence"] = ""
-
-    for feature in features:
-        block_id = feature["block_id"]
-        del feature["block_id"]
-        if block_id in all_blocks:
-            all_blocks[ block_id ]["sequence"]["features"].append(feature)
-
-    return all_blocks
-
 obj = json.load(open(block_file,"r"))
 block = obj["block"]
-blocks = obj["block"]
+blocks = obj["blocks"]
 block_to_genbank(genbank_file, block, blocks)

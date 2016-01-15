@@ -1,4 +1,4 @@
-command: python3 translate.py inputs/block outputs/genbank
+command: python3 block_to_genbank.py inputs/block outputs/genbank
 inputs:
     - id: block
       type: string
@@ -6,4 +6,3 @@ inputs:
 outputs:
     - id: genbank
       type: string
-

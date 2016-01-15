@@ -33,155 +33,180 @@ and return the output strings or file names
 */
 export const runNode = (id, fileUrls, header) => {
   const outputFiles = {};
-  const dir = getNodeDir(id) + '/';
+  const outputFileNames = [];
+  const inputFileWrites = [];
 
-  fs.readFile(dir + 'workflow.yaml', 'utf8', (err, filestr) => {
-    if (err) {
-      console.log('Workflow.yaml could not be read: ' + err);
-    } else {
-      const data = yaml.parse(filestr);
-      const inputs = data.inputs;
-      const outputs = data.outputs;
-      const cmd = data.command;
-      const outputFileNames = [];
-      let inputDirWrites = [];
-      const inputFileWrites = [];
-      let i;
+  function readYaml(file) {
+    return new Promise( (resolve, reject) => {
+      fs.readFile(file, 'utf8', (err, filestr) => {
+        if (err) {
+          console.log('Workflow.yaml could not be read: ' + err);
+          reject('Workflow.yaml could not be read: ' + err);
+        } else {
+          resolve( yaml.parse(filestr) );
+        }
+      });
+    });
+  }
 
-      inputDirWrites = [
+  function createInputOutputFolders(dir) {
+    let inputDirWrites = [];
+    inputDirWrites = [
+      new Promise((resolve, reject) => {
+        mkpath(dir + 'inputs/', (err) => {
+          if (err) {
+            reject(err.message);
+          } else {
+            resolve(dir + 'inputs/');
+          }
+        });
+      }),
+      new Promise((resolve, reject) => {
+        mkpath(dir + 'outputs/', (err) => {
+          if (err) {
+            reject(err.message);
+          } else {
+            resolve(dir + 'outputs/');
+          }
+        });
+      }),
+    ];
+
+    return Promise.all(inputDirWrites);
+  }
+
+  function writeInputFiles(dir, inputs, outputs) {
+    inputFileWrites.push(
+      new Promise((resolve, reject) => {
+        fs.writeFile( dir + 'inputs/headers', JSON.stringify(header), 'utf8', err => {
+          if (err) {
+            console.log(err.message);
+            reject(err.message);
+          } else {
+            resolve(dir + 'inputs/headers');
+          }
+        }); //fs.writeFile
+      })
+    );
+
+    inputs.forEach(inputItem => {
+      const inputKey = inputItem.id;
+      inputFileWrites.push(
         new Promise((resolve, reject) => {
-          mkpath(dir + 'inputs/', (err) => {
+          const inputFile = fileUrls[inputKey].replace('/api/file/', 'storage/');
+          fs.readFile(inputFile, 'utf8', (err, contents) => {
             if (err) {
+              console.log(err.message);
               reject(err.message);
-            } else {
-              resolve(dir + 'inputs/');
             }
-          });
-        }),
-        new Promise((resolve, reject) => {
-          mkpath(dir + 'outputs/', (err) => {
-            if (err) {
-              reject(err.message);
-            } else {
-              resolve(dir + 'outputs/');
-            }
-          });
-        }),
-      ];
-
-      Promise.all(inputDirWrites).then(result => {
-        inputFileWrites.push(
-          new Promise((resolve, reject) => {
-            fs.writeFile( dir + 'inputs/headers', JSON.stringify(header), 'utf8', err => {
+            fs.writeFile( dir + 'inputs/' + inputKey, contents, 'utf8', err => {
               if (err) {
                 console.log(err.message);
                 reject(err.message);
               } else {
-                resolve(dir + 'inputs/headers');
+                resolve(dir + 'inputs/' + inputKey);
               }
             }); //fs.writeFile
-          }));
+          }); //fs.readFile
+        })
+      );
+    });
 
-          inputs.forEach(inputItem => {
-            const inputKey = inputItem.id;
-            inputFileWrites.push(
-              new Promise((resolve, reject) => {
-                const inputFile = fileUrls[inputKey].replace('/api/file/', 'storage/');
-                console.log('Reading ' + inputFile);
-                fs.readFile(inputFile, 'utf8', (err, contents) => {
+    //outputs
+    for (let i = 0; i < outputs.length; ++i) {
+      outputFiles[ outputs[i].id ] = '';
+      outputFileNames.push(dir + 'outputs/' + outputs[i].id);
+    }
+
+    return Promise.all(inputFileWrites);
+  }
+
+  function readOutputFiles(outputs) {
+    return new Promise( (resolveRead, rejectRead) => {
+      readMultipleFiles(outputFileNames, 'utf8', (err, buffers) => {
+        if (err) {
+          console.log('Output read error: ' + err);
+        }
+        //get values from files into object
+        //TODO - select only json-suitable output fields
+        const outputFileWrites = [];
+
+        for (let i = 0; i < outputFileNames.length; ++i) {
+          const outFile = fileUrls[outputs[i].id];
+          const contents = buffers[i];
+
+          //write all the output files
+          outputFileWrites.push(
+            new Promise((resolve, reject) => {
+              if (outFile) {
+                outputFiles[ outputs[i].id ] = outFile;
+                const outFileTrue = outFile.replace('/api/file/', 'storage/');
+
+                //create folder for outFile
+                const path = outFileTrue.substring(0, outFileTrue.lastIndexOf('/') + 1);
+                mkpath(path, (err) => {
                   if (err) {
                     console.log(err.message);
                     reject(err.message);
                   }
-                  fs.writeFile( dir + 'inputs/' + inputKey, contents, 'utf8', err => {
+                  fs.writeFile(outFileTrue, contents, 'utf8', err => {
                     if (err) {
                       console.log(err.message);
                       reject(err.message);
                     } else {
-                      console.log('Wrote ' + dir + 'inputs/' + inputKey);
-                      resolve(dir + 'inputs/' + inputKey);
+                      resolve(outFileTrue);
                     }
                   }); //fs.writeFile
-                }); //fs.readFile
-              }));
-            });
-
-            //outputs
-            for (i = 0; i < outputs.length; ++i) {
-              outputFiles[ outputs[i].id ] = '';
-              outputFileNames.push(dir + 'outputs/' + outputs[i].id);
-            }
-
-            Promise.all(inputFileWrites).then(result => {
-              if (!result) {
-                console.log('Input write error');
+                }); //make path
+              } else { //if not writing to output file, return in json
+                outputFiles[ outputs[i].id ] = contents;
+                resolve(contents);
               }
-
-              console.log(cmd);
-
-              //run the command
-              return runCmd(id, cmd)
-                .then(res => {
-                  //read the output files
-
-                  console.log(cmd);
-                  readMultipleFiles(outputFileNames, 'utf8', (err, buffers) => {
-                    if (err) {
-                      console.log('Output read error: ' + err);
-                    }
-                    //get values from files into object
-                    //TODO - select only json-suitable output fields
-                    const outputFileWrites = [];
-
-                    for (i = 0; i < outputFileNames.length; ++i) {
-                      const outFile = fileUrls[outputs[i].id];
-                      const contents = buffers[i];
-
-                      outputFileWrites.push(
-                        new Promise((resolve, reject) => {
-                          if (outFile) {
-                            outputFiles[ outputs[i].id ] = outFile;
-                            const outFileTrue = outFile.replace('/api/file/', 'storage/');
-
-                            //create folder for outFile
-                            const path = outFileTrue.substring(0, outFileTrue.lastIndexOf('/') + 1);
-                            mkpath(path, (err) => {
-                              if (err) {
-                                console.log(err.message);
-                                return reject(err.message);
-                              }
-
-                              fs.writeFile(outFileTrue, contents, 'utf8', err => {
-                                if (err) {
-                                  console.log(err.message);
-                                  reject(err.message);
-                                } else {
-                                  console.log('Wrote ' + outFileTrue);
-                                  return resolve(outFileTrue);
-                                }
-                              }); //fs.writeFile
-                            }); //make path
-                          } else { //if not writing to output file, return in json
-                            outputFiles[ outputs[i].id ] = contents;
-                            return resolve(contents);
-                          }
-                        })
-                      );
-                    }
-
-                    Promise.all(outputFileWrites)
-                      .then(result => {
-                        return Promise.resolve(outputFiles);
-                      })
-                      .catch(err => {
-                        return Promise.reject(err.message);
-                      });
-                  }); //readMultipleFiles
-                }); //runNode
             })
-            .catch(err => { console.log(err); return Promise.reject(err.message); }); //writeInputFiles
-          })
-          .catch(err => { console.log(err); return Promise.reject(err.message); }); //writeInputDirs
-        }   //read yaml file successful
-      }); //fs.readFile
-    };
+          );
+        }
+
+        Promise.all(outputFileWrites)
+        .then(res => {
+          resolveRead(res);
+        }).
+        catch(res => {
+          rejectRead(res);
+        });
+      });
+    });
+  }
+
+  let inputs;
+  let outputs;
+  let cmd;
+  const dir = getNodeDir(id) + '/';
+
+  return readYaml(dir + 'workflow.yaml')
+  .then( data => {
+    inputs = data.inputs;
+    outputs = data.outputs;
+    cmd = data.command;
+    return createInputOutputFolders(dir);
+  })
+  .then( res => {
+    return writeInputFiles(dir, inputs, outputs);
+  })
+  .then( res => {
+    if (!res) {
+      console.log('Input write error');
+      Promise.reject('Input write error');
+    }
+
+    return runCmd(id, cmd);
+  })
+  .then( res => {
+    return readOutputFiles(outputs);
+  })
+  .then( res => {
+    return Promise.resolve(outputFiles);
+  })
+  .catch( err => {
+    return Promise.reject(err);
+  });
+};
