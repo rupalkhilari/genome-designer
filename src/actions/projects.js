@@ -14,6 +14,22 @@ export const projectCreate = (initialModel) => {
   };
 };
 
+//Promise
+export const projectSave = (projectId) => {
+  return (dispatch, getState) => {
+    const project = getState().projects[projectId];
+    //todo - static method
+    return project.save()
+      .then(response => response.json())
+      .then(json => {
+        dispatch({
+          type: ActionTypes.PROJECT_SAVE,
+          project,
+        });
+        return json;
+      });
+  };
+};
 
 //this is a backup for performing arbitrary mutations
 export const projectMerge = (projectId, toMerge) => {
