@@ -87,7 +87,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
     const block = this.topBlockAt(point);
     if (block) {
       const node = this.layout.nodeFromElement(block);
-      if (evt.shiftKey) {
+      if (evt.shiftKey || window.__e2eShiftKey) {
         // range select
         this.constructViewer.blockAddToSelections([block]);
       } else
