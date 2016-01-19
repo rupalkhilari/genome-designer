@@ -17,7 +17,7 @@ import { nodeIndex } from '../utils';
 import ConstructViewerMenu from './constructviewermenu';
 import UserInterface from './constructvieweruserinterface';
 import { inspectorToggleVisibility } from '../../../actions/inspector';
-import { uiSetCurrent } from '../../../actions/ui';
+import { uiToggleCurrent, uiSetCurrent, uiAddCurrent } from '../../../actions/ui';
 
 export class ConstructViewer extends Component {
 
@@ -25,9 +25,11 @@ export class ConstructViewer extends Component {
     construct: PropTypes.object.isRequired,
     constructId: PropTypes.string.isRequired,
     layoutAlgorithm: PropTypes.string.isRequired,
+    uiAddCurrent: PropTypes.func.isRequired,
     uiSetCurrent: PropTypes.func.isRequired,
+    uiToggleCurrent: PropTypes.func.isRequired,
     inspectorToggleVisibility: PropTypes.func.isRequired,
-    currentBlock: PropTypes.string,
+    currentBlock: PropTypes.array,
     isOver: PropTypes.boolean,
     blockSetSbol: PropTypes.func,
     blockClone: PropTypes.func,
@@ -110,7 +112,8 @@ export class ConstructViewer extends Component {
       if (insertionPoint) {
         // change to the sbol type
         this.props.blockSetSbol(insertionPoint.block, item.id);
-        this.blockSelected(insertionPoint.block.id);
+        // return the blocked dropped on
+        return [insertionPoint.block];
       }
     } else {
       // get index of insertion allowing for the edge closest to the drop
@@ -118,11 +121,16 @@ export class ConstructViewer extends Component {
       if (insertionPoint) {
         index = this.props.construct.components.indexOf(insertionPoint.block) + (insertionPoint.edge === 'right' ? 1 : 0);
       }
-      // clone and add the block
-      this.props.blockClone(item).then(block => {
-        this.props.blockAddComponent(this.props.construct.id, block.id, index);
-        this.blockSelected(block.id);
+      // add all blocks in the payload
+      const blocks = Array.isArray(payload.item) ? payload.item : [payload.item];
+      const clones = [];
+      blocks.forEach(block => {
+        const clone = this.props.blockClone(block);
+        this.props.blockAddComponent(this.props.construct.id, clone.id, index++);
+        clones.push(clone.id);
       });
+      // return all the newly inserted blocks
+      return clones;
     }
   }
 
@@ -148,10 +156,27 @@ export class ConstructViewer extends Component {
   /**
    * select the given block
    */
-  blockSelected(partId) {
-    this.props.uiSetCurrent(partId);
+  blockSelected(partIds) {
+    this.props.uiSetCurrent(partIds);
     this.props.inspectorToggleVisibility(true);
   }
+
+  /**
+   * select the given block
+   */
+  blockToggleSelected(partIds) {
+    this.props.uiToggleCurrent(partIds);
+    this.props.inspectorToggleVisibility(true);
+  }
+
+  /**
+   * add the given part by ID to the selections
+   */
+  blockAddToSelections(partIds) {
+    this.props.uiAddCurrent(partIds);
+    this.props.inspectorToggleVisibility(true);
+  }
+
   /**
    * window resize, update layout and scene graph with new dimensions
    * @return {[type]} [description]
@@ -181,7 +206,7 @@ export class ConstructViewer extends Component {
    * update the layout and then the scene graph
    */
   update() {
-    this.layout.update(this.props.construct, this.props.layoutAlgorithm, this.props.blocks, this.props.currentBlock.currentBlock);
+    this.layout.update(this.props.construct, this.props.layoutAlgorithm, this.props.blocks, this.props.ui.currentBlocks);
     this.sg.update();
     this.sg.ui.update();
   }
@@ -191,7 +216,7 @@ export class ConstructViewer extends Component {
    */
   render() {
     if (this.layout) {
-      this.layout.update(this.props.construct, this.props.layoutAlgorithm, this.props.blocks, this.props.currentBlock.currentBlock);
+      this.layout.update(this.props.construct, this.props.layoutAlgorithm, this.props.blocks, this.props.ui.currentBlocks);
     }
 
     const rendered = (
@@ -208,7 +233,7 @@ export class ConstructViewer extends Component {
 
 function mapStateToProps(state, props) {
   return {
-    currentBlock: state.ui,
+    ui: state.ui,
     construct: state.blocks[props.constructId],
     blocks: state.blocks,
   };
@@ -221,6 +246,8 @@ export default connect(mapStateToProps, {
   blockRemoveComponent,
   blockSetSbol,
   blockRename,
+  uiAddCurrent,
   uiSetCurrent,
+  uiToggleCurrent,
   inspectorToggleVisibility,
 })(ConstructViewer);

@@ -1,16 +1,45 @@
 import * as ActionTypes from '../constants/ActionTypes';
 
 export const initialState = {
-  currentBlock: null,
+  currentBlocks: null,
   detailViewVisible: false,
 };
 
 export default function inventory(state = initialState, action) {
   switch (action.type) {
-  case ActionTypes.UI_SET_CURRENT : {
-    const { blockId } = action;
-    return Object.assign({}, state, {currentBlock: blockId});
+
+  case ActionTypes.UI_ADD_CURRENT : {
+    const { blocks } = action;
+    // merge new blocks with current blocks, ignoring duplicates
+    const newBlocks = state.currentBlocks || [];
+    (blocks || []).forEach(blockId => {
+      if (!newBlocks.includes(blockId)) {
+        newBlocks.push(blockId);
+      }
+    });
+
+    return Object.assign({}, state, {currentBlocks: newBlocks});
   }
+  case ActionTypes.UI_SET_CURRENT : {
+    const { blocks } = action;
+    return Object.assign({}, state, {currentBlocks: blocks});
+  }
+
+  case ActionTypes.UI_TOGGLE_CURRENT : {
+    const { blocks } = action;
+    const newCurrent = state.currentBlocks.slice(0);
+    blocks.forEach(block => {
+      const index = newCurrent.indexOf(block);
+      if (index < 0) {
+        newCurrent.push(block);
+      } else {
+        newCurrent.splice(index, 1);
+      }
+    })
+
+    return Object.assign({}, state, {currentBlocks: newCurrent});
+  }
+
   case ActionTypes.UI_TOGGLE_DETAIL_VIEW : {
     const { forceState } = action;
     const nextState = (forceState !== undefined) ? !!forceState : !state.detailViewVisible;

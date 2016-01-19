@@ -41,10 +41,15 @@ export default class UserInterface {
    * add to selections, ignores if already present
    * @param {[type]} node [description]
    */
-  addToSelections(node) {
-    invariant(node.sg === this.sg, 'node is not in our scenegraph');
-    if (!this.isSelected(node)) {
-      this.selections.push(node);
+  addToSelections(nodes) {
+    let added = 0;
+    (nodes || []).forEach(node => {
+      if (!this.isSelected(node)) {
+        this.selections.push(node);
+        added += 1;
+      }
+    });
+    if (added) {
       this.updateSelections();
     }
   }
