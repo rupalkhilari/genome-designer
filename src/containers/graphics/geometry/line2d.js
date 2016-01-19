@@ -1,4 +1,4 @@
-import invariant from '../../../utils/environment/invariant';
+import invariant from 'invariant';
 import Vector2D from './vector2d';
 import Intersection2D from './intersection2d';
 
@@ -52,10 +52,10 @@ export default class Line2D {
   }
   /**
    * setter for start
-   * @param  {Vector2D} v
+   * @param  {Vector2D} vector
    */
-  set start(v) {
-    this._start = v.clone();
+  set start(vector) {
+    this._start = vector.clone();
   }
 
   /**
@@ -67,10 +67,10 @@ export default class Line2D {
   }
   /**
    * setter for end
-   * @param  {Vector2D} v
+   * @param  {Vector2D} vector
    */
-  set start(v) {
-    this._end = v.clone();
+  set start(vector) {
+    this._end = vector.clone();
   }
 
   /**
@@ -125,12 +125,12 @@ export default class Line2D {
 
   /**
    * static constructor, produces a Line from the product of toObject
-   * @param  {object} o
+   * @param  {object} obj
    * @return Line2D
    */
-  static fromObject(o) {
-    invariant(o && o.start && o.end, 'Bad parameter');
-    return new Line2D(Vector2D.fromObject(o.start), Vector2D.fromObject(o.end));
+  static fromObject(obj) {
+    invariant(obj && obj.start && obj.end, 'Bad parameter');
+    return new Line2D(Vector2D.fromObject(obj.start), Vector2D.fromObject(obj.end));
   }
 
   /**
@@ -157,52 +157,52 @@ export default class Line2D {
 
   /**
    * distance of point to line segment formed by this.start, this.end squared.
-   * @param {Vector2D} p
+   * @param {Vector2D} point
    * @return {number} [description]
    */
-  distanceToSegment(p) {
-    return Math.sqrt(this.distanceToSegmentSquared(p));
+  distanceToSegment(point) {
+    return Math.sqrt(this.distanceToSegmentSquared(point));
   }
 
   /**
    * return the squared distance of the point to this line
-   * @param  {Vector2D} p
+   * @param  {Vector2D} point
    * @return {number}
    */
-  distanceToSegmentSquared(p) {
-    function sqr(x) {
-      return x * x;
+  distanceToSegmentSquared(point) {
+    function sqr(xp) {
+      return xp * xp;
     }
-    function dist2(v, w) {
-      return sqr(v.x - w.x) + sqr(v.y - w.y);
+    function dist2(p1, p2) {
+      return sqr(p1.x - p2.x) + sqr(p1.y - p2.y);
     }
-    const v = this.start;
-    const w = this.end;
-    const l2 = dist2(v, w);
+    const startv = this.start;
+    const endv = this.end;
+    const l2 = dist2(startv, endv);
     if (l2 === 0) {
-      return dist2(p, v);
+      return dist2(point, startv);
     }
-    const t = ((p.x - v.x) * (w.x - v.x) + (p.y - v.y) * (w.y - v.y)) / l2;
-    if (t < 0) {
-      return dist2(p, v);
+    const dst = ((point.x - startv.x) * (endv.x - startv.x) + (point.y - startv.y) * (endv.y - startv.y)) / l2;
+    if (dst < 0) {
+      return dist2(point, startv);
     }
-    if (t > 1) {
-      return dist2(p, w);
+    if (dst > 1) {
+      return dist2(point, endv);
     }
-    return dist2(p, {
-      x: v.x + t * (w.x - v.x),
-      y: v.y + t * (w.y - v.y),
+    return dist2(point, {
+      x: startv.x + dst * (endv.x - startv.x),
+      y: startv.y + dst * (endv.y - startv.y),
     });
   }
 
 
   /**
    * parametric point on line
-   * @param {number} p
+   * @param {number} point
    */
-  pointOnLine(p) {
-    const x = this.x1 + (this.x2 - this.x1) * p;
-    const y = this.y1 + (this.y2 - this.y1) * p;
+  pointOnLine(point) {
+    const x = this.x1 + (this.x2 - this.x1) * point;
+    const y = this.y1 + (this.y2 - this.y1) * point;
     return new Vector2D(x, y);
   }
 
@@ -247,8 +247,8 @@ export default class Line2D {
    * multiple / scale the line by the given coeffecient
    * @param (numner) v
    */
-  multiply(v) {
-    return new Line2D(this.start.multiply(v), this.end.multiply(v));
+  multiply(multiplier) {
+    return new Line2D(this.start.multiply(multiplier), this.end.multiply(multiplier));
   }
 
   /**

@@ -15,7 +15,7 @@ const middleware = [
   // middleware like thunk (async, promises) should come first in the chain
   thunk,
 
-  saveLastActionMiddleware(),
+  saveLastActionMiddleware,
 
   //logging middleware
   createLogger({
@@ -27,6 +27,7 @@ let finalCreateStore;
 if (process.env.NODE_ENV !== 'production') {
   finalCreateStore = compose(
     applyMiddleware(...middleware),
+    //todo - condition import: http://rackt.org/redux/docs/api/applyMiddleware.html
     devTools()
   )(createStore);
 } else {
@@ -35,8 +36,10 @@ if (process.env.NODE_ENV !== 'production') {
 
 finalCreateStore = reduxReactRouter({ routes, createHistory })(finalCreateStore);
 
-export default function configureStore(initialState) {
-  const store = finalCreateStore(rootReducer, initialState);
+// expose reducer so you can pass in only one reducer for tests
+// (probably need to compose the way rootReducer does)
+export default function configureStore(initialState, reducer = rootReducer) {
+  const store = finalCreateStore(reducer, initialState);
 
   if (module.hot) {
     // Enable Webpack hot module replacement for reducers

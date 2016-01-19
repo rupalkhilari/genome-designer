@@ -7,19 +7,23 @@
 .GlobalNav {
 
   display: flex;
-  justify-content: space-between;
-  padding: 0.25em 0.5em;
-  background-color: var(--colors-greyLight);
+  background-color: white;
 
   &-title {
-    color: #bbb;
+    color: white;
+    background-color: rgb(189, 130, 113);
+    text-align: center;
+    height: var(--GlobalNav-width-chrome);
+    width: var(--GlobalNav-width-chrome);
+    line-height: var(--GlobalNav-width-chrome + 4px);
     text-decoration: none;
+    font-size: 1.5rem;
+    font-weight: 100;
   }
 
   &-action {
-    border-radius: 3px;
-    padding: 1px 5px;
-
+    padding: 0 1rem 0 1rem;
+    line-height: var(--GlobalNav-width-chrome);
     &:not([disabled]):hover {
       cursor: pointer;
       background-color: var(--colors-selected);

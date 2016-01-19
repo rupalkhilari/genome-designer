@@ -3,10 +3,11 @@
 @import 'base.css';
 
 .App {
-  height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: var(--colors-greyLight);
+  background-color: var(--colors-bluegrey);
+  height: 100vh;
+  overflow: hidden;
 }
 
 .App-pageContent {

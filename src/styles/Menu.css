@@ -1,0 +1,60 @@
+@import './variables.css';
+
+.menu-bar {
+  display: flex;
+  align-items: center;
+}
+
+.menu-dropdown {
+  display: inline-block;
+  position: relative;
+  margin-left: 4rem;
+
+  &-container {
+    position: absolute;
+    left: 0px;
+    top: 3rem;
+    padding: 0.5em 0;
+    z-index: 1000;
+    border: 1px solid #ddd;
+    background: white;
+    box-shadow: 2px 2px 11px -2px rgba(82,82,82,1);
+    min-width: 19rem;
+
+    hr {
+      margin-top: 0.5em;
+      margin-bottom: 0.5em;
+      border-top: 1px solid #ddd;
+    }
+  }
+}
+
+.menu-header {
+  display: inline-block;
+  border-bottom: 4px solid transparent;
+  padding: 0.75em;
+  cursor: pointer;
+
+  &-open {
+    border-bottom: 4px solid dodgerblue;
+  }
+}
+
+.menu-item {
+  color: black;
+  font-size: 1em;
+  line-height: 1.25em;
+  cursor: pointer;
+  margin: 0.25em 0 0;
+  padding: 0.25em 1em;
+  background: transparent;
+  transition: background ease-out var(--timing-fast);
+
+  &:hover {
+    background: var(--colors-greyLight);
+  }
+
+  &:last-child {
+    margin-bottom: 0.5rem;
+  }
+}

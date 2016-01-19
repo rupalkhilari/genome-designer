@@ -1,26 +1,11 @@
 import React, { Component, PropTypes } from 'react';
-import { DragSource } from 'react-dnd';
-import { inventoryItem as inventoryItemDragType } from '../../constants/DragTypes';
+import DnD from '../../containers/graphics/dnd/dnd';
+import MouseTrap from '../../containers/graphics/mousetrap';
 
 import '../../styles/InventoryItem.css';
 
-const inventorySource = {
-  beginDrag(props) {
-    return {
-      item: props.item,
-      type: props.inventoryType,
-    };
-  },
-};
-
-@DragSource(inventoryItemDragType, inventorySource, (connect, monitor) => ({
-  connectDragSource: connect.dragSource(),
-  isDragging: monitor.isDragging(),
-}))
 export default class InventoryItem extends Component {
   static propTypes = {
-    connectDragSource: PropTypes.func.isRequired,
-    isDragging: PropTypes.bool.isRequired,
     inventoryType: PropTypes.string.isRequired,
     item: PropTypes.shape({
       metadata: PropTypes.shape({
@@ -30,13 +15,42 @@ export default class InventoryItem extends Component {
     }).isRequired,
   }
 
+  componentDidMount() {
+    const dom = React.findDOMNode(this);
+    this.mouseTrap = new MouseTrap({
+      element: dom,
+      mouseDrag: this.mouseDrag.bind(this),
+    });
+  }
+
+  mouseDrag(event, localPosition, startPosition, distance) {
+    // cancel mouse drag and start a drag and drop
+    this.mouseTrap.cancelDrag();
+    // get global point as starting point for drag
+    const globalPoint = this.mouseTrap.mouseToGlobal(event);
+    // start DND
+    DnD.startDrag(this.makeDnDProxy(), globalPoint, {
+      item: this.props.item,
+      type: this.props.inventoryType,
+    });
+  }
+
+  /**
+   * make a drag and drop proxy for the item
+   */
+  makeDnDProxy() {
+    const proxy = document.createElement('span');
+    proxy.classList.add('InventoryItemProxy');
+    proxy.innerHTML = this.props.item.metadata.name;
+    return proxy;
+  }
+
   render() {
-    const { item, isDragging, connectDragSource } = this.props;
+    const item = this.props.item;
     const imagePath = item.metadata.image;
 
-    return connectDragSource(
+    return (
       <div className={'InventoryItem' +
-        (isDragging ? ' isDragging' : '') +
         (!!imagePath ? ' hasImage' : '')}>
         <a className="InventoryItem-item">
           {!!imagePath && <img className="InventoryItem-image" src={imagePath}/> }

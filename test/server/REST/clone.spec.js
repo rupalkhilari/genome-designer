@@ -1,16 +1,16 @@
 import { expect } from 'chai';
 import { Block as exampleBlock } from '../../schemas/_examples';
-import { set as dbSet } from '../../../server/database';
+import { set as dbSet } from '../../../server/utils/database';
 import request from 'supertest';
 
-const devServer = require('../../../devServer');
+const devServer = require('../../../server/devServer');
 
 describe('REST', () => {
   let server;
-  const sessionKey = '123456';
+  const sessionkey = '123456';
   beforeEach('server setup', () => {
     server = devServer.listen();
-    return dbSet(sessionKey, {});
+    return dbSet(sessionkey, {});
   });
   afterEach(() => {
     server.close();
@@ -21,7 +21,7 @@ describe('REST', () => {
       const parent = exampleBlock;
       request(server)
         .post('/api/clone')
-        .set('session-key', sessionKey)
+        .set('sessionkey', sessionkey)
         .send(parent)
         .expect(404, done);
     });
@@ -30,14 +30,14 @@ describe('REST', () => {
       const parent = exampleBlock;
       request(server)
         .put(`/api/block/${parent.id}`)
-        .set('session-key', sessionKey)
+        .set('sessionkey', sessionkey)
         .send(parent)
         .expect(200, makeClone);
 
       function makeClone() {
         request(server)
           .post(`/api/clone/${parent.id}`)
-          .set('session-key', sessionKey)
+          .set('sessionkey', sessionkey)
           .send()
           .expect(200, done);
       }
@@ -51,14 +51,14 @@ describe('REST', () => {
       });
       request(server)
         .put(`/api/block/${parent.id}`)
-        .set('session-key', sessionKey)
+        .set('sessionkey', sessionkey)
         .send(parent)
         .expect(200, makeClone);
 
       function makeClone() {
         request(server)
           .post(`/api/clone/${parent.id}`)
-          .set('session-key', sessionKey)
+          .set('sessionkey', sessionkey)
           .send()
           .expect(200)
           .expect(result => {
@@ -78,14 +78,14 @@ describe('REST', () => {
       let descendent;
       request(server)
         .put(`/api/block/${parent.id}`)
-        .set('session-key', sessionKey)
+        .set('sessionkey', sessionkey)
         .send(parent)
         .expect(200, makeClone);
 
       function makeClone() {
         request(server)
           .post(`/api/clone/${parent.id}`)
-          .set('session-key', sessionKey)
+          .set('sessionkey', sessionkey)
           .send()
           .expect(result => {
             descendent = result.body;
@@ -99,7 +99,7 @@ describe('REST', () => {
       function testClone() {
         request(server)
           .get(`/api/block/${descendent.id}`)
-          .set('session-key', sessionKey)
+          .set('sessionkey', sessionkey)
           .expect(200)
           .expect(result => {
             expect(result.body).to.eql(descendent);

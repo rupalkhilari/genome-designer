@@ -1,4 +1,4 @@
-import invariant from '../../../utils/environment/invariant';
+import invariant from 'invariant';
 
 export default class Intersection2D {
   /**
@@ -42,19 +42,19 @@ export default class Intersection2D {
 
   /**
    * setter for our status
-   * @param  {String} s
+   * @param  {String} str
    */
-  set status(s) {
-    invariant(typeof s === 'string', 'expected a string');
-    this._status = s;
+  set status(str) {
+    invariant(typeof str === 'string', 'expected a string');
+    this._status = str;
   }
 
   /**
    * add a point to our intersection set
-   * @param {Vector2D} p
+   * @param {Vector2D} point
    */
-  add(p) {
+  add(point) {
     this.points = this.points || [];
-    this.points.push(p);
+    this.points.push(point);
   }
 }

@@ -1,7 +1,6 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import TestUtils from 'react-addons-test-utils';
-import wrapInDragTestContext from '../utils/wrapInDragTestContext';
 import { createStore } from 'redux';
 import rootReducer from '../../src/reducers/index';
 import chai from 'chai';
@@ -16,7 +15,7 @@ chai.use(sinonChai);
  import configureStore from '../../src/store/configureStore';
  */
 
-import InventoryConnected, { Inventory } from '../../src/containers/Inventory';
+import { Inventory } from '../../src/containers/Inventory';
 
 function setup(propOverrides = {}) {
   const store = createStore(rootReducer);
@@ -28,9 +27,7 @@ function setup(propOverrides = {}) {
     searchTerm: '',
   }, propOverrides);
 
-  // Render with the testing backend
-  const InventoryDragContext = wrapInDragTestContext(Inventory);
-  const component = TestUtils.renderIntoDocument(<Provider store={store}><InventoryDragContext {...props} /></Provider>);
+  const component = TestUtils.renderIntoDocument(<Provider store={store}><Inventory {...props} /></Provider>);
 
   return {
     props,
@@ -50,7 +47,7 @@ describe('containers', () => {
       expect(props.isVisible).to.equal(true);
 
       //wrapping will break component refs
-      const closeButton = TestUtils.findRenderedDOMComponentWithClass(component, 'SidePanel-close');
+      const closeButton = TestUtils.findRenderedDOMComponentWithClass(component, 'SidePanel-heading-close');
 
       TestUtils.Simulate.click(closeButton);
       expect(toggleSpy).to.have.been.calledWith(false);

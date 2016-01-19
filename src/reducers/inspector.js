@@ -1,8 +1,7 @@
 import * as ActionTypes from '../constants/ActionTypes';
 
 export const initialState = {
-  isVisible: true,
-  currentInstance: null,
+  isVisible: false,
 };
 
 export default function inventory(state = initialState, action) {
@@ -11,10 +10,6 @@ export default function inventory(state = initialState, action) {
     const { forceState } = action;
     const nextState = (forceState !== undefined) ? !!forceState : !state.isVisible;
     return Object.assign({}, state, {isVisible: nextState});
-  }
-  case ActionTypes.INSPECTOR_SET_CURRENT : {
-    const { instance } = action;
-    return Object.assign({}, state, {currentInstance: instance});
   }
   default : {
     return state;

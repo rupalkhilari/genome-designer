@@ -1,4 +1,4 @@
-import invariant from '../../../utils/environment/invariant';
+import invariant from 'invariant';
 import { isRealNumber, deg2rad, rad2deg } from '../utils';
 import Line2D from './line2d';
 /**
@@ -47,14 +47,14 @@ export default class Vector2D {
    */
   static fromObject(str) {
     invariant(str, 'Bad parameter');
-    const a = str.split(',');
-    invariant(a.length === 2, 'Bad parameter');
-    const v = new Vector2D();
-    v.x = parseFloat(a[0]);
-    v.y = parseFloat(a[1]);
-    invariant(isRealNumber(v.x), 'Bad parameter');
-    invariant(isRealNumber(v.y), 'Bad parameter');
-    return v;
+    const ary = str.split(',');
+    invariant(ary.length === 2, 'Bad parameter');
+    const vector = new Vector2D();
+    vector.x = parseFloat(ary[0]);
+    vector.y = parseFloat(ary[1]);
+    invariant(isRealNumber(vector.x), 'Bad parameter');
+    invariant(isRealNumber(vector.y), 'Bad parameter');
+    return vector;
   }
 
   /**
@@ -74,24 +74,24 @@ export default class Vector2D {
 
   /**
    * return a new vector rounded to the nearest k integer
-   * @param {Number} k [description]
+   * @param {Number} grid [description]
    * @return {Vector2D}   [description]
    */
-  snap(k) {
-    return new Vector2D(Math.floor(this.x / k) * k, Math.floor(this.y / k) * k);
+  snap(grid) {
+    return new Vector2D(Math.floor(this.x / grid) * grid, Math.floor(this.y / grid) * grid);
   }
 
   /**
    * Point on circumference of circle
    * @param {Number} xc
    * @param {Number} yc
-   * @param {Number} r
+   * @param {Number} radius
    * @param {Number} degrees
    */
-  static pointOnCircumference(xc, yc, r, degrees) {
+  static pointOnCircumference(xc, yc, radius, degrees) {
     return new Vector2D(
-      xc + r * Math.cos(deg2rad(degrees)),
-      yc + r * Math.sin(deg2rad(degrees))
+      xc + radius * Math.cos(deg2rad(degrees)),
+      yc + radius * Math.sin(deg2rad(degrees))
     );
   }
 
@@ -130,29 +130,29 @@ export default class Vector2D {
 
   /**
    * multiply vector by coeffecient or another vector
-   * @param {Number|Vector2D} e
+   * @param {Number|Vector2D} multiplier
    * @returns {Vector2D | Number}
    */
-  multiply(e) {
-    return isRealNumber(e) ?
-      new Vector2D(this.x * e, this.y * e) :
-      new Vector2D(this.x * e.x, this.y * e.y);
+  multiply(multiplier) {
+    return isRealNumber(multiplier) ?
+      new Vector2D(this.x * multiplier, this.y * multiplier) :
+      new Vector2D(this.x * multiplier.x, this.y * multiplier.y);
   }
 
   /**
    * scale is an alias for multiply
    */
-  scale(c) {
-    return this.multiply(c);
+  scale(multiplier) {
+    return this.multiply(multiplier);
   }
 
   /**
    * divide vector by a constant
-   * @param {Number} e
+   * @param {Number} divisor
    * @returns {Vector2D}
    */
-  divide(e) {
-    return new Vector2D(this.x / e, this.y / e);
+  divide(divisor) {
+    return new Vector2D(this.x / divisor, this.y / divisor);
   }
 
   /**

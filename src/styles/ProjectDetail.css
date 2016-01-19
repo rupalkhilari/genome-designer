@@ -1,0 +1,76 @@
+@import './variables.css';
+
+.ProjectDetail {
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  min-height: 30px;
+  height: 0;
+  background-color: var(--colors-bluegreyLight);
+  padding: 8px 10px;
+
+  &.visible {
+    background-color: var(--colors-white);
+    flex-grow: 1;
+    height: 600px;
+  }
+
+  &-heading {
+    display: flex;
+    margin: 0 0 10px;
+
+    &-close,
+    &-toggle {
+      width: var(--SidePanel-trigger-width);
+      height: var(--SidePanel-trigger-width);
+      min-width: var(--SidePanel-trigger-width);
+    }
+
+    &-toggle {
+      align-self: flex-start;
+      color: white;
+      background-image: url('/images/ui/caret_open_light.svg');
+
+      .visible & {
+        transform: rotateX(180deg);
+      }
+    }
+
+    &-extensionList {
+      flex-grow: 1;
+    }
+
+    &-extension {
+      padding: 0px 20px;
+      border-right: 1px solid var(--colors-greyMedLight);
+      color: #e6e6e6;
+
+      .visible & {
+        color: #4c505f;
+        padding: 0px;
+      }
+
+      &.disabled {
+        color: #757884;
+      }
+
+      &:last-child {
+        border: none;
+      }
+    }
+
+    &-close {
+      align-self: flex-end;
+      background-image: url('/images/ui/close_icon_dark.svg');
+    }
+  }
+
+  &-chrome {
+
+  }
+
+  &-extensionView {
+    flex-grow: 1;
+  }
+
+}

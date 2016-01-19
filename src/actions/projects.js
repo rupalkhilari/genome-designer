@@ -6,33 +6,53 @@ import Project from '../models/Project';
 export const projectCreate = (initialModel) => {
   return (dispatch, getState) => {
     const project = new Project(initialModel);
-
-    return Promise.resolve(project)
-      .then((project) => {
-        dispatch({
-          type: ActionTypes.PROJECT_CREATE,
-          project,
-        });
-        return project;
-      });
+    dispatch({
+      type: ActionTypes.PROJECT_CREATE,
+      project,
+    });
+    return project;
   };
 };
 
+//Promise
+export const projectSave = (projectId) => {
+  return (dispatch, getState) => {
+    const project = getState().projects[projectId];
+    //todo - static method
+    return project.save()
+      .then(response => response.json())
+      .then(json => {
+        dispatch({
+          type: ActionTypes.PROJECT_SAVE,
+          project,
+        });
+        return json;
+      });
+  };
+};
 
 //this is a backup for performing arbitrary mutations
 export const projectMerge = (projectId, toMerge) => {
   return (dispatch, getState) => {
     const oldProject = getState().projects[projectId];
     const project = oldProject.merge(toMerge);
+    dispatch({
+      type: ActionTypes.PROJECT_MERGE,
+      project,
+    });
+    return project;
+  };
+};
 
-    return Promise.resolve(project)
-      .then((project) => {
-        dispatch({
-          type: ActionTypes.PROJECT_MERGE,
-          project,
-        });
-        return project;
-      });
+export const projectRename = (projectId, newName) => {
+  return (dispatch, getState) => {
+    const oldProject = getState().projects[projectId];
+    const project = oldProject.mutate('metadata.name', newName);
+    dispatch({
+      type: ActionTypes.PROJECT_RENAME,
+      project,
+    });
+    return project;
   };
 };
 
@@ -41,14 +61,10 @@ export const projectAddConstruct = (projectId, componentId) => {
   return (dispatch, getState) => {
     const oldProject = getState().projects[projectId];
     const project = oldProject.addComponents(componentId);
-
-    return Promise.resolve(project)
-      .then((project) => {
-        dispatch({
-          type: ActionTypes.PROJECT_ADD_CONSTRUCT,
-          project,
-        });
-        return project;
-      });
+    dispatch({
+      type: ActionTypes.PROJECT_ADD_CONSTRUCT,
+      project,
+    });
+    return project;
   };
 };

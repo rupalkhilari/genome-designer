@@ -3,53 +3,88 @@ import chai from 'chai';
 
 const { assert, expect } = chai;
 
-describe('Instance Model', () => {
-  describe('Constructor', () => {
-    it('should exist, be callable with new', () => {
+describe('Model', () => {
+  describe('Instance', () => {
+    describe('Constructor', () => {
+      it('should exist, be callable with new', () => {
+        const inst = new Instance();
+
+        expect(inst.constructor).to.be.a('function');
+      });
+
+      it('should accept existing input', () => {
+        const existing = {
+          metadata: {
+            name: 'blah',
+          },
+        };
+        const inst = new Instance(existing);
+
+        expect(inst.metadata.name).to.equal('blah');
+      });
+
+      it('should accept further properties to use in the base', () => {
+        class Extended extends Instance {
+          constructor(...args) {
+            super(...args, {
+              customProp: [],
+            });
+          }
+
+          addToArray(...stuff) {
+            return this.mutate('customProp', this.customProp.concat(stuff));
+          }
+        }
+        const ext = new Extended();
+
+        expect(ext.customProp).to.be.an('array');
+        expect(ext.addToArray).to.be.a('function');
+
+        const added = ext.addToArray('some', 'stuff');
+        expect(ext.customProp).to.have.length(0);
+        expect(added.customProp).to.eql(['some', 'stuff']);
+      });
+    });
+
+    it('should return a new object when mutated, not mutate the prior instance', () => {
       const inst = new Instance();
+      const newInst = inst.mutate('meaning.oflife', 42);
 
-      expect(inst.constructor).to.be.a('function');
+      assert(inst !== newInst);
+      expect(inst.meaning).to.be.undefined;
+      expect(newInst.meaning.oflife).to.equal(42);
     });
 
-    it('should accept existing input', () => {
-      const existing = {
-        metadata: {
-          name: 'blah',
-        },
+    it('should be immutable', () => {
+      const inst = new Instance({
+        prior: 'field',
+      });
+
+      const mutator = () => {
+        inst.prior = 'newvalue';
       };
-      const inst = new Instance(existing);
 
-      expect(inst.metadata.name).to.equal('blah');
+      const adder = () => {
+        inst.newfield = 'value';
+      };
+
+      expect(adder).to.throw;
+      expect(mutator).to.throw;
     });
 
-    it('should accept further properties to use in the base', () => {
-      class Extended extends Instance {
-        constructor(...args) {
-          super(...args, {
-            customProp: [],
-          });
-        }
-        addToArray(...stuff) {
-          return this.mutate('customProp', this.customProp.concat(stuff));
-        }
-      }
-      const ext = new Extended();
+    it('can be cloned, and update the parents array, with newest first', () => {
+      const inst = new Instance({
+        prior: 'field',
+      });
+      expect(inst.parents.length).to.equal(0);
 
-      expect(ext.customProp).to.be.an('array');
-      expect(ext.addToArray).to.be.a('function');
+      const clone = inst.clone();
+      expect(clone.parents.length).to.equal(1);
+      expect(clone.parents[0]).to.equal(inst.id);
 
-      const added = ext.addToArray('some', 'stuff');
-      expect(ext.customProp).to.have.length(0);
-      expect(added.customProp).to.eql(['some', 'stuff']);
+      const second = clone.clone();
+      expect(second.parents.length).to.equal(2);
+      expect(second.parents).to.eql([clone.id, inst.id]);
     });
-  });
-
-  it('should return a new object when mutated', () => {
-    const inst = new Instance();
-    const newInst = inst.mutate('meaning.oflife', 42);
-
-    assert(inst !== newInst);
-    expect(inst.meaning).to.be.undefined;
-    expect(newInst.meaning.oflife).to.equal(42);
   });
 });

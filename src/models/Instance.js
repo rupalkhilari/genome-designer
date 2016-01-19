@@ -26,6 +26,7 @@ export default class Instance {
       subclassBase,
       {
         id: uuid.v4(),
+        parents: [],
         metadata: {
           name: '',
           description: '',
@@ -36,18 +37,36 @@ export default class Instance {
       },
       parsedInput
     );
+
+    if (process.env.NODE_ENV !== 'production') {
+      require('deep-freeze')(this);
+    }
   }
+
+  //use cloneDeep and perform mutation prior to calling constructor because constructor may freeze object
 
   // returns a new instance
   // uses lodash _.set() for path, e.g. 'a.b[0].c'
-  // cloneDeep by default to handle deep properties that might not be handled properly by Object.assign
-  mutate(path, value, bypassCloning = false) {
-    const base = bypassCloning ? this : cloneDeep(this);
-    return pathSet(new this.constructor(base), path, value);
+  mutate(path, value) {
+    const base = cloneDeep(this);
+    pathSet(base, path, value);
+    return new this.constructor(base);
   }
 
   // returns a new instance
+  // deep merge using _.merge
   merge(obj) {
-    return merge(new this.constructor(cloneDeep(this)), obj);
+    const base = cloneDeep(this);
+    merge(base, obj);
+    return new this.constructor(base);
+  }
+
+  clone() {
+    const self = cloneDeep(this);
+    const clone = Object.assign(self, {
+      id: uuid.v4(),
+      parents: [self.id].concat(self.parents),
+    });
+    return new this.constructor(clone);
   }
 }

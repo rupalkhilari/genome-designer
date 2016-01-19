@@ -3,16 +3,16 @@
 import { expect } from 'chai';
 import { Block as exampleBlock } from '../../schemas/_examples';
 import request from 'supertest';
-import { set as dbSet } from '../../../server/database';
+import { set as dbSet } from '../../../server/utils/database';
 
-const devServer = require('../../../devServer');
+const devServer = require('../../../server/devServer');
 
 describe('REST', () => {
   let server;
-  const sessionKey = '123456';
+  const sessionkey = '123456';
   beforeEach('server setup', () => {
     server = devServer.listen();
-    return dbSet(sessionKey, {});
+    return dbSet(sessionkey, {});
   });
   afterEach(() => {
     server.close();

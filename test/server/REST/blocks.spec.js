@@ -1,16 +1,13 @@
 import { expect } from 'chai';
 import { Block as exampleBlock } from '../../schemas/_examples';
-import { set as dbSet } from '../../../server/database';
 import request from 'supertest';
-
-const devServer = require('../../../devServer');
+import devServer from '../../../server/devServer';
 
 describe('REST', () => {
   let server;
-  const sessionKey = '123456';
+  const sessionkey = '123456';
   beforeEach('server setup', () => {
     server = devServer.listen();
-    return dbSet(sessionKey, {});
   });
   afterEach(() => {
     server.close();
@@ -26,7 +23,7 @@ describe('REST', () => {
     it('GET a block that is not real returns null', (done) => {
       request(server)
         .get('/api/block/notrealblock')
-        .set('session-key', sessionKey)
+        .set('sessionkey', sessionkey)
         .expect(200)
         .expect((result) => {
           expect(result.body).to.be.null;
@@ -40,7 +37,7 @@ describe('REST', () => {
 
       request(server)
         .post('/api/block')
-        .set('session-key', sessionKey)
+        .set('sessionkey', sessionkey)
         .send(block)
         .expect((res) => {
           const instance = res.body;
@@ -58,7 +55,7 @@ describe('REST', () => {
 
       request(server)
         .post('/api/block')
-        .set('session-key', sessionKey)
+        .set('sessionkey', sessionkey)
         .send(block)
         .expect((res) => {
           const instance = res.body;
@@ -70,7 +67,7 @@ describe('REST', () => {
     it('PUT to update a block', (done) => {
       request(server)
         .put(`/api/block/${exampleBlock.id}`)
-        .set('session-key', sessionKey)
+        .set('sessionkey', sessionkey)
         .send(exampleBlock)
         .expect(200)
         .expect((res) => {
@@ -82,7 +79,7 @@ describe('REST', () => {
     it('GET should return the instance by default', (done) => {
       request(server)
         .get(`/api/block/${exampleBlock.id}`)
-        .set('session-key', sessionKey)
+        .set('sessionkey', sessionkey)
         .expect(200)
         .expect((res) => {
           expect(res.body).to.not.be.undefined;
@@ -96,7 +93,7 @@ describe('REST', () => {
     it('GET should return the tree with query parameter', (done) => {
       request(server)
         .get(`/api/block/${exampleBlock.id}?tree=true`)
-        .set('session-key', sessionKey)
+        .set('sessionkey', sessionkey)
         .expect(200)
         .expect((res) => {
           expect(res.body).to.not.be.undefined;
@@ -112,7 +109,7 @@ describe('REST', () => {
     it('GET an created block', (done) => {
       request(server)
         .get(`/api/block/${exampleBlock.id}`)
-        .set('session-key', sessionKey)
+        .set('sessionkey', sessionkey)
         .expect(200)
         .expect((res) => {
           const instance = res.body;
@@ -124,7 +121,7 @@ describe('REST', () => {
     it('PUT allows custom fields', (done) => {
       request(server)
         .put(`/api/block/${extendedBlock.id}`)
-        .set('session-key', sessionKey)
+        .set('sessionkey', sessionkey)
         .send(extendedBlock)
         .expect(200)
         .expect((res) => {

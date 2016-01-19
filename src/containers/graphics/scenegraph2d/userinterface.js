@@ -1,87 +1,147 @@
-import React from 'react';
-import Vector2D from '../geometry/vector2d';
-import UserInterfaceReact from '../scenegraph2d_react/userinterface';
-import Layout1 from './layout1.js';
+import MouseTrap from '../mousetrap';
+import invariant from 'invariant';
 
 export default class UserInterface {
 
-  constructor(sceneGraph, dataSet) {
-    this.sceneGraph = sceneGraph;
-    this.dataSet = dataSet;
-    this.layout = new Layout1(this.sceneGraph, this.dataSet, {
-      width: 850,
+  constructor(sg) {
+    // the scenegraph we are on top of.
+    this.sg = sg;
+    invariant(this.sg, 'user interface must have a scenegraph');
+    // build our element
+    this.el = document.createElement('div');
+    this.el.className = 'scenegraph-userinterface';
+    // append after our scenegraph
+    this.sg.parent.parentNode.insertBefore(this.el, this.sg.parent.nextSibiling);
+    // sink mouse events
+    this.el.addEventListener('mousedown', this.onMouseDown);
+    // this.el.addEventListener('mousemove', this.onMouseMove);
+    // this.el.addEventListener('mouseup', this.onMouseUp);
+    // base class can handle simple selections based on the AABB of nodes
+    this.selections = [];
+    // maps selected node UUID's to their display glyph
+    this.selectionMap = {};
+    // mouse tracker
+    this.mouseTrap = new MouseTrap({
+      element: this.el,
+      mouseDown: this.mouseDown.bind(this),
+      mouseMove: this.mouseMove.bind(this),
+      mouseDrag: this.mouseDrag.bind(this),
+      mouseUp: this.mouseUp.bind(this),
     });
-    this.layout.update();
   }
-
-  onMouseDown = (e) => {
-    const point = this.eventToLocal(e);
-    this.sceneGraph.traverse( node => {
-      if (node.parent && node.containsGlobalPoint(point)) {
-        this.drag = node;
-        this.dragStart = point;
-        // node starting position, relative to parent, in global coordinates
-        this.nodeStart = this.drag.parent.localToGlobal(new Vector2D(this.drag.props.x, this.drag.props.y));
-        //console.log(`HIT:, ${node.props.glyph}, ${node.props.fill}`);
-      }
-    }, this);
+  /**
+   * replace current selections, call with falsey to reset selections
+   * @param {[type]} newSelections [description]
+   */
+  setSelections(newSelections) {
+    this.selections = newSelections ? newSelections.slice() : [];
+    this.updateSelections();
   }
-
-  onMouseMove = (e) => {
-    if (this.drag) {
-      const p = this.eventToLocal(e);
-      // the delta includes accomodating the view scale on the root node
-      const delta = p.sub(this.dragStart); //.multiply(1/this.sceneGraph.root.props.scale);
-      // add the delta to the nodes starting global position
-      const g = this.nodeStart.add(delta);
-      // transform this point back into local space of the dragged node
-      const l = this.drag.parent.globalToLocal(g);
-      // apply to the nodes position
-      this.drag.props.x = l.x;
-      this.drag.props.y = l.y;
-      // update the entire graph ... yuk
-      this.sceneGraph.update();
+  /**
+   * add to selections, ignores if already present
+   * @param {[type]} node [description]
+   */
+  addToSelections(node) {
+    invariant(node.sg === this.sg, 'node is not in our scenegraph');
+    if (!this.isSelected(node)) {
+      this.selections.push(node);
+      this.updateSelections();
     }
   }
-
-  onMouseUp = (e) => {
-    this.drag = null;
+  /**
+   * remove from selections, ignores if not present
+   * @param  {[type]} node [description]
+   * @return {[type]}      [description]
+   */
+  removeFromSelections(node) {
+    invariant(node.sg === this.sg, 'node is not in our scenegraph');
+    const index = this.selections.indexOf(node);
+    if (index >= 0) {
+      this.selections.splice(index, 1);
+      this.updateSelections();
+    }
+  }
+  /**
+   * returns true if the node is selected
+   * @param  {[type]}  node [description]
+   * @return {Boolean}      [description]
+   */
+  isSelected(node) {
+    return this.selections.indexOf(node) >= 0;
   }
 
   /**
-   * convert clientX/clientY to local coordinates
-   * @param  {[type]} evt [description]
-   * @return {[type]}   [description]
+   * create / add / remove selection elements according to current selections
+   * @return {[type]} [description]
    */
-  eventToLocal(evt) {
-    function getPosition(element) {
-      let xPosition = 0;
-      let yPosition = 0;
-      let el = element;
-      while (el) {
-        xPosition += (el.offsetLeft - el.scrollLeft + el.clientLeft);
-        yPosition += (el.offsetTop - el.scrollTop + el.clientTop);
-        el = el.offsetParent;
+  updateSelections() {
+    this.selections.forEach(node => {
+      // create an element if we need one
+      let sel = this.selectionMap[node.uuid];
+      if (!sel) {
+        sel = this.selectionMap[node.uuid] = this.createSelectionElement(node);
+        this.el.appendChild(sel);
       }
-      return new Vector2D(xPosition, yPosition);
-    }
-
-    const parentPosition = getPosition(evt.currentTarget);
-    return new Vector2D(evt.clientX, evt.clientY).sub(parentPosition);
+      // update to current node bounds
+      const bounds = node.getAABB();
+      sel.style.left = bounds.x + 'px';
+      sel.style.top = bounds.y + 'px';
+      sel.style.width = bounds.width + 'px';
+      sel.style.height = bounds.height + 'px';
+    });
+    // remove any elements no longer required.
+    const keys = Object.keys(this.selectionMap);
+    keys.forEach(nodeUUID => {
+      if (!this.selections.find(node => nodeUUID === node.uuid)) {
+        const element = this.selectionMap[nodeUUID];
+        delete this.selectionMap[nodeUUID];
+        this.el.removeChild(element);
+      }
+    });
   }
 
-  render() {
-    // size to cover scene graph but don't scale
-    const scale = this.sceneGraph.getScale();
-    const style = {
-      width: (this.sceneGraph.props.w * scale) + 'px',
-      height: (this.sceneGraph.props.h * scale) + 'px',
-    };
+  /**
+   * create a selection element for a given node. Override this method to create
+   * selection elements with a different appearance.
+   * @param  {Node2D} node
+   */
+  createSelectionElement(node) {
+    const div = document.createElement('div');
+    div.className = 'scenegraph-userinterface-selection';
+    return div;
+  }
 
-    return (<UserInterfaceReact style={style}
-      onMouseDown={this.onMouseDown}
-      onMouseMove={this.onMouseMove}
-      onMouseUp={this.onMouseUp}
-      />);
+  /**
+   * this is the actual mouse down event you should override in descendant classes
+   */
+  mouseDown(point, event) {}
+  /**
+   * this is the actual mouse move event you should override in descendant classes
+   */
+  mouseMove(point, event) {}
+  /**
+   * this is the actual mouse drag event you should override in descendant classes
+   */
+  mouseDrag(point, event) {}
+  /**
+   * this is the actual mouse up event you should override in descendant classes
+   */
+  mouseUp(point, event) {}
+
+  /**
+   * general update, called whenever our scenegraph updates
+   * @return {[type]} [description]
+   */
+  update() {
+    this.updateSelections();
+  }
+
+  /**
+   * update our element to the current scene graph size
+   * @return {[type]} [description]
+   */
+  updateSize() {
+    this.el.style.width = this.sg.width + 'px';
+    this.el.style.height = this.sg.height + 'px';
   }
 }

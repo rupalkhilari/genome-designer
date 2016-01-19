@@ -4,9 +4,9 @@ export const getLastAction = () => {
   return lastAction;
 };
 
-export const saveLastActionMiddleware = (config) => ({getState, dispatch}) => (next) => (action) => {
-  lastAction = action;
-  return next(action);
-};
-
-export default saveLastActionMiddleware;
+export default function saveLastActionMiddleware({dispatch, getState}) {
+  return next => action => {
+    lastAction = action;
+    return next(action);
+  };
+}

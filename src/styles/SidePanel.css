@@ -10,8 +10,7 @@
   overflow-x: hidden;
   top: 0;
   bottom: 0;
-  padding: 0.5em;
-  background: var(--background-dark-semiTransparent);
+  background: var(--colors-bluegreyDark);
   color: var(--colors-white);
   transition-property: width, opacity;
   transition-duration: var(--timing-fast);
@@ -23,54 +22,61 @@
 
   &-heading {
     width: 100%;
+    padding: var(--SidePanel-width-padding-heading);;
     position: relative;
-    margin: 0 0 0.25em;
     display: flex;
-
-    &-trigger {
-      width: var(--SidePanel-trigger-width);
-      min-width: var(--SidePanel-trigger-width);
-      /* temp */
-      text-align: center;
-      border-radius: 50%;
-      border: 1px solid white;
-      margin: 0 5px;
-    }
+    align-items: center;
+    justify-content: center;
 
     &-content {
       display: none;
+      flex-grow: 1;
+      justify-content: space-between;
+      align-items: center;
 
       .visible & {
-        display: block;
+        display: flex;
       }
+    }
+
+    &-trigger,
+    &-close {
+      width: var(--SidePanel-trigger-width);
+      height: var(--SidePanel-trigger-width);
+      min-width: var(--SidePanel-trigger-width);
+      /* temp */
+      text-align: center;
+      margin: 0;
+      background-size: contain;
+    }
+
+    &-trigger {
+      margin: 0;
+
+      .visible & {
+        margin-right: var(--SidePanel-width-padding-heading);
+      }
+    }
+
+    &-title {
+      font-size: var(--font-size-heading);
+      text-transform: uppercase;
+      font-weight: 200;
+    }
+
+    &-close {
+      align-self: flex-end;
+      margin: -4px -2px 0 0;
+      background-image: url('/images/ui/close_icon.svg');
     }
   }
 
-  &-trigger {
-    width: var(--SidePanel-trigger-width);
-    /* temp */
-    text-align: center;
-    border-radius: 50%;
-    border: 1px solid white;
-  }
-
-  &-title {
-    text-transform: uppercase;
-    font-weight: 200;
-  }
-
-  &-close {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 20px;
-  }
-
   &-content {
-    opacity: 0;
     display: flex;
     flex-grow: 1;
+    width: var(--width-SidePanel-open);
+    padding: 0 var(--SidePanel-width-padding-content) var(--SidePanel-width-padding-heading);
+    opacity: 0;
 
     .visible & {
       opacity: 1;

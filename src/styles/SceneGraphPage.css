@@ -1,51 +1,127 @@
 
-.sceneGraphContainer {
-  position: relative;
-  display: inline-block;
-  border: 1px solid lightgray;
-  overflow: auto;
-  margin-top: 1rem;
-}
 .sceneGraph {
-  position: absolute;
+  position: relative;
   display: inline-block;
   overflow: hidden;
 }
-/* test user interface */
-.userInterface {
+/* any element with an animated transform */
+.transform-animated {
+  /*transition: transform 100ms ease, width 100ms ease;*/
+}
+
+/* base node type in scene graph*/
+.node {
   position: absolute;
+  display: inline-block;
   transform-origin: 0 0;
-  width: 100%;
-  height: 100%;
+}
+/*text overlay for nodes*/
+.nodetext {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: inline-block;
+  transform: translate(-50%, -50%);
+  color: white;
+  user-select: none;
+  pointer-events: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+/*base class for html based glyph*/
+.html-glyph {
+  position: absolute;
+  display: inline-block;
+  box-sizing: border-box;
+}
+
+/*base class for html based glyph*/
+.sbol-glyph {
+  position: absolute;
+  display: inline-block;
+  box-sizing: border-box;
+}
+.sbol-icon {
+  position: absolute;
+  display: inline-block;
+  box-sizing: border-box;
+}
+
+.canvas-glyph {
+  position: absolute;
+  display: inline-block;
+  box-sizing: border-box;
+}
+
+/* overlaid panel for handling mouse inputs and displaying overlaid UI affordances/glyphs */
+.scenegraph-userinterface {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
   background-color: transparent;
   cursor: default;
+
+  .scenegraph-userinterface-selection {
+    position: absolute;
+    border: 2px solid white;
+    background-color: transparent;
+  }
 }
-.sceneGraph {
-  /*ase node type in scene graph*/
-  .node {
+
+.construct-viewer {
+  margin: 1rem 1rem 0 1rem;
+  width: calc(100% - 2rem);
+  overflow: hidden;
+  background: transparent;
+  position: relative;
+
+  /* block insertion point, position via center */
+  .block-insertion-point {
     position: absolute;
-    display: inline-block;
-    transform-origin: 0 0;
-  }
-  /*text overlay for nodes*/
-  .nodetext {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    display: inline-block;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    color: white;
-    user-select: none;
-    pointer-events: none;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
-  }
-  /*base class for html based glyph*/
-  .html-glyph {
-    position: absolute;
-    display: inline-block;
     box-sizing: border-box;
+    height: 36px;
+    width: 4px;
+    background-color: white;
   }
+
+  .sceneGraphContainer {
+    overflow: scroll;
+    position: relative;
+    min-height: 10rem;
+  }
+
+  .construct-viewer-menu {
+
+    display: flex;
+    justify-content: flex-end;
+    opacity: 0.2;
+    transition: opacity 250ms ease;
+
+    .link {
+      margin: 0.5rem 1rem 0 1rem;
+      padding-bottom: 0.5rem;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      color: white;
+      font-size: 0.9rem;
+      font-weight: lighter;
+    }
+    .link:hover {
+      border-bottom: 3px solid dodgerblue;
+    }
+    .link.checked {
+      border-bottom: 3px solid dodgerblue;
+    }
+    .icon {
+      transform: scale(2) translateY(2px);
+    }
+  }
+}
+.construct-viewer:last-child {
+  margin-bottom: 5rem;
+}
+.construct-viewer-menu:hover {
+  opacity: 1;
 }

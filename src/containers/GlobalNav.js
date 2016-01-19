@@ -1,93 +1,201 @@
-import React, { Component, PropTypes } from 'react';
-import { Link } from 'react-router';
-import { connect } from 'react-redux';
-import { pushState } from 'redux-router';
-import { projectCreate } from '../actions/projects';
-import { blockCreate } from '../actions/blocks';
-import { projectAddConstruct } from '../actions/projects';
-import { inventoryToggleVisibility } from '../actions/inventory';
+import React, {Component, PropTypes} from 'react';
+import {Link} from 'react-router';
+import {connect} from 'react-redux';
+import {pushState} from 'redux-router';
+
+import MenuBar from '../components/Menu/MenuBar';
 
 import '../styles/GlobalNav.css';
 
 class GlobalNav extends Component {
   static propTypes = {
-    projects: PropTypes.object.isRequired,
-    inputValue: PropTypes.string.isRequired,
-    projectCreate: PropTypes.func.isRequired,
     pushState: PropTypes.func.isRequired,
-    blockCreate: PropTypes.func.isRequired,
     currentProjectId: PropTypes.string,
-    projectAddConstruct: PropTypes.func.isRequired,
-    inventoryToggleVisibility: PropTypes.func.isRequired,
   }
 
   state = {
     showAddProject: false,
   }
 
-  handleClickInventory = (event) => {
-    this.props.inventoryToggleVisibility();
-  }
-
-  handleClickAddProject = (event) => {
-    const { pushState, projectCreate } = this.props;
-    projectCreate().then(project => {
-      pushState(null, `/project/${project.id}`);
-    });
-  }
-
-  handleClickAddConstruct = (event) => {
-    const { currentProjectId, blockCreate, projectAddConstruct } = this.props;
-    blockCreate()
-      .then(block => {
-        projectAddConstruct(currentProjectId, block.id);
-      });
-  }
-
   render() {
-    const { currentProjectId } = this.props;
-
     return (
       <div className="GlobalNav">
-        <Link className="GlobalNav-title"
-              to="/">Home</Link>
-        <a className="GlobalNav-action"
-           disabled={!currentProjectId}
-           onClick={this.handleClickInventory}>
-          Inventory
-        </a>
-        <a className={'GlobalNav-action'}
-           onClick={this.handleClickAddProject}>
-          Add Project
-        </a>
-        <a className={'GlobalNav-action'}
-           disabled={!currentProjectId}
-           onClick={this.handleClickAddConstruct}>
-          Add Construct
-        </a>
-        <a className={'GlobalNav-action'}
-           disabled //todo - check for current construct / block being selected
-           onClick={this.handleClickAddConstruct}>
-          Add Block
-        </a>
-
+        <Link className="GlobalNav-title" to="/">GD</Link>
+        <MenuBar
+          menus={[
+            {
+              text: 'FILE',
+              items: [
+                {
+                  text: 'Recent Projects',
+                  action: () => {},
+                }, {}, {
+                  text: 'New Project',
+                  action: () => {},
+                }, {
+                  text: 'New Construct',
+                  action: () => {},
+                }, {
+                  text: 'New Construct from Clipboard',
+                  action: () => {},
+                }, {
+                  text: 'New Instance',
+                  action: () => {},
+                }, {}, {
+                  text: 'Invite Collaborators',
+                  action: () => {},
+                }, {
+                  text: 'Upload Genbank File',
+                  action: () => {},
+                }, {
+                  text: 'Download Genbank File',
+                  action: () => {},
+                }, {
+                  text: 'Export PDF',
+                  action: () => {},
+                }, {}, {
+                  text: 'Publish to Gallery',
+                  action: () => {},
+                },
+              ],
+            },
+            {
+              text: 'EDIT',
+              items: [
+                {
+                  text: 'Undo',
+                  action: () => {},
+                }, {
+                  text: 'Redo',
+                  action: () => {},
+                }, {}, {
+                  text: 'Cut',
+                  action: () => {},
+                }, {
+                  text: 'Copy',
+                  action: () => {},
+                }, {
+                  text: 'Copy As...',
+                  action: () => {},
+                }, {
+                  text: 'Paste',
+                  action: () => {},
+                }, {}, {
+                  text: 'Rename',
+                  action: () => {},
+                }, {
+                  text: 'Duplicate',
+                  action: () => {},
+                }, {
+                  text: 'Delete',
+                  action: () => {},
+                }, {}, {
+                  text: 'Crop Sequence to Selection',
+                  action: () => {},
+                }, {}, {
+                  text: 'Convert to List',
+                  action: () => {},
+                }, {
+                  text: 'Convert to Construct',
+                  action: () => {},
+                },
+              ],
+            },
+            {
+              text: 'VIEW',
+              items: [
+                {
+                  text: 'Inventory',
+                  action: () => {},
+                }, {
+                  text: 'Inspector',
+                  action: () => {},
+                }, {
+                  text: 'Toolbar',
+                  action: () => {},
+                }, {
+                  text: 'History',
+                  action: () => {},
+                }, {
+                  text: 'Sequence',
+                  action: () => {},
+                }, {}, {
+                  text: 'Hide/Show Annotations',
+                  action: () => {},
+                }, {
+                  text: 'Hide/Show List Contents',
+                  action: () => {},
+                }, {
+                  text: 'Compare...',
+                  action: () => {},
+                }, {}, {
+                  text: 'Labels Only',
+                  action: () => {},
+                }, {
+                  text: 'Symbols Only',
+                  action: () => {},
+                }, {
+                  text: 'Labels + Symbols',
+                  action: () => {},
+                }, {
+                  text: 'Custom',
+                  action: () => {},
+                }, {}, {
+                  text: 'Full Width',
+                  action: () => {},
+                }, {
+                  text: 'Compact',
+                  action: () => {},
+                }, {
+                  text: 'Wrap',
+                  action: () => {},
+                }, {}, {
+                  text: 'Preview Deletions',
+                  action: () => {},
+                },
+              ],
+            },
+            {
+              text: 'HELP',
+              items: [
+                {
+                  text: 'User Guide',
+                  action: () => {},
+                }, {
+                  text: 'Show Tutorial',
+                  action: () => {},
+                }, {
+                  text: 'Keyboard Shortcuts',
+                  action: () => {},
+                }, {
+                  text: 'Community Forum',
+                  action: () => {},
+                }, {
+                  text: 'Get Support',
+                  action: () => {},
+                }, {
+                  text: 'Give Us Feedback',
+                  action: () => {},
+                }, {}, {
+                  text: 'About Genome Designer',
+                  action: () => {},
+                }, {
+                  text: 'Terms of Use',
+                  action: () => {},
+                }, {
+                  text: 'Privacy Policy',
+                  action: () => {},
+                },
+              ],
+            },
+          ]}/>
       </div>
     );
   }
 }
 
 function mapStateToProps(state) {
-  return {
-    currentProjectId: state.router.params.projectId,
-    projects: state.projects,
-    inputValue: state.router.params.projectId || '',
-  };
+  return {currentProjectId: state.router.params.projectId};
 }
 
-export default connect(mapStateToProps, {
-  pushState,
-  blockCreate,
-  projectCreate,
-  projectAddConstruct,
-  inventoryToggleVisibility,
-})(GlobalNav);
+export default connect(mapStateToProps, {pushState})(GlobalNav);

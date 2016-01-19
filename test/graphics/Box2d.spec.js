@@ -22,7 +22,7 @@ describe('Box2D', () => {
       x: 1,
       y: 2,
       w: 3,
-      h: 4
+      h: 4,
     });
     chai.expect(b.x).to.equal(1);
     chai.expect(b.y).to.equal(2);
@@ -33,7 +33,7 @@ describe('Box2D', () => {
       left: 1,
       top: 2,
       width: 3,
-      height: 4
+      height: 4,
     });
     chai.expect(b.x).to.equal(1);
     chai.expect(b.y).to.equal(2);
@@ -50,6 +50,17 @@ describe('Box2D', () => {
     chai.expect(b1.y).to.equal(2);
     chai.expect(b1.w).to.equal(3);
     chai.expect(b1.h).to.equal(4);
+  });
+
+  it('calculate the union of two boxes', () => {
+    let b1 = new Box2D(100,110,100,100);
+    let b2 = new Box2D(150,150,120,200);
+    let b3 = b1.union(b2);
+
+    chai.expect(b3.x).to.equal(100);
+    chai.expect(b3.y).to.equal(110);
+    chai.expect(b3.right).to.equal(270);
+    chai.expect(b3.bottom).to.equal(350);
   });
 
   it('should be able to create a box from a point array', () => {
@@ -86,8 +97,8 @@ describe('Box2D', () => {
     chai.expect(b.center.x).to.equal(12.5);
     chai.expect(b.center.y).to.equal(15);
 
-    chai.expect(b.r).to.equal(15);
-    chai.expect(b.b).to.equal(18);
+    chai.expect(b.right).to.equal(15);
+    chai.expect(b.bottom).to.equal(18);
 
     chai.expect(b.topLeft.x).to.equal(10);
     chai.expect(b.topLeft.y).to.equal(12);
@@ -137,8 +148,8 @@ describe('Box2D', () => {
 
     chai.expect(b.x).to.equal(995);
     chai.expect(b.y).to.equal(995);
-    chai.expect(b.r).to.equal(1005);
-    chai.expect(b.b).to.equal(1005);
+    chai.expect(b.right).to.equal(1005);
+    chai.expect(b.bottom).to.equal(1005);
 
   });
 

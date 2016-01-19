@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { inventoryToggleVisibility } from '../actions/inventory';
-import inventoryDummyBlocks from '../inventory/dummyBlocks';
+import andreaBlocks from '../inventory/andrea';
 import inventorySbol from '../inventory/sbol';
 
 import InventoryGroups from '../components/Inventory/InventoryGroups';
@@ -13,12 +13,12 @@ import '../styles/SidePanel.css';
 // should also better enumerate types...
 const inventoryData = [
   {
-    name: 'dummy',
+    name: 'Foundry',
     type: 'block',
-    items: inventoryDummyBlocks,
+    items: andreaBlocks,
   },
   {
-    name: 'sbol',
+    name: 'Symbols',
     type: 'sbol',
     items: inventorySbol,
   },
@@ -30,21 +30,26 @@ export class Inventory extends Component {
     inventoryToggleVisibility: PropTypes.func.isRequired,
   }
 
+  toggle = (forceVal) => {
+    this.props.inventoryToggleVisibility(forceVal);
+    window.setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+    }, 300);
+  }
+
   render() {
-    const { isVisible, inventoryToggleVisibility } = this.props;
+    const { isVisible } = this.props;
 
     return (
       <div className={'SidePanel Inventory' + (isVisible ? ' visible' : '')}>
-
-
         <div className="SidePanel-heading">
           <span className="SidePanel-heading-trigger Inventory-trigger"
-                onClick={() => inventoryToggleVisibility()}>=</span>
+                onClick={() => this.toggle()} />
           <div className="SidePanel-heading-content">
-            <span className="SidePanel-title">Inventory</span>
-            <a className="SidePanel-close"
+            <span className="SidePanel-heading-title">Inventory</span>
+            <a className="SidePanel-heading-close"
                ref="close"
-               onClick={inventoryToggleVisibility.bind(null, false)}>&times;</a>
+               onClick={() => this.toggle(false)} />
           </div>
         </div>
 
