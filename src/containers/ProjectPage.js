@@ -7,6 +7,7 @@ import ProjectHeader from '../components/ProjectHeader';
 import Inventory from './Inventory';
 import Inspector from './Inspector';
 
+
 import '../styles/ProjectPage.css';
 import '../styles/SceneGraphPage.css';
 

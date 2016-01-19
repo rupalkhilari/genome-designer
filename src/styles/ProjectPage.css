@@ -12,6 +12,7 @@
     flex-direction: column;
     flex-grow: 1;
     width: 0; /* hack - flexbox will give it min-width */
+    overflow: auto;
   }
 
   &-constructs {
