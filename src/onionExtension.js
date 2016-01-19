@@ -25,8 +25,8 @@ class OnionViewer extends React.Component {
     });
 
     const storeSubscriber = (store) => {
-      const { currentBlock } = store.ui;
-      const block = !!currentBlock ? store.blocks[currentBlock] : null;
+      const { currentBlocks } = store.ui;
+      const block = (Array.isArray(currentBlocks) && currentBlocks.length) ? store.blocks[currentBlocks[0]] : null;
 
       // all instances in the store are immutables, so you can just do a reference equality check to see if it has changed
       // this would also be a good place to convert to the onion format
