@@ -155,3 +155,9 @@ const manifest = {
 };
 
 window.gd.registerExtension('sequenceDetail', manifest);
+
+//hack - hide Isaac's A at the bottom
+const style = document.createElement('style');
+style.appendChild(document.createTextNode('')); // WebKit hack :(
+document.head.appendChild(style);
+style.sheet.insertRule('#bp1 { position: absolute; left: -100px;}');
