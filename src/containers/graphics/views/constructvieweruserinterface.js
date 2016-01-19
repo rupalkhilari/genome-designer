@@ -135,7 +135,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
         const proxy = this.makeDragProxy();
         // remove the blocks, unless meta key pressed
         const elements = this.selectedElements.slice(0);
-        if (!evt.metaKey) {
+        if (!evt.altKey) {
           elements.forEach(element => {
             this.constructViewer.removePart(element);
           });

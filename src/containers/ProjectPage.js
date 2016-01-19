@@ -52,19 +52,6 @@ class ProjectPage extends Component {
         <Inventory />
 
         <div className="ProjectPage-content">
-          <div
-            style={{margin: '1rem 0 1rem 1rem',
-            paddingRight: '1rem',
-            textAlign: 'right',
-            position: 'absolute',
-            top: '0',
-            right: '0'}}>
-            <select ref="layoutSelector" onChange={this.onLayoutChanged}>
-              <option value="wrap">Wrap</option>
-              <option value="full">Full</option>
-              <option value="fit">Fit</option>
-            </select>
-          </div>
 
           <ProjectHeader project={project}/>
 
@@ -97,3 +84,19 @@ function mapStateToProps(state) {
 export default connect(mapStateToProps, {
   pushState,
 })(ProjectPage);
+
+/* old wrap menu, leave for now.
+<div
+  style={{margin: '1rem 0 1rem 1rem',
+  paddingRight: '1rem',
+  textAlign: 'right',
+  position: 'absolute',
+  top: '0',
+  right: '0'}}>
+  <select ref="layoutSelector" onChange={this.onLayoutChanged}>
+    <option value="wrap">Wrap</option>
+    <option value="full">Full</option>
+    <option value="fit">Fit</option>
+  </select>
+</div>
+ */

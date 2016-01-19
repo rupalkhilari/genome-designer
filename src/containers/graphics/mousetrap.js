@@ -182,12 +182,12 @@ export default class MouseTrap {
     // use the elements offset + the nearest positioned element, back to the root to find
     // the absolute position of the element
     let element = _element;
-    let curleft = element.offsetLeft;
-    let curtop = element.offsetTop;
+    let curleft = element.offsetLeft - element.scrollLeft;
+    let curtop = element.offsetTop - element.scrollTop;
     while (element.offsetParent) {
       element = element.offsetParent;
-      curleft += element.offsetLeft;
-      curtop += element.offsetTop;
+      curleft += element.offsetLeft - element.scrollLeft;
+      curtop += element.offsetTop - element.scrollTop;
     }
     return {
       left: curleft,
