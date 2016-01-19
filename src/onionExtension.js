@@ -30,6 +30,7 @@ class OnionViewer extends React.Component {
       showFeatures:true,
       showRuler:true,
       showBlockBar:true,
+      showAA:true,
       blocks:onionFile.blocks,
     };
 
@@ -127,7 +128,7 @@ class OnionViewer extends React.Component {
 
   render() {
     //console.log(this.state);
-    let {showEnzymes, showLadder, showRS, showFeatures, showRuler,showBlockBar} = this.state;
+    let {showEnzymes, showLadder, showRS, showFeatures, showRuler,showBlockBar,showAA} = this.state;
     let divHeight = 400;
     let sequence;
     let features;
@@ -170,6 +171,7 @@ class OnionViewer extends React.Component {
             showFeatures={showFeatures}
             showRuler={showRuler}
             showBlockBar={showBlockBar}
+            showAA={showAA}
             onSelect = {this.selectLayer.bind(this)}
         ></MenuBar>
         <div style={{
@@ -194,6 +196,7 @@ class OnionViewer extends React.Component {
             showFeatures={showFeatures}
             showRuler={showRuler}
             showBlockBar={showBlockBar}
+            showAA={showAA}
             blocks = {blocks}
           />
         </div>
