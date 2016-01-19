@@ -14,3 +14,12 @@
   flex-grow: 1;
   display: flex;
 }
+
+/**
+ * HACK, hide some crud at bottom of page, this needs
+ * to be removed once problems are resolved.
+ */
+#bp1 {
+  position: absolute;
+  left: -10000px;
+}

@@ -98,6 +98,9 @@ export default class ConstructViewerUserInterface extends UserInterface {
         // otherwise single select the block
         this.constructViewer.blockSelected([block]);
       }
+    } else {
+      // clear selections on no block click
+      this.constructViewer.blockSelected([block]);
     }
   }
 
@@ -130,11 +133,13 @@ export default class ConstructViewerUserInterface extends UserInterface {
         const node = this.layout.nodeFromElement(block);
         // proxy representing 1 ore more blocks
         const proxy = this.makeDragProxy();
-        // remove the blocks
+        // remove the blocks, unless meta key pressed
         const elements = this.selectedElements.slice(0);
-        elements.forEach(element => {
-          this.constructViewer.removePart(element);
-        });
+        if (!evt.altKey) {
+          elements.forEach(element => {
+            this.constructViewer.removePart(element);
+          });
+        }
         // start the drag with the proxy and the removed block as the payload
         DnD.startDrag(proxy, globalPoint, {
           item: elements,
@@ -172,14 +177,6 @@ export default class ConstructViewerUserInterface extends UserInterface {
     div.style.width = `${width}px`;
     div.style.height = `${height}px`;
     return div;
-  }
-  /**
-   * drag events
-   * @return {[type]} [description]
-   */
-  dragEnter() {
-    // reset insertion point
-    this.insertion = null;
   }
 
   /**

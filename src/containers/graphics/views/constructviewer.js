@@ -22,6 +22,7 @@ import { uiToggleCurrent, uiSetCurrent, uiAddCurrent } from '../../../actions/ui
 export class ConstructViewer extends Component {
 
   static propTypes = {
+    projectId: PropTypes.string.isRequired,
     construct: PropTypes.object.isRequired,
     constructId: PropTypes.string.isRequired,
     layoutAlgorithm: PropTypes.string.isRequired,
@@ -30,12 +31,11 @@ export class ConstructViewer extends Component {
     uiToggleCurrent: PropTypes.func.isRequired,
     inspectorToggleVisibility: PropTypes.func.isRequired,
     currentBlock: PropTypes.array,
-    isOver: PropTypes.boolean,
     blockSetSbol: PropTypes.func,
     blockClone: PropTypes.func,
     blockAddComponent: PropTypes.func,
     blockRemoveComponent: PropTypes.func,
-    blocks: PropTypes.array,
+    blocks: PropTypes.object,
   }
 
   constructor(props) {
@@ -75,30 +75,11 @@ export class ConstructViewer extends Component {
   }
 
   /**
-   * update drag state
-   */
-  componentWillReceiveProps(nextProps) {
-    if (this.props.isOver && !nextProps.isOver) {
-      this.sg.ui.dragLeave();
-    }
-
-    if (!this.props.isOver && nextProps.isOver) {
-      this.sg.ui.dragEnter();
-    }
-  }
-  /**
    * update scene graph after the react component updates
    */
   componentDidUpdate() {
     this.update();
-  }
-
-  /**
-   * drag over event
-   */
-  dragOver(monitor) {
-    const point = monitor.getClientOffset();
-    this.sg.ui.dragOver(new Vector2D(point.x, point.y));
+    console.log("PROJECT ID:", this.props.projectId);
   }
 
   /**
@@ -232,7 +213,9 @@ export class ConstructViewer extends Component {
 }
 
 function mapStateToProps(state, props) {
+  const { projectId } = state.router.params;
   return {
+    projectId,
     ui: state.ui,
     construct: state.blocks[props.constructId],
     blocks: state.blocks,

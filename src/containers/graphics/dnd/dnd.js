@@ -73,6 +73,29 @@ class DnD {
     if (target && target.options && target.options.dragOver) {
       target.options.dragOver.call(this, globalPosition, this.payload);
     }
+
+    // clear selection after all drag events
+    this.clearSelection();
+  }
+
+  /**
+   * clear all browser selections, becareful
+   */
+  clearSelection() {
+  	var selection = null;
+  	if(window.getSelection){
+  		selection = window.getSelection();
+  	} else if(document.selection){
+  		selection = document.selection;
+  	}
+  	if(selection){
+  		if(selection.empty){
+  			selection.empty();
+  		}
+  		if(selection.removeAllRanges){
+  			selection.removeAllRanges();
+  		}
+  	}
   }
   /**
    * mouse up during drag
@@ -161,12 +184,12 @@ class DnD {
     // use the elements offset + the nearest positioned element, back to the root to find
     // the absolute position of the element
     let element = _element;
-    let curleft = element.offsetLeft;
-    let curtop = element.offsetTop;
+    let curleft = element.offsetLeft - element.scrollLeft;
+    let curtop = element.offsetTop - element.scrollTop;
     while (element.offsetParent) {
       element = element.offsetParent;
-      curleft += element.offsetLeft;
-      curtop += element.offsetTop;
+      curleft += element.offsetLeft - element.scrollLeft;
+      curtop += element.offsetTop - element.scrollTop;
     }
     // curLeft, curTop are the position,  now get the viewport size
     const bounds = _element.getBoundingClientRect();
