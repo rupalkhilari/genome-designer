@@ -1,8 +1,0 @@
-command: python3 genbank_to_block.py inputs/genbank outputs/block
-inputs:
-    - id: genbank
-      type: string
-
-outputs:
-    - id: block
-      type: string
