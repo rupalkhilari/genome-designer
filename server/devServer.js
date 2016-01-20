@@ -19,6 +19,7 @@ const extRouter = require('../extensions/compute/api');
 //import and export file formats
 const importRouter = require('../extensions/convert/import');
 const exportRouter = require('../extensions/convert/export');
+const searchRouter = require('../extensions/search/search');
 
 //logging middleware
 app.use(morgan('dev'));
@@ -52,6 +53,7 @@ app.use('/api', apiRouter);
 app.use('/compute', extRouter);
 app.use('/import', importRouter);
 app.use('/export', exportRouter);
+app.use('/search', exportRouter);
 
 // Register Client Requests, delegate routing to client
 // ----------------------------------------------------

@@ -3,11 +3,6 @@ const fs = require('fs');
 
 module.exports = exports = {};
 
-const execOptions = {
-  encoding: 'utf8',
-  cwd: null,
-};
-
 exports.exportBlock = function exportBlock(block, blocks) {
   const input = {
     block: block,
