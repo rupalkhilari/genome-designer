@@ -12,7 +12,7 @@ export class Inspector extends Component {
   static propTypes = {
     isVisible: PropTypes.bool.isRequired,
     inspectorToggleVisibility: PropTypes.func.isRequired,
-    currentBlock: PropTypes.string,
+    currentBlocks: PropTypes.array,
     project: PropTypes.object,
     block: PropTypes.object,
   }
@@ -25,7 +25,7 @@ export class Inspector extends Component {
   }
 
   render() {
-    const { isVisible, currentBlock, block, project } = this.props;
+    const { isVisible, block, project } = this.props;
 
     return (
       <div className={'SidePanel Inspector' + (isVisible ? ' visible' : '')}>
@@ -42,7 +42,7 @@ export class Inspector extends Component {
         </div>
 
         <div className="SidePanel-content">
-          {!!currentBlock ?
+          {block ?
             (<InspectorBlock instance={block}/>) :
             (<InspectorProject instance={project}/>) }
         </div>
@@ -53,15 +53,15 @@ export class Inspector extends Component {
 
 function mapStateToProps(state, props) {
   const { isVisible } = state.inspector;
-  const { currentBlock } = state.ui;
-  const block = state.blocks[currentBlock];
+  const { currentBlocks } = state.ui;
+  const block = currentBlocks && currentBlocks.length ? state.blocks[currentBlocks[0]] : null;
 
   const { projectId } = state.router.params;
   const project = state.projects[projectId];
 
   return {
     isVisible,
-    currentBlock,
+    currentBlocks,
     block,
     project,
   };

@@ -15,24 +15,20 @@ export const blockCreate = (initialModel) => {
   };
 };
 
-//this action accepts either the block directly, or the ID
+//this action accepts either a block JSON directly, or the ID
 //inventory items may not be in the store, so we need to pass the block directly
+//allow object so doesn't need to be in the store i.e. avoid store bloat
 export const blockClone = (blockInput) => {
   return (dispatch, getState) => {
     let oldBlock;
     if (typeof blockInput === 'string') {
       oldBlock = getState().blocks[blockInput];
     } else if (BlockDefinition.validate(blockInput)) {
-      oldBlock = blockInput;
+      oldBlock = new Block(blockInput);
     } else {
       throw new Error('invalid input to blockClone', blockInput);
     }
-
-    //hack - should hit the server
-    const block = new Block(Object.assign({}, oldBlock, {
-      id: uuid.v4(),
-      parent: oldBlock.id,
-    }));
+    const block = oldBlock.clone();
 
     dispatch({
       type: ActionTypes.BLOCK_CLONE,
