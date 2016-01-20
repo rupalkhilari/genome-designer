@@ -201,7 +201,8 @@ export default class ConstructViewerUserInterface extends UserInterface {
     const localPosition = this.mouseTrap.globalToLocal(globalPosition, this.el);
     // there is a different highlight / UX experience depending on what is being dragged
     const { item, type } = payload;
-    if (type === sbolDragType) {
+    //if (type === sbolDragType) {
+    if (false) {
       // sbol symbol so we highlight the targeted block
       const block = this.topBlockAt(localPosition);
       if (block) {
