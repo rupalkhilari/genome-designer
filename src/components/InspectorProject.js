@@ -28,12 +28,12 @@ export class InspectorProject extends Component {
     return (
       <div className="InspectorContent InspectorContentProject">
         <h4 className="InspectorContent-heading">Name</h4>
-        <InputSimple placeholder="Part Name"
+        <InputSimple placeholder="Project Name"
                      onChange={this.setProjectName}
                      value={instance.metadata.name}/>
 
         <h4 className="InspectorContent-heading">Description</h4>
-        <InputSimple placeholder="Part Description"
+        <InputSimple placeholder="Project Description"
                      useTextarea
                      onChange={this.setProjectDescription}
                      updateOnBlur

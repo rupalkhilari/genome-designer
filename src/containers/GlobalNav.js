@@ -3,7 +3,7 @@ import {Link} from 'react-router';
 import {connect} from 'react-redux';
 import {pushState} from 'redux-router';
 import MenuBar from '../components/Menu/MenuBar';
-import { projectAddConstruct } from '../actions/projects';
+import { projectCreate, projectAddConstruct } from '../actions/projects';
 import { blockCreate } from '../actions/blocks';
 
 import '../styles/GlobalNav.css';
@@ -11,6 +11,8 @@ import '../styles/GlobalNav.css';
 class GlobalNav extends Component {
   static propTypes = {
     pushState: PropTypes.func.isRequired,
+    projectCreate: PropTypes.func.isRequired,
+    projectAddConstruct: PropTypes.func.isRequired,
     currentProjectId: PropTypes.string,
     blockCreate: PropTypes.func,
   }
@@ -35,7 +37,10 @@ class GlobalNav extends Component {
                 {},
                 {
                   text: 'New Project',
-                  action: () => {},
+                  action: () => {
+                    const project = this.props.projectCreate();
+                    this.props.pushState(null, `/project/${project.id}`);
+                  },
                 }, {
                   text: 'New Construct',
                   action: () => {
@@ -209,6 +214,7 @@ function mapStateToProps(state) {
 
 export default connect(mapStateToProps, {
   projectAddConstruct,
+  projectCreate,
   blockCreate,
-  pushState
+  pushState,
 })(GlobalNav);
