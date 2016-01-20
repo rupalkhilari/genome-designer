@@ -17,23 +17,25 @@ import { nodeIndex } from '../utils';
 import ConstructViewerMenu from './constructviewermenu';
 import UserInterface from './constructvieweruserinterface';
 import { inspectorToggleVisibility } from '../../../actions/inspector';
-import { uiSetCurrent } from '../../../actions/ui';
+import { uiToggleCurrent, uiSetCurrent, uiAddCurrent } from '../../../actions/ui';
 
 export class ConstructViewer extends Component {
 
   static propTypes = {
+    projectId: PropTypes.string.isRequired,
     construct: PropTypes.object.isRequired,
     constructId: PropTypes.string.isRequired,
     layoutAlgorithm: PropTypes.string.isRequired,
+    uiAddCurrent: PropTypes.func.isRequired,
     uiSetCurrent: PropTypes.func.isRequired,
+    uiToggleCurrent: PropTypes.func.isRequired,
     inspectorToggleVisibility: PropTypes.func.isRequired,
-    currentBlock: PropTypes.string,
-    isOver: PropTypes.boolean,
+    currentBlock: PropTypes.array,
     blockSetSbol: PropTypes.func,
     blockClone: PropTypes.func,
     blockAddComponent: PropTypes.func,
     blockRemoveComponent: PropTypes.func,
-    blocks: PropTypes.array,
+    blocks: PropTypes.object,
   }
 
   constructor(props) {
@@ -73,30 +75,11 @@ export class ConstructViewer extends Component {
   }
 
   /**
-   * update drag state
-   */
-  componentWillReceiveProps(nextProps) {
-    if (this.props.isOver && !nextProps.isOver) {
-      this.sg.ui.dragLeave();
-    }
-
-    if (!this.props.isOver && nextProps.isOver) {
-      this.sg.ui.dragEnter();
-    }
-  }
-  /**
    * update scene graph after the react component updates
    */
   componentDidUpdate() {
     this.update();
-  }
-
-  /**
-   * drag over event
-   */
-  dragOver(monitor) {
-    const point = monitor.getClientOffset();
-    this.sg.ui.dragOver(new Vector2D(point.x, point.y));
+    console.log("PROJECT ID:", this.props.projectId);
   }
 
   /**
@@ -108,9 +91,23 @@ export class ConstructViewer extends Component {
     if (type === sbolDragType) {
       // must have an insertion point for sbol
       if (insertionPoint) {
+        // create a block
+        const block = this.props.blockCreate({
+          rules: {
+            sbol: item.id,
+          }
+        });
+
         // change to the sbol type
-        this.props.blockSetSbol(insertionPoint.block, item.id);
-        this.blockSelected(insertionPoint.block.id);
+        //this.props.blockSetSbol(insertionPoint.block, item.id);
+        // get index of insertion allowing for the edge closest to the drop
+        let index = this.props.construct.components.length;
+        if (insertionPoint) {
+          index = this.props.construct.components.indexOf(insertionPoint.block) + (insertionPoint.edge === 'right' ? 1 : 0);
+        }
+        this.props.blockAddComponent(this.props.construct.id, block.id, index);
+        // return the blocked dropped on
+        return [block.id];
       }
     } else {
       // get index of insertion allowing for the edge closest to the drop
@@ -118,11 +115,16 @@ export class ConstructViewer extends Component {
       if (insertionPoint) {
         index = this.props.construct.components.indexOf(insertionPoint.block) + (insertionPoint.edge === 'right' ? 1 : 0);
       }
-      // clone and add the block
-      this.props.blockClone(item).then(block => {
-        this.props.blockAddComponent(this.props.construct.id, block.id, index);
-        this.blockSelected(block.id);
+      // add all blocks in the payload
+      const blocks = Array.isArray(payload.item) ? payload.item : [payload.item];
+      const clones = [];
+      blocks.forEach(block => {
+        const clone = this.props.blockClone(block);
+        this.props.blockAddComponent(this.props.construct.id, clone.id, index++);
+        clones.push(clone.id);
       });
+      // return all the newly inserted blocks
+      return clones;
     }
   }
 
@@ -148,10 +150,27 @@ export class ConstructViewer extends Component {
   /**
    * select the given block
    */
-  blockSelected(partId) {
-    this.props.uiSetCurrent(partId);
+  blockSelected(partIds) {
+    this.props.uiSetCurrent(partIds);
     this.props.inspectorToggleVisibility(true);
   }
+
+  /**
+   * select the given block
+   */
+  blockToggleSelected(partIds) {
+    this.props.uiToggleCurrent(partIds);
+    this.props.inspectorToggleVisibility(true);
+  }
+
+  /**
+   * add the given part by ID to the selections
+   */
+  blockAddToSelections(partIds) {
+    this.props.uiAddCurrent(partIds);
+    this.props.inspectorToggleVisibility(true);
+  }
+
   /**
    * window resize, update layout and scene graph with new dimensions
    * @return {[type]} [description]
@@ -181,7 +200,7 @@ export class ConstructViewer extends Component {
    * update the layout and then the scene graph
    */
   update() {
-    this.layout.update(this.props.construct, this.props.layoutAlgorithm, this.props.blocks, this.props.currentBlock.currentBlock);
+    this.layout.update(this.props.construct, this.props.layoutAlgorithm, this.props.blocks, this.props.ui.currentBlocks);
     this.sg.update();
     this.sg.ui.update();
   }
@@ -191,7 +210,7 @@ export class ConstructViewer extends Component {
    */
   render() {
     if (this.layout) {
-      this.layout.update(this.props.construct, this.props.layoutAlgorithm, this.props.blocks, this.props.currentBlock.currentBlock);
+      this.layout.update(this.props.construct, this.props.layoutAlgorithm, this.props.blocks, this.props.ui.currentBlocks);
     }
 
     const rendered = (
@@ -207,8 +226,10 @@ export class ConstructViewer extends Component {
 }
 
 function mapStateToProps(state, props) {
+  const { projectId } = state.router.params;
   return {
-    currentBlock: state.ui,
+    projectId,
+    ui: state.ui,
     construct: state.blocks[props.constructId],
     blocks: state.blocks,
   };
@@ -221,6 +242,8 @@ export default connect(mapStateToProps, {
   blockRemoveComponent,
   blockSetSbol,
   blockRename,
+  uiAddCurrent,
   uiSetCurrent,
+  uiToggleCurrent,
   inspectorToggleVisibility,
 })(ConstructViewer);

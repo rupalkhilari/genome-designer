@@ -1,4 +1,5 @@
 import Box2D from '../geometry/box2d';
+import Vector2D from '../geometry/vector2d';
 import Node2D from '../scenegraph2d/node2d';
 import Block2D from '../scenegraph2d/block2d';
 import SBOL2D from '../scenegraph2d/sbol2d';
@@ -143,11 +144,11 @@ export default class Layout {
    * If the part is an SBOL symbol then use the symbol name preferentially
    */
   partName(part) {
-    if (this.isSBOL(part)) {
-      return this.partRule(part, 'sbol');
-    }
+    // if (this.isSBOL(part)) {
+    //   return this.partRule(part, 'sbol');
+    // }
     // return meta data name if present or just the ID of the part if it is not.
-    return this.partMeta(part, 'name') || part;
+    return this.partMeta(part, 'name') || this.partRule(part, 'sbol') || 'block';
   }
   /**
    * create the banner / bar for the construct ( contains the triangle )
@@ -240,11 +241,11 @@ export default class Layout {
    * display elements as required
    * @return {[type]} [description]
    */
-  update(construct, layoutAlgorithm, blocks, currentBlockId) {
+  update(construct, layoutAlgorithm, blocks, currentBlocks) {
     this.construct = construct;
     this.layoutAlgorithm = layoutAlgorithm;
     this.blocks = blocks;
-    this.currentBlockId = currentBlockId;
+    this.currentBlocks = currentBlocks;
 
     switch (this.layoutAlgorithm) {
     case kT.layoutWrap:
@@ -294,6 +295,13 @@ export default class Layout {
     return node.getPreferredSize(str, condensed);
   }
   /**
+   * return the point where layout of actual blocks begins
+   * @return {[type]} [description]
+   */
+  getInitialLayoutPoint() {
+    return new Vector2D(kT.insetX + kT.rowBarW, kT.insetY + kT.titleH + kT.rowBarH);
+  }
+  /**
    * layout, configured with various options:
    * xlimit: maximum x extent
    * @return {[type]} [description]
@@ -318,7 +326,7 @@ export default class Layout {
     // update title to current position and text
     this.titleNode.set({
       bounds: new Box2D(xs, ys, this.sceneGraph.availableWidth, kT.titleH),
-      text: ct.id,
+      text: "Construct: " + ct.id.substr(0, 6),
     });
     // layout all the various components, constructing elements as required
     // and wrapping when a row is complete
@@ -327,7 +335,6 @@ export default class Layout {
 
     // used to determine when we need a new row
     let row = null;
-
     // update / make all the parts
     ct.components.forEach(part => {
       // create a row bar as neccessary
@@ -385,12 +392,18 @@ export default class Layout {
     this.vertical.set({
       bounds: new Box2D(xs, ys + kT.titleH + kT.rowBarH, kT.rowBarW, vh),
     });
-
-    // update selection
-    if (this.currentBlockId && this.nodeFromElement(this.currentBlockId)) {
-      this.sceneGraph.ui.setSelections([this.nodeFromElement(this.currentBlockId)]);
-    } else {
-      this.sceneGraph.ui.setSelections([]);
+    // filter the selections so that we eliminate those block we don't contain
+    let selectedNodes = [];
+    if (this.currentBlocks) {
+      const containedBlockIds = this.currentBlocks.filter(blockId => {
+        return !!this.nodeFromElement(blockId);
+      });
+      // get nodes for selected blocks
+      selectedNodes = containedBlockIds.map(blockId => {
+        return this.nodeFromElement(blockId);
+      });
     }
+    // apply selections to scene graph
+    this.sceneGraph.ui.setSelections(selectedNodes);
   }
 }
