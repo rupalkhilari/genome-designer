@@ -176,7 +176,7 @@ class OnionViewer extends React.Component {
         ></MenuBar>
         <div style={{
           width:width,
-          height:divHeight-30,
+          height:divHeight-45,
           overflowY:"scroll",
           border:"1px solid black",
           display:"inline-block",
