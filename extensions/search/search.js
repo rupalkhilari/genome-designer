@@ -17,12 +17,12 @@ require('fs').readdirSync(normalizedPath).forEach(folder => {
 
 router.use(sessionMiddleware);
 
-function searchString(id, str, callback) {
+function searchString(id, str, max, callback) {
   if (id in extensions) {
     const mod = extensions[id];
     if (mod.search) {
       try {
-        mod.search(str)
+        mod.search(str, max)
         .then(res => {
           callback(res);
         });
@@ -40,10 +40,10 @@ function searchString(id, str, callback) {
 }
 
 router.get('/:id', jsonParser, (req, resp) => {
-  const { id, str } = req.params;
+  const { id, str, n } = req.params;
   //const key = req.headers.sessionkey;
   //const header = {'sessionkey': key, 'host': 'http://0.0.0.0:3000'};
-  searchString(id, str, res => { resp.json(res); });
+  searchString(id, str, n, res => { resp.json(res); });
 });
 
 //export these functions for testing purpose
