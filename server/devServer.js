@@ -16,6 +16,10 @@ const app = express();
 const compiler = webpack(config);
 const extRouter = require('../extensions/compute/api');
 
+//import and export file formats
+const importRouter = require('../extensions/convert/import');
+const exportRouter = require('../extensions/convert/export');
+
 //logging middleware
 app.use(morgan('dev'));
 
@@ -45,7 +49,9 @@ app.use('/login', (req, res) => {
 });
 
 app.use('/api', apiRouter);
-app.use('/api/compute', extRouter);
+app.use('/compute', extRouter);
+app.use('/import', importRouter);
+app.use('/export', exportRouter);
 
 // Register Client Requests, delegate routing to client
 // ----------------------------------------------------
