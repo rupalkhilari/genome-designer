@@ -17,7 +17,12 @@ import { nodeIndex } from '../utils';
 import ConstructViewerMenu from './constructviewermenu';
 import UserInterface from './constructvieweruserinterface';
 import { inspectorToggleVisibility } from '../../../actions/inspector';
-import { uiToggleCurrent, uiSetCurrent, uiAddCurrent } from '../../../actions/ui';
+import {
+   uiToggleCurrent,
+   uiSetCurrent,
+   uiAddCurrent,
+   uiSetCurrentConstruct,
+  } from '../../../actions/ui';
 
 export class ConstructViewer extends Component {
 
@@ -28,6 +33,7 @@ export class ConstructViewer extends Component {
     layoutAlgorithm: PropTypes.string.isRequired,
     uiAddCurrent: PropTypes.func.isRequired,
     uiSetCurrent: PropTypes.func.isRequired,
+    uiSetCurrentConstruct: PropTypes.func.isRequired,
     uiToggleCurrent: PropTypes.func.isRequired,
     inspectorToggleVisibility: PropTypes.func.isRequired,
     currentBlock: PropTypes.array,
@@ -150,6 +156,14 @@ export class ConstructViewer extends Component {
   /**
    * select the given block
    */
+  constructSelected(id) {
+    this.props.uiSetCurrentConstruct(id, this.props.blocks);
+    this.props.inspectorToggleVisibility(true);
+  }
+
+  /**
+   * select the given block
+   */
   blockSelected(partIds) {
     this.props.uiSetCurrent(partIds);
     this.props.inspectorToggleVisibility(true);
@@ -200,7 +214,7 @@ export class ConstructViewer extends Component {
    * update the layout and then the scene graph
    */
   update() {
-    this.layout.update(this.props.construct, this.props.layoutAlgorithm, this.props.blocks, this.props.ui.currentBlocks);
+    this.layout.update(this.props.construct, this.props.layoutAlgorithm, this.props.blocks, this.props.ui.currentBlocks, this.props.ui.currentConstructId);
     this.sg.update();
     this.sg.ui.update();
   }
@@ -210,7 +224,7 @@ export class ConstructViewer extends Component {
    */
   render() {
     if (this.layout) {
-      this.layout.update(this.props.construct, this.props.layoutAlgorithm, this.props.blocks, this.props.ui.currentBlocks);
+      this.layout.update(this.props.construct, this.props.layoutAlgorithm, this.props.blocks, this.props.ui.currentBlocks, this.props.ui.currentConstructId);
     }
 
     const rendered = (
@@ -244,6 +258,7 @@ export default connect(mapStateToProps, {
   blockRename,
   uiAddCurrent,
   uiSetCurrent,
+  uiSetCurrentConstruct,
   uiToggleCurrent,
   inspectorToggleVisibility,
 })(ConstructViewer);

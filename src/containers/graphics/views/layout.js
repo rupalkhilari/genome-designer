@@ -241,8 +241,10 @@ export default class Layout {
    * display elements as required
    * @return {[type]} [description]
    */
-  update(construct, layoutAlgorithm, blocks, currentBlocks) {
+  update(construct, layoutAlgorithm, blocks, currentBlocks, currentConstructId) {
     this.construct = construct;
+    this.currentConstructId = currentConstructId;
+    console.log("CCID:", this.currentConstructId);
     this.layoutAlgorithm = layoutAlgorithm;
     this.blocks = blocks;
     this.currentBlocks = currentBlocks;
@@ -326,7 +328,7 @@ export default class Layout {
     // update title to current position and text
     this.titleNode.set({
       bounds: new Box2D(xs, ys, this.sceneGraph.availableWidth, kT.titleH),
-      text: "Construct: " + ct.id.substr(0, 6),
+      text: ct.metadata.name || ct.id,
     });
     // layout all the various components, constructing elements as required
     // and wrapping when a row is complete

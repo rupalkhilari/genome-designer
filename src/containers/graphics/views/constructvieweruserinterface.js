@@ -86,6 +86,12 @@ export default class ConstructViewerUserInterface extends UserInterface {
     evt.preventDefault();
     const block = this.topBlockAt(point);
     if (block) {
+      // select the construct if not already the selected construct ( changing
+      // the construct will remove blocks that are not part of the construct from the selections )
+      if (this.constructViewer.props.construct.id !== this.constructViewer.props.currentConstructId) {
+        this.constructViewer.constructSelected(this.constructViewer.props.constructId);
+      }
+
       const node = this.layout.nodeFromElement(block);
       if (evt.shiftKey || window.__e2eShiftKey) {
         // range select
@@ -99,8 +105,9 @@ export default class ConstructViewerUserInterface extends UserInterface {
         this.constructViewer.blockSelected([block]);
       }
     } else {
-      // clear selections on no block click
-      this.constructViewer.blockSelected([this.constructViewer.props.constructId]);
+      // select construct if no block clicked and deselect all blocks
+      this.constructViewer.blockSelected([]);
+      this.constructViewer.constructSelected(this.constructViewer.props.constructId);
     }
   }
 
