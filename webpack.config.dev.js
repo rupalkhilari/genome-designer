@@ -3,7 +3,7 @@ var webpack = require('webpack');
 var webpackBase = require('./webpack.config.base');
 
 module.exports = Object.assign({}, webpackBase, {
-  devtool: 'cheap-module-eval-source-map',
+  devtool: 'source-map',
   entry  : [
     'webpack-hot-middleware/client',
     './src/index'

@@ -71,5 +71,20 @@ describe('Model', () => {
       expect(adder).to.throw;
       expect(mutator).to.throw;
     });
+
+    it('can be cloned, and update the parents array, with newest first', () => {
+      const inst = new Instance({
+        prior: 'field',
+      });
+      expect(inst.parents.length).to.equal(0);
+
+      const clone = inst.clone();
+      expect(clone.parents.length).to.equal(1);
+      expect(clone.parents[0]).to.equal(inst.id);
+
+      const second = clone.clone();
+      expect(second.parents.length).to.equal(2);
+      expect(second.parents).to.eql([clone.id, inst.id]);
+    });
   });
 });

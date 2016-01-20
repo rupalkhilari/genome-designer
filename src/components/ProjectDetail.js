@@ -8,18 +8,17 @@ import '../styles/ProjectDetail.css';
 //todo - how should this be exposed so that React won't dump it away
 
 export class ProjectDetail extends Component {
+  static propTypes = {
+    uiToggleDetailView: PropTypes.func.isRequired,
+    isVisible: PropTypes.bool.isRequired,
+    project: PropTypes.object.isRequired,
+  }
   componentDidMount() {
     //hack - load in Onion
     setTimeout(() => {
       this.forceUpdate();
       registry.sequenceDetail[0].render(this.refs.extensionView);
     }, 500);
-  }
-
-  static propTypes = {
-    uiToggleDetailView: PropTypes.func.isRequired,
-    isVisible: PropTypes.bool.isRequired,
-    project: PropTypes.object.isRequired,
   }
 
   toggle = (forceVal) => {

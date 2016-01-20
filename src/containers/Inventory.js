@@ -38,7 +38,7 @@ export class Inventory extends Component {
   }
 
   render() {
-    const { isVisible, inventoryToggleVisibility } = this.props;
+    const { isVisible } = this.props;
 
     return (
       <div className={'SidePanel Inventory' + (isVisible ? ' visible' : '')}>

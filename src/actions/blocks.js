@@ -7,51 +7,43 @@ import Block from '../models/Block';
 export const blockCreate = (initialModel) => {
   return (dispatch, getState) => {
     const block = new Block(initialModel);
-
-    return Promise.resolve(block)
-      .then((block) => {
-        dispatch({
-          type: ActionTypes.BLOCK_CREATE,
-          block,
-        });
-        return block;
-      });
+    dispatch({
+      type: ActionTypes.BLOCK_CREATE,
+      block,
+    });
+    return block;
   };
 };
 
-//this action accepts either the block directly, or the ID
+//this action accepts either a block JSON directly, or the ID
 //inventory items may not be in the store, so we need to pass the block directly
+//allow object so doesn't need to be in the store i.e. avoid store bloat
 export const blockClone = (blockInput) => {
   return (dispatch, getState) => {
     let oldBlock;
     if (typeof blockInput === 'string') {
       oldBlock = getState().blocks[blockInput];
     } else if (BlockDefinition.validate(blockInput)) {
-      oldBlock = blockInput;
+      oldBlock = new Block(blockInput);
     } else {
       throw new Error('invalid input to blockClone', blockInput);
     }
+    const clone = oldBlock.clone();
 
-    //hack - should hit the server
-    const cloneStub = new Block(Object.assign({}, oldBlock, {
-      id: uuid.v4(),
-      parent: oldBlock.id,
-    }));
+    dispatch({
+      type: ActionTypes.BLOCK_CLONE,
+      clone,
+    });
 
-    return Promise.resolve(cloneStub)
-      .then((block) => {
-        dispatch({
-          type: ActionTypes.BLOCK_CLONE,
-          block,
-        });
-        return block;
-      });
+    return clone;
   };
 };
 
+//Promise
 export const blockSave = (blockId) => {
   return (dispatch, getState) => {
     const block = getState().blocks[blockId];
+    //todo - static method
     return block.save()
       .then(response => response.json())
       .then(json => {
@@ -69,15 +61,11 @@ export const blockMerge = (blockId, toMerge) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
     const block = oldBlock.merge(toMerge);
-
-    return Promise.resolve(block)
-      .then((block) => {
-        dispatch({
-          type: ActionTypes.BLOCK_MERGE,
-          block,
-        });
-        return block;
-      });
+    dispatch({
+      type: ActionTypes.BLOCK_MERGE,
+      block,
+    });
+    return block;
   };
 };
 
@@ -85,15 +73,11 @@ export const blockRename = (blockId, name) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
     const block = oldBlock.mutate('metadata.name', name);
-
-    return Promise.resolve(block)
-      .then((block) => {
-        dispatch({
-          type: ActionTypes.BLOCK_RENAME,
-          block,
-        });
-        return block;
-      });
+    dispatch({
+      type: ActionTypes.BLOCK_RENAME,
+      block,
+    });
+    return block;
   };
 };
 
@@ -101,15 +85,11 @@ export const blockSetColor = (blockId, color) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
     const block = oldBlock.mutate('metadata.color', color);
-
-    return Promise.resolve(block)
-      .then((block) => {
-        dispatch({
-          type: ActionTypes.BLOCK_SET_COLOR,
-          block,
-        });
-        return block;
-      });
+    dispatch({
+      type: ActionTypes.BLOCK_SET_COLOR,
+      block,
+    });
+    return block;
   };
 };
 
@@ -117,31 +97,26 @@ export const blockAddComponent = (blockId, componentId, index) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
     const block = oldBlock.addComponent(componentId, index);
-
-    return Promise.resolve(block)
-      .then((block) => {
-        dispatch({
-          type: ActionTypes.BLOCK_COMPONENT_ADD,
-          block,
-        });
-        return block;
-      });
+    dispatch({
+      type: ActionTypes.BLOCK_COMPONENT_ADD,
+      block,
+    });
+    return block;
   };
 };
 
-export const blockRemoveComponent = (blockId, componentId) => {
+export const blockRemoveComponent = (blockId, ...componentIds) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
-    const block = oldBlock.removeComponent(componentId);
+    const block = componentIds.reduce((acc, currentId) => {
+      return acc.removeComponent(currentId);
+    }, oldBlock);
 
-    return Promise.resolve(block)
-      .then((block) => {
-        dispatch({
-          type: ActionTypes.BLOCK_COMPONENT_REMOVE,
-          block,
-        });
-        return block;
-      });
+    dispatch({
+      type: ActionTypes.BLOCK_COMPONENT_REMOVE,
+      block,
+    });
+    return block;
   };
 };
 
@@ -149,15 +124,11 @@ export const blockMoveComponent = (blockId, componentId, newIndex) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
     const block = oldBlock.moveComponent(componentId, newIndex);
-
-    return Promise.resolve(block)
-      .then((block) => {
-        dispatch({
-          type: ActionTypes.BLOCK_COMPONENT_MOVE,
-          block,
-        });
-        return block;
-      });
+    dispatch({
+      type: ActionTypes.BLOCK_COMPONENT_MOVE,
+      block,
+    });
+    return block;
   };
 };
 
@@ -165,15 +136,11 @@ export const blockSetSbol = (blockId, sbol) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
     const block = oldBlock.setSbol(sbol);
-
-    return Promise.resolve(block)
-      .then((block) => {
-        dispatch({
-          type: ActionTypes.BLOCK_SET_SBOL,
-          block,
-        });
-        return block;
-      });
+    dispatch({
+      type: ActionTypes.BLOCK_SET_SBOL,
+      block,
+    });
+    return block;
   };
 };
 
@@ -181,15 +148,11 @@ export const blockAnnotate = (blockId, annotation) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
     const block = oldBlock.annotate(annotation);
-
-    return Promise.resolve(block)
-      .then((block) => {
-        dispatch({
-          type: ActionTypes.BLOCK_ANNOTATE,
-          block,
-        });
-        return block;
-      });
+    dispatch({
+      type: ActionTypes.BLOCK_ANNOTATE,
+      block,
+    });
+    return block;
   };
 };
 
@@ -197,18 +160,15 @@ export const blockRemoveAnnotation = (blockId, annotationId) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
     const block = oldBlock.removeAnnotation(annotationId);
-
-    return Promise.resolve(block)
-      .then((block) => {
-        dispatch({
-          type: ActionTypes.BLOCK_REMOVE_ANNOTATION,
-          block,
-        });
-        return block;
-      });
+    dispatch({
+      type: ActionTypes.BLOCK_REMOVE_ANNOTATION,
+      block,
+    });
+    return block;
   };
 };
 
+//Promise
 //ignore format for now
 export const blockGetSequence = (blockId, format) => {
   return (dispatch, getState) => {
@@ -217,6 +177,7 @@ export const blockGetSequence = (blockId, format) => {
   };
 };
 
+//todo - should this be async? or assume setting sequence will work? validate here?
 //future - also trigger some history actions
 export const blockSetSequence = (blockId, sequence) => {
   return (dispatch, getState) => {
@@ -226,16 +187,18 @@ export const blockSetSequence = (blockId, sequence) => {
     const sequenceUrl = oldBlock.getSequenceUrl(true);
     const sequenceLength = sequence.length;
 
-    return writeFile(sequenceUrl, sequence)
-      .then(() => {
-         //const unannotated = oldBlock.mutate('sequence.annotations', []);
-        const withUrl = oldBlock.setSequenceUrl(sequenceUrl);
-        const block = withUrl.mutate('sequence.length', sequenceLength);
-        dispatch({
-          type: ActionTypes.BLOCK_SET_SEQUENCE,
-          block,
-        });
-        return block;
-      });
+    //todo - validate sequence
+    //what do we do if this fails???
+    writeFile(sequenceUrl, sequence)
+    .then()
+    .catch();
+
+    const withUrl = oldBlock.setSequenceUrl(sequenceUrl);
+    const block = withUrl.mutate('sequence.length', sequenceLength);
+    dispatch({
+      type: ActionTypes.BLOCK_SET_SEQUENCE,
+      block,
+    });
+    return block;
   };
 };

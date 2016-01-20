@@ -1,6 +1,4 @@
-import uuid from 'node-uuid';
-import Node2D from './node2d';
-import Vector2D from '../geometry/vector2d';
+import MouseTrap from '../mousetrap';
 import invariant from 'invariant';
 
 export default class UserInterface {
@@ -16,12 +14,20 @@ export default class UserInterface {
     this.sg.parent.parentNode.insertBefore(this.el, this.sg.parent.nextSibiling);
     // sink mouse events
     this.el.addEventListener('mousedown', this.onMouseDown);
-    this.el.addEventListener('mousemove', this.onMouseMove);
-    this.el.addEventListener('mouseup', this.onMouseUp);
+    // this.el.addEventListener('mousemove', this.onMouseMove);
+    // this.el.addEventListener('mouseup', this.onMouseUp);
     // base class can handle simple selections based on the AABB of nodes
     this.selections = [];
     // maps selected node UUID's to their display glyph
     this.selectionMap = {};
+    // mouse tracker
+    this.mouseTrap = new MouseTrap({
+      element: this.el,
+      mouseDown: this.mouseDown.bind(this),
+      mouseMove: this.mouseMove.bind(this),
+      mouseDrag: this.mouseDrag.bind(this),
+      mouseUp: this.mouseUp.bind(this),
+    });
   }
   /**
    * replace current selections, call with falsey to reset selections
@@ -100,64 +106,27 @@ export default class UserInterface {
    * @param  {Node2D} node
    */
   createSelectionElement(node) {
-    const d = document.createElement('div');
-    d.className = 'scenegraph-userinterface-selection';
-    return d;
+    const div = document.createElement('div');
+    div.className = 'scenegraph-userinterface-selection';
+    return div;
   }
 
-  /**
-   * mousedown event binding
-   */
-  onMouseDown = (e) => {
-    this.mouseDown(this.eventToLocal(e.clientX, e.clientY, e.currentTarget), e);
-  }
   /**
    * this is the actual mouse down event you should override in descendant classes
    */
-  mouseDown(point, e) {}
-  /**
-   * mousemove event binding
-   */
-  onMouseMove = (e) => {
-    this.mouseMove(this.eventToLocal(e.clientX, e.clientY, e.currentTarget), e);
-  }
+  mouseDown(point, event) {}
   /**
    * this is the actual mouse move event you should override in descendant classes
    */
-  mouseMove(point, e) {}
+  mouseMove(point, event) {}
   /**
-   * mouseup event binding
+   * this is the actual mouse drag event you should override in descendant classes
    */
-  onMouseUp = (e) => {
-    this.mouseUp(this.eventToLocal(e.clientX, e.clientY, e.currentTarget), e);
-  }
+  mouseDrag(point, event) {}
   /**
    * this is the actual mouse up event you should override in descendant classes
    */
-  mouseUp(point, e) {}
-
-  /**
-   * [eventToLocal description]
-   * @param  {Number} clientX
-   * @param  {Number} clientY
-   * @param  {Node} target
-   * @return {Vector2D}
-   */
-  eventToLocal(clientX, clientY, target) {
-    function getPosition(element) {
-      let xPosition = 0;
-      let yPosition = 0;
-      let el = element;
-      while (el) {
-        xPosition += (el.offsetLeft - el.scrollLeft + el.clientLeft);
-        yPosition += (el.offsetTop - el.scrollTop + el.clientTop);
-        el = el.offsetParent;
-      }
-      return new Vector2D(xPosition, yPosition);
-    }
-    const parentPosition = getPosition(target);
-    return new Vector2D(clientX, clientY).sub(parentPosition);
-  }
+  mouseUp(point, event) {}
 
   /**
    * general update, called whenever our scenegraph updates

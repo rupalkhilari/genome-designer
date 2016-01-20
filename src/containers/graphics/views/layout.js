@@ -1,4 +1,3 @@
-import Vector2D from '../geometry/vector2d';
 import Box2D from '../geometry/box2d';
 import Node2D from '../scenegraph2d/node2d';
 import Block2D from '../scenegraph2d/block2d';
@@ -92,17 +91,14 @@ export default class Layout {
    * @return {[type]}            [description]
    */
   partFactory(part, appearance) {
-
     // if the part type has changed remove it before updating to a new node/glyph
     const partType = this.isSBOL(part) ? sbolType : blockType;
     if (this.partTypes[part] && this.partTypes[part] !== partType) {
       this.removePart(part);
     }
 
-    // get metadata from the part id
-    const meta = this.blocks[part].metadata;
     if (!this.nodeFromElement(part)) {
-      let props = Object.assign({}, {
+      const props = Object.assign({}, {
         sg: this.sceneGraph,
       }, appearance);
       let node = null;
@@ -244,10 +240,11 @@ export default class Layout {
    * display elements as required
    * @return {[type]} [description]
    */
-  update(construct, layoutAlgorithm, blocks) {
+  update(construct, layoutAlgorithm, blocks, currentBlockId) {
     this.construct = construct;
     this.layoutAlgorithm = layoutAlgorithm;
     this.blocks = blocks;
+    this.currentBlockId = currentBlockId;
 
     switch (this.layoutAlgorithm) {
     case kT.layoutWrap:
@@ -307,7 +304,7 @@ export default class Layout {
     // construct the banner
     this.bannerFactory();
     this.banner.set({
-      bounds: new Box2D(0,0,this.sceneGraph.availableWidth, kT.bannerHeight),
+      bounds: new Box2D(0, 0, this.sceneGraph.availableWidth, kT.bannerHeight),
     });
     // top left of our area to render in
     const xs = kT.insetX;
@@ -388,5 +385,12 @@ export default class Layout {
     this.vertical.set({
       bounds: new Box2D(xs, ys + kT.titleH + kT.rowBarH, kT.rowBarW, vh),
     });
+
+    // update selection
+    if (this.currentBlockId && this.nodeFromElement(this.currentBlockId)) {
+      this.sceneGraph.ui.setSelections([this.nodeFromElement(this.currentBlockId)]);
+    } else {
+      this.sceneGraph.ui.setSelections([]);
+    }
   }
 }

@@ -26,6 +26,7 @@ export default class Instance {
       subclassBase,
       {
         id: uuid.v4(),
+        parents: [],
         metadata: {
           name: '',
           description: '',
@@ -60,5 +61,12 @@ export default class Instance {
     return new this.constructor(base);
   }
 
-
+  clone() {
+    const self = cloneDeep(this);
+    const clone = Object.assign(self, {
+      id: uuid.v4(),
+      parents: [self.id].concat(self.parents),
+    });
+    return new this.constructor(clone);
+  }
 }

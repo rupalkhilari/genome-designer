@@ -11,7 +11,7 @@ import ConstructBanner from './glyphs/canvas/constructbanner';
  * shared DIV for measuring text,
  */
 let textDIV;
-let textCache = {};
+const textCache = {};
 
 /**
  * basic rectangular node
