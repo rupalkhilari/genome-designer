@@ -24,7 +24,7 @@ export class InventoryGroupBlocks extends Component {
 
     //in the future, we will want smarter searching
     const searchRegex = new RegExp(searchTerm, 'gi');
-    const listingItems = items.filter(item => searchRegex.test(item.metadata.name));
+    const listingItems = items.filter(item => searchRegex.test(item.metadata.name) || searchRegex.test(item.rules.sbol));
 
     return (
       <div className="InventoryGroup InventoryGroupBlocks">

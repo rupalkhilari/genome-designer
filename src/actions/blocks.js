@@ -28,14 +28,14 @@ export const blockClone = (blockInput) => {
     } else {
       throw new Error('invalid input to blockClone', blockInput);
     }
-    const clone = oldBlock.clone();
+    const block = oldBlock.clone();
 
     dispatch({
       type: ActionTypes.BLOCK_CLONE,
-      clone,
+      block,
     });
 
-    return clone;
+    return block;
   };
 };
 

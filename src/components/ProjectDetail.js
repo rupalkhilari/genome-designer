@@ -53,8 +53,6 @@ export class ProjectDetail extends Component {
             })}
 
             {!this.props.isVisible && ( <a className="ProjectDetail-heading-extension disabled">3D Protein Preview</a>)}
-            {!this.props.isVisible && ( <a className="ProjectDetail-heading-extension disabled">Promoter Structure
-Prediction</a>)}
             {!this.props.isVisible && ( <a className="ProjectDetail-heading-extension disabled">CRISPR</a>)}
           </div>
 
