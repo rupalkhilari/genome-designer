@@ -67,6 +67,22 @@ def block_to_genbank(filename, block, allblocks):
 
     SeqIO.write(seq_obj, open(filename, "w"), "genbank")
 
+def create_block_json(id, sequence, features):
+    return {
+        "id": id,
+        "metadata" : {
+            "authors": [],
+            "tags": {},
+            "version": ""
+        },
+        "rules": {},
+        "components": [],
+        "sequence" : {
+            "sequence": sequence,
+            "features": features
+        }
+      }
+
 def genbank_to_block(filename):
     all_blocks = {}
     block_parents = {}
@@ -80,14 +96,7 @@ def genbank_to_block(filename):
 
     sequence = str(gb.seq)
 
-    all_blocks[gb.id] = {
-        "id": gb.id,
-        "components": [],
-        "sequence" : {
-            "sequence": sequence,
-            "features": []
-        }
-      }
+    all_blocks[gb.id] = create_block_json(gb.id, sequence, [])
 
     for f in gb.features:
         q = f.qualifiers
@@ -100,14 +109,7 @@ def genbank_to_block(filename):
             end = f.location.end.position
 
             if f.type == "block":
-                child_block = {
-                    "id": block_id,
-                    "components": [],
-                    "sequence" : {
-                        "sequence": sequence[start:end],
-                        "features": []
-                    }
-                  }
+                child_block = create_block_json(block_id, sequence[start:end], [])
                 if q.get("parent_block",None):
                     words = q["parent_block"][0].split(",")
                     block_parents[block_id] = {

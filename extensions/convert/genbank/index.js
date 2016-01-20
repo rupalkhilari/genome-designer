@@ -84,5 +84,5 @@ exports.importBlock = function importBlock(gbstr) {
 exports.exportProject = function exportProject(proj, blocks) {
 };
 
-exports.importProject = function importProject(gbfile) {
+exports.importProject = function importProject(gbstr) {
 };

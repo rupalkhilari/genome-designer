@@ -44,7 +44,6 @@ function importBlock(id, data, callback) {
     const mod = extensions[id];
     if (mod.importBlock) {
       try {
-        console.log(id + ' importBlock');
         mod.importBlock(data)
         .then(res => {
           callback(res);
