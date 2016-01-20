@@ -100,7 +100,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
       }
     } else {
       // clear selections on no block click
-      this.constructViewer.blockSelected([block]);
+      this.constructViewer.blockSelected([this.constructViewer.props.constructId]);
     }
   }
 

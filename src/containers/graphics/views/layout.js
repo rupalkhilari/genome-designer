@@ -326,7 +326,7 @@ export default class Layout {
     // update title to current position and text
     this.titleNode.set({
       bounds: new Box2D(xs, ys, this.sceneGraph.availableWidth, kT.titleH),
-      text: ct.id,
+      text: "Construct: " + ct.id.substr(0, 6),
     });
     // layout all the various components, constructing elements as required
     // and wrapping when a row is complete
