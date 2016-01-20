@@ -144,11 +144,11 @@ export default class Layout {
    * If the part is an SBOL symbol then use the symbol name preferentially
    */
   partName(part) {
-    if (this.isSBOL(part)) {
-      return this.partRule(part, 'sbol');
-    }
+    // if (this.isSBOL(part)) {
+    //   return this.partRule(part, 'sbol');
+    // }
     // return meta data name if present or just the ID of the part if it is not.
-    return this.partMeta(part, 'name') || part;
+    return this.partMeta(part, 'name') || this.partRule(part, 'sbol') || 'block';
   }
   /**
    * create the banner / bar for the construct ( contains the triangle )
