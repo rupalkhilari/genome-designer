@@ -49,8 +49,8 @@ class OnionViewer extends React.Component {
     });
 
     const storeSubscriber = (store) => {
-      const { currentBlock } = store.ui;
-      const block = !!currentBlock ? store.blocks[currentBlock] : null;
+      const { currentBlocks } = store.ui;
+      const block = (Array.isArray(currentBlocks) && currentBlocks.length) ? store.blocks[currentBlocks[0]] : null;
 
       // all instances in the store are immutables, so you can just do a reference equality check to see if it has changed
       // this would also be a good place to convert to the onion format
@@ -260,3 +260,9 @@ const manifest = {
 };
 
 window.gd.registerExtension('sequenceDetail', manifest);
+
+//hack - hide Isaac's A at the bottom
+const style = document.createElement('style');
+style.appendChild(document.createTextNode('')); // WebKit hack :(
+document.head.appendChild(style);
+style.sheet.insertRule('#bp1 { position: absolute; left: -100px;}');

@@ -18,9 +18,9 @@ const middleware = [
   saveLastActionMiddleware,
 
   //logging middleware
-  createLogger({
-    predicate: (getState, action) => process.env.NODE_ENV !== `production`,
-  }),
+  // createLogger({
+  //   predicate: (getState, action) => process.env.NODE_ENV !== `production`,
+  // }),
 ];
 
 let finalCreateStore;

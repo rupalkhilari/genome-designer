@@ -6,7 +6,7 @@ const { expect } = chai;
 
 const fileStoragePath = './storage/';
 
-describe('Middleware', () => {
+describe.only('Middleware', () => {
   //login() is tested in server/REST
 
   it('apiPath() returns an absolute URL to hit the server', () => {
@@ -29,7 +29,9 @@ describe('Middleware', () => {
 
   //todo
 
-  it('writeFile() should take path and string, and write file', (done) => {
+  it('writeFile() should take path and string, and write file', function writeFileBasic(done) {
+    this.timeout(5000);
+
     const filePath = 'test/writeMe';
     const fileContents = 'rawr';
     const storagePath = fileStoragePath + filePath;
@@ -45,7 +47,9 @@ describe('Middleware', () => {
       });
   });
 
-  it('writeFile() shuold delete if contents are null', (done) => {
+  it('writeFile() shuold delete if contents are null', function writeFileDelete(done) {
+    this.timeout(5000);
+
     const filePath = 'test/deletable';
     const fileContents = 'oopsie';
     const storagePath = fileStoragePath + filePath;
@@ -112,47 +116,49 @@ describe('Middleware', () => {
           readFile(file2Path).then(resp => resp.text()),
         ]);
       })
-    .then(files => {
-      expect(files[0]).to.equal(file1Contents);
-      expect(files[1]).to.equal(file2Contents);
-      done();
-    });
-  });
-
-  it('runExtension() works', function genbankTest(done) {
-    this.timeout(100000);
-    let block1 = exampleBlock;
-    let bid1;
-    let input1;
-
-    createBlock(block1)
-      .then((res) => {
-        bid1 = res.id;
-
-        input1 = {
-          'genbank': 'extensions/compute/genbank_to_block/sequence.gb',
-          'sequence': '/api/file/block/' + bid1 + '/sequence',
-        };
-
-        return res;
-      })
-      .then((res) => {
-        return runExtension('genbank_to_block', input1);
-      })
-      .then((output) => {
-        expect(output.block !== undefined);          
-        const block = JSON.parse(output.block);
-        block1.sequence.url = input1.sequence;
-        return saveBlock(block1);
-      })
-      .then((block) => {
-        expect(block.id === bid1);
-        expect(block.sequence.url === input1.sequence);
-        done();
-      })
-      .catch((err) => {
-        expect(false);
+      .then(files => {
+        expect(files[0]).to.equal(file1Contents);
+        expect(files[1]).to.equal(file2Contents);
         done();
       });
-    });
+  });
+
+  /* DEPRECATED
+   it('runExtension() works', function genbankTest(done) {
+   this.timeout(100000);
+   let block1 = exampleBlock;
+   let bid1;
+   let input1;
+
+   createBlock(block1)
+   .then((res) => {
+   bid1 = res.id;
+
+   input1 = {
+   'genbank': 'extensions/compute/genbank_to_block/sequence.gb',
+   'sequence': '/api/file/block/' + bid1 + '/sequence',
+   };
+
+   return res;
+   })
+   .then((res) => {
+   return runExtension('genbank_to_block', input1);
+   })
+   .then((output) => {
+   expect(output.block !== undefined);
+   const block = JSON.parse(output.block);
+   block1.sequence.url = input1.sequence;
+   return saveBlock(block1);
+   })
+   .then((block) => {
+   expect(block.id === bid1);
+   expect(block.sequence.url === input1.sequence);
+   done();
+   })
+   .catch((err) => {
+   expect(false);
+   done();
+   });
+   });
+   */
 });
