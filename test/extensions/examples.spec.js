@@ -10,7 +10,7 @@ describe('Extensions', () => {
     fs.writeFile(dnaFile, 'AACTTGTCCACTGTA', err => {
       if (err) {
         expect(false);
-        done();
+        done(err.message);
       }
       runNode('translate_dna_example', input, {})
       .then(result => {
@@ -19,7 +19,7 @@ describe('Extensions', () => {
       })
       .catch(err => {
         expect(false);
-        done();
+        done(err.message);
       });
     });
   });
