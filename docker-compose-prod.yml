@@ -9,9 +9,8 @@ genome-designer:
     - /var/run/docker.sock:/var/run/docker.sock
     - /usr/bin/docker:/usr/bin/docker 
     - /usr/lib64/libdevmapper.so.1.02:/usr/lib/libdevmapper.so.1.02 
-  command: npm run start
 
 
 redis:
   image: redis:3
-  command: redis-server /redis.conf 
+  command: redis-server
