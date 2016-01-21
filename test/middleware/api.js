@@ -1,7 +1,7 @@
 import chai from 'chai';
 import fs from 'fs';
 import { Block as exampleBlock } from '../schemas/_examples';
-import { apiPath, getSessionKey, writeFile, readFile, runExtension, createBlock, saveBlock } from '../../src/middleware/api';
+import { * } from '../../src/middleware/api';
 const { expect } = chai;
 
 const fileStoragePath = './storage/';
@@ -124,42 +124,25 @@ describe('Middleware', () => {
       });
   });
 
-  /* DEPRECATED
-   it('runExtension() works', function genbankTest(done) {
-   this.timeout(100000);
-   let block1 = exampleBlock;
-   let bid1;
-   let input1;
+  it('importFrom() should be able convert Genbank strings to Block', function readFileTest(done) {
+    this.timeout(5000);
 
-   createBlock(block1)
-   .then((res) => {
-   bid1 = res.id;
+    fs.readFile('../res/sampleGenbank.gb', sampleStr => {
 
-   input1 = {
-   'genbank': 'extensions/compute/genbank_to_block/sequence.gb',
-   'sequence': '/api/file/block/' + bid1 + '/sequence',
-   };
+    });
 
-   return res;
-   })
-   .then((res) => {
-   return runExtension('genbank_to_block', input1);
-   })
-   .then((output) => {
-   expect(output.block !== undefined);
-   const block = JSON.parse(output.block);
-   block1.sequence.url = input1.sequence;
-   return saveBlock(block1);
-   })
-   .then((block) => {
-   expect(block.id === bid1);
-   expect(block.sequence.url === input1.sequence);
-   done();
-   })
-   .catch((err) => {
-   expect(false);
-   done();
-   });
-   });
-   */
+    fs.writeFile(storagePath, fileContents, 'utf8', (err, write) => {
+      readFile(filePath)
+        .then(result => {
+          expect(result.status).to.equal(200);
+          expect(typeof result.text).to.equal('function');
+          return result.text();
+        })
+        .then(text => {
+          expect(text).to.equal(fileContents);
+          done();
+        });
+    });
+  });
+
 });

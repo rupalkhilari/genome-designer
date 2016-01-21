@@ -149,7 +149,7 @@ export const exportTo = (id, inputs) => {
   }
 };
 
-export const importFom = (id, inputs) => {
+export const importFrom = (id, inputs) => {
   try {
     const stringified = JSON.stringify(inputs);
     return fetch(importPath(`${id}`), headersPost(stringified));
@@ -157,3 +157,14 @@ export const importFom = (id, inputs) => {
     return Promise.reject('error stringifying input object');
   }
 };
+
+export const searchForBlocks = (id, inputs) => {
+  try {
+    const stringified = JSON.stringify(inputs);
+    return fetch(searchPath(`${id}`), headersPost(stringified));
+  } catch (err) {
+    return Promise.reject('error stringifying input object');
+  }
+};
+
+
