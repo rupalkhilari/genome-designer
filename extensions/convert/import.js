@@ -49,7 +49,6 @@ function importBlock(id, data, callback) {
           callback(res);
         });
       } catch (err) {
-        console.log(err);
         callback({
           error: err.message,
         });
@@ -67,7 +66,13 @@ router.post('/project/:id', jsonParser, (req, resp) => {
   const data = req.body;
   //const key = req.headers.sessionkey;
   //const header = {'sessionkey': key, 'host': 'http://0.0.0.0:3000'};
-  importProject(id, data, res => { resp.json(res); });
+  importProject(id, data, res => {
+    if (res) {
+      resp.json(res);
+    } else {
+      resp.json( { error: 'No result' });
+    }
+  });
 });
 
 router.post('/block/:id', jsonParser, (req, resp) => {
@@ -75,7 +80,13 @@ router.post('/block/:id', jsonParser, (req, resp) => {
   const data = req.body;
   //const key = req.headers.sessionkey;
   //const header = {'sessionkey': key, 'host': 'http://0.0.0.0:3000'};
-  importBlock(id, data, res => { resp.json(res); });
+  importBlock(id, data, res => {
+    if (res) {
+      resp.json(res);
+    } else {
+      resp.json( { error: 'No result' });
+    }
+  });
 });
 
 //export these functions for testing purpose
