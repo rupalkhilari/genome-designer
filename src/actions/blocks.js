@@ -234,7 +234,10 @@ export const blockSetSequence = (blockId, sequence) => {
 
 //todo - work for project.components
 const getParentFromStore = (blockId, store, def) => {
-  return Object.keys(store).find(id => store.blocks[id].components.includes(blockId)) || def;
+  const id = Object.keys(store.blocks).find(id => {
+    return store.blocks[id].components.includes(blockId);
+  });
+  return !!id ? store.blocks[id] : def;
 };
 
 //Non-mutating
@@ -244,8 +247,8 @@ export const blockGetParents = (blockId) => {
     const store = getState();
     let parent = getParentFromStore(blockId, store);
     while (parent) {
-      parents.push(parent);
-      parent = getParentFromStore(parent, store);
+      parents.push(parent.id);
+      parent = getParentFromStore(parent.id, store);
     }
     return parents;
   };
@@ -263,6 +266,6 @@ export const blockGetSiblings = (blockId) => {
 export const blockGetIndex = (blockId) => {
   return (dispatch, getState) => {
     const parent = getParentFromStore(blockId, getState(), {});
-    return Array.isArray(parent.components) ? parent.components.indexOf(blockId) : 0;
+    return Array.isArray(parent.components) ? parent.components.indexOf(blockId) : -1;
   };
 };
