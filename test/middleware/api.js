@@ -6,7 +6,7 @@ const { expect } = chai;
 
 const fileStoragePath = './storage/';
 
-describe.only('Middleware', () => {
+describe('Middleware', () => {
   //login() is tested in server/REST
 
   it('apiPath() returns an absolute URL to hit the server', () => {
@@ -65,7 +65,8 @@ describe.only('Middleware', () => {
     });
   });
 
-  it('readFile() should return fetch response object', (done) => {
+  it('readFile() should return fetch response object', function readFileTest(done) {
+    this.timeout(5000);
     const filePath = 'test/readable';
     const fileContents = 'the contents!';
     const storagePath = fileStoragePath + filePath;
