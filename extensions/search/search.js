@@ -25,6 +25,11 @@ function searchString(id, str, max, callback) {
         mod.search(str, max)
         .then(res => {
           callback(res);
+        })
+        .catch(err => {
+          callback({
+            error: err.message,
+          });
         });
       } catch (err) {
         callback({

@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { runNode } from '../../extensions/compute/runNode';
 const fs = require('fs');
 
-describe('Extensions', () => {
+describe('Extensions: run nodes', () => {
   const dnaFile = process.cwd() + '/temp.txt';
   const input = {DNA: dnaFile};
   it('Biopython translate example should work', function translateDNA(done) {

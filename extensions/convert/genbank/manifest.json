@@ -1,0 +1,15 @@
+{
+  "name": "genbank",
+  "authors": [
+    { "name": "Deepak Chandran",
+      "email": "deepak.chandran@autodesk.com"
+    }
+  ],
+  "description": "import and export genbank formatted strings",
+  "functions": {
+    "importBlock": "convert a genbank string to array of blocks",
+    "exportBlock": "convert a block to a genbank formatted string",
+    "importProject": "convert a genbank string to array of blocks",
+    "importBlock": "convert a genbank string to array of blocks"
+  }
+}

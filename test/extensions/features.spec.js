@@ -130,8 +130,8 @@ const sampleFeatures = `1:28 glll	GTATGGGATTTTGCTAAACAAC	primer_bind	#0000ff	#ff
 123:Xpress Forward 	TATGGCTAGCATGACTGGT 	primer_bind	#0000ff	#ff00ff
 124:VLH 	TTGTGTGGAATTGTGAGCGG	primer_bind	#0000ff	#ff00ff`;
 
-describe('Features', () => {
-  it('import', done => {
+describe('Extensions: Features import/export', () => {
+  it('import to blocks array', done => {
     importProject('features', sampleFeatures, result => {
       expect(result.project.components.length === 125);
       expect(result.project.components[19].metadata.name === '20:CBDcexLEAD');

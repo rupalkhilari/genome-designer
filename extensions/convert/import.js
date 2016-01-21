@@ -25,6 +25,11 @@ function importProject(id, data, callback) {
         mod.importProject(data)
         .then(res => {
           callback(res);
+        })
+        .catch(err => {
+          callback({
+            error: err.message,
+          });
         });
       } catch (err) {
         callback({
@@ -47,6 +52,11 @@ function importBlock(id, data, callback) {
         mod.importBlock(data)
         .then(res => {
           callback(res);
+        })
+        .catch(err => {
+          callback({
+            error: err.message,
+          });
         });
       } catch (err) {
         callback({

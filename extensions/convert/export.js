@@ -25,6 +25,11 @@ function exportProject(id, input, callback) {
         mod.exportProject(input.project, input.blocks)
         .then(res => {
           callback(res);
+        })
+        .catch(err => {
+          callback({
+            error: err.message,
+          });
         });
       } catch (err) {
         callback({
@@ -47,6 +52,11 @@ function exportBlock(id, input, callback) {
         mod.exportBlock(input.block, input.blocks)
         .then(res => {
           callback(res);
+        })
+        .catch(err => {
+          callback({
+            error: err.message,
+          });
         });
       } catch (err) {
         callback({
