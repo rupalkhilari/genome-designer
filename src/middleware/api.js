@@ -9,7 +9,10 @@ import BlockDefinition from '../schemas/Block';
  *************************/
 
 //fetch only supports absolute paths
-const serverRoot = `${global.location.protocol}//${global.location.host}/`;
+//include a check for tests, hardcode for now
+const serverRoot = window.location.protocol ?
+  `${window.location.protocol}//${window.location.host}/` :
+  'http://localhost:3000/';
 
 const execPath = (path) => serverRoot + 'exec/' + path;
 export const apiPath = (path) => serverRoot + 'api/' + path;
