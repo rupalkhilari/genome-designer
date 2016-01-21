@@ -96,23 +96,22 @@ export class ConstructViewer extends Component {
     if (type === sbolDragType) {
       // must have an insertion point for sbol
       if (insertionPoint) {
-        // create a block
-        const block = this.props.blockCreate({
-          rules: {
-            sbol: item.id,
-          }
-        });
-
-        // change to the sbol type
-        //this.props.blockSetSbol(insertionPoint.block, item.id);
-        // get index of insertion allowing for the edge closest to the drop
-        let index = this.props.construct.components.length;
-        if (insertionPoint) {
-          index = this.props.construct.components.indexOf(insertionPoint.block) + (insertionPoint.edge === 'right' ? 1 : 0);
+        // blocks with an sbol symbol can be dropped on an edge and get inserted
+        // as a new block or can simply update the sbol symbol for the block at the drop site.
+        if (insertionPoint.edge) {
+          // insert new block
+          const block = this.props.blockCreate({rules: {sbol: item.id,}});
+          // get index of insertion allowing for the edge closest to the drop if provided
+          const index = this.props.construct.components.indexOf(insertionPoint.block) + (insertionPoint.edge === 'right' ? 1 : 0);
+          // add
+          this.props.blockAddComponent(this.props.construct.id, block.id, index);
+          // return the newly created block or the block dropped on
+          return [block.id];
+        } else {
+          // drop on existing block
+          this.props.blockSetSbol(insertionPoint.block, item.id);
+          return [insertionPoint.block];
         }
-        this.props.blockAddComponent(this.props.construct.id, block.id, index);
-        // return the blocked dropped on
-        return [block.id];
       }
     } else {
       // get index of insertion allowing for the edge closest to the drop

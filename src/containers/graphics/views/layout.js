@@ -170,7 +170,6 @@ export default class Layout {
     if (!this.titleNode) {
       this.titleNode = new Node2D(Object.assign({
         sg: this.sceneGraph,
-        color: this.baseColor,
       }, kT.titleAppearance));
       this.sceneGraph.root.appendChild(this.titleNode);
     }
@@ -238,7 +237,6 @@ export default class Layout {
    * @return {[type]} [description]
    */
   update(construct, layoutAlgorithm, blocks, currentBlocks, currentConstructId) {
-    console.time('Layout Time');
     this.construct = construct;
     this.currentConstructId = currentConstructId;
     this.layoutAlgorithm = layoutAlgorithm;
@@ -262,7 +260,6 @@ export default class Layout {
     }
     // auto size scene after layout
     this.autoSizeSceneGraph();
-    console.timeEnd('Layout Time');
   }
 
   /**
@@ -323,9 +320,11 @@ export default class Layout {
     // create title as neccessary and position
     this.titleFactory(ct);
     // update title to current position and text
+    const isSelectedConstruct = this.construct.id === this.currentConstructId;
     this.titleNode.set({
       bounds: new Box2D(xs, ys, this.sceneGraph.availableWidth, kT.titleH),
       text: ct.metadata.name || ct.id,
+      color: isSelectedConstruct ? 'white' : this.baseColor,
     });
     // layout all the various components, constructing elements as required
     // and wrapping when a row is complete
