@@ -40,6 +40,12 @@ export default function blocks(state = initialState, action) {
     const { block } = action;
     return Object.assign({}, state, {[block.id]: block});
   }
+  case ActionTypes.BLOCK_DELETE : {
+    const { blockId } = action;
+    const nextState = Object.assign({}, state);
+    delete nextState[blockId];
+    return nextState;
+  }
   default : {
     return state;
   }

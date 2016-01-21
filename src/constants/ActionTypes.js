@@ -2,6 +2,7 @@ export const BLOCK_CREATE = 'BLOCK_CREATE';
 export const BLOCK_SAVE = 'BLOCK_SAVE';
 export const BLOCK_CLONE = 'BLOCK_CLONE';
 export const BLOCK_MERGE = 'BLOCK_MERGE';
+export const BLOCK_DELETE = 'BLOCK_DELETE';
 export const BLOCK_RENAME = 'BLOCK_RENAME';
 export const BLOCK_SET_COLOR = 'BLOCK_SET_COLOR';
 export const BLOCK_SET_SBOL = 'BLOCK_SET_SBOL';
