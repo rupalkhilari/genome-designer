@@ -10,7 +10,7 @@ import BlockDefinition from '../schemas/Block';
 
 //fetch only supports absolute paths
 //include a check for tests, hardcode for now
-const serverRoot = window.location.protocol ?
+const serverRoot = (/http/gi).test(window.location.protocol) ?
   `${window.location.protocol}//${window.location.host}/` :
   'http://localhost:3000/';
 
