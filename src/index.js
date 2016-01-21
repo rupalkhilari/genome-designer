@@ -8,7 +8,7 @@ import store, { lastAction } from './store/index';
 import * as api from './middleware/api';
 import { registerExtension } from './extensions/index';
 
-import orchestrator from './orchestrators/blocks';
+import orchestrator from './store/orchestrator';
 console.log(orchestrator);
 
 render(
