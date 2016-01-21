@@ -8,6 +8,9 @@ import store, { lastAction } from './store/index';
 import * as api from './middleware/api';
 import { registerExtension } from './extensions/index';
 
+import orchestrator from './orchestrators/blocks';
+console.log(orchestrator);
+
 render(
   <Provider store={store}>
     <ReduxRouter />
