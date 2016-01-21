@@ -144,10 +144,6 @@ export default class Layout {
    * If the part is an SBOL symbol then use the symbol name preferentially
    */
   partName(part) {
-    // if (this.isSBOL(part)) {
-    //   return this.partRule(part, 'sbol');
-    // }
-    // return meta data name if present or just the ID of the part if it is not.
     return this.partMeta(part, 'name') || this.partRule(part, 'sbol') || 'block';
   }
   /**
@@ -170,7 +166,7 @@ export default class Layout {
    * @param  {[type]} part [description]
    * @return {[type]}   [description]
    */
-  titleFactory(part) { //
+  titleFactory(part) {
     if (!this.titleNode) {
       this.titleNode = new Node2D(Object.assign({
         sg: this.sceneGraph,
@@ -242,9 +238,9 @@ export default class Layout {
    * @return {[type]} [description]
    */
   update(construct, layoutAlgorithm, blocks, currentBlocks, currentConstructId) {
+    console.time('Layout Time');
     this.construct = construct;
     this.currentConstructId = currentConstructId;
-    console.log("CCID:", this.currentConstructId);
     this.layoutAlgorithm = layoutAlgorithm;
     this.blocks = blocks;
     this.currentBlocks = currentBlocks;
@@ -266,6 +262,7 @@ export default class Layout {
     }
     // auto size scene after layout
     this.autoSizeSceneGraph();
+    console.timeEnd('Layout Time');
   }
 
   /**

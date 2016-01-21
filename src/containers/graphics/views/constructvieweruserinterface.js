@@ -88,8 +88,8 @@ export default class ConstructViewerUserInterface extends UserInterface {
     if (block) {
       // select the construct if not already the selected construct ( changing
       // the construct will remove blocks that are not part of the construct from the selections )
-      if (this.constructViewer.props.construct.id !== this.constructViewer.props.currentConstructId) {
-        this.constructViewer.constructSelected(this.constructViewer.props.constructId);
+      if (this.constructViewer.props.construct.id !== this.constructViewer.props.ui.currentConstructId) {
+        this.constructViewer.constructSelected(this.constructViewer.props.construct.id);
       }
 
       const node = this.layout.nodeFromElement(block);

@@ -85,7 +85,6 @@ export class ConstructViewer extends Component {
    */
   componentDidUpdate() {
     this.update();
-    console.log("PROJECT ID:", this.props.projectId);
   }
 
   /**
