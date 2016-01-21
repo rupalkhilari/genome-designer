@@ -1,12 +1,10 @@
-const fs = require('fs');
-const uuid = require('uuid');
+const uuid = require('node-uuid');
 const csv = require('fast-csv');
 
 module.exports = exports = {};
 
 exports.importProject = function importProject(csvstr) {
   return new Promise((resolve, reject) => {
-
     const proj = {
       'id': uuid.v4(),
       'metadata': {

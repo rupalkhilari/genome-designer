@@ -1,7 +1,7 @@
 import chai from 'chai';
 import fs from 'fs';
 import { Block as exampleBlock } from '../schemas/_examples';
-import { * } from '../../src/middleware/api';
+import { importFrom } from '../../src/middleware/api';
 const { expect } = chai;
 
 const fileStoragePath = './storage/';
@@ -124,25 +124,20 @@ describe('Middleware', () => {
       });
   });
 
-  it('importFrom() should be able convert Genbank strings to Block', function readFileTest(done) {
+  it.only('importFrom() should be able convert Genbank strings to Block', function readFileTest(done) {
     this.timeout(5000);
 
     fs.readFile('../res/sampleGenbank.gb', sampleStr => {
-
+      importFrom('block/genbank', sampleStr)
+      .then(result => {
+        return JSON.parse(result.body);
+      })
+      .then(result => {
+        console.log(result);
+        done();
+      });
     });
 
-    fs.writeFile(storagePath, fileContents, 'utf8', (err, write) => {
-      readFile(filePath)
-        .then(result => {
-          expect(result.status).to.equal(200);
-          expect(typeof result.text).to.equal('function');
-          return result.text();
-        })
-        .then(text => {
-          expect(text).to.equal(fileContents);
-          done();
-        });
-    });
   });
 
 });

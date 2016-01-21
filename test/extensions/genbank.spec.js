@@ -110,7 +110,6 @@ describe('Extensions: Genbank import/export', () => {
 
   it('import sample file from NCBI', function importGB(done) {
     this.timeout(5000);
-
     fs.readFile('../res/sampleGenbank.gb', sampleStr => {
       importBlock('genbank', sampleStr, result => {
         const output = JSON.parse(result);
@@ -119,7 +118,6 @@ describe('Extensions: Genbank import/export', () => {
         done();
       });
     });
-    
   });
 
   it('export from blocks', function exportGB(done) {
