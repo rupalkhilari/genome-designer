@@ -200,9 +200,13 @@ export class ConstructViewer extends Component {
       this.layout.update(this.props.construct, this.props.layoutAlgorithm, this.props.blocks, this.props.ui.currentBlocks);
     }
 
+    const menu = this.props.constructId === this.props.ui.currentConstructId
+    ? <ConstructViewerMenu constructId={this.props.constructId} layoutAlgorithm={this.props.layoutAlgorithm}/>
+    : null
+
     const rendered = (
       <div className="construct-viewer" key={this.props.construct.id}>
-        <ConstructViewerMenu constructId={this.props.constructId} layoutAlgorithm={this.props.layoutAlgorithm}/>
+        {menu}
         <div className="sceneGraphContainer">
           <div className="sceneGraph"/>
         </div>
