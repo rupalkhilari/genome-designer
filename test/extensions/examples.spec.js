@@ -2,10 +2,10 @@ import { expect } from 'chai';
 import { runNode } from '../../extensions/compute/runNode';
 const fs = require('fs');
 
-describe('Extensions: run nodes', () => {
+describe('Nodes Extension', () => {
   const dnaFile = process.cwd() + '/temp.txt';
   const input = {DNA: dnaFile};
-  it('Biopython translate example should work', function translateDNA(done) {
+  it('should successfully run the Biopython example', function translateDNA(done) {
     this.timeout(6000); //this timeout is not needed if the test is run by itself (using it.only)
     fs.writeFile(dnaFile, 'AACTTGTCCACTGTA', err => {
       if (err) {

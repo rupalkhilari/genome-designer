@@ -5,7 +5,7 @@ const { expect } = chai;
 
 const fileStoragePath = './storage/';
 
-describe('Middleware', () => {
+describe.only('Middleware', () => {
   //login() is tested in server/REST
 
   it('apiPath() returns an absolute URL to hit the server', () => {
@@ -130,14 +130,13 @@ describe('Middleware', () => {
         return result.json();
       })
       .then(data => {
-        const result = JSON.parse(data);
-        expect(result.block !== undefined).to.equal(true);
-        expect(result.blocks !== undefined).to.equal(true);
-        expect(result.block.components.length === 2).to.equal(true);
-        expect(result.blocks[data.block.components[0]] !== undefined).to.equal(true);
-        expect(result.blocks[data.block.components[1]] !== undefined).to.equal(true);
-        expect(result.blocks[data.block.components[0]].metadata.tags.sbol === 'cds').to.equal(true);
-        expect(result.blocks[data.block.components[1]].metadata.tags.sbol === 'cds').to.equal(true);
+        expect(data.block !== undefined).to.equal(true);
+        expect(data.blocks !== undefined).to.equal(true);
+        expect(data.block.components.length === 2).to.equal(true);
+        expect(data.blocks[data.block.components[0]] !== undefined).to.equal(true);
+        expect(data.blocks[data.block.components[1]] !== undefined).to.equal(true);
+        expect(data.blocks[data.block.components[0]].metadata.tags.sbol === 'cds').to.equal(true);
+        expect(data.blocks[data.block.components[1]].metadata.tags.sbol === 'cds').to.equal(true);
         done();
       })
       .catch(err => {
@@ -149,7 +148,6 @@ describe('Middleware', () => {
 
   it('exportBlock() should be able convert Block to Genbank', function importFromTestimport(done) {
     this.timeout(5000); //reading genbank can take long, esp when running along with other tests
-    const sampleGenbank = 'LOCUS       1                          6 bp    DNA              UNK 01-JAN-1980\nDEFINITION  .\nACCESSION   1\nVERSION     1\nKEYWORDS    .\nSOURCE      .\n  ORGANISM  .\n            .\nFEATURES             Location/Qualifiers\n     block           1..3\n                     /parent_block="1,0"\n                     /block_id="2"\n     block           1..2\n                     /parent_block="2,0"\n                     /block_id="5"\n     block           1\n                     /parent_block="5,0"\n                     /block_id="8"\n     block           2\n                     /parent_block="5,1"\n                     /block_id="9"\n     block           2\n                     /parent_block="9,0"\n                     /block_id="10"\n     block           3\n                     /parent_block="2,1"\n                     /block_id="6"\n     block           4\n                     /parent_block="1,1"\n                     /block_id="3"\n     block           4\n                     /parent_block="3,0"\n                     /block_id="7"\n     block           5..6\n                     /parent_block="1,2"\n                     /block_id="4"\n     Double_T        5\n                     /parent_block\n                     /block_id="4"\nORIGIN\n        1 acggtt\n//\n';
     fs.readFile('./test/res/sampleBlocks.json', 'utf8', (err, sampleBlocksJson) => {
       const sampleBlocks = JSON.parse(sampleBlocksJson);
       api.exportBlock('genbank', {block: sampleBlocks['1'], blocks: sampleBlocks})
@@ -157,7 +155,8 @@ describe('Middleware', () => {
         return result.json();
       })
       .then(result => {
-        expect(result === sampleGenbank).to.equal(true);
+        expect(result.indexOf('acggtt') !== -1).to.equal(true);
+        expect(result.indexOf('block           5..6') !== -1).to.equal(true);
         done();
       })
       .catch(err => {
@@ -168,14 +167,13 @@ describe('Middleware', () => {
   });
 
   it('importProject() should be able convert feature file to Blocks', function importFromTestimport(done) {
-    this.timeout(5000); //reading a long csv file
+    this.timeout(10000); //reading a long csv file
     fs.readFile('./test/res/sampleFeatureFile.tab', 'utf8', (err, sampleFeatures) => {
       api.importProject('features', sampleFeatures)
       .then(result => {
         return result.json();
       })
-      .then(data => {
-        const result = JSON.parse(data);
+      .then(result => {
         expect(result.project.components.length === 125).to.equal(true);
         expect(result.blocks[ result.project.components[19] ].metadata.name === '19:CBDcenA ').to.equal(true);
         done();
@@ -194,8 +192,7 @@ describe('Middleware', () => {
     .then(result => {
       return result.json();
     })
-    .then(result => {
-      const output = JSON.parse(result);
+    .then(output => {
       expect(output[0].metadata.name !== undefined).to.equal(true);
       expect(output[0].metadata.organism !== undefined).to.equal(true);
       expect(output.length === 2).to.equal(true);

@@ -13,7 +13,7 @@ exports.search = function search(searchString, maxResults = 10) {
           reject(err.message);
           return;
         }
-        resolve(data);
+        resolve(JSON.parse(data));
       });
     }
 

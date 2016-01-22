@@ -50,7 +50,7 @@ exports.importBlock = function importBlock(gbstr) {
           reject(err.message);
           return;
         }
-        resolve(data);
+        resolve(JSON.parse(data));
       });
     }
 
