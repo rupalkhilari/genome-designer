@@ -1,6 +1,6 @@
 {
   "presets": ["stage-0", "react", "es2015"],
-  "plugins": ["transform-decorators-legacy"],
+  "plugins": ["transform-class-properties", "transform-decorators-legacy"],
   "env": {
     "development": {
       "plugins": [
@@ -17,9 +17,6 @@
               // you can have many transforms, not just one
               "transform": "react-transform-catch-errors",
               "imports": ["react", "redbox-react"]
-            }, {
-              // can be an NPM module name or a local path
-              "transform": "./src/my-custom-transform"
             }]
             // by default we only look for `React.createClass` (and ES6 classes)
             // but you can tell the plugin to look for different component factories:
