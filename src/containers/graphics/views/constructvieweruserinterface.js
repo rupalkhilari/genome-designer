@@ -272,6 +272,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
   onDrop(globalPosition, payload) {
     const blocks = this.constructViewer.addItemAtInsertionPoint(payload, this.insertion);
     this.constructViewer.blockSelected(blocks);
+    this.constructViewer.constructSelected(this.constructViewer.props.constructId);
   }
   /**
    * show the insertion point at the top left of an empty construct.

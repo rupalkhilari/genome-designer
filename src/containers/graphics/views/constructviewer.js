@@ -81,13 +81,6 @@ export class ConstructViewer extends Component {
   }
 
   /**
-   * update scene graph after the react component updates
-   */
-  componentDidUpdate() {
-    this.update();
-  }
-
-  /**
    * add the given item using an insertion point from the constructviewer user interface.
    * Insertion point may be null, in which the block is added at the end
    */
@@ -209,6 +202,13 @@ export class ConstructViewer extends Component {
   }
 
   /**
+   * update scene graph after the react component updates
+   */
+  componentDidUpdate() {
+    this.update();
+  }
+
+  /**
    * update the layout and then the scene graph
    */
   update() {
@@ -221,9 +221,6 @@ export class ConstructViewer extends Component {
    * render the component, the scene graph will render later when componentDidUpdate is called
    */
   render() {
-    if (this.layout) {
-      this.layout.update(this.props.construct, this.props.layoutAlgorithm, this.props.blocks, this.props.ui.currentBlocks, this.props.ui.currentConstructId);
-    }
 
     const rendered = (
       <div className="construct-viewer" key={this.props.construct.id}>
