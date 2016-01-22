@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import SceneGraph2D from '../scenegraph2d/scenegraph2d';
 import Vector2D from '../geometry/vector2d';
 import Layout from './layout.js';
+import PopupMenu from '../../../components/Menu/PopupMenu';
 import {connect } from 'react-redux';
 import {
   blockCreate,
@@ -200,7 +201,9 @@ export class ConstructViewer extends Component {
       this.layout.update(this.props.construct, this.props.layoutAlgorithm, this.props.blocks, this.props.ui.currentBlocks);
     }
 
-    const menu = this.props.constructId === this.props.ui.currentConstructId
+    // TODO, can be conditional when master is fixed and this is merged with construct select PR
+    //const menu = this.props.constructId === this.props.ui.currentConstructId
+    const menu = true
     ? <ConstructViewerMenu constructId={this.props.constructId} layoutAlgorithm={this.props.layoutAlgorithm}/>
     : null
 
@@ -210,6 +213,21 @@ export class ConstructViewer extends Component {
         <div className="sceneGraphContainer">
           <div className="sceneGraph"/>
         </div>
+        <PopupMenu menuItems={
+          [
+            {
+              text: 'One',
+              action: () => {},
+            },
+            {
+              text: 'Two',
+              action: () => {},
+            },
+            {
+              text: 'Three',
+              action: () => {},
+            },
+          ]}></PopupMenu>
       </div>
     );
     return rendered;
