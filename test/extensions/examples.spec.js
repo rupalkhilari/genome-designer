@@ -9,16 +9,16 @@ describe('Extensions: run nodes', () => {
     this.timeout(6000); //this timeout is not needed if the test is run by itself (using it.only)
     fs.writeFile(dnaFile, 'AACTTGTCCACTGTA', err => {
       if (err) {
-        expect(false);
+        expect(false).to.equal(true);
         done(err.message);
       }
       runNode('translate_dna_example', input, {})
       .then(result => {
-        expect(result.prot === 'NLSTV');
+        expect(result.Protein === 'NLSTV').to.equal(true);
         done();
       })
       .catch(err => {
-        expect(false);
+        expect(false).to.equal(true);
         done(err.message);
       });
     });

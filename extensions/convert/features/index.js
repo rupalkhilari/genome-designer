@@ -24,8 +24,9 @@ exports.importProject = function importProject(csvstr) {
       seq = data[1];
       type = data[2];
       color = data[3];
+      id = uuid.v4();
       blocks[id] = {
-        'id': uuid.v4(),
+        'id': id,
         'metadata': {
           'authors': [],
           'tags': {'type': type},
@@ -39,8 +40,7 @@ exports.importProject = function importProject(csvstr) {
           'features': [],
         },
       };
-      proj.components.push(blocks[id]);
-
+      proj.components.push(id);
       return;
     }
 

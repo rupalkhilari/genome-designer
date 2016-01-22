@@ -19,5 +19,5 @@ if to_genbank:
 else:
     genbank_file = sys.argv[2]
     block_file = sys.argv[3]
-    blocks = genbank_to_block(genbank_file)
+    blocks = genbank_to_block(genbank_file, True)
     json.dump(blocks, open(block_file,'w'))

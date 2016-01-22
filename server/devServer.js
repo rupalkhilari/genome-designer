@@ -53,7 +53,7 @@ app.use('/api', apiRouter);
 app.use('/compute', extRouter);
 app.use('/import', importRouter);
 app.use('/export', exportRouter);
-app.use('/search', exportRouter);
+app.use('/search', searchRouter);
 
 // Register Client Requests, delegate routing to client
 // ----------------------------------------------------

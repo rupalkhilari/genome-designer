@@ -140,19 +140,35 @@ export const computeWorkflow = (id, inputs) => {
   }
 };
 
-export const exportTo = (id, inputs) => {
+export const exportBlock = (id, inputs) => {
   try {
     const stringified = JSON.stringify(inputs);
-    return fetch(exportPath(`${id}`), headersPost(stringified));
+    return fetch(exportPath(`block/${id}`), headersPost(stringified));
   } catch (err) {
     return Promise.reject('error stringifying input object');
   }
 };
 
-export const importFrom = (id, inputs) => {
+export const exportProject = (id, inputs) => {
   try {
     const stringified = JSON.stringify(inputs);
-    return fetch(importPath(`${id}`), headersPost(stringified));
+    return fetch(exportPath(`project/${id}`), headersPost(stringified));
+  } catch (err) {
+    return Promise.reject('error stringifying input object');
+  }
+};
+
+export const importBlock = (id, input) => {
+  try {
+    return fetch(importPath(`block/${id}`), headersPost(JSON.stringify({ text: input })));
+  } catch (err) {
+    return Promise.reject('error stringifying input object');
+  }
+};
+
+export const importProject = (id, input) => {
+  try {
+    return fetch(importPath(`project/${id}`), headersPost(JSON.stringify({ text: input })));
   } catch (err) {
     return Promise.reject('error stringifying input object');
   }

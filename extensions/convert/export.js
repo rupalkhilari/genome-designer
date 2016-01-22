@@ -7,9 +7,9 @@ const extensions = {};
 const jsonParser = bodyParser.json({
   strict: false, //allow values other than arrays and objects
 });
-
+const fs = require('fs');
 const normalizedPath = require('path').join(__dirname, '.');
-require('fs').readdirSync(normalizedPath).forEach(folder => {
+fs.readdirSync(normalizedPath).forEach(folder => {
   if (folder.indexOf('.js') === -1) {
     extensions[folder] = require('./' + folder);
   }

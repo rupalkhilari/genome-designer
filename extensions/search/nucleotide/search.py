@@ -6,10 +6,10 @@ sys.path.append("extensions/convert/genbank")
 
 from genbank_import_export import *
 
-search_string = "carboxylase"
-max_items = 2
-outfile = "output.json"
-db_name="nucleotide"
+db_name =  sys.argv[1]
+search_string = sys.argv[2]
+max_items = sys.argv[3]
+outfile =  sys.argv[4]
 
 Entrez.email = "deepak.chandran@autodesk.com"
 handle = Entrez.esearch(db=db_name, retmax=max_items, term=search_string)
@@ -28,9 +28,8 @@ for i in range(0,len(id_list)):
     fout.write(gbstr)
     fout.close()
 
-    blocks = genbank_to_block(tmpfile)['blocks']
-    for j in blocks:
-        all_blocks.append(blocks[j]);
+    block = genbank_to_block(tmpfile)['block']
+    all_blocks.append(block);
     print(len(all_blocks))
 
 json.dump(all_blocks, open(outfile,'w'))

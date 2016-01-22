@@ -1,7 +1,6 @@
 import chai from 'chai';
 import fs from 'fs';
-import { Block as exampleBlock } from '../schemas/_examples';
-import { importFrom } from '../../src/middleware/api';
+import * as api from '../../src/middleware/api';
 const { expect } = chai;
 
 const fileStoragePath = './storage/';
@@ -10,19 +9,19 @@ describe('Middleware', () => {
   //login() is tested in server/REST
 
   it('apiPath() returns an absolute URL to hit the server', () => {
-    const fakepath = apiPath('somepath');
+    const fakepath = api.apiPath('somepath');
     expect(/http/.test(fakepath)).to.equal(true);
     expect(/somepath/.test(fakepath)).to.equal(true);
     expect(/api/.test(fakepath)).to.equal(true);
   });
 
   it('apiPath() paths are prefixed with /api/', () => {
-    const fakepath = apiPath('somepath');
+    const fakepath = api.apiPath('somepath');
     expect(/api\/somepath/.test(fakepath)).to.equal(true);
   });
 
   it('getSessionKey() should return current session key', () => {
-    expect(getSessionKey()).to.be.a.string;
+    expect(api.getSessionKey()).to.be.a.string;
   });
 
   it('getSessionKey() should be null before logging in'); //future
@@ -36,7 +35,7 @@ describe('Middleware', () => {
     const fileContents = 'rawr';
     const storagePath = fileStoragePath + filePath;
 
-    return writeFile(filePath, fileContents)
+    return api.writeFile(filePath, fileContents)
       .then((res) => {
         expect(res.status).to.equal(200);
         fs.readFile(storagePath, 'utf8', (err, file) => {
@@ -55,7 +54,7 @@ describe('Middleware', () => {
     const storagePath = fileStoragePath + filePath;
 
     fs.writeFile(storagePath, fileContents, 'utf8', (err, write) => {
-      writeFile(filePath, null).then((res) => {
+      api.writeFile(filePath, null).then((res) => {
         expect(res.status).to.equal(200);
         fs.readFile(storagePath, 'utf8', (err, read) => {
           expect(err.code).to.equal('ENOENT');
@@ -72,7 +71,7 @@ describe('Middleware', () => {
     const storagePath = fileStoragePath + filePath;
 
     fs.writeFile(storagePath, fileContents, 'utf8', (err, write) => {
-      readFile(filePath)
+      api.readFile(filePath)
         .then(result => {
           expect(result.status).to.equal(200);
           expect(typeof result.text).to.equal('function');
@@ -86,7 +85,6 @@ describe('Middleware', () => {
   });
 
   it('should work with multiple files', function multipleFiles(done) {
-
     //only takes a long time the first time docker build is run
     this.timeout(500000);
 
@@ -100,8 +98,8 @@ describe('Middleware', () => {
 
     Promise
       .all([
-        writeFile(file1Path, file1Contents),
-        writeFile(file2Path, file2Contents),
+        api.writeFile(file1Path, file1Contents),
+        api.writeFile(file2Path, file2Contents),
       ])
       .then(files => {
         fs.readFile(storage1Path, 'utf8', (err, read) => {
@@ -113,8 +111,8 @@ describe('Middleware', () => {
       })
       .then(() => {
         return Promise.all([
-          readFile(file1Path).then(resp => resp.text()),
-          readFile(file2Path).then(resp => resp.text()),
+          api.readFile(file1Path).then(resp => resp.text()),
+          api.readFile(file2Path).then(resp => resp.text()),
         ]);
       })
       .then(files => {
@@ -124,20 +122,88 @@ describe('Middleware', () => {
       });
   });
 
-  it.only('importFrom() should be able convert Genbank strings to Block', function readFileTest(done) {
-    this.timeout(5000);
-
-    fs.readFile('../res/sampleGenbank.gb', sampleStr => {
-      importFrom('block/genbank', sampleStr)
+  it('importBlock() should be able convert Genbank features to Block', function importFromTestimport(done) {
+    this.timeout(5000); //reading genbank can take long, esp when running along with other tests
+    fs.readFile('./test/res/sampleGenbank.gb', 'utf8', (err, sampleStr) => {
+      api.importBlock('genbank', sampleStr)
       .then(result => {
-        return JSON.parse(result.body);
+        return result.json();
       })
-      .then(result => {
-        console.log(result);
+      .then(data => {
+        const result = JSON.parse(data);
+        expect(result.block !== undefined).to.equal(true);
+        expect(result.blocks !== undefined).to.equal(true);
+        expect(result.block.components.length === 2).to.equal(true);
+        expect(result.blocks[data.block.components[0]] !== undefined).to.equal(true);
+        expect(result.blocks[data.block.components[1]] !== undefined).to.equal(true);
+        expect(result.blocks[data.block.components[0]].metadata.tags.sbol === 'cds').to.equal(true);
+        expect(result.blocks[data.block.components[1]].metadata.tags.sbol === 'cds').to.equal(true);
+        done();
+      })
+      .catch(err => {
+        expect(false).to.equal(true);
         done();
       });
     });
-
   });
 
+  it('exportBlock() should be able convert Block to Genbank', function importFromTestimport(done) {
+    this.timeout(5000); //reading genbank can take long, esp when running along with other tests
+    const sampleGenbank = 'LOCUS       1                          6 bp    DNA              UNK 01-JAN-1980\nDEFINITION  .\nACCESSION   1\nVERSION     1\nKEYWORDS    .\nSOURCE      .\n  ORGANISM  .\n            .\nFEATURES             Location/Qualifiers\n     block           1..3\n                     /parent_block="1,0"\n                     /block_id="2"\n     block           1..2\n                     /parent_block="2,0"\n                     /block_id="5"\n     block           1\n                     /parent_block="5,0"\n                     /block_id="8"\n     block           2\n                     /parent_block="5,1"\n                     /block_id="9"\n     block           2\n                     /parent_block="9,0"\n                     /block_id="10"\n     block           3\n                     /parent_block="2,1"\n                     /block_id="6"\n     block           4\n                     /parent_block="1,1"\n                     /block_id="3"\n     block           4\n                     /parent_block="3,0"\n                     /block_id="7"\n     block           5..6\n                     /parent_block="1,2"\n                     /block_id="4"\n     Double_T        5\n                     /parent_block\n                     /block_id="4"\nORIGIN\n        1 acggtt\n//\n';
+    fs.readFile('./test/res/sampleBlocks.json', 'utf8', (err, sampleBlocksJson) => {
+      const sampleBlocks = JSON.parse(sampleBlocksJson);
+      api.exportBlock('genbank', {block: sampleBlocks['1'], blocks: sampleBlocks})
+      .then(result => {
+        return result.json();
+      })
+      .then(result => {
+        expect(result === sampleGenbank).to.equal(true);
+        done();
+      })
+      .catch(err => {
+        expect(false).to.equal(true);
+        done();
+      });
+    });
+  });
+
+  it('importProject() should be able convert feature file to Blocks', function importFromTestimport(done) {
+    this.timeout(5000); //reading a long csv file
+    fs.readFile('./test/res/sampleFeatureFile.tab', 'utf8', (err, sampleFeatures) => {
+      api.importProject('features', sampleFeatures)
+      .then(result => {
+        return result.json();
+      })
+      .then(data => {
+        const result = JSON.parse(data);
+        expect(result.project.components.length === 125).to.equal(true);
+        expect(result.blocks[ result.project.components[19] ].metadata.name === '19:CBDcenA ').to.equal(true);
+        done();
+      })
+      .catch(err => {
+        expect(false).to.equal(true);
+        done();
+      });
+    });
+  });
+
+  it('searchForBlocks() should be able search NCBI nucleotide DB', function importFromTestimport(done) {
+    this.timeout(20000);  //searching NCBI
+    const input = {query: 'carboxylase', max: 2};
+    api.searchForBlocks('nucleotide', input)
+    .then(result => {
+      return result.json();
+    })
+    .then(result => {
+      const output = JSON.parse(result);
+      expect(output[0].metadata.name !== undefined).to.equal(true);
+      expect(output[0].metadata.organism !== undefined).to.equal(true);
+      expect(output.length === 2).to.equal(true);
+      done();
+    })
+    .catch(err => {
+      expect(false).to.equal(true);
+      done();
+    });
+  });
 });

@@ -55,7 +55,7 @@ exports.importBlock = function importBlock(gbstr) {
     }
 
     function runPy() {
-      exec('python3 extensions/convert/genbank/convert.py from_genbank input.gb output.json', (err, stdout) => {
+      exec('rm output.json; python3 extensions/convert/genbank/convert.py from_genbank input.gb output.json', (err, stdout) => {
         if (err) {
           reject(err.message);
           return;

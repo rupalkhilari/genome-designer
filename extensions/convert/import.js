@@ -7,9 +7,9 @@ const extensions = {};
 const jsonParser = bodyParser.json({
   strict: false, //allow values other than arrays and objects
 });
-
+const fs = require('fs');
 const normalizedPath = require('path').join(__dirname, '.');
-require('fs').readdirSync(normalizedPath).forEach(folder => {
+fs.readdirSync(normalizedPath).forEach(folder => {
   if (folder.indexOf('.js') === -1) {
     extensions[folder] = require('./' + folder);
   }
@@ -76,13 +76,22 @@ router.post('/project/:id', jsonParser, (req, resp) => {
   const data = req.body;
   //const key = req.headers.sessionkey;
   //const header = {'sessionkey': key, 'host': 'http://0.0.0.0:3000'};
-  importProject(id, data, res => {
-    if (res) {
-      resp.json(res);
-    } else {
-      resp.json( { error: 'No result' });
-    }
-  });
+  function callImportProj(text) {
+    importProject(id, text, res => {
+      if (res) {
+        resp.json(res);
+      } else {
+        resp.json( { error: 'No result' });
+      }
+    });
+  }
+  if (data.file) {
+    fs.readFile(data.file, 'utf8', (err, text) => {
+      callImportProj(text);
+    });
+  } else {
+    callImportProj(data.text);
+  }
 });
 
 router.post('/block/:id', jsonParser, (req, resp) => {
@@ -90,13 +99,22 @@ router.post('/block/:id', jsonParser, (req, resp) => {
   const data = req.body;
   //const key = req.headers.sessionkey;
   //const header = {'sessionkey': key, 'host': 'http://0.0.0.0:3000'};
-  importBlock(id, data, res => {
-    if (res) {
-      resp.json(res);
-    } else {
-      resp.json( { error: 'No result' });
-    }
-  });
+  function callImportBlock(text) {
+    importBlock(id, text, res => {
+      if (res) {
+        resp.json(res);
+      } else {
+        resp.json( { error: 'No result' });
+      }
+    });
+  }
+  if (data.file) {
+    fs.readFile(data.file, 'utf8', (err, text) => {
+      callImportBlock(text);
+    });
+  } else {
+    callImportBlock(data.text);
+  }
 });
 
 //export these functions for testing purpose

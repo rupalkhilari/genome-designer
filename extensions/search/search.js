@@ -44,11 +44,12 @@ function searchString(id, str, max, callback) {
   });
 }
 
-router.get('/:id', jsonParser, (req, resp) => {
-  const { id, str, n } = req.params;
+router.post('/:id', jsonParser, (req, resp) => {
+  const { id } = req.params;
+  const data = req.body;
   //const key = req.headers.sessionkey;
   //const header = {'sessionkey': key, 'host': 'http://0.0.0.0:3000'};
-  searchString(id, str, n, res => { resp.json(res); });
+  searchString(id, data.query, data.max, res => { resp.json(res); });
 });
 
 //export these functions for testing purpose
