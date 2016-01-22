@@ -32,7 +32,7 @@ describe('Genbank Extension', () => {
     });
   });
 
-  it.only('should export blocks to genbank', function exportGB(done) {
+  it('should export blocks to genbank', function exportGB(done) {
     this.timeout(5000);
     fs.readFile('./test/res/sampleBlocks.json', 'utf8', (err, sampleBlocksJson) => {
       const sampleBlocks = JSON.parse(sampleBlocksJson);

@@ -122,7 +122,7 @@ describe('Middleware', () => {
       });
   });
 
-  it('importBlock() should be able convert Genbank features to Block', function importFromTestimport(done) {
+  it('importBlock() should be able convert Genbank features to Block', function testFunc(done) {
     this.timeout(5000); //reading genbank can take long, esp when running along with other tests
     fs.readFile('./test/res/sampleGenbank.gb', 'utf8', (err, sampleStr) => {
       api.importBlock('genbank', sampleStr)
@@ -146,7 +146,7 @@ describe('Middleware', () => {
     });
   });
 
-  it('exportBlock() should be able convert Block to Genbank', function importFromTestimport(done) {
+  it('exportBlock() should be able convert Block to Genbank', function testFunc(done) {
     this.timeout(5000); //reading genbank can take long, esp when running along with other tests
     fs.readFile('./test/res/sampleBlocks.json', 'utf8', (err, sampleBlocksJson) => {
       const sampleBlocks = JSON.parse(sampleBlocksJson);
@@ -166,7 +166,7 @@ describe('Middleware', () => {
     });
   });
 
-  it('importProject() should be able convert feature file to Blocks', function importFromTestimport(done) {
+  it('importProject() should be able convert feature file to Blocks', function testFunc(done) {
     this.timeout(10000); //reading a long csv file
     fs.readFile('./test/res/sampleFeatureFile.tab', 'utf8', (err, sampleFeatures) => {
       api.importProject('features', sampleFeatures)
@@ -185,7 +185,7 @@ describe('Middleware', () => {
     });
   });
 
-  it('searchForBlocks() should be able search NCBI nucleotide DB', function importFromTestimport(done) {
+  it('searchForBlocks() should be able search NCBI nucleotide DB', function testFunc(done) {
     this.timeout(20000);  //searching NCBI
     const input = {query: 'carboxylase', max: 2};
     api.searchForBlocks('nucleotide', input)
@@ -196,6 +196,22 @@ describe('Middleware', () => {
       expect(output[0].metadata.name !== undefined).to.equal(true);
       expect(output[0].metadata.organism !== undefined).to.equal(true);
       expect(output.length === 2).to.equal(true);
+      done();
+    })
+    .catch(err => {
+      expect(false).to.equal(true);
+      done();
+    });
+  });
+
+  it('getManifests() should be able get extension information', done => {
+    api.getManifests('import')
+    .then(result => {
+      return result.json();
+    })
+    .then(output => {
+      expect(output.features !== undefined).to.equal(true);
+      expect(output.genbank !== undefined).to.equal(true);
       done();
     })
     .catch(err => {

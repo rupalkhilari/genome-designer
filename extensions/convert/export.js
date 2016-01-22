@@ -1,19 +1,16 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import { sessionMiddleware } from '../../server/utils/authentication';
-
+import { load as loadExtensions } from '../requireExtensions';
 const router = express.Router(); //eslint-disable-line new-cap
-const extensions = {};
 const jsonParser = bodyParser.json({
   strict: false, //allow values other than arrays and objects
 });
-const fs = require('fs');
+
 const normalizedPath = require('path').join(__dirname, '.');
-fs.readdirSync(normalizedPath).forEach(folder => {
-  if (folder.indexOf('.js') === -1) {
-    extensions[folder] = require('./' + folder);
-  }
-});
+const retval = loadExtensions(normalizedPath);
+const extensions = retval.extensions;
+const manifests = retval.manifests;
 
 router.use(sessionMiddleware);
 
@@ -100,6 +97,14 @@ router.post('/block/:id', jsonParser, (req, resp) => {
     }
   });
 });
+
+
+router.get('/manifests', jsonParser, (req, resp) => {
+  //const key = req.headers.sessionkey;
+  //const header = {'sessionkey': key, 'host': 'http://0.0.0.0:3000'};
+  resp.json(manifests);
+});
+
 
 //export these functions for testing purpose
 router.exportBlock = exportBlock;

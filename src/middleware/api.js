@@ -182,3 +182,11 @@ export const searchForBlocks = (id, inputs) => {
     return Promise.reject('error stringifying input object');
   }
 };
+
+export const getManifests = (id) => {
+  try {
+    return fetch(serverRoot + id + '/manifests', headersGet());
+  } catch (err) {
+    return Promise.reject('no such extension category: ' + id);
+  }
+};
