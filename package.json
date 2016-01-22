@@ -34,6 +34,8 @@
     "node": ">= 4.2.2"
   },
   "dependencies": {
+    "bootstrap": "^3.3.6",
+    "d3": "^3.5.12",
     "deep-freeze": "0.0.1",
     "history": "1.13.1",
     "invariant": "^2.2.0",
@@ -52,6 +54,7 @@
     "react": "^0.14.3",
     "react-addons-clone-with-props": "^0.14.3",
     "react-addons-test-utils": "0.14.2",
+    "react-bootstrap": "^0.28.2",
     "react-dom": "0.14.2",
     "react-redux": "^3.1.0",
     "react-router": "1.0.1",
@@ -79,6 +82,7 @@
     "eslint-config-airbnb": "^0.1.0",
     "eslint-plugin-react": "^3.7.1",
     "express": "^4.13.3",
+    "file-loader": "^0.8.5",
     "jsdom": "^7.0.2",
     "mocha": "^2.2.5",
     "morgan": "^1.6.1",
@@ -99,6 +103,7 @@
     "sinon-chai": "^2.8.0",
     "style-loader": "^0.13.0",
     "supertest": "^1.1.0",
+    "url-loader": "^0.5.7",
     "webpack": "^1.9.6",
     "webpack-dev-middleware": "^1.2.0",
     "webpack-hot-middleware": "^2.0.0"
