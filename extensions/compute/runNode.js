@@ -17,10 +17,9 @@ export const runCmd = (id, cmd) => {
 
   const fullCmd = 'cd ' + dir + '; ' + cmd;
 
-  return exec(fullCmd).then(result => {
+  return exec(fullCmd).then((error, stdout, stderr) => {
     return Promise.resolve(true);
   }).catch(err => {
-    console.log(err.message);
     //apparently, even warning messages trigger this section of exec, so it 'usually' ok
     return Promise.resolve(true);
   });
@@ -89,25 +88,27 @@ export const runNode = (id, fileUrls, header) => {
       })
     );
 
+    function copyToInputsFolder(inputFile, inputKey, resolve, reject) {
+      fs.readFile(inputFile, 'utf8', (err, contents) => {
+        if (err) {
+          reject(err.message);
+        }
+        fs.writeFile( dir + 'inputs/' + inputKey, contents, 'utf8', err => {
+          if (err) {
+            reject(err.message);
+          } else {
+            resolve(dir + 'inputs/' + inputKey);
+          }
+        }); //fs.writeFile
+      }); //fs.readFile
+    }
+
     inputs.forEach(inputItem => {
       const inputKey = inputItem.id;
       inputFileWrites.push(
         new Promise((resolve, reject) => {
           const inputFile = fileUrls[inputKey].replace('/api/file/', 'storage/');
-          fs.readFile(inputFile, 'utf8', (err, contents) => {
-            if (err) {
-              console.log(err.message);
-              reject(err.message);
-            }
-            fs.writeFile( dir + 'inputs/' + inputKey, contents, 'utf8', err => {
-              if (err) {
-                console.log(err.message);
-                reject(err.message);
-              } else {
-                resolve(dir + 'inputs/' + inputKey);
-              }
-            }); //fs.writeFile
-          }); //fs.readFile
+          copyToInputsFolder(inputFile, inputKey, resolve, reject);
         })
       );
     });
@@ -117,7 +118,6 @@ export const runNode = (id, fileUrls, header) => {
       outputFiles[ outputs[i].id ] = '';
       outputFileNames.push(dir + 'outputs/' + outputs[i].id);
     }
-
     return Promise.all(inputFileWrites);
   }
 
@@ -126,6 +126,7 @@ export const runNode = (id, fileUrls, header) => {
       readMultipleFiles(outputFileNames, 'utf8', (err, buffers) => {
         if (err) {
           console.log('Output read error: ' + err);
+          rejectRead('Output read error: ' + err);
         }
         //get values from files into object
         //TODO - select only json-suitable output fields
@@ -146,12 +147,10 @@ export const runNode = (id, fileUrls, header) => {
                 const path = outFileTrue.substring(0, outFileTrue.lastIndexOf('/') + 1);
                 mkpath(path, (err) => {
                   if (err) {
-                    console.log(err.message);
                     reject(err.message);
                   }
                   fs.writeFile(outFileTrue, contents, 'utf8', err => {
                     if (err) {
-                      console.log(err.message);
                       reject(err.message);
                     } else {
                       resolve(outFileTrue);
@@ -166,13 +165,13 @@ export const runNode = (id, fileUrls, header) => {
           );
         }
 
-        Promise.all(outputFileWrites)
-        .then(res => {
-          resolveRead(res);
-        }).
-        catch(res => {
-          rejectRead(res);
-        });
+        return Promise.all(outputFileWrites)
+          .then(res => {
+            resolveRead(res);
+          }).
+          catch(res => {
+            rejectRead(res);
+          });
       });
     });
   }
@@ -194,8 +193,7 @@ export const runNode = (id, fileUrls, header) => {
   })
   .then( res => {
     if (!res) {
-      console.log('Input write error');
-      Promise.reject('Input write error');
+      return Promise.reject('Input write error');
     }
 
     return runCmd(id, cmd);

@@ -8,10 +8,15 @@ const sampleGenbank = 'LOCUS       1                          6 bp    DNA       
 describe('Genbank Extension', () => {
   it('should import genbank file that has nested blocks', function importGB(done) {
     this.timeout(5000);
-    importBlock('genbank', sampleGenbank, output => {
+    importBlock('genbank', sampleGenbank)
+    .then(output => {
       expect(output.block !== undefined).to.equal(true);
       expect(output.block.components.length === 3).to.equal(true);
       expect(output.blocks['2'].components.length === 2).to.equal(true);
+      done();
+    })
+    .catch(err => {
+      expect(false).to.equal(true);
       done();
     });
   });
@@ -19,7 +24,8 @@ describe('Genbank Extension', () => {
   it('should be able convert Genbank features to Block', function importGB(done) {
     this.timeout(5000);
     fs.readFile('./test/res/sampleGenbank.gb', 'utf8', (err, sampleStr) => {
-      importBlock('genbank', sampleStr, data => {
+      importBlock('genbank', sampleStr)
+      .then(data => {
         expect(data.block !== undefined).to.equal(true);
         expect(data.blocks !== undefined).to.equal(true);
         expect(data.block.components.length === 2).to.equal(true);
@@ -27,6 +33,10 @@ describe('Genbank Extension', () => {
         expect(data.blocks[data.block.components[1]] !== undefined).to.equal(true);
         expect(data.blocks[data.block.components[0]].metadata.tags.sbol === 'cds').to.equal(true);
         expect(data.blocks[data.block.components[1]].metadata.tags.sbol === 'cds').to.equal(true);
+        done();
+      })
+      .catch(err => {
+        expect(false).to.equal(true);
         done();
       });
     });
@@ -36,9 +46,14 @@ describe('Genbank Extension', () => {
     this.timeout(5000);
     fs.readFile('./test/res/sampleBlocks.json', 'utf8', (err, sampleBlocksJson) => {
       const sampleBlocks = JSON.parse(sampleBlocksJson);
-      exportBlock('genbank', {block: sampleBlocks['1'], blocks: sampleBlocks}, result => {
+      exportBlock('genbank', {block: sampleBlocks['1'], blocks: sampleBlocks})
+      .then(result => {
         expect(result.indexOf('acggtt') !== -1).to.equal(true);
         expect(result.indexOf('block           5..6') !== -1).to.equal(true);
+        done();
+      })
+      .catch(err => {
+        expect(false).to.equal(true);
         done();
       });
     });

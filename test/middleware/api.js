@@ -5,7 +5,7 @@ const { expect } = chai;
 
 const fileStoragePath = './storage/';
 
-describe('Middleware', () => {
+describe.only('Middleware', () => {
   //login() is tested in server/REST
 
   it('apiPath() returns an absolute URL to hit the server', () => {
@@ -185,10 +185,10 @@ describe('Middleware', () => {
     });
   });
 
-  it('searchForBlocks() should be able search NCBI nucleotide DB', function testFunc(done) {
+  it('search() should be able search NCBI nucleotide DB', function testFunc(done) {
     this.timeout(20000);  //searching NCBI
     const input = {query: 'carboxylase', max: 2};
-    api.searchForBlocks('nucleotide', input)
+    api.search('nucleotide', input)
     .then(result => {
       return result.json();
     })

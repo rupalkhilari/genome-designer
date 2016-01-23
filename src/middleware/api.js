@@ -174,7 +174,7 @@ export const importProject = (id, input) => {
   }
 };
 
-export const searchForBlocks = (id, inputs) => {
+export const search = (id, inputs) => {
   try {
     const stringified = JSON.stringify(inputs);
     return fetch(searchPath(`${id}`), headersPost(stringified));

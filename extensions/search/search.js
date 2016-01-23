@@ -13,45 +13,45 @@ const manifests = retval.manifests;
 
 router.use(sessionMiddleware);
 
-function searchString(id, str, max, callback) {
-  if (id in extensions) {
-    const mod = extensions[id];
-    if (mod.search) {
-      try {
-        mod.search(str, max)
-        .then(res => {
-          callback(res);
-        })
-        .catch(err => {
-          callback({
-            error: err.message,
+function searchString(id, str, max) {
+  return new Promise((resolve, reject) => {
+    if (id in extensions) {
+      const mod = extensions[id];
+      if (mod.search) {
+        try {
+          mod.search(str, max)
+          .then(res => {
+            console.log("search res");
+            resolve(res);
+          })
+          .catch(err => {
+            reject(err.message);
           });
-        });
-      } catch (err) {
-        callback({
-          error: err.message,
-        });
+        } catch (err) {
+          reject(err.message);
+        }
+      } else {
+        reject('No search option named ' + id);
       }
-      return;
+    } else {
+      reject('No search option named ' + id);
     }
-  }
-  callback({
-    error: 'No import option named ' + id + ' for projects',
   });
 }
 
 router.post('/:id', jsonParser, (req, resp) => {
   const { id } = req.params;
   const data = req.body;
-  //const key = req.headers.sessionkey;
-  //const header = {'sessionkey': key, 'host': 'http://0.0.0.0:3000'};
-  searchString(id, data.query, data.max, res => { resp.json(res); });
+  searchString(id, data.query, data.max)
+  .then(res => {
+    resp.json(res);
+  })
+  .catch(err => {
+    resp.status(500).send(err);
+  });
 });
 
-
 router.get('/manifests', jsonParser, (req, resp) => {
-  //const key = req.headers.sessionkey;
-  //const header = {'sessionkey': key, 'host': 'http://0.0.0.0:3000'};
   resp.json(manifests);
 });
 

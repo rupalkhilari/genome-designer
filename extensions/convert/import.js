@@ -10,113 +10,86 @@ const normalizedPath = require('path').join(__dirname, '.');
 const retval = loadExtensions(normalizedPath);
 const extensions = retval.extensions;
 const manifests = retval.manifests;
-
+const fs = require('fs');
 router.use(sessionMiddleware);
 
-function importProject(id, data, callback) {
-  if (id in extensions) {
-    const mod = extensions[id];
-    if (mod.importProject) {
-      try {
-        mod.importProject(data)
-        .then(res => {
-          callback(res);
-        })
-        .catch(err => {
-          callback({
-            error: err.message,
+
+function callImportFunction(funcName, id, data) {
+  return new Promise((resolve, reject) => {
+    if (id in extensions) {
+      const mod = extensions[id];
+      if (mod[funcName]) {
+        try {
+          const func = mod[funcName];
+          func(data)
+          .then(res => {
+            resolve(res);
+          })
+          .catch(err => {
+            reject(err.message);
           });
-        });
-      } catch (err) {
-        callback({
-          error: err.message,
-        });
+        } catch (err) {
+          reject(err.message);
+        }
+      } else {
+        reject('No import option named ' + id + ' for projects');
       }
-      return;
+    } else {
+      reject('No import option named ' + id + ' for projects');
     }
-  }
-  callback({
-    error: 'No import option named ' + id + ' for projects',
   });
 }
 
-function importBlock(id, data, callback) {
-  if (id in extensions) {
-    const mod = extensions[id];
-    if (mod.importBlock) {
-      try {
-        mod.importBlock(data)
-        .then(res => {
-          callback(res);
-        })
-        .catch(err => {
-          callback({
-            error: err.message,
-          });
-        });
-      } catch (err) {
-        callback({
-          error: err.message,
-        });
-      }
-      return;
-    }
-  }
-  callback({
-    error: 'No import option named ' + id + ' for blocks',
+function importProject(id, data) {
+  return callImportFunction('importProject', id, data);
+}
+
+function importBlock(id, data) {
+  return callImportFunction('importBlock', id, data);
+}
+
+//this function is just trying to avoid redundant code
+function importThenCatch(promise, resp) {
+  promise
+  .then(res => {
+    resp.json(res);
+  })
+  .catch(err => {
+    resp.status(500).send(err);
   });
 }
 
 router.post('/project/:id', jsonParser, (req, resp) => {
   const { id } = req.params;
   const data = req.body;
-  //const key = req.headers.sessionkey;
-  //const header = {'sessionkey': key, 'host': 'http://0.0.0.0:3000'};
-  function callImportProj(text) {
-    importProject(id, text, res => {
-      if (res) {
-        resp.json(res);
-      } else {
-        resp.json( { error: 'No result' });
-      }
-    });
-  }
+
   if (data.file) {
     fs.readFile(data.file, 'utf8', (err, text) => {
-      callImportProj(text);
+      const promise = importProject(id, text);
+      importThenCatch(promise, resp);
     });
   } else {
-    callImportProj(data.text);
+    const promise = importProject(id, data.text);
+    importThenCatch(promise, resp);
   }
 });
 
 router.post('/block/:id', jsonParser, (req, resp) => {
   const { id } = req.params;
   const data = req.body;
-  //const key = req.headers.sessionkey;
-  //const header = {'sessionkey': key, 'host': 'http://0.0.0.0:3000'};
-  function callImportBlock(text) {
-    importBlock(id, text, res => {
-      if (res) {
-        resp.json(res);
-      } else {
-        resp.json( { error: 'No result' });
-      }
-    });
-  }
+
   if (data.file) {
     fs.readFile(data.file, 'utf8', (err, text) => {
-      callImportBlock(text);
+      const promise = importBlock(id, text);
+      importThenCatch(promise, resp);
     });
   } else {
-    callImportBlock(data.text);
+    const promise = importBlock(id, data.text);
+    importThenCatch(promise, resp);
   }
 });
 
-
 router.get('/manifests', jsonParser, (req, resp) => {
-  //const key = req.headers.sessionkey;
-  //const header = {'sessionkey': key, 'host': 'http://0.0.0.0:3000'};
   resp.json(manifests);
 });
 
