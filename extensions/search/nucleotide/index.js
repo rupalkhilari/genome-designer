@@ -6,7 +6,7 @@ const dbName = 'nucleotide';
 
 exports.search = function search(searchString, maxResults = 10) {
   const promise = new Promise((resolve, reject) => {
-    const outfile = 'output.json';
+    const outfile = 'temp.json';
     function readOutput() {
       fs.readFile(outfile, 'utf8', (err, data) => {
         if (err) {

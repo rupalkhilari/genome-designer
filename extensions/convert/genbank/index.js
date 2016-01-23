@@ -11,7 +11,7 @@ exports.exportBlock = function exportBlock(block, blocks) {
 
   const promise = new Promise((resolve, reject) => {
     function readOutput() {
-      fs.readFile('output.gb', 'utf8', (err, data) => {
+      fs.readFile('temp.gb', 'utf8', (err, data) => {
         if (err) {
           reject(err.message);
           return;
@@ -21,7 +21,7 @@ exports.exportBlock = function exportBlock(block, blocks) {
     }
 
     function runPy() {
-      exec('python3 extensions/convert/genbank/convert.py to_genbank data.json output.gb', (err, stdout) => {
+      exec('python3 extensions/convert/genbank/convert.py to_genbank temp.json temp.gb', (err, stdout) => {
         if (err) {
           reject(err.message);
           return;
@@ -30,7 +30,7 @@ exports.exportBlock = function exportBlock(block, blocks) {
       });
     }
 
-    fs.writeFile('data.json', JSON.stringify(input), 'utf8', (err, data) => {
+    fs.writeFile('temp.json', JSON.stringify(input), 'utf8', (err, data) => {
       if (err) {
         reject(err.message);
         return;
@@ -45,7 +45,7 @@ exports.exportBlock = function exportBlock(block, blocks) {
 exports.importBlock = function importBlock(gbstr) {
   const promise = new Promise((resolve, reject) => {
     function readOutput() {
-      fs.readFile('output.json', 'utf8', (err, data) => {
+      fs.readFile('temp.json', 'utf8', (err, data) => {
         if (err) {
           reject(err.message);
           return;
@@ -55,7 +55,7 @@ exports.importBlock = function importBlock(gbstr) {
     }
 
     function runPy() {
-      exec('rm output.json; python3 extensions/convert/genbank/convert.py from_genbank input.gb output.json', (err, stdout) => {
+      exec('rm output.json; python3 extensions/convert/genbank/convert.py from_genbank temp.gb temp.json', (err, stdout) => {
         if (err) {
           reject(err.message);
           return;
@@ -64,7 +64,7 @@ exports.importBlock = function importBlock(gbstr) {
       });
     }
 
-    fs.writeFile('input.gb', gbstr, 'utf8', (err, data) => {
+    fs.writeFile('temp.gb', gbstr, 'utf8', (err, data) => {
       if (err) {
         reject(err.message);
         return;
