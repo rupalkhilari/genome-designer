@@ -18,13 +18,8 @@ exports.importProject = function importProject(csvstr) {
     const blocks = {};
 
     function appendToProj(data) {
-      let id, json, name, seq, type, color;
-
-      name = data[0];
-      seq = data[1];
-      type = data[2];
-      color = data[3];
-      id = uuid.v4();
+      const [name, seq, type, color] = data;
+      const id = uuid.v4();
       blocks[id] = {
         'id': id,
         'metadata': {

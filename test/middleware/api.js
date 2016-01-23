@@ -5,7 +5,7 @@ const { expect } = chai;
 
 const fileStoragePath = './storage/';
 
-describe.only('Middleware', () => {
+describe('Middleware', () => {
   //login() is tested in server/REST
 
   it('apiPath() returns an absolute URL to hit the server', () => {

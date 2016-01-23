@@ -1,5 +1,6 @@
 {
   "name": "nucleotide",
+  "version": "1.0.0",
   "authors": [
     { "name": "Deepak Chandran",
       "email": "deepak.chandran@autodesk.com"
