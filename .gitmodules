@@ -1,3 +1,5 @@
 [submodule "src/extensions/onion2"]
 	path = src/extensions/onion2
 	url = https://github.com/IsaacLuo/onion2.git
+	pushurl = git@github.com:IsaacLuo/onion2.git
+	branch = master
