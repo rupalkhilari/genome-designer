@@ -15,7 +15,7 @@ describe('Schema', () => {
       expect(BlockDefinition.validate(scaffold)).to.equal(true);
     });
 
-    it.only('should prefix ID with block', () => {
+    it('should prefix ID with block', () => {
       const scaffold = BlockDefinition.scaffold();
       const regex = /^block/;
       //console.log(scaffold);
