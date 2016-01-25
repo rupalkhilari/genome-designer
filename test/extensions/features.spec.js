@@ -13,8 +13,7 @@ describe('Features Extensions', () => {
         done();
       })
       .catch(err => {
-        expect(false).to.equal(true);
-        done();
+        done(err);
       });
     });
   });

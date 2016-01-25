@@ -1,4 +1,4 @@
-import { expect, assert } from 'chai';
+import { expect } from 'chai';
 import { importProject, importBlock } from '../../extensions/convert/import';
 import { exportProject, exportBlock } from '../../extensions/convert/export';
 const fs = require('fs');
@@ -16,7 +16,7 @@ describe('Genbank Extension', () => {
       done();
     })
     .catch(err => {
-      console.log(err);
+      done(err);
     });
   });
 
@@ -31,7 +31,7 @@ describe('Genbank Extension', () => {
         done();
       })
       .catch(err => {
-        console.log(err);
+        done(err);
       });
     });
   });
@@ -57,7 +57,7 @@ describe('Genbank Extension', () => {
         done();
       })
       .catch(err => {
-        console.log(err);
+        done(err);
       });
     });
   });
@@ -74,7 +74,7 @@ describe('Genbank Extension', () => {
         done();
       })
       .catch(err => {
-        console.log(err);
+        done(err);
       });
     });
   });
@@ -91,7 +91,7 @@ describe('Genbank Extension', () => {
         done();
       })
       .catch(err => {
-        console.log(err);
+        done(err);
       });
     });
   });

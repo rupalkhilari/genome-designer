@@ -6,13 +6,13 @@ module.exports = exports = {};
 
 function runCmd(cmd, input, inputFile, outputFile) {
   const promise = new Promise((resolve, reject) => {
-
     function readOutput() {
       try {
         fs.readFile(outputFile, 'utf8', (err, data) => {
+          fs.unlink(inputFile);
+          fs.unlink(outputFile);
           if (err) {
             reject(err);
-            return;
           }
           resolve(data);
         });
@@ -62,7 +62,7 @@ exports.importBlock = function importBlock(gbstr) {
             const block = result.blocks[bid];
             return Promise.resolve({ block: block, blocks: result.blocks });
           }
-          return Promise.reject("invalid input string")
+          return Promise.reject('invalid input string');
         });
 };
 
@@ -71,18 +71,22 @@ exports.exportProject = function exportProject(proj, blocks) {
     project: proj,
     blocks: blocks,
   };
-  const cmd = 'python extensions/convert/genbank/convert.py to_genbank temp.json temp.gb';
-  return runCmd(cmd, JSON.stringify(input), 'temp.json', 'temp.gb');
+  const inputFile = 'temp-' + uuid.v4();
+  const outputFile = 'temp-' + uuid.v4();
+  const cmd = 'python extensions/convert/genbank/convert.py to_genbank ' + inputFile + ' ' + outputFile;
+  return runCmd(cmd, JSON.stringify(input), inputFile, outputFile);
 };
 
 exports.importProject = function importProject(gbstr) {
-  const cmd = 'rm temp.json; python extensions/convert/genbank/convert.py from_genbank temp.gb temp.json';
-  return runCmd(cmd, gbstr, 'temp.gb', 'temp.json')
+  const inputFile = 'temp-' + uuid.v4();
+  const outputFile = 'temp-' + uuid.v4();
+  const cmd = 'python extensions/convert/genbank/convert.py from_genbank ' + inputFile + ' ' + outputFile;
+  return runCmd(cmd, gbstr, inputFile, outputFile)
           .then(resStr => {
             try {
               const res = JSON.parse(resStr);
               return Promise.resolve(res);
-            } catch(exp) {
+            } catch (exp) {
               return Promise.reject(exp.message);
             }
           });

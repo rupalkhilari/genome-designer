@@ -146,8 +146,7 @@ describe('Middleware', () => {
         done();
       })
       .catch(err => {
-        expect(false).to.equal(true);
-        done();
+        done(err);
       });
     });
   });
@@ -166,8 +165,7 @@ describe('Middleware', () => {
         done();
       })
       .catch(err => {
-        expect(false).to.equal(true);
-        done();
+        done(err);
       });
     });
   });
@@ -185,8 +183,7 @@ describe('Middleware', () => {
         done();
       })
       .catch(err => {
-        expect(false).to.equal(true);
-        done();
+        done(err);
       });
     });
   });
@@ -194,7 +191,7 @@ describe('Middleware', () => {
   it('search() should be able search NCBI nucleotide DB', function testFunc(done) {
     this.timeout(20000);  //searching NCBI
     const input = {query: 'carboxylase', max: 2};
-    api.search('nucleotide', input)
+    return api.search('nucleotide', input)
     .then(result => {
       return result.json();
     })
@@ -203,25 +200,17 @@ describe('Middleware', () => {
       expect(output[0].metadata.organism !== undefined).to.equal(true);
       expect(output.length === 2).to.equal(true);
       done();
-    })
-    .catch(err => {
-      expect(false).to.equal(true);
-      done();
     });
   });
 
   it('getManifests() should be able get extension information', done => {
-    api.getManifests('import')
+    return api.getManifests('import')
     .then(result => {
       return result.json();
     })
     .then(output => {
       expect(output.features !== undefined).to.equal(true);
       expect(output.genbank !== undefined).to.equal(true);
-      done();
-    })
-    .catch(err => {
-      expect(false).to.equal(true);
       done();
     });
   });

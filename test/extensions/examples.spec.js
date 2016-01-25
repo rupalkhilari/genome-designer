@@ -18,7 +18,6 @@ describe('Nodes Extension', () => {
         done();
       })
       .catch(err => {
-        expect(false).to.equal(true);
         done(err.message);
       });
     });

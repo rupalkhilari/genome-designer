@@ -1,14 +1,16 @@
 const exec = require('child_process').exec;
 const fs = require('fs');
+const uuid = require('node-uuid');
 
 module.exports = exports = {};
 const dbName = 'nucleotide';
 
 exports.search = function search(searchString, maxResults = 10) {
   const promise = new Promise((resolve, reject) => {
-    const outfile = 'temp.json';
+    const outputFile = 'temp-' + uuid.v4();
     function readOutput() {
-      fs.readFile(outfile, 'utf8', (err, data) => {
+      fs.readFile(outputFile, 'utf8', (err, data) => {
+        fs.unlink(outputFile);
         if (err) {
           reject(err.message);
           return;
@@ -17,7 +19,7 @@ exports.search = function search(searchString, maxResults = 10) {
       });
     }
 
-    exec('python extensions/search/nucleotide/search.py ' + dbName + ' "' + searchString + '" ' + maxResults + ' ' + outfile, (err, stdout) => {
+    exec('python extensions/search/nucleotide/search.py ' + dbName + ' "' + searchString + '" ' + maxResults + ' ' + outputFile, (err, stdout) => {
       if (err) {
         reject(err.message);
         return;
