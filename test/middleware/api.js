@@ -133,10 +133,16 @@ describe('Middleware', () => {
         expect(data.block !== undefined).to.equal(true);
         expect(data.blocks !== undefined).to.equal(true);
         expect(data.block.components.length === 2).to.equal(true);
+
+        //check that CDS types were converted to Blocks
         expect(data.blocks[data.block.components[0]] !== undefined).to.equal(true);
         expect(data.blocks[data.block.components[1]] !== undefined).to.equal(true);
         expect(data.blocks[data.block.components[0]].metadata.tags.sbol === 'cds').to.equal(true);
         expect(data.blocks[data.block.components[1]].metadata.tags.sbol === 'cds').to.equal(true);
+
+        //check that other features were imported as features for the main block
+        expect(data.block.sequence.features.length === 2).to.equal(true);
+        expect(data.block.sequence.features[1].type === 'rep_origin').to.equal(true);
         done();
       })
       .catch(err => {
@@ -150,7 +156,7 @@ describe('Middleware', () => {
     this.timeout(5000); //reading genbank can take long, esp when running along with other tests
     fs.readFile('./test/res/sampleBlocks.json', 'utf8', (err, sampleBlocksJson) => {
       const sampleBlocks = JSON.parse(sampleBlocksJson);
-      api.exportBlock('genbank', {block: sampleBlocks['1'], blocks: sampleBlocks})
+      api.exportBlock('genbank', sampleBlocks)
       .then(result => {
         return result.json();
       })

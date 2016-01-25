@@ -13,11 +13,11 @@ to_genbank = sys.argv[1] == "to_genbank"
 
 if to_genbank:
     genbank_file = sys.argv[3]
-    block_file = sys.argv[2]
-    block = json.load(open(block_file,"r"))
-    block_to_genbank(genbank_file, block['block'], block['blocks'])
+    project_file = sys.argv[2]
+    project = json.load(open(project_file,"r"))
+    project_to_genbank(genbank_file, project['project'], project['blocks'])
 else:
     genbank_file = sys.argv[2]
-    block_file = sys.argv[3]
-    blocks = genbank_to_block(genbank_file, True)
-    json.dump(blocks, open(block_file,'w'))
+    project_file = sys.argv[3]
+    project = genbank_to_project(genbank_file, True)
+    json.dump(project, open(project_file,'w'))

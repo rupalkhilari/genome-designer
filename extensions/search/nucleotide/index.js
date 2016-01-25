@@ -17,7 +17,7 @@ exports.search = function search(searchString, maxResults = 10) {
       });
     }
 
-    exec('python3 extensions/search/nucleotide/search.py ' + dbName + ' "' + searchString + '" ' + maxResults + ' ' + outfile, (err, stdout) => {
+    exec('python extensions/search/nucleotide/search.py ' + dbName + ' "' + searchString + '" ' + maxResults + ' ' + outfile, (err, stdout) => {
       if (err) {
         reject(err.message);
         return;

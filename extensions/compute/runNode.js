@@ -39,7 +39,6 @@ export const runNode = (id, fileUrls, header) => {
     return new Promise( (resolve, reject) => {
       fs.readFile(file, 'utf8', (err, filestr) => {
         if (err) {
-          console.log('Workflow.yaml could not be read: ' + err);
           reject('Workflow.yaml could not be read: ' + err);
         } else {
           resolve( yaml.parse(filestr) );
@@ -79,7 +78,6 @@ export const runNode = (id, fileUrls, header) => {
       new Promise((resolve, reject) => {
         fs.writeFile( dir + 'inputs/headers', JSON.stringify(header), 'utf8', err => {
           if (err) {
-            console.log(err.message);
             reject(err.message);
           } else {
             resolve(dir + 'inputs/headers');
@@ -125,7 +123,6 @@ export const runNode = (id, fileUrls, header) => {
     return new Promise( (resolveRead, rejectRead) => {
       readMultipleFiles(outputFileNames, 'utf8', (err, buffers) => {
         if (err) {
-          console.log('Output read error: ' + err);
           rejectRead('Output read error: ' + err);
         }
         //get values from files into object

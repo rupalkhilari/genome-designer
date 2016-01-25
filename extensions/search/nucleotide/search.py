@@ -8,7 +8,7 @@ from genbank_import_export import *
 
 db_name =  sys.argv[1]
 search_string = sys.argv[2]
-max_items = sys.argv[3]
+max_items = int(sys.argv[3])
 outfile =  sys.argv[4]
 
 Entrez.email = "deepak.chandran@autodesk.com"
@@ -20,7 +20,7 @@ handle.close()
 all_blocks = []
 tmpfile = "temp.gb"
 
-for i in range(0,len(id_list)):
+for i in range(0,min([max_items, len(id_list)])):
     handle = Entrez.efetch(db=db_name, id=id_list[i], rettype="gb", retmode="text")
     gbstr = handle.read()
     handle.close()
@@ -28,8 +28,13 @@ for i in range(0,len(id_list)):
     fout.write(gbstr)
     fout.close()
 
-    block = genbank_to_block(tmpfile)['block']
-    all_blocks.append(block);
-    print(len(all_blocks))
+    try:
+        project = genbank_to_project(tmpfile)
+        block_id = project["project"]["components"][0]
+        block = project["blocks"][block_id]
+        all_blocks.append(block);
+    except Exception as e:
+        print(e)
+        pass
 
 json.dump(all_blocks, open(outfile,'w'))

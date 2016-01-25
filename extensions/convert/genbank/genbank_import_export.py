@@ -46,21 +46,30 @@ def get_sequence_and_features(block, allblocks):
                 })
         return { "sequence": seq, "features": features }
 
-def block_to_genbank(filename, block, allblocks):
-    output = get_sequence_and_features(block, allblocks)
-    seq = output["sequence"]
-    features = output["features"]
+def project_to_genbank(filename, project, allblocks):
+    blocks = project["components"]
+    seq_obj_lst = []
 
-    seq_obj = SeqIO.SeqRecord(Seq.Seq(seq,Seq.Alphabet.DNAAlphabet()),block["id"])
-    for feature in features:
-        sf = SeqFeature.SeqFeature()
-        sf.type = feature["type"]
-        sf.location = SeqFeature.FeatureLocation(feature["start"],feature["end"])
-        sf.qualifiers["block_id"] = feature.get("block_id","")
-        sf.qualifiers["parent_block"] = feature.get("parent_block",None)
-        seq_obj.features.append(sf)
+    for bid in blocks:
+        block = allblocks.get(bid)
+        if not block:
+            continue
 
-    SeqIO.write(seq_obj, open(filename, "w"), "genbank")
+        output = get_sequence_and_features(block, allblocks)
+        seq = output["sequence"]
+        features = output["features"]
+
+        seq_obj = SeqIO.SeqRecord(Seq.Seq(seq,Seq.Alphabet.DNAAlphabet()),block["id"])
+        for feature in features:
+            sf = SeqFeature.SeqFeature()
+            sf.type = feature["type"]
+            sf.location = SeqFeature.FeatureLocation(feature["start"],feature["end"])
+            sf.qualifiers["block_id"] = feature.get("block_id","")
+            sf.qualifiers["parent_block"] = feature.get("parent_block",None)
+            seq_obj.features.append(sf)
+        seq_obj_lst.append(seq_obj)
+
+    SeqIO.write(seq_obj_lst, open(filename, "w"), "genbank")
 
 def create_block_json(id, sequence, features):
     return {
@@ -78,20 +87,15 @@ def create_block_json(id, sequence, features):
         }
       }
 
-def genbank_to_block(filename, convert_features=False):
+def genbank_to_block_helper(gb, convert_features=False):
     all_blocks = {}
     block_parents = {}
     block_start_pos = {}
     features = []
     newblocks = 0
-
-    generator = SeqIO.parse(open(filename,"r"),"genbank")
-    for record in generator:
-        gb = record
-        break
-
     sequence = str(gb.seq)
-    root_id = str(uuid.uuid4())
+    #root_id = str(uuid.uuid4())
+    root_id = gb.id
 
     #Collect all the neccessary metadata
     root_block = create_block_json(root_id, sequence, [])
@@ -105,7 +109,7 @@ def genbank_to_block(filename, convert_features=False):
             pass
 
     all_blocks[root_id] = root_block
-    all_blocks[gb.id] = root_block
+    #all_blocks[gb.id] = root_block
 
     for f in gb.features:
         qualifiers = f.qualifiers
@@ -177,4 +181,27 @@ def genbank_to_block(filename, convert_features=False):
         del feature["block_id"]
         if block_id in all_blocks:
             all_blocks[ block_id ]["sequence"]["features"].append(feature)
+    #del all_blocks[gb.id]
     return { "block": all_blocks[root_id], "blocks": all_blocks }
+
+
+def genbank_to_project(filename, convert_features=False):
+    project = {
+      'id': str(uuid.uuid4()),
+      'metadata': {
+        'authors': [],
+        'tags': {},
+        'version': '',
+      },
+      'components': [],
+    };
+    blocks_array = []
+    all_blocks = {}
+    generator = SeqIO.parse(open(filename,"r"),"genbank")
+    for record in generator:
+        gb = record
+        one_block = genbank_to_block_helper(gb, convert_features)
+        project["components"].append(one_block["block"]["id"])
+        for bid in one_block["blocks"]:
+            all_blocks[bid] = one_block["blocks"][bid]
+    return { "project": project, "blocks": all_blocks }

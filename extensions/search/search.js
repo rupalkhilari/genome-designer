@@ -21,7 +21,6 @@ function searchString(id, str, max) {
         try {
           mod.search(str, max)
           .then(res => {
-            console.log("search res");
             resolve(res);
           })
           .catch(err => {

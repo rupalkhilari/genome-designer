@@ -27,10 +27,10 @@ function callExportFunction(funcName, field, id, input) {
             resolve(res);
           })
           .catch(err => {
-            reject(err.message);
+            reject(err);
           });
         } catch (err) {
-          reject(err.message);
+          reject(err);
         }
       } else {
         reject('No export option named ' + id + ' for projects');

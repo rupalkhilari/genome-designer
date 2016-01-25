@@ -11,10 +11,6 @@ describe('NCBI Search extension', () => {
       expect(output[0].metadata.organism !== undefined).to.equal(true);
       expect(output.length === 2).to.equal(true);
       done();
-    })
-    .catch(err => {
-      expect(false).to.equal(true);
-      done();
     });
   });
 });

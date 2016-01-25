@@ -13,7 +13,6 @@ const manifests = retval.manifests;
 const fs = require('fs');
 router.use(sessionMiddleware);
 
-
 function callImportFunction(funcName, id, data) {
   return new Promise((resolve, reject) => {
     if (id in extensions) {
@@ -26,10 +25,10 @@ function callImportFunction(funcName, id, data) {
             resolve(res);
           })
           .catch(err => {
-            reject(err.message);
+            reject(err);
           });
         } catch (err) {
-          reject(err.message);
+          reject(err);
         }
       } else {
         reject('No import option named ' + id + ' for projects');

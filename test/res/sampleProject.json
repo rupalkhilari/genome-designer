@@ -1,16 +1,17 @@
 {
-	"block": {
-		"id": "1",
-		"components": ["2", "3", "4"],
-		"sequence": {
-			"sequence": "",
-			"features": []
-		}
-	},
+	"project": {
+    "id": "p1",
+    "metadata": {
+    	"authors": [],
+      "tags": {},
+      "version": ""
+    },
+    "components": ["1", "2", "3", "4"]
+  },
 	"blocks": {
 		"1": {
 			"id": "1",
-			"components": ["2", "3", "4"],
+			"components": [],
 			"sequence": {
 				"sequence": "",
 				"features": []
