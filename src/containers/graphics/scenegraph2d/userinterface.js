@@ -23,6 +23,8 @@ export default class UserInterface {
     // mouse tracker
     this.mouseTrap = new MouseTrap({
       element: this.el,
+      mouseEnter: this.mouseEnter.bind(this),
+      mouseLeave: this.mouseLeave.bind(this),
       mouseDown: this.mouseDown.bind(this),
       mouseMove: this.mouseMove.bind(this),
       mouseDrag: this.mouseDrag.bind(this),
@@ -116,6 +118,14 @@ export default class UserInterface {
     return div;
   }
 
+  /**
+   * this is the actual mouse down event you should override in descendant classes
+   */
+  mouseEnter(event) {}
+  /**
+   * this is the actual mouse down event you should override in descendant classes
+   */
+  mouseLeave(event) {}
   /**
    * this is the actual mouse down event you should override in descendant classes
    */

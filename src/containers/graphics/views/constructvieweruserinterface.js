@@ -73,6 +73,16 @@ export default class ConstructViewerUserInterface extends UserInterface {
     return this.constructViewer.props.construct;
   }
   /**
+   * mouse enter
+   */
+  mouseEnter(event) {
+    console.log("ENTER:", this.construct.id);
+  }
+  mouseLeave(event) {
+    console.log("LEAVE:", this.construct.id);
+  }
+
+  /**
    * mouse down handler
    */
   mouseUp(evt, point) {
@@ -101,6 +111,11 @@ export default class ConstructViewerUserInterface extends UserInterface {
     } else {
       // clear selections on no block click
       this.constructViewer.blockSelected([block]);
+      // for now, open a context menu
+      this.constructViewer.openPopup({
+        blockPopupMenuOpen: true,
+        menuPosition: this.mouseTrap.mouseToGlobal(evt),
+      });
     }
   }
 

@@ -41,6 +41,10 @@ export class ConstructViewer extends Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+      blockPopupMenuOpen: false,    // context menu for blocks
+      menuPosition: new Vector2D(), // position for any popup menu
+    }
   }
 
   /**
@@ -194,6 +198,18 @@ export class ConstructViewer extends Component {
   }
 
   /**
+   * close all popup menus
+   */
+  closePopups() {
+    this.setState({blockPopupMenuOpen: false});
+  }
+  /**
+   * open any popup menu by apply the appropriate state and global position
+   */
+  openPopup(state) {
+    this.setState(state);
+  }
+  /**
    * render the component, the scene graph will render later when componentDidUpdate is called
    */
   render() {
@@ -213,19 +229,17 @@ export class ConstructViewer extends Component {
         <div className="sceneGraphContainer">
           <div className="sceneGraph"/>
         </div>
-        <PopupMenu menuItems={
+        <PopupMenu open={this.state.blockPopupMenuOpen} position={this.state.menuPosition} closePopup={this.closePopups.bind(this)} menuItems={
           [
             {
               text: 'One',
-              action: () => {},
+              action: () => {alert('One')},
             },
             {
               text: 'Two',
-              action: () => {},
             },
             {
               text: 'Three',
-              action: () => {},
             },
           ]}></PopupMenu>
       </div>

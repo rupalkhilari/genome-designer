@@ -6,6 +6,7 @@ import invariant from 'invariant';
 import NodeText2D from './nodetext2d';
 import RectangleGlyph2D from './glyphs/html/rectangleglyph2d';
 import SBOLGlyph2D from './glyphs/html/sbolglyph2d';
+import ContextDots2D from './glyphs/html/contextdots2d';
 import ConstructBanner from './glyphs/canvas/constructbanner';
 /**
  * shared DIV for measuring text,
@@ -61,6 +62,9 @@ export default class Node2D {
       break;
     case 'sbol':
       this.glyphObject = new SBOLGlyph2D(this);
+      break;
+    case 'dots':
+      this.glyphObject = new ContextDots2D(this);
       break;
     case 'none':
       break;
