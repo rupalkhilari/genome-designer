@@ -229,22 +229,50 @@ export class ConstructViewer extends Component {
         <div className="sceneGraphContainer">
           <div className="sceneGraph"/>
         </div>
-        <PopupMenu open={this.state.blockPopupMenuOpen} position={this.state.menuPosition} closePopup={this.closePopups.bind(this)} menuItems={
-          [
-            {
-              text: 'One',
-              action: () => {alert('One')},
-            },
-            {
-              text: 'Two',
-            },
-            {
-              text: 'Three',
-            },
-          ]}></PopupMenu>
+        {this.blockContextMenu()}
       </div>
     );
     return rendered;
+  }
+  /**
+   * return JSX for block construct menu
+   */
+  blockContextMenu() {
+    return (
+      <PopupMenu open={this.state.blockPopupMenuOpen} position={this.state.menuPosition} closePopup={this.closePopups.bind(this)} menuItems={
+        [
+          {
+            text: 'Inspect',
+          },
+          {},
+          {
+            text: 'Symbol',
+          },
+          {
+            text: 'Color',
+          },
+          {
+            text: 'Reverse',
+          },
+          {},
+          {
+            text: 'Add to my Inventory',
+          },
+          {
+            text: 'Export as PDF', //
+          },
+          {},
+          {
+            text: 'Rename',
+          },
+          {
+            text: 'Duplicate',
+          },
+          {
+            text: 'Delete',
+          }
+        ]}></PopupMenu>
+      )
   }
 }
 
