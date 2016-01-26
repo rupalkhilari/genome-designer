@@ -7,12 +7,12 @@
     "clean": "rimraf lib dist coverage",
     "check": "npm run lint && npm run test",
     "start": "babel-node server/devServer.js",
-    "lint": "eslint src server; exit 0;",
+    "lint": "eslint src server extensions; exit 0;",
     "lint-jscs": "jscs src",
     "test": "NODE_ENV=test mocha --recursive --compilers js:babel-core/register,css:test/css-null-compiler.js --require ./test/setup.js",
     "test:watch": "npm test -- --watch",
     "nightwatch": "./node_modules/nightwatch/bin/nightwatch",
-    "postinstall": "./node_modules/selenium-standalone/bin/selenium-standalone install",
+    "postinstall": "./node_modules/selenium-standalone/bin/selenium-standalone install; yes | pip install biopython",
     "start-docker": "docker build -t genome-designer . && docker run --privileged -v /var/run/docker.sock:/run/docker.sock -i -p 3000:3000 -t genome-designer",
     "create-ecoli-db": "python extensions/foundry/ecoli/generate_db.py jdon extensions/foundry/ecoli/ecoli.genes.json extensions/foundry/ecoli.json"
   },
@@ -65,7 +65,8 @@
     "redux-thunk": "^0.1.0",
     "semver-regex": "^1.0.0",
     "url-regex": "^3.0.0",
-    "yamljs": "^0.2.4"
+    "yamljs": "^0.2.4",
+    "fast-csv": "^1.0.0"
   },
   "devDependencies": {
     "autoprefixer": "^6.0.3",
