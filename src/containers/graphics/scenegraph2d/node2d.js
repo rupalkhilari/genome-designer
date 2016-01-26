@@ -30,6 +30,8 @@ export default class Node2D {
     this.children = [];
     // extend default options with the given options
     this.set(Object.assign({
+      visible: true,
+      hover: false,
       stroke: 'black',
       strokeWidth: 0,
       fill: 'dodgerblue',
@@ -295,6 +297,9 @@ export default class Node2D {
     this.el.style.width = this.width + 'px';
     this.el.style.height = this.height + 'px';
     this.el.style.transform = this.localTransform.toCSSString();
+
+    // visibility is controlled with opacity
+    this.el.style.opacity = this.visible ? 1 : 0;
 
     // now update our glyph
     if (this.glyphObject) {

@@ -73,15 +73,44 @@ export default class ConstructViewerUserInterface extends UserInterface {
     return this.constructViewer.props.construct;
   }
   /**
-   * mouse enter
+   * mouse enter/leave are used to ensure no block is in the hover state
    */
   mouseEnter(event) {
-    console.log("ENTER:", this.construct.id);
+    this.setHover()
   }
   mouseLeave(event) {
-    console.log("LEAVE:", this.construct.id);
+    this.setHover();
+  }
+  /**
+   * set the given block to the hover state
+   * @param {[type]} block [description]
+   */
+  setHover(block) {
+    if (this.hover) {
+      this.hover.node.set({
+        hover: false,
+      });
+      this.hover.node.updateBranch();
+      this.hover = null;
+    }
+    if (block) {
+      this.hover = {
+        block: block,
+        node: this.layout.nodeFromElement(block),
+      }
+      this.hover.node.set({
+        hover: true
+      });
+      this.hover.node.updateBranch();
+    }
   }
 
+  /**
+   * mouse move handler ( note, not the same as drag which is with a button held down )
+   */
+  mouseMove(evt, point) {
+    this.setHover(this.topBlockAt(point));
+  }
   /**
    * mouse down handler
    */

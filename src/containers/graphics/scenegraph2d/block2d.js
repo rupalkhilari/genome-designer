@@ -46,13 +46,14 @@ export default class Block2D extends Node2D {
   update() {
     // base class
     const el = Node2D.prototype.update.call(this);
-    // context dots
+    // context dots, shown only in hover state
     this.dots.set({
       bounds: new Box2D(
         this.width - kT.contextDotsW,
         (this.height - kT.contextDotsH) / 2,
         kT.contextDotsW,
         kT.contextDotsH),
+      visible: this.hover,
     });
     // add our uuid as data-testblock for easier testing
     el.setAttribute('data-testblock', this.uuid);
