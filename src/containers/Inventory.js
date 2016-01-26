@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { inventoryToggleVisibility } from '../actions/inventory';
-import andreaBlocks from '../inventory/andrea';
 import inventorySbol from '../inventory/sbol';
 
 import '../styles/Inventory.css';
@@ -31,7 +30,7 @@ export class Inventory extends Component {
   };
 
   render() {
-    const { isVisible } = this.props;
+    const { isVisible, projects } = this.props;
     const { activeTab } = this.state;
 
     return (
@@ -56,7 +55,8 @@ export class Inventory extends Component {
             <InventoryGroup title="My Projects"
                             type="projects"
                             isActive={activeTab === 'projects'}
-                            setActive={() => this.setActiveTab('projects')}/>
+                            setActive={() => this.setActiveTab('projects')}
+                            projects={projects}/>
             <InventoryGroup title="Sketch Library"
                             type="sbol"
                             isActive={activeTab === 'projects'}
@@ -73,6 +73,7 @@ function mapStateToProps(state, props) {
   const { isVisible } = state.inventory;
 
   return {
+    projects,
     isVisible,
   };
 }

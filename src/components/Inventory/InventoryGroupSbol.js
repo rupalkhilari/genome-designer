@@ -18,7 +18,7 @@ export default class InventoryGroupSbol extends Component {
     const { items } = this.props;
 
     return (
-      <div className="InventoryGroup InventoryGroupSbol">
+      <div className="InventoryGroupSbol">
         <InventoryList inventoryType={sbolDragType}
                        items={items}/>
       </div>
