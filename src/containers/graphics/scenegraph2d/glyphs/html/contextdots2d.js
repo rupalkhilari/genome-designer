@@ -1,6 +1,5 @@
 import Glyph2D from '../glyph2d';
 import kT from '../../../views/layoutconstants';
-import symbols from '../../../../../inventory/sbol';
 
 
 export default class ContextDots2D extends Glyph2D {
@@ -12,8 +11,8 @@ export default class ContextDots2D extends Glyph2D {
     super(node);
     this.el = document.createElement('div');
     this.el.className = 'dot-container';
-    for(let i = 0; i < 3; i += 1) {
-      let dot = document.createElement('div');
+    for (let i = 0; i < 3; i += 1) {
+      const dot = document.createElement('div');
       dot.className = 'dot';
       this.el.appendChild(dot);
     }

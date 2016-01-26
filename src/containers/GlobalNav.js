@@ -13,6 +13,7 @@ class GlobalNav extends Component {
     pushState: PropTypes.func.isRequired,
     currentProjectId: PropTypes.string,
     blockCreate: PropTypes.func,
+    projectAddConstruct: PropTypes.func,
   }
 
   state = {
@@ -210,5 +211,5 @@ function mapStateToProps(state) {
 export default connect(mapStateToProps, {
   projectAddConstruct,
   blockCreate,
-  pushState
+  pushState,
 })(GlobalNav);

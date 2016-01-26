@@ -7,27 +7,26 @@ import MenuSeparator from './MenuSeparator';
 export default class Menu extends Component {
 
   static propTypes = {
-    isOpen: PropTypes.bool.isRequired,
+    open: PropTypes.bool.isRequired,
     closePopup: PropTypes.func.isRequired,
     menuItems: PropTypes.array.isRequired,
     position: PropTypes.object.isRequired,
   }
 
   // mouse down on the blocker closes the modal
-  onMouseDown(e) {
+  onMouseDown(evt) {
     const blockEl = ReactDOM.findDOMNode(this.refs.blocker);
-    if (e.target === blockEl) {
+    if (evt.target === blockEl) {
       this.props.closePopup();
     }
   }
 
   render() {
-
     // set position from properties
     const position = {
       left: `${this.props.position.x}px`,
       top: `${this.props.position.y}px`,
-    }
+    };
     return (
       <div
         onMouseDown={this.onMouseDown.bind(this)}

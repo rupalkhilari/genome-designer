@@ -37,6 +37,7 @@ export class ConstructViewer extends Component {
     blockAddComponent: PropTypes.func,
     blockRemoveComponent: PropTypes.func,
     blocks: PropTypes.object,
+    ui: PropTypes.object,
   }
 
   constructor(props) {
@@ -44,7 +45,7 @@ export class ConstructViewer extends Component {
     this.state = {
       blockPopupMenuOpen: false,    // context menu for blocks
       menuPosition: new Vector2D(), // position for any popup menu
-    }
+    };
   }
 
   /**
@@ -84,7 +85,6 @@ export class ConstructViewer extends Component {
    */
   componentDidUpdate() {
     this.update();
-    console.log("PROJECT ID:", this.props.projectId);
   }
 
   /**
@@ -210,36 +210,14 @@ export class ConstructViewer extends Component {
     this.setState(state);
   }
   /**
-   * render the component, the scene graph will render later when componentDidUpdate is called
-   */
-  render() {
-    if (this.layout) {
-      this.layout.update(this.props.construct, this.props.layoutAlgorithm, this.props.blocks, this.props.ui.currentBlocks);
-    }
-
-    // TODO, can be conditional when master is fixed and this is merged with construct select PR
-    //const menu = this.props.constructId === this.props.ui.currentConstructId
-    const menu = true
-    ? <ConstructViewerMenu constructId={this.props.constructId} layoutAlgorithm={this.props.layoutAlgorithm}/>
-    : null
-
-    const rendered = (
-      <div className="construct-viewer" key={this.props.construct.id}>
-        {menu}
-        <div className="sceneGraphContainer">
-          <div className="sceneGraph"/>
-        </div>
-        {this.blockContextMenu()}
-      </div>
-    );
-    return rendered;
-  }
-  /**
    * return JSX for block construct menu
    */
   blockContextMenu() {
-    return (
-      <PopupMenu open={this.state.blockPopupMenuOpen} position={this.state.menuPosition} closePopup={this.closePopups.bind(this)} menuItems={
+    return (<PopupMenu
+      open={this.state.blockPopupMenuOpen}
+      position={this.state.menuPosition}
+      closePopup={this.closePopups.bind(this)}
+      menuItems={
         [
           {
             text: 'Inspect',
@@ -270,9 +248,32 @@ export class ConstructViewer extends Component {
           },
           {
             text: 'Delete',
-          }
-        ]}></PopupMenu>
-      )
+          },
+        ]
+      }/>);
+  }
+  /**
+   * render the component, the scene graph will render later when componentDidUpdate is called
+   */
+  render() {
+    if (this.layout) {
+      this.layout.update(this.props.construct, this.props.layoutAlgorithm, this.props.blocks, this.props.ui.currentBlocks);
+    }
+
+    // TODO, can be conditional when master is fixed and this is merged with construct select PR
+    //const menu = this.props.constructId === this.props.ui.currentConstructId
+    const menu = <ConstructViewerMenu constructId={this.props.constructId} layoutAlgorithm={this.props.layoutAlgorithm}/>;
+
+    const rendered = (
+      <div className="construct-viewer" key={this.props.construct.id}>
+        {menu}
+        <div className="sceneGraphContainer">
+          <div className="sceneGraph"/>
+        </div>
+        {this.blockContextMenu()}
+      </div>
+    );
+    return rendered;
   }
 }
 

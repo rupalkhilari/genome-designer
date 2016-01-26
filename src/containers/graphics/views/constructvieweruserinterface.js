@@ -32,7 +32,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
     // nodes might include anything added to the scenegraph
     // so work backwards in the list and return the first
     // block found
-    for(let i = hits.length - 1; i >= 0; i--) {
+    for (let i = hits.length - 1; i >= 0; i--) {
       if (this.layout.elementFromNode(hits[i])) {
         return hits[i];
       }
@@ -87,7 +87,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * mouse enter/leave are used to ensure no block is in the hover state
    */
   mouseEnter(event) {
-    this.setHover()
+    this.setHover();
   }
   mouseLeave(event) {
     this.setHover();
@@ -107,9 +107,9 @@ export default class ConstructViewerUserInterface extends UserInterface {
       this.hover = {
         block: block,
         node: this.layout.nodeFromElement(block),
-      }
+      };
       this.hover.node.set({
-        hover: true
+        hover: true,
       });
       this.hover.node.updateBranch();
     }
@@ -135,12 +135,11 @@ export default class ConstructViewerUserInterface extends UserInterface {
     evt.preventDefault();
     const block = this.topBlockAt(point);
     if (block) {
-      const node = this.layout.nodeFromElement(block);
       if (evt.shiftKey || window.__e2eShiftKey) {
         // range select
         this.constructViewer.blockAddToSelections([block]);
       } else
-      if (evt.metaKey || evt.altKey){
+      if (evt.metaKey || evt.altKey) {
         // toggle block in selections
         this.constructViewer.blockToggleSelected([block]);
       } else {
@@ -180,19 +179,16 @@ export default class ConstructViewerUserInterface extends UserInterface {
     }
     // in block but nowhere special
     return 'main';
-
   }
-
   /**
    * list of all selected blocks, based on our selected scenegraph blocks
    * @return {[type]} [description]
    */
   get selectedElements() {
     return this.selections.map((node) => {
-      return this.layout.elementFromNode(node)
+      return this.layout.elementFromNode(node);
     });
   }
-
   /**
    * move drag handler, if the user initiates a drag of a block hand over
    * to the DND manager to handle
@@ -208,8 +204,6 @@ export default class ConstructViewerUserInterface extends UserInterface {
         this.constructViewer.blockAddToSelections([block]);
         // get global point as starting point for drag
         const globalPoint = this.mouseTrap.mouseToGlobal(evt);
-        // create proxy and drag
-        const node = this.layout.nodeFromElement(block);
         // proxy representing 1 ore more blocks
         const proxy = this.makeDragProxy();
         // remove the blocks, unless meta key pressed
@@ -235,12 +229,12 @@ export default class ConstructViewerUserInterface extends UserInterface {
     const div = document.createElement('div');
     div.style.display = 'inline-block';
     div.style.position = 'relative';
-    const nodes = this.selectedElements.map(e => this.layout.nodeFromElement(e));
+    const nodes = this.selectedElements.map(elem => this.layout.nodeFromElement(elem));
     const limit = Math.min(5, nodes.length);
     let x = 0;
     let width = 0;
     let height = 0;
-    for(var i = 0; i < limit; i += 1) {
+    for (let i = 0; i < limit; i += 1) {
       const node = nodes[i].el;
       const clone = node.cloneNode(true);
       clone.style.position = 'absolute';
@@ -279,7 +273,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
     // convert global point to local space via our mousetrap
     const localPosition = this.mouseTrap.globalToLocal(globalPosition, this.el);
     // there is a different highlight / UX experience depending on what is being dragged
-    const { item, type } = payload;
+    const { type } = payload;
     if (type === sbolDragType) {
       // sbol symbol so we highlight the targeted block
       const block = this.topBlockAt(localPosition);
