@@ -6,7 +6,7 @@ describe('Nodes Extension', () => {
   const dnaFile = process.cwd() + '/temp.txt';
   const input = {DNA: dnaFile};
   it('should successfully run the Biopython example', function translateDNA(done) {
-    this.timeout(6000); //this timeout is not needed if the test is run by itself (using it.only)
+    this.timeout(8000); //this timeout is not needed if the test is run by itself (using it.only)
     fs.writeFile(dnaFile, 'AACTTGTCCACTGTA', err => {
       if (err) {
         expect(false).to.equal(true);

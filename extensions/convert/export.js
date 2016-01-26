@@ -33,10 +33,10 @@ function callExportFunction(funcName, field, id, input) {
           reject(err);
         }
       } else {
-        reject('No export option named ' + id + ' for projects');
+        reject('No export option named ' + id + ' for ' + field);
       }
     } else {
-      reject('No export option named ' + id + ' for projects');
+      reject('No export option named ' + id + ' for ' + field);
     }
   });
 }

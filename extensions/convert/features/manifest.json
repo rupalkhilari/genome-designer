@@ -8,6 +8,7 @@
   ],
   "description": "convert an ApE feature file into a project with those blocks",
   "functions": {
-    "importProject": "convert an ApE feature file into a project"
+    "importProject": "convert an ApE feature file into a project",
+    "exportProject": "convert all non-parent blocks into features in an ApE feature file"
   }
 }
