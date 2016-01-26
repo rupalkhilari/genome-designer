@@ -1,6 +1,8 @@
 import UserInterface from '../scenegraph2d/userinterface';
 import { sbol as sbolDragType } from '../../../constants/DragTypes';
 import DnD from '../dnd/dnd';
+import Vector2D from '../geometry/vector2d';
+import kT from './layoutconstants';
 
 // # of pixels of mouse movement before a drag is triggered.
 const dragThreshold = 8;
@@ -27,7 +29,16 @@ export default class ConstructViewerUserInterface extends UserInterface {
    */
   topNodeAt(point) {
     const hits = this.sg.findNodesAt(point);
-    return hits.length ? hits.pop() : null;
+    // nodes might include anything added to the scenegraph
+    // so work backwards in the list and return the first
+    // block found
+    for(let i = hits.length - 1; i >= 0; i--) {
+      if (this.layout.elementFromNode(hits[i])) {
+        return hits[i];
+      }
+    }
+    // no hits or no blocks in the hits
+    return null;
   }
   /**
    * return the top most block at a given location
@@ -83,7 +94,6 @@ export default class ConstructViewerUserInterface extends UserInterface {
   }
   /**
    * set the given block to the hover state
-   * @param {[type]} block [description]
    */
   setHover(block) {
     if (this.hover) {
@@ -136,16 +146,41 @@ export default class ConstructViewerUserInterface extends UserInterface {
       } else {
         // otherwise single select the block
         this.constructViewer.blockSelected([block]);
+        // if they clicked the context menu area, open it
+        // for now, open a context menu
+        const globalPoint = this.mouseTrap.mouseToGlobal(evt);
+        if (this.getBlockRegion(block, globalPoint) === 'dots') {
+          this.constructViewer.openPopup({
+            blockPopupMenuOpen: true,
+            menuPosition: globalPoint,
+          });
+        }
       }
     } else {
       // clear selections on no block click
       this.constructViewer.blockSelected([block]);
-      // for now, open a context menu
-      this.constructViewer.openPopup({
-        blockPopupMenuOpen: true,
-        menuPosition: this.mouseTrap.mouseToGlobal(evt),
-      });
     }
+  }
+  /**
+   * return an indication of where in the block this point lies.
+   * One of ['none', 'main, 'dots']
+   */
+  getBlockRegion(block, globalPoint) {
+    // substract window scrolling from global point to get viewport coordinates
+    const vpt = globalPoint.sub(new Vector2D(window.scrollX, window.scrollY));
+    // compare against viewport bounds of node representing the block
+    const box = this.layout.nodeFromElement(block).el.getBoundingClientRect();
+    // compare to bounds
+    if (vpt.x < box.left || vpt.x > box.right || vpt.y < box.top || vpt.y > box.bottom) {
+      return 'none';
+    }
+    // context menu area?
+    if (vpt.x >= box.right - kT.contextDotsW) {
+      return 'dots';
+    }
+    // in block but nowhere special
+    return 'main';
+
   }
 
   /**
