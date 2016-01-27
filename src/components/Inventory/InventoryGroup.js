@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 
 import InventoryGroupSbol from './InventoryGroupSbol';
+import InventoryGroupBlocks from './InventoryGroupBlocks';
 import InventoryGroupSearch from './InventoryGroupSearch';
 import InventoryGroupProjects from './InventoryGroupProjects';
 
@@ -14,7 +15,7 @@ export default class InventoryGroup extends Component {
     setActive: PropTypes.func.isRequired,
   };
 
-  static inventoryGroupTypeToComponent = (type, props) => {
+  inventoryGroupTypeToComponent = (type, props) => {
     switch (type) {
     case 'sbol' :
       return (<InventoryGroupSbol {...props} />);
@@ -30,7 +31,6 @@ export default class InventoryGroup extends Component {
   };
 
   render() {
-    const { currentTabIndex } = this.state;
     const { title, type, isActive, setActive, ...rest } = this.props;
     const currentGroupComponent = this.inventoryGroupTypeToComponent(type, rest);
 
@@ -40,9 +40,7 @@ export default class InventoryGroup extends Component {
              onClick={setActive}>
           <span className="InventoryGroup-title">{title}</span>
         </div>
-        {isActive && (<div className="InventoryGroup-content">
-          {currentGroupComponent}
-        </div>)}
+        {isActive && currentGroupComponent}
       </div>
     );
   }

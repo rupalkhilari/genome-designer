@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { inventoryToggleVisibility } from '../actions/inventory';
 import inventorySbol from '../inventory/sbol';
+import InventoryGroup from '../components/Inventory/inventoryGroup';
 
 import '../styles/Inventory.css';
 import '../styles/SidePanel.css';
@@ -47,7 +48,7 @@ export class Inventory extends Component {
         </div>
 
         <div className="SidePanel-content">
-          <div className="Inventory-Groups">
+          <div className="Inventory-groups">
             <InventoryGroup title="Search"
                             type="search"
                             isActive={activeTab === 'search'}
@@ -59,7 +60,7 @@ export class Inventory extends Component {
                             projects={projects}/>
             <InventoryGroup title="Sketch Library"
                             type="sbol"
-                            isActive={activeTab === 'projects'}
+                            isActive={activeTab === 'sbol'}
                             setActive={() => this.setActiveTab('sbol')}
                             items={inventorySbol}/>
           </div>
@@ -73,7 +74,6 @@ function mapStateToProps(state, props) {
   const { isVisible } = state.inventory;
 
   return {
-    projects,
     isVisible,
   };
 }

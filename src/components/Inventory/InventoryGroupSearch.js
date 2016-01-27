@@ -30,7 +30,7 @@ export class InventoryGroupSearch extends Component {
     const listingItems = items.filter(item => searchRegex.test(item.metadata.name) || searchRegex.test(item.rules.sbol));
 
     return (
-      <div className="InventoryGroupSearch">
+      <div className="InventoryGroup-content InventoryGroupSearch">
         <InventorySearch searchTerm={searchTerm}
                          onSearchChange={this.handleSearchChange}/>
         <InventoryList inventoryType={blockDragType}

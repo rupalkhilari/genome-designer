@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
 
 export class InventoryGroupProjects extends Component {
   static propTypes = {
@@ -9,7 +10,7 @@ export class InventoryGroupProjects extends Component {
     const { projects } = this.props;
 
     return (
-      <div className="InventoryGroupProjects">
+      <div className="InventoryGroup-content InventoryGroupProjects">
         todo
       </div>
     );
