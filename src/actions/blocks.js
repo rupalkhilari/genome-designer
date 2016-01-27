@@ -2,6 +2,7 @@ import * as ActionTypes from '../constants/ActionTypes';
 import BlockDefinition from '../schemas/Block';
 import { writeFile } from '../middleware/api';
 import Block from '../models/Block';
+import * as selectors from '../selectors/blocks';
 
 //Promise
 export const blockSave = (blockId) => {
@@ -31,10 +32,9 @@ export const blockCreate = (initialModel) => {
   };
 };
 
-//this action accepts either a block JSON directly, or the ID
-//inventory items may not be in the store, so we need to pass the block directly
-//allow object so doesn't need to be in the store i.e. avoid store bloat
-export const blockClone = (blockInput) => {
+//note - this action accepts either a block JSON directly, or the ID, since inventory items may not be in the store, so we need to pass the block directly
+//note - Does a deep clone by default, adds all child blocks to store
+export const blockClone = (blockInput, shallowOnly = false) => {
   return (dispatch, getState) => {
     let oldBlock;
     if (typeof blockInput === 'string') {
@@ -44,14 +44,41 @@ export const blockClone = (blockInput) => {
     } else {
       throw new Error('invalid input to blockClone', blockInput);
     }
-    const block = oldBlock.clone();
 
-    dispatch({
-      type: ActionTypes.BLOCK_CLONE,
-      block,
+    if (!!shallowOnly || !oldBlock.components.length) {
+      const block = oldBlock.clone();
+      dispatch({
+        type: ActionTypes.BLOCK_CLONE,
+        block,
+      });
+      return block;
+    }
+
+    const allChildren = selectors.blockGetChildrenRecursive(oldBlock.id);
+    const unmappedClones = allChildren.map(block => block.clone());
+
+    //update IDs in components
+    const cloneIdMap = allChildren.reduce((acc, next, index) => {
+      acc[next] = unmappedClones[index].id;
+    }, {});
+    const clones = unmappedClones.map(clone => {
+      const newComponents = clone.components.map(componentId => cloneIdMap[componentId]);
+      return clone.mutate('components', newComponents);
     });
 
-    return block;
+    //add clones to the store
+    //todo - transaction
+    clones.forEach(block => {
+      dispatch({
+        type: ActionTypes.BLOCK_CLONE,
+        block,
+      });
+    });
+
+    //return the clone of root passed in
+    const rootId = cloneIdMap[oldBlock.id];
+    const root = clones.find(clone => clone.id === rootId);
+    return root;
   };
 };
 
@@ -222,7 +249,6 @@ export const blockSetSequence = (blockId, sequence) => {
           block,
         });
         return block;
-      })
-      .catch();
+      });
   };
 };

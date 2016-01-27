@@ -32,7 +32,7 @@ export const blockGetParents = (blockId) => {
   };
 };
 
-export const blockGetChildrenRecursive = (blockId, childId) => {
+export const blockGetChildrenRecursive = (blockId) => {
   return (dispatch, getState) => {
     //const children = [];
     const store = getState();
