@@ -54,12 +54,14 @@ export const blockClone = (blockInput, shallowOnly = false) => {
       return block;
     }
 
-    const allChildren = selectors.blockGetChildrenRecursive(oldBlock.id);
-    const unmappedClones = allChildren.map(block => block.clone());
+    const allChildren = dispatch(selectors.blockGetChildrenRecursive(oldBlock.id));
+    const allToClone = [oldBlock, ...allChildren];
+    const unmappedClones = allToClone.map(block => block.clone());
 
     //update IDs in components
-    const cloneIdMap = allChildren.reduce((acc, next, index) => {
-      acc[next] = unmappedClones[index].id;
+    const cloneIdMap = allToClone.reduce((acc, next, index) => {
+      acc[next.id] = unmappedClones[index].id;
+      return acc;
     }, {});
     const clones = unmappedClones.map(clone => {
       const newComponents = clone.components.map(componentId => cloneIdMap[componentId]);
