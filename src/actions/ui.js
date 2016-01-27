@@ -1,5 +1,4 @@
 import * as ActionTypes from '../constants/ActionTypes';
-import makeActionCreator from './makeActionCreator';
 
 export const uiSetCurrent = (blocks) => {
   return (dispatch, getState) => {

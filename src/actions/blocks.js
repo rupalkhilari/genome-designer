@@ -1,5 +1,4 @@
 import * as ActionTypes from '../constants/ActionTypes';
-import uuid from 'node-uuid';
 import BlockDefinition from '../schemas/Block';
 import { writeFile } from '../middleware/api';
 import Block from '../models/Block';
