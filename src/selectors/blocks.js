@@ -3,7 +3,7 @@
  ***************************************/
 
 const _getBlockFromStore = (blockId, store) => {
-  return store.blocks[blockId];
+  return store.blocks[blockId] || null;
 };
 
 const _getParentFromStore = (blockId, store, def) => {
