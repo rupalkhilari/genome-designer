@@ -1,24 +1,19 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import { sessionMiddleware } from '../../server/utils/authentication';
-import { load as loadExtensions } from '../requireExtensions';
+import { extensions, extensionsInfo } from '../requireExtensions';
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
   strict: false, //allow values other than arrays and objects
 });
-
-const normalizedPath = require('path').join(__dirname, '.');
-const retval = loadExtensions(normalizedPath);
-const extensions = retval.extensions;
-const manifests = retval.manifests;
 
 router.use(sessionMiddleware);
 
 //just avoiding redundant code
 function callExportFunction(funcName, field, id, input) {
   return new Promise((resolve, reject) => {
-    if (id in extensions) {
-      const mod = extensions[id];
+    if (id in extensions.convert) {
+      const mod = extensions.convert[id];
       if (mod[funcName]) {
         try {
           const func = mod[funcName];
@@ -80,7 +75,7 @@ router.post('/block/:id', jsonParser, (req, resp) => {
 });
 
 router.get('/manifests', jsonParser, (req, resp) => {
-  resp.json(manifests);
+  resp.json(extensionsInfo.convert);
 });
 
 //export these functions for testing purpose

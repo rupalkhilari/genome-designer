@@ -1,0 +1,20 @@
+{
+  "convert": {
+    "genbank": {
+      "path": "./convert/genbank"
+    },
+    "features": {
+      "path": "./convert/features"
+    }
+  },
+  "search": {
+    "nucleotide": {
+      "path": "./search/nucleotide"
+    }
+  },
+  "sequenceView": {
+    "onion": {
+      "path": "./onion2"
+    }
+  }
+}
