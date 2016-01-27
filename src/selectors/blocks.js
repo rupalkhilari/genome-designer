@@ -34,14 +34,21 @@ export const blockGetParents = (blockId) => {
 
 export const blockGetChildrenRecursive = (blockId) => {
   return (dispatch, getState) => {
-    //const children = [];
     const store = getState();
-    const block = _getBlockFromStore(blockId);
+    const block = _getBlockFromStore(blockId, store);
 
     const getChildrenShallow = (block) => block.components.map(id => _getBlockFromStore(id, store));
 
-    //todo - recursive
-    return getChildrenShallow(block);
+    const getAllChildren = (root, children = []) => {
+      const kids = getChildrenShallow(root);
+      if (kids.length) {
+        children.push(...kids);
+        kids.forEach(kid => getAllChildren(kid, children));
+      }
+      return children;
+    };
+
+    return getAllChildren(block);
   };
 };
 
