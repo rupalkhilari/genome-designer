@@ -1,6 +1,4 @@
 import React, { Component, PropTypes } from 'react';
-import ReactDOM from 'react';
-
 import '../../../src/styles/Modal.css';
 
 /**
@@ -18,6 +16,6 @@ export default class ModalButtonBar extends Component {
       <div className="modal-button-bar">
         {this.props.children}
       </div>
-    )
+    );
   }
 }

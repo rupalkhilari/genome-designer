@@ -258,8 +258,8 @@ export class ConstructViewer extends Component {
               this.setState({
                 modalOpen: true,
               });
-            }
-          }
+            },
+          },
         ]
       }/>);
   }
@@ -286,16 +286,13 @@ export class ConstructViewer extends Component {
           open={this.state.modalOpen}
           title="Construct Viewer Modal"
           payload={<div className="payload"/>}
-          closeOnClickOff={true}
+          closeOnClickOff
           buttons={
             [
-              {text: "Ok", primary: true},
-              {text:"Cancel", primary: false}
+              {text: 'Ok', primary: true},
+              {text: 'Cancel', primary: false},
             ]}
           closeModal={(buttonText) => {
-            if (buttonText) {
-              alert('Closed via:' + buttonText);
-            }
             this.setState({
               modalOpen: false,
             });

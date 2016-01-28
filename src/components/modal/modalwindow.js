@@ -15,6 +15,10 @@ export default class ModalWindow extends Component {
   static propTypes = {
     open: PropTypes.bool.isRequired,
     closeModal: PropTypes.func.isRequired,
+    closeOnClickOff: PropTypes.bool,
+    buttons: PropTypes.array,
+    title: PropTypes.string.isRequired,
+    payload: PropTypes.object.isRequired,
   }
 
   // mouse down on the blocker closes the modal, if props.closeOnClickOff is true
@@ -43,13 +47,13 @@ export default class ModalWindow extends Component {
       const buttons = this.props.buttons.map(button => {
         return (
           <button
-            className={button.primary ? "button button-primary" : "button button-normal"}
+            className={button.primary ? 'button button-primary' : 'button button-normal'}
             key={button.text}
             onClick={this.onButtonClick.bind(this)}>
             {button.text}
           </button>);
       });
-      return <ModalButtonBar>{buttons}</ModalButtonBar>
+      return <ModalButtonBar>{buttons}</ModalButtonBar>;
     }
     return null;
   }
