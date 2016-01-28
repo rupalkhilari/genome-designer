@@ -14,7 +14,7 @@ const _getParentFromStore = (blockId, store, def) => {
 };
 
 const _getChildrenShallow = (blockId, store) => {
-  const block = _getBlockFromStore(blockId);
+  const block = _getBlockFromStore(blockId, store);
   return block.components.map(id => _getBlockFromStore(id, store));
 };
 
@@ -26,6 +26,8 @@ const _getAllChildren = (rootId, store, children = []) => {
   }
   return children;
 };
+
+const _filterToLeafNodes = (blocks) => blocks.filter(child => !child.components.length);
 
 export const blockGet = (blockId) => {
   return (dispatch, getState) => {
@@ -54,8 +56,7 @@ export const blockGetChildrenRecursive = (blockId) => {
 
 export const blockGetLeaves = (blockId) => {
   return (dispatch, getState) => {
-    const children = _getAllChildren(blockId, getState());
-    return children.filter(child => !child.components.length);
+    return _filterToLeafNodes(_getAllChildren(blockId, getState()))
   };
 };
 
@@ -79,10 +80,10 @@ const _checkSingleBlockIsSpec = (block) => {
 
 export const blockIsSpec = (blockId) => {
   return (dispatch, getState) => {
-    const block = _getBlockFromStore(blockId, getState());
+    const store = getState();
+    const block = _getBlockFromStore(blockId, store);
     if (block.components.length) {
-      return _getAllChildren(blockId, getState())
-        .filter(child => !child.components.length)
+      return _filterToLeafNodes(_getAllChildren(blockId, store))
         .every(_checkSingleBlockIsSpec);
     }
     return _checkSingleBlockIsSpec(block);
