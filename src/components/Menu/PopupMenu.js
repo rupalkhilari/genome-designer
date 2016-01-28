@@ -11,7 +11,7 @@ export default class Menu extends Component {
     closePopup: PropTypes.func.isRequired,
     menuItems: PropTypes.array.isRequired,
     position: PropTypes.object.isRequired,
-  }
+  };
 
   // mouse down on the blocker closes the modal
   onMouseDown(evt) {

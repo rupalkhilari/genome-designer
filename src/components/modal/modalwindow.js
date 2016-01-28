@@ -19,7 +19,7 @@ export default class ModalWindow extends Component {
     buttons: PropTypes.array,
     title: PropTypes.string.isRequired,
     payload: PropTypes.object.isRequired,
-  }
+  };
 
   // mouse down on the blocker closes the modal, if props.closeOnClickOutside is true
   onMouseDown(evt) {

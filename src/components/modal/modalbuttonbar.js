@@ -8,7 +8,7 @@ export default class ModalButtonBar extends Component {
 
   static propTypes = {
     children: PropTypes.array.isRequired,
-  }
+  };
 
   render() {
     return (
