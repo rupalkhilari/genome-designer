@@ -286,7 +286,7 @@ export class ConstructViewer extends Component {
           open={this.state.modalOpen}
           title="Construct Viewer Modal"
           payload={<div className="payload"/>}
-          closeOnClickOff
+          closeOnClickOutside
           buttons={
             [
               {text: 'Ok', primary: true},

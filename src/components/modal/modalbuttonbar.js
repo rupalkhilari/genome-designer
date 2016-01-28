@@ -1,5 +1,4 @@
 import React, { Component, PropTypes } from 'react';
-import '../../../src/styles/Modal.css';
 
 /**
  * Can be added as part of your payload. Displays buttons right center

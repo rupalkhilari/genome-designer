@@ -15,16 +15,16 @@ export default class ModalWindow extends Component {
   static propTypes = {
     open: PropTypes.bool.isRequired,
     closeModal: PropTypes.func.isRequired,
-    closeOnClickOff: PropTypes.bool,
+    closeOnClickOutside: PropTypes.bool,
     buttons: PropTypes.array,
     title: PropTypes.string.isRequired,
     payload: PropTypes.object.isRequired,
   }
 
-  // mouse down on the blocker closes the modal, if props.closeOnClickOff is true
+  // mouse down on the blocker closes the modal, if props.closeOnClickOutside is true
   onMouseDown(evt) {
     const blockEl = ReactDOM.findDOMNode(this.refs.blocker);
-    if (evt.target === blockEl && this.props.closeOnClickOff) {
+    if (evt.target === blockEl && this.props.closeOnClickOutside) {
       this.props.closeModal();
     }
   }
