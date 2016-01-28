@@ -3,6 +3,7 @@ import SceneGraph2D from '../scenegraph2d/scenegraph2d';
 import Vector2D from '../geometry/vector2d';
 import Layout from './layout.js';
 import PopupMenu from '../../../components/Menu/PopupMenu';
+import ModalWindow from '../../../components/modal/modalwindow';
 import {connect } from 'react-redux';
 import {
   blockCreate,
@@ -44,7 +45,8 @@ export class ConstructViewer extends Component {
     super(props);
     this.state = {
       blockPopupMenuOpen: false,    // context menu for blocks
-      menuPosition: new Vector2D(), // position for any popup menu
+      menuPosition: new Vector2D(), // position for any popup menu,
+      modalOpen: false,             // controls visibility of test modal window
     };
   }
 
@@ -249,6 +251,15 @@ export class ConstructViewer extends Component {
           {
             text: 'Delete',
           },
+          {},
+          {
+            text: 'Open Modal Window',
+            action: () => {
+              this.setState({
+                modalOpen: true,
+              });
+            }
+          }
         ]
       }/>);
   }
@@ -271,6 +282,25 @@ export class ConstructViewer extends Component {
           <div className="sceneGraph"/>
         </div>
         {this.blockContextMenu()}
+        <ModalWindow
+          open={this.state.modalOpen}
+          title="Construct Viewer Modal"
+          payload={<div className="payload"/>}
+          closeOnClickOff={true}
+          buttons={
+            [
+              {text: "Ok", primary: true},
+              {text:"Cancel", primary: false}
+            ]}
+          closeModal={(buttonText) => {
+            if (buttonText) {
+              alert('Closed via:' + buttonText);
+            }
+            this.setState({
+              modalOpen: false,
+            });
+          }}
+          />
       </div>
     );
     return rendered;
