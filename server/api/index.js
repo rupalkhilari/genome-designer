@@ -8,8 +8,10 @@ import { createDescendant, record, getAncestors, getDescendantsRecursively } fro
 import { get as dbGet, getSafe as dbGetSafe, set as dbSet } from './../utils/database';
 import { errorInvalidModel, errorInvalidRoute } from './../utils/errors';
 import { validateBlock, validateProject } from './../utils/validation';
-import { sessionMiddleware } from './../utils/authentication';
+import { authenticationMiddleware } from './../utils/authentication';
 import { getComponents } from './../utils/getRecursively';
+
+import fileRouter from './fileRouter';
 
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
@@ -17,14 +19,14 @@ const jsonParser = bodyParser.json({
 });
 
 function paramIsTruthy(param) {
-  return param !== undefined && param !== 'false';
+  return (param !== undefined && param !== 'false') || param === true;
 }
 
 /***************************
  Login and session validator
  ****************************/
 
-router.use(sessionMiddleware);
+router.use(authenticationMiddleware);
 
 /*********************************
  GET
@@ -207,68 +209,7 @@ router.post('/clone/:id', (req, res) => {
  * Read and write files
  *********************************/
 
-//All files are put in the storage folder (until platform comes along)
-const createFileUrl = (url) => './storage/' + url;
-
-router.get('/file/*', (req, res) => {
-  const url = req.params[0];
-  const filePath = createFileUrl(url);
-
-  fs.readFile(filePath, 'utf8', (err, data) => {
-    if (err) {
-      res.status(500).send(err.message);
-    } else {
-      res.send(data);
-    }
-  });
-});
-
-router.post('/file/*', (req, res) => {
-  const url = req.params[0];
-  const filePath = createFileUrl(url);
-  const folderPath = filePath.substring(0, filePath.lastIndexOf('/') + 1);
-
-  //assuming contents to be string
-  let buffer = '';
-
-  //get data in parts
-  req.on('data', data => {
-    buffer += data;
-  });
-
-  //received all the data
-  req.on('end', () => {
-    //make folder if doesn't exists
-    //todo - should ensure there isn't a file preventing directory creation
-    mkpath(folderPath, (err) => {
-      if (err) {
-        res.status(500).send(err.message);
-      } else {
-        //write data to file
-        fs.writeFile(filePath, buffer, 'utf8', (err) => {
-          if (err) {
-            res.status(500).send(err.message);
-          } else {
-            res.send(req.originalUrl);
-          }
-        });
-      }
-    });
-  });
-});
-
-router.delete('/file/*', (req, res) => {
-  const url = req.params[0];
-  const filePath = createFileUrl(url);
-
-  fs.unlink(filePath, (err) => {
-    if (err) {
-      res.status(500).send(err.message);
-    } else {
-      res.status(200).send();
-    }
-  });
-});
+router.use('/file', fileRouter);
 
 //default catch
 router.use('*', (req, res) => {
