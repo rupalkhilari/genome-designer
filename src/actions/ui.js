@@ -1,5 +1,15 @@
 import * as ActionTypes from '../constants/ActionTypes';
 
+export const uiShowMainMenu = (showMainMenu) => {
+  return (dispatch, getState) => {
+    dispatch({
+      type: ActionTypes.UI_SHOW_MAIN_MENU,
+      showMainMenu,
+    });
+    return showMainMenu;
+  };
+};
+
 export const uiSetCurrent = (blocks) => {
   return (dispatch, getState) => {
     dispatch({
