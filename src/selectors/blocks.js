@@ -13,6 +13,20 @@ const _getParentFromStore = (blockId, store, def) => {
   return !!id ? store.blocks[id] : def;
 };
 
+const _getChildrenShallow = (blockId, store) => {
+  const block = _getBlockFromStore(blockId);
+  return block.components.map(id => _getBlockFromStore(id, store));
+};
+
+const _getAllChildren = (rootId, store, children = []) => {
+  const kids = _getChildrenShallow(rootId, store);
+  if (kids.length) {
+    children.push(...kids);
+    kids.forEach(kid => _getAllChildren(kid.id, store, children));
+  }
+  return children;
+};
+
 export const blockGet = (blockId) => {
   return (dispatch, getState) => {
     return _getBlockFromStore(blockId, getState());
@@ -34,21 +48,14 @@ export const blockGetParents = (blockId) => {
 
 export const blockGetChildrenRecursive = (blockId) => {
   return (dispatch, getState) => {
-    const store = getState();
-    const block = _getBlockFromStore(blockId, store);
+    return _getAllChildren(blockId, getState());
+  };
+};
 
-    const getChildrenShallow = (block) => block.components.map(id => _getBlockFromStore(id, store));
-
-    const getAllChildren = (root, children = []) => {
-      const kids = getChildrenShallow(root);
-      if (kids.length) {
-        children.push(...kids);
-        kids.forEach(kid => getAllChildren(kid, children));
-      }
-      return children;
-    };
-
-    return getAllChildren(block);
+export const blockGetLeaves = (blockId) => {
+  return (dispatch, getState) => {
+    const children = _getAllChildren(blockId, getState());
+    return children.filter(child => !child.components.length);
   };
 };
 
@@ -63,5 +70,21 @@ export const blockGetIndex = (blockId) => {
   return (dispatch, getState) => {
     const parent = _getParentFromStore(blockId, getState(), {});
     return Array.isArray(parent.components) ? parent.components.indexOf(blockId) : -1;
+  };
+};
+
+const _checkSingleBlockIsSpec = (block) => {
+  return (!block.options.length) && (block.sequence.length > 0);
+};
+
+export const blockIsSpec = (blockId) => {
+  return (dispatch, getState) => {
+    const block = _getBlockFromStore(blockId, getState());
+    if (block.components.length) {
+      return _getAllChildren(blockId, getState())
+        .filter(child => !child.components.length)
+        .every(_checkSingleBlockIsSpec);
+    }
+    return _checkSingleBlockIsSpec(block);
   };
 };
