@@ -7,18 +7,16 @@ import ProjectHeader from '../components/ProjectHeader';
 import Inventory from './Inventory';
 import Inspector from './Inspector';
 
-
 import '../styles/ProjectPage.css';
 import '../styles/SceneGraphPage.css';
 
 class ProjectPage extends Component {
-
   static propTypes = {
     project: PropTypes.object.isRequired,
     projectId: PropTypes.string.isRequired,
     constructs: PropTypes.array.isRequired,
     pushState: PropTypes.func.isRequired,
-  }
+  };
 
   constructor(props) {
     super(props);
@@ -28,7 +26,7 @@ class ProjectPage extends Component {
   onLayoutChanged = () => {
     this.layoutAlgorithm = this.refs.layoutSelector.value;
     this.forceUpdate();
-  }
+  };
 
   render() {
     const { project, constructs } = this.props;
@@ -36,6 +34,7 @@ class ProjectPage extends Component {
     //todo - need error handling here. Should be in route transition probably?
     //right now there is some handling in GlobalNav when using ProjectSelect. Doesn't handle request of the URL.
     if (!project || !project.metadata) {
+      this.props.pushState('/');
       return <p>todo - need to handle this (direct request)</p>;
     }
 
@@ -71,6 +70,11 @@ class ProjectPage extends Component {
 function mapStateToProps(state) {
   const { projectId, constructId } = state.router.params;
   const project = state.projects[projectId];
+
+  if (!project) {
+    return {};
+  }
+
   const constructs = project.components.map(componentId => state.blocks[componentId]);
 
   return {

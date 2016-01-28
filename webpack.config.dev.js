@@ -27,13 +27,17 @@ module.exports = Object.assign({}, webpackBase, {
     loaders: [
       {
         test   : /\.js$/,
-        loaders: ['babel'],
+        loader: 'babel-loader',
         include: path.join(__dirname, 'src'),
         exclude: /node_modules/
       },
       {
-        test  : /\.css$/,
+        test: /\.css$/,
         loader: 'style-loader!css-loader!postcss-loader'
+      },
+      {
+        test: /\.(png|woff|woff2|eot|ttf|svg)$/,
+        loader: 'url-loader?limit=100000'
       }
     ]
   }

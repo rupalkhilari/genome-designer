@@ -12,7 +12,8 @@ export class ProjectDetail extends Component {
     uiToggleDetailView: PropTypes.func.isRequired,
     isVisible: PropTypes.bool.isRequired,
     project: PropTypes.object.isRequired,
-  }
+  };
+
   componentDidMount() {
     //hack - load in Onion
     setTimeout(() => {
@@ -26,12 +27,12 @@ export class ProjectDetail extends Component {
     window.setTimeout(() => {
       window.dispatchEvent(new Event('resize'));
     }, 300);
-  }
+  };
 
   loadExtension = (manifest) => {
     this.toggle(true);
     manifest.render(this.refs.extensionView);
-  }
+  };
 
   render() {
     //todo - need to trigger render when extensions are registered
@@ -53,8 +54,6 @@ export class ProjectDetail extends Component {
             })}
 
             {!this.props.isVisible && ( <a className="ProjectDetail-heading-extension disabled">3D Protein Preview</a>)}
-            {!this.props.isVisible && ( <a className="ProjectDetail-heading-extension disabled">Promoter Structure
-Prediction</a>)}
             {!this.props.isVisible && ( <a className="ProjectDetail-heading-extension disabled">CRISPR</a>)}
           </div>
 

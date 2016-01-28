@@ -3,6 +3,23 @@ import BlockDefinition from '../schemas/Block';
 import { writeFile } from '../middleware/api';
 import Block from '../models/Block';
 
+//Promise
+export const blockSave = (blockId) => {
+  return (dispatch, getState) => {
+    const block = getState().blocks[blockId];
+    //todo - static method
+    return block.save()
+      .then(response => response.json())
+      .then(json => {
+        dispatch({
+          type: ActionTypes.BLOCK_SAVE,
+          block,
+        });
+        return json;
+      });
+  };
+};
+
 export const blockCreate = (initialModel) => {
   return (dispatch, getState) => {
     const block = new Block(initialModel);
@@ -38,24 +55,7 @@ export const blockClone = (blockInput) => {
   };
 };
 
-//Promise
-export const blockSave = (blockId) => {
-  return (dispatch, getState) => {
-    const block = getState().blocks[blockId];
-    //todo - static method
-    return block.save()
-      .then(response => response.json())
-      .then(json => {
-        dispatch({
-          type: ActionTypes.BLOCK_SAVE,
-          block,
-        });
-        return json;
-      });
-  };
-};
-
-//this is a backup for performing arbitrary mutations
+//this is a backup for performing arbitrary mutations. You shouldn't use this.
 export const blockMerge = (blockId, toMerge) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
@@ -67,6 +67,21 @@ export const blockMerge = (blockId, toMerge) => {
     return block;
   };
 };
+
+//todo - remove from all constructs
+export const blockDelete = (blockId) => {
+  return (dispatch, getState) => {
+    dispatch({
+      type: ActionTypes.BLOCK_DELETE,
+      blockId,
+    });
+    return blockId;
+  };
+};
+
+/***************************************
+ * Metadata things
+ ***************************************/
 
 export const blockRename = (blockId, name) => {
   return (dispatch, getState) => {
@@ -92,8 +107,26 @@ export const blockSetColor = (blockId, color) => {
   };
 };
 
+export const blockSetSbol = (blockId, sbol) => {
+  return (dispatch, getState) => {
+    const oldBlock = getState().blocks[blockId];
+    const block = oldBlock.setSbol(sbol);
+    dispatch({
+      type: ActionTypes.BLOCK_SET_SBOL,
+      block,
+    });
+    return block;
+  };
+};
+
+/***************************************
+ * Components
+ ***************************************/
+
 export const blockAddComponent = (blockId, componentId, index) => {
   return (dispatch, getState) => {
+    //todo - should remove from all other constructs
+
     const oldBlock = getState().blocks[blockId];
     const block = oldBlock.addComponent(componentId, index);
     dispatch({
@@ -131,17 +164,9 @@ export const blockMoveComponent = (blockId, componentId, newIndex) => {
   };
 };
 
-export const blockSetSbol = (blockId, sbol) => {
-  return (dispatch, getState) => {
-    const oldBlock = getState().blocks[blockId];
-    const block = oldBlock.setSbol(sbol);
-    dispatch({
-      type: ActionTypes.BLOCK_SET_SBOL,
-      block,
-    });
-    return block;
-  };
-};
+/***************************************
+ * Sequence / annotations
+ ***************************************/
 
 export const blockAnnotate = (blockId, annotation) => {
   return (dispatch, getState) => {
@@ -167,6 +192,7 @@ export const blockRemoveAnnotation = (blockId, annotationId) => {
   };
 };
 
+//Non-mutating
 //Promise
 //ignore format for now
 export const blockGetSequence = (blockId, format) => {
@@ -176,8 +202,9 @@ export const blockGetSequence = (blockId, format) => {
   };
 };
 
-//todo - should this be async? or assume setting sequence will work? validate here?
-//future - also trigger some history actions
+//Promise
+//future - validate
+//future - trigger history actions
 export const blockSetSequence = (blockId, sequence) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
@@ -186,18 +213,16 @@ export const blockSetSequence = (blockId, sequence) => {
     const sequenceUrl = oldBlock.getSequenceUrl(true);
     const sequenceLength = sequence.length;
 
-    //todo - validate sequence
-    //what do we do if this fails???
-    writeFile(sequenceUrl, sequence)
-    .then()
-    .catch();
-
-    const withUrl = oldBlock.setSequenceUrl(sequenceUrl);
-    const block = withUrl.mutate('sequence.length', sequenceLength);
-    dispatch({
-      type: ActionTypes.BLOCK_SET_SEQUENCE,
-      block,
-    });
-    return block;
+    return writeFile(sequenceUrl, sequence)
+      .then(() => {
+        const withUrl = oldBlock.setSequenceUrl(sequenceUrl);
+        const block = withUrl.mutate('sequence.length', sequenceLength);
+        dispatch({
+          type: ActionTypes.BLOCK_SET_SEQUENCE,
+          block,
+        });
+        return block;
+      })
+      .catch();
   };
 };

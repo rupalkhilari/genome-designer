@@ -13,18 +13,18 @@ export class InventoryGroupBlocks extends Component {
     searchTerm: PropTypes.string.isRequired,
     inventorySearch: PropTypes.func.isRequired,
     items: ({items}) => validators.arrayOf(item => BlockDefinition.validate(item, true))(items) || null,
-  }
+  };
 
   handleSearchChange = (value) => {
     this.props.inventorySearch(value);
-  }
+  };
 
   render() {
     const { items, searchTerm } = this.props;
 
     //in the future, we will want smarter searching
     const searchRegex = new RegExp(searchTerm, 'gi');
-    const listingItems = items.filter(item => searchRegex.test(item.metadata.name));
+    const listingItems = items.filter(item => searchRegex.test(item.metadata.name) || searchRegex.test(item.rules.sbol));
 
     return (
       <div className="InventoryGroup InventoryGroupBlocks">

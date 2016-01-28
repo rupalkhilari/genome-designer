@@ -6,6 +6,9 @@ import kT from './layoutconstants';
 
 // # of pixels of mouse movement before a drag is triggered.
 const dragThreshold = 8;
+// if within this threshold of a block edge the edge is selected versus
+// the entire blocks
+const edgeThreshold = 20;
 
 /**
  * user interface overlay for construct viewer
@@ -78,6 +81,37 @@ export default class ConstructViewerUserInterface extends UserInterface {
     return null;
   }
   /**
+   * return the top most block at the given location and whether the point
+   * is closer to the left or right edges ( if within a threshold, otherwise
+   * just the block is returned )
+   */
+  topBlockAndOptionalVerticalEdgeAt(point) {
+    const block = this.topBlockAt(point);
+    if (block) {
+      // get the AABB of the node representing the block
+      const node = this.layout.nodeFromElement(block);
+      const AABB = node.getAABB();
+      let edge = null;
+      if ((point.x - AABB.x) < edgeThreshold) {
+        edge = 'left';
+      }
+      if ((point.x - AABB.x) > AABB.width - edgeThreshold) {
+        edge = 'right';
+      }
+      return {block, edge}
+    }
+    // if no edit then return the right edge of the last block
+    const count = this.construct.components.length;
+    if (count) {
+      return {
+        block: this.construct.components[count - 1],
+        edge: 'right',
+      };
+    }
+    // construct is empty, we should an insertion point for the construct
+    return null;
+  }
+  /**
    * accessor for the construct in our constructviewer owner
    */
   get construct() {
@@ -135,6 +169,13 @@ export default class ConstructViewerUserInterface extends UserInterface {
     evt.preventDefault();
     const block = this.topBlockAt(point);
     if (block) {
+      // select the construct if not already the selected construct ( changing
+      // the construct will remove blocks that are not part of the construct from the selections )
+      if (this.constructViewer.props.construct.id !== this.constructViewer.props.ui.currentConstructId) {
+        this.constructViewer.constructSelected(this.constructViewer.props.construct.id);
+      }
+
+      const node = this.layout.nodeFromElement(block);
       if (evt.shiftKey || window.__e2eShiftKey) {
         // range select
         this.constructViewer.blockAddToSelections([block]);
@@ -156,8 +197,9 @@ export default class ConstructViewerUserInterface extends UserInterface {
         }
       }
     } else {
-      // clear selections on no block click
-      this.constructViewer.blockSelected([block]);
+      // select construct if no block clicked and deselect all blocks
+      this.constructViewer.blockSelected([]);
+      this.constructViewer.constructSelected(this.constructViewer.props.constructId);
     }
   }
   /**
@@ -276,13 +318,17 @@ export default class ConstructViewerUserInterface extends UserInterface {
     const { type } = payload;
     if (type === sbolDragType) {
       // sbol symbol so we highlight the targeted block
-      const block = this.topBlockAt(localPosition);
-      if (block) {
-        this.showInsertionPointForBlock(block);
+      const hit = this.topBlockAndOptionalVerticalEdgeAt(localPosition);
+      if (hit) {
+        if (hit.edge) {
+          this.showInsertionPointForEdge(hit.block, hit.edge);
+        } else {
+          this.showInsertionPointForBlock(hit.block);
+        }
       } else {
-        this.hideBlockInsertionPoint();
-        this.hideEdgeInsertionPoint();
+        this.showDefaultInsertPoint();
       }
+
     } else {
       // block, so we highlight the insertion point
       const hit = this.topBlockAndVerticalEdgeAt(localPosition);
@@ -300,6 +346,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
   onDrop(globalPosition, payload) {
     const blocks = this.constructViewer.addItemAtInsertionPoint(payload, this.insertion);
     this.constructViewer.blockSelected(blocks);
+    this.constructViewer.constructSelected(this.constructViewer.props.constructId);
   }
   /**
    * show the insertion point at the top left of an empty construct.
