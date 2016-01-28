@@ -19,7 +19,12 @@ import { nodeIndex } from '../utils';
 import ConstructViewerMenu from './constructviewermenu';
 import UserInterface from './constructvieweruserinterface';
 import { inspectorToggleVisibility } from '../../../actions/inspector';
-import { uiToggleCurrent, uiSetCurrent, uiAddCurrent } from '../../../actions/ui';
+import {
+   uiToggleCurrent,
+   uiSetCurrent,
+   uiAddCurrent,
+   uiSetCurrentConstruct,
+  } from '../../../actions/ui';
 
 export class ConstructViewer extends Component {
 
@@ -30,6 +35,7 @@ export class ConstructViewer extends Component {
     layoutAlgorithm: PropTypes.string.isRequired,
     uiAddCurrent: PropTypes.func.isRequired,
     uiSetCurrent: PropTypes.func.isRequired,
+    uiSetCurrentConstruct: PropTypes.func.isRequired,
     uiToggleCurrent: PropTypes.func.isRequired,
     inspectorToggleVisibility: PropTypes.func.isRequired,
     currentBlock: PropTypes.array,
@@ -39,7 +45,7 @@ export class ConstructViewer extends Component {
     blockRemoveComponent: PropTypes.func,
     blocks: PropTypes.object,
     ui: PropTypes.object,
-  }
+  };
 
   constructor(props) {
     super(props);
@@ -98,10 +104,22 @@ export class ConstructViewer extends Component {
     if (type === sbolDragType) {
       // must have an insertion point for sbol
       if (insertionPoint) {
-        // change to the sbol type
-        this.props.blockSetSbol(insertionPoint.block, item.id);
-        // return the blocked dropped on
-        return [insertionPoint.block];
+        // blocks with an sbol symbol can be dropped on an edge and get inserted
+        // as a new block or can simply update the sbol symbol for the block at the drop site.
+        if (insertionPoint.edge) {
+          // insert new block
+          const block = this.props.blockCreate({rules: {sbol: item.id,}});
+          // get index of insertion allowing for the edge closest to the drop if provided
+          const index = this.props.construct.components.indexOf(insertionPoint.block) + (insertionPoint.edge === 'right' ? 1 : 0);
+          // add
+          this.props.blockAddComponent(this.props.construct.id, block.id, index);
+          // return the newly created block or the block dropped on
+          return [block.id];
+        } else {
+          // drop on existing block
+          this.props.blockSetSbol(insertionPoint.block, item.id);
+          return [insertionPoint.block];
+        }
       }
     } else {
       // get index of insertion allowing for the edge closest to the drop
@@ -139,6 +157,14 @@ export class ConstructViewer extends Component {
    */
   blockRename(blockId, newName) {
 
+  }
+
+  /**
+   * select the given block
+   */
+  constructSelected(id) {
+    this.props.uiSetCurrentConstruct(id);
+    this.props.inspectorToggleVisibility(true);
   }
 
   /**
@@ -191,10 +217,17 @@ export class ConstructViewer extends Component {
   }
 
   /**
+   * update scene graph after the react component updates
+   */
+  componentDidUpdate() {
+    this.update();
+  }
+
+  /**
    * update the layout and then the scene graph
    */
   update() {
-    this.layout.update(this.props.construct, this.props.layoutAlgorithm, this.props.blocks, this.props.ui.currentBlocks);
+    this.layout.update(this.props.construct, this.props.layoutAlgorithm, this.props.blocks, this.props.ui.currentBlocks, this.props.ui.currentConstructId);
     this.sg.update();
     this.sg.ui.update();
   }
@@ -267,9 +300,6 @@ export class ConstructViewer extends Component {
    * render the component, the scene graph will render later when componentDidUpdate is called
    */
   render() {
-    if (this.layout) {
-      this.layout.update(this.props.construct, this.props.layoutAlgorithm, this.props.blocks, this.props.ui.currentBlocks);
-    }
 
     // TODO, can be conditional when master is fixed and this is merged with construct select PR
     //const menu = this.props.constructId === this.props.ui.currentConstructId
@@ -323,6 +353,7 @@ export default connect(mapStateToProps, {
   blockRename,
   uiAddCurrent,
   uiSetCurrent,
+  uiSetCurrentConstruct,
   uiToggleCurrent,
   inspectorToggleVisibility,
 })(ConstructViewer);
