@@ -8,7 +8,8 @@ const _getBlockFromStore = (blockId, store) => {
 
 const _getParentFromStore = (blockId, store, def) => {
   const id = Object.keys(store.blocks).find(id => {
-    return _getBlockFromStore(id, store).components.includes(blockId);
+    const block = _getBlockFromStore(id, store);
+    return block.components.indexOf(blockId) > -1;
   });
   return !!id ? store.blocks[id] : def;
 };
@@ -56,14 +57,14 @@ export const blockGetChildrenRecursive = (blockId) => {
 
 export const blockGetLeaves = (blockId) => {
   return (dispatch, getState) => {
-    return _filterToLeafNodes(_getAllChildren(blockId, getState()))
+    return _filterToLeafNodes(_getAllChildren(blockId, getState()));
   };
 };
 
 export const blockGetSiblings = (blockId) => {
   return (dispatch, getState) => {
     const parent = _getParentFromStore(blockId, getState(), {});
-    return parent.components;
+    return parent.components || [];
   };
 };
 
