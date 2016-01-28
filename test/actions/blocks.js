@@ -6,10 +6,24 @@ import Block from '../../src/models/Block';
 
 describe('Block Actions', () => {
   const storeBlock = new Block();
-  const initialState = {
+  const grandchildA1 = new Block();
+  const grandchildA2 = new Block();
+  const childA = new Block({
+    components: [grandchildA1.id, grandchildA2.id],
+  });
+  const childB = new Block();
+  const root = new Block({
+    components: [childA.id, childB.id],
+  });
+  const cloneStoreInitial = {
     [storeBlock.id]: storeBlock,
+    [root.id]: root,
+    [childA.id]: childA,
+    [childB.id]: childB,
+    [grandchildA1.id]: grandchildA1,
+    [grandchildA2.id]: grandchildA2,
   };
-  const blockStore = simpleStore(initialState, blocksReducer, 'blocks');
+  const blockStore = simpleStore(cloneStoreInitial, blocksReducer, 'blocks');
 
   it('blockCreate() adds a block', () => {
     const created = blockStore.dispatch(actions.blockCreate());
@@ -18,25 +32,7 @@ describe('Block Actions', () => {
     expect(inStore).to.eql(created);
   });
 
-  describe.only('Cloning', () => {
-    const grandchildA1 = new Block();
-    const grandchildA2 = new Block();
-    const childA = new Block({
-      components: [grandchildA1.id, grandchildA2.id],
-    });
-    const childB = new Block();
-    const root = new Block({
-      components: [childA.id, childB.id],
-    });
-    const cloneStoreInitial = {
-      [root.id]: root,
-      [childA.id]: childA,
-      [childB.id]: childB,
-      [grandchildA1.id]: grandchildA1,
-      [grandchildA2.id]: grandchildA2,
-    };
-    const cloningStore = simpleStore(cloneStoreInitial, blocksReducer, 'blocks');
-
+  describe('Cloning', () => {
     it('blockClone() clones a block with a new id + proper parents', () => {
       const clone = blockStore.dispatch(actions.blockClone(storeBlock.id));
       expect(clone.id).to.not.equal(storeBlock.id);
@@ -50,11 +46,11 @@ describe('Block Actions', () => {
     });
 
     it('blockClone() deep clones by default, and updates children IDs', () => {
-      const storePreClone = cloningStore.getState().blocks;
-      const rootClone = cloningStore.dispatch(actions.blockClone(root.id));
-      const stateAfterClone = cloningStore.getState().blocks;
+      const storePreClone = blockStore.getState().blocks;
+      const rootClone = blockStore.dispatch(actions.blockClone(root.id));
+      const stateAfterClone = blockStore.getState().blocks;
 
-      expect(Object.keys(storePreClone).length * 2).to.equal(Object.keys(stateAfterClone).length);
+      expect(Object.keys(storePreClone).length + 5).to.equal(Object.keys(stateAfterClone).length);
       expect(rootClone.parents).to.eql([root.id]);
 
       const children = rootClone.components.map(componentId => stateAfterClone[componentId]);
@@ -67,9 +63,9 @@ describe('Block Actions', () => {
     });
 
     it('blockClone() can shallow clone', () => {
-      const preClone = cloningStore.getState().blocks;
-      const rootClone = cloningStore.dispatch(actions.blockClone(root.id, true));
-      const postClone = cloningStore.getState().blocks;
+      const preClone = blockStore.getState().blocks;
+      const rootClone = blockStore.dispatch(actions.blockClone(root.id, true));
+      const postClone = blockStore.getState().blocks;
 
       expect(Object.keys(preClone).length + 1).to.equal(Object.keys(postClone).length);
 
@@ -78,8 +74,9 @@ describe('Block Actions', () => {
   });
 
   describe('Sequence', () => {
+    const sequence = 'acgtacgtacgt';
+
     it('blockSetSequence() sets the length', () => {
-      const sequence = 'acgtacgtacgt';
       blockStore.dispatch(actions.blockSetSequence(storeBlock.id, sequence))
         .then(() => {
           const newBlock = blockStore.getState().blocks[storeBlock.id];
