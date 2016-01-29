@@ -1,0 +1,27 @@
+form.authenticate-form {
+  width: 20rem;
+  background-color: white;
+  margin: 1rem;
+  padding: 1rem;
+}
+form.authenticate-form .row {
+  margin-bottom: 1rem;
+}
+form.authenticate-form label {
+  font-weight: bold;
+  width: 40%;
+  display: inline-block;
+}
+form.authenticate-form input {
+  width: 60%;
+  display: inline-block;
+}
+form.authenticate-form .right {
+  margin-top: 2rem;
+  text-align: right;
+}
+form.authenticate-form h1 {
+  color: lightgray;
+  font-size: 2rem;
+  margin: 0 0 1rem 0;
+}
