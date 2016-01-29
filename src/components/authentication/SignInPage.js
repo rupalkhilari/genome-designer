@@ -7,7 +7,7 @@ import ForgotPasswordForm from './forgot.js';
 
 import '../../../src/styles/Authentication.css';
 
-export default function LoginPage(props) {
+export default function SignInPage(props) {
   return (
     <div style={{margin: "10rem auto"}}>
       <LoginForm/>

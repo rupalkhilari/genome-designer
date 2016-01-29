@@ -1,22 +1,48 @@
-import React from 'react';
+import React , { Component, PropTypes } from 'react';
+import 'isomorphic-fetch';
 
-export default function RegisterForm(props) {
-  return (
-    <div style={{display: 'inline-block'}}>
-      <form className="authenticate-form">
-        <h1>Register</h1>
-        <div className="row">
-          <label>Email</label>
-          <input type="text"/>
-        </div>
-        <div className="row">
-          <label>Password</label>
-          <input type="password"/>
-        </div>
-        <div className="right">
-          <button className="button button-primary" type="submit">Register</button>
-        </div>
-      </form>
-    </div>
-  );
+export default class RegisterForm extends Component {
+
+  static propTypes = {
+  };
+
+  onSubmit(evt) {
+    evt.preventDefault();
+    const email = this.refs.email.value;
+    const password = this.refs.password.value;
+    if (email && password) {
+      fetch('http://localhost:8080/auth/register', {
+        method: 'POST',
+        headers: {
+          
+        }
+        body: JSON.stringify({email, password}),
+      })
+      .then(() => {
+        console.log(arguments);
+      });
+    }
+    alert("Register!");
+  }
+
+  render() {
+    return (
+      <div style={{display: 'inline-block'}}>
+        <form className="authenticate-form" onSubmit={this.onSubmit.bind(this)}>
+          <h1>Register</h1>
+          <div className="row">
+            <label>Email</label>
+            <input ref="email" type="text"/>
+          </div>
+          <div className="row">
+            <label>Password</label>
+            <input ref="password" type="password"/>
+          </div>
+          <div className="right">
+            <button className="button button-primary" type="submit">Register</button>
+          </div>
+        </form>
+      </div>
+    );
+  }
 }
