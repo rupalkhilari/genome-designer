@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import uuid from 'node-uuid';
 import fs from 'fs';
 import mkpath from 'mkpath';
+import merge from 'lodash.merge';
 
 import { createDescendant, record, getAncestors, getDescendantsRecursively } from './../utils/history';
 import { get as dbGet, getSafe as dbGetSafe, set as dbSet } from './../utils/database';
@@ -10,6 +11,9 @@ import { errorInvalidModel, errorInvalidRoute } from './../utils/errors';
 import { validateBlock, validateProject } from './../utils/validation';
 import { authenticationMiddleware } from './../utils/authentication';
 import { getComponents } from './../utils/getRecursively';
+
+import { createStorageUrl } from './../utils/filePaths';
+import {} from './../utils/git';
 
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
@@ -39,14 +43,39 @@ router.get('/clone', (req, res) => {
  CRUD
  *********************************/
 
-router.param('projectId', (req, res, next, id) => {});
-router.param('blockId', (req, res, next, id) => {});
+router.param('projectId', (req, res, next, id) => {
 
-router.get('/:projectId/:blockId/sequence', (req, res) => {});
-router.get('/:projectId/:blockId', (req, res) => {});
-router.get('/:projectId', (req, res) => {});
+});
 
-/////////////////
+router.param('blockId', (req, res, next, id) => {
+
+});
+
+router.route('/:projectId/:blockId/sequence')
+  .get((req, res) => {
+    const { block } = req;
+
+  })
+  .post((req, res) => {
+    const { block } = req;
+
+    //update block sequence length just in case
+
+  });
+
+router.route('/:projectId/:blockId')
+  .get((req, res) => {})
+  .post((req, res) => {})
+  .put((req, res) => {});
+
+router.route('/:projectId')
+  .get((req, res) => {
+    const { depth } = req.query; //future
+  })
+  .post((req, res) => {})
+  .put((req, res) => {});
+
+///////////////// DEPRECATED //////////////////////
 
 router.get('/project/:id', (req, res) => {
   const { id } = req.params;

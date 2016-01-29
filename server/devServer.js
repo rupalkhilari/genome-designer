@@ -3,9 +3,15 @@ import express from 'express';
 import webpack from 'webpack';
 import morgan from 'morgan';
 import config from './../webpack.config.dev.js';
-import apiRouter from './api/index';
 
-import { validateLoginCredentials } from './utils/authentication';
+import dataRouter from './api/dataRouter';
+import fileRouter from './api/fileRouter';
+import extRouter from '../extensions/compute/api';
+import importRouter from '../extensions/convert/import';
+import exportRouter from '../extensions/convert/export';
+import searchRouter from '../extensions/search/search';
+
+import { authRouter, validateUser } from './utils/authentication';
 import { errorInvalidSessionKey } from './utils/errors';
 
 const DEFAULT_PORT = 3000;
@@ -14,12 +20,6 @@ const hostname = '0.0.0.0';
 
 const app = express();
 const compiler = webpack(config);
-const extRouter = require('../extensions/compute/api');
-
-//import and export file formats
-const importRouter = require('../extensions/convert/import');
-const exportRouter = require('../extensions/convert/export');
-const searchRouter = require('../extensions/search/search');
 
 //logging middleware
 app.use(morgan('dev'));
@@ -38,9 +38,10 @@ app.use(require('webpack-hot-middleware')(compiler));
 // Register API middleware
 // ----------------------------------------------------
 
+//todo - should move to auth/login and use that route directly
 app.use('/login', (req, res) => {
   const { user, password } = req.query;
-  validateLoginCredentials(user, password)
+  validateUser(user, password)
     .then(key => {
       res.json({'sessionkey': key});
     })
@@ -49,7 +50,13 @@ app.use('/login', (req, res) => {
     });
 });
 
-app.use('/api', apiRouter);
+app.use('/auth', authRouter);
+
+// all these should require authentication middleware
+
+app.use('/data', dataRouter);
+app.use('/file', fileRouter);
+
 app.use('/compute', extRouter);
 app.use('/import', importRouter);
 app.use('/export', exportRouter);

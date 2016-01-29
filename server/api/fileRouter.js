@@ -2,16 +2,15 @@ import express from 'express';
 import fs from 'fs';
 import mkpath from 'mkpath';
 
-const router = express.Router(); //eslint-disable-line new-cap
+import { createStorageUrl } from './../utils/filePaths';
 
-//All files are put in the storage folder (until platform comes along)
-const createFileUrl = (url) => './storage/' + url;
+const router = express.Router(); //eslint-disable-line new-cap
 
 router.route('*')
   //.all((req, res, next) { next(); })
   .get((req, res) => {
     const url = req.params[0];
-    const filePath = createFileUrl(url);
+    const filePath = createStorageUrl(url);
 
     fs.readFile(filePath, 'utf8', (err, data) => {
       if (err) {
@@ -23,7 +22,7 @@ router.route('*')
   })
   .post((req, res) => {
     const url = req.params[0];
-    const filePath = createFileUrl(url);
+    const filePath = createStorageUrl(url);
     const folderPath = filePath.substring(0, filePath.lastIndexOf('/') + 1);
 
     //assuming contents to be string
@@ -56,7 +55,7 @@ router.route('*')
   })
   .delete((req, res) => {
     const url = req.params[0];
-    const filePath = createFileUrl(url);
+    const filePath = createStorageUrl(url);
 
     fs.unlink(filePath, (err) => {
       if (err) {
