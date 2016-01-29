@@ -11,8 +11,6 @@ import { validateBlock, validateProject } from './../utils/validation';
 import { authenticationMiddleware } from './../utils/authentication';
 import { getComponents } from './../utils/getRecursively';
 
-import fileRouter from './fileRouter';
-
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
   strict: false, //allow values other than arrays and objects
@@ -29,9 +27,26 @@ function paramIsTruthy(param) {
 router.use(authenticationMiddleware);
 
 /*********************************
- GET
- Fetch an entry and all sub-entries
+ Cloning
  *********************************/
+
+//todo - right now, supporting on client only
+router.get('/clone', (req, res) => {
+  res.status(501).send('not implemented');
+});
+
+/*********************************
+ CRUD
+ *********************************/
+
+router.param('projectId', (req, res, next, id) => {});
+router.param('blockId', (req, res, next, id) => {});
+
+router.get('/:projectId/:blockId/sequence', (req, res) => {});
+router.get('/:projectId/:blockId', (req, res) => {});
+router.get('/:projectId', (req, res) => {});
+
+/////////////////
 
 router.get('/project/:id', (req, res) => {
   const { id } = req.params;
@@ -203,13 +218,6 @@ router.post('/clone/:id', (req, res) => {
       res.json(clone);
     });
 });
-
-/*********************************
- * File IO
- * Read and write files
- *********************************/
-
-router.use('/file', fileRouter);
 
 //default catch
 router.use('*', (req, res) => {
