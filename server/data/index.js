@@ -8,7 +8,7 @@ import invariant from 'invariant';
 
 import { createDescendant, record, getAncestors, getDescendantsRecursively } from './../utils/history';
 import { get as dbGet, getSafe as dbGetSafe, set as dbSet } from './../utils/database';
-import { errorNoIdProvided, errorAlreadyExists, errorInvalidModel, errorInvalidRoute } from './../utils/errors';
+import { errorNoIdProvided, errorInvalidModel, errorInvalidRoute } from './../utils/errors';
 import { validateBlock, validateProject } from './../utils/validation';
 import { authenticationMiddleware } from './../utils/authentication';
 import { getComponents } from './../utils/getRecursively';
@@ -25,14 +25,20 @@ function paramIsTruthy(param) {
 }
 
 /***************************
- Login and session validator
+ Middleware
  ****************************/
 
+//Login and session validator
 router.use(authenticationMiddleware);
 
-/*********************************
- Cloning
- *********************************/
+//JSON parser
+router.use(jsonParser);
+
+/***************************
+ REST
+ ***************************/
+
+/******** Cloning *********/
 
 //todo - right now, supporting on client only
 router.get('/clone', (req, res) => {
@@ -77,7 +83,7 @@ router.param('blockId', (req, res, next, id) => {
 
 router.route('/:projectId/:blockId/sequence')
   .all((req, res, next) => {
-    const { projectId, blockId } = req.params;
+    const { projectId, blockId } = req;
     if (!projectId || ! blockId) {
       res.status(400).send(errorNoIdProvided);
     }
@@ -97,7 +103,7 @@ router.route('/:projectId/:blockId/sequence')
 
 router.route('/:projectId/:blockId')
   .all((req, res, next) => {
-    const { projectId, blockId } = req.params;
+    const { projectId, blockId } = req;
     if (!projectId || ! blockId) {
       res.status(400).send(errorNoIdProvided);
     }
@@ -118,7 +124,7 @@ router.route('/:projectId/:blockId')
 
 router.route('/:projectId')
   .all((req, res, next) => {
-    const { projectId } = req.params;
+    const { projectId } = req;
     if (!projectId) {
       res.status(400).send(errorNoIdProvided);
     }

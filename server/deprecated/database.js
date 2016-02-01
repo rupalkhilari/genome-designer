@@ -1,6 +1,6 @@
 import redis from 'redis';
-import { errorDoesNotExist } from './errors';
-import { assertValidId } from './validation';
+import { errorDoesNotExist } from './../utils/errors';
+import { assertValidId } from './../utils/validation';
 /**
  * This file expects only valid data for the database. handles stringifying / parsing.
  *

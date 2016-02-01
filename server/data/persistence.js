@@ -1,6 +1,6 @@
-import { errorDoesNotExist, errorAlreadyExists, errorFileSystem } from './errors';
-import * as filePaths from './filePaths';
-import * as git from './git';
+import { errorDoesNotExist, errorAlreadyExists, errorFileSystem } from './../utils/errors';
+import * as filePaths from './../utils/filePaths';
+import * as git from './../utils/git';
 import fs from 'fs';
 import rimraf from 'rimraf';
 import merge from 'lodash.merge';
@@ -107,12 +107,12 @@ const _blockCommit = (blockId, projectId) => {
 
 //EXISTS
 
-const projectExists = (projectId) => {
+export const projectExists = (projectId) => {
   const path = filePaths.createProjectManifestPath(projectId);
   return _fileExists(path);
 };
 
-const blockExists = (blockId, projectId) => {
+export const blockExists = (blockId, projectId) => {
   const path = filePaths.createBlockManifestPath(blockId, projectId);
   return _fileExists(path);
 };

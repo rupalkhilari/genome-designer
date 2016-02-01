@@ -7,7 +7,7 @@ import { createStorageUrl } from './../utils/filePaths';
 const router = express.Router(); //eslint-disable-line new-cap
 
 router.route(':url')
-  .all((req, res, next) {
+  .all((req, res, next) => {
     const url = req.params[0];
     const filePath = createStorageUrl(url);
     const folderPath = filePath.substring(0, filePath.lastIndexOf('/') + 1);
