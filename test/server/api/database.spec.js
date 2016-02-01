@@ -1,5 +1,5 @@
 import chai, { expect } from 'chai';
-import { errorIdTooShort, errorNoIdProvided, errorDoesNotExist } from '../../../server/utils/errors';
+import { errorIdInvalid, errorNoIdProvided, errorDoesNotExist } from '../../../server/utils/errors';
 import uuid from 'node-uuid';
 import { get, getSafe, set } from '../../../server/utils/database';
 import sinon from 'sinon';
@@ -32,7 +32,7 @@ describe('Database', () => {
       return get(shortId)
         .catch((err) => {
           expect(err).to.be.instanceof(Error);
-          expect(err.message).to.equal(errorIdTooShort);
+          expect(err.message).to.equal(errorIdInvalid);
           done();
         });
     });
@@ -73,7 +73,7 @@ describe('Database', () => {
       return set(shortId)
         .catch((err) => {
           expect(err).to.be.instanceof(Error);
-          expect(err.message).to.equal(errorIdTooShort);
+          expect(err.message).to.equal(errorIdInvalid);
           done();
         });
     });

@@ -2,7 +2,7 @@ import BlockDefinition from '../../src/schemas/Block';
 import ProjectDefinition from '../../src/schemas/Project';
 import * as validators from '../../src/schemas/fields/validators';
 
-import { errorNoIdProvided, errorIdTooShort } from './errors';
+import { errorNoIdProvided, errorIdInvalid } from './errors';
 
 export const validateBlock = (instance) => {
   return BlockDefinition.validate(instance);

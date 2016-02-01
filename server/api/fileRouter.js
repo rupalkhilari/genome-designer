@@ -6,11 +6,20 @@ import { createStorageUrl } from './../utils/filePaths';
 
 const router = express.Router(); //eslint-disable-line new-cap
 
-router.route('*')
-  //.all((req, res, next) { next(); })
-  .get((req, res) => {
+router.route(':url')
+  .all((req, res, next) {
     const url = req.params[0];
     const filePath = createStorageUrl(url);
+    const folderPath = filePath.substring(0, filePath.lastIndexOf('/') + 1);
+
+    Object.assign(req, {
+      filePath,
+      folderPath,
+    });
+    next();
+  })
+  .get((req, res) => {
+    const { filePath } = req;
 
     fs.readFile(filePath, 'utf8', (err, data) => {
       if (err) {
@@ -21,9 +30,7 @@ router.route('*')
     });
   })
   .post((req, res) => {
-    const url = req.params[0];
-    const filePath = createStorageUrl(url);
-    const folderPath = filePath.substring(0, filePath.lastIndexOf('/') + 1);
+    const { filePath, folderPath } = req;
 
     //assuming contents to be string
     let buffer = '';
@@ -54,8 +61,7 @@ router.route('*')
     });
   })
   .delete((req, res) => {
-    const url = req.params[0];
-    const filePath = createStorageUrl(url);
+    const { filePath } = req;
 
     fs.unlink(filePath, (err) => {
       if (err) {

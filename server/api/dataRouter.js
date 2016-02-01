@@ -4,16 +4,16 @@ import uuid from 'node-uuid';
 import fs from 'fs';
 import mkpath from 'mkpath';
 import merge from 'lodash.merge';
+import invariant from 'invariant';
 
 import { createDescendant, record, getAncestors, getDescendantsRecursively } from './../utils/history';
 import { get as dbGet, getSafe as dbGetSafe, set as dbSet } from './../utils/database';
-import { errorInvalidModel, errorInvalidRoute } from './../utils/errors';
+import { errorNoIdProvided, errorAlreadyExists, errorInvalidModel, errorInvalidRoute } from './../utils/errors';
 import { validateBlock, validateProject } from './../utils/validation';
 import { authenticationMiddleware } from './../utils/authentication';
 import { getComponents } from './../utils/getRecursively';
 
-import { createStorageUrl } from './../utils/filePaths';
-import {} from './../utils/git';
+import * as persistence from './../utils/persistence';
 
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
@@ -39,41 +39,102 @@ router.get('/clone', (req, res) => {
   res.status(501).send('not implemented');
 });
 
-/*********************************
- CRUD
- *********************************/
+/******** PARAMS ***********/
 
 router.param('projectId', (req, res, next, id) => {
+  const projectId = id;
+  persistence.projectGet(projectId)
+    .then(project => {
+      Object.assign(req, {
+        project,
+        projectId,
+      });
+      next();
+    })
+    .catch(err => {
+      res.status(500).send(err);
+    });
 
 });
 
 router.param('blockId', (req, res, next, id) => {
-
+  const blockId = id;
+  const { projectId } = req.params;
+  persistence.blockGet(projectId, blockId)
+    .then(block => {
+      Object.assign(req, {
+        block,
+        blockId,
+      });
+      next();
+    })
+    .catch(err => {
+      res.status(500).send(err);
+    });
 });
 
+/********** ROUTES ***********/
+
 router.route('/:projectId/:blockId/sequence')
+  .all((req, res, next) => {
+    const { projectId, blockId } = req.params;
+    if (!projectId || ! blockId) {
+      res.status(400).send(errorNoIdProvided)
+    }
+    next();
+  })
   .get((req, res) => {
-    const { block } = req;
+    const { projectId, blockId, block } = req;
 
   })
   .post((req, res) => {
-    const { block } = req;
+    const { projectId, blockId, block } = req;
 
     //update block sequence length just in case
 
-  });
+  })
+  .delete((req, res)) => {});
 
 router.route('/:projectId/:blockId')
-  .get((req, res) => {})
-  .post((req, res) => {})
-  .put((req, res) => {});
+  .all((req, res, next) => {
+    const { projectId, blockId } = req.params;
+    if (!projectId || ! blockId) {
+      res.status(400).send(errorNoIdProvided)
+    }
+    next();
+  })
+  .get((req, res) => {
+    const { projectId, blockId, block } = req;
+  })
+  .put((req, res) => {
+    const { projectId, blockId, block } = req;
+    //todo - validate
+  })
+  .post((req, res) => {
+    const { projectId, blockId, block } = req;
+    //todo - validate
+  })
+  .delete((req, res)) => {});
 
 router.route('/:projectId')
+  .all((req, res, next) => {
+    const { projectId } = req.params;
+    if (!project) {
+      res.status(400).send(errorNoIdProvided)
+    }
+    next();
+  })
   .get((req, res) => {
     const { depth } = req.query; //future
   })
-  .post((req, res) => {})
-  .put((req, res) => {});
+  .put((req, res) => {
+    //todo - validate
+  })
+  .post((req, res) => {
+    //todo - validate
+  })
+  .delete((req, res)) => {});
+
 
 ///////////////// DEPRECATED //////////////////////
 
