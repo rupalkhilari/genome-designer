@@ -2,21 +2,18 @@ import { errorDoesNotExist, errorAlreadyExists, errorFileSystem } from './errors
 import * as filePaths from './filePaths';
 import * as git from './git';
 import fs from 'fs';
+import rimraf from 'rimraf';
 import merge from 'lodash.merge';
 import mkpath from 'mkpath';
 
 const parser = JSON.parse;
 const stringifier = JSON.stringify;
 
-//todo - get promisified version of FS module
+// internal read/write utils
 
-//projects
-
-export const projectExists = (projectId) => {
-  const path = filePaths.createProjectManifestPath(projectId);
+const _fileExists = (path) => {
   return new Promise((resolve, reject) => {
-    //fixme - lookup this function
-    fs.exists(path, (err, result) => {
+    fs.access(path, (err) => {
       if (err) {
         reject(errorDoesNotExist);
       } else {
@@ -26,128 +23,234 @@ export const projectExists = (projectId) => {
   });
 };
 
+const _fileRead = (path) => {
+  return new Promise((resolve, reject) => {
+    fs.readFile(path, 'utf8', (err, result) => {
+      if (err) {
+        reject(err);
+      }
+      const parsed = parser(result);
+      resolve(parsed);
+    });
+  });
+};
+
+const _fileWrite = (path, jsonData) => {
+  return new Promise((resolve, reject) => {
+    const stringified = stringifier(jsonData);
+    fs.writeFile(path, stringified, 'utf8', (err) => {
+      if (err) {
+        reject(err);
+      }
+      resolve(path);
+    });
+  });
+};
+
+const _makeDirectory = (path) => {
+  return new Promise((resolve, reject) => {
+    mkpath(path, (err) => {
+      if (err) {
+        reject(errorFileSystem);
+      }
+      resolve(path);
+    });
+  });
+};
+
+const _fileDelete = (path) => {
+  return new Promise((resolve, reject) => {
+    fs.unlink(path, (err) => {
+      if (err) { reject(err); }
+      resolve(path);
+    });
+  });
+};
+
+const _fileDeleteDirectory = (path) => {
+  return new Promise((resolve, reject) => {
+    rimraf(path, (err) => {
+      if (err) { reject (err); }
+      resolve(path);
+    });
+  });
+};
+
+const _projectRead = (projectId) => {
+  const path = filePaths.createProjectManifestPath(projectId);
+  return _fileRead(path);
+};
+
+const _blockRead = (blockId, projectId) => {
+  const path = filePaths.createBlockManifestPath(blockId, projectId);
+  return _fileRead(path);
+};
+
+const _projectWrite = (projectId, project) => {
+
+};
+
+const _blockWrite = (blockId, block, projectId) => {
+
+};
+
+//todo - specific git commit messages
+const _projectCommit = (projectId) => {
+  const path = filePaths.createProjectPath(projectId);
+  return git.commit(path);
+};
+
+const _blockCommit = (blockId, projectId) => {
+  const projectPath = filePaths.createProjectPath(projectId);
+  return git.commit(projectPath);
+};
+
+//EXISTS
+
+const projectExists = (projectId) => {
+  const path = filePaths.createProjectManifestPath(projectId);
+  return _fileExists(path);
+};
+
+const blockExists = (blockId, projectId) => {
+  const path = filePaths.createBlockManifestPath(blockId, projectId);
+  return _fileExists(path);
+};
+
+const projectAssertNew = (projectId) => {
+  return projectExists(projectId)
+    .then(() => Promise.reject(errorAlreadyExists))
+    .catch((err) => {
+      if (err === errorDoesNotExist) {
+        return Promise.resolve(projectId);
+      }
+      return Promise.reject(err);
+    });
+};
+
+const blockAssertNew = (blockId, projectId) => {
+  return blockExists(blockId, projectId)
+    .then(() => Promise.reject(errorAlreadyExists))
+    .catch((err) => {
+      if (err === errorDoesNotExist) {
+        return Promise.resolve(blockId);
+      }
+      return Promise.reject(err);
+    });
+};
+
+//GET
+
 export const projectGet = (projectId) => {
   return projectExists(projectId)
-    .then(path => {
-      return new Promise((resolve, reject) => {
-        fs.readFile(path, 'utf8', (err, result) => {
-          if (err) {
-            reject(err);
-          }
-          const parsed = parser(result);
-          resolve(result);
-        });
-      });
-    })
+    .then(() => _projectRead(projectId))
     .catch(err => {
       if (err === errorDoesNotExist) {
         return Promise.resolve(null);
-      } else {
-        return Promise.reject(err);
       }
+      return Promise.reject(err);
     });
 };
+
+export const blockGet = (blockId, projectId) => {
+  return blockExists(blockId, projectId)
+    .then(() => _blockRead(blockId, projectId))
+    .catch(err => {
+      if (err === errorDoesNotExist) {
+        return Promise.resolve(null);
+      }
+      return Promise.reject(err);
+    });
+};
+
+//CREATE
 
 export const projectCreate = (projectId, project) => {
-  //check to make sure does not yet exist... reject if it does
-  return projectExists(projectId)
-  .then(() => Promise.reject(errorAlreadyExists))
-  .catch((err) => {
-    if (err === errorDoesNotExist) {
-      const projectPath = filePaths.createProjectPath(projectId);
-      return Promise.resolve(projectPath);
-    }
-    return Promise.reject(err);
-  })
-  //create the path, initialize git repo
-  .then(projectPath => {
-    return new Promise((resolve, reject) => {
-      mkpath(projectPath, (err) => {
-        if (err) { reject(errorFileSystem); }
+  const projectPath = filePaths.createProjectPath(projectId);
+  const manifestPath = filePaths.createProjectManifestPath(projectId);
 
-        //todo - double check this will propagate
-        return git.initialize(projectPath)
-          .then(resolve);
-      });
-    });
-  })
-  //add files
-  .then(projectPath => {
-    return new Promise((resolve, reject) => {
-      const manifestPath = filePaths.createProjectManifestPath(projectId);
-      const stringified = stringifier(project);
-      fs.writeFile(manifestPath, stringified, 'utf8', (err) => {
-        if (err) { reject(err); }
-        resolve(projectPath);
-      });
-    });
-  })
-  //commit
-  .then(projectPath => git.commit(projectPath));
+  return projectAssertNew(projectId)
+    .then(() => _makeDirectory(projectPath))
+    .then(() => git.initialize(projectPath))
+    .then(() => _fileWrite(manifestPath, project))
+    .then(() => _projectCommit(projectId));
 };
 
-export const projectReplace = (projectId, project) => {
-  return new Promise((resolve, reject) => {
-    const manifestPath = filePaths.createProjectManifestPath(projectId);
-    const stringified = stringifier(project);
-    fs.writeFile(manifestPath, stringified, 'utf8', (err) => {
-      if (err) { reject(err); }
-      resolve(project);
-    });
-  });
+export const blockCreate = (blockId, projectId, block) => {
+  const blockPath = filePaths.createBlockPath(blockId, projectId);
+  const manifestPath = filePaths.createBlockManifestPath(blockId, projectId);
+
+  return blockAssertNew(blockId, projectId)
+    .then(() => _makeDirectory(blockPath))
+    .then(() => _fileWrite(manifestPath, block))
+    .then(() => _blockCommit(blockId, projectId));
+};
+
+//SET (WRITE + MERGE)
+
+export const projectWrite = (projectId, project) => {
+  const manifestPath = filePaths.createProjectManifestPath(projectId);
+  return _fileWrite(manifestPath, project)
+    .then(() => _projectCommit(projectId));
 };
 
 export const projectMerge = (projectId, project) => {
   return projectGet(projectId)
     .then(oldProject => {
       const merged = merge({}, oldProject, project);
-      return projectReplace(projectId, merged);
+      return projectWrite(projectId, merged);
     });
 };
 
+export const blockWrite = (blockId, block, projectId) => {
+  const manifestPath = filePaths.createBlockManifestPath(blockId, projectId);
+  return _fileWrite(manifestPath, block)
+    .then(() => _blockCommit(blockId, projectId));
+};
+
+export const blockMerge = (blockId, block, projectId) => {
+  return blockGet(projectId)
+    .then(oldBlock => {
+      const merged = merge({}, oldBlock, block);
+      return blockWrite(blockId, merged, projectId);
+    });
+};
+
+//DELETE
+
 export const projectDelete = (projectId) => {
   return projectExists(projectId)
-  .then(projectPath => {
-    //todo - delete recursively
-  });
+    .then(() => {
+      const projectPath = filePaths.createProjectPath(projectId);
+      return _fileDeleteDirectory(projectPath);
+    });
+  //no need to commit... its deleted
 };
 
-//blocks
-
-export const blockExists = (projectId, blockId) => {
-  return Promise.resolve(true);
-};
-
-export const blockGet = (projectId, blockId) => {
-  return Promise.resolve(true);
-};
-
-export const blockAdd = (projectId, blockId, block) => {
-  return Promise.resolve(true);
-};
-
-export const blockReplace = (projectId, blockId, block) => {
-  return Promise.resolve(true);
-};
-
-export const blockMerge = (projectId, blockId, block) => {
-  return Promise.resolve(true);
-};
-
-export const blockDelete = (projectId, blockId) => {
-  return Promise.resolve(true);
+export const blockDelete = (blockId, projectId) => {
+  const blockPath = filePaths.createBlockPath(blockId, projectId);
+  return blockExists(blockId, projectId)
+    .then(() => _fileDeleteDirectory(blockPath))
+    .then(() => _projectCommit(projectId));
 };
 
 //sequence
 
-export const sequenceExists = (projectId, blockId) => {
-  return Promise.resolve(true);
+export const sequenceExists = (blockId, projectId) => {
+  const sequencePath = filePaths.createBlockSequencePath(blockId, projectId);
+  return _fileExists(sequencePath);
 };
 
-export const sequenceReplace = (projectId, blockId, sequence) => {
-  return Promise.resolve(true);
+export const sequenceWrite = (blockId, sequence, projectId) => {
+  const sequencePath = filePaths.createBlockSequencePath(blockId, projectId);
+  return sequenceExists(blockId, projectId)
+    .then(() => _fileWrite(sequencePath, sequence))
+    .then(() => _blockCommit(blockId, projectId));
 };
 
-export const sequenceDelete = (projectId, blockId) => {
-  return Promise.resolve(true);
+export const sequenceDelete = (blockId, projectId) => {
+  const sequencePath = filePaths.createBlockSequencePath(blockId, projectId);
+  return sequenceExists(blockId, projectId)
+    .then(() => _fileDelete(sequencePath))
+    .then(() => _blockCommit(blockId, projectId));
 };

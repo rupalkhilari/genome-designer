@@ -79,7 +79,7 @@ router.route('/:projectId/:blockId/sequence')
   .all((req, res, next) => {
     const { projectId, blockId } = req.params;
     if (!projectId || ! blockId) {
-      res.status(400).send(errorNoIdProvided)
+      res.status(400).send(errorNoIdProvided);
     }
     next();
   })
@@ -93,13 +93,13 @@ router.route('/:projectId/:blockId/sequence')
     //update block sequence length just in case
 
   })
-  .delete((req, res)) => {});
+  .delete((req, res) => {});
 
 router.route('/:projectId/:blockId')
   .all((req, res, next) => {
     const { projectId, blockId } = req.params;
     if (!projectId || ! blockId) {
-      res.status(400).send(errorNoIdProvided)
+      res.status(400).send(errorNoIdProvided);
     }
     next();
   })
@@ -114,13 +114,13 @@ router.route('/:projectId/:blockId')
     const { projectId, blockId, block } = req;
     //todo - validate
   })
-  .delete((req, res)) => {});
+  .delete((req, res) => {});
 
 router.route('/:projectId')
   .all((req, res, next) => {
     const { projectId } = req.params;
-    if (!project) {
-      res.status(400).send(errorNoIdProvided)
+    if (!projectId) {
+      res.status(400).send(errorNoIdProvided);
     }
     next();
   })
@@ -133,7 +133,7 @@ router.route('/:projectId')
   .post((req, res) => {
     //todo - validate
   })
-  .delete((req, res)) => {});
+  .delete((req, res) => {});
 
 
 ///////////////// DEPRECATED //////////////////////
