@@ -3,7 +3,7 @@
 import { expect } from 'chai';
 import { Block as exampleBlock } from '../../schemas/_examples';
 import request from 'supertest';
-import { set as dbSet } from '../../../server/utils/database';
+import { set as dbSet } from '../../../server/deprecated/database';
 
 const devServer = require('../../../server/devServer');
 

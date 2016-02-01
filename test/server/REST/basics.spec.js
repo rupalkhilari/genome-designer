@@ -1,5 +1,5 @@
 import request from 'supertest';
-import { set as dbSet } from '../../../server/utils/database';
+import { set as dbSet } from '../../../server/deprecated/database';
 
 const devServer = require('../../../server/devServer');
 

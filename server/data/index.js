@@ -6,14 +6,14 @@ import mkpath from 'mkpath';
 import merge from 'lodash.merge';
 import invariant from 'invariant';
 
-import { createDescendant, record, getAncestors, getDescendantsRecursively } from './../utils/history';
-import { get as dbGet, getSafe as dbGetSafe, set as dbSet } from './../utils/database';
+import { createDescendant, record, getAncestors, getDescendantsRecursively } from './../deprecated/history';
+import { get as dbGet, getSafe as dbGetSafe, set as dbSet } from './../deprecated/database';
 import { errorNoIdProvided, errorInvalidModel, errorInvalidRoute } from './../utils/errors';
 import { validateBlock, validateProject } from './../utils/validation';
 import { authenticationMiddleware } from './../utils/authentication';
-import { getComponents } from './../utils/getRecursively';
+import { getComponents } from './../deprecated/getRecursively';
 
-import * as persistence from './../utils/persistence';
+import * as persistence from './persistence';
 
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({

@@ -1,7 +1,7 @@
 import chai, { expect } from 'chai';
 import { errorIdInvalid, errorNoIdProvided, errorDoesNotExist } from '../../../server/utils/errors';
 import uuid from 'node-uuid';
-import { get, getSafe, set } from '../../../server/utils/database';
+import { get, getSafe, set } from '../../../server/deprecated/database';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 chai.use(sinonChai);

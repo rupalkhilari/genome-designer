@@ -4,8 +4,8 @@ import webpack from 'webpack';
 import morgan from 'morgan';
 import config from './../webpack.config.dev.js';
 
-import dataRouter from './api/dataRouter';
-import fileRouter from './api/fileRouter';
+import dataRouter from './data/index';
+import fileRouter from './file/index';
 import extRouter from '../extensions/compute/api';
 import importRouter from '../extensions/convert/import';
 import exportRouter from '../extensions/convert/export';

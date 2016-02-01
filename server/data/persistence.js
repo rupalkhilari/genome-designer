@@ -1,6 +1,6 @@
 import { errorDoesNotExist, errorAlreadyExists, errorFileSystem } from './../utils/errors';
-import * as filePaths from './../utils/filePaths';
-import * as git from './../utils/git';
+import * as filePaths from './filePaths';
+import * as git from './git';
 import fs from 'fs';
 import rimraf from 'rimraf';
 import merge from 'lodash.merge';

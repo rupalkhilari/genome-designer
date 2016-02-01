@@ -2,7 +2,7 @@ import express from 'express';
 import fs from 'fs';
 import mkpath from 'mkpath';
 
-import { createStorageUrl } from './../utils/filePaths';
+import { createStorageUrl } from './../data/filePaths';
 
 const router = express.Router(); //eslint-disable-line new-cap
 
