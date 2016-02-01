@@ -5,9 +5,6 @@ import morgan from 'morgan';
 import config from './../webpack.config.dev.js';
 import apiRouter from './api/index';
 
-import { validateLoginCredentials } from './utils/authentication';
-import { errorInvalidSessionKey } from './utils/errors';
-
 const DEFAULT_PORT = 3000;
 const port = parseInt(process.argv[2], 10) || process.env.PORT || DEFAULT_PORT;
 const hostname = '0.0.0.0';
@@ -37,17 +34,6 @@ app.use(require('webpack-hot-middleware')(compiler));
 
 // Register API middleware
 // ----------------------------------------------------
-
-app.use('/login', (req, res) => {
-  const { user, password } = req.query;
-  validateLoginCredentials(user, password)
-    .then(key => {
-      res.json({'sessionkey': key});
-    })
-    .catch(err => {
-      res.status(403).send(errorInvalidSessionKey);
-    });
-});
 
 app.use('/api', apiRouter);
 app.use('/compute', extRouter);

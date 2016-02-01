@@ -5,7 +5,7 @@ import ResetPasswordForm from './resetpassword.js';
 import UpdateCredentialsForm from './updatecredentials.js';
 import ForgotPasswordForm from './forgot.js';
 
-import '../../../src/styles/Authentication.css';
+import '../../../src/styles/Authentication.css'; //
 
 export default function SignInPage(props) {
   return (

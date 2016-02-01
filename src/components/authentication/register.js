@@ -11,11 +11,12 @@ export default class RegisterForm extends Component {
     const email = this.refs.email.value;
     const password = this.refs.password.value;
     if (email && password) {
-      fetch('http://localhost:8080/auth/register', {
+      fetch('http://localhost:3000/api/auth/register', {
         method: 'POST',
         headers: {
-          
-        }
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify({email, password}),
       })
       .then(() => {
