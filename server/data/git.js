@@ -7,7 +7,6 @@ const makePath = (fsPath) => {
 
 export const initialize = (path) => {
   const repoPath = makePath(path);
-  console.log(repoPath);
   return nodegit.Repository.init(repoPath, 0)
     .then(repo => {
       return repo.openIndex()
@@ -65,10 +64,7 @@ export const commit = (path, message = 'commit message') => {
             });
         });
     })
-    .then((commit) => {
-      console.log('comitted!', commit);
-      return repoPath;
-    })
+    .then((commitId) => commitId) //just being explicit what is returned
     .catch((err) => Promise.reject(err));
 };
 

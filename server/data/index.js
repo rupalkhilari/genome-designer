@@ -108,7 +108,7 @@ router.route('/:projectId/:blockId/sequence')
       .catch(err => res.status(500).send(err));
   })
   .delete((req, res) => {
-    const { projectId, blockId, block } = req;
+    const { projectId, blockId } = req;
 
     persistence.sequenceDelete(blockId, projectId)
       .then(() => res.status(200).send())
@@ -141,7 +141,7 @@ router.route('/:projectId/:blockId')
         if (err === errorInvalidModel) {
           res.status(400).send(err);
         }
-        res.status(500).send(err);
+        res.status(500).err(err);
       });
   })
   .post((req, res) => {
@@ -160,7 +160,7 @@ router.route('/:projectId/:blockId')
     const { blockId, projectId } = req;
     persistence.blockDelete(blockId, projectId)
       .then(() => res.status(200).send(blockId))
-      .catch(err => res.status(500).send(err));
+      .catch(err => res.status(500).err(err));
   });
 
 router.route('/:projectId')
@@ -190,16 +190,14 @@ router.route('/:projectId')
         if (err === errorInvalidModel) {
           res.status(400).send(err);
         }
-        res.status(500).send(err);
+        res.status(500).err(err);
       });
   })
   .post((req, res) => {
     const { projectId, project } = req;
 
     persistence.projectMerge(projectId, project)
-      .then(merged => {
-        res.status(200).send(merged);
-      })
+      .then(merged => res.status(200).send(merged))
       .catch(err => {
         if (err === errorInvalidModel) {
           res.status(400).send(err);
