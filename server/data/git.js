@@ -1,42 +1,41 @@
 import nodegit from 'nodegit';
 import path from 'path';
 
-const makePath = (path) => {
-  return path.resolve(__dirname, path, './.git');
+const makePath = (fsPath) => {
+  return path.resolve(__dirname, fsPath);
 };
 
 export const initialize = (path) => {
-  return nodegit.Repository.init(makePath(path), 0)
+  const repoPath = makePath(path);
+  console.log(repoPath);
+  return nodegit.Repository.init(repoPath, 0)
     .then(repo => {
-      const index = repo.openIndex();
-      index.read(1); //what is this? was in example
+      return repo.openIndex()
+        .then(index => {
+          index.read(1); //what is this? was in example
 
-      //todo - add an initial file
+          //todo - add an initial file
 
-      return index.addAll()
-        .then(() => index.write())
-        .then(() => index.writeTree())
-        .then(oid => {
-          const author = nodegit.Signature.now('Person', 'email');
-          const committer = author;
-          return repo.createCommit('HEAD', author, committer, 'Initialize', oid, []);
+          return index.addAll()
+            .then(() => index.write())
+            .then(() => index.writeTree())
+            .then(oid => {
+              const author = nodegit.Signature.now('Person', 'email');
+              const committer = author;
+              return repo.createCommit('HEAD', author, committer, 'Initialize', oid, []);
+            });
         });
     })
-    .done(commitId => {
-      console.log('Initial Commit', commitId);
-      Promise.resolve(path);
-    })
-    .catch(Promise.reject);
+    .then(() => repoPath)
+    .catch((err) => Promise.reject(err));
 };
 
-//todo = verify
 export const isInitialized = (path) => {
   return nodegit.Repository.open(makePath(path))
     .then(repo => {
       return true;
     })
     .catch(() => {
-      console.log('caught!');
       return false;
     });
 };
@@ -45,31 +44,32 @@ export const isInitialized = (path) => {
 //todo - prevent conflicts
 //see https://github.com/nodegit/nodegit/blob/master/examples/add-and-commit.js
 export const commit = (path, message = 'commit message') => {
-  return nodegit.Repository.open(makePath(path))
+  const repoPath = makePath(path);
+  return nodegit.Repository.open(repoPath)
     .then(repo => {
-      const index = repo.openIndex();
-      index.read(1); //what is this? was in example
+      return repo.openIndex()
+        .then(index => {
+          index.read(1); //what is this? was in example
 
-      return index.addAll()
-        .then(() => index.write())
-        .then(() => index.writeTree())
-        .then(oid => {
-          return nodegit.Reference.nameToId(repo, 'HEAD')
-            .then((head) => repo.getCommit(head))
-            .then(parent => {
-              const author = nodegit.Signature.now('Person', 'email');
-              const committer = author;
-              return repo.createCommit('HEAD', author, committer, message, oid, [parent]);
+          return index.addAll()
+            .then(() => index.write())
+            .then(() => index.writeTree())
+            .then(oid => {
+              return nodegit.Reference.nameToId(repo, 'HEAD')
+                .then((head) => repo.getCommit(head))
+                .then(parent => {
+                  const author = nodegit.Signature.now('Person', 'email');
+                  const committer = author;
+                  return repo.createCommit('HEAD', author, committer, message, oid, [parent]);
+                });
             });
         });
     })
-    .catch((err) => {
-      console.error('commit error', err);
+    .then(() => {
+      console.log('comitted!');
+      return repoPath;
     })
-    .done(commitId => {
-      console.log('committed!', commitId);
-      return path;
-    });
+    .catch((err) => Promise.reject(err));
 };
 
 export const log = (path) => {

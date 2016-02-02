@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import * as persistence from '../../../server/data/persistence';
 
-describe('Data', () => {
+describe('API Data', () => {
   describe('persistence', () => {
     it('projectExists() check if project exists');
     it('blockExists() check if block exists');
