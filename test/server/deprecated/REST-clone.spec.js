@@ -5,7 +5,7 @@ import request from 'supertest';
 
 const devServer = require('../../../server/devServer');
 
-describe('REST', () => {
+describe.skip('REST', () => {
   let server;
   const sessionkey = '123456';
   beforeEach('server setup', () => {

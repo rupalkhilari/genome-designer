@@ -5,7 +5,7 @@ import { getSessionKey, login } from '../../../src/middleware/api';
 
 const devServer = require('../../../server/devServer');
 
-describe('REST', () => {
+describe.skip('REST', () => {
   describe('/login', () => {
     let server;
     const dummyUser = {

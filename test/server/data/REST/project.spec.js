@@ -1,13 +1,13 @@
 /* eslint-disable */
 
 import { expect } from 'chai';
-import { Block as exampleBlock } from '../../schemas/_examples';
+import { Block as exampleBlock } from '../../../schemas/_examples';
 import request from 'supertest';
-import { set as dbSet } from '../../../server/deprecated/database';
+import { set as dbSet } from '../../../../server/deprecated/database';
 
-const devServer = require('../../../server/devServer');
+const devServer = require('../../../../server/devServer');
 
-describe('REST', () => {
+describe.skip('REST', () => {
   let server;
   const sessionkey = '123456';
   beforeEach('server setup', () => {

@@ -4,7 +4,7 @@ import { set as dbSet } from '../../../server/deprecated/database';
 import request from 'supertest';
 import devServer from '../../../server/devServer';
 
-describe('REST', () => {
+describe.skip('REST', () => {
   let server;
   const sessionkey = '123456';
   const proj1 = exampleProject;
