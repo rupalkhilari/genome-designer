@@ -40,6 +40,7 @@ export class ConstructViewer extends Component {
     inspectorToggleVisibility: PropTypes.func.isRequired,
     currentBlock: PropTypes.array,
     blockSetSbol: PropTypes.func,
+    blockCreate: PropTypes.func,
     blockClone: PropTypes.func,
     blockAddComponent: PropTypes.func,
     blockRemoveComponent: PropTypes.func,
@@ -108,38 +109,35 @@ export class ConstructViewer extends Component {
         // as a new block or can simply update the sbol symbol for the block at the drop site.
         if (insertionPoint.edge) {
           // insert new block
-          const block = this.props.blockCreate({rules: {sbol: item.id,}});
+          const block = this.props.blockCreate({rules: {sbol: item.id}});
           // get index of insertion allowing for the edge closest to the drop if provided
           const index = this.props.construct.components.indexOf(insertionPoint.block) + (insertionPoint.edge === 'right' ? 1 : 0);
           // add
           this.props.blockAddComponent(this.props.construct.id, block.id, index);
           // return the newly created block or the block dropped on
           return [block.id];
-        } else {
-          // drop on existing block
-          this.props.blockSetSbol(insertionPoint.block, item.id);
-          return [insertionPoint.block];
         }
+        // drop on existing block
+        this.props.blockSetSbol(insertionPoint.block, item.id);
+        return [insertionPoint.block];
       }
-    } else {
-      // get index of insertion allowing for the edge closest to the drop
-      let index = this.props.construct.components.length;
-      if (insertionPoint) {
-        index = this.props.construct.components.indexOf(insertionPoint.block) + (insertionPoint.edge === 'right' ? 1 : 0);
-      }
-      // add all blocks in the payload
-      const blocks = Array.isArray(payload.item) ? payload.item : [payload.item];
-      const clones = [];
-      blocks.forEach(block => {
-        const clone = this.props.blockClone(block);
-        this.props.blockAddComponent(this.props.construct.id, clone.id, index++);
-        clones.push(clone.id);
-      });
-      // return all the newly inserted blocks
-      return clones;
     }
+    // get index of insertion allowing for the edge closest to the drop
+    let index = this.props.construct.components.length;
+    if (insertionPoint) {
+      index = this.props.construct.components.indexOf(insertionPoint.block) + (insertionPoint.edge === 'right' ? 1 : 0);
+    }
+    // add all blocks in the payload
+    const blocks = Array.isArray(payload.item) ? payload.item : [payload.item];
+    const clones = [];
+    blocks.forEach(block => {
+      const clone = this.props.blockClone(block);
+      this.props.blockAddComponent(this.props.construct.id, clone.id, index++);
+      clones.push(clone.id);
+    });
+    // return all the newly inserted blocks
+    return clones;
   }
-
   /**
    * remove the given block, which we assume if part of our construct
    */
@@ -300,7 +298,6 @@ export class ConstructViewer extends Component {
    * render the component, the scene graph will render later when componentDidUpdate is called
    */
   render() {
-
     // TODO, can be conditional when master is fixed and this is merged with construct select PR
     //const menu = this.props.constructId === this.props.ui.currentConstructId
     const menu = <ConstructViewerMenu constructId={this.props.constructId} layoutAlgorithm={this.props.layoutAlgorithm}/>;

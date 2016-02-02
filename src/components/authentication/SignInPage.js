@@ -1,4 +1,4 @@
-import React , { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import LoginForm from './signin.js';
 import RegisterForm from './register.js';
 import ResetPasswordForm from './resetpassword.js';

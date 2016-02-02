@@ -1,9 +1,10 @@
-import React , { Component, PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
 import 'isomorphic-fetch';
 
 export default class RegisterForm extends Component {
 
   static propTypes = {
+    output: PropTypes.func.isRequired,
   };
 
   onSubmit(evt) {
@@ -15,7 +16,7 @@ export default class RegisterForm extends Component {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({email, password}),
       })
@@ -24,12 +25,10 @@ export default class RegisterForm extends Component {
       })
       .then((json) => {
         this.props.output(JSON.stringify(json, null, 2));
-        console.log(json);
       })
       .catch((reason) => {
         this.props.output(`Exception: ${reason.toString()}`);
-        console.log(reason);
-      })
+      });
     }
   }
 
