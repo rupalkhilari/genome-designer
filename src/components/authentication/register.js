@@ -25,7 +25,11 @@ export default class RegisterForm extends Component {
       .then((json) => {
         this.props.output(JSON.stringify(json, null, 2));
         console.log(json);
-      });
+      })
+      .catch((reason) => {
+        this.props.output(`Exception: ${reason.toString()}`);
+        console.log(reason);
+      })
     }
   }
 

@@ -1,7 +1,7 @@
 form.authenticate-form {
   width: 30rem;
+  margin: 0 1rem 1rem 1rem;
   background-color: white;
-  margin: 1rem;
   padding: 1rem;
 }
 form.authenticate-form .row {

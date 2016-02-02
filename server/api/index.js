@@ -285,6 +285,9 @@ router.post('/auth/register', jsonParser, (req, res) => {
   })
   .then((json) => {
     res.send(json);
+  })
+  .catch((reason) => {
+    res.status(500).send(reason.toString());
   });
 });
 

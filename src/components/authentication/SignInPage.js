@@ -14,14 +14,24 @@ export default class SignInPage extends Component {
   }
 
   render() {
+    const container = {
+      display: 'flex',
+      marginTop: '3rem',
+      alignItems: 'top',
+      width: '90%',
+      flexWrap: 'wrap',
+      justifyContent: 'center',
+      overflowY: 'scroll',
+    };
+
     return (
-      <div style={{margin: "10rem auto"}}>
+      <div style={container}>
         <LoginForm/>
         <RegisterForm output={this.output.bind(this)}/>
         <ResetPasswordForm/>
         <UpdateCredentialsForm/>
         <ForgotPasswordForm/>
-        <textarea cols="50" rows="10" ref="output"/>
+        <textarea cols="50" style={{height: '10rem'}} ref="output"/>
       </div>
     );
   }
