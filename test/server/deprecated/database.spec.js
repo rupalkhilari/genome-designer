@@ -6,7 +6,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 chai.use(sinonChai);
 
-describe('Database', () => {
+describe.skip('Database', () => {
   const dummyInstance = {
     id: 'some-cool-id',
     metadata: {

@@ -6,7 +6,7 @@ import getRecursively from '../../../server/deprecated/getRecursively';
 
 const { expect } = chai;
 
-describe('getRecursively', () => {
+describe.skip('getRecursively', () => {
   const componentField = 'components';
   const treeDepth = 4;
   const treeNumberChildren = 3;

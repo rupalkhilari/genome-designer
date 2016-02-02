@@ -4,7 +4,7 @@ import { Block as exampleBlock } from '../../schemas/_examples';
 import { getSafe as dbGetSafe } from '../../../server/deprecated/database';
 import { createDescendant, record, makeHistoryKey, getAncestors, getDescendants, getRoot, getDescendantsRecursively } from '../../../server/deprecated/history';
 
-describe('History', () => {
+describe.skip('History', () => {
   it('makeHistoryKey() should append "-history"', () => {
     const key = 'blah';
     expect(makeHistoryKey(key) === key + '-history');
