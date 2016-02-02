@@ -133,31 +133,27 @@ router.route('/:projectId/:blockId')
   })
   .put((req, res) => {
     const { projectId, blockId, block } = req;
-
     //todo - force ID and return block
 
-    if (validateBlock(block)) {
-      persistence.blockWrite(blockId, block, projectId)
-        .then(() => res.status(200).send(block))
-        .catch(err => res.status(500).err(err));
-    } else {
-      res.status(400).send(errorInvalidModel);
-    }
+    persistence.blockWrite(blockId, block, projectId)
+      .then(result => res.json(result))
+      .catch(err => {
+        if (err === errorInvalidModel) {
+          res.status(400).send(err);
+        }
+        res.status(500).send(err);
+      });
   })
   .post((req, res) => {
     const { projectId, blockId, block } = req;
 
-    persistence.blockGet(blockId, projectId)
-      .then(retrieved => {
-        const merged = merge({}, retrieved, block);
-
-        if (validateBlock(merged)) {
-          persistence.blockWrite(blockId, merged)
-            .then(result => res.json(merged))
-            .catch(err => res.status(500).err(err));
-        } else {
-          res.status(400).send(errorInvalidModel);
+    persistence.blockMerge(blockId, block, projectId)
+      .then(merged => res.status(200).send(merged))
+      .catch(err => {
+        if (err === errorInvalidModel) {
+          res.status(400).send(err);
         }
+        res.status(500).send(err);
       });
   })
   .delete((req, res) => {
@@ -188,28 +184,27 @@ router.route('/:projectId')
     const { projectId, project } = req;
     //todo - force ID and return project
 
-    if (validateProject(project)) {
-      persistence.projectWrite(projectId, project)
-        .then(result => res.json(result))
-        .catch(err => res.status(500).err(err));
-    } else {
-      res.status(400).send(errorInvalidModel);
-    }
+    persistence.projectWrite(projectId, project)
+      .then(result => res.json(result))
+      .catch(err => {
+        if (err === errorInvalidModel) {
+          res.status(400).send(err);
+        }
+        res.status(500).send(err);
+      });
   })
   .post((req, res) => {
     const { projectId, project } = req;
 
-    persistence.projectGet(projectId, projectId)
-      .then(retrieved => {
-        const merged = merge({}, retrieved, project);
-
-        if (validateProject(merged)) {
-          persistence.projectWrite(projectId, merged)
-            .then(result => res.json(merged))
-            .catch(err => res.status(500).err(err));
-        } else {
-          res.status(400).send(errorInvalidModel);
+    persistence.projectMerge(projectId, project)
+      .then(merged => {
+        res.status(200).send(merged);
+      })
+      .catch(err => {
+        if (err === errorInvalidModel) {
+          res.status(400).send(err);
         }
+        res.status(500).send(err);
       });
   })
   .delete((req, res) => {

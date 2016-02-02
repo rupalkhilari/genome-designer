@@ -65,8 +65,8 @@ export const commit = (path, message = 'commit message') => {
             });
         });
     })
-    .then(() => {
-      console.log('comitted!');
+    .then((commit) => {
+      console.log('comitted!', commit);
       return repoPath;
     })
     .catch((err) => Promise.reject(err));

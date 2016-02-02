@@ -1,4 +1,5 @@
-import { errorDoesNotExist, errorAlreadyExists, errorFileSystem } from './../utils/errors';
+import { errorDoesNotExist, errorAlreadyExists, errorInvalidModel, errorFileSystem } from './../utils/errors';
+import { validateBlock, validateProject } from './../utils/validation';
 import * as filePaths from './filePaths';
 import * as git from './git';
 import fs from 'fs';
@@ -199,11 +200,16 @@ export const blockCreate = (blockId, projectId, block) => {
 //SET (WRITE + MERGE)
 
 export const projectWrite = (projectId, project) => {
+  if (!validateProject(project)) {
+    return Promise.reject(errorInvalidModel);
+  }
+
+  //create directory etc. if doesn't exist
   return projectExists(projectId)
-    //create directory etc. if doesn't exist
     .catch(() => _projectSetupDirectory(projectId))
     .then(() => _projectWrite(projectId, project))
-    .then(() => _projectCommit(projectId));
+    .then(() => _projectCommit(projectId))
+    .then(() => project);
 };
 
 export const projectMerge = (projectId, project) => {
@@ -215,11 +221,16 @@ export const projectMerge = (projectId, project) => {
 };
 
 export const blockWrite = (blockId, block, projectId) => {
+  if (!validateBlock(block)) {
+    return Promise.reject(errorInvalidModel);
+  }
+
+  //create directory etc. if doesn't exist
   return blockExists(blockId, projectId)
-    //create directory etc. if doesn't exist
     .catch(() => _blockSetupDirectory(blockId, projectId))
     .then(() => _blockWrite(blockId, block, projectId))
-    .then(() => _blockCommit(blockId, projectId));
+    .then(() => _blockCommit(blockId, projectId))
+    .then(() => block);
 };
 
 export const blockMerge = (blockId, block, projectId) => {
