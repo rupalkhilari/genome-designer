@@ -61,7 +61,9 @@ const _makeDirectory = (path) => {
 const _fileDelete = (path) => {
   return new Promise((resolve, reject) => {
     fs.unlink(path, (err) => {
-      if (err) { reject(err); }
+      if (err) {
+        reject(err);
+      }
       resolve(path);
     });
   });
@@ -70,7 +72,9 @@ const _fileDelete = (path) => {
 const _fileDeleteDirectory = (path) => {
   return new Promise((resolve, reject) => {
     rimraf(path, (err) => {
-      if (err) { reject (err); }
+      if (err) {
+        reject(err);
+      }
       resolve(path);
     });
   });
@@ -84,6 +88,17 @@ const _projectRead = (projectId) => {
 const _blockRead = (blockId, projectId) => {
   const path = filePaths.createBlockManifestPath(blockId, projectId);
   return _fileRead(path);
+};
+
+const _projectSetupDirectory = (projectId) => {
+  const projectPath = filePaths.createProjectPath(projectId);
+  return _makeDirectory(projectPath)
+    .then(() => git.initialize(projectPath));
+};
+
+const _blockSetupDirectory = (blockId, projectId) => {
+  const blockPath = filePaths.createBlockPath(blockId, projectId);
+  return _makeDirectory(blockPath);
 };
 
 const _projectWrite = (projectId, project) => {
@@ -168,20 +183,15 @@ export const blockGet = (blockId, projectId) => {
 //CREATE
 
 export const projectCreate = (projectId, project) => {
-  const projectPath = filePaths.createProjectPath(projectId);
-
   return projectAssertNew(projectId)
-    .then(() => _makeDirectory(projectPath))
-    .then(() => git.initialize(projectPath))
+    .then(() => _projectSetupDirectory(projectId))
     .then(() => _projectWrite(projectId, project))
     .then(() => _projectCommit(projectId));
 };
 
 export const blockCreate = (blockId, projectId, block) => {
-  const blockPath = filePaths.createBlockPath(blockId, projectId);
-
   return blockAssertNew(blockId, projectId)
-    .then(() => _makeDirectory(blockPath))
+    .then(() => _blockSetupDirectory(blockId, projectId))
     .then(() => _blockWrite(blockId, block, projectId))
     .then(() => _blockCommit(blockId, projectId));
 };
@@ -189,8 +199,10 @@ export const blockCreate = (blockId, projectId, block) => {
 //SET (WRITE + MERGE)
 
 export const projectWrite = (projectId, project) => {
-  //todo - create if needed
-  return _projectWrite(projectId, project)
+  return projectExists(projectId)
+    //create directory etc. if doesn't exist
+    .catch(() => _projectSetupDirectory(projectId))
+    .then(() => _projectWrite(projectId, project))
     .then(() => _projectCommit(projectId));
 };
 
@@ -203,8 +215,10 @@ export const projectMerge = (projectId, project) => {
 };
 
 export const blockWrite = (blockId, block, projectId) => {
-  //todo - create if needed
-  return _blockWrite(blockId, block, projectId)
+  return blockExists(blockId, projectId)
+    //create directory etc. if doesn't exist
+    .catch(() => _blockSetupDirectory(blockId, projectId))
+    .then(() => _blockWrite(blockId, block, projectId))
     .then(() => _blockCommit(blockId, projectId));
 };
 
