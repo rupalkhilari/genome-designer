@@ -19,11 +19,14 @@ export default class RegisterForm extends Component {
         },
         body: JSON.stringify({email, password}),
       })
-      .then(() => {
-        console.log(arguments);
+      .then((response) => {
+        return response.json();
+      })
+      .then((json) => {
+        this.props.output(JSON.stringify(json, null, 2));
+        console.log(json);
       });
     }
-    alert("Register!");
   }
 
   render() {
