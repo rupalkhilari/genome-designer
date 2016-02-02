@@ -6,23 +6,15 @@ import mkpath from 'mkpath';
 import merge from 'lodash.merge';
 import invariant from 'invariant';
 
-import { createDescendant, record, getAncestors, getDescendantsRecursively } from './../deprecated/history';
-import { get as dbGet, getSafe as dbGetSafe, set as dbSet } from './../deprecated/database';
 import { errorNoIdProvided, errorInvalidModel, errorInvalidRoute } from './../utils/errors';
 import { validateBlock, validateProject } from './../utils/validation';
 import { authenticationMiddleware } from './../utils/authentication';
-import { getComponents } from './../deprecated/getRecursively';
-
 import * as persistence from './persistence';
 
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
   strict: false, //allow values other than arrays and objects
 });
-
-function paramIsTruthy(param) {
-  return (param !== undefined && param !== 'false') || param === true;
-}
 
 /***************************
  Middleware
@@ -40,12 +32,14 @@ router.use(jsonParser);
 
 /******** Cloning *********/
 
-//todo - right now, supporting on client only
+//todo in future - supporting on client only
 router.get('/clone', (req, res) => {
   res.status(501).send('not implemented');
 });
 
 /******** PARAMS ***********/
+
+//assign null if they do not exist
 
 router.param('projectId', (req, res, next, id) => {
   const projectId = id;
@@ -81,10 +75,15 @@ router.param('blockId', (req, res, next, id) => {
 
 /********** ROUTES ***********/
 
+// PUT - replace
+// POST - merge
+
+//todo - expecting sequence in POST json
 router.route('/:projectId/:blockId/sequence')
   .all((req, res, next) => {
     const { projectId, blockId } = req;
-    if (!projectId || ! blockId) {
+
+    if (!projectId || !blockId) {
       res.status(400).send(errorNoIdProvided);
     }
     next();
@@ -92,228 +91,133 @@ router.route('/:projectId/:blockId/sequence')
   .get((req, res) => {
     const { projectId, blockId, block } = req;
 
+    persistence.sequenceGet(blockId, projectId)
+      .then(sequence => res.status(200).send(sequence))
+      .catch(err => res.status(500).send(err));
   })
   .post((req, res) => {
     const { projectId, blockId, block } = req;
+    const sequence = req.body;
 
-    //update block sequence length just in case
-
+    persistence.sequenceWrite(blockId, sequence, projectId)
+      .then(() => {
+        //todo - md5 sequence and return
+        //todo - update block sequence length just in case
+        res.status(200).send();
+      })
+      .catch(err => res.status(500).send(err));
   })
-  .delete((req, res) => {});
+  .delete((req, res) => {
+    const { projectId, blockId, block } = req;
+
+    persistence.sequenceDelete(blockId, projectId)
+      .then(() => res.status(200).send())
+      .catch(err => res.status(500).err(err));
+  });
 
 router.route('/:projectId/:blockId')
   .all((req, res, next) => {
     const { projectId, blockId } = req;
-    if (!projectId || ! blockId) {
+
+    if (!projectId || !blockId) {
       res.status(400).send(errorNoIdProvided);
     }
     next();
   })
   .get((req, res) => {
-    const { projectId, blockId, block } = req;
+    const { projectId, blockId } = req;
+
+    persistence.blockGet(blockId, projectId)
+      .then(result => res.json(result))
+      .catch(err => res.status(500).err(err));
   })
   .put((req, res) => {
     const { projectId, blockId, block } = req;
-    //todo - validate
+
+    //todo - force ID and return block
+
+    if (validateBlock(block)) {
+      persistence.blockWrite(blockId, block, projectId)
+        .then(() => res.status(200).send(block))
+        .catch(err => res.status(500).err(err));
+    } else {
+      res.status(400).send(errorInvalidModel);
+    }
   })
   .post((req, res) => {
     const { projectId, blockId, block } = req;
-    //todo - validate
+
+    persistence.blockGet(blockId, projectId)
+      .then(retrieved => {
+        const merged = merge({}, retrieved, block);
+
+        if (validateBlock(merged)) {
+          persistence.blockWrite(blockId, merged)
+            .then(result => res.json(merged))
+            .catch(err => res.status(500).err(err));
+        } else {
+          res.status(400).send(errorInvalidModel);
+        }
+      });
   })
-  .delete((req, res) => {});
+  .delete((req, res) => {
+    const { blockId, projectId } = req;
+    persistence.blockDelete(blockId, projectId)
+      .then(() => res.status(200).send(blockId))
+      .catch(err => res.status(500).send(err));
+  });
 
 router.route('/:projectId')
   .all((req, res, next) => {
     const { projectId } = req;
+
     if (!projectId) {
       res.status(400).send(errorNoIdProvided);
     }
     next();
   })
   .get((req, res) => {
+    const { projectId } = req;
     const { depth } = req.query; //future
+
+    persistence.projectGet(projectId)
+      .then(result => res.json(result))
+      .catch(err => res.status(500).err(err));
   })
   .put((req, res) => {
-    //todo - validate
+    const { projectId, project } = req;
+    //todo - force ID and return project
+
+    if (validateProject(project)) {
+      persistence.projectWrite(projectId, project)
+        .then(result => res.json(result))
+        .catch(err => res.status(500).err(err));
+    } else {
+      res.status(400).send(errorInvalidModel);
+    }
   })
   .post((req, res) => {
-    //todo - validate
+    const { projectId, project } = req;
+
+    persistence.projectGet(projectId, projectId)
+      .then(retrieved => {
+        const merged = merge({}, retrieved, project);
+
+        if (validateProject(merged)) {
+          persistence.projectWrite(projectId, merged)
+            .then(result => res.json(merged))
+            .catch(err => res.status(500).err(err));
+        } else {
+          res.status(400).send(errorInvalidModel);
+        }
+      });
   })
-  .delete((req, res) => {});
-
-
-///////////////// DEPRECATED //////////////////////
-
-router.get('/project/:id', (req, res) => {
-  const { id } = req.params;
-  const { tree } = req.query;
-
-  if (paramIsTruthy(tree)) {
-    Promise
-      .all([
-        dbGetSafe(id),
-        getComponents(id),
-      ])
-      .then(([inst, comps]) => {
-        res.json({
-          instance: inst,
-          components: comps,
-        });
-      })
-      .catch(err => res.status(500).send(err.message));
-  } else {
-    dbGetSafe(id)
-      .then(result => res.json(result))
-      .catch(err => res.status(500).send(err.message));
-  }
-});
-
-router.get('/block/:id', (req, res) => {
-  const { id } = req.params;
-  const { tree } = req.query;
-
-  if (paramIsTruthy(tree)) {
-    Promise
-      .all([
-        dbGetSafe(id),
-        getComponents(id),
-      ])
-      .then(([inst, comps]) => {
-        res.json({
-          instance: inst,
-          components: comps,
-        });
-      })
-      .catch(err => res.status(500).send(err.message));
-  } else {
-    dbGetSafe(id)
-      .then(result => res.json(result))
-      .catch(err => res.status(500).send(err.message));
-  }
-});
-
-router.get('/ancestors/:id', (req, res) => {
-  const { id } = req.params;
-
-  getAncestors(id)
-    .then(result => res.json(result))
-    .catch(err => res.status(500).send(err.message));
-});
-
-router.get('/descendants/:id', (req, res) => {
-  const { id } = req.params;
-  const { depth } = req.query;
-
-  getDescendantsRecursively(id, depth)
-    .then(result => res.json(result))
-    .catch(err => res.status(500).send(err.message));
-});
-
-/*********************************
- POST
- Create an entry for the first time.
- Forces a new ID, to guarantee object is new.
-
- future - extend scaffold with posted body, then check if valid
- future - allow bypassing of validation?
- *********************************/
-
-router.post('/project', jsonParser, (req, res) => {
-  const data = req.body;
-  const id = uuid.v4();
-  Object.assign(data, {
-    id,
+  .delete((req, res) => {
+    const { projectId } = req;
+    persistence.projectDelete(projectId)
+      .then(() => res.status(200).send(projectId))
+      .catch(err => res.status(500).send(err));
   });
-
-  if (validateProject(data)) {
-    dbSet(id, data)
-      .then(result => res.json(result))
-      .catch(err => res.status(500).err(err.message));
-  } else {
-    res.status(400).send(errorInvalidModel);
-  }
-});
-
-router.post('/block', jsonParser, (req, res) => {
-  const data = req.body;
-  const id = uuid.v4();
-  Object.assign(data, {
-    id,
-  });
-
-  if (validateBlock(data)) {
-    dbSet(id, data)
-      .then(result => res.json(result))
-      .catch(err => res.status(500).err(err.message));
-  } else {
-    res.status(400).send(errorInvalidModel);
-  }
-});
-
-/*********************************
- PUT
- Modify an existing entry.
- Creates the object if it does not exist. ID of URL is assigned to object.
- *********************************/
-
-router.put('/project/:id', jsonParser, (req, res) => {
-  const { id } = req.params;
-  const data = req.body;
-  Object.assign(data, {
-    id,
-  });
-
-  //Check that the input is a valid Project
-  if (validateProject(data)) {
-    dbSet(id, data)
-      .then(result => res.json(result))
-      .catch(err => res.status(500).send(err.message));
-  } else {
-    res.status(400).send(errorInvalidModel);
-  }
-});
-
-router.put('/block/:id', jsonParser, (req, res) => {
-  const { id } = req.params;
-  const data = req.body;
-  Object.assign(data, {
-    id,
-  });
-
-  if (validateBlock(data)) {
-    dbSet(id, data)
-      .then(result => {
-        console.log('result', result);
-        return res.json(result);
-      })
-      .catch(err => res.status(500).send(err.message));
-  } else {
-    res.status(400).send(errorInvalidModel);
-  }
-});
-
-/**
- * Create a child instance
- */
-router.post('/clone/:id', (req, res) => {
-  const { id } = req.params;
-
-  dbGet(id)
-    .then(instance => {
-      const clone = createDescendant(instance);
-      return dbSet(clone.id, clone)
-        .then(() => {
-          return record(clone.id, instance.id);
-        })
-        .then(() => clone);
-    })
-    .catch(err => {
-      res.status(500).send(err.message);
-    })
-    .then(clone => {
-      res.json(clone);
-    });
-});
 
 //default catch
 router.use('*', (req, res) => {

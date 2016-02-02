@@ -87,11 +87,13 @@ const _blockRead = (blockId, projectId) => {
 };
 
 const _projectWrite = (projectId, project) => {
-
+  const manifestPath = filePaths.createProjectManifestPath(projectId);
+  return _fileWrite(manifestPath, project);
 };
 
 const _blockWrite = (blockId, block, projectId) => {
-
+  const manifestPath = filePaths.createProjectManifestPath(blockId, projectId);
+  return _fileWrite(manifestPath, block);
 };
 
 //todo - specific git commit messages
@@ -167,30 +169,28 @@ export const blockGet = (blockId, projectId) => {
 
 export const projectCreate = (projectId, project) => {
   const projectPath = filePaths.createProjectPath(projectId);
-  const manifestPath = filePaths.createProjectManifestPath(projectId);
 
   return projectAssertNew(projectId)
     .then(() => _makeDirectory(projectPath))
     .then(() => git.initialize(projectPath))
-    .then(() => _fileWrite(manifestPath, project))
+    .then(() => _projectWrite(projectId, project))
     .then(() => _projectCommit(projectId));
 };
 
 export const blockCreate = (blockId, projectId, block) => {
   const blockPath = filePaths.createBlockPath(blockId, projectId);
-  const manifestPath = filePaths.createBlockManifestPath(blockId, projectId);
 
   return blockAssertNew(blockId, projectId)
     .then(() => _makeDirectory(blockPath))
-    .then(() => _fileWrite(manifestPath, block))
+    .then(() => _blockWrite(blockId, block, projectId))
     .then(() => _blockCommit(blockId, projectId));
 };
 
 //SET (WRITE + MERGE)
 
 export const projectWrite = (projectId, project) => {
-  const manifestPath = filePaths.createProjectManifestPath(projectId);
-  return _fileWrite(manifestPath, project)
+  //todo - create if needed
+  return _projectWrite(projectId, project)
     .then(() => _projectCommit(projectId));
 };
 
@@ -203,8 +203,8 @@ export const projectMerge = (projectId, project) => {
 };
 
 export const blockWrite = (blockId, block, projectId) => {
-  const manifestPath = filePaths.createBlockManifestPath(blockId, projectId);
-  return _fileWrite(manifestPath, block)
+  //todo - create if needed
+  return _blockWrite(blockId, block, projectId)
     .then(() => _blockCommit(blockId, projectId));
 };
 
@@ -239,6 +239,18 @@ export const blockDelete = (blockId, projectId) => {
 export const sequenceExists = (blockId, projectId) => {
   const sequencePath = filePaths.createBlockSequencePath(blockId, projectId);
   return _fileExists(sequencePath);
+};
+
+export const sequenceGet = (blockId, projectId) => {
+  const sequencePath = filePaths.createBlockSequencePath(blockId, projectId);
+  return sequenceExists(blockId, projectId)
+    .then(() => _fileRead(sequencePath))
+    .catch(err => {
+      if (err === errorDoesNotExist) {
+        return Promise.resolve(null);
+      }
+      return Promise.reject(err);
+    });
 };
 
 export const sequenceWrite = (blockId, sequence, projectId) => {
