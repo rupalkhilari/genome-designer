@@ -20,13 +20,13 @@ const _blockRead = (blockId, projectId) => {
   return fileRead(path);
 };
 
-const _projectSetupDirectory = (projectId) => {
+const _projectSetup = (projectId) => {
   const projectPath = filePaths.createProjectPath(projectId);
   return directoryMake(projectPath)
     .then(() => git.initialize(projectPath));
 };
 
-const _blockSetupDirectory = (blockId, projectId) => {
+const _blockSetup = (blockId, projectId) => {
   const blockPath = filePaths.createBlockPath(blockId, projectId);
   return directoryMake(blockPath);
 };
@@ -114,14 +114,14 @@ export const blockGet = (blockId, projectId) => {
 
 export const projectCreate = (projectId, project) => {
   return projectAssertNew(projectId)
-    .then(() => _projectSetupDirectory(projectId))
+    .then(() => _projectSetup(projectId))
     .then(() => _projectWrite(projectId, project))
     .then(() => _projectCommit(projectId));
 };
 
 export const blockCreate = (blockId, projectId, block) => {
   return blockAssertNew(blockId, projectId)
-    .then(() => _blockSetupDirectory(blockId, projectId))
+    .then(() => _blockSetup(blockId, projectId))
     .then(() => _blockWrite(blockId, block, projectId))
     .then(() => _blockCommit(blockId, projectId));
 };
@@ -135,7 +135,7 @@ export const projectWrite = (projectId, project) => {
 
   //create directory etc. if doesn't exist
   return projectExists(projectId)
-    .catch(() => _projectSetupDirectory(projectId))
+    .catch(() => _projectSetup(projectId))
     .then(() => _projectWrite(projectId, project))
     .then(() => _projectCommit(projectId))
     .then(() => project);
@@ -156,7 +156,7 @@ export const blockWrite = (blockId, block, projectId) => {
 
   //create directory etc. if doesn't exist
   return blockExists(blockId, projectId)
-    .catch(() => _blockSetupDirectory(blockId, projectId))
+    .catch(() => _blockSetup(blockId, projectId))
     .then(() => _blockWrite(blockId, block, projectId))
     .then(() => _blockCommit(blockId, projectId))
     .then(() => block);
@@ -189,6 +189,8 @@ export const blockDelete = (blockId, projectId) => {
 };
 
 //sequence
+
+//TODO  - update block schema to handle routing for sequence file... skip ability to reference
 
 export const sequenceExists = (blockId, projectId) => {
   const sequencePath = filePaths.createBlockSequencePath(blockId, projectId);

@@ -40,6 +40,7 @@ export const isInitialized = (path) => {
 };
 
 //todo - prevent conflicts -- shouldn't be an issue with only one branch
+//todo - ensure HEAD is latest on master
 export const commit = (path, message = 'commit message') => {
   const repoPath = makePath(path);
   return nodegit.Repository.open(repoPath)
@@ -121,3 +122,5 @@ export const checkout = (path, sha = 'HEAD', file) => {
         });
     });
 };
+
+//export const promote = (path, sha, file) => {}
