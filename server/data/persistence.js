@@ -1,115 +1,42 @@
-import { errorDoesNotExist, errorAlreadyExists, errorInvalidModel, errorFileSystem } from './../utils/errors';
-import { validateBlock, validateProject } from './../utils/validation';
+import { errorDoesNotExist, errorAlreadyExists, errorInvalidModel, errorFileSystem } from '../utils/errors';
+import { validateBlock, validateProject } from '../utils/validation';
 import * as filePaths from './filePaths';
 import * as git from './git';
 import fs from 'fs';
 import rimraf from 'rimraf';
 import merge from 'lodash.merge';
 import mkpath from 'mkpath';
-
-const parser = JSON.parse;
-const stringifier = JSON.stringify;
-
-// internal read/write utils
-
-const _fileExists = (path) => {
-  return new Promise((resolve, reject) => {
-    fs.access(path, (err) => {
-      if (err) {
-        reject(errorDoesNotExist);
-      } else {
-        resolve(path);
-      }
-    });
-  });
-};
-
-const _fileRead = (path) => {
-  return new Promise((resolve, reject) => {
-    fs.readFile(path, 'utf8', (err, result) => {
-      if (err) {
-        reject(err);
-      }
-      const parsed = parser(result);
-      resolve(parsed);
-    });
-  });
-};
-
-const _fileWrite = (path, jsonData) => {
-  return new Promise((resolve, reject) => {
-    const stringified = stringifier(jsonData);
-    fs.writeFile(path, stringified, 'utf8', (err) => {
-      if (err) {
-        reject(err);
-      }
-      resolve(path);
-    });
-  });
-};
-
-const _makeDirectory = (path) => {
-  return new Promise((resolve, reject) => {
-    mkpath(path, (err) => {
-      if (err) {
-        reject(errorFileSystem);
-      }
-      resolve(path);
-    });
-  });
-};
-
-const _fileDelete = (path) => {
-  return new Promise((resolve, reject) => {
-    fs.unlink(path, (err) => {
-      if (err) {
-        reject(err);
-      }
-      resolve(path);
-    });
-  });
-};
-
-const _fileDeleteDirectory = (path) => {
-  return new Promise((resolve, reject) => {
-    rimraf(path, (err) => {
-      if (err) {
-        reject(err);
-      }
-      resolve(path);
-    });
-  });
-};
+import { fileExists, fileRead, fileWrite, fileDelete, directoryMake, directoryDelete } from '../utils/fileSystem';
 
 const _projectRead = (projectId) => {
   const path = filePaths.createProjectManifestPath(projectId);
-  return _fileRead(path);
+  return fileRead(path);
 };
 
 const _blockRead = (blockId, projectId) => {
   const path = filePaths.createBlockManifestPath(blockId, projectId);
-  return _fileRead(path);
+  return fileRead(path);
 };
 
 const _projectSetupDirectory = (projectId) => {
   const projectPath = filePaths.createProjectPath(projectId);
-  return _makeDirectory(projectPath)
+  return directoryMake(projectPath)
     .then(() => git.initialize(projectPath));
 };
 
 const _blockSetupDirectory = (blockId, projectId) => {
   const blockPath = filePaths.createBlockPath(blockId, projectId);
-  return _makeDirectory(blockPath);
+  return directoryMake(blockPath);
 };
 
 const _projectWrite = (projectId, project) => {
   const manifestPath = filePaths.createProjectManifestPath(projectId);
-  return _fileWrite(manifestPath, project);
+  return fileWrite(manifestPath, project);
 };
 
 const _blockWrite = (blockId, block, projectId) => {
   const manifestPath = filePaths.createProjectManifestPath(blockId, projectId);
-  return _fileWrite(manifestPath, block);
+  return fileWrite(manifestPath, block);
 };
 
 //todo - specific git commit messages
@@ -127,12 +54,12 @@ const _blockCommit = (blockId, projectId) => {
 
 export const projectExists = (projectId) => {
   const path = filePaths.createProjectManifestPath(projectId);
-  return _fileExists(path);
+  return fileExists(path);
 };
 
 export const blockExists = (blockId, projectId) => {
   const path = filePaths.createBlockManifestPath(blockId, projectId);
-  return _fileExists(path);
+  return fileExists(path);
 };
 
 const projectAssertNew = (projectId) => {
@@ -247,7 +174,7 @@ export const projectDelete = (projectId) => {
   return projectExists(projectId)
     .then(() => {
       const projectPath = filePaths.createProjectPath(projectId);
-      return _fileDeleteDirectory(projectPath);
+      return directoryDelete(projectPath);
     });
   //no need to commit... its deleted
 };
@@ -255,7 +182,7 @@ export const projectDelete = (projectId) => {
 export const blockDelete = (blockId, projectId) => {
   const blockPath = filePaths.createBlockPath(blockId, projectId);
   return blockExists(blockId, projectId)
-    .then(() => _fileDeleteDirectory(blockPath))
+    .then(() => directoryDelete(blockPath))
     .then(() => _projectCommit(projectId));
 };
 
@@ -263,13 +190,13 @@ export const blockDelete = (blockId, projectId) => {
 
 export const sequenceExists = (blockId, projectId) => {
   const sequencePath = filePaths.createBlockSequencePath(blockId, projectId);
-  return _fileExists(sequencePath);
+  return fileExists(sequencePath);
 };
 
 export const sequenceGet = (blockId, projectId) => {
   const sequencePath = filePaths.createBlockSequencePath(blockId, projectId);
   return sequenceExists(blockId, projectId)
-    .then(() => _fileRead(sequencePath))
+    .then(() => fileRead(sequencePath))
     .catch(err => {
       if (err === errorDoesNotExist) {
         return Promise.resolve(null);
@@ -281,13 +208,13 @@ export const sequenceGet = (blockId, projectId) => {
 export const sequenceWrite = (blockId, sequence, projectId) => {
   const sequencePath = filePaths.createBlockSequencePath(blockId, projectId);
   return sequenceExists(blockId, projectId)
-    .then(() => _fileWrite(sequencePath, sequence))
+    .then(() => fileWrite(sequencePath, sequence))
     .then(() => _blockCommit(blockId, projectId));
 };
 
 export const sequenceDelete = (blockId, projectId) => {
   const sequencePath = filePaths.createBlockSequencePath(blockId, projectId);
   return sequenceExists(blockId, projectId)
-    .then(() => _fileDelete(sequencePath))
+    .then(() => fileDelete(sequencePath))
     .then(() => _blockCommit(blockId, projectId));
 };
