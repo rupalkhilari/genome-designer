@@ -16,10 +16,12 @@ export class ProjectDetail extends Component {
 
   componentDidMount() {
     //hack - load in Onion
-    setTimeout(() => {
-      this.forceUpdate();
-      registry.sequenceDetail[0].render(this.refs.extensionView);
-    }, 500);
+    if (registry.sequenceDetail.length > 0) {
+      setTimeout(() => {
+        this.forceUpdate();
+        registry.sequenceDetail[0].render(this.refs.extensionView);
+      }, 500);
+    }
   }
 
   toggle = (forceVal) => {
