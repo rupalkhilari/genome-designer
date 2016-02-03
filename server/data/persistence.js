@@ -37,19 +37,19 @@ const _projectWrite = (projectId, project = {}) => {
 };
 
 const _blockWrite = (blockId, block = {}, projectId) => {
-  const manifestPath = filePaths.createProjectManifestPath(blockId, projectId);
+  const manifestPath = filePaths.createBlockManifestPath(blockId, projectId);
   return fileWrite(manifestPath, block);
 };
 
 //todo - specific git commit messages
 const _projectCommit = (projectId) => {
   const path = filePaths.createProjectPath(projectId);
-  return git.commit(path);
+  return git.commit(path, 'project commit');
 };
 
 const _blockCommit = (blockId, projectId) => {
   const projectPath = filePaths.createProjectPath(projectId);
-  return git.commit(projectPath);
+  return git.commit(projectPath, 'block commit - ' + blockId);
 };
 
 //EXISTS
@@ -120,7 +120,7 @@ export const projectCreate = (projectId, project) => {
     .then(() => project);
 };
 
-export const blockCreate = (blockId, projectId, block) => {
+export const blockCreate = (blockId, block, projectId) => {
   return blockAssertNew(blockId, projectId)
     .then(() => _blockSetup(blockId, projectId))
     .then(() => _blockWrite(blockId, block, projectId))
@@ -165,7 +165,7 @@ export const blockWrite = (blockId, block, projectId) => {
 };
 
 export const blockMerge = (blockId, block, projectId) => {
-  return blockGet(projectId)
+  return blockGet(blockId, projectId)
     .then(oldBlock => {
       const merged = merge({}, oldBlock, block);
       return blockWrite(blockId, merged, projectId);
@@ -202,27 +202,31 @@ export const sequenceExists = (blockId, projectId) => {
 };
 
 export const sequenceGet = (blockId, projectId) => {
-  const sequencePath = filePaths.createBlockSequencePath(blockId, projectId);
   return sequenceExists(blockId, projectId)
-    .then(() => fileRead(sequencePath, false))
+    .then(path => fileRead(path, false))
     .catch(err => {
       if (err === errorDoesNotExist) {
-        return Promise.resolve(null);
+        //if sequence doesn't exist, check if block exists:
+        //  block exists -> null
+        //  block DNE -> rejection
+        return blockExists(blockId, projectId)
+          .then(() => Promise.resolve(null));
       }
       return Promise.reject(err);
     });
 };
 
+//todo - validate sequence
 export const sequenceWrite = (blockId, sequence, projectId) => {
   const sequencePath = filePaths.createBlockSequencePath(blockId, projectId);
-  return sequenceExists(blockId, projectId)
+  return blockExists(blockId, projectId)
     .then(() => fileWrite(sequencePath, sequence, false))
-    .then(() => _blockCommit(blockId, projectId));
+    .then(() => _blockCommit(blockId, projectId))
+    .then(() => sequence);
 };
 
 export const sequenceDelete = (blockId, projectId) => {
-  const sequencePath = filePaths.createBlockSequencePath(blockId, projectId);
   return sequenceExists(blockId, projectId)
-    .then(() => fileDelete(sequencePath))
+    .then(path => fileDelete(path))
     .then(() => _blockCommit(blockId, projectId));
 };
