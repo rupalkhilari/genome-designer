@@ -31,12 +31,12 @@ const _blockSetup = (blockId, projectId) => {
   return directoryMake(blockPath);
 };
 
-const _projectWrite = (projectId, project) => {
+const _projectWrite = (projectId, project = {}) => {
   const manifestPath = filePaths.createProjectManifestPath(projectId);
   return fileWrite(manifestPath, project);
 };
 
-const _blockWrite = (blockId, block, projectId) => {
+const _blockWrite = (blockId, block = {}, projectId) => {
   const manifestPath = filePaths.createProjectManifestPath(blockId, projectId);
   return fileWrite(manifestPath, block);
 };
@@ -116,14 +116,16 @@ export const projectCreate = (projectId, project) => {
   return projectAssertNew(projectId)
     .then(() => _projectSetup(projectId))
     .then(() => _projectWrite(projectId, project))
-    .then(() => _projectCommit(projectId));
+    .then(() => _projectCommit(projectId))
+    .then(() => project);
 };
 
 export const blockCreate = (blockId, projectId, block) => {
   return blockAssertNew(blockId, projectId)
     .then(() => _blockSetup(blockId, projectId))
     .then(() => _blockWrite(blockId, block, projectId))
-    .then(() => _blockCommit(blockId, projectId));
+    .then(() => _blockCommit(blockId, projectId))
+    .then(() => block);
 };
 
 //SET (WRITE + MERGE)
@@ -177,7 +179,8 @@ export const projectDelete = (projectId) => {
     .then(() => {
       const projectPath = filePaths.createProjectPath(projectId);
       return directoryDelete(projectPath);
-    });
+    })
+    .then(() => projectId);
   //no need to commit... its deleted
 };
 
@@ -185,7 +188,8 @@ export const blockDelete = (blockId, projectId) => {
   const blockPath = filePaths.createBlockPath(blockId, projectId);
   return blockExists(blockId, projectId)
     .then(() => directoryDelete(blockPath))
-    .then(() => _projectCommit(projectId));
+    .then(() => _projectCommit(projectId))
+    .then(() => blockId);
 };
 
 //sequence
@@ -200,7 +204,7 @@ export const sequenceExists = (blockId, projectId) => {
 export const sequenceGet = (blockId, projectId) => {
   const sequencePath = filePaths.createBlockSequencePath(blockId, projectId);
   return sequenceExists(blockId, projectId)
-    .then(() => fileRead(sequencePath))
+    .then(() => fileRead(sequencePath, false))
     .catch(err => {
       if (err === errorDoesNotExist) {
         return Promise.resolve(null);
@@ -212,7 +216,7 @@ export const sequenceGet = (blockId, projectId) => {
 export const sequenceWrite = (blockId, sequence, projectId) => {
   const sequencePath = filePaths.createBlockSequencePath(blockId, projectId);
   return sequenceExists(blockId, projectId)
-    .then(() => fileWrite(sequencePath, sequence))
+    .then(() => fileWrite(sequencePath, sequence, false))
     .then(() => _blockCommit(blockId, projectId));
 };
 
