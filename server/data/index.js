@@ -54,7 +54,6 @@ router.param('projectId', (req, res, next, id) => {
     .catch(err => {
       res.status(500).send(err);
     });
-
 });
 
 router.param('blockId', (req, res, next, id) => {
@@ -89,7 +88,7 @@ router.route('/:projectId/:blockId/sequence')
     next();
   })
   .get((req, res) => {
-    const { projectId, blockId, block } = req;
+    const { projectId, blockId } = req;
 
     persistence.sequenceGet(blockId, projectId)
       .then(sequence => res.status(200).send(sequence))
@@ -158,6 +157,7 @@ router.route('/:projectId/:blockId')
   })
   .delete((req, res) => {
     const { blockId, projectId } = req;
+
     persistence.blockDelete(blockId, projectId)
       .then(() => res.status(200).send(blockId))
       .catch(err => res.status(500).err(err));
@@ -207,6 +207,7 @@ router.route('/:projectId')
   })
   .delete((req, res) => {
     const { projectId } = req;
+
     persistence.projectDelete(projectId)
       .then(() => res.status(200).send(projectId))
       .catch(err => res.status(500).send(err));
