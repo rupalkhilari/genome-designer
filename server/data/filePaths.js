@@ -20,7 +20,6 @@ export const createProjectPath = (projectId, ...rest) => {
 };
 
 export const createProjectManifestPath = (projectId) => {
-  invariant(projectId, 'Project ID required');
   return createProjectPath(projectId, manifestPath);
 };
 
@@ -33,11 +32,9 @@ export const createBlockPath = (blockId, projectId, ...rest) => {
 };
 
 export const createBlockManifestPath = (blockId, projectId) => {
-  invariant(blockId, 'Block ID required');
   return createBlockPath(blockId, projectId, manifestPath);
 };
 
 export const createBlockSequencePath = (blockId, projectId) => {
-  invariant(blockId, 'Block ID required');
   return createBlockPath(blockId, projectId, sequencePath);
 };

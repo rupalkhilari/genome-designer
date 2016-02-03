@@ -6,10 +6,11 @@ import fs from 'fs';
 const parser = (string) => JSON.parse(string);
 const stringifier = (obj) => JSON.stringify(obj, null, 2);
 
+//note that node docs recommend avoiding checking if files exist, and just opening them directly in case of race conditions. This function is however useful to avoid overwriting / re-initializing a directory or file.
 export const fileExists = (path) => {
   return new Promise((resolve, reject) => {
-    fs.access(path, (err) => {
-      if (err) {
+    fs.stat(path, (err, stats) => {
+      if (err || !stats.isFile()) {
         reject(errorDoesNotExist);
       } else {
         resolve(path);
@@ -47,6 +48,17 @@ export const fileDelete = (path) => {
     fs.unlink(path, (err) => {
       if (err) {
         reject(err);
+      }
+      resolve(path);
+    });
+  });
+};
+
+export const directoryExists = (path) => {
+  return new Promise((resolve, reject) => {
+    fs.stat(path, (err, stats) => {
+      if (err || !stats.isDirectory()) {
+        reject(errorDoesNotExist);
       }
       resolve(path);
     });
