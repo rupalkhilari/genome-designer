@@ -8,8 +8,20 @@ let DO_ONCE = false;
 
 if (!DO_ONCE) {
   fs.readFile('extensions/registeredExtensions.json', 'utf8', (err, file) => {
-    const namespaces = JSON.parse(file);
-    let name, extensions, path, namespace;
+    if (err) {
+      console.log('Failed to load extensions file');
+      return;
+    }
+
+    let name, extensions, path, namespace, namespaces;
+
+    try {
+      namespaces = JSON.parse(file);
+    } catch (exception) {
+      console.log('Failed to load extensions file: ' + exception.message);
+      return;
+    }
+
     for (namespace in namespaces) {
       extensions = namespaces[namespace];
       if (!(namespace in exports.extensions)) {
