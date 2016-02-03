@@ -1,6 +1,6 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import { sessionMiddleware } from '../../server/utils/authentication';
+//import { sessionMiddleware } from '../../server/utils/authentication';
 import { load as loadExtensions } from '../requireExtensions';
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
@@ -12,7 +12,7 @@ const retval = loadExtensions(normalizedPath);
 const extensions = retval.extensions;
 const manifests = retval.manifests;
 
-router.use(sessionMiddleware);
+//router.use(sessionMiddleware);
 
 //just avoiding redundant code
 function callExportFunction(funcName, field, id, input) {
