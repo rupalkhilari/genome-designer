@@ -9,7 +9,10 @@ export const sequencePath = 'sequence';
 export const manifestPath = 'manifest.json';
 
 //All files are put in the storage folder (until platform comes along)
-export const createStorageUrl = (...urls) => makePath('../../storage/', ...urls);
+export const createStorageUrl = (...urls) => {
+  const dev = process.env.NODE_ENV === 'test' ? 'test/' : '';
+  return makePath('../../storage/' + dev, ...urls);
+};
 
 export const createProjectPath = (projectId, ...rest) => {
   invariant(projectId, 'Project ID required');
