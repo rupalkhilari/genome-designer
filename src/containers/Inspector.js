@@ -31,12 +31,11 @@ export class Inspector extends Component {
       <div className={'SidePanel Inspector' + (isVisible ? ' visible' : '')}>
 
         <div className="SidePanel-heading">
-          <span className="SidePanel-heading-trigger Inspector-trigger"
+          <button className="button-nostyle SidePanel-heading-trigger Inspector-trigger"
                 onClick={() => this.toggle()}/>
           <div className="SidePanel-heading-content">
             <span className="SidePanel-heading-title">Inspector</span>
-            <a ref="close"
-               className="SidePanel-heading-close"
+            <button className="button-nostyle SidePanel-heading-close"
                onClick={() => this.toggle(false)}/>
           </div>
         </div>

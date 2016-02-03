@@ -3,12 +3,12 @@ import bodyParser from 'body-parser';
 import uuid from 'node-uuid';
 import fs from 'fs';
 import mkpath from 'mkpath';
+import 'isomorphic-fetch';
 
 import { createDescendant, record, getAncestors, getDescendantsRecursively } from './../utils/history';
 import { get as dbGet, getSafe as dbGetSafe, set as dbSet } from './../utils/database';
 import { errorInvalidModel, errorInvalidRoute } from './../utils/errors';
 import { validateBlock, validateProject } from './../utils/validation';
-import { sessionMiddleware } from './../utils/authentication';
 import { getComponents } from './../utils/getRecursively';
 
 const router = express.Router(); //eslint-disable-line new-cap
@@ -16,15 +16,11 @@ const jsonParser = bodyParser.json({
   strict: false, //allow values other than arrays and objects
 });
 
+
 function paramIsTruthy(param) {
   return param !== undefined && param !== 'false';
 }
 
-/***************************
- Login and session validator
- ****************************/
-
-router.use(sessionMiddleware);
 
 /*********************************
  GET
@@ -179,6 +175,7 @@ router.put('/block/:id', jsonParser, (req, res) => {
   }
 });
 
+
 /**
  * Create a child instance
  */
@@ -269,6 +266,31 @@ router.delete('/file/*', (req, res) => {
     }
   });
 });
+
+// =======================================================================
+// authentication proxies
+// =======================================================================
+router.post('/auth/register', jsonParser, (req, res) => {
+  const {email, password} = req.body;
+  fetch('http://localhost:8080/auth/register', {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({email, password}),
+  })
+  .then((response) => {
+    return response.json();
+  })
+  .then((json) => {
+    res.send(json);
+  })
+  .catch((reason) => {
+    res.status(500).send(reason.toString());
+  });
+});
+
 
 //default catch
 router.use('*', (req, res) => {

@@ -39,3 +39,12 @@
   border: 1px solid var(--colors-bluegreyDark);
   color: var(--colors-bluegreyDark);
 }
+.button-nostyle {
+  background-color: transparent;
+  border: none;
+  outline-style: none;
+}
+.button-nostyle:hover {
+  background-color: transparent;
+  border: none;
+}
