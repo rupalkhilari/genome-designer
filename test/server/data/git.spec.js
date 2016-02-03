@@ -8,7 +8,7 @@ import * as git from '../../../server/data/git';
 import { fileExists, fileRead, fileWrite, fileDelete, directoryMake, directoryDelete } from '../../../server/utils/fileSystem';
 
 describe('API Data', () => {
-  describe.only('git', function gitTests() {
+  describe('git', function gitTests() {
     this.timeout(10000);
     const pathRepo = createStorageUrl('testrepo');
 
@@ -81,7 +81,16 @@ describe('API Data', () => {
         });
       });
 
-      it('should handle removing a file');
+      it('should handle removing a file', (done) => {
+        fileDelete(file1Path)
+          .then(() => git.commit(pathRepo, 'file deleted'))
+          .then((sha) => {
+            exec(`cd ${pathRepo} && git ls-files`, (err, output) => {
+              expect(output.indexOf(file1Path) < 0);
+              done();
+            });
+          });
+      });
     });
 
     describe('log()', () => {
@@ -111,19 +120,31 @@ describe('API Data', () => {
           .then(() => git.commit(pathRepo, 'first commit'))
           .then((sha) => {
             sha1 = sha;
-            console.log('sha 1', sha1);
             return fileWrite(filePath, fileContents_B);
           })
           .then(() => git.commit(pathRepo, 'second commit'))
           .then((sha) => {
             sha2 = sha;
-            console.log('sha2 ', sha2);
             done();
           })
           .catch(done);
       });
 
-      //todo - remove unless allow persist checking out a branch
+      it('checkout(path, sha, file) gets file at specific version', (done) => {
+        git.checkout(pathRepo, sha1, fileName)
+          .then(fileContents => {
+            expect(fileContents).to.equal(fileContents_A);
+
+            exec(`cd ${pathRepo} && git rev-parse HEAD`, (err, output) => {
+              const [ headSha ] = output.split('\n');
+              expect(headSha).to.equal(sha2);
+              done();
+            });
+          })
+          .catch(done);
+      });
+
+      //todo - irrelevant unless allow persist checking out a branch
       it.skip('checkout(path) checks out head', (done) => {
         git.checkout(pathRepo)
           .then(resetToHead => {
@@ -137,23 +158,9 @@ describe('API Data', () => {
           .catch(done);
       });
 
-      //todo - remove unless allow persist checking out a branch
+      //todo - irrelevant unless allow persist checking out a branch
       it.skip('checkout(path, sha) checks out a version');
 
-      it('checkout(path, sha, file) gets file at specific version', (done) => {
-        //todo - ensure still at head afterwards
-        git.checkout(pathRepo, sha1, fileName)
-          .then(fileContents => {
-            expect(fileContents).to.equal(fileContents_A);
-
-            exec(`cd ${pathRepo} && git rev-parse HEAD`, (err, output) => {
-              const [ headSha ] = output.split('\n');
-              expect(headSha).to.equal(sha2);
-              done();
-            });
-          })
-          .catch(done);
-      });
     });
   });
 });

@@ -8,6 +8,8 @@ import merge from 'lodash.merge';
 import mkpath from 'mkpath';
 import { fileExists, fileRead, fileWrite, fileDelete, directoryMake, directoryDelete } from '../utils/fileSystem';
 
+//todo - support reading a certain version (passing a SHA)
+
 const _projectRead = (projectId) => {
   const path = filePaths.createProjectManifestPath(projectId);
   return fileRead(path);

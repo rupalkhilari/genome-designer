@@ -115,8 +115,7 @@ export const checkout = (path, sha = 'HEAD', file) => {
         .then(entry => {
           return entry.getBlob()
             .then(blob => {
-              console.log(entry.filename(), entry.sha(), blob.rawsize());
-              console.log(blob.toString());
+              //console.log(entry.filename(), entry.sha(), blob.rawsize());
               return blob.toString();
             });
         });
