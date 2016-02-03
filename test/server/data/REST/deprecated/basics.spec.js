@@ -1,6 +1,6 @@
 import request from 'supertest';
 
-const devServer = require('../../../../server/devServer');
+const devServer = require('../../../../../server/devServer');
 
 describe.skip('REST', () => {
   let server;
