@@ -1,4 +1,4 @@
-import { expect } from 'chai';
+import { assert, expect } from 'chai';
 import fs from 'fs';
 import path from 'path';
 import rimraf from 'rimraf';
@@ -8,7 +8,7 @@ import * as git from '../../../server/data/git';
 import { fileExists, fileRead, fileWrite, fileDelete, directoryMake, directoryDelete } from '../../../server/utils/fileSystem';
 
 describe('API Data', () => {
-  describe('git', function gitTests() {
+  describe.only('git', function gitTests() {
     this.timeout(10000);
     const pathRepo = createStorageUrl('testrepo');
 
@@ -21,7 +21,7 @@ describe('API Data', () => {
         git.initialize(pathRepo)
           .then(() => {
             exec(`cd ${pathRepo} && git status`, (err, result) => {
-              expect(result.indexOf('On branch master') >= 0);
+              assert(result.indexOf('On branch master') >= 0);
               done(err);
             });
           })
@@ -31,7 +31,7 @@ describe('API Data', () => {
       it('isInitialized() checks if initialized - true if is', () => {
         return git.isInitialized(pathRepo)
           .then(result => {
-            expect(result === true);
+            assert(result === true);
           });
       });
 
@@ -39,7 +39,7 @@ describe('API Data', () => {
         const uninitPath = 'uninitPath';
         return git.isInitialized(uninitPath)
           .then(result => {
-            expect(result === false);
+            assert(result === false);
           });
       });
     });
@@ -62,21 +62,21 @@ describe('API Data', () => {
 
       it('commit() should add all the files', (done) => {
         exec(`cd ${pathRepo} && git status`, (err, out) => {
-          expect(out.indexOf('working directory clean') >= 0);
+          assert(out.indexOf('working directory clean') >= 0);
           done(err);
         });
       });
 
       it('commit() should accept a message', (done) => {
         exec(`cd ${pathRepo} && git log`, (err, out) => {
-          expect(out.indexOf(commitMessage) >= 0);
+          assert(out.indexOf(commitMessage) >= 0);
           done(err);
         });
       });
 
       it('commit() should add a commit', (done) => {
         exec(`cd ${pathRepo} && git log`, (err, out) => {
-          expect(out.indexOf(commitSha) >= 0);
+          assert(out.indexOf(commitSha) >= 0);
           done(err);
         });
       });
@@ -86,7 +86,7 @@ describe('API Data', () => {
           .then(() => git.commit(pathRepo, 'file deleted'))
           .then((sha) => {
             exec(`cd ${pathRepo} && git ls-files`, (err, output) => {
-              expect(output.indexOf(file1Path) < 0);
+              assert(output.indexOf(file1Path) < 0);
               done();
             });
           });
@@ -97,8 +97,8 @@ describe('API Data', () => {
       it('returns a list of commits with specific fields', (done) => {
         git.log(pathRepo)
           .then(commits => {
-            expect(Array.isArray(commits));
-            expect(commits.every(commit => {
+            assert(Array.isArray(commits));
+            assert(commits.every(commit => {
               return commit.sha && commit.author && commit.date && commit.message;
             }));
             done();
