@@ -30,10 +30,10 @@ export const fileRead = (path) => {
   });
 };
 
-export const fileWrite = (path, jsonData) => {
+export const fileWrite = (path, contents, stringify = true) => {
   return new Promise((resolve, reject) => {
-    const stringified = stringifier(jsonData);
-    fs.writeFile(path, stringified, 'utf8', (err) => {
+    const fileContent = !!stringify ? stringifier(contents) : contents;
+    fs.writeFile(path, fileContent, 'utf8', (err) => {
       if (err) {
         reject(err);
       }

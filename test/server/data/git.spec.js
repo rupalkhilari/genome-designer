@@ -5,6 +5,7 @@ import rimraf from 'rimraf';
 import { exec } from 'child_process'; //todo - promise version
 import { createStorageUrl } from '../../../server/data/filePaths';
 import * as git from '../../../server/data/git';
+import { fileExists, fileRead, fileWrite, fileDelete, directoryMake, directoryDelete } from '../../../server/utils/fileSystem';
 
 describe('API Data', () => {
   describe.only('git', function gitTests() {
@@ -50,18 +51,13 @@ describe('API Data', () => {
       let commitSha;
 
       before((done) => {
-        fs.writeFile(file1Path, file1Contents, 'utf8', (err) => {
-          if (err) {
-            done(err);
-          }
-
-          git.commit(pathRepo, commitMessage)
-            .then((sha) => {
-              commitSha = sha;
-              done();
-            })
-            .catch(done);
-        });
+        fileWrite(file1Path, file1Contents, false)
+          .then(() => git.commit(pathRepo, commitMessage))
+          .then((sha) => {
+            commitSha = sha;
+            done();
+          })
+          .catch(done);
       });
 
       it('commit() should add all the files', (done) => {
@@ -84,6 +80,8 @@ describe('API Data', () => {
           done(err);
         });
       });
+
+      it('should handle removing a file');
     });
 
     describe('log()', () => {
@@ -101,9 +99,61 @@ describe('API Data', () => {
     });
 
     describe('checkout()', () => {
-      it('checkout(path) checks out head');
-      it('checkout(path, file) gets a file');
-      it('checkout(path, file, SHA) gets file at specific version');
+      const fileName = 'rewritable';
+      const filePath = path.resolve(pathRepo, fileName);
+      const fileContents_A = 'initial contents';
+      const fileContents_B = 'alternative internals';
+      let sha1;
+      let sha2;
+
+      before((done) => {
+        fileWrite(filePath, fileContents_A, false)
+          .then(() => git.commit(pathRepo, 'first commit'))
+          .then((sha) => {
+            sha1 = sha;
+            console.log('sha 1', sha1);
+            return fileWrite(filePath, fileContents_B);
+          })
+          .then(() => git.commit(pathRepo, 'second commit'))
+          .then((sha) => {
+            sha2 = sha;
+            console.log('sha2 ', sha2);
+            done();
+          })
+          .catch(done);
+      });
+
+      //todo - remove unless allow persist checking out a branch
+      it.skip('checkout(path) checks out head', (done) => {
+        git.checkout(pathRepo)
+          .then(resetToHead => {
+            exec(`cd ${pathRepo} && git rev-parse HEAD`, (err, output) => {
+              const [ headSha ] = output.split('\n');
+              expect(headSha).to.equal(sha2);
+              //todo - is this really testing this correctly?
+              done();
+            });
+          })
+          .catch(done);
+      });
+
+      //todo - remove unless allow persist checking out a branch
+      it.skip('checkout(path, sha) checks out a version');
+
+      it('checkout(path, sha, file) gets file at specific version', (done) => {
+        //todo - ensure still at head afterwards
+        git.checkout(pathRepo, sha1, fileName)
+          .then(fileContents => {
+            expect(fileContents).to.equal(fileContents_A);
+
+            exec(`cd ${pathRepo} && git rev-parse HEAD`, (err, output) => {
+              const [ headSha ] = output.split('\n');
+              expect(headSha).to.equal(sha2);
+              done();
+            });
+          })
+          .catch(done);
+      });
     });
   });
 });

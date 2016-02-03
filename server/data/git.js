@@ -39,9 +39,7 @@ export const isInitialized = (path) => {
     });
 };
 
-//todo - add all files
-//todo - prevent conflicts
-//see https://github.com/nodegit/nodegit/blob/master/examples/add-and-commit.js
+//todo - prevent conflicts -- shouldn't be an issue with only one branch
 export const commit = (path, message = 'commit message') => {
   const repoPath = makePath(path);
   return nodegit.Repository.open(repoPath)
@@ -64,7 +62,7 @@ export const commit = (path, message = 'commit message') => {
             });
         });
     })
-    .then((commitId) => commitId) //just being explicit what is returned
+    .then((commitId) => '' + commitId) //just being explicit what is returned
     .catch((err) => Promise.reject(err));
 };
 
@@ -97,23 +95,30 @@ export const log = (path) => {
     });
 };
 
-export const checkout = (path, file, sha = 'HEAD') => {
+//future - may want to cut file path down automatically if includes repo path
+export const checkout = (path, sha = 'HEAD', file) => {
   return nodegit.Repository.open(makePath(path))
-    .then(repo => repo.getCommit(sha))
+    .then(repo => {
+      if (!sha || sha === 'HEAD') {
+        return repo.getMasterCommit();
+      }
+      return repo.getCommit(sha);
+    })
     .then(commit => {
-      //just take them to a specific commit
+      //just take them to a specific commit,
+      //return a function to return them to the head
       if (!file) {
         return Promise.resolve(sha);
       }
 
       return commit.getEntry(file)
         .then(entry => {
-          entry.getBlob()
+          return entry.getBlob()
             .then(blob => {
               console.log(entry.filename(), entry.sha(), blob.rawsize());
               console.log(blob.toString());
+              return blob.toString();
             });
         });
-    })
-    .done();
+    });
 };
