@@ -3,8 +3,8 @@ import mkpath from 'mkpath';
 import rimraf from 'rimraf';
 import fs from 'fs';
 
-const parser = JSON.parse;
-const stringifier = JSON.stringify;
+const parser = (string) => JSON.parse(string);
+const stringifier = (obj) => JSON.stringify(obj, null, 2);
 
 export const fileExists = (path) => {
   return new Promise((resolve, reject) => {
@@ -18,13 +18,13 @@ export const fileExists = (path) => {
   });
 };
 
-export const fileRead = (path) => {
+export const fileRead = (path, jsonParse = true) => {
   return new Promise((resolve, reject) => {
     fs.readFile(path, 'utf8', (err, result) => {
       if (err) {
         reject(err);
       }
-      const parsed = parser(result);
+      const parsed = !!jsonParse ? parser(result) : result;
       resolve(parsed);
     });
   });
