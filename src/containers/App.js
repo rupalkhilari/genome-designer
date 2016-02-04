@@ -1,7 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-
 import GlobalNav from './GlobalNav';
-//import DevTools from './DevTools';
 
 import '../styles/App.css';
 

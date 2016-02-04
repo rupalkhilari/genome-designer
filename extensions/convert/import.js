@@ -11,6 +11,7 @@ const retval = loadExtensions(normalizedPath);
 const extensions = retval.extensions;
 const manifests = retval.manifests;
 const fs = require('fs');
+
 router.use(authenticationMiddleware);
 
 function callImportFunction(funcName, id, data) {

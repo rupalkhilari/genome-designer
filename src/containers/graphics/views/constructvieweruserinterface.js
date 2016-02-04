@@ -98,7 +98,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
       if ((point.x - AABB.x) > AABB.width - edgeThreshold) {
         edge = 'right';
       }
-      return {block, edge}
+      return {block, edge};
     }
     // if no edit then return the right edge of the last block
     const count = this.construct.components.length;
@@ -175,7 +175,6 @@ export default class ConstructViewerUserInterface extends UserInterface {
         this.constructViewer.constructSelected(this.constructViewer.props.construct.id);
       }
 
-      const node = this.layout.nodeFromElement(block);
       if (evt.shiftKey || window.__e2eShiftKey) {
         // range select
         this.constructViewer.blockAddToSelections([block]);
@@ -328,7 +327,6 @@ export default class ConstructViewerUserInterface extends UserInterface {
       } else {
         this.showDefaultInsertPoint();
       }
-
     } else {
       // block, so we highlight the insertion point
       const hit = this.topBlockAndVerticalEdgeAt(localPosition);
