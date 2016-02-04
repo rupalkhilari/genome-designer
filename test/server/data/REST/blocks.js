@@ -1,4 +1,4 @@
-import { expect } from 'chai';
+import { assert, expect } from 'chai';
 import request from 'supertest';
 import Project from '../../../../src/models/Project';
 import Block from '../../../../src/models/Block';
@@ -11,13 +11,13 @@ describe('REST', () => {
       let server;
       const projectData = new Project();
       const projectId = projectData.id;
-
       const blockData = new Block();
       const blockId = blockData.id;
 
-      const extendedBlock = blockData.merge({
+      const blockPatch = {
         some: 'field',
-      });
+      };
+      const extendedBlock = blockData.merge(blockPatch);
 
       before(() => {
         return persistence.projectCreate(projectId, projectData)
@@ -52,6 +52,15 @@ describe('REST', () => {
           })
         .end(done);
       });
+
+      it('POST merges the block and returns it');
+      it('POST doesnt allow data with wrong ID');
+
+      it('PUT replaces the block');
+      it('PUT forces the block ID');
+      it('PUT validates the block');
+
+      it('DELETE deletes the block and returns ID');
     });
   });
 });

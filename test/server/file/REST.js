@@ -7,7 +7,6 @@ const devServer = require('../../../server/devServer');
 describe('REST', () => {
   describe('Files', () => {
     let server;
-    const sessionkey = '123456';
     beforeEach('server setup', () => {
       server = devServer.listen();
     });
@@ -24,7 +23,6 @@ describe('REST', () => {
 
       request(server)
         .post(apiPath)
-        .set('sessionkey', sessionkey)
         .send('file contents')
         .expect(200)
         .expect(apiPath, done);
@@ -38,7 +36,6 @@ describe('REST', () => {
       fs.writeFile(fileStoragePath + fileName, fileContents, 'utf8', (err, result) => {
         request(server)
           .get(apiPath)
-          .set('sessionkey', sessionkey)
           .expect(200)
           .expect(fileContents, done);
       });
@@ -52,7 +49,6 @@ describe('REST', () => {
       fs.writeFile(fileStoragePath + fileName, fileContents, 'utf8', (writeErr, result) => {
         request(server)
           .delete(apiPath)
-          .set('sessionkey', sessionkey)
           .expect(200)
           .end((deleteErr, res) => {
             fs.readFile(fileStoragePath + fileName, 'utf8', (readErr, result) => {

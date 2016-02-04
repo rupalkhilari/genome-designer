@@ -43,7 +43,6 @@ router.get('/clone', (req, res) => {
 router.param('projectId', (req, res, next, id) => {
   const projectId = id;
   Object.assign(req, {projectId});
-  console.log('project ID is ' + projectId);
   next();
 
   /*
@@ -64,7 +63,6 @@ router.param('projectId', (req, res, next, id) => {
 router.param('blockId', (req, res, next, id) => {
   const blockId = id;
   Object.assign(req, {blockId});
-  console.log('block id is ' + blockId);
   next();
 
   /*
@@ -145,7 +143,12 @@ router.route('/:projectId/:blockId/sequence')
 
     persistence.sequenceDelete(blockId, projectId)
       .then(() => res.status(200).send())
-      .catch(err => res.status(500).err(err));
+      .catch(err => {
+        if (err === errorInvalidModel) {
+          res.status(400).send(errorInvalidModel);
+        }
+        res.status(500).err(err);
+      });
   });
 
 router.route('/:projectId/:blockId')
@@ -173,13 +176,11 @@ router.route('/:projectId/:blockId')
     const { projectId, blockId } = req;
     const block = req.body;
 
-    //todo - force ID and return block
-
     persistence.blockWrite(blockId, block, projectId)
       .then(result => res.json(result))
       .catch(err => {
         if (err === errorInvalidModel) {
-          res.status(400).send(err);
+          res.status(400).send(errorInvalidModel);
         }
         res.status(500).err(err);
       });
@@ -188,11 +189,15 @@ router.route('/:projectId/:blockId')
     const { projectId, blockId } = req;
     const block = req.body;
 
+    if (!!block.id && block.id !== blockId) {
+      res.status(400).send(errorInvalidModel);
+    }
+
     persistence.blockMerge(blockId, block, projectId)
       .then(merged => res.status(200).send(merged))
       .catch(err => {
         if (err === errorInvalidModel) {
-          res.status(400).send(err);
+          res.status(400).send(errorInvalidModel);
         }
         res.status(500).send(err);
       });
@@ -206,14 +211,6 @@ router.route('/:projectId/:blockId')
   });
 
 router.route('/:projectId')
-  .all((req, res, next) => {
-    const { projectId } = req;
-
-    if (!projectId) {
-      res.status(400).send(errorNoIdProvided);
-    }
-    next();
-  })
   .get((req, res) => {
     const { projectId } = req;
     const { depth } = req.query; //future
@@ -231,13 +228,11 @@ router.route('/:projectId')
     const { projectId } = req;
     const project = req.body;
 
-    //todo - force ID and return project
-
     persistence.projectWrite(projectId, project)
       .then(result => res.json(result))
       .catch(err => {
         if (err === errorInvalidModel) {
-          res.status(400).send(err);
+          res.status(400).send(errorInvalidModel);
         }
         res.status(500).err(err);
       });
@@ -246,11 +241,15 @@ router.route('/:projectId')
     const { projectId } = req;
     const project = req.body;
 
+    if (!!project.id && project.id !== projectId) {
+      res.status(400).send(errorInvalidModel);
+    }
+
     persistence.projectMerge(projectId, project)
       .then(merged => res.status(200).send(merged))
       .catch(err => {
         if (err === errorInvalidModel) {
-          res.status(400).send(err);
+          res.status(400).send(errorInvalidModel);
         }
         res.status(500).send(err);
       });
