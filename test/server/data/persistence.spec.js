@@ -19,7 +19,7 @@ describe('API Data', () => {
   describe('persistence', function persistenceTests() {
     this.timeout(10000);
 
-    describe('existence + reading', () => {
+    describe.only('existence + reading', () => {
       const projectName = 'persistenceProject';
       const projectData = new Project({metadata: {name: projectName}});
       const projectId = projectData.id;
@@ -89,6 +89,11 @@ describe('API Data', () => {
 
       it('sequenceGet() returns null for block with no sequence');
       it('sequenceGet() rejects if no block');
+
+      it('findProjectFromBlock() should find project ID given only a block', () => {
+        return persistence.findProjectFromBlock(blockId)
+        .then(result => expect(result).to.equal(projectId));
+      });
     });
 
     describe('creation', () => {

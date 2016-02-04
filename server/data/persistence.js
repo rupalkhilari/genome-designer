@@ -60,8 +60,8 @@ export const findProjectFromBlock = (blockId) => {
     const storagePath = filePaths.createStorageUrl();
     exec(`cd ${storagePath} && find . -type d -name ${blockId}`, (err, output) => {
       const lines = output.split('/n');
-      if (lines === 1) {
-        const [ idBlock, idProject ] = lines.split('/').reverse();
+      if (lines.length === 1) {
+        const [ idBlock, idProject ] = lines[0].split('/').reverse();
         resolve(idProject);
       } else {
         reject(null);
