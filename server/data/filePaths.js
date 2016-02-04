@@ -1,6 +1,8 @@
 import path from 'path';
 import invariant from 'invariant';
 
+const relativeStoragePath = '../../storage/';
+
 const makePath = (...paths) => {
   return path.resolve(__dirname, ...paths);
 };
@@ -11,7 +13,7 @@ export const manifestPath = 'manifest.json';
 //All files are put in the storage folder (until platform comes along)
 export const createStorageUrl = (...urls) => {
   const dev = process.env.NODE_ENV === 'test' ? 'test/' : '';
-  return makePath('../../storage/' + dev, ...urls);
+  return makePath(relativeStoragePath + dev, ...urls);
 };
 
 export const createProjectPath = (projectId, ...rest) => {

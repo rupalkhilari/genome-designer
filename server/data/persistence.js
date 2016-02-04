@@ -3,6 +3,7 @@ import { validateBlock, validateProject } from '../utils/validation';
 import * as filePaths from './filePaths';
 import * as git from './git';
 import fs from 'fs';
+import { exec } from 'child_process';
 import rimraf from 'rimraf';
 import merge from 'lodash.merge';
 import mkpath from 'mkpath';
@@ -50,6 +51,23 @@ const _projectCommit = (projectId) => {
 const _blockCommit = (blockId, projectId) => {
   const projectPath = filePaths.createProjectPath(projectId);
   return git.commit(projectPath, 'block commit - ' + blockId);
+};
+
+//SEARCH
+
+export const findProjectFromBlock = (blockId) => {
+  return new Promise((resolve, reject) => {
+    const storagePath = filePaths.createStorageUrl();
+    exec(`cd ${storagePath} && find . -type d -name ${blockId}`, (err, output) => {
+      const lines = output.split('/n');
+      if (lines === 1) {
+        const [ idBlock, idProject ] = lines.split('/').reverse();
+        resolve(idProject);
+      } else {
+        reject(null);
+      }
+    });
+  });
 };
 
 //EXISTS

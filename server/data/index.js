@@ -5,9 +5,6 @@ import fs from 'fs';
 import mkpath from 'mkpath';
 import merge from 'lodash.merge';
 import invariant from 'invariant';
-import path from 'path';
-import { exec } from 'child_process';
-
 import { errorNoIdProvided, errorInvalidModel, errorInvalidRoute } from './../utils/errors';
 import { validateBlock, validateProject } from './../utils/validation';
 import { authenticationMiddleware } from './../utils/authentication';
@@ -49,18 +46,18 @@ router.param('projectId', (req, res, next, id) => {
   next();
 
   /*
-  persistence.projectGet(projectId)
-  .then(project => {
-    Object.assign(req, {
-      project,
-      projectId,
-    });
-    next();
-  })
-  .catch(err => {
-    res.status(500).send(err);
-  });
-  */
+   persistence.projectGet(projectId)
+   .then(project => {
+   Object.assign(req, {
+   project,
+   projectId,
+   });
+   next();
+   })
+   .catch(err => {
+   res.status(500).send(err);
+   });
+   */
 });
 
 router.param('blockId', (req, res, next, id) => {
@@ -69,46 +66,42 @@ router.param('blockId', (req, res, next, id) => {
   next();
 
   /*
-  const { projectId } = req.params;
-  persistence.blockGet(projectId, blockId)
-  .then(block => {
-    Object.assign(req, {
-      block,
-      blockId,
-    });
-    next();
-  })
-  .catch(err => {
-    res.status(500).send(err);
-  });
-*/
+   const { projectId } = req.params;
+   persistence.blockGet(projectId, blockId)
+   .then(block => {
+   Object.assign(req, {
+   block,
+   blockId,
+   });
+   next();
+   })
+   .catch(err => {
+   res.status(500).send(err);
+   });
+   */
 });
 
 /********** ROUTES ***********/
 
-//hack??? - let's allow the route /block/<blockId> and search for the projectId
+// is this a hack? or super useful?!
+// allow the route /block/<blockId> and find the projectId
 router.all((req, res, next) => {
   const { projectId, blockId } = req;
-  if (projectId === 'block') {
-    if (blockId) {
-      //todo - find the project ID based on the block ID
-      const storagePath = path.resolve(__dirname, '../../storage');
 
-      exec(`cd ${storagePath} && find . -type d -name ${blockId}`, (err, output) => {
-        const lines = output.split('/n');
-        if (lines === 1) {
-          const [ id_block, id_project, ...rest] = lines.split('/').reverse();
-          Object.assign(req, {projectId: id_project});
-          next();
-        } else {
-          //couldn't find it...
-          res.status(404).send('Could not find project ID automatically for block ID ' + blockId);
-        }
+  if (projectId === 'block' && blockId) {
+    persistence.findProjectFromBlock(blockId)
+      .then(projectId => {
+        Object.assign(req, {projectId});
+        next();
+      })
+      .catch(err => {
+        res.status(404).send('Could not find project ID automatically for block ID ' + blockId);
       });
-    } else {
-      // tried to access route /block without a block ID
-      res.status(404).send('Block ID required');
-    }
+  } else if (projectId === 'block' && !blockId) {
+    // tried to access route /block without a block ID
+    res.status(404).send('Block ID required');
+  } else {
+    next();
   }
 });
 
