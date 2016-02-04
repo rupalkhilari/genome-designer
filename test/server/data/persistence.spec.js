@@ -19,7 +19,7 @@ describe('API Data', () => {
   describe('persistence', function persistenceTests() {
     this.timeout(10000);
 
-    describe.only('existence + reading', () => {
+    describe('existence + reading', () => {
       const projectName = 'persistenceProject';
       const projectData = new Project({metadata: {name: projectName}});
       const projectId = projectData.id;
