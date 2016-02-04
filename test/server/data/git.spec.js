@@ -4,7 +4,7 @@ import path from 'path';
 import rimraf from 'rimraf';
 import { exec } from 'child_process'; //todo - promise version
 import { createStorageUrl } from '../../../server/data/filePaths';
-import * as git from '../../../server/data/git';
+import * as git from '../../../server/data/versioning';
 import { fileExists, fileRead, fileWrite, fileDelete, directoryMake, directoryDelete } from '../../../server/utils/fileSystem';
 
 describe('API Data', () => {

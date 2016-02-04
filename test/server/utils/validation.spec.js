@@ -1,18 +1,19 @@
 import chai from 'chai';
 import uuid from 'node-uuid';
 import { assertValidId } from '../../../server/utils/validation';
-import { errorNoIdProvided } from '../../../server/utils/errors';
 
-const {expect} = chai;
+const { assert } = chai;
 
 describe('API validation', () => {
-  it('assertValidId will throw on invalid IDs', () => {
-    expect(assertValidId.bind(null, 235)).to.throw(errorNoIdProvided);
+  it('assertValidId accepts a callback, arguments mean errors', () => {
+    assertValidId(235, err => assert(!!err));
 
     const id = uuid.v4();
-    expect(assertValidId.bind(null, id)).to.not.throw();
+    assertValidId(id, err => assert(!err));
+  });
 
-    //not necessarily UUID compliant
-    expect(assertValidId.bind(null, id + 'child')).to.not.throw();
+  it('allows prefixed IDs with a hyphen', () => {
+    const id = 'prefix-' + uuid.v4();
+    assertValidId(id, isValid => assert(isValid));
   });
 });

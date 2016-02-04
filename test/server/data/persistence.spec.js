@@ -10,7 +10,7 @@ import Project from '../../../src/models/Project';
 import Block from '../../../src/models/Block';
 
 import * as filePaths from '../../../server/data/filePaths';
-import * as git from '../../../server/data/git';
+import * as git from '../../../server/data/versioning';
 import * as persistence from '../../../server/data/persistence';
 
 //todo - can probably de-dupe many of these setup / before() clauses, they are pretty similar
@@ -186,6 +186,13 @@ describe('API Data', () => {
           .then(result => expect(result).to.eql(projectData));
       });
 
+      it('projectMerge() forces the ID', () => {
+        const invalidData = {id: 'impossible'};
+        const comparison = projectData;
+        return persistence.projectMerge(projectId, invalidData)
+          .then(result => expect(result).to.eql(comparison));
+      });
+
       it('projectWrite() overwrites the project', () => {
         const overwrite = projectData.merge(projectPatch);
         return persistence.projectWrite(projectId, overwrite)
@@ -204,7 +211,7 @@ describe('API Data', () => {
       });
 
       it('projectMerge() validates the project', () => {
-        const invalidData = {id: 'impossible'};
+        const invalidData = {metadata: 'impossible'};
         return persistence.projectMerge(projectId, invalidData)
           .then(() => assert(false))
           .catch(err => expect(err).to.equal(errorInvalidModel));
@@ -225,6 +232,13 @@ describe('API Data', () => {
           .catch(err => expect(err).to.equal(errorInvalidModel))
           .then(() => fileRead(blockManifestPath))
           .then(result => expect(result).to.eql(blockData));
+      });
+
+      it('blockMerge() forces the ID', () => {
+        const invalidData = {id: 'impossible'};
+        const comparison = blockData;
+        return persistence.blockMerge(blockId, invalidData, projectId)
+          .then(result => expect(result).to.eql(comparison));
       });
 
       it('blockWrite() ovewrwrites the block', () => {
@@ -256,7 +270,7 @@ describe('API Data', () => {
       });
 
       it('blockMerge() validates the block', () => {
-        const invalidData = {id: 'impossible'};
+        const invalidData = {metadata: 'impossible'};
         return persistence.blockMerge(blockId, invalidData, projectId)
           .then(() => assert(false))
           .catch(err => expect(err).to.equal(errorInvalidModel));

@@ -3,8 +3,23 @@ import mkpath from 'mkpath';
 import rimraf from 'rimraf';
 import fs from 'fs';
 
-const parser = (string) => JSON.parse(string);
-const stringifier = (obj) => JSON.stringify(obj, null, 2);
+const parser = (string) => {
+  try {
+    return JSON.parse(string);
+  } catch (e) {
+    console.error(e);
+    return {};
+  }
+};
+
+const stringifier = (obj) => {
+  try {
+    return JSON.stringify(obj, null, 2);
+  } catch (e) {
+    console.error(e);
+    return '';
+  }
+};
 
 //note that node docs recommend avoiding checking if files exist, and just opening them directly in case of race conditions. This function is however useful to avoid overwriting / re-initializing a directory or file.
 export const fileExists = (path) => {

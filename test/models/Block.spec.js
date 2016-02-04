@@ -89,12 +89,12 @@ describe('Model', () => {
       });
 
       it('persists it', (done) => {
-        block.save()
-          .then(response => response.json())
+        block.save('testProjectId')
           .then(json => {
             expect(json).to.eql(block);
             done();
-          });
+          })
+          .catch(done);
       });
     });
   });
