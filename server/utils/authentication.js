@@ -29,4 +29,15 @@ export const authenticationMiddleware = (req, res, next) => {
     });
 };
 
+router.use('/login', (req, res) => {
+  const { user, password } = req.query;
+  validateUser(user, password)
+    .then(key => {
+      res.json({'sessionkey': key});
+    })
+    .catch(err => {
+      res.status(403).send(errorInvalidSessionKey);
+    });
+});
+
 export const authRouter = router;

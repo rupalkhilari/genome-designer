@@ -1,5 +1,3 @@
-//this is sort of an end to end test... mostly testing the fetch interface
-
 import { expect } from 'chai';
 import fetch from 'isomorphic-fetch';
 import Project from '../../../../src/models/Project';
@@ -7,7 +5,7 @@ import { dataApiPath, getSessionKey } from '../../../../src/middleware/api';
 import devServer from '../../../../server/devServer';
 
 describe('REST', () => {
-  describe.only('fetch', function fetchTest() {
+  describe('fetch', function fetchTest() {
     before((done) => {
       //make sure the server has actually started and is ready to go
       devServer.listen(3000, done);

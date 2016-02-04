@@ -68,7 +68,7 @@ const headersDelete = () => ({
  *************************/
 
 export const login = (user, password) => {
-  return fetch(serverRoot + `login?user=${user}&password=${password}`, headersGet())
+  return fetch(serverRoot + `auth/login?user=${user}&password=${password}`, headersGet())
     .then(resp => resp.json())
     .then(json => {
       sessionKey = json.sessionkey;

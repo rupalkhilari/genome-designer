@@ -43,6 +43,7 @@ router.get('/clone', (req, res) => {
 router.param('projectId', (req, res, next, id) => {
   const projectId = id;
   Object.assign(req, {projectId});
+  console.log('project ID is ' + projectId);
   next();
 
   /*
@@ -63,6 +64,7 @@ router.param('projectId', (req, res, next, id) => {
 router.param('blockId', (req, res, next, id) => {
   const blockId = id;
   Object.assign(req, {blockId});
+  console.log('block id is ' + blockId);
   next();
 
   /*
@@ -159,7 +161,12 @@ router.route('/:projectId/:blockId')
     const { projectId, blockId } = req;
 
     persistence.blockGet(blockId, projectId)
-      .then(result => res.json(result))
+      .then(result => {
+        if (!result) {
+          res.status(204).json(null);
+        }
+        res.json(result);
+      })
       .catch(err => res.status(500).err(err));
   })
   .put((req, res) => {
@@ -212,7 +219,12 @@ router.route('/:projectId')
     const { depth } = req.query; //future
 
     persistence.projectGet(projectId)
-      .then(result => res.json(result))
+      .then(result => {
+        if (!result) {
+          res.status(204).json(null);
+        }
+        res.json(result);
+      })
       .catch(err => res.status(500).err(err));
   })
   .put((req, res) => {

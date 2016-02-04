@@ -38,18 +38,6 @@ app.use(require('webpack-hot-middleware')(compiler));
 // Register API middleware
 // ----------------------------------------------------
 
-//todo - should move to auth/login and use that route directly
-app.use('/login', (req, res) => {
-  const { user, password } = req.query;
-  validateUser(user, password)
-    .then(key => {
-      res.json({'sessionkey': key});
-    })
-    .catch(err => {
-      res.status(403).send(errorInvalidSessionKey);
-    });
-});
-
 app.use('/auth', authRouter);
 
 // all these should require authentication middleware
