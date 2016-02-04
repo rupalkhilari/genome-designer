@@ -16,9 +16,9 @@ describe('REST', () => {
     });
 
     const fileStoragePath = './storage/';
-    const fileApiPath = '/api/file/';
+    const fileApiPath = '/file/';
 
-    it('/api/file POST for creating files, returns route as result', (done) => {
+    it('/file POST for creating files, returns route as result', (done) => {
       const fileName = 'test/testfile1';
       const apiPath = fileApiPath + fileName;
 
@@ -30,8 +30,7 @@ describe('REST', () => {
         .expect(apiPath, done);
     });
 
-    it('/api/file GET for getting files', function fileGet(done) {
-      this.timeout(5000);
+    it('/file GET for getting files', function fileGet(done) {
       const fileName = 'test/testfile2';
       const fileContents = 'yada!';
       const apiPath = fileApiPath + fileName;
@@ -45,8 +44,7 @@ describe('REST', () => {
       });
     });
 
-    it('/api/file DELETE for deleting files', function fileDelete(done) {
-      this.timeout(5000);
+    it('/file DELETE for deleting files', function fileDelete(done) {
       const fileName = 'test/testfile3';
       const fileContents = 'deleteme';
       const apiPath = fileApiPath + fileName;
