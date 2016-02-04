@@ -6,12 +6,18 @@ import devServer from '../../../../server/devServer';
 
 describe('REST', () => {
   describe('Data', () => {
-    describe.only('Projects', () => {
+    describe('Projects', () => {
       let server;
       const initialFields = {initial: 'value'};
       const projectData = new Project(initialFields);
       const projectId = projectData.id;
       const invalidIdProject = Object.assign({}, projectData, {id: 'invalid'});
+      const invalidDataProject = Object.assign({}, projectData, {metadata: 'blah'});
+
+      const projectPatch = {
+        some: 'field',
+      };
+      const patchedProject = projectData.merge(projectPatch);
 
       before(() => {
         return persistence.projectCreate(projectId, projectData);
@@ -66,7 +72,9 @@ describe('REST', () => {
           .expect(200)
           .expect('Content-Type', /json/)
           .end((err, result) => {
-            if (err) { done(err); }
+            if (err) {
+              done(err);
+            }
             expect(result.body).to.eql(projectData);
 
             persistence.projectGet(projectId)
@@ -77,6 +85,8 @@ describe('REST', () => {
               .catch(done);
           });
       });
+
+      it('POST allows for delta merges');
 
       it('POST doesnt allow data with the wrong ID', (done) => {
         const url = `/data/${projectId}`;
@@ -99,7 +109,9 @@ describe('REST', () => {
           .expect(200)
           .expect('Content-Type', /json/)
           .end((err, result) => {
-            if (err) { done(err); }
+            if (err) {
+              done(err);
+            }
             expect(result.body).to.eql(newProject);
             expect(result.body).to.not.eql(projectData);
 
@@ -126,7 +138,9 @@ describe('REST', () => {
           .expect(200)
           .expect('Content-Type', /json/)
           .end((err, result) => {
-            if (err) { done(err); }
+            if (err) {
+              done(err);
+            }
             expect(result.body).to.eql(validator);
             expect(result.body).to.not.eql(newProject);
             expect(result.body).to.not.eql(projectData);
@@ -139,9 +153,9 @@ describe('REST', () => {
               .catch(done);
           });
       });
+
       it('PUT validates the project', (done) => {
         const url = `/data/${projectId}`;
-        const invalidDataProject = Object.assign({}, projectData, {metadata: 'blah'});
         request(server)
           .put(url)
           .send(invalidDataProject)
@@ -154,7 +168,9 @@ describe('REST', () => {
           .delete(url)
           .expect(200)
           .end((err, result) => {
-            if (err) { done(err); }
+            if (err) {
+              done(err);
+            }
 
             persistence.projectExists(projectId)
               .then(() => done(new Error('shouldnt exist')))
