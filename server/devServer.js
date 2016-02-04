@@ -11,8 +11,7 @@ import importRouter from '../extensions/convert/import';
 import exportRouter from '../extensions/convert/export';
 import searchRouter from '../extensions/search/search';
 
-import { authRouter, validateUser } from './utils/authentication';
-import { errorInvalidSessionKey } from './utils/errors';
+import { authRouter } from './utils/authentication';
 
 const DEFAULT_PORT = 3000;
 const port = parseInt(process.argv[2], 10) || process.env.PORT || DEFAULT_PORT;

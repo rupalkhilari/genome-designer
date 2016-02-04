@@ -234,7 +234,8 @@ export const sequenceGet = (blockId, projectId) => {
         //  block exists -> null
         //  block DNE -> rejection
         return blockExists(blockId, projectId)
-          .then(() => Promise.resolve(null));
+          .then(() => Promise.resolve(null))
+          .catch(() => Promise.reject(errorDoesNotExist));
       }
       return Promise.reject(err);
     });

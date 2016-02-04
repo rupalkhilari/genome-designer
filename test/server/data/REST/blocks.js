@@ -7,7 +7,7 @@ import devServer from '../../../../server/devServer';
 
 describe('REST', () => {
   describe('Data', () => {
-    describe.only('Blocks', () => {
+    describe('Blocks', () => {
       let server;
       const projectData = new Project();
       const projectId = projectData.id;

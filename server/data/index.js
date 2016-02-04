@@ -1,12 +1,6 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import uuid from 'node-uuid';
-import fs from 'fs';
-import mkpath from 'mkpath';
-import merge from 'lodash.merge';
-import invariant from 'invariant';
-import { errorNoIdProvided, errorInvalidModel, errorInvalidRoute } from './../utils/errors';
-import { validateBlock, validateProject } from './../utils/validation';
+import { errorNoIdProvided, errorInvalidModel, errorInvalidRoute, errorDoesNotExist } from './../utils/errors';
 import { authenticationMiddleware } from './../utils/authentication';
 import * as persistence from './persistence';
 
@@ -14,6 +8,7 @@ const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
   strict: false, //allow values other than arrays and objects
 });
+const textParser = bodyParser.text();
 
 /***************************
  Middleware
@@ -22,7 +17,6 @@ const jsonParser = bodyParser.json({
 //Login and session validator
 router.use(authenticationMiddleware);
 
-//JSON parser
 router.use(jsonParser);
 
 /***************************
@@ -32,7 +26,7 @@ router.use(jsonParser);
 /******** Cloning *********/
 
 //todo in future - supporting on client only
-router.get('/clone', (req, res) => {
+router.get('/clone', jsonParser, (req, res) => {
   res.status(501).send('not implemented');
 });
 
@@ -107,11 +101,10 @@ router.all((req, res, next) => {
 
 // PUT - replace
 // POST - merge
-// todo (future) - support PUT without an id
 
 //todo - expecting sequence in POST json, update middleware
 router.route('/:projectId/:blockId/sequence')
-  .all((req, res, next) => {
+  .all(textParser, (req, res, next) => {
     const { projectId, blockId } = req;
 
     if (!projectId || !blockId) {
@@ -123,8 +116,21 @@ router.route('/:projectId/:blockId/sequence')
     const { projectId, blockId } = req;
 
     persistence.sequenceGet(blockId, projectId)
-      .then(sequence => res.status(200).send(sequence))
-      .catch(err => res.status(500).send(err));
+      .then(sequence => {
+        if (!sequence) {
+          res.status(204).send('');
+        }
+        res.status(200)
+          .set('Content-Type', 'text/plain')
+          .send(sequence);
+      })
+      .catch(err => {
+        if (err === errorDoesNotExist) {
+          //this means the block does not exist
+          res.status(400).send(errorDoesNotExist);
+        }
+        res.status(500).err(err);
+      });
   })
   .post((req, res) => {
     const { projectId, blockId } = req;
@@ -144,7 +150,7 @@ router.route('/:projectId/:blockId/sequence')
     persistence.sequenceDelete(blockId, projectId)
       .then(() => res.status(200).send())
       .catch(err => {
-        if (err === errorInvalidModel) {
+        if (err === errorDoesNotExist) {
           res.status(400).send(errorInvalidModel);
         }
         res.status(500).err(err);
