@@ -9,6 +9,8 @@ import merge from 'lodash.merge';
 import mkpath from 'mkpath';
 import { fileExists, fileRead, fileWrite, fileDelete, directoryMake, directoryDelete } from '../utils/fileSystem';
 
+//todo - more consistent validation
+
 //todo - support reading a certain version (passing a SHA)
 
 const _projectRead = (projectId) => {
@@ -149,43 +151,47 @@ export const blockCreate = (blockId, block, projectId) => {
 //SET (WRITE + MERGE)
 
 export const projectWrite = (projectId, project) => {
-  if (!validateProject(project)) {
+  const idedProject = Object.assign({}, project, {id: projectId});
+
+  if (!validateProject(idedProject)) {
     return Promise.reject(errorInvalidModel);
   }
 
   //create directory etc. if doesn't exist
   return projectExists(projectId)
     .catch(() => _projectSetup(projectId))
-    .then(() => _projectWrite(projectId, project))
+    .then(() => _projectWrite(projectId, idedProject))
     .then(() => _projectCommit(projectId))
-    .then(() => project);
+    .then(() => idedProject);
 };
 
 export const projectMerge = (projectId, project) => {
   return projectGet(projectId)
     .then(oldProject => {
-      const merged = merge({}, oldProject, project);
+      const merged = merge({}, oldProject, project, {id: projectId});
       return projectWrite(projectId, merged);
     });
 };
 
 export const blockWrite = (blockId, block, projectId) => {
-  if (!validateBlock(block)) {
+  const idedBlock = Object.assign({}, block, {id: blockId});
+
+  if (!validateBlock(idedBlock)) {
     return Promise.reject(errorInvalidModel);
   }
 
   //create directory etc. if doesn't exist
   return blockExists(blockId, projectId)
     .catch(() => _blockSetup(blockId, projectId))
-    .then(() => _blockWrite(blockId, block, projectId))
+    .then(() => _blockWrite(blockId, idedBlock, projectId))
     .then(() => _blockCommit(blockId, projectId))
-    .then(() => block);
+    .then(() => idedBlock);
 };
 
 export const blockMerge = (blockId, block, projectId) => {
   return blockGet(blockId, projectId)
     .then(oldBlock => {
-      const merged = merge({}, oldBlock, block);
+      const merged = merge({}, oldBlock, block, {id: blockId});
       return blockWrite(blockId, merged, projectId);
     });
 };
