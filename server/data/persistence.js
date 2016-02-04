@@ -1,7 +1,7 @@
 import { errorDoesNotExist, errorAlreadyExists, errorInvalidModel, errorFileSystem } from '../utils/errors';
 import { validateBlock, validateProject } from '../utils/validation';
 import * as filePaths from './filePaths';
-import * as git from './git';
+import * as git from './versioning';
 import fs from 'fs';
 import { exec } from 'child_process';
 import rimraf from 'rimraf';

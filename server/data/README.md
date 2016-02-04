@@ -30,7 +30,7 @@ This section of the API is for saving Projects and Blocks. Projects are saved as
 
 Express Router, largely relying on persistence interface
 
-### git.js
+### versioning.js
 
 git utilities, relying on nodegit
 
