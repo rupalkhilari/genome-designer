@@ -8,15 +8,15 @@ const fileStoragePath = './storage/';
 describe('Middleware', () => {
   //login() is tested in server/REST
 
-  it('apiPath() returns an absolute URL to hit the server', () => {
-    const fakepath = api.apiPath('somepath');
+  it('dataApiPath() returns an absolute URL to hit the server', () => {
+    const fakepath = api.dataApiPath('somepath');
     expect(/http/.test(fakepath)).to.equal(true);
     expect(/somepath/.test(fakepath)).to.equal(true);
     expect(/api/.test(fakepath)).to.equal(true);
   });
 
-  it('apiPath() paths are prefixed with /api/', () => {
-    const fakepath = api.apiPath('somepath');
+  it('dataApiPath() paths are prefixed with /api/', () => {
+    const fakepath = api.dataApiPath('somepath');
     expect(/api\/somepath/.test(fakepath)).to.equal(true);
   });
 

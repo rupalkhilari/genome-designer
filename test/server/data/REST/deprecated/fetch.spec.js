@@ -2,7 +2,7 @@
 
 import { expect } from 'chai';
 import fetch from 'isomorphic-fetch';
-import { apiPath, getSessionKey } from '../../../../../src/middleware/api';
+import { dataApiPath, getSessionKey } from '../../../../../src/middleware/api';
 import { Block as exampleBlock } from '../../../../schemas/_examples';
 
 describe.skip('REST', () => {
@@ -16,7 +16,7 @@ describe.skip('REST', () => {
         },
       });
 
-      return fetch(apiPath(`block/${testBlock.id}`), {
+      return fetch(dataApiPath(`block/${testBlock.id}`), {
         method: 'put',
         headers: {
           'Content-type': 'application/json',

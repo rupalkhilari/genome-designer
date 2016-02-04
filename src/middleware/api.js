@@ -64,7 +64,7 @@ const headersDelete = () => ({
 });
 
 /*************************
- Data API
+ Authentication API
  *************************/
 
 export const login = (user, password) => {
@@ -76,33 +76,46 @@ export const login = (user, password) => {
     });
 };
 
+/*************************
+ Data API
+ *************************/
+
 export const createBlock = (block, projectId) => {
   invariant(projectId, 'Project ID is required');
   invariant(BlockDefinition.validate(block), 'Block does not pass validation: ' + block);
 
   try {
     const stringified = JSON.stringify(block);
-    return fetch(dataApiPath(`${projectId}/${block.id}`), headersPost(stringified));
+    const url = dataApiPath(`${projectId}/${block.id}`);
+
+    return fetch(url, headersPut(stringified))
+      .then(resp => resp.json());
   } catch (err) {
     return Promise.reject('error stringifying block');
   }
 };
 
-export const retrieveBlock = (blockId, projectId) => {
+export const retrieveBlock = (blockId, projectId = 'block') => {
   invariant(projectId, 'Project ID is required');
   invariant(blockId, 'Block ID is required');
 
-  return fetch(dataApiPath(`${projectId}/${blockId}`), headersGet())
+  const url = dataApiPath(`${projectId}/${blockId}`);
+
+  return fetch(url, headersGet())
     .then(resp => resp.json());
 };
 
-export const saveBlock = (block, projectId) => {
+export const saveBlock = (block, projectId, overwrite = false) => {
   invariant(projectId, 'Project ID is required');
   invariant(BlockDefinition.validate(block), 'Block does not pass validation: ' + block);
 
   try {
     const stringified = JSON.stringify(block);
-    return fetch(dataApiPath(`block/${block.id}`), headersPut(stringified));
+    const url = dataApiPath(`${projectId}/${block.id}`);
+    const headers = !!overwrite ? headersPut : headersPost;
+
+    return fetch(url, headers(stringified))
+      .then(resp => resp.json());
   } catch (err) {
     return Promise.reject('error stringifying block');
   }
@@ -113,7 +126,10 @@ export const saveProject = (project) => {
 
   try {
     const stringified = JSON.stringify(project);
-    return fetch(dataApiPath(`${project.id}`), headersPut(stringified));
+    const url = dataApiPath(`${project.id}`);
+
+    return fetch(url, headersPost(stringified))
+      .then(resp => resp.json());
   } catch (err) {
     return Promise.reject('error stringifying project');
   }

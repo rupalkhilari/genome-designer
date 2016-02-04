@@ -43,41 +43,69 @@ router.get('/clone', (req, res) => {
 
 router.param('projectId', (req, res, next, id) => {
   const projectId = id;
+  Object.assign(req, {projectId});
+  next();
+
+  /*
   persistence.projectGet(projectId)
-    .then(project => {
-      Object.assign(req, {
-        project,
-        projectId,
-      });
-      next();
-    })
-    .catch(err => {
-      res.status(500).send(err);
+  .then(project => {
+    Object.assign(req, {
+      project,
+      projectId,
     });
+    next();
+  })
+  .catch(err => {
+    res.status(500).send(err);
+  });
+  */
 });
 
 router.param('blockId', (req, res, next, id) => {
   const blockId = id;
+  Object.assign(req, {blockId});
+  next();
+
+  /*
   const { projectId } = req.params;
   persistence.blockGet(projectId, blockId)
-    .then(block => {
-      Object.assign(req, {
-        block,
-        blockId,
-      });
-      next();
-    })
-    .catch(err => {
-      res.status(500).send(err);
+  .then(block => {
+    Object.assign(req, {
+      block,
+      blockId,
     });
+    next();
+  })
+  .catch(err => {
+    res.status(500).send(err);
+  });
+*/
 });
 
 /********** ROUTES ***********/
 
+router.all((req, res, next) => {
+  const { projectId, blockId } = req;
+  if (projectId === 'block') {
+    if (blockId) {
+      //todo - find the project ID based on the block ID
+
+      const foundProjectId = '';
+
+      Object.assign(req, {projectId: foundProjectId});
+      next();
+    } else {
+      // tried to access route /block without a block ID
+      res.status(404).send('Block ID required');
+    }
+  }
+});
+
 // PUT - replace
 // POST - merge
+// todo (future) - support PUT without an id
 
-//todo - expecting sequence in POST json
+//todo - expecting sequence in POST json, update middleware
 router.route('/:projectId/:blockId/sequence')
   .all((req, res, next) => {
     const { projectId, blockId } = req;
@@ -95,7 +123,7 @@ router.route('/:projectId/:blockId/sequence')
       .catch(err => res.status(500).send(err));
   })
   .post((req, res) => {
-    const { projectId, blockId, block } = req;
+    const { projectId, blockId } = req;
     const sequence = req.body;
 
     persistence.sequenceWrite(blockId, sequence, projectId)
@@ -131,7 +159,9 @@ router.route('/:projectId/:blockId')
       .catch(err => res.status(500).err(err));
   })
   .put((req, res) => {
-    const { projectId, blockId, block } = req;
+    const { projectId, blockId } = req;
+    const block = req.body;
+
     //todo - force ID and return block
 
     persistence.blockWrite(blockId, block, projectId)
@@ -144,7 +174,8 @@ router.route('/:projectId/:blockId')
       });
   })
   .post((req, res) => {
-    const { projectId, blockId, block } = req;
+    const { projectId, blockId } = req;
+    const block = req.body;
 
     persistence.blockMerge(blockId, block, projectId)
       .then(merged => res.status(200).send(merged))
@@ -181,7 +212,9 @@ router.route('/:projectId')
       .catch(err => res.status(500).err(err));
   })
   .put((req, res) => {
-    const { projectId, project } = req;
+    const { projectId } = req;
+    const project = req.body;
+
     //todo - force ID and return project
 
     persistence.projectWrite(projectId, project)
@@ -194,7 +227,8 @@ router.route('/:projectId')
       });
   })
   .post((req, res) => {
-    const { projectId, project } = req;
+    const { projectId } = req;
+    const project = req.body;
 
     persistence.projectMerge(projectId, project)
       .then(merged => res.status(200).send(merged))

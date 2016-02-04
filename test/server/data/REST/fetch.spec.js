@@ -2,31 +2,38 @@
 
 import { expect } from 'chai';
 import fetch from 'isomorphic-fetch';
-import { apiPath, getSessionKey } from '../../../../../src/middleware/api';
-import { Block as exampleBlock } from '../../../../schemas/_examples';
+import Project from '../../../../src/models/Project';
+import { dataApiPath, getSessionKey } from '../../../../src/middleware/api';
+import devServer from '../../../../server/devServer';
 
-describe.skip('REST', () => {
-  describe('fetch', () => {
-    //todo - explicitly make sure server has started
+describe('REST', () => {
+  describe.only('fetch', function fetchTest() {
+    before((done) => {
+      //make sure the server has actually started and is ready to go
+      devServer.listen(3000, done);
+    });
 
     it('basic test', (done) => {
-      const testBlock = Object.assign({}, exampleBlock, {
+      const testProject = new Project({
         notes: {
           some: 'note',
         },
       });
 
-      return fetch(apiPath(`block/${testBlock.id}`), {
+      return fetch(dataApiPath(`${testProject.id}`), {
         method: 'put',
         headers: {
           'Content-type': 'application/json',
           'sessionkey': getSessionKey(),
         },
-        body: JSON.stringify(testBlock),
+        body: JSON.stringify(testProject),
       })
-        .then(res => res.json())
+        .then(res => {
+          expect(res.status).to.equal(200);
+          return res.json();
+        })
         .then(json => {
-          expect(json).to.eql(testBlock);
+          expect(json).to.eql(testProject);
           done();
         });
     });

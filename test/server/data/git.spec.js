@@ -8,7 +8,7 @@ import * as git from '../../../server/data/git';
 import { fileExists, fileRead, fileWrite, fileDelete, directoryMake, directoryDelete } from '../../../server/utils/fileSystem';
 
 describe('API Data', () => {
-  describe.only('git', function gitTests() {
+  describe('git', function gitTests() {
     this.timeout(10000);
     const pathRepo = createStorageUrl('testrepo');
 
