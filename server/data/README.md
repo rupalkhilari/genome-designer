@@ -2,9 +2,14 @@
 
 Todos
 
+- allow put without an ID
 - move blocks under block directory
 - test the REST interface
 - test the /block/<blockId> interface
+    - export functionality to get block projectId -- add to datastructure?
+- sequence
+    - remove URL field from blocks
+    - setting sequence returns updated block with md5
 
 ## Overview
 
