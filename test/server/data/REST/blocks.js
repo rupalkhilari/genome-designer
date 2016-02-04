@@ -15,13 +15,12 @@ describe('REST', () => {
       const initialFields = {initial: 'value'};
       const blockData = new Block(initialFields);
       const blockId = blockData.id;
+
       const invalidIdBlock = Object.assign({}, blockData, {id: 'invalid'});
       const invalidDataBlock = Object.assign({}, blockData, {metadata: 'invalid'});
 
-      const blockPatch = {
-        some: 'field',
-      };
-      const extendedBlock = blockData.merge(blockPatch);
+      const blockPatch = {some: 'field'};
+      const patchedBlock = blockData.merge(blockPatch);
 
       before(() => {
         return persistence.projectCreate(projectId, projectData)
@@ -79,7 +78,28 @@ describe('REST', () => {
           });
       });
 
-      it('POST allows for delta merges');
+      it('POST allows for delta merges', (done) => {
+        const url = `/data/${projectId}/${blockId}`;
+        request(server)
+          .post(url)
+          .send(blockPatch)
+          .expect(200)
+          .expect('Content-Type', /json/)
+          .end((err, result) => {
+            if (err) {
+              done(err);
+            }
+            expect(result.body).to.eql(patchedBlock);
+            expect(result.body).to.not.eql(blockData);
+
+            persistence.blockGet(blockId, projectId)
+              .then((result) => {
+                expect(result).to.eql(patchedBlock);
+                done();
+              })
+              .catch(done);
+          });
+      });
 
       it('POST doesnt allow data with wrong ID', (done) => {
         const url = `/data/${projectId}/${blockId}`;

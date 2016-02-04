@@ -11,12 +11,11 @@ describe('REST', () => {
       const initialFields = {initial: 'value'};
       const projectData = new Project(initialFields);
       const projectId = projectData.id;
+
       const invalidIdProject = Object.assign({}, projectData, {id: 'invalid'});
       const invalidDataProject = Object.assign({}, projectData, {metadata: 'blah'});
 
-      const projectPatch = {
-        some: 'field',
-      };
+      const projectPatch = {some: 'field'};
       const patchedProject = projectData.merge(projectPatch);
 
       before(() => {
@@ -86,7 +85,28 @@ describe('REST', () => {
           });
       });
 
-      it('POST allows for delta merges');
+      it('POST allows for delta merges', (done) => {
+        const url = `/data/${projectId}`;
+        request(server)
+          .post(url)
+          .send(projectPatch)
+          .expect(200)
+          .expect('Content-Type', /json/)
+          .end((err, result) => {
+            if (err) {
+              done(err);
+            }
+            expect(result.body).to.eql(patchedProject);
+            expect(result.body).to.not.eql(projectData);
+
+            persistence.projectGet(projectId)
+              .then((result) => {
+                expect(result).to.eql(patchedProject);
+                done();
+              })
+              .catch(done);
+          });
+      });
 
       it('POST doesnt allow data with the wrong ID', (done) => {
         const url = `/data/${projectId}`;
