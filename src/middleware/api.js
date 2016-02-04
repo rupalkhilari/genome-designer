@@ -183,10 +183,6 @@ export const search = (id, inputs) => {
   }
 };
 
-export const getManifests = (id) => {
-  try {
-    return fetch(serverRoot + id + '/manifests', headersGet());
-  } catch (err) {
-    return Promise.reject('no such extension category: ' + id);
-  }
+export const getExtensionsInfo = () => {
+  return fetch(serverRoot + 'extensions', headersGet());
 };

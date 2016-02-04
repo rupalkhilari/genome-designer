@@ -203,14 +203,15 @@ describe('Middleware', () => {
     });
   });
 
-  it('getManifests() should be able get extension information', done => {
-    return api.getManifests('import')
+  it('getExtensionsInfo() should be able get extension manifests', done => {
+    return api.getExtensionsInfo()
     .then(result => {
       return result.json();
     })
     .then(output => {
-      expect(output.features !== undefined).to.equal(true);
-      expect(output.genbank !== undefined).to.equal(true);
+      expect(output.convert !== undefined).to.equal(true);
+      expect(output.convert.genbank !== undefined).to.equal(true);
+      expect(output.search !== undefined).to.equal(true);
       done();
     });
   });

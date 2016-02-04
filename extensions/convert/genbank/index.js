@@ -9,8 +9,8 @@ function runCmd(cmd, input, inputFile, outputFile) {
     function readOutput() {
       try {
         fs.readFile(outputFile, 'utf8', (err, data) => {
-          fs.unlink(inputFile);
-          fs.unlink(outputFile);
+          //fs.unlink(inputFile);
+          //fs.unlink(outputFile);
           if (err) {
             reject(err);
           }
@@ -23,6 +23,9 @@ function runCmd(cmd, input, inputFile, outputFile) {
 
     function runPy() {
       exec(cmd, (err, stdout) => {
+        if (err) {
+          console.log(err);
+        }
         readOutput();
       });
     }
@@ -71,15 +74,15 @@ exports.exportProject = function exportProject(proj, blocks) {
     project: proj,
     blocks: blocks,
   };
-  const inputFile = 'temp-' + uuid.v4();
-  const outputFile = 'temp-' + uuid.v4();
+  const inputFile = 'storage/test/temp-' + uuid.v4();
+  const outputFile = 'storage/test/temp-' + uuid.v4();
   const cmd = 'python extensions/convert/genbank/convert.py to_genbank ' + inputFile + ' ' + outputFile;
   return runCmd(cmd, JSON.stringify(input), inputFile, outputFile);
 };
 
 exports.importProject = function importProject(gbstr) {
-  const inputFile = 'temp-' + uuid.v4();
-  const outputFile = 'temp-' + uuid.v4();
+  const inputFile = 'storage/test/temp-' + uuid.v4();
+  const outputFile = 'storage/test/temp-' + uuid.v4();
   const cmd = 'python extensions/convert/genbank/convert.py from_genbank ' + inputFile + ' ' + outputFile;
   return runCmd(cmd, gbstr, inputFile, outputFile)
           .then(resStr => {

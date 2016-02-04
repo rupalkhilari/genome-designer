@@ -1,20 +1,21 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import { sessionMiddleware } from '../../server/utils/authentication';
-import { extensions, extensionsInfo } from '../requireExtensions';
+import { getExtension } from '../requireExtensions';
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
   strict: false, //allow values other than arrays and objects
 });
 
 router.use(sessionMiddleware);
+const namespace = 'convert';
 
 //just avoiding redundant code
 function callExportFunction(funcName, field, id, input) {
   return new Promise((resolve, reject) => {
-    if (id in extensions.convert) {
-      const mod = extensions.convert[id];
-      if (mod[funcName]) {
+    getExtension(namespace, id)
+    .then(mod => {
+      if (mod && mod[funcName]) {
         try {
           const func = mod[funcName];
           func(input[field], input.blocks)
@@ -30,9 +31,7 @@ function callExportFunction(funcName, field, id, input) {
       } else {
         reject('No export option named ' + id + ' for ' + field);
       }
-    } else {
-      reject('No export option named ' + id + ' for ' + field);
-    }
+    });
   });
 }
 
@@ -72,10 +71,6 @@ router.post('/block/:id', jsonParser, (req, resp) => {
   const input = req.body;
   const promise = exportBlock(id, input);
   exportThenCatch( promise, resp );
-});
-
-router.get('/manifests', jsonParser, (req, resp) => {
-  resp.json(extensionsInfo.convert);
 });
 
 //export these functions for testing purpose

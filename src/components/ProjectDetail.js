@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { uiToggleDetailView } from '../actions/ui';
-import { registry } from '../extensions/index';
+import { registry } from '../extensions/registry';
 
 import '../styles/ProjectDetail.css';
 
@@ -16,12 +16,15 @@ export class ProjectDetail extends Component {
 
   componentDidMount() {
     //hack - load in Onion
-    if (registry.sequenceDetail.length > 0) {
-      setTimeout(() => {
-        this.forceUpdate();
-        registry.sequenceDetail[0].render(this.refs.extensionView);
-      }, 500);
-    }
+    setTimeout(() => {
+      this.forceUpdate();
+      if (registry.sequenceView) {
+        for (let name in registry.sequenceView) {
+          registry.sequenceView[name].render(this.refs.extensionView);
+          break;
+        }
+      }
+    }, 500);
   }
 
   toggle = (forceVal) => {
@@ -31,9 +34,9 @@ export class ProjectDetail extends Component {
     }, 300);
   };
 
-  loadExtension = (manifest) => {
+  loadExtension = (name) => {
     this.toggle(true);
-    manifest.render(this.refs.extensionView);
+    registry.sequenceView[name].render(this.refs.extensionView);
   };
 
   render() {
@@ -47,11 +50,11 @@ export class ProjectDetail extends Component {
              onClick={() => this.toggle()} />)}
 
           <div className="ProjectDetail-heading-extensionList">
-            {registry.sequenceDetail.map(manifest => {
+            {Object.keys(registry.sequenceView).map(name => {
               return (
-                <a key={manifest.id}
+                <a key={name}
                    className="ProjectDetail-heading-extension"
-                   onClick={this.loadExtension.bind(null, manifest)}>{manifest.name}</a>
+                   onClick={this.loadExtension.bind(null, name)}>{name}</a>
               );
             })}
 

@@ -14,7 +14,8 @@
   },
   "sequenceView": {
     "onion": {
-      "path": "./onion2"
+      "path": "./onion2",
+      "gui": "DetailedView"
     }
   }
 }

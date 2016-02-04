@@ -20,6 +20,7 @@ const extRouter = require('../extensions/compute/api');
 const importRouter = require('../extensions/convert/import');
 const exportRouter = require('../extensions/convert/export');
 const searchRouter = require('../extensions/search/search');
+const extensionsRouter = require('../extensions/');
 
 //logging middleware
 app.use(morgan('dev'));
@@ -54,6 +55,7 @@ app.use('/compute', extRouter);
 app.use('/import', importRouter);
 app.use('/export', exportRouter);
 app.use('/search', searchRouter);
+app.use('/extensions', extensionsRouter);
 
 // Register Client Requests, delegate routing to client
 // ----------------------------------------------------

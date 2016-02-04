@@ -32,6 +32,12 @@ module.exports = Object.assign({}, webpackBase, {
         exclude: /node_modules/
       },
       {
+        test   : /\.js$/,
+        loader: 'babel-loader',
+        include: path.join(__dirname, 'extensions'),
+        exclude: /node_modules/
+      },
+      {
         test: /\.css$/,
         loader: 'style-loader!css-loader!postcss-loader'
       },

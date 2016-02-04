@@ -1,50 +1,83 @@
 const fs = require('fs');
 const exports = module.exports;
-exports.extensions = {};
-exports.extensionsInfo = {};
-exports.errors = {};
 
-let DO_ONCE = false;
+const _extensions = {};
+const _extensionsInfo = { GUI: {} };
+const _errors = {};
 
-if (!DO_ONCE) {
-  fs.readFile('extensions/registeredExtensions.json', 'utf8', (err, file) => {
-    if (err) {
-      console.log('Failed to load extensions file');
-      return;
-    }
-
-    let name, extensions, path, namespace, namespaces;
-
-    try {
-      namespaces = JSON.parse(file);
-    } catch (exception) {
-      console.log('Failed to load extensions file: ' + exception.message);
-      return;
-    }
-
-    for (namespace in namespaces) {
-      extensions = namespaces[namespace];
-      if (!(namespace in exports.extensions)) {
-        exports.extensions[namespace] = {};
+function loadExtensions() {
+  return new Promise( (resolve, reject) => {
+    fs.readFile('extensions/registeredExtensions.json', 'utf8', (err, file) => {
+      if (err) {
+        reject('Failed to open registeredExtensions.json file');
+        return;
       }
-      if (!(namespace in exports.extensionsInfo)) {
-        exports.extensionsInfo[namespace] = {};
+
+      let name, extensions, path, namespace, namespaces;
+
+      try {
+        namespaces = JSON.parse(file);
+      } catch (exception) {
+        reject('Failed to load extensions file: ' + exception.message);
+        return;
       }
-      if (!(namespace in exports.errors)) {
-        exports.errors[namespace] = {};
-      }
-      for (name in extensions) {
-        try {
-          path = extensions[name].path;
-          exports.extensions[namespace][name] = require(path);
-          exports.extensionsInfo[namespace][name] = require(path + '/package.json');
-        } catch (exception) {
-          exports.errors[namespace][name] = exception.message;
-          console.log(exception.message);
+
+      for (namespace in namespaces) {
+        extensions = namespaces[namespace];
+        _extensions[namespace] = _extensions[namespace] || {};
+        _extensionsInfo[namespace] = _extensionsInfo[namespace] || {};
+        _errors[namespace] = _errors[namespace] || {};
+        for (name in extensions) {
+          if (_extensions[namespace][name] === undefined) { //don't reload
+            try {
+              path = extensions[name].path;
+              if (!extensions[name].gui) {
+                _extensions[namespace][name] = require(path);
+              } else {
+                _extensionsInfo.GUI[namespace] = _extensionsInfo.GUI[namespace] || {};
+                _extensionsInfo.GUI[namespace][name] = require(path + '/package.json');
+                _extensionsInfo.GUI[namespace][name].path = path;
+              }
+              _extensionsInfo[namespace][name] = require(path + '/package.json');
+            } catch (exception) {
+              _extensionsInfo[namespace][name] = 'Failed to load ' + name + ' : ' + exception.message;
+            }
+          }
         }
       }
-    }
-    DO_ONCE = true;
-    console.log("Extensions loaded");
+      resolve(_extensions);
+    });
   });
 }
+
+exports.getExtension = (namespace, name) => {
+  return new Promise( (resolve, reject) => {
+    if (!namespace || !name) {
+      reject("Invalid input");
+      return;
+    }
+
+    if (_extensions[namespace] && _extensions[namespace][name]) {
+      resolve(_extensions[namespace][name]);
+      return;
+    }
+
+    loadExtensions()
+    .then(extensions => {
+      if (extensions[namespace] && extensions[namespace][name]) {
+        resolve(extensions[namespace][name]);
+        return;
+      }
+      reject('No such extension: ' + namespace + '.' + name);
+    });
+  });
+};
+
+exports.getExtensionsInfo = () => {
+  return new Promise( (resolve, reject) => {
+    loadExtensions()
+    .then(extensions => {
+      resolve(_extensionsInfo);
+    });
+  });
+};
