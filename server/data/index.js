@@ -5,6 +5,8 @@ import fs from 'fs';
 import mkpath from 'mkpath';
 import merge from 'lodash.merge';
 import invariant from 'invariant';
+import path from 'path';
+import { exec } from 'child_process';
 
 import { errorNoIdProvided, errorInvalidModel, errorInvalidRoute } from './../utils/errors';
 import { validateBlock, validateProject } from './../utils/validation';
@@ -84,16 +86,25 @@ router.param('blockId', (req, res, next, id) => {
 
 /********** ROUTES ***********/
 
+//hack??? - let's allow the route /block/<blockId> and search for the projectId
 router.all((req, res, next) => {
   const { projectId, blockId } = req;
   if (projectId === 'block') {
     if (blockId) {
       //todo - find the project ID based on the block ID
+      const storagePath = path.resolve(__dirname, '../../storage');
 
-      const foundProjectId = '';
-
-      Object.assign(req, {projectId: foundProjectId});
-      next();
+      exec(`cd ${storagePath} && find . -type d -name ${blockId}`, (err, output) => {
+        const lines = output.split('/n');
+        if (lines === 1) {
+          const [ id_block, id_project, ...rest] = lines.split('/').reverse();
+          Object.assign(req, {projectId: id_project});
+          next();
+        } else {
+          //couldn't find it...
+          res.status(404).send('Could not find project ID automatically for block ID ' + blockId);
+        }
+      });
     } else {
       // tried to access route /block without a block ID
       res.status(404).send('Block ID required');
