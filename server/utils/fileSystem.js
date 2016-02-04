@@ -4,19 +4,25 @@ import rimraf from 'rimraf';
 import fs from 'fs';
 
 const parser = (string) => {
+  if (typeof string !== 'string') {
+    return string;
+  }
   try {
     return JSON.parse(string);
-  } catch (e) {
-    console.error(e);
+  } catch (err) {
+    console.error(err);
     return {};
   }
 };
 
 const stringifier = (obj) => {
+  if (typeof obj === 'string') {
+    return obj;
+  }
   try {
     return JSON.stringify(obj, null, 2);
-  } catch (e) {
-    console.error(e);
+  } catch (err) {
+    console.error(err);
     return '';
   }
 };

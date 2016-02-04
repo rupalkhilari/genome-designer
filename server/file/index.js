@@ -1,15 +1,17 @@
 import express from 'express';
-import fs from 'fs';
-import mkpath from 'mkpath';
+import { fileRead, fileWrite, directoryMake, fileDelete} from '../utils/fileSystem';
 
-import { createStorageUrl } from './../data/filePaths';
+import { createFilePath } from './../utils/filePaths';
 
 const router = express.Router(); //eslint-disable-line new-cap
 
-router.route(':url')
+router.route('*')
   .all((req, res, next) => {
     const url = req.params[0];
-    const filePath = createStorageUrl(url);
+    const filePath = createFilePath(url);
+
+    console.log('file path is ', filePath, url);
+
     const folderPath = filePath.substring(0, filePath.lastIndexOf('/') + 1);
 
     Object.assign(req, {
@@ -21,16 +23,17 @@ router.route(':url')
   .get((req, res) => {
     const { filePath } = req;
 
-    fs.readFile(filePath, 'utf8', (err, data) => {
-      if (err) {
-        res.status(500).send(err.message);
-      } else {
-        res.send(data);
-      }
-    });
+    fileRead(filePath, false)
+      .then(data => res.send(data))
+      .catch(err => {
+        console.log('get err', err);
+        res.status(500).err(err);
+      });
   })
   .post((req, res) => {
     const { filePath, folderPath } = req;
+
+    console.log('hit post');
 
     //assuming contents to be string
     let buffer = '';
@@ -42,34 +45,22 @@ router.route(':url')
 
     //received all the data
     req.on('end', () => {
-      //make folder if doesn't exists
+      console.log('got all the stuff', buffer);
+
       //todo - should ensure there isn't a file preventing directory creation
-      mkpath(folderPath, (err) => {
-        if (err) {
-          res.status(500).send(err.message);
-        } else {
-          //write data to file
-          fs.writeFile(filePath, buffer, 'utf8', (err) => {
-            if (err) {
-              res.status(500).send(err.message);
-            } else {
-              res.send(req.originalUrl);
-            }
-          });
-        }
-      });
+
+      directoryMake(folderPath)
+        .then(() => fileWrite(filePath, buffer, false))
+        .then(() => res.send(req.originalUrl))
+        .catch((err) => res.status(500).err(err));
     });
   })
   .delete((req, res) => {
     const { filePath } = req;
 
-    fs.unlink(filePath, (err) => {
-      if (err) {
-        res.status(500).send(err.message);
-      } else {
-        res.status(200).send();
-      }
-    });
+    fileDelete(filePath)
+      .then(() => res.status(200).send())
+      .catch(err => res.status(500).err(err));
   });
 
 export default router;

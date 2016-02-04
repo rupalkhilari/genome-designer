@@ -1,6 +1,6 @@
 import { errorDoesNotExist, errorAlreadyExists, errorInvalidModel } from '../utils/errors';
 import { validateBlock, validateProject } from '../utils/validation';
-import * as filePaths from './filePaths';
+import * as filePaths from './../utils/filePaths';
 import * as git from './versioning';
 import { exec } from 'child_process';
 import merge from 'lodash.merge';
