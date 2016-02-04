@@ -1,12 +1,9 @@
-import { errorDoesNotExist, errorAlreadyExists, errorInvalidModel, errorFileSystem } from '../utils/errors';
+import { errorDoesNotExist, errorAlreadyExists, errorInvalidModel } from '../utils/errors';
 import { validateBlock, validateProject } from '../utils/validation';
 import * as filePaths from './filePaths';
 import * as git from './versioning';
-import fs from 'fs';
 import { exec } from 'child_process';
-import rimraf from 'rimraf';
 import merge from 'lodash.merge';
-import mkpath from 'mkpath';
 import { fileExists, fileRead, fileWrite, fileDelete, directoryMake, directoryDelete } from '../utils/fileSystem';
 
 //todo - more consistent validation
@@ -63,7 +60,7 @@ export const findProjectFromBlock = (blockId) => {
     exec(`cd ${storagePath} && find . -type d -name ${blockId}`, (err, output) => {
       const lines = output.split('/n');
       if (lines.length === 1) {
-        const [ idBlock, idProject ] = lines[0].split('/').reverse();
+        const [ idBlock, idProject ] = lines[0].split('/').reverse(); //eslint-ignore-line no-usused-vars
         resolve(idProject);
       } else {
         reject(null);

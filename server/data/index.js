@@ -219,7 +219,7 @@ router.route('/:projectId/:blockId')
 router.route('/:projectId')
   .get((req, res) => {
     const { projectId } = req;
-    const { depth } = req.query; //future
+    //const { depth } = req.query; //future
 
     persistence.projectGet(projectId)
       .then(result => {
