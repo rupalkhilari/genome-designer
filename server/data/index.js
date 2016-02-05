@@ -200,7 +200,7 @@ router.route('/:projectId/:blockId')
     }
 
     persistence.blockMerge(blockId, block, projectId)
-      .then(merged => res.status(200).send(merged))
+      .then(merged => res.json(merged))
       .catch(err => {
         if (err === errorInvalidModel) {
           res.status(400).send(errorInvalidModel);

@@ -1,5 +1,6 @@
 import nodegit from 'nodegit';
 import path from 'path';
+import { errorVersioningSystem } from '../utils/errors';
 
 const makePath = (fsPath) => {
   return path.resolve(__dirname, fsPath);
@@ -26,7 +27,7 @@ export const initialize = (path) => {
         });
     })
     .then(() => repoPath)
-    .catch((err) => Promise.reject(err));
+    .catch((err) => Promise.reject(errorVersioningSystem));
 };
 
 export const isInitialized = (path) => {
@@ -64,7 +65,7 @@ export const commit = (path, message = 'commit message') => {
         });
     })
     .then((commitId) => '' + commitId) //just being explicit what is returned
-    .catch((err) => Promise.reject(err));
+    .catch((err) => Promise.reject(errorVersioningSystem));
 };
 
 export const log = (path) => {
@@ -93,7 +94,8 @@ export const log = (path) => {
 
         history.start();
       });
-    });
+    })
+  .catch(err => errorVersioningSystem);
 };
 
 //future - may want to cut file path down automatically if includes repo path
@@ -120,7 +122,8 @@ export const checkout = (path, sha = 'HEAD', file) => {
               return blob.toString();
             });
         });
-    });
+    })
+    .catch(err => errorVersioningSystem);
 };
 
 //export const promote = (path, sha, file) => {}

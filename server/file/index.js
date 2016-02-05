@@ -30,8 +30,6 @@ router.route('/*')
   .post((req, res) => {
     const { filePath, folderPath } = req;
 
-    console.log('hit post');
-
     //assuming contents to be string
     let buffer = '';
 
@@ -42,8 +40,6 @@ router.route('/*')
 
     //received all the data
     req.on('end', () => {
-      console.log('got all the stuff', buffer);
-
       //todo - should ensure there isn't a file preventing directory creation
 
       directoryMake(folderPath)

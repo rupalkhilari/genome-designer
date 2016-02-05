@@ -10,3 +10,4 @@ export const errorInvalidSessionKey = 'INVALID_SESSION_KEY';
 export const errorSessionKeyNotValidated = 'SESSION_KEY_NOT_VALIDATED';
 
 export const errorFileSystem = 'FILE_SYSTEM_ERROR';
+export const errorVersioningSystem = 'VERSIONING_ERROR';

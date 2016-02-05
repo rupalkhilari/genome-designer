@@ -2,8 +2,9 @@ import chai from 'chai';
 import fs from 'fs';
 import * as api from '../../src/middleware/api';
 const { assert, expect } = chai;
+import { createFilePath } from '../../server/utils/filePaths';
 
-const fileStoragePath = './storage/';
+const makeStoragePath = (path) => createFilePath(path);
 
 describe('Middleware', () => {
   //login() is tested in server/REST
@@ -30,7 +31,7 @@ describe('Middleware', () => {
   it('writeFile() should take path and string, and write file', function writeFileBasic(done) {
     const filePath = 'test/writeMe';
     const fileContents = 'rawr';
-    const storagePath = fileStoragePath + filePath;
+    const storagePath = makeStoragePath(filePath);
 
     return api.writeFile(filePath, fileContents)
       .then((res) => {
@@ -46,7 +47,7 @@ describe('Middleware', () => {
   it('writeFile() shuold delete if contents are null', function writeFileDelete(done) {
     const filePath = 'test/deletable';
     const fileContents = 'oopsie';
-    const storagePath = fileStoragePath + filePath;
+    const storagePath = makeStoragePath(filePath);
 
     fs.writeFile(storagePath, fileContents, 'utf8', (err, write) => {
       api.writeFile(filePath, null)
@@ -64,7 +65,7 @@ describe('Middleware', () => {
   it('readFile() should return fetch response object', function readFileTest(done) {
     const filePath = 'test/readable';
     const fileContents = 'the contents!';
-    const storagePath = fileStoragePath + filePath;
+    const storagePath = makeStoragePath(filePath);
 
     fs.writeFile(storagePath, fileContents, 'utf8', (err, write) => {
       api.readFile(filePath)
@@ -86,11 +87,11 @@ describe('Middleware', () => {
 
     const file1Path = 'test/file1';
     const file1Contents = 'exhibit a';
-    const storage1Path = fileStoragePath + file1Path;
+    const storage1Path = makeStoragePath(file1Path);
 
     const file2Path = 'test/file2';
     const file2Contents = 'exhibit b';
-    const storage2Path = fileStoragePath + file2Path;
+    const storage2Path = makeStoragePath(file2Path);
 
     Promise
       .all([
