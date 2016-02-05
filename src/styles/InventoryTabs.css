@@ -5,6 +5,7 @@
   flex-direction: row;
   margin-bottom: 0.5em;
   border-bottom: 1px solid var(--colors-selected);
+  display: inline-block;
 
   &-tab {
     text-align: center;
@@ -16,6 +17,7 @@
     color: var(--colors-grey);
     font-size: var(--font-size-heading);
     font-weight: 600;
+    padding: 0.25em 0.5em 0;
 
     &:hover {
       color: var(--colors-selected);

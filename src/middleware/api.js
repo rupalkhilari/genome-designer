@@ -1,5 +1,5 @@
 import uuid from 'node-uuid';
-import 'isomorphic-fetch';
+import fetch from 'isomorphic-fetch';
 import invariant from 'invariant';
 import ProjectDefinition from '../schemas/Project';
 import BlockDefinition from '../schemas/Block';
@@ -21,7 +21,8 @@ export const exportPath = (id) => serverRoot + 'export/' + id;
 export const searchPath = (id) => serverRoot + 'search/' + id;
 
 //main API
-export const apiPath = (path) => serverRoot + 'api/' + path;
+export const dataApiPath = (path) => serverRoot + 'data/' + path;
+export const fileApiPath = (path) => serverRoot + 'file/' + path;
 
 //hack - set testing stub from start for now so all requests work
 let sessionKey = 'testingStub';
@@ -63,11 +64,11 @@ const headersDelete = () => ({
 });
 
 /*************************
- Server Communication
+ Authentication API
  *************************/
 
 export const login = (user, password) => {
-  return fetch(serverRoot + `login?user=${user}&password=${password}`, headersGet())
+  return fetch(serverRoot + `auth/login?user=${user}&password=${password}`, headersGet())
     .then(resp => resp.json())
     .then(json => {
       sessionKey = json.sessionkey;
@@ -75,26 +76,46 @@ export const login = (user, password) => {
     });
 };
 
-export const createBlock = (block) => {
+/*************************
+ Data API
+ *************************/
+
+export const createBlock = (block, projectId) => {
+  invariant(projectId, 'Project ID is required');
   invariant(BlockDefinition.validate(block), 'Block does not pass validation: ' + block);
+
   try {
     const stringified = JSON.stringify(block);
-    return fetch(apiPath(`block/`), headersPost(stringified));
+    const url = dataApiPath(`${projectId}/${block.id}`);
+
+    return fetch(url, headersPut(stringified))
+      .then(resp => resp.json());
   } catch (err) {
     return Promise.reject('error stringifying block');
   }
 };
 
-export const retrieveBlock = (id) => {
-  return fetch(apiPath(`block/${id}`), headersGet())
+export const retrieveBlock = (blockId, projectId = 'block') => {
+  invariant(projectId, 'Project ID is required');
+  invariant(blockId, 'Block ID is required');
+
+  const url = dataApiPath(`${projectId}/${blockId}`);
+
+  return fetch(url, headersGet())
     .then(resp => resp.json());
 };
 
-export const saveBlock = (block) => {
+export const saveBlock = (block, projectId, overwrite = false) => {
+  invariant(projectId, 'Project ID is required');
   invariant(BlockDefinition.validate(block), 'Block does not pass validation: ' + block);
+
   try {
     const stringified = JSON.stringify(block);
-    return fetch(apiPath(`block/${block.id}`), headersPut(stringified));
+    const url = dataApiPath(`${projectId}/${block.id}`);
+    const headers = !!overwrite ? headersPut : headersPost;
+
+    return fetch(url, headers(stringified))
+      .then(resp => resp.json());
   } catch (err) {
     return Promise.reject('error stringifying block');
   }
@@ -102,23 +123,31 @@ export const saveBlock = (block) => {
 
 export const saveProject = (project) => {
   invariant(ProjectDefinition.validate(project), 'Project does not pass validation: ' + project);
+
   try {
     const stringified = JSON.stringify(project);
-    return fetch(apiPath(`project/${project.id}`), headersPut(stringified));
+    const url = dataApiPath(`${project.id}`);
+
+    return fetch(url, headersPost(stringified))
+      .then(resp => resp.json());
   } catch (err) {
     return Promise.reject('error stringifying project');
   }
 };
 
+/*************************
+ File API
+ *************************/
+
 //returns a fetch object, for you to parse yourself (doesnt automatically convert to json)
 export const readFile = (fileName) => {
-  return fetch(apiPath(`file/${fileName}`), headersGet());
+  return fetch(fileApiPath(fileName), headersGet());
 };
 
 // if contents === null, then the file is deleted
 // Set contents to '' to empty the file
 export const writeFile = (fileName = uuid.v4(), contents) => {
-  const filePath = apiPath(`file/${fileName}`);
+  const filePath = fileApiPath(fileName);
 
   if (contents === null) {
     return fetch(filePath, headersDelete());
@@ -128,8 +157,9 @@ export const writeFile = (fileName = uuid.v4(), contents) => {
 };
 
 /**************************
-Running extensions
-**************************/
+ Running extensions
+ **************************/
+//todo - these should be in their own file...
 
 export const computeWorkflow = (id, inputs) => {
   try {
@@ -160,7 +190,7 @@ export const exportProject = (id, inputs) => {
 
 export const importBlock = (id, input) => {
   try {
-    return fetch(importPath(`block/${id}`), headersPost(JSON.stringify({ text: input })));
+    return fetch(importPath(`block/${id}`), headersPost(JSON.stringify({text: input})));
   } catch (err) {
     return Promise.reject('error stringifying input object');
   }
@@ -168,7 +198,7 @@ export const importBlock = (id, input) => {
 
 export const importProject = (id, input) => {
   try {
-    return fetch(importPath(`project/${id}`), headersPost(JSON.stringify({ text: input })));
+    return fetch(importPath(`project/${id}`), headersPost(JSON.stringify({text: input})));
   } catch (err) {
     return Promise.reject('error stringifying input object');
   }

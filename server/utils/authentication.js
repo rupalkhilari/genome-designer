@@ -1,54 +1,43 @@
-import crypto from 'crypto';
-import { getSafe as dbGetSafe, set as dbSet } from './database';
-import { errorInvalidSessionKey, errorSessionKeyNotValidated } from './errors';
+import express from 'express';
+import { errorInvalidSessionKey } from './errors';
 
-/**
- * @description asserts valid session key
- * @param key {sha1} session key
- */
+const router = express.Router(); //eslint-disable-line new-cap
 
-//hack - use default because if no sessionkey is set, this will error because no ID provided
+export const validateUser = (user, password) => {
+  const fakeKey = `${user}-key`;
+  return Promise.resolve(fakeKey);
+};
+
 export const validateSessionKey = (key) => {
-  return dbGetSafe(key, null)
-    .then(result => true)
-    .catch(err => {
-      console.log('error getting key', err); //eslint-disable-line
-      return Promise.reject(errorInvalidSessionKey);
-    });
+  return Promise.resolve(true);
 };
 
-/**
- * STUB - this will create a new sha1 every time
- * @description validate a user name and password
- * @param user
- * @param pw
- * @returns {Promise.<T>}
- */
-export const validateLoginCredentials = (user, pw) => {
-  const sha1 = crypto.randomBytes(20).toString('hex');
-  const info = {
-    user: user,
-    password: pw,
-    permissions: 4,
-    expiration: -1,
-  };
-
-  return dbSet(sha1, info)
-    .then(result => sha1)
-    .catch(err => {
-      return Promise.reject(errorSessionKeyNotValidated);
-    });
-};
-
-export const cleanUpSessionKeys = () => {
-  //TODO
-};
-
-export const sessionMiddleware = (req, res, next) => {
+export const authenticationMiddleware = (req, res, next) => {
   const { sessionkey } = req.headers;
   //console.log('session key: ' + sessionkey);
 
+  //todo - fetch user information
+  const user = {};
+
   return validateSessionKey(sessionkey)
-    .then(() => { next(); })
-    .catch(() => { res.status(403).send(errorInvalidSessionKey); });
+    .then(() => {
+      Object.assign(req, {user});
+      next();
+    })
+    .catch(() => {
+      res.status(403).send(errorInvalidSessionKey);
+    });
 };
+
+router.use('/login', (req, res) => {
+  const { user, password } = req.query;
+  validateUser(user, password)
+    .then(key => {
+      res.json({'sessionkey': key});
+    })
+    .catch(err => {
+      res.status(403).send(errorInvalidSessionKey);
+    });
+});
+
+export const authRouter = router;

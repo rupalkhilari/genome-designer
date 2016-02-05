@@ -1,14 +1,15 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import { sessionMiddleware } from '../../server/utils/authentication';
+import { authenticationMiddleware } from '../../server/utils/authentication';
 import { getExtension } from '../requireExtensions';
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
   strict: false, //allow values other than arrays and objects
 });
 
-router.use(sessionMiddleware);
 const namespace = 'convert';
+
+router.use(authenticationMiddleware);
 
 //just avoiding redundant code
 function callExportFunction(funcName, field, id, input) {

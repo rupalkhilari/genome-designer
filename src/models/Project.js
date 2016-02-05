@@ -5,6 +5,7 @@ export default class Project extends Instance {
   constructor(...args) {
     super(...args, {
       components: [],
+      settings: {},
     });
   }
 

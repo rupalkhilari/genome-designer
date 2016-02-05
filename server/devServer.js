@@ -3,10 +3,16 @@ import express from 'express';
 import webpack from 'webpack';
 import morgan from 'morgan';
 import config from './../webpack.config.dev.js';
-import apiRouter from './api/index';
 
-import { validateLoginCredentials } from './utils/authentication';
-import { errorInvalidSessionKey } from './utils/errors';
+import dataRouter from './data/index';
+import fileRouter from './file/index';
+import extensionsRouter from '../extensions/index';
+import extRouter from '../extensions/compute/api';
+import importRouter from '../extensions/convert/import';
+import exportRouter from '../extensions/convert/export';
+import searchRouter from '../extensions/search/search';
+
+import { authRouter } from './utils/authentication';
 
 const DEFAULT_PORT = 3000;
 const port = parseInt(process.argv[2], 10) || process.env.PORT || DEFAULT_PORT;
@@ -14,13 +20,6 @@ const hostname = '0.0.0.0';
 
 const app = express();
 const compiler = webpack(config);
-const extRouter = require('../extensions/compute/api');
-
-//import and export file formats
-const importRouter = require('../extensions/convert/import');
-const exportRouter = require('../extensions/convert/export');
-const searchRouter = require('../extensions/search/search');
-const extensionsRouter = require('../extensions/');
 
 //logging middleware
 app.use(morgan('dev'));
@@ -39,18 +38,13 @@ app.use(require('webpack-hot-middleware')(compiler));
 // Register API middleware
 // ----------------------------------------------------
 
-app.use('/login', (req, res) => {
-  const { user, password } = req.query;
-  validateLoginCredentials(user, password)
-    .then(key => {
-      res.json({'sessionkey': key});
-    })
-    .catch(err => {
-      res.status(403).send(errorInvalidSessionKey);
-    });
-});
+app.use('/auth', authRouter);
 
-app.use('/api', apiRouter);
+// all these should require authentication middleware
+
+app.use('/data', dataRouter);
+app.use('/file', fileRouter);
+
 app.use('/compute', extRouter);
 app.use('/import', importRouter);
 app.use('/export', exportRouter);

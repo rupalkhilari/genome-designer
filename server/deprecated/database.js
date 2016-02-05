@@ -1,6 +1,6 @@
 import redis from 'redis';
-import { errorDoesNotExist } from './errors';
-import { assertValidId } from './validation';
+import { errorDoesNotExist } from './../utils/errors';
+import { assertValidId } from './../utils/validation';
 /**
  * This file expects only valid data for the database. handles stringifying / parsing.
  *
@@ -29,7 +29,9 @@ client.on('error', (err) => {
  **/
 export const get = (id) => {
   return new Promise((resolve, reject) => {
-    assertValidId(id);
+    assertValidId(id, (err) => {
+      if (err) reject(err);
+    });
 
     //todo - better timeout handling
     const timeout = setTimeout(reject, timeoutTime);
@@ -76,7 +78,9 @@ export const getSafe = (id, defaultValue = null) => {
 export const set = (id, data = '') => {
   //const command = `redis-cli set ${id} '${data}'`;
   return new Promise((resolve, reject) => {
-    assertValidId(id);
+    assertValidId(id, (err) => {
+      if (err) reject(err);
+    });
 
     //todo - better timeout handling
     const timeout = setTimeout(reject, timeoutTime);

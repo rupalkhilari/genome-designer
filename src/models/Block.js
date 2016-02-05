@@ -4,7 +4,7 @@ import color from '../utils/generators/color';
 import { saveBlock, readFile } from '../middleware/api';
 import AnnotationDefinition from '../schemas/Annotation';
 
-const sequenceFilePathFromId = (id) => `block/${id}/sequence/`;
+const createSequenceUrl = (blockId, projectId = 'block') => `${projectId}/${blockId}/sequence`;
 
 //todo - should scaffold, not pass manually
 
@@ -25,8 +25,9 @@ export default class Block extends Instance {
     });
   }
 
-  save() {
-    return saveBlock(this);
+  save(projectId, overwrite = false) {
+    invariant(projectId, 'Project ID required to save');
+    return saveBlock(this, projectId, overwrite);
   }
 
   addComponent(componentId, index) {
@@ -77,7 +78,7 @@ export default class Block extends Instance {
 
   getSequenceUrl(forceNew) {
     return ( forceNew || !this.hasSequenceUrl() ) ?
-      sequenceFilePathFromId(this.id) :
+      createSequenceUrl(this.id) :
       this.sequence.url;
   }
 

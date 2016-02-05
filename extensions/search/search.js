@@ -1,14 +1,15 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import { sessionMiddleware } from '../../server/utils/authentication';
+import { authenticationMiddleware } from '../../server/utils/authentication';
 import { getExtension } from '../requireExtensions';
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
   strict: false, //allow values other than arrays and objects
 });
 
-router.use(sessionMiddleware);
 const namespace = 'search';
+
+router.use(authenticationMiddleware);
 
 function searchString(id, str, max) {
   return new Promise((resolve, reject) => {
@@ -45,6 +46,7 @@ router.post('/:id', jsonParser, (req, resp) => {
   });
 });
 
+//fixme
 router.get('/manifests', jsonParser, (req, resp) => {
   resp.json(extensionsInfo.search);
 });

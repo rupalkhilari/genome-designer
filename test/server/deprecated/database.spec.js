@@ -1,12 +1,12 @@
 import chai, { expect } from 'chai';
-import { errorIdTooShort, errorNoIdProvided, errorDoesNotExist } from '../../../server/utils/errors';
+import { errorIdInvalid, errorNoIdProvided, errorDoesNotExist } from '../../../server/utils/errors';
 import uuid from 'node-uuid';
-import { get, getSafe, set } from '../../../server/utils/database';
+import { get, getSafe, set } from '../../../server/deprecated/database';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 chai.use(sinonChai);
 
-describe('Database', () => {
+describe.skip('Redis Database', () => {
   const dummyInstance = {
     id: 'some-cool-id',
     metadata: {
@@ -32,7 +32,7 @@ describe('Database', () => {
       return get(shortId)
         .catch((err) => {
           expect(err).to.be.instanceof(Error);
-          expect(err.message).to.equal(errorIdTooShort);
+          expect(err.message).to.equal(errorIdInvalid);
           done();
         });
     });
@@ -73,7 +73,7 @@ describe('Database', () => {
       return set(shortId)
         .catch((err) => {
           expect(err).to.be.instanceof(Error);
-          expect(err.message).to.equal(errorIdTooShort);
+          expect(err.message).to.equal(errorIdInvalid);
           done();
         });
     });
