@@ -1,6 +1,6 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-//import { sessionMiddleware } from '../../server/utils/authentication';
+import { authenticationMiddleware } from '../../server/utils/authentication';
 import { load as loadExtensions } from '../requireExtensions';
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
@@ -11,7 +11,7 @@ const retval = loadExtensions(normalizedPath);
 const extensions = retval.extensions;
 const manifests = retval.manifests;
 
-//router.use(sessionMiddleware);
+router.use(authenticationMiddleware);
 
 function searchString(id, str, max) {
   return new Promise((resolve, reject) => {

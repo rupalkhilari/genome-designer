@@ -4,7 +4,7 @@ import orchestrator from '../../src/store/orchestrator';
 import * as actions from '../../src/actions/_expose';
 import * as selectors from '../../src/actions/_expose';
 
-describe.only('Orchestrator', () => {
+describe('Orchestrator', () => {
   const sections = ['blocks', 'projects', 'ui', 'inventory', 'inspector'];
 
   it('should have sections corresponding to store', () => {

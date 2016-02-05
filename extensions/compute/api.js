@@ -1,14 +1,14 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import { runNode } from './runNode';
-//import { sessionMiddleware } from '../../server/utils/authentication';
+import { authenticationMiddleware } from '../../server/utils/authentication';
 
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
   strict: false, //allow values other than arrays and objects
 });
 
-//router.use(sessionMiddleware);
+router.use(authenticationMiddleware);
 
 router.post('/:id', jsonParser, (req, resp) => {
   const { id } = req.params;
