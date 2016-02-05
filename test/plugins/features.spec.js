@@ -4,7 +4,7 @@ import { exportProject } from '../../plugins/convert/export';
 
 const fs = require('fs');
 
-describe('Features Extensions', () => {
+describe('Features Plugin', () => {
   it('should be able convert feature file to Blocks', done => {
     fs.readFile('./test/res/sampleFeatureFile.tab', 'utf8', (err, sampleFeatures) => {
       importProject('features', sampleFeatures).

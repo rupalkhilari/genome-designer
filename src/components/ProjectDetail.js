@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { uiToggleDetailView } from '../actions/ui';
-import { registry } from '../extensions/registry';
+import { registry } from '../extensions/clientRegistry';
 
 import '../styles/ProjectDetail.css';
 

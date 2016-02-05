@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { searchString } from '../../plugins/search/search';
 const query = 'carboxylase';
 
-describe('NCBI Search extension', () => {
+describe('NCBI Search Plugin', () => {
   it('should be able to search the Nucleotide DB', function nucleotide(done) {
     this.timeout(10000);  //searching NCBI... so might take long, depending on internet
     searchString('nucleotide', query, 2)

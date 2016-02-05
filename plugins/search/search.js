@@ -1,7 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import { authenticationMiddleware } from '../../server/utils/authentication';
-import { getExtension } from '../requireExtensions';
+import { getExtension } from '../loadPlugin';
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
   strict: false, //allow values other than arrays and objects

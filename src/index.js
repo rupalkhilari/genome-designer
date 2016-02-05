@@ -6,8 +6,8 @@ import * as actionTypes from './constants/ActionTypes';
 import actions from './actions/_expose';
 import store, { lastAction } from './store/index';
 import * as server from './middleware/api';
-import registry from './extensions/registry';
 import orchestrator from './store/orchestrator';
+import registerExtension from './extensions/registerExtension';
 
 render(
   <Provider store={store}>
@@ -24,6 +24,7 @@ server.login();
 //expose various things on the window, e.g. for extensions
 const exposed = global.gd = {};
 Object.assign(exposed, {
+  registerExtension,
   actionTypes,
   actions,
   api: orchestrator, //expose better....
