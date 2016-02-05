@@ -10,6 +10,7 @@ import SymbolPicker from './ui/SymbolPicker';
 export class InspectorBlock extends Component {
   static propTypes = {
     instance: PropTypes.object.isRequired,
+    currentBlocks: PropTypes.array,
     blockSetColor: PropTypes.func.isRequired,
     blockSetSbol: PropTypes.func.isRequired,
     blockMerge: PropTypes.func.isRequired,
@@ -17,25 +18,38 @@ export class InspectorBlock extends Component {
   };
 
   setBlockName = (name) => {
-    this.props.blockRename(this.props.instance.id, name);
+    this.props.currentBlocks.forEach((blockId) => {
+      this.props.blockRename(blockId, name);
+    });
   };
 
   setBlockDescription = (description) => {
-    if (description !== this.props.instance.metadata.description) {
-      this.props.blockMerge(this.props.instance.id, {metadata: {description}});
-    }
+    this.props.currentBlocks.forEach((blockId) => {
+      this.props.blockMerge(blockId, {metadata: {description}});
+    });
   };
 
   selectColor = (color) => {
-    this.props.blockSetColor(this.props.instance.id, color);
+    this.props.currentBlocks.forEach((blockId) => {
+      this.props.blockSetColor(blockId, color);
+    });
   };
 
   selectSymbol = (symbol) => {
-    this.props.blockSetSbol(this.props.instance.id, symbol);
+    this.props.currentBlocks.forEach((blockId) => {
+      this.props.blockSetSbol(blockId, symbol);
+    });
   };
 
   render() {
     const { instance } = this.props;
+
+    let cb = '';
+    if (this.props.currentBlocks) {
+      cb = this.props.currentBlocks.reduce((memo, block) => {
+        return memo + ' --- ' + block;
+      }, '');
+    }
 
     return (
       <div className="InspectorContent InspectorContentBlock">
@@ -62,7 +76,8 @@ export class InspectorBlock extends Component {
         <SymbolPicker current={instance.rules.sbol}
                       onSelect={this.selectSymbol}/>
 
-
+        <h4 className="InspectorContent-heading">Selected Blocks</h4>
+        <textarea style={{color: 'black'}} value={cb}></textarea>
       </div>
     );
   }

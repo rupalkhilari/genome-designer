@@ -42,7 +42,7 @@ export class Inspector extends Component {
 
         <div className="SidePanel-content">
           {block ?
-            (<InspectorBlock instance={block}/>) :
+            (<InspectorBlock instance={block} currentBlocks={this.props.currentBlocks}/>) :
             (<InspectorProject instance={project}/>) }
         </div>
       </div>
