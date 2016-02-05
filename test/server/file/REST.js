@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import request from 'supertest';
 import fs from 'fs';
-import { createStorageUrl } from '../../../server/utils/filePaths';
+import { createFilePath } from '../../../server/utils/filePaths';
 
 const devServer = require('../../../server/devServer');
 
@@ -15,11 +15,11 @@ describe('REST', () => {
       server.close();
     });
 
-    const makeStoragePath = (path) => createStorageUrl(path);
+    const makeStoragePath = (path) => createFilePath(path);
     const makeApiPath = (path) => '/file/' + path;
 
     it('/file POST for creating files, returns route as result', (done) => {
-      const fileName = 'test/testfile1';
+      const fileName = 'testfile1';
       const apiPath = makeApiPath(fileName);
 
       request(server)
@@ -30,7 +30,7 @@ describe('REST', () => {
     });
 
     it('/file GET for getting files', function fileGet(done) {
-      const fileName = 'test/testfile2';
+      const fileName = 'testfile2';
       const fileContents = 'yada!';
       const apiPath = makeApiPath(fileName);
 
@@ -43,7 +43,7 @@ describe('REST', () => {
     });
 
     it('/file DELETE for deleting files', function fileDelete(done) {
-      const fileName = 'test/testfile3';
+      const fileName = 'testfile3';
       const fileContents = 'deleteme';
       const apiPath = makeApiPath(fileName);
 
@@ -62,7 +62,7 @@ describe('REST', () => {
     });
 
     it('should support deep paths', (done) => {
-      const fileName = 'test/deep/path';
+      const fileName = 'deep/long/path';
       const fileContents = 'content';
       const apiPath = makeApiPath(fileName);
 
@@ -76,5 +76,7 @@ describe('REST', () => {
           });
         });
     });
+
+    it('should support paths starting with /test/');
   });
 });

@@ -5,13 +5,10 @@ import { createFilePath } from './../utils/filePaths';
 
 const router = express.Router(); //eslint-disable-line new-cap
 
-router.route('*')
+router.route('/*')
   .all((req, res, next) => {
     const url = req.params[0];
     const filePath = createFilePath(url);
-
-    console.log('file path is ', filePath, url);
-
     const folderPath = filePath.substring(0, filePath.lastIndexOf('/') + 1);
 
     Object.assign(req, {
