@@ -41,43 +41,85 @@ export class InspectorBlock extends Component {
     });
   };
 
+  /**
+   * color of selected instance or null if multiple blocks selected
+   */
+  currentColor() {
+    if (this.props.currentBlocks && this.props.currentBlocks.length > 1) {
+      return null;
+    }
+    if (this.props.instance) {
+      return this.props.instance.metadata.color;
+    }
+    return null;
+  }
+
+  /**
+   * sbol symbol of selected instance or null if multiple blocks selected
+   */
+  currentSbolSymbol() {
+    if (this.props.currentBlocks && this.props.currentBlocks.length > 1) {
+      return null;
+    }
+    if (this.props.instance) {
+      return this.props.instance.rules.sbol;
+    }
+    return null;
+  }
+
+  /**
+   * current name of instance or null if multi-select
+   */
+  currentName() {
+    if (this.props.currentBlocks && this.props.currentBlocks.length > 1) {
+      return null;
+    }
+    if (this.props.instance) {
+      return this.props.instance.metadata.name;
+    }
+    return null;
+  }
+
+  /**
+   * current name of instance or null if multi-select
+   */
+  currentDescription() {
+    if (this.props.currentBlocks && this.props.currentBlocks.length > 1) {
+      return null;
+    }
+    if (this.props.instance) {
+      return this.props.instance.metadata.description;
+    }
+    return null;
+  }
+
   render() {
     const { instance } = this.props;
-
-    let cb = '';
-    if (this.props.currentBlocks) {
-      cb = this.props.currentBlocks.reduce((memo, block) => {
-        return memo + ' --- ' + block;
-      }, '');
-    }
 
     return (
       <div className="InspectorContent InspectorContentBlock">
         <h4 className="InspectorContent-heading">Name</h4>
         <InputSimple placeholder="Part Name"
                      onChange={this.setBlockName}
-                     value={instance.metadata.name}/>
+                     value={this.currentName()}/>
 
         <h4 className="InspectorContent-heading">Description</h4>
         <InputSimple placeholder="Part Description"
                      useTextarea
                      onChange={this.setBlockDescription}
                      updateOnBlur
-                     value={instance.metadata.description}/>
+                     value={this.currentDescription()}/>
 
         <h4 className="InspectorContent-heading">Sequence Length</h4>
         <p><strong>{instance.sequence.length ? (instance.sequence.length + ' bp') : 'No Sequence'}</strong></p>
 
         <h4 className="InspectorContent-heading">Color</h4>
-        <ColorPicker current={instance.metadata.color}
+        <ColorPicker current={this.currentColor()}
                      onSelect={this.selectColor}/>
 
         <h4 className="InspectorContent-heading">Symbol</h4>
-        <SymbolPicker current={instance.rules.sbol}
+        <SymbolPicker current={this.currentSbolSymbol()}
                       onSelect={this.selectSymbol}/>
-
-        <h4 className="InspectorContent-heading">Selected Blocks</h4>
-        <textarea style={{color: 'black'}} value={cb}></textarea>
       </div>
     );
   }
