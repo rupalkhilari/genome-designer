@@ -1,6 +1,6 @@
 import { expect } from 'chai';
-import { importProject } from '../../extensions/convert/import';
-import { exportProject } from '../../extensions/convert/export';
+import { importProject } from '../../plugins/convert/import';
+import { exportProject } from '../../plugins/convert/export';
 
 const fs = require('fs');
 

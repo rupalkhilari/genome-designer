@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { runNode } from '../../extensions/compute/runNode';
+import { runNode } from '../../plugins/compute/runNode';
 const fs = require('fs');
 
 describe('Nodes Extension', () => {

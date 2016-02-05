@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { searchString } from '../../extensions/search/search';
+import { searchString } from '../../plugins/search/search';
 const query = 'carboxylase';
 
 describe('NCBI Search extension', () => {

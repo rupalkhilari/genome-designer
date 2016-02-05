@@ -1,0 +1,8 @@
+{
+  "name": "genome-designer-default-extensions",
+  "version" : "0.0.1",
+  "description": "list of the default extensions for genome designer",
+  "dependencies": {
+    "onion" : "../../extensions/onion2"
+  }
+}
