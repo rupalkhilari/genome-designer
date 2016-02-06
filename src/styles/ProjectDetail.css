@@ -70,7 +70,11 @@
   }
 
   &-extensionView {
+    display: none;
     flex-grow: 1;
-  }
 
+    .visible & {
+      display: block;
+    }
+  }
 }

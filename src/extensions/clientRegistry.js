@@ -20,11 +20,11 @@ function registerExtensionManifests() {
 //for now, build the registry using everything registered on the server, and load automatically
 function loadRegisteredExtensions() {
   return Promise.all(Object.keys(registry).map(key => {
-    return loadExtension(key);
-  }))
-  .then(() => {
-    return registry;
-  });
+      return loadExtension(key);
+    }))
+    .then(() => {
+      return registry;
+    });
 }
 
 function loadAllExtensions() {
@@ -32,8 +32,8 @@ function loadAllExtensions() {
     .then(loadRegisteredExtensions);
 }
 
-//load everything automatically after a second...
-setTimeout(loadAllExtensions, 1000);
+//load everything automatically after a moment...
+setTimeout(loadAllExtensions, 100);
 
 export const validRegion = (region) => regions.hasOwnProperty(region);
 
@@ -49,14 +49,14 @@ export const addExtensionToRegistry = (region, manifest, render) => {
   return merged;
 };
 
+//returns an array
 export const extensionsByRegion = (region) => {
-  return Object.keys(registry).reduce((acc, key) => {
-    const manifest = registry[key];
-    if (manifest.region === region) {
-      return Object.assign(acc, {[key] : manifest});
-    }
-    return acc;
-  }, {});
+  return Object.keys(registry)
+    .filter(key => {
+      const manifest = registry[key];
+      return manifest.region === region;
+    })
+    .map(key => registry[key])
 };
 
 export default registry;

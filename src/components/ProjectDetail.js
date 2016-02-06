@@ -32,22 +32,18 @@ export class ProjectDetail extends Component {
   };
 
   render() {
-    //todo - trigger more intelligently
+    //todo - trigger more intelligently, dont want to recompute all the time
     const extensions = extensionsByRegion('sequenceDetail');
-    mapValues(extensions, (manifest) => {
-      console.log(manifest);
-    });
 
     return (
       <div className={'ProjectDetail' + (this.props.isVisible ? ' visible' : '')}>
         <div className="ProjectDetail-heading">
           {!this.props.isVisible && (<a ref="open"
                                         className="ProjectDetail-heading-toggle"
-                                        onClick={() => this.toggle()}/>)}
+                                        onClick={() => { this.toggle(); this.loadExtension(extensions[0]);} }/>)}
 
           <div className="ProjectDetail-heading-extensionList">
-            {Object.keys(extensions).map(name => {
-              const manifest = extensions[name];
+            {extensions.map(manifest => {
               return (
                 <a key={manifest.name}
                    className="ProjectDetail-heading-extension"
