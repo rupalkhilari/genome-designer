@@ -14,6 +14,7 @@ export class ProjectDetail extends Component {
   };
 
   componentDidMount() {
+    //to update when extensions register... todo - need a pubsub method
     setTimeout(() => {
       this.forceUpdate();
     }, 500);
@@ -27,8 +28,13 @@ export class ProjectDetail extends Component {
   };
 
   loadExtension = (manifest) => {
-    manifest.render(this.refs.extensionView);
-    this.toggle(true);
+    try {
+      manifest.render(this.refs.extensionView);
+      this.toggle(true);
+    } catch (err) {
+      console.error('error loading / rendering extension!', manifest);
+      console.error(err);
+    }
   };
 
   render() {

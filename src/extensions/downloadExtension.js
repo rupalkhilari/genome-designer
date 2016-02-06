@@ -1,4 +1,5 @@
 import loadScript from 'load-script';
+import merge from 'lodash.merge';
 
 const cached = {};
 
@@ -9,7 +10,7 @@ const cached = {};
  * resolve(true) - was downloaded
  * reject(err) - error downloading
  */
-const loadExtension = (name) => {
+export const downloadExtension = (name) => {
   return new Promise((resolve, reject) => {
     if (cached[name]) {
       resolve(false);
@@ -26,4 +27,4 @@ const loadExtension = (name) => {
   });
 };
 
-export default loadExtension;
+export default downloadExtension;

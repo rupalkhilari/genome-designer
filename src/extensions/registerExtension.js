@@ -1,13 +1,19 @@
-import registry, { validRegion, addExtensionToRegistry } from './clientRegistry';
+import registry, { validRegion } from './clientRegistry';
+import merge from 'lodash.merge';
 import invariant from 'invariant';
 
 const registerExtension = (manifest, render) => {
-  const { region } = manifest;
+  const { name, region } = manifest;
+  invariant(name, 'Name is required');
   invariant(region, 'Region (manifest.region) is required to register a plugin');
+  invariant(typeof render === 'function', 'Must provide a render function to register a plugin');
 
   if (validRegion(region)) {
-    addExtensionToRegistry(region, manifest, render);
-    return manifest;
+    const merged = merge({}, registry[name], manifest, {render});
+    Object.assign(registry, {
+      [name]: merged,
+    });
+    return merged;
   } else {
     throw new Error(`extension region ${region} unrecognized`);
   }
