@@ -1,11 +1,10 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { uiToggleDetailView } from '../actions/ui';
-import { registry } from '../extensions/clientRegistry';
+import { extensionsByRegion, registry } from '../extensions/clientRegistry';
+import mapValues from '../utils/object/mapValues';
 
 import '../styles/ProjectDetail.css';
-
-//todo - how should this be exposed so that React won't dump it away
 
 export class ProjectDetail extends Component {
   static propTypes = {
@@ -15,15 +14,8 @@ export class ProjectDetail extends Component {
   };
 
   componentDidMount() {
-    //hack - load in Onion
     setTimeout(() => {
       this.forceUpdate();
-      if (registry.sequenceView) {
-        for (let name in registry.sequenceView) {
-          registry.sequenceView[name].render(this.refs.extensionView);
-          break;
-        }
-      }
     }, 500);
   }
 
@@ -34,27 +26,32 @@ export class ProjectDetail extends Component {
     }, 300);
   };
 
-  loadExtension = (name) => {
+  loadExtension = (manifest) => {
+    manifest.render(this.refs.extensionView);
     this.toggle(true);
-    registry.sequenceView[name].render(this.refs.extensionView);
   };
 
   render() {
-    //todo - need to trigger render when extensions are registered
+    //todo - trigger more intelligently
+    const extensions = extensionsByRegion('sequenceDetail');
+    mapValues(extensions, (manifest) => {
+      console.log(manifest);
+    });
 
     return (
       <div className={'ProjectDetail' + (this.props.isVisible ? ' visible' : '')}>
         <div className="ProjectDetail-heading">
           {!this.props.isVisible && (<a ref="open"
-             className="ProjectDetail-heading-toggle"
-             onClick={() => this.toggle()} />)}
+                                        className="ProjectDetail-heading-toggle"
+                                        onClick={() => this.toggle()}/>)}
 
           <div className="ProjectDetail-heading-extensionList">
-            {Object.keys(registry.sequenceView).map(name => {
+            {Object.keys(extensions).map(name => {
+              const manifest = extensions[name];
               return (
-                <a key={name}
+                <a key={manifest.name}
                    className="ProjectDetail-heading-extension"
-                   onClick={this.loadExtension.bind(null, name)}>{name}</a>
+                   onClick={this.loadExtension.bind(null, manifest)}>{manifest.readable || manifest.name}</a>
               );
             })}
 
@@ -63,8 +60,8 @@ export class ProjectDetail extends Component {
           </div>
 
           {this.props.isVisible && (<a ref="close"
-             className="ProjectDetail-heading-close"
-             onClick={() => this.toggle(false)} />)}
+                                       className="ProjectDetail-heading-close"
+                                       onClick={() => this.toggle(false)}/>)}
         </div>
         <div className="ProjectDetail-chrome">
           <div ref="extensionView"

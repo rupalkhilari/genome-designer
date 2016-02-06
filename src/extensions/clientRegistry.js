@@ -1,10 +1,9 @@
 import * as regions from './regions';
 import invariant from 'invariant';
 import merge from 'lodash.merge';
-import pick from 'lodash.pick';
 import loadExtension from './loadExtension';
 
-const registry = {};
+export const registry = {};
 
 function registerExtensionManifests() {
   return new Promise((resolve, reject) => {
@@ -22,7 +21,10 @@ function registerExtensionManifests() {
 function loadRegisteredExtensions() {
   return Promise.all(Object.keys(registry).map(key => {
     return loadExtension(key);
-  }));
+  }))
+  .then(() => {
+    return registry;
+  });
 }
 
 function loadAllExtensions() {
@@ -30,7 +32,8 @@ function loadAllExtensions() {
     .then(loadRegisteredExtensions);
 }
 
-loadAllExtensions();
+//load everything automatically after a second...
+setTimeout(loadAllExtensions, 1000);
 
 export const validRegion = (region) => regions.hasOwnProperty(region);
 
@@ -47,7 +50,13 @@ export const addExtensionToRegistry = (region, manifest, render) => {
 };
 
 export const extensionsByRegion = (region) => {
-  return pick(registry, (key, manifest) => manifest.region === region);
+  return Object.keys(registry).reduce((acc, key) => {
+    const manifest = registry[key];
+    if (manifest.region === region) {
+      return Object.assign(acc, {[key] : manifest});
+    }
+    return acc;
+  }, {});
 };
 
 export default registry;

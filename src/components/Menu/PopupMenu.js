@@ -34,7 +34,7 @@ export default class Menu extends Component {
         ref="blocker"
       >
         <div className="menu-popup-container" style={position}>
-          {this.props.menuItems.map(item => {
+          {this.props.menuItems.map((item, index) => {
             const boundAction = () => {
               this.props.closePopup();
               if (item.action) {
@@ -43,8 +43,8 @@ export default class Menu extends Component {
             };
             return (
               item.text ?
-                (<MenuItem text={item.text} action={boundAction}/>) :
-                (<MenuSeparator />)
+                (<MenuItem key={item.text} text={item.text} action={boundAction}/>) :
+                (<MenuSeparator key={index} />)
               );
           })}
         </div>
