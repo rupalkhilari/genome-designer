@@ -1,19 +1,22 @@
 const fs = require('fs');
 const exports = module.exports;
 
-const _extensions = {};
-const _extensionsInfo = { GUI: {} };
+const _plugins = {};
+const _pluginInfo = { GUI: {} };
 const _errors = {};
 
-function loadExtensions() {
+//todo - rename to plugins
+
+function loadPlugins() {
   return new Promise( (resolve, reject) => {
+    //fixme - this is going to be broken
     fs.readFile('extensions/registeredExtensions.json', 'utf8', (err, file) => {
       if (err) {
         reject('Failed to open registeredExtensions.json file');
         return;
       }
 
-      let name, extensions, path, namespace, namespaces;
+      let name, plugins, path, namespace, namespaces;
 
       try {
         namespaces = JSON.parse(file);
@@ -23,46 +26,46 @@ function loadExtensions() {
       }
 
       for (namespace in namespaces) {
-        extensions = namespaces[namespace];
-        _extensions[namespace] = _extensions[namespace] || {};
-        _extensionsInfo[namespace] = _extensionsInfo[namespace] || {};
+        plugins = namespaces[namespace];
+        _plugins[namespace] = _plugins[namespace] || {};
+        _pluginInfo[namespace] = _pluginInfo[namespace] || {};
         _errors[namespace] = _errors[namespace] || {};
-        for (name in extensions) {
-          if (_extensions[namespace][name] === undefined) { //don't reload
+        for (name in plugins) {
+          if (_plugins[namespace][name] === undefined) { //don't reload
             try {
-              path = extensions[name].path;
-              if (!extensions[name].gui) {
-                _extensions[namespace][name] = require(path);
+              path = plugins[name].path;
+              if (!plugins[name].gui) {
+                _plugins[namespace][name] = require(path);
               } else {
-                _extensionsInfo.GUI[namespace] = _extensionsInfo.GUI[namespace] || {};
-                _extensionsInfo.GUI[namespace][name] = require(path + '/package.json');
-                _extensionsInfo.GUI[namespace][name].path = path;
+                _pluginInfo.GUI[namespace] = _pluginInfo.GUI[namespace] || {};
+                _pluginInfo.GUI[namespace][name] = require(path + '/package.json');
+                _pluginInfo.GUI[namespace][name].path = path;
               }
-              _extensionsInfo[namespace][name] = require(path + '/package.json');
+              _pluginInfo[namespace][name] = require(path + '/package.json');
             } catch (exception) {
-              _extensionsInfo[namespace][name] = 'Failed to load ' + name + ' : ' + exception.message;
+              _pluginInfo[namespace][name] = 'Failed to load ' + name + ' : ' + exception.message;
             }
           }
         }
       }
-      resolve(_extensions);
+      resolve(_plugins);
     });
   });
 }
 
-exports.getExtension = (namespace, name) => {
+exports.getPlugin = (namespace, name) => {
   return new Promise( (resolve, reject) => {
     if (!namespace || !name) {
       reject("Invalid input");
       return;
     }
 
-    if (_extensions[namespace] && _extensions[namespace][name]) {
-      resolve(_extensions[namespace][name]);
+    if (_plugins[namespace] && _plugins[namespace][name]) {
+      resolve(_plugins[namespace][name]);
       return;
     }
 
-    loadExtensions()
+    loadPlugins()
     .then(extensions => {
       if (extensions[namespace] && extensions[namespace][name]) {
         resolve(extensions[namespace][name]);
@@ -73,11 +76,11 @@ exports.getExtension = (namespace, name) => {
   });
 };
 
-exports.getExtensionsInfo = () => {
+exports.getPluginInfo = () => {
   return new Promise( (resolve, reject) => {
-    loadExtensions()
+    loadPlugins()
     .then(extensions => {
-      resolve(_extensionsInfo);
+      resolve(_pluginInfo);
     });
   });
 };

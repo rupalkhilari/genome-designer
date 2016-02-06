@@ -1,7 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import { authenticationMiddleware } from '../../server/utils/authentication';
-import { getExtension } from '../loadPlugin';
+import { getPlugin } from '../loadPlugin';
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
   strict: false, //allow values other than arrays and objects
@@ -13,7 +13,7 @@ router.use(authenticationMiddleware);
 
 function searchString(id, str, max) {
   return new Promise((resolve, reject) => {
-    getExtension(namespace, id)
+    getPlugin(namespace, id)
     .then(mod => {
       if (mod && mod.search) {
         try {

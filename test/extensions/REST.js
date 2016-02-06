@@ -4,7 +4,7 @@ import request from 'supertest';
 import devServer from '../../server/devServer';
 
 describe('Extensions', () => {
-  describe.only('REST', () => {
+  describe('REST', () => {
     let server;
 
     beforeEach('server setup', () => {
