@@ -58,11 +58,14 @@
 /***/ function(module, exports) {
 
 	module.exports = {
-		"name": "onion",
+		"name": "simple",
 		"version": "1.0.0",
-		"description": "Detailed Sequence viewer from EGF",
+		"description": "Simple Extensions",
 		"region": "sequenceDetail",
-		"readable": "Sequence Viewer",
+		"readable": "Simple",
+		"scripts": {
+			"build": "npm install && webpack main.js index.js"
+		},
 		"devDependencies": {
 			"json-loader": "^0.5.4"
 		}

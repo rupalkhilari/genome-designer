@@ -1,10 +1,13 @@
-const manifest = require('./package.json');
+import path from 'path';
+import manifest from './package.json';
+
 const { dependencies } = manifest;
 
 export const extensionsFolder = '../../extensions/';
 
 const registry = Object.keys(dependencies).reduce((acc, dep) => {
-  const depManifest = require(extensionsFolder + dep + '/package.json');
+  const filePath = path.resolve(__dirname, extensionsFolder + dep + '/package.json');
+  const depManifest = require(filePath);
   return Object.assign(acc, {
     [dep]: depManifest,
   });

@@ -26,15 +26,13 @@ module.exports = Object.assign({}, webpackBase, {
   module : {
     loaders: [
       {
-        test   : /\.js$/,
-        loader: 'babel-loader',
-        include: path.join(__dirname, 'src'),
-        exclude: /node_modules/
+        test: /\.json$/,
+        loader: 'json-loader'
       },
       {
         test   : /\.js$/,
         loader: 'babel-loader',
-        include: path.join(__dirname, 'extensions'),
+        include: path.join(__dirname, 'src'),
         exclude: /node_modules/
       },
       {

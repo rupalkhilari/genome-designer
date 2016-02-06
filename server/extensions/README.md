@@ -14,16 +14,22 @@ Genome designer is built to accommodate extensions, which extend the front-end w
 
 Include extensions in `/server/extensions/package.json`, and they will be installed using NPM. You can include local paths for extensions included locally, or npm modules. 
 
-It is assumed that extensions are already installed by the time the server has started.
+It is assumed that extensions are already installed and built (e.g. using `npm install`) by the time the server has started.
+
+At this time, the client is bootstrapped with knowledge of all the plugins available on the server, but they are initialized lazily as needed (i.e. `package.json` manifest available, `index.js` loaded when needed).
 
 ## Extension Format
 
 Extensions are expected to be NPM modules. They must provide:
  
-- an entrypoint of `index.js` which exports as default a `render()` function (defined below)
+- an entrypoint of `index.js` which is responsible for calling `gd.registerExtension(manifest, render)`. The format of the render function is given below.
 - package.json with fields `id`, `name`, `version`, `region` (defined below) 
 
-### example package.json
+### example 
+
+An trivial example is given in extensions/simple
+
+#### package.json
 
 ```
 {
@@ -39,9 +45,7 @@ Extensions are expected to be NPM modules. They must provide:
 
 Area of the application where the extension will render.
 
-Possible regions are:
-
-- sequenceDetail
+Possible regions are in `src/extensions/regions.js`
 
 ### `render(container)` <function>
 

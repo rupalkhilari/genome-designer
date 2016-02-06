@@ -1,3 +1,4 @@
+import path from 'path';
 import { errorDoesNotExist } from '../utils/errors';
 import registry from './registry';
 
@@ -11,5 +12,7 @@ const loadExtension = (name) => {
     }
   });
 };
+
+export const getExtensionInternalPath = (name) => path.resolve(__dirname, `../../extensions/${name}/index.js`);
 
 export default loadExtension;

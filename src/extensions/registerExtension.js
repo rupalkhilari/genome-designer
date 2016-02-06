@@ -1,10 +1,10 @@
-import registry, { validRegion, addExtension } from './clientRegistry';
+import registry, { validRegion, addExtensionToRegistry } from './clientRegistry';
 
 const registerExtension = (manifest, render) => {
   const { region } = manifest;
 
   if (validRegion(region)) {
-    addExtension(region, manifest, render);
+    addExtensionToRegistry(region, manifest, render);
   } else {
     throw new Error(`extension region ${region} unrecognized`);
   }
