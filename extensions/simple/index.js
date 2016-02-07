@@ -48,6 +48,12 @@
 
 	function render(container) {
 	  container.innerHTML = 'extension loaded!';
+
+	  console.log(window.gd);
+
+	  var subscriber = window.gd.store.subscribe(function (state, lastAction) {
+	    console.log(state);
+	  });
 	}
 
 	window.gd.registerExtension(manifest, render);
