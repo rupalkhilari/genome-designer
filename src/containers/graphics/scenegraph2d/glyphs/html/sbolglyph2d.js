@@ -1,4 +1,5 @@
 import Glyph2D from '../glyph2d';
+
 import kT from '../../../views/layoutconstants';
 import symbols from '../../../../../inventory/sbol';
 
@@ -6,11 +7,8 @@ import symbols from '../../../../../inventory/sbol';
 export default class SBOLGlyph2D extends Glyph2D {
 
   /**
-   * Simple HTML based rectangle. The only complexity is that we carefully
-   * adjust the size to accomodate the stroke ( which is rendered using a border property).
-   * HTML borders are either inside or outside the elenent, for compatibility
-   * with canvas/svg with make the border straddle the edges.
-   * @param {Node2D} node - the node for which we render ourselves
+   * represents a block with, possibly an SBOL symbol and a context menu
+   * that is shown only on hover.
    */
   constructor(node) {
     super(node);
@@ -21,6 +19,18 @@ export default class SBOLGlyph2D extends Glyph2D {
     this.img.setAttribute('src', '/images/sbolSymbols/terminator.svg');
     this.el.appendChild(this.img);
     this.node.el.appendChild(this.el);
+  }
+
+  /**
+   * get the preferred width / height of this block as condensed or fully expanded
+   * @return {[type]} [description]
+   */
+  getPreferredSize(str, condensed) {
+    if (condensed) {
+      return new Vector2D(kT.condensedText, kT.blockH);
+    }
+    // measure actual text plus some padding
+    return this.measureText(str).add(new Vector2D(kT.textPad * 2 + kT.contextDotsW, 0));
   }
 
   /**
