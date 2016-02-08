@@ -3,6 +3,7 @@
   "version" : "0.0.1",
   "description": "list of the default extensions for genome designer",
   "dependencies": {
-    "simple" : "../../extensions/simple"
+    "simple" : "../../extensions/simple",
+    "onion2" : "../../extensions/onion2"
   }
 }

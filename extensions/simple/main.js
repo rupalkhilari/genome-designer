@@ -4,7 +4,16 @@ function render(container) {
   container.innerHTML = 'extension loaded!';
 
   var subscriber = window.gd.store.subscribe(function (state, lastAction) {
-    console.log(state);
+    var last = [];
+    var current = state.ui.currentBlocks;
+    if (current &&
+      current.length &&
+        (current.length !== last.length ||
+        !current.every(function (item, index) {return item !== last[index]}))
+    ) {
+      console.log(current);
+      last = current;
+    }
   });
 }
 
