@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, IndexRoute, Redirect } from 'react-router';
+import { Route, IndexRoute, Redirect, IndexRedirect } from 'react-router';
 
 import App from './containers/App';
 import DashboardPage from './containers/DashboardPage';
@@ -17,15 +17,17 @@ export default(
     {/* todo - signout page w/ dynamic routing */
       /* todo - signout page w/ dynamic routing */}
 
-    {/* this is temporary pending splash page */}
-    <IndexRoute component={DashboardPage}/>
+    {/*
+     //Redirect to project page, use sidepanel, no dashboard.
+     <IndexRoute component={DashboardPage}/>
+     */}
 
     <Route path="/about" component={AboutPage}/>
     <Route path="/signin" component={SignInPage}/>
     <Route path="/support" component={SupportPage}/>
-    <Route path="/projects" component={DashboardPage}/>
     <Route path="/project/:projectId" component={ProjectPage}/>
-    <Redirect from="/project" to="/"/>
+
+    <IndexRedirect to="/project/test" />
 
   </Route>
 );
