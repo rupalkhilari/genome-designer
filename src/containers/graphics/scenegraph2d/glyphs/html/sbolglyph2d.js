@@ -1,4 +1,5 @@
 import Glyph2D from '../glyph2d';
+
 import kT from '../../../views/layoutconstants';
 import symbols from '../../../../../inventory/sbol';
 
@@ -6,11 +7,8 @@ import symbols from '../../../../../inventory/sbol';
 export default class SBOLGlyph2D extends Glyph2D {
 
   /**
-   * Simple HTML based rectangle. The only complexity is that we carefully
-   * adjust the size to accomodate the stroke ( which is rendered using a border property).
-   * HTML borders are either inside or outside the elenent, for compatibility
-   * with canvas/svg with make the border straddle the edges.
-   * @param {Node2D} node - the node for which we render ourselves
+   * represents a block with, possibly an SBOL symbol and a context menu
+   * that is shown only on hover.
    */
   constructor(node) {
     super(node);
@@ -35,14 +33,19 @@ export default class SBOLGlyph2D extends Glyph2D {
     this.el.style.height = (this.node.height + sw) + 'px';
     this.el.style.backgroundColor = this.node.fill;
     this.el.style.border = sw ? `${sw}px solid ${this.node.stroke}` : 'none';
-    // the icon img tag
-    this.img.style.left = (this.node.width - kT.sbolIcon - 2 - kT.contextDotsW) + 'px';
-    this.img.style.maxWidth = kT.sbolIcon + 'px';
-    this.img.style.top = (this.node.height / 2 - kT.sbolIcon / 2) + 'px';
+    if (this.node.sbolName) {
+      // the icon img tag
+      this.img.style.left = (this.node.width - kT.sbolIcon - 2 - kT.contextDotsW) + 'px';
+      this.img.style.maxWidth = kT.sbolIcon + 'px';
+      this.img.style.top = (this.node.height / 2 - kT.sbolIcon / 2) + 'px';
 
-    const svgPath = symbols.find(symbol => symbol.id === this.node.sbolName).metadata.imageThick;
-    if (this.img.getAttribute('src') !== svgPath) {
-      this.img.setAttribute('src', svgPath);
+      const svgPath = symbols.find(symbol => symbol.id === this.node.sbolName).metadata.imageThick;
+      if (this.img.getAttribute('src') !== svgPath) {
+        this.img.setAttribute('src', svgPath);
+      }
+      this.img.style.display = 'block';
+    } else {
+      this.img.style.display = 'none';
     }
   }
 }
