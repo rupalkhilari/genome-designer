@@ -156,7 +156,7 @@ export const snapshotProject = (project) => {
  *************************/
 
 //future - support format
-const createSequenceUrl = (blockId, projectId = 'block', format) => `data/${projectId}/${blockId}/sequence`;
+const createSequenceUrl = (blockId, projectId = 'block', format) => dataApiPath(`${projectId}/${blockId}/sequence`);
 
 export const getSequence = (blockId, format) => {
   const url = createSequenceUrl(blockId, undefined, format);
