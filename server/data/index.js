@@ -157,6 +157,27 @@ router.route('/:projectId/:blockId/sequence')
       });
   });
 
+
+router.route('/:projectId/commit/:sha?')
+  .get((req, res) => {
+    //pass the SHA you want, otherwise loads the head
+    const { projectId } = req;
+    const { sha } = req.params;
+
+    persistence.projectGet(projectId, sha)
+      .then(project => res.status(200).json(project))
+      .catch(err => res.status(500).err(err));
+  })
+  .post((req, res) => {
+    //you can POST a field `message` for the commit, receieve the SHA
+    const { projectId } = req;
+    const { message } = req.body;
+
+    persistence.projectSave(projectId, message)
+      .then(sha => res.status(200).send(sha))
+      .catch(err => res.status(500).err(err));
+  });
+
 router.route('/:projectId/:blockId')
   .all((req, res, next) => {
     const { projectId, blockId } = req;

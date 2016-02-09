@@ -98,7 +98,27 @@ export const log = (path) => {
   .catch(err => errorVersioningSystem);
 };
 
-//future - may want to cut file path down automatically if includes repo path
+export const versionExists = (path, sha = 'HEAD', file) => {
+  return nodegit.Repository.open(makePath(path))
+    .then(repo => {
+      if (!sha || sha === 'HEAD') {
+        return repo.getMasterCommit();
+      }
+      return repo.getCommit(sha);
+    })
+    .then(commit => {
+      //just verify a commit is available
+      if (!file) {
+        return Promise.resolve(sha);
+      }
+
+      return commit.getEntry(file)
+        .then(entry => Promise.resolve(true))
+        .catch(() => Promise.reject(false)); //todo - more explicit. test for specific exception
+    })
+    .catch(err => Promise.reject(false)); //todo - more explicit. test for specific exception
+};
+
 export const checkout = (path, sha = 'HEAD', file) => {
   return nodegit.Repository.open(makePath(path))
     .then(repo => {
@@ -108,8 +128,7 @@ export const checkout = (path, sha = 'HEAD', file) => {
       return repo.getCommit(sha);
     })
     .then(commit => {
-      //just take them to a specific commit,
-      //return a function to return them to the head
+      //just verify a commit is available
       if (!file) {
         return Promise.resolve(sha);
       }
@@ -126,4 +145,5 @@ export const checkout = (path, sha = 'HEAD', file) => {
     .catch(err => errorVersioningSystem);
 };
 
+//todo - required once support versioning API
 //export const promote = (path, sha, file) => {}
