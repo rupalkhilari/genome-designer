@@ -22,18 +22,6 @@ export default class SBOLGlyph2D extends Glyph2D {
   }
 
   /**
-   * get the preferred width / height of this block as condensed or fully expanded
-   * @return {[type]} [description]
-   */
-  getPreferredSize(str, condensed) {
-    if (condensed) {
-      return new Vector2D(kT.condensedText, kT.blockH);
-    }
-    // measure actual text plus some padding
-    return this.measureText(str).add(new Vector2D(kT.textPad * 2 + kT.contextDotsW, 0));
-  }
-
-  /**
    * render latest changes //
    */
   update() {
@@ -45,14 +33,19 @@ export default class SBOLGlyph2D extends Glyph2D {
     this.el.style.height = (this.node.height + sw) + 'px';
     this.el.style.backgroundColor = this.node.fill;
     this.el.style.border = sw ? `${sw}px solid ${this.node.stroke}` : 'none';
-    // the icon img tag
-    this.img.style.left = (this.node.width - kT.sbolIcon - 2 - kT.contextDotsW) + 'px';
-    this.img.style.maxWidth = kT.sbolIcon + 'px';
-    this.img.style.top = (this.node.height / 2 - kT.sbolIcon / 2) + 'px';
+    if (this.node.sbolName) {
+      // the icon img tag
+      this.img.style.left = (this.node.width - kT.sbolIcon - 2 - kT.contextDotsW) + 'px';
+      this.img.style.maxWidth = kT.sbolIcon + 'px';
+      this.img.style.top = (this.node.height / 2 - kT.sbolIcon / 2) + 'px';
 
-    const svgPath = symbols.find(symbol => symbol.id === this.node.sbolName).metadata.imageThick;
-    if (this.img.getAttribute('src') !== svgPath) {
-      this.img.setAttribute('src', svgPath);
+      const svgPath = symbols.find(symbol => symbol.id === this.node.sbolName).metadata.imageThick;
+      if (this.img.getAttribute('src') !== svgPath) {
+        this.img.setAttribute('src', svgPath);
+      }
+      this.img.style.display = 'block';
+    } else {
+      this.img.style.display = 'none';
     }
   }
 }

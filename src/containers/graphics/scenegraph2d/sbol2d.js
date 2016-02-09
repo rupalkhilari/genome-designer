@@ -28,6 +28,7 @@ export default class SBOL2D extends Node2D {
     return `SBOL = glyph:${this.glyph || 'NONE'} text:${this.text || ''}`;
   }
 
+
   /**
    * get the preferred width / height of this block as condensed or fully expanded
    * @return {[type]} [description]
@@ -37,7 +38,9 @@ export default class SBOL2D extends Node2D {
       return new Vector2D(kT.condensedText, kT.blockH);
     }
     // measure actual text plus some padding
-    return this.measureText(str).add(new Vector2D(kT.textPad * 3 + kT.sbolIcon + kT.contextDotsW, 0));
+    const sbolWidth = this.sbolName ? kT.sbolIcon + kT.textPad : 0;
+    const size = this.measureText(str).add(new Vector2D(kT.textPad * 2 + sbolWidth + kT.contextDotsW, 0));
+    return size;
   }
 
   update() {
