@@ -108,6 +108,18 @@ describe('REST', () => {
         });
       });
 
+      describe('versionExists()', () => {
+        before(done => {
+          //temp error
+        });
+
+        it('checks for commit if no file passed');
+        it('defaults to HEAD');
+        it('checks file at specific SHA');
+
+        it('TODO - CHECK ERROR HANDLING');
+      });
+
       describe('checkout()', () => {
         const fileName = 'rewritable';
         const filePath = path.resolve(pathRepo, fileName);
@@ -131,8 +143,8 @@ describe('REST', () => {
             .catch(done);
         });
 
-        it('checkout(path, sha, file) gets file at specific version', (done) => {
-          git.checkout(pathRepo, sha1, fileName)
+        it('checkout(path, file, sha) gets file at specific version', (done) => {
+          git.checkout(pathRepo, fileName, sha1)
             .then(fileContents => {
               expect(fileContents).to.equal(fileContents_A);
 
@@ -145,23 +157,7 @@ describe('REST', () => {
             .catch(done);
         });
 
-        //todo - irrelevant unless allow persist checking out a branch
-        it.skip('checkout(path) checks out head', (done) => {
-          git.checkout(pathRepo)
-            .then(resetToHead => {
-              exec(`cd ${pathRepo} && git rev-parse HEAD`, (err, output) => {
-                const [ headSha ] = output.split('\n');
-                expect(headSha).to.equal(sha2);
-                //todo - is this really testing this correctly?
-                done();
-              });
-            })
-            .catch(done);
-        });
-
-        //todo - irrelevant unless allow persist checking out a branch
-        it.skip('checkout(path, sha) checks out a version');
-
+        it('does not persist checkouts for subsequent calls');
       });
     });
   });

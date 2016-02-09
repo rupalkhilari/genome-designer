@@ -157,7 +157,6 @@ router.route('/:projectId/:blockId/sequence')
       });
   });
 
-
 router.route('/:projectId/commit/:sha?')
   .get((req, res) => {
     //pass the SHA you want, otherwise loads the head

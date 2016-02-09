@@ -1,4 +1,5 @@
 import nodegit from 'nodegit';
+import invariant from 'invariant';
 import path from 'path';
 import { errorVersioningSystem } from '../utils/errors';
 
@@ -95,7 +96,7 @@ export const log = (path) => {
         history.start();
       });
     })
-  .catch(err => errorVersioningSystem);
+    .catch(err => errorVersioningSystem);
 };
 
 export const versionExists = (path, sha = 'HEAD', file) => {
@@ -119,7 +120,9 @@ export const versionExists = (path, sha = 'HEAD', file) => {
     .catch(err => Promise.reject(false)); //todo - more explicit. test for specific exception
 };
 
-export const checkout = (path, sha = 'HEAD', file) => {
+export const checkout = (path, file, sha = 'HEAD') => {
+  invariant(file, 'file path is required');
+
   return nodegit.Repository.open(makePath(path))
     .then(repo => {
       if (!sha || sha === 'HEAD') {
@@ -128,11 +131,6 @@ export const checkout = (path, sha = 'HEAD', file) => {
       return repo.getCommit(sha);
     })
     .then(commit => {
-      //just verify a commit is available
-      if (!file) {
-        return Promise.resolve(sha);
-      }
-
       return commit.getEntry(file)
         .then(entry => {
           return entry.getBlob()

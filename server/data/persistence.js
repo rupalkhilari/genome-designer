@@ -41,7 +41,7 @@ const _projectRead = (projectId, sha) => {
     return fileRead(manifestPath);
   }
 
-  return git.checkout(projectPath, sha, relativePath);
+  return git.checkout(projectPath, relativePath, sha);
 };
 
 const _blockRead = (blockId, projectId, sha) => {
@@ -53,7 +53,7 @@ const _blockRead = (blockId, projectId, sha) => {
     return fileRead(manifestPath);
   }
 
-  return git.checkout(projectPath, sha, relativePath);
+  return git.checkout(projectPath, relativePath, sha);
 };
 
 const _projectSetup = (projectId) => {

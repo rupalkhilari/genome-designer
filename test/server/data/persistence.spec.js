@@ -340,9 +340,13 @@ describe('REST', () => {
         });
       });
 
-      //forthcoming
-      it('projectGet() accepts a version');
-      it('blockGet() accepts a version');
+      describe('versioning', () => {
+        it('projectExists() accepts a version');
+        it('projectGet() accepts a version');
+
+        it('blockExists() accepts a version');
+        it('blockGet() accepts a version');
+      });
     });
   });
 });
