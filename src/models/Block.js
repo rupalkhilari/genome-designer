@@ -86,16 +86,18 @@ export default class Block extends Instance {
   }
 
   /**
-   * //todo - return the updated block
    * @description Writes the sequence for a block
    * @param sequence
-   * @returns {Promise} Promise which resolves with ___ (todo)
+   * @returns {Promise} Promise which resolves with the udpated block
    */
   setSequence(sequence) {
     const sequenceLength = sequence.length;
 
     return writeSequence(this.id, sequence)
-      .then(updatedSequence => {
+      .then(() => {
+        const updatedSequence = {
+          length: sequenceLength,
+        };
         return this.merge({sequence: updatedSequence});
       });
   }
