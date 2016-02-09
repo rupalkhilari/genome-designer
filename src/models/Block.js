@@ -1,7 +1,7 @@
 import Instance from './Instance';
 import invariant from 'invariant';
 import color from '../utils/generators/color';
-import { saveBlock, readFile } from '../middleware/api';
+import { saveBlock, getSequence, writeSequence } from '../middleware/api';
 import AnnotationDefinition from '../schemas/Annotation';
 
 const createSequenceUrl = (blockId, projectId = 'block') => `${projectId}/${blockId}/sequence`;
@@ -72,14 +72,8 @@ export default class Block extends Instance {
     return this.mutate('rules.sbol', sbol);
   }
 
-  hasSequenceUrl() {
-    return (typeof this.sequence === 'object' && (typeof this.sequence.url === 'string') );
-  }
-
-  getSequenceUrl(forceNew) {
-    return ( forceNew || !this.hasSequenceUrl() ) ?
-      createSequenceUrl(this.id) :
-      this.sequence.url;
+  getSequenceUrl() {
+    return createSequenceUrl(this.id);
   }
 
   /**
@@ -88,27 +82,22 @@ export default class Block extends Instance {
    * @returns {Promise} Promise which resolves with the sequence value, or (resolves) with null if no sequence is associated.
    */
   getSequence(format = 'raw') {
-    //future - url + `?format=${format}`; --- need API support
-    const sequencePath = this.getSequenceUrl();
-
-    return !this.hasSequenceUrl() ?
-      Promise.resolve(null) :
-      readFile(sequencePath)
-        .then(resp => resp.text())
-        .then(result => {
-          return result;
-        });
+    return getSequence(this.id, format);
   }
 
-  //todo - should have method for setting sequence length
   /**
-   * @description Set the sequence URL of the block. Does not affect annotations.
-   * ONLY SET THE URL ONCE THE FILE IS WRITTEN SUCCESSFULLY
-   * @param url {String} URL of the sequence file. Should generate with block.getSequenceUrl.
-   * @returns block {Block} New block with the potentially-updated sequence file path
+   * //todo - return the updated block
+   * @description Writes the sequence for a block
+   * @param sequence
+   * @returns {Promise} Promise which resolves with ___ (todo)
    */
-  setSequenceUrl(url) {
-    return this.mutate('sequence.url', url);
+  setSequence(sequence) {
+    const sequenceLength = sequence.length;
+
+    return writeSequence(this.id, sequence)
+      .then(updatedSequence => {
+        return this.merge({sequence: updatedSequence});
+      });
   }
 
   annotate(annotation) {

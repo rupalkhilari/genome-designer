@@ -18,8 +18,6 @@ import * as persistence from '../../../server/data/persistence';
 describe('REST', () => {
   describe('Data', () => {
     describe('persistence', function persistenceTests() {
-      this.timeout(10000);
-
       describe('existence + reading', () => {
         const projectName = 'persistenceProject';
         const projectData = new Project({metadata: {name: projectName}});

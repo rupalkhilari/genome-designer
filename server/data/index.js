@@ -77,14 +77,18 @@ router.param('blockId', (req, res, next, id) => {
 
 /********** ROUTES ***********/
 
-// is this a hack? or super useful?!
+// slightly hack-ish
 // allow the route /block/<blockId> and find the projectId
-router.all((req, res, next) => {
+// not recommended e.g. for POST
+const blockDeterminatorMiddleware = (req, res, next) => {
   const { projectId, blockId } = req;
+
+  console.log('hit catcher', projectId, blockId);
 
   if (projectId === 'block' && blockId) {
     persistence.findProjectFromBlock(blockId)
       .then(projectId => {
+        console.log('foudn!');
         Object.assign(req, {projectId});
         next();
       })
@@ -97,14 +101,14 @@ router.all((req, res, next) => {
   } else {
     next();
   }
-});
+};
 
 // PUT - replace
 // POST - merge
 
-//todo - expecting sequence in POST json, update middleware
+//future - url + `?format=${format}`; --- need API support
 router.route('/:projectId/:blockId/sequence')
-  .all(textParser, (req, res, next) => {
+  .all(textParser, blockDeterminatorMiddleware, (req, res, next) => {
     const { projectId, blockId } = req;
 
     if (!projectId || !blockId) {
@@ -114,6 +118,8 @@ router.route('/:projectId/:blockId/sequence')
   })
   .get((req, res) => {
     const { projectId, blockId } = req;
+
+    console.log(projectId, blockId);
 
     persistence.sequenceGet(blockId, projectId)
       .then(sequence => {
@@ -178,7 +184,7 @@ router.route('/:projectId/commit/:sha?')
   });
 
 router.route('/:projectId/:blockId')
-  .all((req, res, next) => {
+  .all(blockDeterminatorMiddleware, (req, res, next) => {
     const { projectId, blockId } = req;
 
     if (!projectId || !blockId) {
