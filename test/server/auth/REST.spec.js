@@ -1,59 +1,78 @@
 import { expect } from 'chai';
 import request from 'supertest';
-import { set as dbSet } from '../../../server/deprecated/database';
-import { getSessionKey, login } from '../../../src/middleware/api';
+import { getSessionKey, login, user } from '../../../src/middleware/api';
 
 const devServer = require('../../../server/devServer');
 
-describe.skip('REST', () => {
+describe('REST', () => {
   describe('/login', () => {
     let server;
+    let sessionKey;
     const dummyUser = {
-      user: 'user',
-      password: 'password',
+      email: 'bio.nano.dev@autodesk.com',
+      password: 'HelpMe#1',
     };
-    const sessionkey = '123456';
-    const sessionKeyValue = {
-      user: dummyUser.user,
-      password: dummyUser.password,
-    };
-    beforeEach('server setup', () => {
-      server = devServer.listen();
-      return dbSet(sessionkey, sessionKeyValue);
+
+    before('server setup', (done) => {
+      // this is needed for the middleware functions and could cause conflicts with other tests
+      // recommend creating a global module to provide an app proxy to all tests using the web server from client side
+      // methods
+      server = devServer.listen(3000, 'localhost', function (err) {
+        if (err) {
+          console.log("server failure", err);
+          return done(err);
+        }
+        done();
+      });
     });
-    afterEach(() => {
+
+    after(() => {
       server.close();
     });
 
     it('should return a 200', (done) => {
-      request(server)
-        .get(`/login?user=${dummyUser.user}&password=${dummyUser.password}`)
+      request(devServer)
+        .post('/auth/login')
+        .send(dummyUser)
         .expect(200, done);
     });
 
-    it('login() function shouldnt error', (done) => {
-      login(dummyUser.user, dummyUser.password)
+    it('should login using client middleware login()', (done) => {
+      return login(dummyUser.email, dummyUser.password)
         .then(sessionkey => {
+          expect(sessionkey).to.be.not.null;
+          expect(typeof sessionkey).to.equal("string");
+          sessionKey = sessionkey;
           done();
+        })
+        .catch(function (e) {
+          done(e);
         });
     });
 
-    it('should return the session key', () => {
-      return login(dummyUser.user, dummyUser.password)
-        .then(sessionkey=> {
-          expect(typeof sessionkey).to.equal('string');
+    it('getSessionKey() should return the same session key as login()', (done) => {
+      var savedSessionKey = getSessionKey();
+      return login(dummyUser.email, dummyUser.password)
+        .then(sessionkey => {
+          expect(savedSessionKey).to.equal(sessionkey);
+          done();
+        })
+        .catch(function (e) {
+          done(e);
         });
     });
 
-    it('getSessionKey() should return the same session key as login()', () => {
-      return login(dummyUser.user, dummyUser.password)
-        .then(sessionkey=> {
-          expect(getSessionKey()).to.equal(sessionkey);
-        });
+    it('should fetch a user object with a session key', (done) => {
+      return user().then(user => {
+        expect(user).to.be.not.null;
+        expect(user.uuid).to.be.not.null;
+        expect(typeof user.uuid).to.be.equal("string");
+        done();
+      });
     });
 
-    it('[future] should return the session key in the database');
-    it('[future] should ensure user exists');
-    it('[future] should error for invalid users');
+    //it('[future] should return the session key in the database');
+    //it('[future] should ensure user exists');
+    //it('[future] should error for invalid users');
   });
 });

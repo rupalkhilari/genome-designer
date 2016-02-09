@@ -11,8 +11,6 @@ import importRouter from '../extensions/convert/import';
 import exportRouter from '../extensions/convert/export';
 import searchRouter from '../extensions/search/search';
 
-import { authRouter } from './utils/authentication';
-
 const DEFAULT_PORT = 3000;
 const port = parseInt(process.argv[2], 10) || process.env.PORT || DEFAULT_PORT;
 const hostname = '0.0.0.0';
@@ -37,7 +35,21 @@ app.use(require('webpack-hot-middleware')(compiler));
 // Register API middleware
 // ----------------------------------------------------
 
-app.use('/auth', authRouter);
+// Old Auth Routes - leaving this here to be used in open-source local dev mode?
+//import { authRouter } from './utils/authentication';
+//app.use('/auth', authRouter);
+
+// New Auth Implementation
+import { insertAuth } from 'bio-user-platform';
+// the auth routes are currently called from the client and expect JSON responses
+// disable all redirects
+var authConfig = {
+  logoutLanding: false,
+  loginLanding: false,
+  loginFailure: false,
+  apiEndPoint: process.env.API_END_POINT || "http://localhost:8080/api",
+};
+insertAuth(app, authConfig);
 
 // all these should require authentication middleware
 

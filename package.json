@@ -34,6 +34,7 @@
     "node": ">= 4.2.2"
   },
   "dependencies": {
+    "bio-user-platform": "git+https://git.autodesk.com:bionano/bio-user-platform.git#genome-designer",
     "bootstrap": "^3.3.6",
     "d3": "^3.5.12",
     "deep-freeze": "0.0.1",

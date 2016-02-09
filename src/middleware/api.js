@@ -34,7 +34,7 @@ export const getSessionKey = () => {
 const headersGet = () => ({
   method: 'GET',
   headers: {
-    sessionkey: sessionKey,
+    'Cookie': sessionKey,
   },
 });
 
@@ -42,7 +42,7 @@ const headersPost = (body, mimeType = 'application/json') => ({
   method: 'POST',
   headers: {
     'Content-Type': mimeType,
-    sessionkey: sessionKey,
+    'Cookie': sessionKey,
   },
   body,
 });
@@ -51,7 +51,7 @@ const headersPut = (body, mimeType = 'application/json') => ({
   method: 'PUT',
   headers: {
     'Content-Type': mimeType,
-    sessionkey: sessionKey,
+    'Cookie': sessionKey,
   },
   body,
 });
@@ -59,7 +59,7 @@ const headersPut = (body, mimeType = 'application/json') => ({
 const headersDelete = () => ({
   method: 'DELETE',
   headers: {
-    sessionkey: sessionKey,
+    'Cookie': sessionKey,
   },
 });
 
@@ -67,12 +67,51 @@ const headersDelete = () => ({
  Authentication API
  *************************/
 
+// login with email and password and set the sessionKey (cookie) for later use
 export const login = (user, password) => {
-  return fetch(serverRoot + `auth/login?user=${user}&password=${password}`, headersGet())
-    .then(resp => resp.json())
-    .then(json => {
-      sessionKey = json.sessionkey;
-      return sessionKey;
+  var body = {
+    email: user,
+    password: password,
+  };
+
+  var fetchOptions = {
+    method: 'POST',
+    body: JSON.stringify(body),
+    headers: new Headers({
+      'Content-Type': 'application/json'
+    }),
+  };
+
+  return fetch(serverRoot + `auth/login`, fetchOptions)
+    .then(resp => {
+      const cookie = resp.headers.getAll("set-cookie").join(';');
+      sessionKey = cookie;
+      return cookie;
+      // ignoring the user object that is passed as the response body
+    }).catch(function (e) {
+      console.log(e);
+      throw e;
+    });
+};
+
+// use established sessionKey to get the user object
+export const user = () => {
+  var headers = new Headers();
+  headers.set('Content-Type', 'application/json');
+  headers.set('Cookie', sessionKey);
+
+  var fetchOptions = {
+    method: 'GET',
+    headers: headers,
+    credentials: "same-origin"
+  };
+
+  return fetch(serverRoot + `auth/current-user`, fetchOptions)
+    .then(resp => {
+      return resp.json();
+    }).catch(function (e) {
+      console.log(e);
+      throw e;
     });
 };
 
