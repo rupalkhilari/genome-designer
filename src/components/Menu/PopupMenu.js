@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import ReactDOM from 'react';
+import ReactDOM from 'react-dom';
 
 import MenuItem from './MenuItem';
 import MenuSeparator from './MenuSeparator';

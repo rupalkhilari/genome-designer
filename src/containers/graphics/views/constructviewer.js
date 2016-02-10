@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import ReactDOM from 'react-dom';
 import SceneGraph2D from '../scenegraph2d/scenegraph2d';
 import Vector2D from '../geometry/vector2d';
 import Layout from './layout.js';
@@ -204,7 +205,7 @@ export class ConstructViewer extends Component {
    * @return {[type]} [description]
    */
   get dom() {
-    return React.findDOMNode(this);
+    return ReactDOM.findDOMNode(this);
   }
   /**
    * accessor that fetches the actual scene graph element within our DOM
