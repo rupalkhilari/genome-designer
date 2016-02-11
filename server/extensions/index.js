@@ -19,32 +19,8 @@ router.get('/manifest/:extension', (req, res) => {
   const { extension } = req.params;
 
   loadExtension(extension)
-  .then(manifest => {
-    res.json(manifest);
-  })
-  .catch(err => {
-    if (err === errorDoesNotExist) {
-      res.status(400).send(errorDoesNotExist);
-    }
-    res.status(500).err(err);
-  });
-});
-
-//for now, the client knows about all the extensions on bootstrap, and others are manually added to the client
-//however, the client needs to be able to download the script that actually comprises the extension, i.e. index.js
-//index.js is responsible for registering render() via registerExtension() on the client
-router.get('/load/:extension', (req, res) => {
-  const { extension } = req.params;
-
-  loadExtension(extension)
     .then(manifest => {
-      const filePath = getExtensionInternalPath(extension);
-      res.sendFile(filePath, (err) => {
-        if (err) {
-          res.status(err.status).end();
-        }
-        //sent successfully
-      });
+      res.json(manifest);
     })
     .catch(err => {
       if (err === errorDoesNotExist) {
@@ -53,5 +29,42 @@ router.get('/load/:extension', (req, res) => {
       res.status(500).err(err);
     });
 });
+
+if (process.env.NODE_ENV !== 'production') {
+  //make the whole extension available
+  router.get('/load/:extension/:filePath?', (req, res) => {
+    const { filePath = 'index.js', extension } = req.params;
+    const extensionFile = getExtensionInternalPath(extension, filePath);
+
+    res.sendFile(extensionFile, (err) => {
+      if (err) {
+        res.status(err.status).end();
+      }
+    });
+  });
+} else {
+  //only index.js files are available
+
+  router.get('/load/:extension/:filePath?', (req, res) => {
+    const { extension } = req.params;
+
+    loadExtension(extension)
+      .then(manifest => {
+        const filePath = getExtensionInternalPath(extension);
+        res.sendFile(filePath, (err) => {
+          if (err) {
+            res.status(err.status).end();
+          }
+          //sent successfully
+        });
+      })
+      .catch(err => {
+        if (err === errorDoesNotExist) {
+          res.status(400).send(errorDoesNotExist);
+        }
+        res.status(500).err(err);
+      });
+  });
+}
 
 export default router;

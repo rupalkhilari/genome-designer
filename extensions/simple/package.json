@@ -5,7 +5,7 @@
   "region": "sequenceDetail",
   "readable": "Simple",
   "scripts" : {
-    "build" : "npm install && webpack main.js index.js"
+    "build" : "npm install && webpack -d main.js index.js"
   },
   "devDependencies": {
     "json-loader": "^0.5.4"

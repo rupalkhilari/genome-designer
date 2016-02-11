@@ -33,7 +33,7 @@ export class ProjectDetail extends Component {
       this.toggle(true);
     } catch (err) {
       console.error('error loading / rendering extension!', manifest);
-      throw err;
+      console.error(err);
     }
   };
 

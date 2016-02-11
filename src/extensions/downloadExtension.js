@@ -16,7 +16,8 @@ export const downloadExtension = (name) => {
       resolve(false);
     }
 
-    const url = `/extensions/load/${name}`;
+    //we need index.js so that relative sourcemap paths will work properly
+    const url = `/extensions/load/${name}/index.js`;
     loadScript(url, (err, script) => {
       if (err) {
         reject(err);
