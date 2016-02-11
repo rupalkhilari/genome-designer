@@ -1,10 +1,10 @@
 var manifest = require('json!./package.json');
-var external = require('./externalFile.js');
 
 function render(container) {
   container.innerHTML = 'extension loaded!';
 
-  external.doBadThing();
+  //throw an error for debugging debugging
+  //require('./externalFile.js').doBadThing();
 
   var subscriber = window.gd.store.subscribe(function (state, lastAction) {
     var last = [];
@@ -18,8 +18,6 @@ function render(container) {
       last = current;
     }
   });
-
-
 }
 
 window.gd.registerExtension(manifest, render);

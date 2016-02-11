@@ -48,12 +48,12 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var manifest = __webpack_require__(/*! json!./package.json */ 1);
-	var external = __webpack_require__(/*! ./externalFile.js */ 2);
 	
 	function render(container) {
 	  container.innerHTML = 'extension loaded!';
 	
-	  external.doBadThing();
+	  //throw an error for debugging debugging
+	  //require('./externalFile.js').doBadThing();
 	
 	  var subscriber = window.gd.store.subscribe(function (state, lastAction) {
 	    var last = [];
@@ -67,8 +67,6 @@
 	      last = current;
 	    }
 	  });
-	
-	
 	}
 	
 	window.gd.registerExtension(manifest, render);
@@ -94,20 +92,6 @@
 			"json-loader": "^0.5.4"
 		}
 	};
-
-/***/ },
-/* 2 */
-/*!*************************!*\
-  !*** ./externalFile.js ***!
-  \*************************/
-/***/ function(module, exports) {
-
-	module.exports = {
-	  doBadThing: function doBadThing() {
-	    throw new Error('Oh nodes!');
-	  }
-	};
-
 
 /***/ }
 /******/ ]);
