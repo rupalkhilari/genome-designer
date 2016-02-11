@@ -89,7 +89,7 @@ export const login = (user, password) => {
       return cookie;
       // ignoring the user object that is passed as the response body
     }).catch(function (e) {
-      console.log(e);
+      console.log('fetch login error', e);
       throw e;
     });
 };
@@ -110,7 +110,7 @@ export const user = () => {
     .then(resp => {
       return resp.json();
     }).catch(function (e) {
-      console.log(e);
+      console.log('fetch user error', e);
       throw e;
     });
 };

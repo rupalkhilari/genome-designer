@@ -35,21 +35,28 @@ app.use(require('webpack-hot-middleware')(compiler));
 // Register API middleware
 // ----------------------------------------------------
 
-// Old Auth Routes - leaving this here to be used in open-source local dev mode?
-//import { authRouter } from './utils/authentication';
-//app.use('/auth', authRouter);
-
-// New Auth Implementation
-import { insertAuth } from 'bio-user-platform';
+// insert some form of user authentication
 // the auth routes are currently called from the client and expect JSON responses
-// disable all redirects
-var authConfig = {
-  logoutLanding: false,
-  loginLanding: false,
-  loginFailure: false,
-  apiEndPoint: process.env.API_END_POINT || "http://localhost:8080/api",
-};
-insertAuth(app, authConfig);
+if (process.env.BIO_NANO_AUTH) {
+  console.log("real user authentication enabled");
+  var initAuthMiddleware = require('bio-user-platform').initAuthMiddleware;
+
+  // TODO load a custom configuration here
+  // disable all redirects
+  var authConfig = {
+    logoutLanding: false,
+    loginLanding: false,
+    loginFailure: false,
+    apiEndPoint: process.env.API_END_POINT || "http://localhost:8080/api",
+  };
+  app.use(initAuthMiddleware(authConfig));
+} else {
+  app.use(require('cookie-parser')());
+  // import the mocked auth routes
+  app.use(require('./utils/local-auth').mockUser);
+  var authRouter = require('./utils/local-auth').router;
+  app.use('/auth', authRouter);
+}
 
 // all these should require authentication middleware
 

@@ -14,7 +14,9 @@
     "nightwatch": "./node_modules/nightwatch/bin/nightwatch",
     "postinstall": "./node_modules/selenium-standalone/bin/selenium-standalone install",
     "start-docker": "docker build -t genome-designer . && docker run --privileged -v /var/run/docker.sock:/run/docker.sock -i -p 3000:3000 -t genome-designer",
-    "create-ecoli-db": "python extensions/foundry/ecoli/generate_db.py jdon extensions/foundry/ecoli/ecoli.genes.json extensions/foundry/ecoli.json"
+    "create-ecoli-db": "python extensions/foundry/ecoli/generate_db.py jdon extensions/foundry/ecoli/ecoli.genes.json extensions/foundry/ecoli.json",
+    "auth": "./bin/server-auth.sh",
+    "auth-test": "COMMAND=\"mocha --compilers js:babel-register,css:test/css-null-compiler.js --require ./test/setup.js --timeout=10000 test/server/auth/REST.spec.js\" ./bin/server-auth.sh"
   },
   "repository": {
     "type": "git",
@@ -34,8 +36,8 @@
     "node": ">= 4.2.2"
   },
   "dependencies": {
-    "bio-user-platform": "git+https://git.autodesk.com:bionano/bio-user-platform.git#genome-designer",
     "bootstrap": "^3.3.6",
+    "cookie-parser": "^1.4.1",
     "d3": "^3.5.12",
     "deep-freeze": "0.0.1",
     "fast-csv": "^1.0.0",
