@@ -8,7 +8,7 @@ ADD . /app
 
 #setup node
 ADD package.json /app/package.json
-RUN npm update -g npm
+RUN npm install -g npm
 RUN cd /app && npm install
 
 EXPOSE 3000
