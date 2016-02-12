@@ -84,12 +84,9 @@ router.param('blockId', (req, res, next, id) => {
 const blockDeterminatorMiddleware = (req, res, next) => {
   const { projectId, blockId } = req;
 
-  console.log('hit catcher', projectId, blockId);
-
   if (projectId === 'block' && blockId) {
     findProjectFromBlock(blockId)
       .then(projectId => {
-        console.log('foudn!');
         Object.assign(req, {projectId});
         next();
       })
