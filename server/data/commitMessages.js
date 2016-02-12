@@ -3,6 +3,7 @@ const blockSuffix = '_block';
 
 export const SNAPSHOT = 'snapshot';
 export const PROMOTE = 'promote';
+
 export const CREATE = 'create';
 export const CREATE_BLOCK = CREATE + blockSuffix;
 export const CREATE_PROJECT = CREATE + projectSuffix;
@@ -10,6 +11,12 @@ export const CREATE_PROJECT = CREATE + projectSuffix;
 export const COMMIT = 'commit';
 export const COMMIT_PROJECT = COMMIT + projectSuffix;
 export const COMMIT_BLOCK = COMMIT + blockSuffix;
+
+export const DELETE = 'delete';
+export const DELETE_PROJECT = DELETE + projectSuffix;
+export const DELETE_BLOCK = DELETE + blockSuffix;
+
+export const SEQUENCE = 'sequence';
 
 const _createCommitMessage = (type, scope, notes, details) => {
   const header = `${type}(${scope})`;
@@ -59,10 +66,27 @@ export const messagePromoteBlock = (blockId, sha, notes) => {
 
 // CREATE
 
+export const messageCreateProject = (projectId) => {
+  return _createCommitMessage(CREATE_PROJECT, projectId);
+};
+
 export const messageCreateBlock = (blockId) => {
   return _createCommitMessage(CREATE_BLOCK, blockId);
 };
 
-export const messageCreateProject = (projectId) => {
-  return _createCommitMessage(CREATE_PROJECT, projectId);
+// DELETE
+
+export const messageDeleteProject = (projectId) => {
+  return _createCommitMessage(DELETE_PROJECT, projectId);
+};
+
+export const messageDeleteBlock = (blockId) => {
+  return _createCommitMessage(DELETE_BLOCK, blockId);
+};
+
+// SEQUENCE
+
+export const messageSequenceUpdate = (blockId, sequence = '') => {
+  const length = (!!sequence && typeof sequence === 'string') ? sequence.length : 0;
+  return _createCommitMessage(SEQUENCE, blockId, `length=${length}`);
 };

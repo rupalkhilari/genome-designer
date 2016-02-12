@@ -87,23 +87,6 @@ const _blockCommit = (blockId, projectId, message) => {
   return versioning.commit(projectPath, commitMessage);
 };
 
-//SEARCH
-
-export const findProjectFromBlock = (blockId) => {
-  return new Promise((resolve, reject) => {
-    const storagePath = filePaths.createStorageUrl();
-    exec(`cd ${storagePath} && find . -type d -name ${blockId}`, (err, output) => {
-      const lines = output.split('/n');
-      if (lines.length === 1) {
-        const [ idBlock, idProject ] = lines[0].split('/').reverse(); //eslint-ignore-line no-usused-vars
-        resolve(idProject);
-      } else {
-        reject(null);
-      }
-    });
-  });
-};
-
 //SAVE
 
 export const projectSave = (projectId, messageAddition) => {
@@ -221,7 +204,7 @@ export const blockWrite = (blockId, block, projectId) => {
   return blockExists(blockId, projectId)
     .catch(() => _blockSetup(blockId, projectId))
     .then(() => _blockWrite(blockId, idedBlock, projectId))
-    //.then(() => _blockCommit(blockId, projectId))
+    .then(() => _blockCommit(blockId, projectId))
     .then(() => idedBlock);
 };
 
@@ -243,14 +226,15 @@ export const projectDelete = (projectId) => {
       return directoryDelete(projectPath);
     })
     .then(() => projectId);
-  //no need to commit... its deleted
+    //no need to commit... its deleted
+    //todo - do we want to keep it around? Probably want to be able to reference it later...
 };
 
 export const blockDelete = (blockId, projectId) => {
   const blockPath = filePaths.createBlockPath(blockId, projectId);
   return blockExists(blockId, projectId)
     .then(() => directoryDelete(blockPath))
-    //.then(() => _projectCommit(projectId))
+    .then(() => _projectCommit(projectId, commitMessages.messageDeleteBlock(blockId)))
     .then(() => blockId);
 };
 
@@ -284,12 +268,12 @@ export const sequenceWrite = (blockId, sequence, projectId) => {
   const sequencePath = filePaths.createBlockSequencePath(blockId, projectId);
   return blockExists(blockId, projectId)
     .then(() => fileWrite(sequencePath, sequence, false))
-    //.then(() => _blockCommit(blockId, projectId))
+    .then(() => _blockCommit(blockId, projectId, commitMessages.messageSequenceUpdate(blockId, sequence)))
     .then(() => sequence);
 };
 
 export const sequenceDelete = (blockId, projectId) => {
   return sequenceExists(blockId, projectId)
     .then(path => fileDelete(path))
-  //.then(() => _blockCommit(blockId, projectId));
+    .then(() => _blockCommit(blockId, projectId, commitMessages.messageSequenceUpdate(blockId, false)));
 };

@@ -1,6 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import { errorNoIdProvided, errorInvalidModel, errorInvalidRoute, errorDoesNotExist } from './../utils/errors';
+import findProjectFromBlock from './findProjectFromBlock';
 import { authenticationMiddleware } from './../utils/authentication';
 import * as persistence from './persistence';
 
@@ -86,7 +87,7 @@ const blockDeterminatorMiddleware = (req, res, next) => {
   console.log('hit catcher', projectId, blockId);
 
   if (projectId === 'block' && blockId) {
-    persistence.findProjectFromBlock(blockId)
+    findProjectFromBlock(blockId)
       .then(projectId => {
         console.log('foudn!');
         Object.assign(req, {projectId});

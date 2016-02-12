@@ -12,6 +12,7 @@ import Block from '../../../src/models/Block';
 import * as filePaths from '../../../server/utils/filePaths';
 import * as git from '../../../server/data/versioning';
 import * as persistence from '../../../server/data/persistence';
+import findProjectFromBlock from '../../../server/data/findProjectFromBlock';
 
 //todo - can probably de-dupe many of these setup / before() clauses, they are pretty similar
 
@@ -90,7 +91,7 @@ describe('REST', () => {
         it('sequenceGet() rejects if no block');
 
         it('findProjectFromBlock() should find project ID given only a block', () => {
-          return persistence.findProjectFromBlock(blockId)
+          return findProjectFromBlock(blockId)
             .then(result => expect(result).to.equal(projectId));
         });
       });
