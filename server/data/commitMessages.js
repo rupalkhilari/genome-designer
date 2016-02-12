@@ -1,0 +1,68 @@
+const projectSuffix = '_project';
+const blockSuffix = '_block';
+
+export const SNAPSHOT = 'snapshot';
+export const PROMOTE = 'promote';
+export const CREATE = 'create';
+export const CREATE_BLOCK = CREATE + blockSuffix;
+export const CREATE_PROJECT = CREATE + projectSuffix;
+
+export const COMMIT = 'commit';
+export const COMMIT_PROJECT = COMMIT + projectSuffix;
+export const COMMIT_BLOCK = COMMIT + blockSuffix;
+
+const _createCommitMessage = (type, scope, notes, details) => {
+  const header = `${type}(${scope})`;
+  const body = !!notes ? `\n\n${notes}` : '';
+  const footer = !!details ? `\n\n${details}` : '';
+  return header + body + footer;
+};
+
+export const parseCommit = (commitMessage) => {
+  const regex = /(\w+)\((.+?)\)\[\n]*?(.+)[\n]*?(.+)/i;
+  const [ /* match */ , type, scope, notes, details ] = regex.exec(commitMessage);
+
+  //future - when using these, may want to break into type and subtype (e.g. create and commit)
+  return {
+    type,
+    scope,
+    notes,
+    details,
+  };
+};
+
+// DEFAULT COMMITS
+
+export const messageProject = (projectId, notes) => {
+  return _createCommitMessage(COMMIT_PROJECT, projectId, notes);
+};
+
+export const messageBlock = (blockId, notes) => {
+  return _createCommitMessage(COMMIT_BLOCK, blockId, notes);
+};
+
+// SNAPSHOT
+
+export const messageSnapshot = (projectId, notes) => {
+  return _createCommitMessage(SNAPSHOT, projectId, notes);
+};
+
+// PROMOTE
+
+export const messagePromoteProject = (projectId, sha, notes) => {
+  return _createCommitMessage(PROMOTE, projectId, notes, sha);
+};
+
+export const messagePromoteBlock = (blockId, sha, notes) => {
+  return _createCommitMessage(PROMOTE, blockId, notes, sha);
+};
+
+// CREATE
+
+export const messageCreateBlock = (blockId) => {
+  return _createCommitMessage(CREATE_BLOCK, blockId);
+};
+
+export const messageCreateProject = (projectId) => {
+  return _createCommitMessage(CREATE_PROJECT, projectId);
+};

@@ -1,15 +1,11 @@
 import { errorDoesNotExist, errorAlreadyExists, errorInvalidModel, errorVersioningSystem } from '../utils/errors';
 import { validateBlock, validateProject } from '../utils/validation';
 import * as filePaths from './../utils/filePaths';
-import * as git from './versioning';
-import { exec } from 'child_process';
+import * as versioning from './versioning';
+import * as commitMessages from './commitMessages';
 import path from 'path';
 import merge from 'lodash.merge';
 import { fileExists, fileRead, fileWrite, fileDelete, directoryMake, directoryDelete } from '../utils/fileSystem';
-
-const _projectCommitExists = (projectId, sha) => {
-  //todo
-};
 
 const _projectExists = (projectId, sha) => {
   const manifestPath = filePaths.createProjectManifestPath(projectId);
@@ -18,7 +14,7 @@ const _projectExists = (projectId, sha) => {
   if (!sha) {
     return fileExists(manifestPath);
   }
-  return git.versionExists(projectPath, sha);
+  return versioning.versionExists(projectPath, sha);
 };
 
 const _blockExists = (blockId, projectId, sha) => {
@@ -29,7 +25,7 @@ const _blockExists = (blockId, projectId, sha) => {
   if (!sha) {
     return fileExists(manifestPath);
   }
-  return git.versionExists(projectPath, sha, relativePath);
+  return versioning.versionExists(projectPath, sha, relativePath);
 };
 
 const _projectRead = (projectId, sha) => {
@@ -41,7 +37,7 @@ const _projectRead = (projectId, sha) => {
     return fileRead(manifestPath);
   }
 
-  return git.checkout(projectPath, relativePath, sha);
+  return versioning.checkout(projectPath, relativePath, sha);
 };
 
 const _blockRead = (blockId, projectId, sha) => {
@@ -53,13 +49,13 @@ const _blockRead = (blockId, projectId, sha) => {
     return fileRead(manifestPath);
   }
 
-  return git.checkout(projectPath, relativePath, sha);
+  return versioning.checkout(projectPath, relativePath, sha);
 };
 
 const _projectSetup = (projectId) => {
   const projectPath = filePaths.createProjectPath(projectId);
   return directoryMake(projectPath)
-    .then(() => git.initialize(projectPath));
+    .then(() => versioning.initialize(projectPath));
 };
 
 const _blockSetup = (blockId, projectId) => {
@@ -77,14 +73,18 @@ const _blockWrite = (blockId, block = {}, projectId) => {
   return fileWrite(manifestPath, block);
 };
 
-const _projectCommit = (projectId, message = 'project commit') => {
+//expects a well-formed commit message from commitMessages.js
+const _projectCommit = (projectId, message) => {
   const path = filePaths.createProjectPath(projectId);
-  return git.commit(path, message);
+  const commitMessage = !message ? commitMessages.messageProject(projectId) : message;
+  return versioning.commit(path, commitMessage);
 };
 
-const _blockCommit = (blockId, projectId) => {
+//expects a well-formed commit message from commitMessages.js
+const _blockCommit = (blockId, projectId, message) => {
   const projectPath = filePaths.createProjectPath(projectId);
-  return git.commit(projectPath, 'block commit - ' + blockId);
+  const commitMessage = !message ? commitMessages.messageBlock(blockId) : message;
+  return versioning.commit(projectPath, commitMessage);
 };
 
 //SEARCH
@@ -106,7 +106,8 @@ export const findProjectFromBlock = (blockId) => {
 
 //SAVE
 
-export const projectSave = (projectId, message) => {
+export const projectSave = (projectId, messageAddition) => {
+  const message = commitMessages.messageSnapshot(projectId, messageAddition);
   return _projectCommit(projectId, message);
 };
 
@@ -172,7 +173,7 @@ export const projectCreate = (projectId, project) => {
   return projectAssertNew(projectId)
     .then(() => _projectSetup(projectId))
     .then(() => _projectWrite(projectId, project))
-    //.then(() => _projectCommit(projectId))
+    .then(() => _projectCommit(projectId, commitMessages.messageCreateProject(projectId)))
     .then(() => project);
 };
 
@@ -180,7 +181,7 @@ export const blockCreate = (blockId, block, projectId) => {
   return blockAssertNew(blockId, projectId)
     .then(() => _blockSetup(blockId, projectId))
     .then(() => _blockWrite(blockId, block, projectId))
-    //.then(() => _blockCommit(blockId, projectId))
+    .then(() => _blockCommit(blockId, commitMessages.messageCreateBlock(blockId)))
     .then(() => block);
 };
 
@@ -197,7 +198,7 @@ export const projectWrite = (projectId, project) => {
   return projectExists(projectId)
     .catch(() => _projectSetup(projectId))
     .then(() => _projectWrite(projectId, idedProject))
-    //.then(() => _projectCommit(projectId))
+    .then(() => _projectCommit(projectId))
     .then(() => idedProject);
 };
 
