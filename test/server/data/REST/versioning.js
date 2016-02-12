@@ -9,7 +9,7 @@ import devServer from '../../../../server/devServer';
 
 describe('REST', () => {
   describe('Data', () => {
-    describe.only('Versioning', () => {
+    describe('Versioning', () => {
       let server;
       const initialFields = {initial: 'value'};
       const projectData = new Project(initialFields);
