@@ -10,7 +10,7 @@ import Project from '../../../src/models/Project';
 import Block from '../../../src/models/Block';
 
 import * as filePaths from '../../../server/utils/filePaths';
-import * as git from '../../../server/data/versioning';
+import * as versioning from '../../../server/data/versioning';
 import * as persistence from '../../../server/data/persistence';
 import findProjectFromBlock from '../../../server/data/findProjectFromBlock';
 
@@ -117,12 +117,12 @@ describe('REST', () => {
             .then(result => assert(result))
             .then(() => fileRead(projectManifestPath))
             .then(result => expect(result).to.eql(projectData))
-            .then(() => git.isInitialized(projectRepoPath))
+            .then(() => versioning.isInitialized(projectRepoPath))
             .then(result => assert(result === true));
         });
 
         it('projectCreate() creates a git commit with the initial version', () => {
-          return git.log(projectRepoPath)
+          return versioning.log(projectRepoPath)
             .then(result => {
               //initialize + first commit
               assert(result.length >= 2);
@@ -171,7 +171,7 @@ describe('REST', () => {
           return persistence.projectWrite(projectId, projectData)
             .then(() => directoryExists(projectRepoPath))
             .then(result => assert(result))
-            .then(() => git.isInitialized(projectRepoPath))
+            .then(() => versioning.isInitialized(projectRepoPath))
             .then(result => assert(result));
         });
 
@@ -249,10 +249,10 @@ describe('REST', () => {
         });
 
         it('blockWrite() makes the project commit', () => {
-          return git.log(projectRepoPath).then(firstResults => {
+          return versioning.log(projectRepoPath).then(firstResults => {
             const overwrite = blockData.merge(blockPatch);
             return persistence.blockWrite(blockId, overwrite, projectId)
-              .then(() => git.log(projectRepoPath))
+              .then(() => versioning.log(projectRepoPath))
               .then((secondResults) => {
                 expect(secondResults.length).to.equal(firstResults.length + 1);
               });
@@ -327,10 +327,10 @@ describe('REST', () => {
           return persistence.projectWrite(projectId, projectData)
             .then(() => persistence.blockWrite(blockId, blockData, projectId))
             .then(() => {
-              return git.log(projectRepoPath)
+              return versioning.log(projectRepoPath)
                 .then(firstResults => {
                   return persistence.blockDelete(blockId, projectId)
-                    .then(() => git.log(projectRepoPath))
+                    .then(() => versioning.log(projectRepoPath))
                     .then((secondResults) => {
                       expect(secondResults.length).to.equal(firstResults.length + 1);
                     });

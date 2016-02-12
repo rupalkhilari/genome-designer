@@ -66,7 +66,10 @@ export const commit = (path, message = 'commit message') => {
         });
     })
     .then((commitId) => '' + commitId) //just being explicit what is returned
-    .catch((err) => Promise.reject(errorVersioningSystem));
+    .catch((err) => {
+      console.error(err);
+      Promise.reject(errorVersioningSystem);
+    });
 };
 
 export const log = (path) => {

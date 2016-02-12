@@ -18,6 +18,8 @@ export const DELETE_BLOCK = DELETE + blockSuffix;
 
 export const SEQUENCE = 'sequence';
 
+//todo - this module requires some testing once we are actually parsing / filtering commit messages
+
 const _createCommitMessage = (type, scope, notes, details) => {
   const header = `${type}(${scope})`;
   const body = !!notes ? `\n\n${notes}` : '';

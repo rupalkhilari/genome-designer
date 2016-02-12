@@ -164,7 +164,7 @@ export const blockCreate = (blockId, block, projectId) => {
   return blockAssertNew(blockId, projectId)
     .then(() => _blockSetup(blockId, projectId))
     .then(() => _blockWrite(blockId, block, projectId))
-    .then(() => _blockCommit(blockId, commitMessages.messageCreateBlock(blockId)))
+    .then(() => _blockCommit(blockId, projectId, commitMessages.messageCreateBlock(blockId)))
     .then(() => block);
 };
 
