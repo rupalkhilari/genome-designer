@@ -215,8 +215,7 @@ export const blockMerge = (blockId, block, projectId) => {
     .then(oldBlock => {
       const merged = merge({}, oldBlock, block, {id: blockId});
       return blockWrite(blockId, merged, projectId);
-    })
-    .catch(err => console.error('error merging!', err));
+    });
 };
 
 //DELETE
