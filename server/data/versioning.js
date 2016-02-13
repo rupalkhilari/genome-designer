@@ -1,7 +1,7 @@
 import nodegit from 'nodegit';
 import invariant from 'invariant';
 import path from 'path';
-import { errorVersioningSystem } from '../utils/errors';
+import { errorVersioningSystem, errorDoesNotExist } from '../utils/errors';
 
 const makePath = (fsPath) => {
   return path.resolve(__dirname, fsPath);
@@ -72,7 +72,15 @@ export const commit = (path, message = 'commit message') => {
     });
 };
 
-export const log = (path) => {
+/**
+ * @description Git commit log of repository
+ * @param path
+ * @param filter {Function=} function to filter commits, passed commit as single argument. Default is `() => true`
+ * @returns {Promise} Array of commits, in reverse chronological order. Each is an object with fields described in function.
+ */
+export const log = (path, filter = () => true) => {
+  invariant(typeof filter === 'function', 'Must pass function to filter commits');
+
   return nodegit.Repository.open(makePath(path))
     .then(repo => {
       return repo.getMasterCommit();
@@ -83,8 +91,7 @@ export const log = (path) => {
         const commits = [];
 
         history.on('commit', (commit) => {
-          //todo - ability to filter to specific types of commits
-          commits.push(commit);
+          filter(commit) && commits.push(commit);
         });
 
         history.on('end', () => {
@@ -118,11 +125,25 @@ export const versionExists = (path, sha = 'HEAD', file) => {
 
       return commit.getEntry(file)
         .then(entry => Promise.resolve(true))
-        .catch(() => Promise.reject(false)); //todo - more explicit. test for specific exception
+        .catch((err) => Promise.reject(errorDoesNotExist)); //todo - more explicit check that this correct
     })
-    .catch(err => Promise.reject(false)); //todo - more explicit. test for specific exception
+    .catch(err => {
+      if (err.message.indexOf('Unable to parse OID') >= 0) {
+        return Promise.reject(errorDoesNotExist);
+      } else if (err.message.indexOf('no match for id') >= 0) {
+        return Promise.reject(errorDoesNotExist);
+      }
+      return Promise.reject(errorVersioningSystem);
+    });
 };
 
+/**
+ * @description Checks out file at a specific version
+ * @param path {String} path to repo
+ * @param file {String} path, relative to repo path
+ * @param sha Defaults to HEAD
+ * @returns {Promise<String>} String of file
+ */
 export const checkout = (path, file, sha = 'HEAD') => {
   invariant(file, 'file path is required');
 
