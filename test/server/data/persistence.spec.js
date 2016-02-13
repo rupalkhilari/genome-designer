@@ -339,12 +339,82 @@ describe('REST', () => {
         });
       });
 
-      describe('versioning', () => {
-        it('projectExists() accepts a version');
-        it('projectGet() accepts a version');
+      describe.only('versioning', () => {
+        let versionLog;
+        let versions;
+        const nonExistentSHA = '795c5751c8e0b0c9b5993ec81928cd89f7eefd27';
+        const projectData = new Project();
+        const projectId = projectData.id;
+        const projectRepoPath = filePaths.createProjectPath(projectId);
+        const newProject = projectData.merge({projectData: 'new stuff'});
 
-        it('blockExists() accepts a version');
-        it('blockGet() accepts a version');
+        const blockData = new Block();
+        const blockId = blockData.id;
+        const newBlock = blockData.merge({blockData: 'new data'});
+
+        before(() => {
+          return persistence.projectCreate(projectId, projectData)
+            .then(() => persistence.blockCreate(blockId, blockData, projectId))
+            .then(() => persistence.projectWrite(projectId, newProject))
+            .then(() => persistence.blockWrite(blockId, newBlock, projectId))
+            .then(() => versioning.log(projectRepoPath))
+            .then(log => {
+              versionLog = log;
+              versions = versionLog.map(commit => commit.sha);
+            });
+        });
+
+        it('projectExists() rejects if invalid version', () => {
+          return persistence.projectExists(projectId, 'invalidSHA')
+            .then(result => assert(false, 'should not resolve'))
+            .catch(err => assert(err === errorDoesNotExist, 'wrong error type -> function errored...'));
+        });
+
+        it('projectExists() rejects if version does not exist', () => {
+          return persistence.projectExists(projectId, nonExistentSHA)
+            .then(result => assert(false, 'should not resolve'))
+            .catch(err => assert(err === errorDoesNotExist, 'wrong error type -> function errored...'));
+        });
+
+        it('projectExists() resolves if version exists', () => {
+          return persistence.projectExists(projectId, versions[1]);
+        });
+
+        it('projectGet() rejects on if given invalid version', () => {
+          return persistence.projectGet(projectId, nonExistentSHA)
+            .then(result => assert(false, 'should not resolve'))
+            .catch(err => assert(err === errorDoesNotExist, 'wrong error type -> function errored...'));
+        });
+
+        it('projectGet() resolves to correct file when given version', () => {
+          return persistence.projectGet(projectId, versions[3])
+            .then(project => expect(project).to.eql(projectData));
+        });
+
+        it('projectGet() defaults to latest version', () => {
+          return persistence.projectGet(projectId)
+            .then(project => expect(project).to.eql(newProject));
+        });
+
+        it('blockExists() rejects on invalid version', () => {
+          return persistence.blockExists(blockId, projectId, nonExistentSHA)
+            .then(result => assert(false, 'should not resolve'))
+            .catch(err => assert(err === errorDoesNotExist, 'wrong error type -> function errored...'));
+        });
+
+        it('blockExists() accepts a version', () => {
+          return persistence.blockExists(blockId, projectId, versions[2]);
+        });
+
+        it('blockGet() accepts a version, gets version at that time', () => {
+          return persistence.blockGet(blockId, projectId, versions[2])
+            .then(block => expect(block).to.eql(blockData));
+        });
+
+        it('blockGet() defaults to latest version', () => {
+          return persistence.blockGet(blockId, projectId)
+            .then(block => expect(block).to.eql(newBlock));
+        });
       });
     });
   });

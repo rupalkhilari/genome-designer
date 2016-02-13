@@ -19,8 +19,6 @@ describe('REST', () => {
 
       const blockData = new Block();
       const blockId = blockData.id;
-      const blockPath = filePaths.createBlockPath(blockId, projectId);
-      const blockManifestPath = filePaths.createBlockManifestPath(blockId, projectId);
 
       before(() => {
         return persistence.projectCreate(projectId, projectData)

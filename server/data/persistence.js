@@ -37,7 +37,8 @@ const _projectRead = (projectId, sha) => {
     return fileRead(manifestPath);
   }
 
-  return versioning.checkout(projectPath, relativePath, sha);
+  return versioning.checkout(projectPath, relativePath, sha)
+    .then(string => JSON.parse(string));
 };
 
 const _blockRead = (blockId, projectId, sha) => {
@@ -49,7 +50,8 @@ const _blockRead = (blockId, projectId, sha) => {
     return fileRead(manifestPath);
   }
 
-  return versioning.checkout(projectPath, relativePath, sha);
+  return versioning.checkout(projectPath, relativePath, sha)
+    .then(string => JSON.parse(string));
 };
 
 const _projectSetup = (projectId) => {
@@ -132,7 +134,7 @@ export const projectGet = (projectId, sha) => {
   return projectExists(projectId, sha)
     .then(() => _projectRead(projectId, sha))
     .catch(err => {
-      if (err === errorDoesNotExist) {
+      if (err === errorDoesNotExist && !sha) {
         return Promise.resolve(null);
       }
       return Promise.reject(err);
@@ -226,8 +228,8 @@ export const projectDelete = (projectId) => {
       return directoryDelete(projectPath);
     })
     .then(() => projectId);
-    //no need to commit... its deleted
-    //todo - do we want to keep it around? Probably want to be able to reference it later...
+  //no need to commit... its deleted
+  //todo - do we want to keep it around? Probably want to be able to reference it later...
 };
 
 export const blockDelete = (blockId, projectId) => {
