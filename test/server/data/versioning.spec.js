@@ -4,14 +4,16 @@ import path from 'path';
 import rimraf from 'rimraf';
 import { exec } from 'child_process'; //todo - promise version
 import { createStorageUrl } from '../../../server/utils/filePaths';
-import * as git from '../../../server/data/versioning';
+import * as versioning from '../../../server/data/versioning';
 import { fileExists, fileRead, fileWrite, fileDelete, directoryMake, directoryDelete } from '../../../server/utils/fileSystem';
+import { errorDoesNotExist } from '../../../server/utils/errors';
 
 describe('REST', () => {
   describe('Data', () => {
-    describe('git', function gitTests() {
+    describe('versioning', function gitTests() {
       this.timeout(10000);
       const pathRepo = createStorageUrl('testrepo');
+      directoryMake(pathRepo);
 
       before((done) => {
         rimraf(pathRepo, done);
@@ -19,7 +21,7 @@ describe('REST', () => {
 
       describe('initialization', () => {
         it('initialize() should initialize a repo', (done) => {
-          git.initialize(pathRepo)
+          versioning.initialize(pathRepo)
             .then(() => {
               exec(`cd ${pathRepo} && git status`, (err, result) => {
                 assert(result.indexOf('On branch master') >= 0);
@@ -30,7 +32,7 @@ describe('REST', () => {
         });
 
         it('isInitialized() checks if initialized - true if is', () => {
-          return git.isInitialized(pathRepo)
+          return versioning.isInitialized(pathRepo)
             .then(result => {
               assert(result === true);
             });
@@ -38,7 +40,7 @@ describe('REST', () => {
 
         it('isInitialized() checks if initialized - false if not', () => {
           const uninitPath = 'uninitPath';
-          return git.isInitialized(uninitPath)
+          return versioning.isInitialized(uninitPath)
             .then(result => {
               assert(result === false);
             });
@@ -53,7 +55,7 @@ describe('REST', () => {
 
         before((done) => {
           fileWrite(file1Path, file1Contents, false)
-            .then(() => git.commit(pathRepo, commitMessage))
+            .then(() => versioning.commit(pathRepo, commitMessage))
             .then((sha) => {
               commitSha = sha;
               done();
@@ -84,7 +86,7 @@ describe('REST', () => {
 
         it('should handle removing a file', (done) => {
           fileDelete(file1Path)
-            .then(() => git.commit(pathRepo, 'file deleted'))
+            .then(() => versioning.commit(pathRepo, 'file deleted'))
             .then((sha) => {
               exec(`cd ${pathRepo} && git ls-files`, (err, output) => {
                 assert(output.indexOf(file1Path) < 0);
@@ -96,7 +98,7 @@ describe('REST', () => {
 
       describe('log()', () => {
         it('returns a list of commits with specific fields', (done) => {
-          git.log(pathRepo)
+          versioning.log(pathRepo)
             .then(commits => {
               assert(Array.isArray(commits));
               assert(commits.every(commit => {
@@ -109,15 +111,47 @@ describe('REST', () => {
       });
 
       describe('versionExists()', () => {
-        before(done => {
-          //temp error
+        const fileName = 'rewritable';
+        const filePath = path.resolve(pathRepo, fileName);
+        const fileContents_A = 'initial contents';
+        const fileContents_B = 'alternative internals';
+        const fileContents_C = 'final things';
+        let sha1;
+        let sha2;
+
+        before(() => {
+          return versioning.initialize(pathRepo)
+            .then(() => fileWrite(filePath, fileContents_A, false))
+            .then(() => versioning.commit(pathRepo, 'first commit'))
+            .then((sha) => {
+              sha1 = sha;
+              return fileWrite(filePath, fileContents_B);
+            })
+            .then(() => versioning.commit(pathRepo, 'second commit'))
+            .then((sha) => {
+              sha2 = sha;
+              return fileWrite(filePath, fileContents_C, false);
+            })
+            .then(() => versioning.commit(pathRepo, 'third commit'));
         });
 
-        it('checks for commit if no file passed');
-        it('defaults to HEAD');
-        it('checks file at specific SHA');
+        it('rejects on invalid commit', () => {
+          return versioning.versionExists(pathRepo, 'invalid')
+            .then(result => assert(false, 'should not resolve'))
+            .catch(err => assert(err === errorDoesNotExist, 'wrong error type -> function errored...'));
+        });
 
-        it('TODO - CHECK ERROR HANDLING');
+        it('checks for commit if no file passed', () => {
+          return versioning.versionExists(pathRepo, sha2);
+        });
+
+        it('checks file at specific SHA', () => {
+          return versioning.versionExists(pathRepo, sha2, fileName);
+        });
+
+        it('defaults to HEAD when pass a file', () => {
+          return versioning.versionExists(pathRepo, undefined, fileName);
+        });
       });
 
       describe('checkout()', () => {
@@ -130,26 +164,26 @@ describe('REST', () => {
 
         before(() => {
           return fileWrite(filePath, fileContents_A, false)
-            .then(() => git.commit(pathRepo, 'first commit'))
+            .then(() => versioning.commit(pathRepo, 'first commit'))
             .then((sha) => {
               sha1 = sha;
               return fileWrite(filePath, fileContents_B);
             })
-            .then(() => git.commit(pathRepo, 'second commit'))
+            .then(() => versioning.commit(pathRepo, 'second commit'))
             .then((sha) => {
               sha2 = sha;
             });
         });
 
         it('checkout(path, file, sha) gets file at specific version', () => {
-          return git.checkout(pathRepo, fileName, sha1)
+          return versioning.checkout(pathRepo, fileName, sha1)
             .then(fileContents => {
               expect(fileContents).to.equal(fileContents_A);
             });
         });
 
         it('does not persist checkouts for subsequent calls', () => {
-          return git.checkout(pathRepo, fileName, sha1)
+          return versioning.checkout(pathRepo, fileName, sha1)
             .then(fileContents => {
               exec(`cd ${pathRepo} && git rev-parse HEAD`, (err, output) => {
                 const [ headSha ] = output.split('\n');
