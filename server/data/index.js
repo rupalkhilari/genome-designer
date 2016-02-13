@@ -133,7 +133,7 @@ router.route('/:projectId/:blockId/sequence')
           //this means the block does not exist
           res.status(400).send(errorDoesNotExist);
         }
-        res.status(500).err(err);
+        res.status(500).send(err);
       });
   })
   .post((req, res) => {
@@ -157,9 +157,23 @@ router.route('/:projectId/:blockId/sequence')
         if (err === errorDoesNotExist) {
           res.status(400).send(errorInvalidModel);
         }
-        res.status(500).err(err);
+        res.status(500).send(err);
       });
   });
+
+router.get('/:projectId/:blockId/commit/:sha', (req, res) => {
+  const { blockId, projectId } = req;
+  const { sha } = req.params;
+
+  if (!sha) {
+    res.status(400).send('SHA is required');
+    return;
+  }
+
+  persistence.blockGet(blockId, projectId, sha)
+    .then(project => res.status(200).json(project))
+    .catch(err => res.status(500).send(err));
+});
 
 router.route('/:projectId/commit/:sha?')
   .get((req, res) => {
@@ -169,7 +183,7 @@ router.route('/:projectId/commit/:sha?')
 
     persistence.projectGet(projectId, sha)
       .then(project => res.status(200).json(project))
-      .catch(err => res.status(500).err(err));
+      .catch(err => res.status(500).send(err));
   })
   .post((req, res) => {
     //you can POST a field `message` for the commit, receieve the SHA
@@ -178,7 +192,7 @@ router.route('/:projectId/commit/:sha?')
 
     persistence.projectSave(projectId, message)
       .then(sha => res.status(200).send(sha))
-      .catch(err => res.status(500).err(err));
+      .catch(err => res.status(500).send(err));
   });
 
 router.route('/:projectId/:blockId')
@@ -200,7 +214,7 @@ router.route('/:projectId/:blockId')
         }
         res.json(result);
       })
-      .catch(err => res.status(500).err(err));
+      .catch(err => res.status(500).send(err));
   })
   .put((req, res) => {
     const { projectId, blockId } = req;
@@ -212,7 +226,7 @@ router.route('/:projectId/:blockId')
         if (err === errorInvalidModel) {
           res.status(400).send(errorInvalidModel);
         }
-        res.status(500).err(err);
+        res.status(500).send(err);
       });
   })
   .post((req, res) => {
@@ -237,7 +251,7 @@ router.route('/:projectId/:blockId')
 
     persistence.blockDelete(blockId, projectId)
       .then(() => res.status(200).send(blockId))
-      .catch(err => res.status(500).err(err));
+      .catch(err => res.status(500).send(err));
   });
 
 router.route('/:projectId')
@@ -252,7 +266,7 @@ router.route('/:projectId')
         }
         res.json(result);
       })
-      .catch(err => res.status(500).err(err));
+      .catch(err => res.status(500).send(err));
   })
   .put((req, res) => {
     const { projectId } = req;
@@ -264,7 +278,7 @@ router.route('/:projectId')
         if (err === errorInvalidModel) {
           res.status(400).send(errorInvalidModel);
         }
-        res.status(500).err(err);
+        res.status(500).send(err);
       });
   })
   .post((req, res) => {
