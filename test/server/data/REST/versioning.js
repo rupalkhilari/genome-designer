@@ -11,18 +11,28 @@ describe('REST', () => {
   describe('Data', () => {
     describe('Versioning', () => {
       let server;
-      const initialFields = {initial: 'value'};
-      const projectData = new Project(initialFields);
+      let versionLog;
+      let versions;
+      const projectData = new Project();
       const projectId = projectData.id;
       const projectRepoPath = filePaths.createProjectPath(projectId);
-      const projectManifestPath = filePaths.createProjectManifestPath(projectId);
+      const newProject = projectData.merge({projectData: 'new stuff'});
 
       const blockData = new Block();
       const blockId = blockData.id;
+      const newBlock = blockData.merge({blockData: 'new data'});
 
       before(() => {
         return persistence.projectCreate(projectId, projectData)
-          .then(() => persistence.blockCreate(blockId, blockData, projectId));
+          .then(() => persistence.blockCreate(blockId, blockData, projectId))
+          .then(() => persistence.projectWrite(projectId, newProject))
+          .then(() => persistence.blockWrite(blockId, newBlock, projectId))
+          .then(() => versioning.log(projectRepoPath))
+          .then(log => {
+            versionLog = log;
+            versions = versionLog.map(commit => commit.sha);
+            console.log(versions);
+          });
       });
 
       beforeEach('server setup', () => {
@@ -32,7 +42,7 @@ describe('REST', () => {
         server.close();
       });
 
-      it('POST project creates commit', (done) => {
+      it('POST /:projectId creates commit', (done) => {
         versioning.log(projectRepoPath).then(firstResults => {
           const url = `/data/${projectId}`;
           request(server)
@@ -55,7 +65,7 @@ describe('REST', () => {
         });
       });
 
-      it('POST block creates commit', (done) => {
+      it('POST /:projectId/:blockId creates commit', (done) => {
         versioning.log(projectRepoPath).then(firstResults => {
           const url = `/data/${projectId}/${blockId}`;
           request(server)
@@ -78,7 +88,7 @@ describe('REST', () => {
         });
       });
 
-      it('/commit/ route creates a snapshot, accepting a message', (done) => {
+      it('POST /:projectId/commit/ creates a snapshot, accepting a message', (done) => {
         const messageText = 'some message text';
         versioning.log(projectRepoPath).then(firstResults => {
           const url = `/data/${projectId}/commit`;
@@ -96,12 +106,42 @@ describe('REST', () => {
                 .then(secondResults => {
                   expect(secondResults.length).to.equal(firstResults.length + 1);
                   const lastCommit = secondResults.slice().shift();
-                  assert(lastCommit.message.indexOf(messageText) > 0, 'commit message text is missing...');
+                  assert(lastCommit.message.indexOf(messageText) >= 0, 'commit message text is missing...');
                   done();
                 })
                 .catch(done);
             });
         });
+      });
+
+      it('GET /:projectId/commit returns the git log');
+
+      it('GET /:projectId/commit/:sha returns the project at a certain point', (done) => {
+        const url = `/data/${projectId}/commit/${versions[3]}`;
+        request(server)
+          .get(url)
+          .expect(200)
+          .expect('Content-Type', /json/)
+          .end((err, result) => {
+            if (err) { done(err); }
+            expect(result.body).to.eql(projectData);
+            done();
+          });
+      });
+
+      it('GET /:projectId/:blockId/commit returns the git log');
+
+      it('GET /:projectId/:blockId/commit/:sha returns block at a certain point', (done) => {
+        const url = `/data/${projectId}/${blockId}/commit/${versions[2]}`;
+        request(server)
+          .get(url)
+          .expect(200)
+          .expect('Content-Type', /json/)
+          .end((err, result) => {
+            if (err) { done(err); }
+            expect(result.body).to.eql(blockData);
+            done();
+          });
       });
     });
   });

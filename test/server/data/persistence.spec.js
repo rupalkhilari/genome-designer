@@ -339,7 +339,7 @@ describe('REST', () => {
         });
       });
 
-      describe.only('versioning', () => {
+      describe('versioning', () => {
         let versionLog;
         let versions;
         const nonExistentSHA = '795c5751c8e0b0c9b5993ec81928cd89f7eefd27';

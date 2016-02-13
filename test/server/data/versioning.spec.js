@@ -128,8 +128,8 @@ describe('REST', () => {
         let sha1;
         let sha2;
 
-        before((done) => {
-          fileWrite(filePath, fileContents_A, false)
+        before(() => {
+          return fileWrite(filePath, fileContents_A, false)
             .then(() => git.commit(pathRepo, 'first commit'))
             .then((sha) => {
               sha1 = sha;
@@ -138,26 +138,25 @@ describe('REST', () => {
             .then(() => git.commit(pathRepo, 'second commit'))
             .then((sha) => {
               sha2 = sha;
-              done();
-            })
-            .catch(done);
+            });
         });
 
-        it('checkout(path, file, sha) gets file at specific version', (done) => {
-          git.checkout(pathRepo, fileName, sha1)
+        it('checkout(path, file, sha) gets file at specific version', () => {
+          return git.checkout(pathRepo, fileName, sha1)
             .then(fileContents => {
               expect(fileContents).to.equal(fileContents_A);
+            });
+        });
 
+        it('does not persist checkouts for subsequent calls', () => {
+          return git.checkout(pathRepo, fileName, sha1)
+            .then(fileContents => {
               exec(`cd ${pathRepo} && git rev-parse HEAD`, (err, output) => {
                 const [ headSha ] = output.split('\n');
                 expect(headSha).to.equal(sha2);
-                done();
               });
-            })
-            .catch(done);
+            });
         });
-
-        it('does not persist checkouts for subsequent calls');
       });
     });
   });

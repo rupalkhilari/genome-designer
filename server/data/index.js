@@ -161,29 +161,35 @@ router.route('/:projectId/:blockId/sequence')
       });
   });
 
-router.get('/:projectId/:blockId/commit/:sha', (req, res) => {
+//pass SHA you want, otherwise get commit log
+router.get('/:projectId/:blockId/commit/:sha?', (req, res) => {
   const { blockId, projectId } = req;
   const { sha } = req.params;
 
-  if (!sha) {
-    res.status(400).send('SHA is required');
-    return;
+  if (!!sha) {
+    persistence.blockGet(blockId, projectId, sha)
+      .then(project => res.status(200).json(project))
+      .catch(err => res.status(500).send(err));
+  } else {
+    //todo
+    res.status(501).send('not supported yet');
   }
-
-  persistence.blockGet(blockId, projectId, sha)
-    .then(project => res.status(200).json(project))
-    .catch(err => res.status(500).send(err));
 });
 
 router.route('/:projectId/commit/:sha?')
   .get((req, res) => {
-    //pass the SHA you want, otherwise loads the head
+    //pass the SHA you want, otherwise send commit log
     const { projectId } = req;
     const { sha } = req.params;
 
-    persistence.projectGet(projectId, sha)
-      .then(project => res.status(200).json(project))
-      .catch(err => res.status(500).send(err));
+    if (sha) {
+      persistence.projectGet(projectId, sha)
+        .then(project => res.status(200).json(project))
+        .catch(err => res.status(500).send(err));
+    } else {
+      //todo
+      res.status(501).send('not supported yet');
+    }
   })
   .post((req, res) => {
     //you can POST a field `message` for the commit, receieve the SHA
