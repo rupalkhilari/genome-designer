@@ -1,9 +1,9 @@
 genome-designer:
-  image: quay.io/autodesk_bionano/genome-designer-qa
+  image: quay.io/autodesk_bionano/genomedesigner_genome-designer
   links:
     - redis
   ports:
-    - "80:3000"
+    - "3000:3000"
     - "6379:6379"
   volumes:
     - /var/run/docker.sock:/var/run/docker.sock

@@ -33,7 +33,8 @@
     "webpack": "*"
   },
   "engines": {
-    "node": ">= 4.2.2"
+    "node": ">= 4.2.2",
+    "npm": ">= 3.7.1"
   },
   "dependencies": {
     "bootstrap": "^3.3.6",

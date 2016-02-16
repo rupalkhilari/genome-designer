@@ -1,29 +1,63 @@
-import { errorDoesNotExist, errorAlreadyExists, errorInvalidModel } from '../utils/errors';
+import { errorDoesNotExist, errorAlreadyExists, errorInvalidModel, errorVersioningSystem } from '../utils/errors';
 import { validateBlock, validateProject } from '../utils/validation';
 import * as filePaths from './../utils/filePaths';
-import * as git from './versioning';
-import { exec } from 'child_process';
+import * as versioning from './versioning';
+import * as commitMessages from './commitMessages';
+import path from 'path';
 import merge from 'lodash.merge';
 import { fileExists, fileRead, fileWrite, fileDelete, directoryMake, directoryDelete } from '../utils/fileSystem';
 
-//todo - more consistent validation
+const _projectExists = (projectId, sha) => {
+  const manifestPath = filePaths.createProjectManifestPath(projectId);
+  const projectPath = filePaths.createProjectPath(projectId);
 
-//todo - support reading a certain version (passing a SHA)
-
-const _projectRead = (projectId) => {
-  const path = filePaths.createProjectManifestPath(projectId);
-  return fileRead(path);
+  if (!sha) {
+    return fileExists(manifestPath);
+  }
+  return versioning.versionExists(projectPath, sha);
 };
 
-const _blockRead = (blockId, projectId) => {
-  const path = filePaths.createBlockManifestPath(blockId, projectId);
-  return fileRead(path);
+const _blockExists = (blockId, projectId, sha) => {
+  const manifestPath = filePaths.createBlockManifestPath(blockId, projectId);
+  const projectPath = filePaths.createProjectPath(projectId);
+  const relativePath = path.relative(projectPath, manifestPath);
+
+  if (!sha) {
+    return fileExists(manifestPath);
+  }
+  return versioning.versionExists(projectPath, sha, relativePath);
+};
+
+const _projectRead = (projectId, sha) => {
+  const manifestPath = filePaths.createProjectManifestPath(projectId);
+  const projectPath = filePaths.createProjectPath(projectId);
+  const relativePath = path.relative(projectPath, manifestPath);
+
+  if (!sha) {
+    return fileRead(manifestPath);
+  }
+
+  return versioning.checkout(projectPath, relativePath, sha)
+    .then(string => JSON.parse(string));
+};
+
+const _blockRead = (blockId, projectId, sha) => {
+  const manifestPath = filePaths.createBlockManifestPath(blockId, projectId);
+  const projectPath = filePaths.createProjectPath(projectId);
+  const relativePath = path.relative(projectPath, manifestPath);
+
+  if (!sha) {
+    return fileRead(manifestPath);
+  }
+
+  return versioning.checkout(projectPath, relativePath, sha)
+    .then(string => JSON.parse(string));
 };
 
 const _projectSetup = (projectId) => {
   const projectPath = filePaths.createProjectPath(projectId);
   return directoryMake(projectPath)
-    .then(() => git.initialize(projectPath));
+    .then(() => versioning.initialize(projectPath));
 };
 
 const _blockSetup = (blockId, projectId) => {
@@ -41,44 +75,35 @@ const _blockWrite = (blockId, block = {}, projectId) => {
   return fileWrite(manifestPath, block);
 };
 
-//todo - specific git commit messages
-const _projectCommit = (projectId) => {
+//expects a well-formed commit message from commitMessages.js
+const _projectCommit = (projectId, message) => {
   const path = filePaths.createProjectPath(projectId);
-  return git.commit(path, 'project commit');
+  const commitMessage = !message ? commitMessages.messageProject(projectId) : message;
+  return versioning.commit(path, commitMessage);
 };
 
-const _blockCommit = (blockId, projectId) => {
+//expects a well-formed commit message from commitMessages.js
+const _blockCommit = (blockId, projectId, message) => {
   const projectPath = filePaths.createProjectPath(projectId);
-  return git.commit(projectPath, 'block commit - ' + blockId);
+  const commitMessage = !message ? commitMessages.messageBlock(blockId) : message;
+  return versioning.commit(projectPath, commitMessage);
 };
 
-//SEARCH
+//SAVE
 
-export const findProjectFromBlock = (blockId) => {
-  return new Promise((resolve, reject) => {
-    const storagePath = filePaths.createStorageUrl();
-    exec(`cd ${storagePath} && find . -type d -name ${blockId}`, (err, output) => {
-      const lines = output.split('/n');
-      if (lines.length === 1) {
-        const [ idBlock, idProject ] = lines[0].split('/').reverse(); //eslint-ignore-line no-usused-vars
-        resolve(idProject);
-      } else {
-        reject(null);
-      }
-    });
-  });
+export const projectSave = (projectId, messageAddition) => {
+  const message = commitMessages.messageSnapshot(projectId, messageAddition);
+  return _projectCommit(projectId, message);
 };
 
 //EXISTS
 
-export const projectExists = (projectId) => {
-  const path = filePaths.createProjectManifestPath(projectId);
-  return fileExists(path);
+export const projectExists = (projectId, sha) => {
+  return _projectExists(projectId, sha);
 };
 
-export const blockExists = (blockId, projectId) => {
-  const path = filePaths.createBlockManifestPath(blockId, projectId);
-  return fileExists(path);
+export const blockExists = (blockId, projectId, sha) => {
+  return _blockExists(blockId, projectId, sha);
 };
 
 const projectAssertNew = (projectId) => {
@@ -105,20 +130,20 @@ const blockAssertNew = (blockId, projectId) => {
 
 //GET
 
-export const projectGet = (projectId) => {
-  return projectExists(projectId)
-    .then(() => _projectRead(projectId))
+export const projectGet = (projectId, sha) => {
+  return projectExists(projectId, sha)
+    .then(() => _projectRead(projectId, sha))
     .catch(err => {
-      if (err === errorDoesNotExist) {
+      if (err === errorDoesNotExist && !sha) {
         return Promise.resolve(null);
       }
       return Promise.reject(err);
     });
 };
 
-export const blockGet = (blockId, projectId) => {
-  return blockExists(blockId, projectId)
-    .then(() => _blockRead(blockId, projectId))
+export const blockGet = (blockId, projectId, sha) => {
+  return blockExists(blockId, projectId, sha)
+    .then(() => _blockRead(blockId, projectId, sha))
     .catch(err => {
       if (err === errorDoesNotExist) {
         return Promise.resolve(null);
@@ -133,7 +158,7 @@ export const projectCreate = (projectId, project) => {
   return projectAssertNew(projectId)
     .then(() => _projectSetup(projectId))
     .then(() => _projectWrite(projectId, project))
-    .then(() => _projectCommit(projectId))
+    .then(() => _projectCommit(projectId, commitMessages.messageCreateProject(projectId)))
     .then(() => project);
 };
 
@@ -141,7 +166,7 @@ export const blockCreate = (blockId, block, projectId) => {
   return blockAssertNew(blockId, projectId)
     .then(() => _blockSetup(blockId, projectId))
     .then(() => _blockWrite(blockId, block, projectId))
-    .then(() => _blockCommit(blockId, projectId))
+    .then(() => _blockCommit(blockId, projectId, commitMessages.messageCreateBlock(blockId)))
     .then(() => block);
 };
 
@@ -190,8 +215,7 @@ export const blockMerge = (blockId, block, projectId) => {
     .then(oldBlock => {
       const merged = merge({}, oldBlock, block, {id: blockId});
       return blockWrite(blockId, merged, projectId);
-    })
-    .catch(err => console.error('error merging!', err));
+    });
 };
 
 //DELETE
@@ -204,13 +228,14 @@ export const projectDelete = (projectId) => {
     })
     .then(() => projectId);
   //no need to commit... its deleted
+  //todo - do we want to keep it around? Probably want to be able to reference it later...
 };
 
 export const blockDelete = (blockId, projectId) => {
   const blockPath = filePaths.createBlockPath(blockId, projectId);
   return blockExists(blockId, projectId)
     .then(() => directoryDelete(blockPath))
-    .then(() => _projectCommit(projectId))
+    .then(() => _projectCommit(projectId, commitMessages.messageDeleteBlock(blockId)))
     .then(() => blockId);
 };
 
@@ -244,12 +269,12 @@ export const sequenceWrite = (blockId, sequence, projectId) => {
   const sequencePath = filePaths.createBlockSequencePath(blockId, projectId);
   return blockExists(blockId, projectId)
     .then(() => fileWrite(sequencePath, sequence, false))
-    .then(() => _blockCommit(blockId, projectId))
+    .then(() => _blockCommit(blockId, projectId, commitMessages.messageSequenceUpdate(blockId, sequence)))
     .then(() => sequence);
 };
 
 export const sequenceDelete = (blockId, projectId) => {
   return sequenceExists(blockId, projectId)
     .then(path => fileDelete(path))
-    .then(() => _blockCommit(blockId, projectId));
+    .then(() => _blockCommit(blockId, projectId, commitMessages.messageSequenceUpdate(blockId, false)));
 };

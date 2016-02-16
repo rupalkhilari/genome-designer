@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import ReactDOM from 'react-dom';
 import DnD from '../../containers/graphics/dnd/dnd';
 import MouseTrap from '../../containers/graphics/mousetrap';
 
@@ -16,7 +17,7 @@ export default class InventoryItem extends Component {
   };
 
   componentDidMount() {
-    const dom = React.findDOMNode(this);
+    const dom = ReactDOM.findDOMNode(this);
     this.mouseTrap = new MouseTrap({
       element: dom,
       mouseDrag: this.mouseDrag.bind(this),

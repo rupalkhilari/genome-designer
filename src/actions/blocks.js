@@ -232,20 +232,15 @@ export const blockGetSequence = (blockId, format) => {
 };
 
 //Promise
+//todo - server needs to return the block
 //future - validate
 //future - trigger history actions
 export const blockSetSequence = (blockId, sequence) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
-    // If we are editing the sequence, or sequence doesn't exist, we want to set the sequence for the child block, not change the sequence of the parent part.
-    // When setting, it doesn't really matter, we just always want to set via filename which matches this block.
-    const sequenceUrl = oldBlock.getSequenceUrl(true);
-    const sequenceLength = sequence.length;
 
-    return writeFile(sequenceUrl, sequence)
-      .then(() => {
-        const withUrl = oldBlock.setSequenceUrl(sequenceUrl);
-        const block = withUrl.mutate('sequence.length', sequenceLength);
+    return oldBlock.setSequence(sequence)
+      .then(block => {
         dispatch({
           type: ActionTypes.BLOCK_SET_SEQUENCE,
           block,

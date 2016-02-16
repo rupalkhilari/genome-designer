@@ -34,6 +34,7 @@ describe('Model', () => {
       });
     });
 
+    //todo - refactor this whole suite, to reflect dynamic accessing sequence URL
     describe('Sequence', () => {
       const withoutSequence = new Block();
       const sequence = 'acgtacgt';
@@ -51,11 +52,6 @@ describe('Model', () => {
 
         const seqUrl = withSequence.getSequenceUrl();
         expect(seqUrl.indexOf(sequenceUrl) >= 0);
-      });
-
-      it('hasSequenceUrl() checks for sequence URL', () => {
-        expect(withoutSequence.hasSequenceUrl()).to.equal(false);
-        expect(withSequence.hasSequenceUrl()).to.equal(true);
       });
 
       it('getSequence() returns promise -> null when there is no sequence', (done) => {
