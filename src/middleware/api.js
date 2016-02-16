@@ -156,27 +156,20 @@ export const snapshotProject = (project) => {
  *************************/
 
 //future - support format
-const createSequenceUrl = (blockId, projectId = 'block', format) => dataApiPath(`${projectId}/${blockId}/sequence`);
+const createSequenceUrl = (md5, blockId, format) => dataApiPath(`sequence/${md5}` + (!!blockId ? `/${blockId}` : ''));
 
-export const getSequence = (blockId, format) => {
-  const url = createSequenceUrl(blockId, undefined, format);
+export const getSequence = (md5, format) => {
+  const url = createSequenceUrl(md5, undefined, format);
 
   return fetch(url, headersGet())
     .then((resp) => resp.text());
 };
 
-export const writeSequence = (blockId, sequence) => {
-  const url = createSequenceUrl(blockId);
+export const writeSequence = (md5, sequence, blockId) => {
+  const url = createSequenceUrl(md5, blockId);
   const stringified = JSON.stringify({sequence});
 
   return fetch(url, headersPost(stringified))
-    .then(resp => resp.json());
-};
-
-export const deleteSeqeuence = (blockId) => {
-  const url = createSequenceUrl(blockId);
-
-  return fetch(url, headersDelete())
     .then(resp => resp.json());
 };
 
