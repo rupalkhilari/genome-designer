@@ -156,17 +156,17 @@ export const snapshotProject = (project) => {
  *************************/
 
 //future - support format
-const createSequenceUrl = (md5, blockId, format) => dataApiPath(`sequence/${md5}` + (!!blockId ? `/${blockId}` : ''));
+const getSequenceUrl = (md5, blockId, format) => dataApiPath(`sequence/${md5}` + (!!blockId ? `/${blockId}` : ''));
 
 export const getSequence = (md5, format) => {
-  const url = createSequenceUrl(md5, undefined, format);
+  const url = getSequenceUrl(md5, undefined, format);
 
   return fetch(url, headersGet())
     .then((resp) => resp.text());
 };
 
 export const writeSequence = (md5, sequence, blockId) => {
-  const url = createSequenceUrl(md5, blockId);
+  const url = getSequenceUrl(md5, blockId);
   const stringified = JSON.stringify({sequence});
 
   return fetch(url, headersPost(stringified))

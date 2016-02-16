@@ -45,15 +45,6 @@ describe('Model', () => {
         return writeFile(sequenceUrl, sequence);
       });
 
-      it('getSequenceUrl() opts for local sequence url over id', () => {
-        const { id } = withoutSequence;
-        const idUrl = withoutSequence.getSequenceUrl();
-        expect(idUrl.indexOf(id) >= 0);
-
-        const seqUrl = withSequence.getSequenceUrl();
-        expect(seqUrl.indexOf(sequenceUrl) >= 0);
-      });
-
       it('getSequence() returns promise -> null when there is no sequence', (done) => {
         return withoutSequence.getSequence()
           .then((result) => {

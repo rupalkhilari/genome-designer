@@ -2,11 +2,11 @@ import Instance from './Instance';
 import invariant from 'invariant';
 import color from '../utils/generators/color';
 import BlockDefinition from '../schemas/Block';
-import { saveBlock, getSequence, writeSequence } from '../middleware/api';
+import { saveBlock, getSequenceUrl, getSequence, writeSequence } from '../middleware/api';
 import AnnotationDefinition from '../schemas/Annotation';
 import md5 from 'md5';
 
-const createSequenceUrl = (blockId, projectId = 'block') => `${projectId}/${blockId}/sequence`;
+const createSequenceUrl = (blockId, projectId = 'block') => `sequence`;
 
 export default class Block extends Instance {
   constructor(input) {
@@ -58,10 +58,6 @@ export default class Block extends Instance {
 
   setSbol(sbol) {
     return this.mutate('rules.sbol', sbol);
-  }
-
-  getSequenceUrl() {
-    return createSequenceUrl(this.id);
   }
 
   /**
