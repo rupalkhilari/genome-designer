@@ -22,6 +22,7 @@ export default class Layout {
     Object.assign(this, {
       layoutAlgorithm: kT.layoutWrap,
       baseColor: 'white',
+      showHeader: true,
     }, options);
 
     // prep data structures for layout
@@ -130,6 +131,15 @@ export default class Layout {
   }
 
   /**
+   * return true if the given block has children
+   */
+  hasChildren(blockId) {
+    const block = this.blocks[blockId];
+    invariant(block, 'expect to be able to find the block');
+    return block.components && block.components.length;
+  }
+
+  /**
    * return the part ID or if metadata is available use the name property if available.
    * If the part is an SBOL symbol then use the symbol name preferentially
    */
@@ -141,12 +151,13 @@ export default class Layout {
    * @return {[type]} [description]
    */
   bannerFactory() {
-    if (!this.banner) {
+    if (this.showHeader && !this.banner) {
       this.banner = new Node2D({
         sg: this.sceneGraph,
         fill: this.baseColor,
         stroke: this.baseColor,
         glyph: 'construct-banner',
+        bounds: new Box2D(0, 0, this.sceneGraph.availableWidth, kT.bannerHeight),
       });
       this.sceneGraph.root.appendChild(this.banner);
     }
@@ -156,12 +167,22 @@ export default class Layout {
    * @param  {[type]} part [description]
    * @return {[type]}   [description]
    */
-  titleFactory(part) {
-    if (!this.titleNode) {
-      this.titleNode = new Node2D(Object.assign({
-        sg: this.sceneGraph,
-      }, kT.titleAppearance));
-      this.sceneGraph.root.appendChild(this.titleNode);
+  titleFactory() {
+    if (this.showHeader) {
+      if (!this.titleNode) {
+        this.titleNode = new Node2D(Object.assign({
+          sg: this.sceneGraph,
+          bounds: new Box2D(kT.insetX, kT.bannerHeight, this.sceneGraph.availableWidth, kT.titleH),
+        }, kT.titleAppearance));
+        this.sceneGraph.root.appendChild(this.titleNode);
+      }
+
+      // update title to current position and text
+      const isSelectedConstruct = this.construct.id === this.currentConstructId;
+      this.titleNode.set({
+        text: this.construct.metadata.name || this.construct.id,
+        color: isSelectedConstruct ? 'white' : this.baseColor,
+      });
     }
   }
   /**
@@ -295,31 +316,22 @@ export default class Layout {
   layout(layoutOptions) {
     // shortcut
     const ct = this.construct;
-    // construct the banner
+    // construct the banner if required
     this.bannerFactory();
-    this.banner.set({
-      bounds: new Box2D(0, 0, this.sceneGraph.availableWidth, kT.bannerHeight),
-    });
-    // top left of our area to render in
-    const xs = kT.insetX;
-    const ys = kT.insetY;
+    // create and update title
+    this.titleFactory();
     // maximum x position
     const mx = layoutOptions.xlimit;
     // reset row factory
     this.resetRows();
-    // create title as neccessary and position
-    this.titleFactory(ct);
-    // update title to current position and text
-    const isSelectedConstruct = this.construct.id === this.currentConstructId;
-    this.titleNode.set({
-      bounds: new Box2D(xs, ys, this.sceneGraph.availableWidth, kT.titleH),
-      text: ct.metadata.name || ct.id,
-      color: isSelectedConstruct ? 'white' : this.baseColor,
-    });
     // layout all the various components, constructing elements as required
     // and wrapping when a row is complete
-    let xp = xs + kT.rowBarW;
-    let yp = ys + kT.titleH + kT.rowBarH;
+    let xp = kT.insetX + kT.rowBarW;
+    const startY = this.showHeader ? kT.titleH + kT.rowBarH + kT.bannerHeight : kT.rowBarH;
+    let yp = startY;
+
+    // extra space required to accomodate nested constructs
+    let extraY = 0;
 
     // used to determine when we need a new row
     let row = null;
@@ -327,11 +339,11 @@ export default class Layout {
     ct.components.forEach(part => {
       // create a row bar as neccessary
       if (!row) {
-        row = this.rowFactory(new Box2D(xs, yp - kT.rowBarH, 0, kT.rowBarH));
+        row = this.rowFactory(new Box2D(kT.insetX, yp - kT.rowBarH, 0, kT.rowBarH));
       }
       // resize row bar to current row width
-      const rw = xp - xs;
-      row.set({translateX: xs + rw / 2, width: rw});
+      const rw = xp - kT.insetX;
+      row.set({translateX: kT.insetX + rw / 2, width: rw});
 
       // create the node representing the part
       this.partFactory(part, kT.partAppearance);
@@ -346,9 +358,10 @@ export default class Layout {
 
       // if position would exceed x limit then wrap
       if (xp + td.x > mx) {
-        xp = xs + kT.rowBarW;
-        yp += kT.rowH;
-        row = this.rowFactory(new Box2D(xs, yp - kT.rowBarH, 0, kT.rowBarH));
+        xp = kT.insetX + kT.rowBarW;
+        yp += kT.rowH + extraY;
+        row = this.rowFactory(new Box2D(kT.insetX, yp - kT.rowBarH, 0, kT.rowBarH));
+        extraY = 0;
       }
 
       // update part, including its text and color
@@ -360,12 +373,17 @@ export default class Layout {
 
       // set next part position
       xp += td.x;
+
+      // if the part had nested constructs then allow extra space
+      if (this.hasChildren(part)) {
+        extraY = 100;
+      }
     });
 
     // ensure final row has the final row width
     if (row) {
-      const rw = xp - xs;
-      row.set({translateX: xs + rw / 2, width: rw});
+      const rw = xp - kT.insetX;
+      row.set({translateX: kT.insetX + rw / 2, width: rw});
     }
 
     // cleanup any dangling rows
@@ -375,9 +393,8 @@ export default class Layout {
     this.verticalFactory();
 
     // position and size vertical bar
-    const vh = (this.rows.length - 1) * kT.rowH + kT.blockH;
     this.vertical.set({
-      bounds: new Box2D(xs, ys + kT.titleH + kT.rowBarH, kT.rowBarW, vh),
+      bounds: new Box2D(kT.insetX, startY - yp, kT.rowBarW, yp - startY),
     });
     // filter the selections so that we eliminate those block we don't contain
     let selectedNodes = [];

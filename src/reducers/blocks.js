@@ -5,18 +5,19 @@ import dummyBlocks from '../inventory/andrea';
 import Block from '../models/Block';
 
 //testing, default should be {} (but need to hydrate to models)
+//const [child1, child2, child3, child4, child5] = dummyBlocks;
 const [child1, child2, child3, child4, child5] = dummyBlocks;
 const initialState = {
   block1: new Block({
     id: 'block1',
     components: [child1.id, child2.id, child3.id],
   }),
-  block2: new Block({
-    id: 'block2',
-    components: [child4.id, child5.id],
-  }),
+  // block2: new Block({
+  //   id: 'block2',
+  //   components: [child4.id, child5.id],
+  // }),
   [child1.id]: new Block(child1),
-  [child2.id]: new Block(child2),
+  [child2.id]: new Block(Object.assign({}, child2, {components: [child4.id, child5.id]})),
   [child3.id]: new Block(child3),
   [child4.id]: new Block(child4),
   [child5.id]: new Block(child5),
