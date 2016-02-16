@@ -1,6 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import { errorNoIdProvided, errorInvalidModel, errorInvalidRoute, errorDoesNotExist } from './../utils/errors';
+import findProjectFromBlock from './findProjectFromBlock';
 import { authenticationMiddleware } from './../utils/authentication';
 import * as persistence from './persistence';
 
@@ -77,13 +78,14 @@ router.param('blockId', (req, res, next, id) => {
 
 /********** ROUTES ***********/
 
-// is this a hack? or super useful?!
+// slightly hack-ish
 // allow the route /block/<blockId> and find the projectId
-router.all((req, res, next) => {
+// not recommended e.g. for POST
+const blockDeterminatorMiddleware = (req, res, next) => {
   const { projectId, blockId } = req;
 
   if (projectId === 'block' && blockId) {
-    persistence.findProjectFromBlock(blockId)
+    findProjectFromBlock(blockId)
       .then(projectId => {
         Object.assign(req, {projectId});
         next();
@@ -97,14 +99,14 @@ router.all((req, res, next) => {
   } else {
     next();
   }
-});
+};
 
 // PUT - replace
 // POST - merge
 
-//todo - expecting sequence in POST json, update middleware
+//future - url + `?format=${format}`; --- need API support
 router.route('/:projectId/:blockId/sequence')
-  .all(textParser, (req, res, next) => {
+  .all(textParser, blockDeterminatorMiddleware, (req, res, next) => {
     const { projectId, blockId } = req;
 
     if (!projectId || !blockId) {
@@ -114,6 +116,8 @@ router.route('/:projectId/:blockId/sequence')
   })
   .get((req, res) => {
     const { projectId, blockId } = req;
+
+    console.log(projectId, blockId);
 
     persistence.sequenceGet(blockId, projectId)
       .then(sequence => {
@@ -129,7 +133,7 @@ router.route('/:projectId/:blockId/sequence')
           //this means the block does not exist
           res.status(400).send(errorDoesNotExist);
         }
-        res.status(500).err(err);
+        res.status(500).send(err);
       });
   })
   .post((req, res) => {
@@ -153,12 +157,52 @@ router.route('/:projectId/:blockId/sequence')
         if (err === errorDoesNotExist) {
           res.status(400).send(errorInvalidModel);
         }
-        res.status(500).err(err);
+        res.status(500).send(err);
       });
   });
 
+//pass SHA you want, otherwise get commit log
+router.get('/:projectId/:blockId/commit/:sha?', (req, res) => {
+  const { blockId, projectId } = req;
+  const { sha } = req.params;
+
+  if (!!sha) {
+    persistence.blockGet(blockId, projectId, sha)
+      .then(project => res.status(200).json(project))
+      .catch(err => res.status(500).send(err));
+  } else {
+    //todo
+    res.status(501).send('not supported yet');
+  }
+});
+
+router.route('/:projectId/commit/:sha?')
+  .get((req, res) => {
+    //pass the SHA you want, otherwise send commit log
+    const { projectId } = req;
+    const { sha } = req.params;
+
+    if (sha) {
+      persistence.projectGet(projectId, sha)
+        .then(project => res.status(200).json(project))
+        .catch(err => res.status(500).send(err));
+    } else {
+      //todo
+      res.status(501).send('not supported yet');
+    }
+  })
+  .post((req, res) => {
+    //you can POST a field `message` for the commit, receieve the SHA
+    const { projectId } = req;
+    const { message } = req.body;
+
+    persistence.projectSave(projectId, message)
+      .then(sha => res.status(200).send(sha))
+      .catch(err => res.status(500).send(err));
+  });
+
 router.route('/:projectId/:blockId')
-  .all((req, res, next) => {
+  .all(blockDeterminatorMiddleware, (req, res, next) => {
     const { projectId, blockId } = req;
 
     if (!projectId || !blockId) {
@@ -176,7 +220,7 @@ router.route('/:projectId/:blockId')
         }
         res.json(result);
       })
-      .catch(err => res.status(500).err(err));
+      .catch(err => res.status(500).send(err));
   })
   .put((req, res) => {
     const { projectId, blockId } = req;
@@ -188,7 +232,7 @@ router.route('/:projectId/:blockId')
         if (err === errorInvalidModel) {
           res.status(400).send(errorInvalidModel);
         }
-        res.status(500).err(err);
+        res.status(500).send(err);
       });
   })
   .post((req, res) => {
@@ -213,7 +257,7 @@ router.route('/:projectId/:blockId')
 
     persistence.blockDelete(blockId, projectId)
       .then(() => res.status(200).send(blockId))
-      .catch(err => res.status(500).err(err));
+      .catch(err => res.status(500).send(err));
   });
 
 router.route('/:projectId')
@@ -228,7 +272,7 @@ router.route('/:projectId')
         }
         res.json(result);
       })
-      .catch(err => res.status(500).err(err));
+      .catch(err => res.status(500).send(err));
   })
   .put((req, res) => {
     const { projectId } = req;
@@ -240,7 +284,7 @@ router.route('/:projectId')
         if (err === errorInvalidModel) {
           res.status(400).send(errorInvalidModel);
         }
-        res.status(500).err(err);
+        res.status(500).send(err);
       });
   })
   .post((req, res) => {

@@ -10,16 +10,15 @@ import Project from '../../../src/models/Project';
 import Block from '../../../src/models/Block';
 
 import * as filePaths from '../../../server/utils/filePaths';
-import * as git from '../../../server/data/versioning';
+import * as versioning from '../../../server/data/versioning';
 import * as persistence from '../../../server/data/persistence';
+import findProjectFromBlock from '../../../server/data/findProjectFromBlock';
 
 //todo - can probably de-dupe many of these setup / before() clauses, they are pretty similar
 
 describe('REST', () => {
   describe('Data', () => {
     describe('persistence', function persistenceTests() {
-      this.timeout(10000);
-
       describe('existence + reading', () => {
         const projectName = 'persistenceProject';
         const projectData = new Project({metadata: {name: projectName}});
@@ -92,7 +91,7 @@ describe('REST', () => {
         it('sequenceGet() rejects if no block');
 
         it('findProjectFromBlock() should find project ID given only a block', () => {
-          return persistence.findProjectFromBlock(blockId)
+          return findProjectFromBlock(blockId)
             .then(result => expect(result).to.equal(projectId));
         });
       });
@@ -118,12 +117,12 @@ describe('REST', () => {
             .then(result => assert(result))
             .then(() => fileRead(projectManifestPath))
             .then(result => expect(result).to.eql(projectData))
-            .then(() => git.isInitialized(projectRepoPath))
+            .then(() => versioning.isInitialized(projectRepoPath))
             .then(result => assert(result === true));
         });
 
         it('projectCreate() creates a git commit with the initial version', () => {
-          return git.log(projectRepoPath)
+          return versioning.log(projectRepoPath)
             .then(result => {
               //initialize + first commit
               assert(result.length >= 2);
@@ -172,7 +171,7 @@ describe('REST', () => {
           return persistence.projectWrite(projectId, projectData)
             .then(() => directoryExists(projectRepoPath))
             .then(result => assert(result))
-            .then(() => git.isInitialized(projectRepoPath))
+            .then(() => versioning.isInitialized(projectRepoPath))
             .then(result => assert(result));
         });
 
@@ -250,10 +249,10 @@ describe('REST', () => {
         });
 
         it('blockWrite() makes the project commit', () => {
-          return git.log(projectRepoPath).then(firstResults => {
+          return versioning.log(projectRepoPath).then(firstResults => {
             const overwrite = blockData.merge(blockPatch);
             return persistence.blockWrite(blockId, overwrite, projectId)
-              .then(() => git.log(projectRepoPath))
+              .then(() => versioning.log(projectRepoPath))
               .then((secondResults) => {
                 expect(secondResults.length).to.equal(firstResults.length + 1);
               });
@@ -328,10 +327,10 @@ describe('REST', () => {
           return persistence.projectWrite(projectId, projectData)
             .then(() => persistence.blockWrite(blockId, blockData, projectId))
             .then(() => {
-              return git.log(projectRepoPath)
+              return versioning.log(projectRepoPath)
                 .then(firstResults => {
                   return persistence.blockDelete(blockId, projectId)
-                    .then(() => git.log(projectRepoPath))
+                    .then(() => versioning.log(projectRepoPath))
                     .then((secondResults) => {
                       expect(secondResults.length).to.equal(firstResults.length + 1);
                     });
@@ -340,9 +339,83 @@ describe('REST', () => {
         });
       });
 
-      //forthcoming
-      it('projectGet() accepts a version');
-      it('blockGet() accepts a version');
+      describe('versioning', () => {
+        let versionLog;
+        let versions;
+        const nonExistentSHA = '795c5751c8e0b0c9b5993ec81928cd89f7eefd27';
+        const projectData = new Project();
+        const projectId = projectData.id;
+        const projectRepoPath = filePaths.createProjectPath(projectId);
+        const newProject = projectData.merge({projectData: 'new stuff'});
+
+        const blockData = new Block();
+        const blockId = blockData.id;
+        const newBlock = blockData.merge({blockData: 'new data'});
+
+        before(() => {
+          return persistence.projectCreate(projectId, projectData)
+            .then(() => persistence.blockCreate(blockId, blockData, projectId))
+            .then(() => persistence.projectWrite(projectId, newProject))
+            .then(() => persistence.blockWrite(blockId, newBlock, projectId))
+            .then(() => versioning.log(projectRepoPath))
+            .then(log => {
+              versionLog = log;
+              versions = versionLog.map(commit => commit.sha);
+            });
+        });
+
+        it('projectExists() rejects if invalid version', () => {
+          return persistence.projectExists(projectId, 'invalidSHA')
+            .then(result => assert(false, 'should not resolve'))
+            .catch(err => assert(err === errorDoesNotExist, 'wrong error type -> function errored...'));
+        });
+
+        it('projectExists() rejects if version does not exist', () => {
+          return persistence.projectExists(projectId, nonExistentSHA)
+            .then(result => assert(false, 'should not resolve'))
+            .catch(err => assert(err === errorDoesNotExist, 'wrong error type -> function errored...'));
+        });
+
+        it('projectExists() resolves if version exists', () => {
+          return persistence.projectExists(projectId, versions[1]);
+        });
+
+        it('projectGet() rejects on if given invalid version', () => {
+          return persistence.projectGet(projectId, nonExistentSHA)
+            .then(result => assert(false, 'should not resolve'))
+            .catch(err => assert(err === errorDoesNotExist, 'wrong error type -> function errored...'));
+        });
+
+        it('projectGet() resolves to correct file when given version', () => {
+          return persistence.projectGet(projectId, versions[3])
+            .then(project => expect(project).to.eql(projectData));
+        });
+
+        it('projectGet() defaults to latest version', () => {
+          return persistence.projectGet(projectId)
+            .then(project => expect(project).to.eql(newProject));
+        });
+
+        it('blockExists() rejects on invalid version', () => {
+          return persistence.blockExists(blockId, projectId, nonExistentSHA)
+            .then(result => assert(false, 'should not resolve'))
+            .catch(err => assert(err === errorDoesNotExist, 'wrong error type -> function errored...'));
+        });
+
+        it('blockExists() accepts a version', () => {
+          return persistence.blockExists(blockId, projectId, versions[2]);
+        });
+
+        it('blockGet() accepts a version, gets version at that time', () => {
+          return persistence.blockGet(blockId, projectId, versions[2])
+            .then(block => expect(block).to.eql(blockData));
+        });
+
+        it('blockGet() defaults to latest version', () => {
+          return persistence.blockGet(blockId, projectId)
+            .then(block => expect(block).to.eql(newBlock));
+        });
+      });
     });
   });
 });

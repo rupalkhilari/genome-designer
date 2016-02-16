@@ -59,7 +59,6 @@ describe('REST', () => {
           .expect(200)
           .expect('Content-Type', /text/)
           .expect(result => {
-            console.log('receieved ', result);
             expect(result.text).to.eql(sequence);
           })
           .end(done);
