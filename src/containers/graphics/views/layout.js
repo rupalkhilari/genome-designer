@@ -22,7 +22,7 @@ export default class Layout {
     Object.assign(this, {
       layoutAlgorithm: kT.layoutWrap,
       baseColor: 'white',
-      showHeader: true,
+      showHeader: false,
     }, options);
 
     // prep data structures for layout
@@ -38,8 +38,8 @@ export default class Layout {
   autoSizeSceneGraph() {
     const aabb = this.sceneGraph.getAABB();
     if (aabb) {
-      this.sceneGraph.width = aabb.right + kT.insetX;
-      this.sceneGraph.height = aabb.bottom + kT.insetY;
+      this.sceneGraph.width = Math.max(aabb.right, kT.minWidth);
+      this.sceneGraph.height = Math.max(aabb.bottom, kT.minHeight);
       this.sceneGraph.updateSize();
     }
   }
@@ -296,7 +296,6 @@ export default class Layout {
     });
   }
   /**
-   * measure the given text or return its condensed size
    */
   measureText(node, str, condensed) {
     return node.getPreferredSize(str, condensed);
@@ -306,7 +305,7 @@ export default class Layout {
    * @return {[type]} [description]
    */
   getInitialLayoutPoint() {
-    return new Vector2D(kT.insetX + kT.rowBarW, kT.insetY + kT.titleH + kT.rowBarH);
+    return new Vector2D(kT.insetX + kT.rowBarW, kT.insetY + (this.showHeader ? kT.bannerHeight + kT.titleH + kT.rowBarH : kT.rowBarH));
   }
   /**
    * layout, configured with various options:
@@ -326,12 +325,11 @@ export default class Layout {
     this.resetRows();
     // layout all the various components, constructing elements as required
     // and wrapping when a row is complete
-    let xp = kT.insetX + kT.rowBarW;
-    const startY = this.showHeader ? kT.titleH + kT.rowBarH + kT.bannerHeight : kT.rowBarH;
+    const initialPoint = this.getInitialLayoutPoint();
+    const startX = initialPoint.x;
+    let xp = startX;
+    const startY = initialPoint.y;
     let yp = startY;
-
-    // extra space required to accomodate nested constructs
-    let extraY = 0;
 
     // used to determine when we need a new row
     let row = null;
@@ -359,25 +357,20 @@ export default class Layout {
       // if position would exceed x limit then wrap
       if (xp + td.x > mx) {
         xp = kT.insetX + kT.rowBarW;
-        yp += kT.rowH + extraY;
+        yp += kT.rowH;
         row = this.rowFactory(new Box2D(kT.insetX, yp - kT.rowBarH, 0, kT.rowBarH));
-        extraY = 0;
       }
 
       // update part, including its text and color
       this.nodeFromElement(part).set({
         bounds: new Box2D(xp, yp, td.x, kT.blockH),
         text: this.partName(part),
-        fill: this.partMeta(part, 'color'),
+        fill: this.partMeta(part, 'color') || 'lightgray',
       });
 
       // set next part position
       xp += td.x;
 
-      // if the part had nested constructs then allow extra space
-      if (this.hasChildren(part)) {
-        extraY = 100;
-      }
     });
 
     // ensure final row has the final row width
@@ -394,7 +387,7 @@ export default class Layout {
 
     // position and size vertical bar
     this.vertical.set({
-      bounds: new Box2D(kT.insetX, startY - yp, kT.rowBarW, yp - startY),
+      bounds: new Box2D(kT.insetX, startY, kT.rowBarW, yp - startY + kT.blockH),
     });
     // filter the selections so that we eliminate those block we don't contain
     let selectedNodes = [];
