@@ -2,27 +2,14 @@ import Instance from './Instance';
 import invariant from 'invariant';
 import color from '../utils/generators/color';
 import { saveBlock, readFile } from '../middleware/api';
+import BlockDefinition from '../schemas/Block';
 import AnnotationDefinition from '../schemas/Annotation';
 
 const createSequenceUrl = (blockId, projectId = 'block') => `${projectId}/${blockId}/sequence`;
 
-//todo - should scaffold, not pass manually
-
 export default class Block extends Instance {
-  constructor(...args) {
-    super(...args, {
-      metadata: {
-        color: color(),
-      },
-      sequence: {
-        annotations: [],
-      },
-      source: {},
-      rules: {},
-      options: [],
-      components: [],
-      notes: {},
-    });
+  constructor(input) {
+    super(input, BlockDefinition.scaffold());
   }
 
   save(projectId, overwrite = false) {
