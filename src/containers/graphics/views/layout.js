@@ -23,6 +23,8 @@ export default class Layout {
       layoutAlgorithm: kT.layoutWrap,
       baseColor: 'white',
       showHeader: false,
+      insetX: 40,
+      insetY: 140,
     }, options);
 
     // prep data structures for layout
@@ -31,6 +33,7 @@ export default class Layout {
     this.parts2nodes = {};
     this.partTypes = {};
   }
+
   /**
    * size the scene graph to just accomodate all the nodes that are present.
    * @return {[type]} [description]
@@ -157,7 +160,7 @@ export default class Layout {
         fill: this.baseColor,
         stroke: this.baseColor,
         glyph: 'construct-banner',
-        bounds: new Box2D(0, 0, this.sceneGraph.availableWidth, kT.bannerHeight),
+        bounds: new Box2D(this.insetX, this.insetY, this.sceneGraph.availableWidth - this.insetX, kT.bannerHeight),
       });
       this.sceneGraph.root.appendChild(this.banner);
     }
@@ -172,7 +175,7 @@ export default class Layout {
       if (!this.titleNode) {
         this.titleNode = new Node2D(Object.assign({
           sg: this.sceneGraph,
-          bounds: new Box2D(kT.insetX, kT.bannerHeight, this.sceneGraph.availableWidth, kT.titleH),
+          bounds: new Box2D(this.insetX, this.insetY + kT.bannerHeight, this.sceneGraph.availableWidth - this.insetX, kT.titleH),
         }, kT.titleAppearance));
         this.sceneGraph.root.appendChild(this.titleNode);
       }
@@ -279,7 +282,7 @@ export default class Layout {
    */
   layoutWrap() {
     this.layout({
-      xlimit: this.sceneGraph.availableWidth - kT.insetX,
+      xlimit: this.sceneGraph.availableWidth - this.insetX,
       condensed: false,
     });
   }
@@ -291,7 +294,7 @@ export default class Layout {
   }
   layoutFit() {
     this.layout({
-      xlimit: this.sceneGraph.availableWidth - kT.insetX,
+      xlimit: this.sceneGraph.availableWidth - this.insetX,
       condensed: true,
     });
   }
@@ -305,7 +308,7 @@ export default class Layout {
    * @return {[type]} [description]
    */
   getInitialLayoutPoint() {
-    return new Vector2D(kT.insetX + kT.rowBarW, kT.insetY + (this.showHeader ? kT.bannerHeight + kT.titleH + kT.rowBarH : kT.rowBarH));
+    return new Vector2D(this.insetX + kT.rowBarW, this.insetY + (this.showHeader ? kT.bannerHeight + kT.titleH + kT.rowBarH : kT.rowBarH));
   }
   /**
    * layout, configured with various options:
@@ -337,11 +340,11 @@ export default class Layout {
     ct.components.forEach(part => {
       // create a row bar as neccessary
       if (!row) {
-        row = this.rowFactory(new Box2D(kT.insetX, yp - kT.rowBarH, 0, kT.rowBarH));
+        row = this.rowFactory(new Box2D(this.insetX, yp - kT.rowBarH, 0, kT.rowBarH));
       }
       // resize row bar to current row width
-      const rw = xp - kT.insetX;
-      row.set({translateX: kT.insetX + rw / 2, width: rw});
+      const rw = xp - this.insetX;
+      row.set({translateX: this.insetX + rw / 2, width: rw});
 
       // create the node representing the part
       this.partFactory(part, kT.partAppearance);
@@ -356,9 +359,9 @@ export default class Layout {
 
       // if position would exceed x limit then wrap
       if (xp + td.x > mx) {
-        xp = kT.insetX + kT.rowBarW;
+        xp = startX;
         yp += kT.rowH;
-        row = this.rowFactory(new Box2D(kT.insetX, yp - kT.rowBarH, 0, kT.rowBarH));
+        row = this.rowFactory(new Box2D(xp, yp - kT.rowBarH, 0, kT.rowBarH));
       }
 
       // update part, including its text and color
@@ -375,8 +378,8 @@ export default class Layout {
 
     // ensure final row has the final row width
     if (row) {
-      const rw = xp - kT.insetX;
-      row.set({translateX: kT.insetX + rw / 2, width: rw});
+      const rw = xp - this.insetX;
+      row.set({translateX: this.insetX + rw / 2, width: rw});
     }
 
     // cleanup any dangling rows
@@ -387,7 +390,7 @@ export default class Layout {
 
     // position and size vertical bar
     this.vertical.set({
-      bounds: new Box2D(kT.insetX, startY, kT.rowBarW, yp - startY + kT.blockH),
+      bounds: new Box2D(this.insetX, startY, kT.rowBarW, yp - startY + kT.blockH),
     });
     // filter the selections so that we eliminate those block we don't contain
     let selectedNodes = [];
