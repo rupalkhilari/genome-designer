@@ -20,67 +20,9 @@ router.use(authenticationMiddleware);
 
 router.use(jsonParser);
 
-/***************************
- REST
- ***************************/
-
-/******** Cloning *********/
-
-//todo in future - supporting on client only
-router.get('/clone', jsonParser, (req, res) => {
-  res.status(501).send('not implemented');
-});
-
-/******** PARAMS ***********/
-
-//assign null if they do not exist
-
-router.param('projectId', (req, res, next, id) => {
-  const projectId = id;
-  Object.assign(req, {projectId});
-  next();
-
-  /*
-   persistence.projectGet(projectId)
-   .then(project => {
-   Object.assign(req, {
-   project,
-   projectId,
-   });
-   next();
-   })
-   .catch(err => {
-   res.status(500).send(err);
-   });
-   */
-});
-
-router.param('blockId', (req, res, next, id) => {
-  const blockId = id;
-  Object.assign(req, {blockId});
-  next();
-
-  /*
-   const { projectId } = req.params;
-   persistence.blockGet(projectId, blockId)
-   .then(block => {
-   Object.assign(req, {
-   block,
-   blockId,
-   });
-   next();
-   })
-   .catch(err => {
-   res.status(500).send(err);
-   });
-   */
-});
-
-/********** ROUTES ***********/
-
-// slightly hack-ish
 // allow the route /block/<blockId> and find the projectId
 // not recommended e.g. for POST
+// dependent on param middleware below to assign IDs to req directly
 const blockDeterminatorMiddleware = (req, res, next) => {
   const { projectId, blockId } = req;
 
@@ -101,25 +43,50 @@ const blockDeterminatorMiddleware = (req, res, next) => {
   }
 };
 
-// PUT - replace
-// POST - merge
+/***************************
+ REST
+ ***************************/
 
-//future - url + `?format=${format}`; --- need API support
-router.route('/:projectId/:blockId/sequence')
-  .all(textParser, blockDeterminatorMiddleware, (req, res, next) => {
-    const { projectId, blockId } = req;
+/******** Cloning *********/
 
-    if (!projectId || !blockId) {
-      res.status(400).send(errorNoIdProvided);
-    }
-    next();
-  })
+//todo in future - supporting on client only
+router.get('/clone', jsonParser, (req, res) => {
+  res.status(501).send('not implemented');
+});
+
+/******** PARAMS ***********/
+
+//assign null if they do not exist
+
+router.param('projectId', (req, res, next, id) => {
+  const projectId = id;
+  Object.assign(req, {projectId});
+  next();
+});
+
+router.param('blockId', (req, res, next, id) => {
+  const blockId = id;
+  Object.assign(req, {blockId});
+  next();
+});
+
+/********** ROUTES ***********/
+
+/*
+ In general:
+
+ PUT - replace
+ POST - merge
+ */
+
+//expect that a well-formed md5 is sent. however, not yet checking. So you really could just call it whatever you wanted...
+
+// future - url + `?format=${format}`;
+router.route('/sequence/:md5/:blockId?')
   .get((req, res) => {
-    const { projectId, blockId } = req;
+    const { md5 } = req.params;
 
-    console.log(projectId, blockId);
-
-    persistence.sequenceGet(blockId, projectId)
+    persistence.sequenceGet(md5)
       .then(sequence => {
         if (!sequence) {
           res.status(204).send('');
@@ -130,35 +97,30 @@ router.route('/:projectId/:blockId/sequence')
       })
       .catch(err => {
         if (err === errorDoesNotExist) {
-          //this means the block does not exist
           res.status(400).send(errorDoesNotExist);
         }
         res.status(500).send(err);
       });
   })
   .post((req, res) => {
-    const { projectId, blockId } = req;
-    const sequence = req.body;
+    const { md5, blockId } = req.params;
+    const { sequence } = req.body;
 
-    persistence.sequenceWrite(blockId, sequence, projectId)
+    findProjectFromBlock(blockId)
+      .catch(() => {
+        //couldn't find projectId or no block ID provided, just write the sequence
+        return persistence.sequenceWrite(md5, sequence);
+      })
+      .then(projectId => {
+        return persistence.sequenceWrite(md5, sequence, blockId, projectId);
+      })
       .then(() => {
-        //todo - md5 sequence and return
-        //todo - update block sequence length just in case
         res.status(200).send();
       })
       .catch(err => res.status(500).send(err));
   })
   .delete((req, res) => {
-    const { projectId, blockId } = req;
-
-    persistence.sequenceDelete(blockId, projectId)
-      .then(() => res.status(200).send())
-      .catch(err => {
-        if (err === errorDoesNotExist) {
-          res.status(400).send(errorInvalidModel);
-        }
-        res.status(500).send(err);
-      });
+    res.status(403).send('Not allowed to delete sequence');
   });
 
 //pass SHA you want, otherwise get commit log

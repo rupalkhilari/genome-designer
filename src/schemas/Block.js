@@ -25,13 +25,11 @@ const BlockDefinition = InstanceDefinition.extend({
     'Block UUID',
   ],
 
-  /*
-   Part-like fields for sequence and sequence annotations, inventory source
-   */
   sequence: [
     SequenceDefinition,
     `Associated Sequence (url, not the sequence itself), and Annotations etc. associated`,
   ],
+
   source: [
     fields.shape({
       id: validators.id(),

@@ -232,14 +232,12 @@ export const blockGetSequence = (blockId, format) => {
 };
 
 //Promise
-//todo - server needs to return the block
 //future - validate
-//future - trigger history actions
-export const blockSetSequence = (blockId, sequence) => {
+export const blockSetSequence = (blockId, sequence, useStrict) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
 
-    return oldBlock.setSequence(sequence)
+    return oldBlock.setSequence(sequence, useStrict)
       .then(block => {
         dispatch({
           type: ActionTypes.BLOCK_SET_SEQUENCE,

@@ -129,6 +129,7 @@ const blockAssertNew = (blockId, projectId) => {
 };
 
 //GET
+//resolve with null if does not exist
 
 export const projectGet = (projectId, sha) => {
   return projectExists(projectId, sha)
@@ -137,6 +138,7 @@ export const projectGet = (projectId, sha) => {
       if (err === errorDoesNotExist && !sha) {
         return Promise.resolve(null);
       }
+      //let the versioning error fall through, or uncaught error
       return Promise.reject(err);
     });
 };
@@ -241,40 +243,36 @@ export const blockDelete = (blockId, projectId) => {
 
 //sequence
 
-//TODO  - update block schema to handle routing for sequence file... skip ability to reference
-
-export const sequenceExists = (blockId, projectId) => {
-  const sequencePath = filePaths.createBlockSequencePath(blockId, projectId);
+export const sequenceExists = (md5) => {
+  const sequencePath = filePaths.createSequencePath(md5);
   return fileExists(sequencePath);
 };
 
-export const sequenceGet = (blockId, projectId) => {
-  return sequenceExists(blockId, projectId)
-    .then(path => fileRead(path, false))
-    .catch(err => {
-      if (err === errorDoesNotExist) {
-        //if sequence doesn't exist, check if block exists:
-        //  block exists -> null
-        //  block DNE -> rejection
-        return blockExists(blockId, projectId)
-          .then(() => Promise.resolve(null))
-          .catch(() => Promise.reject(errorDoesNotExist));
-      }
-      return Promise.reject(err);
-    });
+export const sequenceGet = (md5) => {
+  return sequenceExists(md5)
+    .then(path => fileRead(path, false));
 };
 
-//todo - validate sequence
-export const sequenceWrite = (blockId, sequence, projectId) => {
-  const sequencePath = filePaths.createBlockSequencePath(blockId, projectId);
-  return blockExists(blockId, projectId)
-    .then(() => fileWrite(sequencePath, sequence, false))
-    .then(() => _blockCommit(blockId, projectId, commitMessages.messageSequenceUpdate(blockId, sequence)))
+//blockId and projectId optional, will create commit if provided
+export const sequenceWrite = (md5, sequence, blockId, projectId) => {
+  const sequencePath = filePaths.createSequencePath(md5);
+  return fileWrite(sequencePath, sequence, false)
+    .then(() => {
+      if (blockId && projectId) {
+        return _blockCommit(blockId, projectId, commitMessages.messageSequenceUpdate(blockId, sequence));
+      }
+    })
     .then(() => sequence);
 };
 
-export const sequenceDelete = (blockId, projectId) => {
-  return sequenceExists(blockId, projectId)
-    .then(path => fileDelete(path))
-    .then(() => _blockCommit(blockId, projectId, commitMessages.messageSequenceUpdate(blockId, false)));
+//unassociate sequence, commit block
+export const sequenceRemove = (blockId, projectId) => {
+  return _blockCommit(blockId, projectId, commitMessages.messageSequenceUpdate(blockId, false));
 };
+
+//probably dont want to let people do this, since sequence may be referenced by multiple blocks...
+export const sequenceDelete = (md5) => {
+  return sequenceExists(md5)
+    .then(path => fileDelete(path));
+};
+
