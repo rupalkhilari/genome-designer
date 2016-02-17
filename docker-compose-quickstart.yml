@@ -2,4 +2,4 @@ genome-designer:
   extends:
     file: docker-compose-common.yml
     service: genome-designer
-  build: .
+  image: quay.io/autodesk_bionano/genomedesigner_genome-designer
