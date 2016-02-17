@@ -14,6 +14,12 @@ function render(container) {
         (current.length !== last.length ||
         !current.every(function (item, index) {return item !== last[index]}))
     ) {
+
+      var block = state.blocks[current[0]];
+      block.getSequence().then(function (sequence) {
+        console.log(sequence);
+      });
+
       console.log(current);
       last = current;
     }

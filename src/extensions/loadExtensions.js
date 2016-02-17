@@ -9,7 +9,11 @@ function loadAllExtensions() {
     .then(resp => resp.json())
     .then(manifests => {
       return Promise.all(Object.keys(manifests).map(key => {
-          return downloadExtension(key);
+          return downloadExtension(key)
+          .catch(err => {
+            console.warn('couldnt load extension ' + key);
+            console.error(err);
+          })
         }));
     })
     .then(() => {
