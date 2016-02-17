@@ -4,6 +4,6 @@
   "description": "list of the default extensions for genome designer",
   "dependencies": {
     "simple" : "../../extensions/simple",
-    "onion2" : "../../extensions/onion2"
+    "onion2" : "IsaacLuo/onion2#deploy"
   }
 }

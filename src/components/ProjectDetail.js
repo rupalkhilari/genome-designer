@@ -32,6 +32,7 @@ export class ProjectDetail extends Component {
     try {
       manifest.render(this.refs.extensionView);
       this.toggle(true);
+      this.setState({currentExtension: manifest});
     } catch (err) {
       console.error('error loading / rendering extension!', manifest);
       throw err;
@@ -42,13 +43,20 @@ export class ProjectDetail extends Component {
     //todo - trigger more intelligently, dont want to recompute all the time
     const extensions = extensionsByRegion('sequenceDetail');
 
-    return (
-      <div className={'ProjectDetail' + (this.props.isVisible ? ' visible' : '')}>
+    const header = (this.props.isVisible) ?
+      (
         <div className="ProjectDetail-heading">
-          {!this.props.isVisible && (<a ref="open"
-                                        className="ProjectDetail-heading-toggle"
-                                        onClick={() => { this.toggle(); this.loadExtension(extensions[0]);} }/>)}
-
+          <a className="ProjectDetail-heading-extension visible">{this.state.currentExtension.name}</a>
+          <a ref="close"
+             className="ProjectDetail-heading-close"
+             onClick={() => this.toggle(false)}/>
+        </div>
+      ) :
+      (
+        <div className="ProjectDetail-heading">
+          <a ref="open"
+             className="ProjectDetail-heading-toggle"
+             onClick={() => { this.toggle(); this.loadExtension(extensions[0]);} }/>
           <div className="ProjectDetail-heading-extensionList">
             {extensions.map(manifest => {
               return (
@@ -57,15 +65,15 @@ export class ProjectDetail extends Component {
                    onClick={this.loadExtension.bind(null, manifest)}>{manifest.readable || manifest.name}</a>
               );
             })}
-
-            {!this.props.isVisible && ( <a className="ProjectDetail-heading-extension disabled">3D Protein Preview</a>)}
-            {!this.props.isVisible && ( <a className="ProjectDetail-heading-extension disabled">CRISPR</a>)}
+            <a className="ProjectDetail-heading-extension disabled">3D Protein Preview</a>
+            <a className="ProjectDetail-heading-extension disabled">CRISPR</a>
           </div>
-
-          {this.props.isVisible && (<a ref="close"
-                                       className="ProjectDetail-heading-close"
-                                       onClick={() => this.toggle(false)}/>)}
         </div>
+      );
+
+    return (
+      <div className={'ProjectDetail' + (this.props.isVisible ? ' visible' : '')}>
+        {header}
         <div className="ProjectDetail-chrome">
           <div ref="extensionView"
                className="ProjectDetail-extensionView"></div>

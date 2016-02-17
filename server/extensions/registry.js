@@ -3,14 +3,22 @@ import manifest from './package.json';
 
 const { dependencies } = manifest;
 
-export const extensionsFolder = '../../extensions/';
+export const extensionsFolder = './node_modules/';
 
 const registry = Object.keys(dependencies).reduce((acc, dep) => {
   const filePath = path.resolve(__dirname, extensionsFolder + dep + '/package.json');
-  const depManifest = require(filePath);
-  return Object.assign(acc, {
-    [dep]: depManifest,
-  });
+
+  try {
+    const depManifest = require(filePath);
+    Object.assign(acc, {
+      [dep]: depManifest,
+    });
+  } catch (err) {
+    console.warn('error loading extension ' + dep);
+    console.err(err);
+  }
+
+  return acc;
 }, {});
 
 export const isRegistered = (name) => {
