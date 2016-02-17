@@ -27,6 +27,7 @@ export class ProjectDetail extends Component {
     }, 300);
   };
 
+  //todo - need to provide a way to unregister event handlers (e.g. an un-render() callback)
   loadExtension = (manifest) => {
     try {
       manifest.render(this.refs.extensionView);

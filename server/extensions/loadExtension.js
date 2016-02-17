@@ -13,6 +13,6 @@ const loadExtension = (name) => {
   });
 };
 
-export const getExtensionInternalPath = (name, fileName = 'index.js') => path.resolve(__dirname, `../../extensions/${name}/${fileName}`);
+export const getExtensionInternalPath = (name, fileName = 'index.js') => path.resolve(__dirname, `./node_modules/${name}/${fileName}`);
 
 export default loadExtension;

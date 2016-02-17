@@ -10,11 +10,13 @@ Todo
 
 Genome designer is built to accommodate extensions, which extend the front-end web application.
 
+Extensions are installed via `npm` into `node_modules` in this directory.
+
 ## Registering extensions
 
 Include extensions in `/server/extensions/package.json`, and they will be installed using NPM. You can include local paths for extensions included locally, or npm modules. 
 
-It is assumed that extensions are already installed and built (e.g. using `npm install`) by the time the server has started.
+It is assumed that extensions are already installed and built (e.g. using `npm install`) by the time the server has started. They are installed into `node_modules` in this folder.
 
 At this time, the client is bootstrapped with knowledge of all the plugins available on the server, but they are initialized lazily as needed (i.e. `package.json` manifest available, `index.js` loaded when needed).
 
