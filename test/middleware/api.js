@@ -81,7 +81,7 @@ describe('Middleware', () => {
     });
   });
 
-  it('should work with multiple files', function multipleFiles(done) {
+  it('readFile / writeFile should work with multiple files', function multipleFiles(done) {
     //only takes a long time the first time docker build is run
     this.timeout(500000);
 
@@ -119,8 +119,15 @@ describe('Middleware', () => {
       });
   });
 
+  /////// SEQUENCE ///////
+
+  it('getSequence() accepts an md5');
+
+  it('writeSequence() writes a sequence');
+
+  /////// EXTENSIONS ///////
+
   it('importBlock() should be able convert Genbank features to Block', function testFunc(done) {
-    this.timeout(5000); //reading genbank can take long, esp when running along with other tests
     fs.readFile('./test/res/sampleGenbank.gb', 'utf8', (err, sampleStr) => {
       api.importBlock('genbank', sampleStr)
         .then(result => {
@@ -149,7 +156,6 @@ describe('Middleware', () => {
   });
 
   it('exportBlock() should be able convert Block to Genbank', function testFunc(done) {
-    this.timeout(5000); //reading genbank can take long, esp when running along with other tests
     fs.readFile('./test/res/sampleBlocks.json', 'utf8', (err, sampleBlocksJson) => {
       const sampleBlocks = JSON.parse(sampleBlocksJson);
       api.exportBlock('genbank', sampleBlocks)
@@ -168,7 +174,6 @@ describe('Middleware', () => {
   });
 
   it('importProject() should be able convert feature file to Blocks', function testFunc(done) {
-    this.timeout(10000); //reading a long csv file
     fs.readFile('./test/res/sampleFeatureFile.tab', 'utf8', (err, sampleFeatures) => {
       api.importProject('features', sampleFeatures)
         .then(result => {

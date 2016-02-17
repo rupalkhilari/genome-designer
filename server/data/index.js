@@ -102,9 +102,9 @@ router.route('/sequence/:md5/:blockId?')
         res.status(500).send(err);
       });
   })
-  .post(textParser, (req, res) => {
+  .post((req, res) => {
     const { md5, blockId } = req.params;
-    const sequence = req.body;
+    const { sequence } = req.body;
 
     findProjectFromBlock(blockId)
       .catch(() => {

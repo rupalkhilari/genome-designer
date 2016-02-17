@@ -1,9 +1,6 @@
 import { assert, expect } from 'chai';
-import fs from 'fs';
 import path from 'path';
 import merge from 'lodash.merge';
-import rimraf from 'rimraf';
-import { exec } from 'child_process'; //todo - promise version
 import { errorInvalidModel, errorAlreadyExists, errorDoesNotExist } from '../../../server/utils/errors';
 import { fileExists, fileRead, fileWrite, fileDelete, directoryExists, directoryMake, directoryDelete } from '../../../server/utils/fileSystem';
 import Project from '../../../src/models/Project';
@@ -24,13 +21,14 @@ describe('REST', () => {
         const projectData = new Project({metadata: {name: projectName}});
         const projectId = projectData.id;
         const projectPath = filePaths.createProjectPath(projectId);
-        const projectManifestPath = path.resolve(projectPath, filePaths.manifestPath);
+        const projectManifestPath = path.resolve(projectPath, filePaths.manifestFilename);
 
         const blockName = 'blockA';
         const blockData = new Block({metadata: {name: blockName}});
         const blockId = blockData.id;
         const blockPath = filePaths.createBlockPath(blockId, projectId);
-        const blockManifestPath = path.resolve(blockPath, filePaths.manifestPath);
+        const blockManifestPath = path.resolve(blockPath, filePaths.manifestFilename);
+        //fixme - update route
         const blockSequencePath = path.resolve(blockPath, filePaths.sequencePath);
 
         const blockSequence = 'aaaaaccccccggggttttt';
@@ -161,7 +159,9 @@ describe('REST', () => {
         const blockId = blockData.id;
         const blockPath = filePaths.createBlockPath(blockId, projectId);
         const blockManifestPath = filePaths.createBlockManifestPath(blockId, projectId);
-        const blockSequencePath = filePaths.createBlockSequencePath(blockId, projectId);
+
+        //fixme - UPDATE
+        const blockSequencePath = filePaths.createSequencePath(blockId, projectId);
 
         const blockSequence = 'aaaaaccccccggggttttt';
         const projectPatch = {metadata: {description: 'fancy pantsy'}};
@@ -282,11 +282,7 @@ describe('REST', () => {
             .then(result => expect(result).to.equal(blockSequence));
         });
 
-        it('sequenceWrite() rejects if block doesnt exist', () => {
-          return persistence.sequenceWrite('invalidId', blockSequence, projectId)
-            .then(() => assert(false))
-            .catch(err => expect(err).to.equal(errorDoesNotExist));
-        });
+        it('sequenceWrite() creates commit if given block + project id');
       });
 
       describe('deletion', () => {

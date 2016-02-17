@@ -7,8 +7,10 @@ const makePath = (...paths) => {
   return path.resolve(__dirname, relativeStoragePath, ...paths);
 };
 
+export const filePath = 'file';
 export const sequencePath = 'sequence';
-export const manifestPath = 'manifest.json';
+
+export const manifestFilename = 'manifest.json';
 
 //All files are put in the storage folder (until platform comes along)
 export const createStorageUrl = (...urls) => {
@@ -19,7 +21,7 @@ export const createStorageUrl = (...urls) => {
 /***** files *****/
 
 export const createFilePath = (path) => {
-  return createStorageUrl('file', path);
+  return createStorageUrl(filePath, path);
 };
 
 /***** data *****/
@@ -32,7 +34,7 @@ export const createProjectPath = (projectId, ...rest) => {
 };
 
 export const createProjectManifestPath = (projectId) => {
-  return createProjectPath(projectId, manifestPath);
+  return createProjectPath(projectId, manifestFilename);
 };
 
 //BLOCKS
@@ -46,12 +48,11 @@ export const createBlockPath = (blockId, projectId, ...rest) => {
 };
 
 export const createBlockManifestPath = (blockId, projectId) => {
-  return createBlockPath(blockId, projectId, manifestPath);
+  return createBlockPath(blockId, projectId, manifestFilename);
 };
 
 //SEQUENCE
 
-//todo - should this be affected by whether in test enviroment or not?
 export const createSequencePath = (md5) => {
   return createStorageUrl(sequencePath, md5);
 };

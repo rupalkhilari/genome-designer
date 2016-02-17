@@ -169,8 +169,7 @@ export const writeSequence = (md5, sequence, blockId) => {
   const url = getSequenceUrl(md5, blockId);
   const stringified = JSON.stringify({sequence});
 
-  return fetch(url, headersPost(stringified))
-    .then(resp => resp.json());
+  return fetch(url, headersPost(stringified));
 };
 
 /*************************
