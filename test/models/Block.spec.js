@@ -48,8 +48,7 @@ describe('Model', () => {
       });
     });
 
-    //todo - refactor this whole suite, to reflect dynamic accessing sequence URL
-    describe.only('Sequence', () => {
+    describe('Sequence', () => {
       const withoutSequence = new Block();
       const oneSequence = 'acgtacgt';
       const twoSequence = 'aacccgggggttttt';

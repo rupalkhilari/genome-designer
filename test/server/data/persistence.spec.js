@@ -1,6 +1,7 @@
 import { assert, expect } from 'chai';
 import path from 'path';
 import merge from 'lodash.merge';
+import md5 from 'md5';
 import { errorInvalidModel, errorAlreadyExists, errorDoesNotExist } from '../../../server/utils/errors';
 import { fileExists, fileRead, fileWrite, fileDelete, directoryExists, directoryMake, directoryDelete } from '../../../server/utils/fileSystem';
 import Project from '../../../src/models/Project';
@@ -28,10 +29,10 @@ describe('REST', () => {
         const blockId = blockData.id;
         const blockPath = filePaths.createBlockPath(blockId, projectId);
         const blockManifestPath = path.resolve(blockPath, filePaths.manifestFilename);
-        //fixme - update route
-        const blockSequencePath = path.resolve(blockPath, filePaths.sequencePath);
 
-        const blockSequence = 'aaaaaccccccggggttttt';
+        const blockSequence = 'acgtacgtacgatcgatcgac';
+        const sequenceMd5 = md5(blockSequence);
+        const sequenceFilePath = filePaths.createSequencePath(sequenceMd5);
 
         before(() => {
           return directoryDelete(projectPath)
@@ -39,7 +40,7 @@ describe('REST', () => {
             .then(() => fileWrite(projectManifestPath, projectData))
             .then(() => directoryMake(blockPath))
             .then(() => fileWrite(blockManifestPath, blockData))
-            .then(() => fileWrite(blockSequencePath, blockSequence, false));
+            .then(() => fileWrite(sequenceFilePath, blockSequence, false));
         });
 
         it('projectExists() rejects for non-extant project', (done) => {
@@ -77,16 +78,20 @@ describe('REST', () => {
         });
 
         it('sequenceExists() checks if sequence file exists', () => {
-          return persistence.sequenceExists(blockId, projectId);
+          return persistence.sequenceExists(sequenceMd5);
         });
 
         it('sequenceGet() returns the sequence as a string', () => {
-          return persistence.sequenceGet(blockId, projectId)
+          return persistence.sequenceGet(sequenceMd5)
             .then(result => expect(result).to.equal(blockSequence));
         });
 
-        it('sequenceGet() returns null for block with no sequence');
-        it('sequenceGet() rejects if no block');
+        it('sequenceGet() rejects for md5 with no sequence', () => {
+          const fakeMd5 = md5('nothingness');
+          return persistence.sequenceGet(fakeMd5)
+            .then(result => assert(false))
+            .catch(err => expect(err).to.equal(errorDoesNotExist));
+        });
 
         it('findProjectFromBlock() should find project ID given only a block', () => {
           return findProjectFromBlock(blockId)
@@ -160,10 +165,10 @@ describe('REST', () => {
         const blockPath = filePaths.createBlockPath(blockId, projectId);
         const blockManifestPath = filePaths.createBlockManifestPath(blockId, projectId);
 
-        //fixme - UPDATE
-        const blockSequencePath = filePaths.createSequencePath(blockId, projectId);
-
         const blockSequence = 'aaaaaccccccggggttttt';
+        const sequenceMd5 = md5(blockSequence);
+        const sequenceFilePath = filePaths.createSequencePath(sequenceMd5);
+
         const projectPatch = {metadata: {description: 'fancy pantsy'}};
         const blockPatch = {rules: {sbol: 'promoter'}};
 
@@ -277,12 +282,10 @@ describe('REST', () => {
         });
 
         it('sequenceWrite() sets the sequence string', () => {
-          return persistence.sequenceWrite(blockId, blockSequence, projectId)
-            .then(() => fileRead(blockSequencePath, false))
+          return persistence.sequenceWrite(sequenceMd5, blockSequence)
+            .then(() => fileRead(sequenceFilePath, false))
             .then(result => expect(result).to.equal(blockSequence));
         });
-
-        it('sequenceWrite() creates commit if given block + project id');
       });
 
       describe('deletion', () => {
@@ -348,6 +351,9 @@ describe('REST', () => {
         const blockId = blockData.id;
         const newBlock = blockData.merge({blockData: 'new data'});
 
+        const blockSequence = 'acgcggcgcgatatatatcgcgcg';
+        const sequenceMd5 = md5(blockSequence);
+
         before(() => {
           return persistence.projectCreate(projectId, projectData)
             .then(() => persistence.blockCreate(blockId, blockData, projectId))
@@ -410,6 +416,14 @@ describe('REST', () => {
         it('blockGet() defaults to latest version', () => {
           return persistence.blockGet(blockId, projectId)
             .then(block => expect(block).to.eql(newBlock));
+        });
+
+        it('sequenceWrite() writes commit if given blockId and projectId', () => {
+          return persistence.sequenceWrite(sequenceMd5, blockSequence, blockId, projectId)
+          .then(() => versioning.log(projectRepoPath))
+          .then(log => {
+            expect(log.length).to.equal(versionLog.length + 1);
+          });
         });
       });
     });
