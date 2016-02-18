@@ -12,7 +12,7 @@ import * as persistence from '../../../server/data/persistence';
 
 describe('REST', () => {
   describe('Data', () => {
-    describe.only('Rollup', () => {
+    describe('Rollup', () => {
       let project;
       let projectId;
       let blockP;
@@ -100,6 +100,8 @@ describe('REST', () => {
               expect(gotF).to.eql(blockF);
               expect(gotC).to.eql(null);
             })
+            .then(() => rollup.getAllBlockIdsInProject(projectId))
+            .then(ids => expect(ids.length).to.equal(6))
           );
       });
     });
