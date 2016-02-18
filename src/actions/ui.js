@@ -1,4 +1,5 @@
 import * as ActionTypes from '../constants/ActionTypes';
+import * as BlockSelector from '../selectors/blocks';
 
 export const uiShowMainMenu = (showMainMenu) => {
   return (dispatch, getState) => {
@@ -62,8 +63,10 @@ export const uiSetCurrentConstruct = (constructId) => {
 
     if (Array.isArray(currentBlocks) && currentBlocks.length) {
       const construct = state.blocks[constructId];
+      const children = dispatch(BlockSelector.blockGetChildrenRecursive(constructId));
+      //debugger;
       const blocks = currentBlocks.filter(blockId => {
-        return construct.components.includes(blockId);
+        return children.some(block => block.id === blockId);
       });
       dispatch({
         type: ActionTypes.UI_SET_CURRENT,

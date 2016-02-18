@@ -57,6 +57,7 @@ export default class UserInterface {
    * @return {[type]}      [description]
    */
   removeFromSelections(node) {
+    debugger;
     invariant(node.sg === this.sg, 'node is not in our scenegraph');
     const index = this.selections.indexOf(node);
     if (index >= 0) {
@@ -82,6 +83,7 @@ export default class UserInterface {
       // create an element if we need one
       let sel = this.selectionMap[node.uuid];
       if (!sel) {
+        console.log('Adding selection for:', node.uuid);
         sel = this.selectionMap[node.uuid] = this.createSelectionElement(node);
         this.el.appendChild(sel);
       }
@@ -92,10 +94,11 @@ export default class UserInterface {
       sel.style.width = bounds.width + 'px';
       sel.style.height = bounds.height + 'px';
     });
+
     // remove any elements no longer required.
-    const keys = Object.keys(this.selectionMap);
-    keys.forEach(nodeUUID => {
+    Object.keys(this.selectionMap).forEach(nodeUUID => {
       if (!this.selections.find(node => nodeUUID === node.uuid)) {
+        console.log('removing selection for:', nodeUUID);
         const element = this.selectionMap[nodeUUID];
         delete this.selectionMap[nodeUUID];
         this.el.removeChild(element);

@@ -22,16 +22,17 @@ export default class Layout {
     Object.assign(this, {
       layoutAlgorithm: kT.layoutWrap,
       baseColor: 'white',
-      showHeader: false,
-      insetX: 40,
-      insetY: 140,
+      showHeader: true,
+      insetX: 0,
+      insetY: 0,
     }, options);
 
-    // prep data structures for layout
+    // prep data structures for layout`
     this.rows = [];
     this.nodes2parts = {};
     this.parts2nodes = {};
     this.partTypes = {};
+    this.nestedLayouts = {};
   }
 
   /**
@@ -63,29 +64,53 @@ export default class Layout {
    * so that is can be reused.
    */
   removePart(part) {
-    const node = this.nodeFromElement(part);
-    invariant(node, 'expected a matching node');
-    delete this.nodes2parts[node.uuid];
-    delete this.parts2nodes[part];
-    delete this.partTypes[part];
-    node.parent.removeChild(node);
-    return node;
+    // if we have the part, remove it and return the node
+    const node = this.parts2nodes[part];
+    if (node) {
+      delete this.nodes2parts[node.uuid];
+      delete this.parts2nodes[part];
+      delete this.partTypes[part];
+      node.parent.removeChild(node);
+      return node;
+    }
+    // if here part might be in nested construct
+    const keys = Object.keys(this.nestedLayouts);
+    for(let i = 0; i < keys.length; i += 1) {
+      const node = this.nestedLayouts[keys[i]].removePart(part);
+      if (node) {
+        return node;
+      }
+    }
+    // if here we don't have the part so return null
+    return null;
   }
   /**
-   * return the element from the data represented by the given node uuid
-   * @param  {[type]} uuid [description]
-   * @return {[type]}      [description]
+   * return the element from the data represented by the given node uuid.
+   * This searches this construct and any nested construct to find the part
    */
   elementFromNode(node) {
-    return this.nodes2parts[node.uuid];
+    let part = this.nodes2parts[node.uuid];
+    if (!part) {
+      const nestedKeys = Object.keys(this.nestedLayouts);
+      for(let i = 0; i < nestedKeys.length && !part; i += 1) {
+        part = this.nestedLayouts[nestedKeys[i]].elementFromNode(node);
+      }
+    }
+    return part;
   }
   /**
    * reverse mapping from anything with an 'uuid' property to a node
-   * @param  {[type]} element [description]
-   * @return {[type]}         [description]
+   * Looks into nested constructs as well.
    */
   nodeFromElement(element) {
-    return this.parts2nodes[element];
+    let node = this.parts2nodes[element];
+    if (!node) {
+      const nestedKeys = Object.keys(this.nestedLayouts);
+      for(let i = 0; i < nestedKeys.length && !node; i += 1) {
+        node = this.nestedLayouts[nestedKeys[i]].nodeFromElement(element);
+      }
+    }
+    return node;
   }
 
   /**
@@ -234,6 +259,13 @@ export default class Layout {
   resetRows() {
     this.newRows = [];
   }
+
+  /**
+   * a map of the extant layout objects, so we can dispose unused ones after layout
+   */
+  resetNestedConstructs() {
+    this.newNestedLayouts = {};
+  }
   /**
    * dispose and unused rows and move newRows to rows
    */
@@ -244,6 +276,16 @@ export default class Layout {
     }
     this.rows = this.newRows;
     this.newRows = null;
+  }
+
+  /**
+   * dispose any nested constructs no longer referenced.
+   */
+  disposeNestedLayouts() {
+    Object.keys(this.nestedLayouts).forEach(key => {
+      this.nestedLayouts[key].dispose();
+    });
+    this.nestedLayouts = this.newNestedLayouts;
   }
   /**
    * store layout information on our cloned copy of the data, constructing
@@ -257,23 +299,30 @@ export default class Layout {
     this.blocks = blocks;
     this.currentBlocks = currentBlocks;
 
+    // regardless of layout algorithm we return the height
+    // used to render the construct / nested construct
+
+    let heightUsed = 0;
+
     switch (this.layoutAlgorithm) {
     case kT.layoutWrap:
-      this.layoutWrap();
+      heightUsed = this.layoutWrap();
       break;
 
     case kT.layoutFull:
-      this.layoutFull();
+      heightUsed = this.layoutFull();
       break;
 
     case kT.layoutFit:
-      this.layoutFit();
+      heightUsed = this.layoutFit();
       break;
 
     default: throw new Error('Not a valid layout algorithm');
     }
     // auto size scene after layout
     this.autoSizeSceneGraph();
+
+    return heightUsed;
   }
 
   /**
@@ -281,19 +330,19 @@ export default class Layout {
    * @return {[type]} [description]
    */
   layoutWrap() {
-    this.layout({
+    return this.layout({
       xlimit: this.sceneGraph.availableWidth - this.insetX,
       condensed: false,
     });
   }
   layoutFull() {
-    this.layout({
+    return this.layout({
       xlimit: Number.MAX_VALUE,
       condensed: false,
     });
   }
   layoutFit() {
-    this.layout({
+    return this.layout({
       xlimit: this.sceneGraph.availableWidth - this.insetX,
       condensed: true,
     });
@@ -326,6 +375,8 @@ export default class Layout {
     const mx = layoutOptions.xlimit;
     // reset row factory
     this.resetRows();
+    // reset nested constructs
+    this.resetNestedConstructs();
     // layout all the various components, constructing elements as required
     // and wrapping when a row is complete
     const initialPoint = this.getInitialLayoutPoint();
@@ -336,6 +387,10 @@ export default class Layout {
 
     // used to determine when we need a new row
     let row = null;
+
+    // additional vertical space consumed on every row for nested constructs
+    let nestedVertical = 0;
+
     // update / make all the parts
     ct.components.forEach(part => {
       // create a row bar as neccessary
@@ -356,11 +411,13 @@ export default class Layout {
 
       // measure element text or used condensed spacing
       const td = this.measureText(this.nodeFromElement(part), this.partName(part), layoutOptions.condensed);
+      //const td = this.measureText(this.nodeFromElement(part), part, layoutOptions.condensed);
 
       // if position would exceed x limit then wrap
       if (xp + td.x > mx) {
         xp = startX;
-        yp += kT.rowH;
+        yp += kT.rowH + nestedVertical;
+        nestedVertical = 0;
         row = this.rowFactory(new Box2D(xp, yp - kT.rowBarH, 0, kT.rowBarH));
       }
 
@@ -368,8 +425,43 @@ export default class Layout {
       this.nodeFromElement(part).set({
         bounds: new Box2D(xp, yp, td.x, kT.blockH),
         text: this.partName(part),
+        //text: part,
         fill: this.partMeta(part, 'color') || 'lightgray',
       });
+
+      // render children ( nested constructs )
+      if (this.hasChildren(part)) {
+        // establish the position
+        const nestedX = this.insetX + kT.nestedInsetX;
+        const nestedY = yp + kT.blockH + kT.nestedInsetY;
+        // get or create the layout object for this nested construct
+        let nestedLayout = this.nestedLayouts[part];
+        if (!nestedLayout) {
+          nestedLayout = this.nestedLayouts[part] = new Layout(this.constructViewer, this.sceneGraph, {
+            layoutAlgorithm: this.layoutAlgorithm,
+            baseColor: this.baseColor,
+            showHeader: false,
+            insetX: nestedX,
+            insetY: nestedY,
+          });
+        }
+        // ensure layout has the latest position ( parent may have moved )
+        nestedLayout.insetX = nestedX;
+        nestedLayout.insetY = nestedY;
+
+        // layout with same options as ourselves
+        nestedVertical += nestedLayout.update(
+          this.blocks[part],
+          this.layoutAlgorithm,
+          this.blocks,
+          this.currentBlocks,
+          this.currentConstructId) + kT.nestedInsetY;
+
+        // remove from old collection so the layout won't get disposed
+        // and add to the new set of layouts
+        this.newNestedLayouts[part] = nestedLayout;
+        delete this.nestedLayouts[part];
+      }
 
       // set next part position
       xp += td.x;
@@ -385,12 +477,16 @@ export default class Layout {
     // cleanup any dangling rows
     this.disposeRows();
 
+    // cleanup and dangling nested constructs
+    this.disposeNestedLayouts();
+
     // create/show vertical bar
     this.verticalFactory();
 
     // position and size vertical bar
+    const heightUsed = yp - startY + kT.blockH;
     this.vertical.set({
-      bounds: new Box2D(this.insetX, startY, kT.rowBarW, yp - startY + kT.blockH),
+      bounds: new Box2D(this.insetX, startY, kT.rowBarW, heightUsed),
     });
     // filter the selections so that we eliminate those block we don't contain
     let selectedNodes = [];
@@ -405,5 +501,36 @@ export default class Layout {
     }
     // apply selections to scene graph
     this.sceneGraph.ui.setSelections(selectedNodes);
+
+    // return the height consumed by the layout
+    return heightUsed;
+  }
+
+  /**
+   * remove any nodes we have created from the scenegraph. Recursively remove
+   * the nodes of nested constructs as well
+   */
+  dispose() {
+    invariant(!this.disposed, 'Layout already disposed');
+    this.disposed = true;
+    this.removeNode(this.banner);
+    this.removeNode(this.titleNode);
+    this.removeNode(this.vertical);
+    this.rows.forEach( node => {
+      this.removeNode(node);
+    });
+    Object.keys(this.parts2nodes).forEach(part => {
+      this.removeNode(this.parts2nodes[part]);
+    });
+    this.disposeNestedLayouts();
+  }
+
+  /**
+   * remove a node
+   */
+  removeNode(node) {
+    if (node && node.parent) {
+      node.parent.removeChild(node);
+    }
   }
 }

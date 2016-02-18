@@ -14,6 +14,10 @@ import {
   blockRename,
   blockRemoveComponent,
 } from '../../../actions/blocks';
+import {
+  blockGetParents,
+} from '../../../selectors/blocks';
+
 import { sbol as sbolDragType } from '../../../constants/DragTypes';
 import debounce from 'lodash.debounce';
 import { nodeIndex } from '../utils';
@@ -26,6 +30,7 @@ import {
    uiAddCurrent,
    uiSetCurrentConstruct,
   } from '../../../actions/ui';
+import invariant from 'invariant';
 
 export class ConstructViewer extends Component {
 
@@ -42,6 +47,7 @@ export class ConstructViewer extends Component {
     currentBlock: PropTypes.array,
     blockSetSbol: PropTypes.func,
     blockCreate: PropTypes.func,
+    blockGetParent: PropTypes.func,
     blockClone: PropTypes.func,
     blockAddComponent: PropTypes.func,
     blockRemoveComponent: PropTypes.func,
@@ -98,11 +104,25 @@ export class ConstructViewer extends Component {
   }
 
   /**
+   * get the parent of the given block, which is either the construct or the parents
+   * of the block if a nested construct.
+   *
+   */
+  getBlockParent(blockId) {
+    const parents = this.props.blockGetParents(blockId);
+    invariant(parents && parents.length, 'blocks are expected to have parents');
+    return this.props.blocks[parents[0]];
+  }
+
+  /**
    * add the given item using an insertion point from the constructviewer user interface.
    * Insertion point may be null, in which the block is added at the end
    */
   addItemAtInsertionPoint(payload, insertionPoint) {
     const { item, type } = payload;
+    // get the immediate parent ( which might not be the top level block if this is a nested construct )
+    let parent = insertionPoint ? this.getBlockParent(insertionPoint.block) : this.props.construct;
+
     if (type === sbolDragType) {
       // must have an insertion point for sbol
       if (insertionPoint) {
@@ -112,9 +132,9 @@ export class ConstructViewer extends Component {
           // insert new block
           const block = this.props.blockCreate({rules: {sbol: item.id}});
           // get index of insertion allowing for the edge closest to the drop if provided
-          const index = this.props.construct.components.indexOf(insertionPoint.block) + (insertionPoint.edge === 'right' ? 1 : 0);
+          const index = parent.components.indexOf(insertionPoint.block) + (insertionPoint.edge === 'right' ? 1 : 0);
           // add
-          this.props.blockAddComponent(this.props.construct.id, block.id, index);
+          this.props.blockAddComponent(parent.id, block.id, index);
           // return the newly created block or the block dropped on
           return [block.id];
         }
@@ -123,28 +143,31 @@ export class ConstructViewer extends Component {
         return [insertionPoint.block];
       }
     }
+
     // get index of insertion allowing for the edge closest to the drop
-    let index = this.props.construct.components.length;
+    let index = parent.components.length;
     if (insertionPoint) {
-      index = this.props.construct.components.indexOf(insertionPoint.block) + (insertionPoint.edge === 'right' ? 1 : 0);
+      index = parent.components.indexOf(insertionPoint.block) + (insertionPoint.edge === 'right' ? 1 : 0);
     }
     // add all blocks in the payload
     const blocks = Array.isArray(payload.item) ? payload.item : [payload.item];
     const clones = [];
     blocks.forEach(block => {
       const clone = this.props.blockClone(block);
-      this.props.blockAddComponent(this.props.construct.id, clone.id, index++);
+      this.props.blockAddComponent(parent.id, clone.id, index++);
       clones.push(clone.id);
     });
     // return all the newly inserted blocks
     return clones;
   }
   /**
-   * remove the given block, which we assume if part of our construct
+   * remove the given block, which we assume if part of our construct and
+   * return the scenegraph node that was representing it.
    */
   removePart(partId) {
     const node = this.layout.removePart(partId);
-    this.props.blockRemoveComponent(this.props.construct.id, partId);
+    const parent = this.getBlockParent(partId);
+    this.props.blockRemoveComponent(parent.id, partId);
     return node;
   }
 
@@ -226,7 +249,12 @@ export class ConstructViewer extends Component {
    * update the layout and then the scene graph
    */
   update() {
-    this.layout.update(this.props.construct, this.props.layoutAlgorithm, this.props.blocks, this.props.ui.currentBlocks, this.props.ui.currentConstructId);
+    this.layout.update(
+      this.props.construct,
+      this.props.layoutAlgorithm,
+      this.props.blocks,
+      this.props.ui.currentBlocks,
+      this.props.ui.currentConstructId);
     this.sg.update();
     this.sg.ui.update();
   }
@@ -347,6 +375,7 @@ export default connect(mapStateToProps, {
   blockClone,
   blockAddComponent,
   blockRemoveComponent,
+  blockGetParents,
   blockSetSbol,
   blockRename,
   uiAddCurrent,
