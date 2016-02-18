@@ -165,6 +165,7 @@ router.route('/:projectId/commit/:sha?')
 
     persistence.projectSnapshot(projectId, message)
       .then(sha => res.status(200).send(sha))
+      //todo - error handling
       .catch(err => res.status(500).send(err));
   });
 

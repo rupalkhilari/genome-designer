@@ -167,7 +167,8 @@ export const projectCreate = (projectId, project) => {
   return projectAssertNew(projectId)
     .then(() => _projectSetup(projectId))
     .then(() => _projectWrite(projectId, project))
-    //.then(() => _projectCommit(projectId, commitMessages.messageCreateProject(projectId)))
+    //keep this initial commit message, even when not auto-commiting for all atomic operations
+    .then(() => _projectCommit(projectId, commitMessages.messageCreateProject(projectId)))
     .then(() => project);
 };
 
