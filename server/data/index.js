@@ -88,6 +88,7 @@ router.route('/sequence/:md5/:blockId?')
 
     persistence.sequenceGet(md5)
       .then(sequence => {
+        //not entirely sure what this means... the file is empty?
         if (!sequence) {
           res.status(204).send('');
         }
@@ -107,12 +108,13 @@ router.route('/sequence/:md5/:blockId?')
     const { sequence } = req.body;
 
     findProjectFromBlock(blockId)
-      .catch(() => {
-        //couldn't find projectId or no block ID provided, just write the sequence
-        return persistence.sequenceWrite(md5, sequence);
-      })
       .then(projectId => {
         return persistence.sequenceWrite(md5, sequence, blockId, projectId);
+      })
+      .catch(() => {
+        //couldn't find projectId or no block ID provided, just write the sequence
+        //todo - ensure that this is an error from findProjectFromBlock
+        return persistence.sequenceWrite(md5, sequence);
       })
       .then(() => {
         res.status(200).send();
