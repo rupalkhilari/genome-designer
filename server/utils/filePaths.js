@@ -38,6 +38,10 @@ export const createProjectManifestPath = (projectId) => {
   return createProjectPath(projectId, manifestFilename);
 };
 
+export const createBlockDirectoryPath = (projectId) => {
+  return createStorageUrl(projectId, blockPath);
+};
+
 //BLOCKS
 
 export const createBlockPath = (blockId, projectId, ...rest) => {
