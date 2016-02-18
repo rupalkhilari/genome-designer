@@ -30,18 +30,19 @@ const initialState = {
     }
   })),
   [child5.id]: new Block(Object.assign({}, child5, {
+    components: [child6.id, child7.id],
     metadata: {
       color: 'goldenrod',
     }
   })),
   [child6.id]: new Block(Object.assign({}, child6, {
     metadata: {
-      color: 'dodgerblue',
+      color: 'palegreen',
     }
   })),
   [child7.id]: new Block(Object.assign({}, child7, {
     metadata: {
-      color: 'dodgerblue',
+      color: 'palegreen',
     }
   })),
 };

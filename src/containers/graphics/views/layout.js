@@ -503,7 +503,7 @@ export default class Layout {
     this.sceneGraph.ui.setSelections(selectedNodes);
 
     // return the height consumed by the layout
-    return heightUsed;
+    return heightUsed + nestedVertical;
   }
 
   /**

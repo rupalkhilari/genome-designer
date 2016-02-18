@@ -149,6 +149,12 @@ export class ConstructViewer extends Component {
     if (insertionPoint) {
       index = parent.components.indexOf(insertionPoint.block) + (insertionPoint.edge === 'right' ? 1 : 0);
     }
+    // just a HACK for now to allow new nested construct to be created.
+    if (insertionPoint && insertionPoint.block && window.event.metaKey) {
+      parent = this.props.blocks[insertionPoint.block];
+      index = 0;
+    }
+
     // add all blocks in the payload
     const blocks = Array.isArray(payload.item) ? payload.item : [payload.item];
     const clones = [];
