@@ -125,16 +125,18 @@ router.route('/projects/:projectId?')
   .get((req, res) => {
     const { projectId } = req;
     rollup.getProjectRollup(projectId)
-      .then(rollup => {
-        res.status(200).json(rollup);
+      .then(roll => {
+        res.status(200).json(roll);
       })
       .catch(err => {
         res.status(400).send(err);
       });
   })
   .post((req, res) => {
-    const rollup = req.body;
-    rollup.saveProjectRollup(rollup)
+    const { projectId } = req;
+    const roll = req.body;
+    rollup.writeProjectRollup(projectId, roll)
+      .then(() => persistence.projectSave(projectId))
       .then(() => {
         res.status(200).send();
       })

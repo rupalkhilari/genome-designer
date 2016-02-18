@@ -3,9 +3,12 @@ import * as persistence from './persistence';
 import * as filePaths from '../utils/filePaths';
 import * as fileSystem from '../utils/fileSystem';
 
+//note - these all expect the project to already exist.
+
 export const getAllBlockIdsInProject = (projectId) => {
   const directory = filePaths.createBlockDirectoryPath(projectId);
-  return fileSystem.directoryContents(directory);
+  return persistence.projectExists(projectId)
+    .then(() => fileSystem.directoryContents(directory));
 };
 
 export const getAllBlocksInProject = (projectId) => {
@@ -13,17 +16,6 @@ export const getAllBlocksInProject = (projectId) => {
     .then(blockIds => {
       return Promise.all(blockIds.map(blockId => persistence.blockGet(blockId, projectId)));
     });
-};
-
-export const getProjectRollup = (projectId) => {
-  return Promise.all([
-    persistence.projectGet(projectId),
-    getAllBlocksInProject(projectId),
-  ])
-  .then(([project, blocks]) => ({
-    project,
-    blocks,
-  }));
 };
 
 //returns block IDs in project with projectId, not in blockIdList passed in
@@ -44,15 +36,40 @@ export const blocksInProjectUnique = (projectId, blockIdList) => {
     });
 };
 
-export const saveProjectRollup = (rollup) => {
-  const { project, blocks } = rollup;
-  const projectId = project.id;
+export const createRollup = (project, ...blocks) => ({
+  project,
+  blocks: [...new Set(blocks)],
+});
 
-  return Promise.all([
-    persistence.projectWrite(projectId, project),
-    ...blocks.map(block => persistence.blockWrite(block.id, block, projectId)),
-  ])
-  .then(() => persistence.projectSave(projectId));
+export const getProjectRollup = (projectId) => {
+  return Promise
+    .all([
+      persistence.projectGet(projectId),
+      getAllBlocksInProject(projectId),
+    ])
+    .then(([project, blocks]) => ({
+      project,
+      blocks,
+    }));
+};
+
+export const writeProjectRollup = (projectId, rollup) => {
+  const { project, blocks } = rollup;
+  const newBlockIds = blocks.map(block => block.id);
+  invariant(projectId === project.id, 'rollup project ID does not match');
+
+  return getAllBlockIdsInProject(projectId)
+    .then(extantBlockIds => {
+      const differenceIds = extantBlockIds.filter(blockId => newBlockIds.indexOf(blockId) < 0);
+      return Promise.all([
+        ...differenceIds.map(blockId => persistence.blockDelete(blockId, projectId)),
+      ]);
+    })
+    .then(() => Promise.all([
+      persistence.projectWrite(projectId, project),
+      ...blocks.map(block => persistence.blockWrite(block.id, block, projectId)),
+    ]))
+    .then(() => rollup);
 };
 
 /**

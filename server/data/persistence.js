@@ -56,7 +56,9 @@ const _blockRead = (blockId, projectId, sha) => {
 
 const _projectSetup = (projectId) => {
   const projectPath = filePaths.createProjectPath(projectId);
+  const blockDirectory = filePaths.createBlockDirectoryPath(projectId);
   return directoryMake(projectPath)
+    .then(() => directoryMake(blockDirectory))
     .then(() => versioning.initialize(projectPath));
 };
 
