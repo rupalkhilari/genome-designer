@@ -3,6 +3,7 @@ import fetch from 'isomorphic-fetch';
 import invariant from 'invariant';
 import ProjectDefinition from '../schemas/Project';
 import BlockDefinition from '../schemas/Block';
+import orchestrator from '../store/orchestrator';
 
 /*************************
  Utils
@@ -136,19 +137,42 @@ export const saveProject = (project) => {
   }
 };
 
-//makes a git commit
-export const snapshotProject = (project) => {
-  invariant(ProjectDefinition.validate(project), 'Project does not pass validation: ' + project);
+//returns a rollup
+export const loadProject = (projectId) => {
+  const url = dataApiPath(`projects/${projectId}`);
+  return fetch(url, headersGet())
+    .then(resp => resp.json());
+};
 
-  try {
-    const stringified = JSON.stringify(project);
-    const url = dataApiPath(`${project.id}/commit`);
+//expects a rollup
+export const autosave = (projectId) => {
+  invariant(projectId, 'Project ID required to snapshot');
 
-    return fetch(url, headersPost(stringified))
-      .then(resp => resp.json());
-  } catch (err) {
-    return Promise.reject('error stringifying project');
-  }
+  const project = orchestrator.projects.projectGet(projectId);
+  invariant(project, 'Project must be in the store...');
+
+  const rollup = orchestrator.projects.projectCreateRollup(projectId);
+  invariant(rollup, 'Could not generate rollup...');
+  invariant(rollup.project && Array.isArray(rollup.blocks), 'rollup in wrong form');
+
+  const url = dataApiPath(`projects/${projectId}`);
+  const stringified = JSON.stringify(rollup);
+
+  return fetch(url, headersPost(stringified))
+    .then(resp => resp.json());
+};
+
+//explicit, makes a git commit
+export const snapshot = (projectId, message = 'Project S') => {
+  invariant(projectId, 'Project ID required to snapshot');
+  invariant(!message || typeof message === 'string', 'optional message for snapshot must be a string');
+
+  const stringified = JSON.stringify({message});
+  const url = dataApiPath(`${projectId}/commit`);
+
+  return autosave(projectId)
+    .then(() => fetch(url, headersPost(stringified)))
+    .then(resp => resp.json());
 };
 
 /*************************
