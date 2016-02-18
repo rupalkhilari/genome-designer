@@ -4,6 +4,7 @@ import { errorNoIdProvided, errorInvalidModel, errorInvalidRoute, errorDoesNotEx
 import findProjectFromBlock from './findProjectFromBlock';
 import { authenticationMiddleware } from './../utils/authentication';
 import * as persistence from './persistence';
+import * as rollup from './rollup';
 
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
@@ -118,14 +119,26 @@ router.route('/sequence/:md5/:blockId?')
 // response/request with data in format {project: {}, blocks: [], ...}
 // e.g. used in autosave, loading / saving whole project
 router.route('/projects/:projectId?')
+  .all(jsonParser)
   .get((req, res) => {
-
-  })
-  .put((req, res) => {
-
+    const { projectId } = req;
+    rollup.getProjectRollup(projectId)
+      .then(rollup => {
+        res.status(200).json(rollup);
+      })
+      .catch(err => {
+        res.status(400).send(err);
+      });
   })
   .post((req, res) => {
-
+    const rollup = req.body;
+    rollup.saveProjectRollup(rollup)
+      .then(() => {
+        res.status(200).send();
+      })
+      .catch(err => {
+        res.status(400).send(err);
+      });
   });
 
 router.route('/:projectId/commit/:sha?')

@@ -15,13 +15,24 @@ export const getAllBlocksInProject = (projectId) => {
     });
 };
 
+export const getProjectRollup = (projectId) => {
+  return Promise.all([
+    persistence.projectGet(projectId),
+    getAllBlocksInProject(projectId),
+  ])
+  .then(([project, blocks]) => ({
+    project,
+    blocks,
+  }));
+};
+
 //returns block IDs in project with projectId, not in blockIdList passed in
 export const blocksInProjectDifference = (projectId, blockIdList) => {
   invariant(Array.isArray(blockIdList), 'Must pass array to diff against');
   return getAllBlockIdsInProject(projectId)
-  .then(blockIds => {
-    return blockIds.filter(blockId => !blockIdList.includes(blockId));
-  });
+    .then(blockIds => {
+      return blockIds.filter(blockId => !blockIdList.includes(blockId));
+    });
 };
 
 //returns blocks IDs unique to blockIdList, not in project with projectId
@@ -31,6 +42,17 @@ export const blocksInProjectUnique = (projectId, blockIdList) => {
     .then(blockIds => {
       return blockIdList.filter(blockId => !blockIds.includes(blockId));
     });
+};
+
+export const saveProjectRollup = (rollup) => {
+  const { project, blocks } = rollup;
+  const projectId = project.id;
+
+  return Promise.all([
+    persistence.projectWrite(projectId, project),
+    ...blocks.map(block => persistence.blockWrite(block.id, block, projectId)),
+  ])
+  .then(() => persistence.projectSave(projectId));
 };
 
 /**
