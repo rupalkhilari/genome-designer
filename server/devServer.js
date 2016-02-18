@@ -21,8 +21,6 @@ var ROOT = path.dirname(__dirname);
 const app = express();
 const compiler = webpack(config);
 
-
-
 //logging middleware
 app.use(morgan('dev'));
 
