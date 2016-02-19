@@ -81,14 +81,16 @@ const _blockWrite = (blockId, block = {}, projectId) => {
 const _projectCommit = (projectId, message) => {
   const path = filePaths.createProjectPath(projectId);
   const commitMessage = !message ? commitMessages.messageProject(projectId) : message;
-  return versioning.commit(path, commitMessage);
+  return versioning.commit(path, commitMessage)
+    .then(sha => versioning.getCommit(path, sha));
 };
 
 //expects a well-formed commit message from commitMessages.js
 const _blockCommit = (blockId, projectId, message) => {
   const projectPath = filePaths.createProjectPath(projectId);
   const commitMessage = !message ? commitMessages.messageBlock(blockId) : message;
-  return versioning.commit(projectPath, commitMessage);
+  return versioning.commit(projectPath, commitMessage)
+    .then(sha => versioning.getCommit(path, sha));
 };
 
 //SAVE
@@ -267,11 +269,11 @@ export const sequenceGet = (md5) => {
 export const sequenceWrite = (md5, sequence, blockId, projectId) => {
   const sequencePath = filePaths.createSequencePath(md5);
   return fileWrite(sequencePath, sequence, false)
-    //.then(() => {
-    //  if (blockId && projectId) {
-    //    return _blockCommit(blockId, projectId, commitMessages.messageSequenceUpdate(blockId, sequence));
-    //  }
-    //})
+  //.then(() => {
+  //  if (blockId && projectId) {
+  //    return _blockCommit(blockId, projectId, commitMessages.messageSequenceUpdate(blockId, sequence));
+  //  }
+  //})
     .then(() => sequence);
 };
 
