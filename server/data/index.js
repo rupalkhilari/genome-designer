@@ -137,7 +137,6 @@ router.route('/projects/:projectId?')
       rollup.getAllProjectManifests()
         .then(metadatas => res.status(200).json(metadatas))
         .catch(err => {
-          console.error(err);
           res.status(500).send(err);
         });
     }
@@ -153,6 +152,7 @@ router.route('/projects/:projectId?')
         res.status(200).send();
       })
       .catch(err => {
+        console.log(err);
         res.status(400).send(err);
       });
   });
@@ -178,7 +178,7 @@ router.route('/:projectId/commit/:sha?')
     const { message } = req.body;
 
     persistence.projectSnapshot(projectId, message)
-      .then(sha => res.status(200).json({sha}))
+      .then(commit => res.status(200).json(commit))
       //todo - error handling
       .catch(err => res.status(500).send(err));
   });

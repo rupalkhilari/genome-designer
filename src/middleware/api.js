@@ -105,6 +105,7 @@ export const loadBlock = (blockId, projectId = 'block') => {
     .then(resp => resp.json());
 };
 
+//in general, youll probably want to save the whole project? but maybe not.
 export const saveBlock = (block, projectId, overwrite = false) => {
   invariant(projectId, 'Project ID is required');
   invariant(BlockDefinition.validate(block), 'Block does not pass validation: ' + block);
@@ -129,7 +130,7 @@ export const listProjects = () => {
 };
 
 //saves just the project manifest to file system
-export const saveProject = (project) => {
+export const saveProjectManifest = (project) => {
   invariant(ProjectDefinition.validate(project), 'Project does not pass validation: ' + project);
 
   try {
@@ -151,7 +152,8 @@ export const loadProject = (projectId) => {
 };
 
 //expects a rollup
-export const saveProjectRollup = (projectId, rollup) => {
+//autosave
+export const saveProject = (projectId, rollup) => {
   invariant(projectId, 'Project ID required to snapshot');
   invariant(rollup, 'Rollup is required to save');
   invariant(rollup.project && Array.isArray(rollup.blocks), 'rollup in wrong form');
@@ -163,6 +165,7 @@ export const saveProjectRollup = (projectId, rollup) => {
 };
 
 //explicit, makes a git commit
+//returns the commit
 export const snapshot = (projectId, rollup, message = 'Project Snapshot') => {
   invariant(projectId, 'Project ID required to snapshot');
   invariant(!message || typeof message === 'string', 'optional message for snapshot must be a string');
@@ -170,7 +173,7 @@ export const snapshot = (projectId, rollup, message = 'Project Snapshot') => {
   const stringified = JSON.stringify({message});
   const url = dataApiPath(`${projectId}/commit`);
 
-  return saveProjectRollup(projectId, rollup)
+  return saveProject(projectId, rollup)
     .then(() => fetch(url, headersPost(stringified)))
     .then(resp => resp.json());
 };

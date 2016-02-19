@@ -1,5 +1,5 @@
 import * as ActionTypes from '../constants/ActionTypes';
-import { saveProjectRollup, loadProject, snapshot } from '../middleware/api';
+import { saveProject, loadProject, snapshot } from '../middleware/api';
 import * as projectSelectors from '../selectors/projects';
 
 import Block from '../models/Block';
@@ -22,7 +22,7 @@ export const projectSave = (projectId) => {
   return (dispatch, getState) => {
     const project = getState().projects[projectId];
     const roll = dispatch(projectSelectors.projectCreateRollup(projectId));
-    return saveProjectRollup(projectId, roll)
+    return saveProject(projectId, roll)
       .then(json => {
         dispatch({
           type: ActionTypes.PROJECT_SAVE,

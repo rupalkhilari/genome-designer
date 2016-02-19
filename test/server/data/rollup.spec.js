@@ -3,49 +3,22 @@ import path from 'path';
 import { errorInvalidModel, errorAlreadyExists, errorDoesNotExist } from '../../../server/utils/errors';
 import { fileExists, fileRead, fileWrite, fileDelete, directoryExists, directoryMake, directoryDelete } from '../../../server/utils/fileSystem';
 
-import Project from '../../../src/models/Project';
 import Block from '../../../src/models/Block';
 
 import * as filePaths from '../../../server/utils/filePaths';
 import * as rollup from '../../../server/data/rollup';
 import * as persistence from '../../../server/data/persistence';
 
+import { createExampleRollup } from '../../utils/rollup';
+
 describe('REST', () => {
   describe('Data', () => {
     describe('Rollup', () => {
-      let project;
-      let projectId;
-      let blockP;
-      let blockA;
-      let blockB;
-      let blockC;
-      let blockD;
-      let blockE;
-      let roll;
-      /**
-       blocks:
-       P - A - C
-       . . . - D
-       . - B - E
-       */
+      const roll = createExampleRollup();
+      const project = roll.project;
+      const projectId = project.id;
+      const [blockP, blockA, blockB, blockC, blockD, blockE] = roll.blocks;
       before(() => {
-        blockC = new Block();
-        blockD = new Block();
-        blockE = new Block();
-        blockB = new Block({
-          components: [blockE.id],
-        });
-        blockA = new Block({
-          components: [blockC.id, blockD.id],
-        });
-        blockP = new Block({
-          components: [blockA.id, blockB.id],
-        });
-        project = new Project({
-          components: [blockP.id],
-        });
-        projectId = project.id;
-        roll = rollup.createRollup(project, blockP, blockA, blockB, blockC, blockD, blockE);
         return persistence.projectCreate(projectId, project);
       });
 
@@ -57,16 +30,16 @@ describe('REST', () => {
       it('writeProjectRollup() writes a whole rollup', () => {
         return rollup.writeProjectRollup(projectId, roll)
           .then(() => Promise
-              .all([
-                persistence.projectGet(projectId),
-                persistence.blockGet(blockA.id, projectId),
-                persistence.blockGet(blockE.id, projectId),
-              ])
-              .then(([gotProject, gotA, gotE]) => {
-                expect(gotProject).to.eql(project);
-                expect(gotA).to.eql(blockA);
-                expect(gotE).to.eql(blockE);
-              })
+            .all([
+              persistence.projectGet(projectId),
+              persistence.blockGet(blockA.id, projectId),
+              persistence.blockGet(blockE.id, projectId),
+            ])
+            .then(([gotProject, gotA, gotE]) => {
+              expect(gotProject).to.eql(project);
+              expect(gotA).to.eql(blockA);
+              expect(gotE).to.eql(blockE);
+            })
           );
       });
 
