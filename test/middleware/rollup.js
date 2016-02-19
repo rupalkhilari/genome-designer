@@ -14,7 +14,7 @@ import * as persistence from '../../server/data/persistence';
 import { createExampleRollup } from '../utils/rollup';
 
 describe('Middleware', () => {
-  describe.only('Rollup', () => {
+  describe('Rollup', () => {
     //create a test project to load
     const roll = createExampleRollup();
     const project = roll.project;
