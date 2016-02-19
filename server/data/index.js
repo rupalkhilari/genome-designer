@@ -135,6 +135,8 @@ router.route('/projects/:projectId?')
   .post((req, res) => {
     const { projectId } = req;
     const roll = req.body;
+    //todo - create project if not created
+
     rollup.writeProjectRollup(projectId, roll)
       .then(() => persistence.projectSave(projectId))
       .then(() => {
@@ -166,7 +168,7 @@ router.route('/:projectId/commit/:sha?')
     const { message } = req.body;
 
     persistence.projectSnapshot(projectId, message)
-      .then(sha => res.status(200).send(sha))
+      .then(sha => res.status(200).json({sha}))
       //todo - error handling
       .catch(err => res.status(500).send(err));
   });

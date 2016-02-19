@@ -14,7 +14,7 @@ class GlobalNav extends Component {
     projectCreate: PropTypes.func.isRequired,
     projectAddConstruct: PropTypes.func.isRequired,
     currentProjectId: PropTypes.string,
-    blockCreate: PropTypes.func,
+    blockCreate: PropTypes.func.isRequired,
     showMainMenu: PropTypes.bool.isRequired,
   };
 

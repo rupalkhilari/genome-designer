@@ -1,4 +1,6 @@
 import * as ActionTypes from '../constants/ActionTypes';
+import { saveProjectRollup, loadProject, snapshot } from '../middleware/api';
+import * as projectSelectors from '../selectors/projects';
 
 import Project from '../models/Project';
 
@@ -18,15 +20,50 @@ export const projectCreate = (initialModel) => {
 export const projectSave = (projectId) => {
   return (dispatch, getState) => {
     const project = getState().projects[projectId];
-    //todo - static method
-    return project.save()
-      .then(response => response.json())
+    const roll = dispatch(projectSelectors.projectCreateRollup(projectId));
+    return saveProjectRollup(projectId, roll)
       .then(json => {
         dispatch({
           type: ActionTypes.PROJECT_SAVE,
           project,
         });
         return json;
+      });
+  };
+};
+
+export const projectSnapshot = (projectId, message) => {
+  return (dispatch, getState) => {
+    const project = getState().projects[projectId];
+    const roll = dispatch(projectSelectors.projectCreateRollup(projectId));
+    return snapshot(projectId, roll, message)
+      .then(sha => {
+        dispatch({
+          type: ActionTypes.PROJECT_SNAPSHOT,
+          sha,
+        });
+        return sha;
+      });
+  };
+};
+
+export const projectLoad = (projectId) => {
+  return (dispatch, getState) => {
+    return loadProject(projectId)
+      .then(rollup => {
+        const { project, blocks } = rollup;
+        dispatch({
+          type: ActionTypes.PROJECT_LOAD,
+          project,
+        });
+        //todo - ensure this loads the blocks, in the right reducer
+        blocks.forEach((block) => {
+          dispatch({
+            type: ActionTypes.BLOCK_LOAD,
+            block,
+          });
+        });
+        return project;
       });
   };
 };
