@@ -1,4 +1,5 @@
 import invariant from 'invariant';
+import { errorDoesNotExist } from '../utils/errors';
 import * as persistence from './persistence';
 import * as filePaths from '../utils/filePaths';
 import * as fileSystem from '../utils/fileSystem';
@@ -7,7 +8,6 @@ export const getAllProjectManifests = () => {
   const directory = filePaths.createProjectsDirectoryPath();
   return fileSystem.directoryContents(directory)
     .then(projects => {
-      console.log(projects);
       return Promise.all(projects.map(project => persistence.projectGet(project)));
     });
 };
@@ -23,24 +23,6 @@ export const getAllBlocksInProject = (projectId) => {
   return getAllBlockIdsInProject(projectId)
     .then(blockIds => {
       return Promise.all(blockIds.map(blockId => persistence.blockGet(blockId, projectId)));
-    });
-};
-
-//returns block IDs in project with projectId, not in blockIdList passed in
-export const blocksInProjectDifference = (projectId, blockIdList) => {
-  invariant(Array.isArray(blockIdList), 'Must pass array to diff against');
-  return getAllBlockIdsInProject(projectId)
-    .then(blockIds => {
-      return blockIds.filter(blockId => !blockIdList.includes(blockId));
-    });
-};
-
-//returns blocks IDs unique to blockIdList, not in project with projectId
-export const blocksInProjectUnique = (projectId, blockIdList) => {
-  invariant(Array.isArray(blockIdList), 'Must pass array to diff against');
-  return getAllBlockIdsInProject(projectId)
-    .then(blockIds => {
-      return blockIdList.filter(blockId => !blockIds.includes(blockId));
     });
 };
 
@@ -66,7 +48,15 @@ export const writeProjectRollup = (projectId, rollup) => {
   const newBlockIds = blocks.map(block => block.id);
   invariant(projectId === project.id, 'rollup project ID does not match');
 
-  return getAllBlockIdsInProject(projectId)
+  return persistence.projectExists(projectId)
+    .catch(err => {
+      //if the project doesn't exist, let's make it
+      if (err === errorDoesNotExist) {
+        return persistence.projectCreate(projectId, project);
+      }
+      return Promise.reject(err);
+    })
+    .then(() => getAllBlockIdsInProject(projectId))
     .then(extantBlockIds => {
       const differenceIds = extantBlockIds.filter(blockId => newBlockIds.indexOf(blockId) < 0);
       return Promise.all([
@@ -88,5 +78,5 @@ export const writeProjectRollup = (projectId, rollup) => {
  */
 export const getComponentsRecursively = (projectId, parentId, acc) => {
   const parent = parentId || projectId;
-  //todo - do we need this? Usually can just use the flat list...
+  //todo - do we need this? Usually can just use the flat list... Use if want a certain depth
 };
