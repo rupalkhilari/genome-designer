@@ -72,6 +72,24 @@ export const commit = (path, message = 'commit message') => {
     });
 };
 
+export const getCommit = (path, sha) => {
+  invariant(sha, 'SHA is required');
+  return nodegit.Repository.open(makePath(path))
+    .then(repo => {
+      return repo.getCommit(sha);
+    })
+    .then(commit => ({
+      sha: commit.sha(),
+      author: commit.author().name(),
+      date: commit.date(),
+      message: commit.message(),
+    }))
+    .catch((err) => {
+      console.error(err);
+      Promise.reject(errorVersioningSystem);
+    });
+};
+
 /**
  * @description Git commit log of repository
  * @param path
