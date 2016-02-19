@@ -13,6 +13,12 @@ TODOs
 
 This section of the API is for saving Projects and Blocks. Projects are saved as directories, and versioned under git. Blocks are directories under projects. Using the provided persistence interface, git versioning should be handled automatically. 
 
+### When things happen
+
+A project will gain a commit whenever something happens (e.g. create, save, destroy)
+
+Snapshots are just commits with a specific message
+
 ### Directory Structure 
 
 /<projectId>
@@ -41,3 +47,7 @@ Interface for checking existence / creating / replacing / merging / deleting pro
 ### filePaths.js
 
 Create file system paths for projects, blocks, manifest files, sequence files
+
+### commitMessages.js
+
+Constants for various commit messages + generators so messages are consistent + easier to filter

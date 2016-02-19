@@ -160,6 +160,7 @@ export const saveBlock = (block, projectId, overwrite = false) => {
   }
 };
 
+//saves to file system
 export const saveProject = (project) => {
   invariant(ProjectDefinition.validate(project), 'Project does not pass validation: ' + project);
 
@@ -172,6 +173,50 @@ export const saveProject = (project) => {
   } catch (err) {
     return Promise.reject('error stringifying project');
   }
+};
+
+//makes a git commit
+export const snapshotProject = (project) => {
+  invariant(ProjectDefinition.validate(project), 'Project does not pass validation: ' + project);
+
+  try {
+    const stringified = JSON.stringify(project);
+    const url = dataApiPath(`${project.id}/commit`);
+
+    return fetch(url, headersPost(stringified))
+      .then(resp => resp.json());
+  } catch (err) {
+    return Promise.reject('error stringifying project');
+  }
+};
+
+/*************************
+ Sequence API
+ *************************/
+
+//future - support format
+const createSequenceUrl = (blockId, projectId = 'block', format) => dataApiPath(`${projectId}/${blockId}/sequence`);
+
+export const getSequence = (blockId, format) => {
+  const url = createSequenceUrl(blockId, undefined, format);
+
+  return fetch(url, headersGet())
+    .then((resp) => resp.text());
+};
+
+export const writeSequence = (blockId, sequence) => {
+  const url = createSequenceUrl(blockId);
+  const stringified = JSON.stringify({sequence});
+
+  return fetch(url, headersPost(stringified))
+    .then(resp => resp.json());
+};
+
+export const deleteSeqeuence = (blockId) => {
+  const url = createSequenceUrl(blockId);
+
+  return fetch(url, headersDelete())
+    .then(resp => resp.json());
 };
 
 /*************************

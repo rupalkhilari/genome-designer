@@ -15,6 +15,7 @@ const DEFAULT_PORT = 3000;
 const port = parseInt(process.argv[2], 10) || process.env.PORT || DEFAULT_PORT;
 const hostname = '0.0.0.0';
 
+var ROOT = path.dirname(__dirname);
 const app = express();
 const compiler = webpack(config);
 
@@ -73,6 +74,15 @@ app.use('/search', searchRouter);
 
 //Static Files
 app.use('/images', express.static(path.join(__dirname, '../src/images')));
+
+app.get('/version', function(req, res) {
+	try {
+		var version = require('fs').readFileSync(path.join(ROOT, 'VERSION'));
+		res.send(version);
+	} catch(ignored) {
+		res.send('Missing VERSION file');
+	}
+});
 
 //so that any routing is delegated to the client
 app.get('*', (req, res) => {

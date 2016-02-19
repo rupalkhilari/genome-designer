@@ -31,7 +31,7 @@ describe('REST', () => {
     });
 
     it('should return a 200', (done) => {
-      request(devServer)
+      request(server)
         .post('/auth/login')
         .send(dummyUser)
         .expect(200, done);

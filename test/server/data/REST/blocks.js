@@ -155,8 +155,6 @@ describe('REST', () => {
               done(err);
             }
 
-            console.log(result.body, blockData);
-
             expect(result.body).to.eql(validator);
             expect(result.body).to.not.eql(newBlock);
             expect(result.body).to.not.eql(blockData);
