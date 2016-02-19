@@ -19,32 +19,14 @@ const initialState = {
   [child1.id]: new Block(child1),
   [child2.id]: new Block(Object.assign({}, child2, {
     components: [child4.id, child5.id],
-    metadata: {
-      color: 'red',
-    }
   })),
   [child3.id]: new Block(child3),
-  [child4.id]: new Block(Object.assign({}, child4, {
-    metadata: {
-      color: 'goldenrod',
-    }
-  })),
+  [child4.id]: new Block(Object.assign({}, child4)),
   [child5.id]: new Block(Object.assign({}, child5, {
     components: [child6.id, child7.id],
-    metadata: {
-      color: 'goldenrod',
-    }
   })),
-  [child6.id]: new Block(Object.assign({}, child6, {
-    metadata: {
-      color: 'palegreen',
-    }
-  })),
-  [child7.id]: new Block(Object.assign({}, child7, {
-    metadata: {
-      color: 'palegreen',
-    }
-  })),
+  [child6.id]: new Block(Object.assign({}, child6)),
+  [child7.id]: new Block(Object.assign({}, child7)),
 };
 
 export default function blocks(state = initialState, action) {

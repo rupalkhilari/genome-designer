@@ -6,7 +6,7 @@ import invariant from 'invariant';
 import NodeText2D from './nodetext2d';
 import RectangleGlyph2D from './glyphs/html/rectangleglyph2d';
 import SBOLGlyph2D from './glyphs/html/sbolglyph2d';
-import LineGlyph2D from './glyphs/canvas/lineglyph2d';
+import LineGlyph2D from './glyphs/html/lineglyph2d';
 import ContextDots2D from './glyphs/html/contextdots2d';
 import ConstructBanner from './glyphs/canvas/constructbanner';
 /**
@@ -88,33 +88,6 @@ export default class Node2D {
    */
   toString() {
     return `Node = glyph:${this.glyph || 'NONE'} text:${this.text || ''}`;
-  }
-
-  /**
-   * append the given child to us. It will be top most until another child is added
-   * @param  {[type]} child [description]
-   * @return {[type]}       [description]
-   */
-  appendChild(child) {
-    invariant(child && !child.parent, 'cannot append nothing or a parented node');
-    child.parent = this;
-    this.children.push(child);
-    this.el.appendChild(child.el);
-    return child;
-  }
-
-
-  /**
-   * remove the given child from our children
-   * @param  {[type]} child [description]
-   * @return {[type]}       [description]
-   */
-  removeChild(child) {
-    invariant(child && this.children.indexOf(child) >= 0, 'node is not our child');
-    child.parent = null;
-    this.children.splice(this.children.indexOf(child), 1);
-    this.el.removeChild(child.el);
-    return child;
   }
 
   /**
@@ -287,6 +260,76 @@ export default class Node2D {
 
     return new Box2D(xmin, ymin, xmax - xmin, ymax - ymin);
   }
+
+  /**
+   * send to back of z order
+   * @return {[type]} [description]
+   */
+  sendToBack() {
+    invariant(this.parent, "Not attached!");
+    const p = this.parent;
+    // ignore if we are already the lowest child
+    if (p.children[0] === this) {
+      return;
+    }
+    this.detach();
+    this.insertBack(p);
+  }
+
+  /**
+ * remove from our current parent.
+ */
+  detach() {
+    invariant(this.parent, "Node is not parented");
+    this.parent.children.splice(this.parent.children.indexOf(this), 1);
+    this.parent.el.removeChild(this.el);
+    this.parent = null;
+  };
+
+  /**
+   * add to the back ( lowest z ) of the parent
+   */
+  insertBack(parent) {
+    invariant(!this.parent, "Node is already parented");
+    invariant(parent, "Bad parameter");
+    // if parent has no children then append is necessary
+    if (parent.children.length === 0) {
+      parent.appendChild(this);
+    } else {
+      // update child list of parent and this nodes parent reference
+      parent.children.splice(0, 0, this);
+      this.parent = parent;
+      // update the DOM
+      this.parent.el.insertBefore(this.el, this.parent.el.firstChild);
+    }
+  }
+
+  /**
+   * append the given child to us. It will be top most until another child is added
+   * @param  {[type]} child [description]
+   * @return {[type]}       [description]
+   */
+  appendChild(child) {
+    invariant(child && !child.parent, 'cannot append nothing or a parented node');
+    child.parent = this;
+    this.children.push(child);
+    this.el.appendChild(child.el);
+    return child;
+  }
+
+  /**
+   * remove the given child from our children
+   * @param  {[type]} child [description]
+   * @return {[type]}       [description]
+   */
+  removeChild(child) {
+    invariant(child && this.children.indexOf(child) >= 0, 'node is not our child');
+    child.parent = null;
+    this.children.splice(this.children.indexOf(child), 1);
+    this.el.removeChild(child.el);
+    return child;
+  }
+
 
   /**
    * Updating all display properties of the node and returning our element.

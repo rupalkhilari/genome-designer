@@ -35,6 +35,13 @@ export default class Layout {
     this.parts2nodes = {};
     this.partTypes = {};
     this.nestedLayouts = {};
+    this.connectors = {};
+
+    // this reference is incremented for each update. Blocks, lines are given
+    // the latest reference whenever they are updated. Any elements without
+    // the latest reference at the end of an update are no longer needed and
+    // will be removed.
+    this.updateReference = 0;
   }
 
   /**
@@ -391,6 +398,8 @@ export default class Layout {
    * @return {[type]} [description]
    */
   layout(layoutOptions) {
+    // set the new reference key
+    this.updateReference += 1;
     // shortcut
     const ct = this.construct;
     // construct the banner if required
@@ -436,8 +445,8 @@ export default class Layout {
       });
 
       // measure element text or used condensed spacing
-      //const td = this.measureText(this.nodeFromElement(part), this.partName(part), layoutOptions.condensed);
-      const td = this.measureText(this.nodeFromElement(part), part, layoutOptions.condensed);
+      const td = this.measureText(this.nodeFromElement(part), this.partName(part), layoutOptions.condensed);
+      //const td = this.measureText(this.nodeFromElement(part), part, layoutOptions.condensed);
 
       // if position would exceed x limit then wrap
       if (xp + td.x > mx) {
@@ -450,8 +459,8 @@ export default class Layout {
       // update part, including its text and color
       this.nodeFromElement(part).set({
         bounds: new Box2D(xp, yp, td.x, kT.blockH),
-        //text: this.partName(part),
-        text: part,
+        text: this.partName(part),
+        //text: part,
         fill: this.partMeta(part, 'color') || 'lightgray',
       });
 
@@ -484,8 +493,7 @@ export default class Layout {
           this.currentConstructId) + kT.nestedInsetY;
 
         // update / create connection
-        const cnodes = this.connectionInfo(part);
-        console.log(`Connect Node: ${cnodes.sourceBlock.id} / ${cnodes.destinationBlock.id}`);
+        this.updateConnection(part);
 
         // remove from old collection so the layout won't get disposed
         // and add to the new set of layouts
@@ -503,6 +511,8 @@ export default class Layout {
       const rw = xp - this.insetX;
       row.set({translateX: this.insetX + rw / 2, width: rw});
     }
+    // cleanup dangling connections
+    this.releaseConnections();
 
     // cleanup any dangling rows
     this.disposeRows();
@@ -532,20 +542,55 @@ export default class Layout {
     // apply selections to scene graph
     this.sceneGraph.ui.setSelections(selectedNodes);
 
-    if (this.line) {
-      this.removeNode(this.line);
-    }
-    this.line = new LineNode2D({
-      line: new Line2D(new Vector2D(0,0), new Vector2D(400, 100)),
-      stroke: 'red',
-      strokeWidth: '10',
-      sg: this.sceneGraph,
-    });
-    this.line.update();
-
-
     // return the height consumed by the layout
     return heightUsed + nestedVertical;
+  }
+
+  /**
+   * update / create the connection between the part which must be the
+   * parent of a nested construct.
+   */
+  updateConnection(part) {
+    const cnodes = this.connectionInfo(part);
+    // the source and destination node id's are used to as the cache key for the connectors
+    const key = `${cnodes.sourceBlock.id}-${cnodes.destinationBlock.id}`;
+    // get or create connection line
+    let connector = this.connectors[key];
+    if (!connector) {
+      const line = new LineNode2D({
+            line: new Line2D(new Vector2D(20, 20), new Vector2D(400, 400)),
+            strokeWidth: '4',
+            sg: this.sceneGraph,
+            parent: this.sceneGraph.root,
+          });
+      connector = {line};
+      this.connectors[key] = connector;
+    }
+    // update connector position
+    const sourceRectangle = cnodes.sourceNode.getAABB();
+    const destinationRectangle = cnodes.destinationNode.getAABB();
+    connector.line.set({
+      stroke: cnodes.sourceNode.fill,
+      line: new Line2D(sourceRectangle.center, destinationRectangle.center),
+    });
+    // ensure the connectors are always behind the blocks
+    connector.line.sendToBack();
+
+    // update its reference
+    connector.updateReference = this.updateReference;
+  }
+
+  /**
+   * remove any connections that are no longer in use
+   */
+  releaseConnections() {
+    Object.keys(this.connectors).forEach(key => {
+      const connector = this.connectors[key];
+      if (connector.updateReference !== this.updateReference) {
+        this.removeNode(connector.line);
+        delete this.connectors[key];
+      }
+    });
   }
 
   /**
@@ -563,6 +608,9 @@ export default class Layout {
     });
     Object.keys(this.parts2nodes).forEach(part => {
       this.removeNode(this.parts2nodes[part]);
+    });
+    Object.keys(this.connectors).forEach(key => {
+      this.removeNode(this.connectors[key].line);
     });
     this.disposeNestedLayouts();
   }
