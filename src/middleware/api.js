@@ -121,6 +121,13 @@ export const saveBlock = (block, projectId, overwrite = false) => {
   }
 };
 
+//returns metadata of projects
+export const listProjects = () => {
+  const url = dataApiPath('projects');
+  return fetch(url, headersGet())
+    .then(resp => resp.json());
+};
+
 //saves just the project manifest to file system
 export const saveProject = (project) => {
   invariant(ProjectDefinition.validate(project), 'Project does not pass validation: ' + project);

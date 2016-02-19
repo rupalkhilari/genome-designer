@@ -32,9 +32,9 @@ export const projectSave = (projectId) => {
   };
 };
 
+//Promise
 export const projectSnapshot = (projectId, message) => {
   return (dispatch, getState) => {
-    const project = getState().projects[projectId];
     const roll = dispatch(projectSelectors.projectCreateRollup(projectId));
     return snapshot(projectId, roll, message)
       .then(sha => {
@@ -47,6 +47,7 @@ export const projectSnapshot = (projectId, message) => {
   };
 };
 
+//Promise
 export const projectLoad = (projectId) => {
   return (dispatch, getState) => {
     return loadProject(projectId)
@@ -56,13 +57,14 @@ export const projectLoad = (projectId) => {
           type: ActionTypes.PROJECT_LOAD,
           project,
         });
-        //todo - ensure this loads the blocks, in the right reducer
+        //todo (future) - transaction
         blocks.forEach((block) => {
           dispatch({
             type: ActionTypes.BLOCK_LOAD,
             block,
           });
         });
+        //todo - change route?
         return project;
       });
   };

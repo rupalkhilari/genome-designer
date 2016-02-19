@@ -30,6 +30,8 @@ export const createFilePath = (path) => {
 
 //PROJECTS
 
+export const createProjectsDirectoryPath = () => createStorageUrl(projectPath);
+
 export const createProjectPath = (projectId, ...rest) => {
   invariant(projectId, 'Project ID required');
   return createStorageUrl(projectPath, projectId, ...rest);

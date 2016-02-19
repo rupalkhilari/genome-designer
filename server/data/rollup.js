@@ -3,8 +3,16 @@ import * as persistence from './persistence';
 import * as filePaths from '../utils/filePaths';
 import * as fileSystem from '../utils/fileSystem';
 
-//note - these all expect the project to already exist.
+export const getAllProjectManifests = () => {
+  const directory = filePaths.createProjectsDirectoryPath();
+  return fileSystem.directoryContents(directory)
+    .then(projects => {
+      console.log(projects);
+      return Promise.all(projects.map(project => persistence.projectGet(project)));
+    });
+};
 
+//note - expects the project to already exist.
 export const getAllBlockIdsInProject = (projectId) => {
   const directory = filePaths.createBlockDirectoryPath(projectId);
   return persistence.projectExists(projectId)

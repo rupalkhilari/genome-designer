@@ -124,13 +124,23 @@ router.route('/projects/:projectId?')
   .all(jsonParser)
   .get((req, res) => {
     const { projectId } = req;
-    rollup.getProjectRollup(projectId)
-      .then(roll => {
-        res.status(200).json(roll);
-      })
-      .catch(err => {
-        res.status(400).send(err);
-      });
+
+    if (projectId) {
+      rollup.getProjectRollup(projectId)
+        .then(roll => {
+          res.status(200).json(roll);
+        })
+        .catch(err => {
+          res.status(400).send(err);
+        });
+    } else {
+      rollup.getAllProjectManifests()
+        .then(metadatas => res.status(200).json(metadatas))
+        .catch(err => {
+          console.error(err);
+          res.status(500).send(err);
+        });
+    }
   })
   .post((req, res) => {
     const { projectId } = req;
