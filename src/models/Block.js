@@ -1,18 +1,13 @@
 import Instance from './Instance';
 import invariant from 'invariant';
 import BlockDefinition from '../schemas/Block';
-import { saveBlock, getSequence, writeSequence } from '../middleware/api';
+import { getSequence, writeSequence } from '../middleware/api';
 import AnnotationDefinition from '../schemas/Annotation';
 import md5 from 'md5';
 
 export default class Block extends Instance {
   constructor(input) {
     super(input, BlockDefinition.scaffold());
-  }
-
-  save(projectId, overwrite = false) {
-    invariant(projectId, 'Project ID required to save');
-    return saveBlock(this, projectId, overwrite);
   }
 
   addComponent(componentId, index) {

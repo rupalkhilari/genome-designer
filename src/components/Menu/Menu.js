@@ -33,7 +33,7 @@ export default class Menu extends Component {
               };
               return (
                 item.text ?
-                  (<MenuItem key={item.text} text={item.text} action={boundAction}/>) :
+                  (<MenuItem text={item.text} disabled={!!item.disabled} action={boundAction}/>) :
                   (<MenuSeparator key={index} />)
                 );
             })}

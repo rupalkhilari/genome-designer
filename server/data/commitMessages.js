@@ -1,6 +1,7 @@
 const projectSuffix = '_project';
 const blockSuffix = '_block';
 
+export const SAVE = 'save';
 export const SNAPSHOT = 'snapshot';
 export const PROMOTE = 'promote';
 
@@ -51,6 +52,10 @@ export const messageBlock = (blockId, notes) => {
 };
 
 // SNAPSHOT
+
+export const messageSave = (projectId, notes) => {
+  return _createCommitMessage(SAVE, projectId, notes);
+};
 
 export const messageSnapshot = (projectId, notes) => {
   return _createCommitMessage(SNAPSHOT, projectId, notes);

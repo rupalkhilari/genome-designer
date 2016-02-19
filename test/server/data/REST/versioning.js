@@ -25,8 +25,11 @@ describe('REST', () => {
       before(() => {
         return persistence.projectCreate(projectId, projectData)
           .then(() => persistence.blockCreate(blockId, blockData, projectId))
+          .then(() => persistence.projectSave(projectId))
           .then(() => persistence.projectWrite(projectId, newProject))
+          .then(() => persistence.projectSave(projectId))
           .then(() => persistence.blockWrite(blockId, newBlock, projectId))
+          .then(() => persistence.projectSave(projectId))
           .then(() => versioning.log(projectRepoPath))
           .then(log => {
             versionLog = log;
@@ -42,7 +45,7 @@ describe('REST', () => {
         server.close();
       });
 
-      it('POST /:projectId creates commit', (done) => {
+      it('POST /:projectId does not create commit', (done) => {
         versioning.log(projectRepoPath).then(firstResults => {
           const url = `/data/${projectId}`;
           request(server)
@@ -57,7 +60,7 @@ describe('REST', () => {
 
               versioning.log(projectRepoPath)
                 .then(secondResults => {
-                  expect(secondResults.length).to.equal(firstResults.length + 1);
+                  expect(secondResults.length).to.equal(firstResults.length);
                   done();
                 })
                 .catch(done);
@@ -65,7 +68,7 @@ describe('REST', () => {
         });
       });
 
-      it('POST /:projectId/:blockId creates commit', (done) => {
+      it('POST /:projectId/:blockId does not create commit', (done) => {
         versioning.log(projectRepoPath).then(firstResults => {
           const url = `/data/${projectId}/${blockId}`;
           request(server)
@@ -80,7 +83,7 @@ describe('REST', () => {
 
               versioning.log(projectRepoPath)
                 .then(secondResults => {
-                  expect(secondResults.length).to.equal(firstResults.length + 1);
+                  expect(secondResults.length).to.equal(firstResults.length);
                   done();
                 })
                 .catch(done);

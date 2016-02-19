@@ -253,13 +253,13 @@ describe('REST', () => {
             .then(result => expect(result).to.eql(overwrite));
         });
 
-        it('blockWrite() makes the project commit', () => {
+        it('blockWrite() does not make the project commit', () => {
           return versioning.log(projectRepoPath).then(firstResults => {
             const overwrite = blockData.merge(blockPatch);
             return persistence.blockWrite(blockId, overwrite, projectId)
               .then(() => versioning.log(projectRepoPath))
               .then((secondResults) => {
-                expect(secondResults.length).to.equal(firstResults.length + 1);
+                expect(secondResults.length).to.equal(firstResults.length);
               });
           });
         });
@@ -322,7 +322,7 @@ describe('REST', () => {
             .catch(err => expect(err).to.equal(errorDoesNotExist));
         });
 
-        it('blockDelete() creates a commit', () => {
+        it('blockDelete() does not create a commit', () => {
           return persistence.projectWrite(projectId, projectData)
             .then(() => persistence.blockWrite(blockId, blockData, projectId))
             .then(() => {
@@ -331,7 +331,7 @@ describe('REST', () => {
                   return persistence.blockDelete(blockId, projectId)
                     .then(() => versioning.log(projectRepoPath))
                     .then((secondResults) => {
-                      expect(secondResults.length).to.equal(firstResults.length + 1);
+                      expect(secondResults.length).to.equal(firstResults.length);
                     });
                 });
             });
@@ -357,8 +357,11 @@ describe('REST', () => {
         before(() => {
           return persistence.projectCreate(projectId, projectData)
             .then(() => persistence.blockCreate(blockId, blockData, projectId))
+            .then(() => persistence.projectSave(projectId))
             .then(() => persistence.projectWrite(projectId, newProject))
+            .then(() => persistence.projectSave(projectId))
             .then(() => persistence.blockWrite(blockId, newBlock, projectId))
+            .then(() => persistence.projectSave(projectId))
             .then(() => versioning.log(projectRepoPath))
             .then(log => {
               versionLog = log;
@@ -418,11 +421,11 @@ describe('REST', () => {
             .then(block => expect(block).to.eql(newBlock));
         });
 
-        it('sequenceWrite() writes commit if given blockId and projectId', () => {
+        it('sequenceWrite() does not create commit even if given blockId and projectId', () => {
           return persistence.sequenceWrite(sequenceMd5, blockSequence, blockId, projectId)
           .then(() => versioning.log(projectRepoPath))
           .then(log => {
-            expect(log.length).to.equal(versionLog.length + 1);
+            expect(log.length).to.equal(versionLog.length);
           });
         });
       });
