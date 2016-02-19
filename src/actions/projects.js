@@ -2,6 +2,7 @@ import * as ActionTypes from '../constants/ActionTypes';
 import { saveProjectRollup, loadProject, snapshot } from '../middleware/api';
 import * as projectSelectors from '../selectors/projects';
 
+import Block from '../models/Block';
 import Project from '../models/Project';
 
 //create a new project
@@ -53,18 +54,21 @@ export const projectLoad = (projectId) => {
     return loadProject(projectId)
       .then(rollup => {
         const { project, blocks } = rollup;
+        const projectModel = new Project(project);
+
+        //todo (future) - transaction
         dispatch({
           type: ActionTypes.PROJECT_LOAD,
-          project,
+          project: projectModel,
         });
-        //todo (future) - transaction
-        blocks.forEach((block) => {
+
+        blocks.forEach((blockObject) => {
+          const block = new Block(blockObject);
           dispatch({
             type: ActionTypes.BLOCK_LOAD,
             block,
           });
         });
-        //todo - change route?
         return project;
       });
   };
