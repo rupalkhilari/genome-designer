@@ -1,7 +1,9 @@
 import Box2D from '../geometry/box2d';
 import Vector2D from '../geometry/vector2d';
+import Line2D from '../geometry/line2d';
 import Node2D from '../scenegraph2d/node2d';
 import SBOL2D from '../scenegraph2d/sbol2d';
+import LineNode2D from '../scenegraph2d/line2d';
 import kT from './layoutconstants';
 import invariant from 'invariant';
 
@@ -165,6 +167,30 @@ export default class Layout {
     const block = this.blocks[blockId];
     invariant(block, 'expect to be able to find the block');
     return block.components && block.components.length;
+  }
+
+  /**
+   * return the first child of the given block or null if it has no children
+   */
+  firstChild(blockId) {
+    const block = this.blocks[blockId];
+    invariant(block, 'expect to be able to find the block');
+    return block.components && block.components.length ? block.components[0] : null;
+  }
+
+  /**
+   * return the two nodes that we need to graphically connect to show a connection.
+   * The given block is the source block
+   */
+  connectionInfo(sourceBlockId) {
+    const destinationBlockId = this.firstChild(sourceBlockId);
+    invariant(destinationBlockId, 'expected a child if this method is called');
+    return {
+      sourceBlock: this.blocks[sourceBlockId],
+      destinationBlock: this.blocks[destinationBlockId],
+      sourceNode: this.nodeFromElement(sourceBlockId),
+      destinationNode: this.nodeFromElement(destinationBlockId),
+    };
   }
 
   /**
@@ -410,8 +436,8 @@ export default class Layout {
       });
 
       // measure element text or used condensed spacing
-      const td = this.measureText(this.nodeFromElement(part), this.partName(part), layoutOptions.condensed);
-      //const td = this.measureText(this.nodeFromElement(part), part, layoutOptions.condensed);
+      //const td = this.measureText(this.nodeFromElement(part), this.partName(part), layoutOptions.condensed);
+      const td = this.measureText(this.nodeFromElement(part), part, layoutOptions.condensed);
 
       // if position would exceed x limit then wrap
       if (xp + td.x > mx) {
@@ -424,8 +450,8 @@ export default class Layout {
       // update part, including its text and color
       this.nodeFromElement(part).set({
         bounds: new Box2D(xp, yp, td.x, kT.blockH),
-        text: this.partName(part),
-        //text: part,
+        //text: this.partName(part),
+        text: part,
         fill: this.partMeta(part, 'color') || 'lightgray',
       });
 
@@ -456,6 +482,10 @@ export default class Layout {
           this.blocks,
           this.currentBlocks,
           this.currentConstructId) + kT.nestedInsetY;
+
+        // update / create connection
+        const cnodes = this.connectionInfo(part);
+        console.log(`Connect Node: ${cnodes.sourceBlock.id} / ${cnodes.destinationBlock.id}`);
 
         // remove from old collection so the layout won't get disposed
         // and add to the new set of layouts
@@ -501,6 +531,18 @@ export default class Layout {
     }
     // apply selections to scene graph
     this.sceneGraph.ui.setSelections(selectedNodes);
+
+    if (this.line) {
+      this.removeNode(this.line);
+    }
+    this.line = new LineNode2D({
+      line: new Line2D(new Vector2D(0,0), new Vector2D(400, 100)),
+      stroke: 'red',
+      strokeWidth: '10',
+      sg: this.sceneGraph,
+    });
+    this.line.update();
+
 
     // return the height consumed by the layout
     return heightUsed + nestedVertical;

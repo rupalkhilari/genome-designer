@@ -83,7 +83,6 @@ export default class UserInterface {
       // create an element if we need one
       let sel = this.selectionMap[node.uuid];
       if (!sel) {
-        console.log('Adding selection for:', node.uuid);
         sel = this.selectionMap[node.uuid] = this.createSelectionElement(node);
         this.el.appendChild(sel);
       }
