@@ -203,6 +203,8 @@ export const writeSequence = (md5, sequence, blockId) => {
  File API
  *************************/
 
+//note - you need to unpack the responses yourself (e.g. resp => resp.json())
+
 //returns a fetch object, for you to parse yourself (doesnt automatically convert to json)
 export const readFile = (fileName) => {
   return fetch(fileApiPath(fileName), headersGet());
@@ -278,5 +280,6 @@ export const search = (id, inputs) => {
 };
 
 export const getExtensionsInfo = () => {
-  return fetch(serverRoot + 'extensions', headersGet());
+  return fetch(serverRoot + 'extensions/list', headersGet())
+    .then(resp => resp.json());
 };

@@ -4,7 +4,7 @@ import * as api from '../../src/middleware/api';
 const { assert, expect } = chai;
 
 describe('Middleware', () => {
-  describe('Extensions', () => {
+  describe.only('Extensions', () => {
     it('importBlock() should be able convert Genbank features to Block', function testFunc(done) {
       fs.readFile('./test/res/sampleGenbank.gb', 'utf8', (err, sampleStr) => {
         api.importBlock('genbank', sampleStr)
@@ -83,33 +83,13 @@ describe('Middleware', () => {
         });
     });
 
-    it('getManifests() should be able get extension information', done => {
-      return api.getManifests('import')
-        .then(result => {
-          return result.json();
-        })
+    it('getExtensionsInfo() should be able get extension manifests', done => {
+      return api.getExtensionsInfo()
         .then(output => {
-          expect(output.features !== undefined).to.equal(true);
-          expect(output.genbank !== undefined).to.equal(true);
+          console.log(output);
           done();
         });
     });
-
-    /* todo
-
-     it('getExtensionsInfo() should be able get extension manifests', done => {
-     return api.getExtensionsInfo()
-     .then(result => {
-     return result.json();
-     })
-     .then(output => {
-     expect(output.convert !== undefined).to.equal(true);
-     expect(output.convert.genbank !== undefined).to.equal(true);
-     expect(output.search !== undefined).to.equal(true);
-     done();
-     });
-     });
-     */
 
   });
 });
