@@ -2,13 +2,9 @@ import fields from './fields/index';
 import SchemaDefinition from './SchemaDefinition';
 
 const ParentDefinition = new SchemaDefinition({
-  project: [
+  id: [
     fields.id().required,
-    'Name of the instance',
-  ],
-  block: [
-    fields.id().required,
-    'Description of instance',
+    'ID of parent instance',
   ],
   sha: [
     fields.version().required,

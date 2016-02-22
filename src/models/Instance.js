@@ -2,6 +2,7 @@ import uuid from 'node-uuid';
 import pathSet from 'lodash.set';
 import merge from 'lodash.merge';
 import cloneDeep from 'lodash.clonedeep';
+import invariant from 'invariant';
 import InstanceDefinition from '../schemas/Instance';
 
 /**
@@ -51,11 +52,19 @@ export default class Instance {
     return new this.constructor(base);
   }
 
-  clone() {
+  //clone by default just uses the ID, however,
+  clone(parentSha) {
     const self = cloneDeep(this);
+    invariant(parentSha || self.version, 'Version (e.g. of project) is required to clone');
+
+    const versionOfParent = (!!parentSha ? parentSha : self.version);
+    const latestParent = {
+      id: self.id,
+      sha: versionOfParent,
+    };
     const clone = Object.assign(self, {
       id: uuid.v4(),
-      parents: [self.id].concat(self.parents),
+      parents: [latestParent].concat(self.parents),
     });
     return new this.constructor(clone);
   }
