@@ -2,6 +2,7 @@ import fields from './fields/index';
 import * as validators from './fields/validators';
 import SchemaDefinition from './SchemaDefinition';
 
+import ParentDefinition from './Parent';
 import MetadataDefinition from './Metadata';
 
 const InstanceDefinition = new SchemaDefinition({
@@ -10,7 +11,7 @@ const InstanceDefinition = new SchemaDefinition({
     'ID of the instance',
   ],
   parents: [
-    fields.arrayOf(validators.id()).required,
+    fields.arrayOf(ParentDefinition).required,
     'Ancestral parents from which object is derived, with newest first',
   ],
   metadata: [
