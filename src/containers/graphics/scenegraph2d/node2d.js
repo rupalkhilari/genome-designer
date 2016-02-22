@@ -266,32 +266,32 @@ export default class Node2D {
    * @return {[type]} [description]
    */
   sendToBack() {
-    invariant(this.parent, "Not attached!");
-    const p = this.parent;
+    invariant(this.parent, 'Not attached!');
+    const par = this.parent;
     // ignore if we are already the lowest child
-    if (p.children[0] === this) {
+    if (par.children[0] === this) {
       return;
     }
     this.detach();
-    this.insertBack(p);
+    this.insertBack(par);
   }
 
   /**
  * remove from our current parent.
  */
   detach() {
-    invariant(this.parent, "Node is not parented");
+    invariant(this.parent, 'Node is not parented');
     this.parent.children.splice(this.parent.children.indexOf(this), 1);
     this.parent.el.removeChild(this.el);
     this.parent = null;
-  };
+  }
 
   /**
    * add to the back ( lowest z ) of the parent
    */
   insertBack(parent) {
-    invariant(!this.parent, "Node is already parented");
-    invariant(parent, "Bad parameter");
+    invariant(!this.parent, 'Node is already parented');
+    invariant(parent, 'Bad parameter');
     // if parent has no children then append is necessary
     if (parent.children.length === 0) {
       parent.appendChild(this);

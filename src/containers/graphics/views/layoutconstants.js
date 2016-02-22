@@ -23,7 +23,7 @@ const insetX = 0;
 const insetY = 0;
 // inset of nested constructs
 const nestedInsetX = 20;
-const nestedInsetY = 40;
+const nestedInsetY = 20;
 // font size
 const titleFontSize = '20px';
 const blockFontSize = '12px';

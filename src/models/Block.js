@@ -1,6 +1,5 @@
 import Instance from './Instance';
 import invariant from 'invariant';
-import color from '../utils/generators/color';
 import { saveBlock, readFile } from '../middleware/api';
 import BlockDefinition from '../schemas/Block';
 import AnnotationDefinition from '../schemas/Annotation';

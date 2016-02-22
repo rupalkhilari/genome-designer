@@ -51,6 +51,7 @@ export class ConstructViewer extends Component {
     blockClone: PropTypes.func,
     blockAddComponent: PropTypes.func,
     blockRemoveComponent: PropTypes.func,
+    blockGetParents: PropTypes.func,
     blocks: PropTypes.object,
     ui: PropTypes.object,
   };

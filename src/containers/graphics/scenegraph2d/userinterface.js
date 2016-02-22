@@ -57,7 +57,6 @@ export default class UserInterface {
    * @return {[type]}      [description]
    */
   removeFromSelections(node) {
-    debugger;
     invariant(node.sg === this.sg, 'node is not in our scenegraph');
     const index = this.selections.indexOf(node);
     if (index >= 0) {
@@ -97,7 +96,6 @@ export default class UserInterface {
     // remove any elements no longer required.
     Object.keys(this.selectionMap).forEach(nodeUUID => {
       if (!this.selections.find(node => nodeUUID === node.uuid)) {
-        console.log('removing selection for:', nodeUUID);
         const element = this.selectionMap[nodeUUID];
         delete this.selectionMap[nodeUUID];
         this.el.removeChild(element);

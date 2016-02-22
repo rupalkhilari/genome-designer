@@ -84,7 +84,7 @@ export default class Layout {
     }
     // if here part might be in nested construct
     const keys = Object.keys(this.nestedLayouts);
-    for(let i = 0; i < keys.length; i += 1) {
+    for (let i = 0; i < keys.length; i += 1) {
       const node = this.nestedLayouts[keys[i]].removePart(part);
       if (node) {
         return node;
@@ -101,7 +101,7 @@ export default class Layout {
     let part = this.nodes2parts[node.uuid];
     if (!part) {
       const nestedKeys = Object.keys(this.nestedLayouts);
-      for(let i = 0; i < nestedKeys.length && !part; i += 1) {
+      for (let i = 0; i < nestedKeys.length && !part; i += 1) {
         part = this.nestedLayouts[nestedKeys[i]].elementFromNode(node);
       }
     }
@@ -115,7 +115,7 @@ export default class Layout {
     let node = this.parts2nodes[element];
     if (!node) {
       const nestedKeys = Object.keys(this.nestedLayouts);
-      for(let i = 0; i < nestedKeys.length && !node; i += 1) {
+      for (let i = 0; i < nestedKeys.length && !node; i += 1) {
         node = this.nestedLayouts[nestedKeys[i]].nodeFromElement(element);
       }
     }
@@ -468,7 +468,7 @@ export default class Layout {
       if (this.hasChildren(part)) {
         // establish the position
         const nestedX = this.insetX + kT.nestedInsetX;
-        const nestedY = yp + kT.blockH + kT.nestedInsetY;
+        const nestedY = yp + nestedVertical + kT.blockH + kT.nestedInsetY;
         // get or create the layout object for this nested construct
         let nestedLayout = this.nestedLayouts[part];
         if (!nestedLayout) {
@@ -500,10 +500,8 @@ export default class Layout {
         this.newNestedLayouts[part] = nestedLayout;
         delete this.nestedLayouts[part];
       }
-
       // set next part position
       xp += td.x;
-
     });
 
     // ensure final row has the final row width
@@ -558,11 +556,11 @@ export default class Layout {
     let connector = this.connectors[key];
     if (!connector) {
       const line = new LineNode2D({
-            line: new Line2D(new Vector2D(20, 20), new Vector2D(400, 400)),
-            strokeWidth: '4',
-            sg: this.sceneGraph,
-            parent: this.sceneGraph.root,
-          });
+        line: new Line2D(new Vector2D(20, 20), new Vector2D(400, 400)),
+        strokeWidth: '4',
+        sg: this.sceneGraph,
+        parent: this.sceneGraph.root,
+      });
       connector = {line};
       this.connectors[key] = connector;
     }

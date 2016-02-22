@@ -1,14 +1,9 @@
-import Vector2D from '../geometry/vector2d';
-import Box2D from '../geometry/box2d';
 import Line2D from '../geometry/line2d';
 import Node2D from './node2d';
-import kT from '../views/layoutconstants.js';
-
 /**
  * a simple canvas based line class
  */
 export default class Line extends Node2D {
-
   constructor(props) {
     super(Object.assign({
       glyph: 'line',
@@ -19,7 +14,6 @@ export default class Line extends Node2D {
   }
 
   update() {
-
     // width is length of line, height is thickness
     this.width = this.line.len();
     this.height = Math.max(1, this.strokeWidth);
@@ -34,7 +28,6 @@ export default class Line extends Node2D {
 
     // base class
     const el = Node2D.prototype.update.call(this);
-
     return el;
   }
 }

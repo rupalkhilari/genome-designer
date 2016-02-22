@@ -62,9 +62,8 @@ export const uiSetCurrentConstruct = (constructId) => {
     const { currentBlocks } = state.ui;
 
     if (Array.isArray(currentBlocks) && currentBlocks.length) {
-      const construct = state.blocks[constructId];
+      //const construct = state.blocks[constructId];
       const children = dispatch(BlockSelector.blockGetChildrenRecursive(constructId));
-      //debugger;
       const blocks = currentBlocks.filter(blockId => {
         return children.some(block => block.id === blockId);
       });
