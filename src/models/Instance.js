@@ -2,15 +2,16 @@ import uuid from 'node-uuid';
 import pathSet from 'lodash.set';
 import merge from 'lodash.merge';
 import cloneDeep from 'lodash.clonedeep';
+import InstanceDefinition from '../schemas/Instance';
 
 /**
  * @description
  * you can pass as argument to the constructor either:
  *  - an object, which will extend the created instance
- *  - a string, to use as a forced ID (todo - deprecate)
+ *  - a string, to use as a forced ID (todo - deprecate - this is for testing...)
  */
 export default class Instance {
-  constructor(input = uuid.v4(), subclassBase) {
+  constructor(input = uuid.v4(), subclassBase, moreFields) {
     let parsedInput;
     if (!!input && typeof input === 'object') {
       parsedInput = input;
@@ -22,18 +23,9 @@ export default class Instance {
 
     merge(this,
       subclassBase,
-      {
-        id: uuid.v4(),
-        parents: [],
-        metadata: {
-          name: '',
-          description: '',
-          version: '1.0.0',
-          authors: [],
-          tags: {},
-        },
-      },
-      parsedInput
+      InstanceDefinition.scaffold(),
+      parsedInput,
+      moreFields
     );
 
     if (process.env.NODE_ENV !== 'production') {
