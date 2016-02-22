@@ -1,23 +1,37 @@
+import invariant from 'invariant';
 import * as ActionTypes from '../constants/ActionTypes';
 import BlockDefinition from '../schemas/Block';
-import { writeFile } from '../middleware/api';
 import Block from '../models/Block';
+import { saveBlock, loadBlock } from '../middleware/api';
 import * as selectors from '../selectors/blocks';
 
 //Promise
-export const blockSave = (blockId) => {
+export const blockSave = (blockId, projectId) => {
+  invariant(projectId, 'project ID required to save block'); //todo - assume from router?
   return (dispatch, getState) => {
     const block = getState().blocks[blockId];
-    //todo - static method
-    return block.save()
-      .then(response => response.json())
-      .then(json => {
+    return saveBlock(block, projectId)
+      .then(block => {
         dispatch({
           type: ActionTypes.BLOCK_SAVE,
           block,
         });
-        return json;
+        return block;
       });
+  };
+};
+
+//Promise
+export const blockLoad = (blockId) => {
+  return (dispatch, getState) => {
+    return loadBlock(blockId)
+    .then(block => {
+      dispatch({
+        type: ActionTypes.BLOCK_LOAD,
+        block,
+      });
+      return block;
+    });
   };
 };
 
@@ -233,19 +247,12 @@ export const blockGetSequence = (blockId, format) => {
 
 //Promise
 //future - validate
-//future - trigger history actions
-export const blockSetSequence = (blockId, sequence) => {
+export const blockSetSequence = (blockId, sequence, useStrict) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
-    // If we are editing the sequence, or sequence doesn't exist, we want to set the sequence for the child block, not change the sequence of the parent part.
-    // When setting, it doesn't really matter, we just always want to set via filename which matches this block.
-    const sequenceUrl = oldBlock.getSequenceUrl(true);
-    const sequenceLength = sequence.length;
 
-    return writeFile(sequenceUrl, sequence)
-      .then(() => {
-        const withUrl = oldBlock.setSequenceUrl(sequenceUrl);
-        const block = withUrl.mutate('sequence.length', sequenceLength);
+    return oldBlock.setSequence(sequence, useStrict)
+      .then(block => {
         dispatch({
           type: ActionTypes.BLOCK_SET_SEQUENCE,
           block,

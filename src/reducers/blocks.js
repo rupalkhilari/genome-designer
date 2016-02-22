@@ -32,7 +32,8 @@ const initialState = {
 export default function blocks(state = initialState, action) {
   switch (action.type) {
   case ActionTypes.BLOCK_CREATE :
-  case ActionTypes.BLOCK_SAVE :
+  //case ActionTypes.BLOCK_SAVE :
+  case ActionTypes.BLOCK_LOAD :
   case ActionTypes.BLOCK_MERGE :
   case ActionTypes.BLOCK_RENAME :
   case ActionTypes.BLOCK_SET_COLOR :

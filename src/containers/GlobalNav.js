@@ -3,7 +3,8 @@ import {Link} from 'react-router';
 import {connect} from 'react-redux';
 import {pushState} from 'redux-router';
 import MenuBar from '../components/Menu/MenuBar';
-import { projectCreate, projectAddConstruct } from '../actions/projects';
+import { listProjects } from '../middleware/api';
+import { projectCreate, projectAddConstruct, projectSave, projectLoad } from '../actions/projects';
 import { blockCreate } from '../actions/blocks';
 
 import '../styles/GlobalNav.css';
@@ -13,14 +14,21 @@ class GlobalNav extends Component {
     pushState: PropTypes.func.isRequired,
     projectCreate: PropTypes.func.isRequired,
     projectAddConstruct: PropTypes.func.isRequired,
+    projectSave: PropTypes.func.isRequired,
+    projectLoad: PropTypes.func.isRequired,
     currentProjectId: PropTypes.string,
-    blockCreate: PropTypes.func,
+    blockCreate: PropTypes.func.isRequired,
     showMainMenu: PropTypes.bool.isRequired,
   };
 
   state = {
     showAddProject: false,
+    recentProjects: [],
   };
+
+  componentDidMount() {
+    listProjects().then(projects => this.setState({recentProjects: projects}));
+  }
 
   menuBar() {
     return (<MenuBar
@@ -30,7 +38,23 @@ class GlobalNav extends Component {
           items: [
             {
               text: 'Recent Projects',
-              action: () => {},
+              disabled: true,
+            },
+            ...(this.state.recentProjects.map(project => {
+              return {
+                text: project.metadata.name || 'My Project',
+                action: () => {
+                  this.props.projectLoad(project.id)
+                    .then(() => this.props.pushState(null, `/project/${project.id}`));
+                },
+              };
+            })),
+            {},
+            {
+              text: 'Save Project',
+              action: () => {
+                this.props.projectSave(this.props.currentProjectId);
+              },
             },
             {},
             {
@@ -221,6 +245,8 @@ function mapStateToProps(state) {
 export default connect(mapStateToProps, {
   projectAddConstruct,
   projectCreate,
+  projectSave,
+  projectLoad,
   blockCreate,
   pushState,
 })(GlobalNav);

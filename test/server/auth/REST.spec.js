@@ -1,6 +1,5 @@
 import { expect } from 'chai';
 import request from 'supertest';
-import { set as dbSet } from '../../../server/deprecated/database';
 import { getSessionKey, login } from '../../../src/middleware/api';
 
 const devServer = require('../../../server/devServer');
@@ -19,7 +18,6 @@ describe.skip('REST', () => {
     };
     beforeEach('server setup', () => {
       server = devServer.listen();
-      return dbSet(sessionkey, sessionKeyValue);
     });
     afterEach(() => {
       server.close();

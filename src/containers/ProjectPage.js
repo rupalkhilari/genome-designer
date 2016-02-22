@@ -77,9 +77,7 @@ function mapStateToProps(state) {
   if (!project) {
     return {};
   }
-
   const constructs = project.components.map(componentId => state.blocks[componentId]);
-
   return {
     projectId,
     constructId,

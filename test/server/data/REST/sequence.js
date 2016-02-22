@@ -1,5 +1,6 @@
 import { assert, expect } from 'chai';
 import request from 'supertest';
+import md5 from 'md5';
 import Project from '../../../../src/models/Project';
 import Block from '../../../../src/models/Block';
 import * as persistence from '../../../../server/data/persistence';
@@ -12,19 +13,21 @@ describe('REST', () => {
       const projectData = new Project();
       const projectId = projectData.id;
 
-      const blockData = new Block();
-      const blockId = blockData.id;
-
-      const blockNoSequence = new Block();
-      const blockNoSequenceId = blockNoSequence.id;
-
       const sequence = 'aaaaacccccccgggggggtttttt';
+      const sequenceMd5 = md5(sequence);
+
+      const blockData = new Block({
+        sequence: {
+          md5: sequenceMd5,
+          length: sequence.length,
+        },
+      });
+      const blockId = blockData.id;
 
       before(() => {
         return persistence.projectCreate(projectId, projectData)
           .then(() => persistence.blockCreate(blockId, blockData, projectId))
-          .then(() => persistence.blockCreate(blockNoSequenceId, blockNoSequence, projectId))
-          .then(() => persistence.sequenceWrite(blockId, sequence, projectId));
+          .then(() => persistence.sequenceWrite(sequenceMd5, sequence));
       });
 
       beforeEach('server setup', () => {
@@ -34,32 +37,20 @@ describe('REST', () => {
         server.close();
       });
 
-      it('GET errors with 400 when block doesnt exist', (done) => {
-        const url = `/data/${projectId}/InvalidId/sequence`;
+      it('GET errors with 400 when sequence doesnt exist', (done) => {
+        const url = `/data/sequence/notReal`;
         request(server)
           .get(url)
           .expect(400, done);
       });
 
-      it('GET a non-extant sequence returns empty and a 204', (done) => {
-        const url = `/data/${projectId}/${blockNoSequenceId}/sequence`;
-        request(server)
-          .get(url)
-          .expect(204)
-          .expect(result => {
-            expect(result.body).to.be.empty;
-          })
-          .end(done);
-      });
-
       it('GET an existing sequence returns the sequence', (done) => {
-        const url = `/data/${projectId}/${blockId}/sequence`;
+        const url = `/data/sequence/${sequenceMd5}`;
         request(server)
           .get(url)
           .expect(200)
           .expect('Content-Type', /text/)
           .expect(result => {
-            console.log('receieved ', result);
             expect(result.text).to.eql(sequence);
           })
           .end(done);
@@ -67,18 +58,20 @@ describe('REST', () => {
 
       it('POST writes the sequence', (done) => {
         const newSequence = 'acgtacgtacgtacgtacgt';
-        const url = `/data/${projectId}/${blockId}/sequence`;
+        const newMd5 = md5(newSequence);
+        const url = `/data/sequence/${newMd5}`;
+
         request(server)
           .post(url)
-          .type('text/plain')
-          .send(newSequence)
+          .send({sequence: newSequence})
           .expect(200)
           .end((err, result) => {
             if (err) {
               done(err);
+              return;
             }
 
-            persistence.sequenceGet(blockId, projectId)
+            persistence.sequenceGet(newMd5)
               .then(seq => {
                 expect(seq).to.equal(newSequence);
                 done();
@@ -88,35 +81,26 @@ describe('REST', () => {
       });
 
       //todo
-      it('POST returns the sequence length and md5');
-
-      //future
       it('POST validates the sequence');
 
-      it('DELETE deletes the sequence', (done) => {
-        const url = `/data/${projectId}/${blockId}/sequence`;
+      it('DELETE does not allow deletion', (done) => {
+        const url = `/data/sequence/${sequenceMd5}`;
         request(server)
-          .delete(url)
-          .expect(200)
+          .del(url)
+          .expect(403)
           .end((err, result) => {
             if (err) {
               done(err);
+              return;
             }
 
-            persistence.sequenceGet(blockId, projectId)
+            persistence.sequenceGet(sequenceMd5)
               .then((seq) => {
-                assert(!seq);
+                assert(seq === sequence, 'should be the same...');
                 done();
               })
               .catch(done);
           });
-      });
-
-      it('DELETE errors when sequence doesnt exist', (done) => {
-        const url = `/data/${projectId}/${blockNoSequenceId}/sequence`;
-        request(server)
-          .delete(url)
-          .expect(400, done);
       });
     });
   });

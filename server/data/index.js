@@ -1,8 +1,10 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import { errorNoIdProvided, errorInvalidModel, errorInvalidRoute, errorDoesNotExist } from './../utils/errors';
+import findProjectFromBlock from './findProjectFromBlock';
 import { authenticationMiddleware } from './../utils/authentication';
 import * as persistence from './persistence';
+import * as rollup from './rollup';
 
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
@@ -19,71 +21,15 @@ router.use(authenticationMiddleware);
 
 router.use(jsonParser);
 
-/***************************
- REST
- ***************************/
-
-/******** Cloning *********/
-
-//todo in future - supporting on client only
-router.get('/clone', jsonParser, (req, res) => {
-  res.status(501).send('not implemented');
-});
-
-/******** PARAMS ***********/
-
-//assign null if they do not exist
-
-router.param('projectId', (req, res, next, id) => {
-  const projectId = id;
-  Object.assign(req, {projectId});
-  next();
-
-  /*
-   persistence.projectGet(projectId)
-   .then(project => {
-   Object.assign(req, {
-   project,
-   projectId,
-   });
-   next();
-   })
-   .catch(err => {
-   res.status(500).send(err);
-   });
-   */
-});
-
-router.param('blockId', (req, res, next, id) => {
-  const blockId = id;
-  Object.assign(req, {blockId});
-  next();
-
-  /*
-   const { projectId } = req.params;
-   persistence.blockGet(projectId, blockId)
-   .then(block => {
-   Object.assign(req, {
-   block,
-   blockId,
-   });
-   next();
-   })
-   .catch(err => {
-   res.status(500).send(err);
-   });
-   */
-});
-
-/********** ROUTES ***********/
-
-// is this a hack? or super useful?!
 // allow the route /block/<blockId> and find the projectId
-router.all((req, res, next) => {
+// not recommended e.g. for POST
+// dependent on param middleware below to assign IDs to req directly
+// does not know about SHA, but shouldn't be an issue, as blocks change IDs moving across projects
+const blockDeterminatorMiddleware = (req, res, next) => {
   const { projectId, blockId } = req;
 
   if (projectId === 'block' && blockId) {
-    persistence.findProjectFromBlock(blockId)
+    findProjectFromBlock(blockId)
       .then(projectId => {
         Object.assign(req, {projectId});
         next();
@@ -97,26 +43,43 @@ router.all((req, res, next) => {
   } else {
     next();
   }
+};
+
+/***************************
+ REST
+ ***************************/
+
+/******** PARAMS ***********/
+
+router.param('projectId', (req, res, next, id) => {
+  Object.assign(req, {projectId: id});
+  next();
 });
 
-// PUT - replace
-// POST - merge
+router.param('blockId', (req, res, next, id) => {
+  Object.assign(req, {blockId: id});
+  next();
+});
 
-//todo - expecting sequence in POST json, update middleware
-router.route('/:projectId/:blockId/sequence')
-  .all(textParser, (req, res, next) => {
-    const { projectId, blockId } = req;
+/********** ROUTES ***********/
 
-    if (!projectId || !blockId) {
-      res.status(400).send(errorNoIdProvided);
-    }
-    next();
-  })
+/*
+ In general:
+
+ PUT - replace
+ POST - merge
+ */
+
+//expect that a well-formed md5 is sent. however, not yet checking. So you really could just call it whatever you wanted...
+
+// future - url + `?format=${format}`;
+router.route('/sequence/:md5/:blockId?')
   .get((req, res) => {
-    const { projectId, blockId } = req;
+    const { md5 } = req.params;
 
-    persistence.sequenceGet(blockId, projectId)
+    persistence.sequenceGet(md5)
       .then(sequence => {
+        //not entirely sure what this means... the file is empty?
         if (!sequence) {
           res.status(204).send('');
         }
@@ -126,46 +89,119 @@ router.route('/:projectId/:blockId/sequence')
       })
       .catch(err => {
         if (err === errorDoesNotExist) {
-          //this means the block does not exist
           res.status(400).send(errorDoesNotExist);
         }
-        res.status(500).err(err);
+        res.status(500).send(err);
       });
   })
   .post((req, res) => {
-    const { projectId, blockId } = req;
-    const sequence = req.body;
+    const { md5, blockId } = req.params;
+    const { sequence } = req.body;
 
-    persistence.sequenceWrite(blockId, sequence, projectId)
+    findProjectFromBlock(blockId)
+      .then(projectId => {
+        return persistence.sequenceWrite(md5, sequence, blockId, projectId);
+      })
+      .catch(() => {
+        //todo - only want to catch the findProjectFromBlock
+        //couldn't find projectId or no block ID provided, just write the sequence
+        //todo - ensure that this is an error from findProjectFromBlock
+        return persistence.sequenceWrite(md5, sequence);
+      })
       .then(() => {
-        //todo - md5 sequence and return
-        //todo - update block sequence length just in case
         res.status(200).send();
       })
       .catch(err => res.status(500).send(err));
   })
   .delete((req, res) => {
-    const { projectId, blockId } = req;
+    res.status(403).send('Not allowed to delete sequence');
+  });
 
-    persistence.sequenceDelete(blockId, projectId)
-      .then(() => res.status(200).send())
+// routes for non-atomic operations
+// response/request with data in format {project: {}, blocks: [], ...}
+// e.g. used in autosave, loading / saving whole project
+router.route('/projects/:projectId?')
+  .all(jsonParser)
+  .get((req, res) => {
+    const { projectId } = req;
+
+    if (projectId) {
+      rollup.getProjectRollup(projectId)
+        .then(roll => {
+          res.status(200).json(roll);
+        })
+        .catch(err => {
+          res.status(400).send(err);
+        });
+    } else {
+      rollup.getAllProjectManifests()
+        .then(metadatas => res.status(200).json(metadatas))
+        .catch(err => {
+          res.status(500).send(err);
+        });
+    }
+  })
+  .post((req, res) => {
+    const { projectId } = req;
+    const roll = req.body;
+    //todo - create project if not created
+
+    rollup.writeProjectRollup(projectId, roll)
+      .then(() => persistence.projectSave(projectId))
+      .then(() => {
+        res.status(200).send();
+      })
       .catch(err => {
-        if (err === errorDoesNotExist) {
-          res.status(400).send(errorInvalidModel);
-        }
-        res.status(500).err(err);
+        console.log(err);
+        res.status(400).send(err);
       });
   });
 
-router.route('/:projectId/:blockId')
-  .all((req, res, next) => {
-    const { projectId, blockId } = req;
+router.route('/:projectId/commit/:sha?')
+  .get((req, res) => {
+    //pass the SHA you want, otherwise send commit log
+    const { projectId } = req;
+    const { sha } = req.params;
 
-    if (!projectId || !blockId) {
-      res.status(400).send(errorNoIdProvided);
+    if (sha) {
+      persistence.projectGet(projectId, sha)
+        .then(project => res.status(200).json(project))
+        .catch(err => res.status(500).send(err));
+    } else {
+      //todo
+      res.status(501).send('not supported yet');
     }
-    next();
   })
+  .post((req, res) => {
+    //you can POST a field `message` for the commit, receieve the SHA
+    const { projectId } = req;
+    const { message } = req.body;
+
+    persistence.projectSnapshot(projectId, message)
+      .then(commit => res.status(200).json(commit))
+      //todo - error handling
+      .catch(err => res.status(500).send(err));
+  });
+
+//pass SHA you want, otherwise get commit log
+router.route('/:projectId/:blockId/commit/:sha?')
+  .all(blockDeterminatorMiddleware)
+  .get((req, res) => {
+    const { blockId, projectId } = req;
+    const { sha } = req.params;
+
+    if (!!sha) {
+      persistence.blockGet(blockId, projectId, sha)
+        .then(project => res.status(200).json(project))
+        .catch(err => res.status(500).send(err));
+    } else {
+      //todo
+      res.status(501).send('not supported yet');
+    }
+  });
+
+router.route('/:projectId/:blockId')
+  .all(blockDeterminatorMiddleware)
   .get((req, res) => {
     const { projectId, blockId } = req;
 
@@ -176,7 +212,7 @@ router.route('/:projectId/:blockId')
         }
         res.json(result);
       })
-      .catch(err => res.status(500).err(err));
+      .catch(err => res.status(500).send(err));
   })
   .put((req, res) => {
     const { projectId, blockId } = req;
@@ -188,7 +224,7 @@ router.route('/:projectId/:blockId')
         if (err === errorInvalidModel) {
           res.status(400).send(errorInvalidModel);
         }
-        res.status(500).err(err);
+        res.status(500).send(err);
       });
   })
   .post((req, res) => {
@@ -213,7 +249,7 @@ router.route('/:projectId/:blockId')
 
     persistence.blockDelete(blockId, projectId)
       .then(() => res.status(200).send(blockId))
-      .catch(err => res.status(500).err(err));
+      .catch(err => res.status(500).send(err));
   });
 
 router.route('/:projectId')
@@ -228,7 +264,7 @@ router.route('/:projectId')
         }
         res.json(result);
       })
-      .catch(err => res.status(500).err(err));
+      .catch(err => res.status(500).send(err));
   })
   .put((req, res) => {
     const { projectId } = req;
@@ -240,7 +276,7 @@ router.route('/:projectId')
         if (err === errorInvalidModel) {
           res.status(400).send(errorInvalidModel);
         }
-        res.status(500).err(err);
+        res.status(500).send(err);
       });
   })
   .post((req, res) => {

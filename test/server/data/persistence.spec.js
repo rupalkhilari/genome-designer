@@ -1,40 +1,38 @@
 import { assert, expect } from 'chai';
-import fs from 'fs';
 import path from 'path';
 import merge from 'lodash.merge';
-import rimraf from 'rimraf';
-import { exec } from 'child_process'; //todo - promise version
+import md5 from 'md5';
 import { errorInvalidModel, errorAlreadyExists, errorDoesNotExist } from '../../../server/utils/errors';
 import { fileExists, fileRead, fileWrite, fileDelete, directoryExists, directoryMake, directoryDelete } from '../../../server/utils/fileSystem';
 import Project from '../../../src/models/Project';
 import Block from '../../../src/models/Block';
 
 import * as filePaths from '../../../server/utils/filePaths';
-import * as git from '../../../server/data/versioning';
+import * as versioning from '../../../server/data/versioning';
 import * as persistence from '../../../server/data/persistence';
+import findProjectFromBlock from '../../../server/data/findProjectFromBlock';
 
 //todo - can probably de-dupe many of these setup / before() clauses, they are pretty similar
 
 describe('REST', () => {
   describe('Data', () => {
     describe('persistence', function persistenceTests() {
-      this.timeout(10000);
-
       describe('existence + reading', () => {
         const projectName = 'persistenceProject';
         const projectData = new Project({metadata: {name: projectName}});
         const projectId = projectData.id;
         const projectPath = filePaths.createProjectPath(projectId);
-        const projectManifestPath = path.resolve(projectPath, filePaths.manifestPath);
+        const projectManifestPath = path.resolve(projectPath, filePaths.manifestFilename);
 
         const blockName = 'blockA';
         const blockData = new Block({metadata: {name: blockName}});
         const blockId = blockData.id;
         const blockPath = filePaths.createBlockPath(blockId, projectId);
-        const blockManifestPath = path.resolve(blockPath, filePaths.manifestPath);
-        const blockSequencePath = path.resolve(blockPath, filePaths.sequencePath);
+        const blockManifestPath = path.resolve(blockPath, filePaths.manifestFilename);
 
-        const blockSequence = 'aaaaaccccccggggttttt';
+        const blockSequence = 'acgtacgtacgatcgatcgac';
+        const sequenceMd5 = md5(blockSequence);
+        const sequenceFilePath = filePaths.createSequencePath(sequenceMd5);
 
         before(() => {
           return directoryDelete(projectPath)
@@ -42,7 +40,7 @@ describe('REST', () => {
             .then(() => fileWrite(projectManifestPath, projectData))
             .then(() => directoryMake(blockPath))
             .then(() => fileWrite(blockManifestPath, blockData))
-            .then(() => fileWrite(blockSequencePath, blockSequence, false));
+            .then(() => fileWrite(sequenceFilePath, blockSequence, false));
         });
 
         it('projectExists() rejects for non-extant project', (done) => {
@@ -80,19 +78,23 @@ describe('REST', () => {
         });
 
         it('sequenceExists() checks if sequence file exists', () => {
-          return persistence.sequenceExists(blockId, projectId);
+          return persistence.sequenceExists(sequenceMd5);
         });
 
         it('sequenceGet() returns the sequence as a string', () => {
-          return persistence.sequenceGet(blockId, projectId)
+          return persistence.sequenceGet(sequenceMd5)
             .then(result => expect(result).to.equal(blockSequence));
         });
 
-        it('sequenceGet() returns null for block with no sequence');
-        it('sequenceGet() rejects if no block');
+        it('sequenceGet() rejects for md5 with no sequence', () => {
+          const fakeMd5 = md5('nothingness');
+          return persistence.sequenceGet(fakeMd5)
+            .then(result => assert(false))
+            .catch(err => expect(err).to.equal(errorDoesNotExist));
+        });
 
         it('findProjectFromBlock() should find project ID given only a block', () => {
-          return persistence.findProjectFromBlock(blockId)
+          return findProjectFromBlock(blockId)
             .then(result => expect(result).to.equal(projectId));
         });
       });
@@ -118,12 +120,12 @@ describe('REST', () => {
             .then(result => assert(result))
             .then(() => fileRead(projectManifestPath))
             .then(result => expect(result).to.eql(projectData))
-            .then(() => git.isInitialized(projectRepoPath))
+            .then(() => versioning.isInitialized(projectRepoPath))
             .then(result => assert(result === true));
         });
 
         it('projectCreate() creates a git commit with the initial version', () => {
-          return git.log(projectRepoPath)
+          return versioning.log(projectRepoPath)
             .then(result => {
               //initialize + first commit
               assert(result.length >= 2);
@@ -162,9 +164,11 @@ describe('REST', () => {
         const blockId = blockData.id;
         const blockPath = filePaths.createBlockPath(blockId, projectId);
         const blockManifestPath = filePaths.createBlockManifestPath(blockId, projectId);
-        const blockSequencePath = filePaths.createBlockSequencePath(blockId, projectId);
 
         const blockSequence = 'aaaaaccccccggggttttt';
+        const sequenceMd5 = md5(blockSequence);
+        const sequenceFilePath = filePaths.createSequencePath(sequenceMd5);
+
         const projectPatch = {metadata: {description: 'fancy pantsy'}};
         const blockPatch = {rules: {sbol: 'promoter'}};
 
@@ -172,7 +176,7 @@ describe('REST', () => {
           return persistence.projectWrite(projectId, projectData)
             .then(() => directoryExists(projectRepoPath))
             .then(result => assert(result))
-            .then(() => git.isInitialized(projectRepoPath))
+            .then(() => versioning.isInitialized(projectRepoPath))
             .then(result => assert(result));
         });
 
@@ -249,13 +253,13 @@ describe('REST', () => {
             .then(result => expect(result).to.eql(overwrite));
         });
 
-        it('blockWrite() makes the project commit', () => {
-          return git.log(projectRepoPath).then(firstResults => {
+        it('blockWrite() does not make the project commit', () => {
+          return versioning.log(projectRepoPath).then(firstResults => {
             const overwrite = blockData.merge(blockPatch);
             return persistence.blockWrite(blockId, overwrite, projectId)
-              .then(() => git.log(projectRepoPath))
+              .then(() => versioning.log(projectRepoPath))
               .then((secondResults) => {
-                expect(secondResults.length).to.equal(firstResults.length + 1);
+                expect(secondResults.length).to.equal(firstResults.length);
               });
           });
         });
@@ -278,15 +282,9 @@ describe('REST', () => {
         });
 
         it('sequenceWrite() sets the sequence string', () => {
-          return persistence.sequenceWrite(blockId, blockSequence, projectId)
-            .then(() => fileRead(blockSequencePath, false))
+          return persistence.sequenceWrite(sequenceMd5, blockSequence)
+            .then(() => fileRead(sequenceFilePath, false))
             .then(result => expect(result).to.equal(blockSequence));
-        });
-
-        it('sequenceWrite() rejects if block doesnt exist', () => {
-          return persistence.sequenceWrite('invalidId', blockSequence, projectId)
-            .then(() => assert(false))
-            .catch(err => expect(err).to.equal(errorDoesNotExist));
         });
       });
 
@@ -324,25 +322,113 @@ describe('REST', () => {
             .catch(err => expect(err).to.equal(errorDoesNotExist));
         });
 
-        it('blockDelete() creates a commit', () => {
+        it('blockDelete() does not create a commit', () => {
           return persistence.projectWrite(projectId, projectData)
             .then(() => persistence.blockWrite(blockId, blockData, projectId))
             .then(() => {
-              return git.log(projectRepoPath)
+              return versioning.log(projectRepoPath)
                 .then(firstResults => {
                   return persistence.blockDelete(blockId, projectId)
-                    .then(() => git.log(projectRepoPath))
+                    .then(() => versioning.log(projectRepoPath))
                     .then((secondResults) => {
-                      expect(secondResults.length).to.equal(firstResults.length + 1);
+                      expect(secondResults.length).to.equal(firstResults.length);
                     });
                 });
             });
         });
       });
 
-      //forthcoming
-      it('projectGet() accepts a version');
-      it('blockGet() accepts a version');
+      describe('versioning', () => {
+        let versionLog;
+        let versions;
+        const nonExistentSHA = '795c5751c8e0b0c9b5993ec81928cd89f7eefd27';
+        const projectData = new Project();
+        const projectId = projectData.id;
+        const projectRepoPath = filePaths.createProjectPath(projectId);
+        const newProject = projectData.merge({projectData: 'new stuff'});
+
+        const blockData = new Block();
+        const blockId = blockData.id;
+        const newBlock = blockData.merge({blockData: 'new data'});
+
+        const blockSequence = 'acgcggcgcgatatatatcgcgcg';
+        const sequenceMd5 = md5(blockSequence);
+
+        before(() => {
+          return persistence.projectCreate(projectId, projectData)
+            .then(() => persistence.blockCreate(blockId, blockData, projectId))
+            .then(() => persistence.projectSave(projectId))
+            .then(() => persistence.projectWrite(projectId, newProject))
+            .then(() => persistence.projectSave(projectId))
+            .then(() => persistence.blockWrite(blockId, newBlock, projectId))
+            .then(() => persistence.projectSave(projectId))
+            .then(() => versioning.log(projectRepoPath))
+            .then(log => {
+              versionLog = log;
+              versions = versionLog.map(commit => commit.sha);
+            });
+        });
+
+        it('projectExists() rejects if invalid version', () => {
+          return persistence.projectExists(projectId, 'invalidSHA')
+            .then(result => assert(false, 'should not resolve'))
+            .catch(err => assert(err === errorDoesNotExist, 'wrong error type -> function errored...'));
+        });
+
+        it('projectExists() rejects if version does not exist', () => {
+          return persistence.projectExists(projectId, nonExistentSHA)
+            .then(result => assert(false, 'should not resolve'))
+            .catch(err => assert(err === errorDoesNotExist, 'wrong error type -> function errored...'));
+        });
+
+        it('projectExists() resolves if version exists', () => {
+          return persistence.projectExists(projectId, versions[1]);
+        });
+
+        it('projectGet() rejects on if given invalid version', () => {
+          return persistence.projectGet(projectId, nonExistentSHA)
+            .then(result => assert(false, 'should not resolve'))
+            .catch(err => assert(err === errorDoesNotExist, 'wrong error type -> function errored...'));
+        });
+
+        it('projectGet() resolves to correct file when given version', () => {
+          return persistence.projectGet(projectId, versions[3])
+            .then(project => expect(project).to.eql(projectData));
+        });
+
+        it('projectGet() defaults to latest version', () => {
+          return persistence.projectGet(projectId)
+            .then(project => expect(project).to.eql(newProject));
+        });
+
+        it('blockExists() rejects on invalid version', () => {
+          return persistence.blockExists(blockId, projectId, nonExistentSHA)
+            .then(result => assert(false, 'should not resolve'))
+            .catch(err => assert(err === errorDoesNotExist, 'wrong error type -> function errored...'));
+        });
+
+        it('blockExists() accepts a version', () => {
+          return persistence.blockExists(blockId, projectId, versions[2]);
+        });
+
+        it('blockGet() accepts a version, gets version at that time', () => {
+          return persistence.blockGet(blockId, projectId, versions[2])
+            .then(block => expect(block).to.eql(blockData));
+        });
+
+        it('blockGet() defaults to latest version', () => {
+          return persistence.blockGet(blockId, projectId)
+            .then(block => expect(block).to.eql(newBlock));
+        });
+
+        it('sequenceWrite() does not create commit even if given blockId and projectId', () => {
+          return persistence.sequenceWrite(sequenceMd5, blockSequence, blockId, projectId)
+          .then(() => versioning.log(projectRepoPath))
+          .then(log => {
+            expect(log.length).to.equal(versionLog.length);
+          });
+        });
+      });
     });
   });
 });

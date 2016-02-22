@@ -6,7 +6,7 @@ e2ereports
 selenium-debug.log
 /redis-stable
 dump.rdb
-storage/*
+storage/test/*
 temp.*
 *.pyc
 *__pycache__*

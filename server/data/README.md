@@ -1,28 +1,42 @@
 # Data API
 
-TODOs
-
-- test the /block/<blockId> interface
-    - export functionality to get block projectId -- add to datastructure?
-- move blocks under /block directory
-- sequence
-    - remove URL field from blocks
-    - setting sequence returns updated block with md5
-
 ## Overview
 
 This section of the API is for saving Projects and Blocks. Projects are saved as directories, and versioned under git. Blocks are directories under projects. Using the provided persistence interface, git versioning should be handled automatically. 
+
+Sequences are saved under their md5 hash, and in a separate folder. The md5 is computed on the client, and `block.sequence.md5` notes this value, which is used for retrieving the sequence.
+
+### When things happen
+
+A project will NOT gain a commit whenever something happens (e.g. create, save, destroy). Commits happen with autosaving, which will be triggered by the client every few minutes when there are changes. 
+
+Snapshots are just commits with a specific message
+
+### Format
+
+Autosaving / loading models are passed as a `rollup`, which takes the format:
+
+```
+{
+  project: <projectManifest>,
+  blocks: [
+    <blockManifest>,
+    ...
+  ]
+```
 
 ### Directory Structure 
 
 /<projectId>
     manifest.json
-    /<blockId>
-        manifest.json
-        sequence
-    /<blockId>
-        manifest.json
-        sequence
+    /blocks
+        /<blockId>
+            manifest.json
+        /<blockId>
+            manifest.json
+/sequence
+    /<md5>
+    /<md5>
 
 ## Files
 
@@ -41,3 +55,11 @@ Interface for checking existence / creating / replacing / merging / deleting pro
 ### filePaths.js
 
 Create file system paths for projects, blocks, manifest files, sequence files
+
+### commitMessages.js
+
+Constants for various commit messages + generators so messages are consistent + easier to filter
+
+### rollup.js
+
+Utilities for creating / reading / writing rollups.

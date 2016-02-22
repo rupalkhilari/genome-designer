@@ -1,6 +1,4 @@
 import React, { Component, PropTypes } from 'react';
-import { Link } from 'react-router';
-
 import '../styles/ProjectHeader.css';
 
 export default class ProjectHeader extends Component {
@@ -26,11 +24,9 @@ export default class ProjectHeader extends Component {
       <div className="ProjectHeader">
         <div className="ProjectHeader-info">
           <div className="ProjectHeader-breadcrumbs">
-            <Link to={`/projects/`}
-                  className="ProjectHeader-breadcrumb ProjectHeader-lead">Projects</Link>
+            <span className="ProjectHeader-breadcrumb ProjectHeader-lead">Projects</span>
             <span className="ProjectHeader-breadcrumb-separator">&#10095;</span>
-            <Link to={`/project/${project.id}`}
-                  className="ProjectHeader-breadcrumb ProjectHeader-title">{project.metadata.name}</Link>
+            <span className="ProjectHeader-breadcrumb ProjectHeader-title">{project.metadata.name}</span>
           </div>
           <div className="ProjectHeader-description">{project.metadata.description}</div>
         </div>

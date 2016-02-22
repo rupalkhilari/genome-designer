@@ -1,19 +1,14 @@
 import Instance from './Instance';
 import invariant from 'invariant';
-import { saveBlock, readFile } from '../middleware/api';
 import BlockDefinition from '../schemas/Block';
+import { getSequence, writeSequence } from '../middleware/api';
 import AnnotationDefinition from '../schemas/Annotation';
-
-const createSequenceUrl = (blockId, projectId = 'block') => `${projectId}/${blockId}/sequence`;
+import md5 from 'md5';
+import color from '../utils/generators/color';
 
 export default class Block extends Instance {
   constructor(input) {
-    super(input, BlockDefinition.scaffold());
-  }
-
-  save(projectId, overwrite = false) {
-    invariant(projectId, 'Project ID required to save');
-    return saveBlock(this, projectId, overwrite);
+    super(input, BlockDefinition.scaffold(), {metadata: {color: color()}});
   }
 
   addComponent(componentId, index) {
@@ -58,43 +53,46 @@ export default class Block extends Instance {
     return this.mutate('rules.sbol', sbol);
   }
 
-  hasSequenceUrl() {
-    return (typeof this.sequence === 'object' && (typeof this.sequence.url === 'string') );
-  }
-
-  getSequenceUrl(forceNew) {
-    return ( forceNew || !this.hasSequenceUrl() ) ?
-      createSequenceUrl(this.id) :
-      this.sequence.url;
-  }
-
   /**
    * @description Retrieve the sequence of the block. Retrieves the sequence from the server, since it is stored in a file, returning a promise.
    * @param format {String} accepts 'raw', 'fasta', 'genbank'
    * @returns {Promise} Promise which resolves with the sequence value, or (resolves) with null if no sequence is associated.
    */
   getSequence(format = 'raw') {
-    //future - url + `?format=${format}`; --- need API support
-    const sequencePath = this.getSequenceUrl();
-
-    return !this.hasSequenceUrl() ?
-      Promise.resolve(null) :
-      readFile(sequencePath)
-        .then(resp => resp.text())
-        .then(result => {
-          return result;
-        });
+    const sequenceMd5 = this.sequence.md5;
+    if (!sequenceMd5) {
+      return Promise.resolve(null);
+    }
+    return getSequence(sequenceMd5, format);
   }
 
-  //todo - should have method for setting sequence length
   /**
-   * @description Set the sequence URL of the block. Does not affect annotations.
-   * ONLY SET THE URL ONCE THE FILE IS WRITTEN SUCCESSFULLY
-   * @param url {String} URL of the sequence file. Should generate with block.getSequenceUrl.
-   * @returns block {Block} New block with the potentially-updated sequence file path
+   * @description Writes the sequence for a block
+   * @param sequence {String}
+   * @param useStrict {Boolean}
+   * @returns {Promise} Promise which resolves with the udpated block
    */
-  setSequenceUrl(url) {
-    return this.mutate('sequence.url', url);
+  setSequence(sequence, useStrict = false) {
+    const sequenceLength = sequence.length;
+    const sequenceMd5 = md5(sequence);
+
+    const validatorStrict = /^[acgtu]*$/gi;
+    const validatorLoose = /^[acgturyswkmbdhvn\.\-]*$/gi;
+
+    const validator = !!useStrict ? validatorStrict : validatorLoose;
+
+    if (!validator.test(sequence)) {
+      return Promise.reject('sequence has invalid characters');
+    }
+
+    return writeSequence(sequenceMd5, sequence, this.id)
+      .then(() => {
+        const updatedSequence = {
+          md5: sequenceMd5,
+          length: sequenceLength,
+        };
+        return this.merge({sequence: updatedSequence});
+      });
   }
 
   annotate(annotation) {

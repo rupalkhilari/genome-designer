@@ -31,14 +31,15 @@
     "webpack": "*"
   },
   "engines": {
-    "node": ">= 4.2.2"
+    "node": ">= 4.2.2",
+    "npm": ">= 3.7.1"
   },
   "dependencies": {
     "bootstrap": "^3.3.6",
     "d3": "^3.5.12",
     "deep-freeze": "0.0.1",
     "fast-csv": "^1.0.0",
-    "history": "1.13.1",
+    "history": "^1.17.0",
     "invariant": "^2.2.0",
     "isomorphic-fetch": "^2.1.1",
     "jquery": "^2.1.4",
@@ -46,6 +47,7 @@
     "lodash.debounce": "^3.1.1",
     "lodash.merge": "^3.3.2",
     "lodash.set": "^3.7.4",
+    "md5": "^2.0.0",
     "mkpath": "^1.0.0",
     "node-uuid": "^1.4.7",
     "nodegit": "^0.9.0",
@@ -59,11 +61,11 @@
     "react-bootstrap": "^0.28.2",
     "react-dom": "0.14.2",
     "react-redux": "^3.1.0",
-    "react-router": "1.0.1",
+    "react-router": "^1.0.3",
     "read-multiple-files": "^1.1.1",
     "redux": "^3.0.2",
     "redux-logger": "^2.0.2",
-    "redux-router": "1.0.0-beta5",
+    "redux-router": "^1.0.0-beta7",
     "redux-thunk": "^0.1.0",
     "rimraf": "^2.5.1",
     "semver-regex": "^1.0.0",
