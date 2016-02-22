@@ -9,19 +9,19 @@ import AnnotationDefinition from './Annotation';
 */
 
 const SequenceDefinition = new SchemaDefinition({
-  id: [
-    fields.id({prefix: 'sequence'}),
-    `ID corresponding to file for associated sequence`,
-  ],
-
-  annotations: [
-    fields.arrayOf(AnnotationDefinition.validate.bind(AnnotationDefinition)),
-    `List of Annotations associated with the sequence`,
+  md5: [
+    fields.string(),
+    `md5 hash of the sequence, used for lookup`,
   ],
 
   length: [
     fields.number(),
     `Length of the sequence (calculated on the server)`,
+  ],
+
+  annotations: [
+    fields.arrayOf(AnnotationDefinition.validate.bind(AnnotationDefinition)),
+    `List of Annotations associated with the sequence`,
   ],
 });
 

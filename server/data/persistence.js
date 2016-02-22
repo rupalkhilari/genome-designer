@@ -56,7 +56,9 @@ const _blockRead = (blockId, projectId, sha) => {
 
 const _projectSetup = (projectId) => {
   const projectPath = filePaths.createProjectPath(projectId);
+  const blockDirectory = filePaths.createBlockDirectoryPath(projectId);
   return directoryMake(projectPath)
+    .then(() => directoryMake(blockDirectory))
     .then(() => versioning.initialize(projectPath));
 };
 
@@ -79,19 +81,28 @@ const _blockWrite = (blockId, block = {}, projectId) => {
 const _projectCommit = (projectId, message) => {
   const path = filePaths.createProjectPath(projectId);
   const commitMessage = !message ? commitMessages.messageProject(projectId) : message;
-  return versioning.commit(path, commitMessage);
+  return versioning.commit(path, commitMessage)
+    .then(sha => versioning.getCommit(path, sha));
 };
 
 //expects a well-formed commit message from commitMessages.js
 const _blockCommit = (blockId, projectId, message) => {
   const projectPath = filePaths.createProjectPath(projectId);
   const commitMessage = !message ? commitMessages.messageBlock(blockId) : message;
-  return versioning.commit(projectPath, commitMessage);
+  return versioning.commit(projectPath, commitMessage)
+    .then(sha => versioning.getCommit(path, sha));
 };
 
 //SAVE
 
+//e.g. autosave
 export const projectSave = (projectId, messageAddition) => {
+  const message = commitMessages.messageSave(projectId, messageAddition);
+  return _projectCommit(projectId, message);
+};
+
+//explicit save aka 'snapshot'
+export const projectSnapshot = (projectId, messageAddition) => {
   const message = commitMessages.messageSnapshot(projectId, messageAddition);
   return _projectCommit(projectId, message);
 };
@@ -129,6 +140,7 @@ const blockAssertNew = (blockId, projectId) => {
 };
 
 //GET
+//resolve with null if does not exist
 
 export const projectGet = (projectId, sha) => {
   return projectExists(projectId, sha)
@@ -137,6 +149,7 @@ export const projectGet = (projectId, sha) => {
       if (err === errorDoesNotExist && !sha) {
         return Promise.resolve(null);
       }
+      //let the versioning error fall through, or uncaught error
       return Promise.reject(err);
     });
 };
@@ -158,6 +171,7 @@ export const projectCreate = (projectId, project) => {
   return projectAssertNew(projectId)
     .then(() => _projectSetup(projectId))
     .then(() => _projectWrite(projectId, project))
+    //keep this initial commit message, even when not auto-commiting for all atomic operations
     .then(() => _projectCommit(projectId, commitMessages.messageCreateProject(projectId)))
     .then(() => project);
 };
@@ -166,7 +180,7 @@ export const blockCreate = (blockId, block, projectId) => {
   return blockAssertNew(blockId, projectId)
     .then(() => _blockSetup(blockId, projectId))
     .then(() => _blockWrite(blockId, block, projectId))
-    .then(() => _blockCommit(blockId, projectId, commitMessages.messageCreateBlock(blockId)))
+    //.then(() => _blockCommit(blockId, projectId, commitMessages.messageCreateBlock(blockId)))
     .then(() => block);
 };
 
@@ -183,7 +197,7 @@ export const projectWrite = (projectId, project) => {
   return projectExists(projectId)
     .catch(() => _projectSetup(projectId))
     .then(() => _projectWrite(projectId, idedProject))
-    .then(() => _projectCommit(projectId))
+    //.then(() => _projectCommit(projectId))
     .then(() => idedProject);
 };
 
@@ -206,7 +220,7 @@ export const blockWrite = (blockId, block, projectId) => {
   return blockExists(blockId, projectId)
     .catch(() => _blockSetup(blockId, projectId))
     .then(() => _blockWrite(blockId, idedBlock, projectId))
-    .then(() => _blockCommit(blockId, projectId))
+    //.then(() => _blockCommit(blockId, projectId))
     .then(() => idedBlock);
 };
 
@@ -235,46 +249,42 @@ export const blockDelete = (blockId, projectId) => {
   const blockPath = filePaths.createBlockPath(blockId, projectId);
   return blockExists(blockId, projectId)
     .then(() => directoryDelete(blockPath))
-    .then(() => _projectCommit(projectId, commitMessages.messageDeleteBlock(blockId)))
+    //.then(() => _projectCommit(projectId, commitMessages.messageDeleteBlock(blockId)))
     .then(() => blockId);
 };
 
 //sequence
 
-//TODO  - update block schema to handle routing for sequence file... skip ability to reference
-
-export const sequenceExists = (blockId, projectId) => {
-  const sequencePath = filePaths.createBlockSequencePath(blockId, projectId);
+export const sequenceExists = (md5) => {
+  const sequencePath = filePaths.createSequencePath(md5);
   return fileExists(sequencePath);
 };
 
-export const sequenceGet = (blockId, projectId) => {
-  return sequenceExists(blockId, projectId)
-    .then(path => fileRead(path, false))
-    .catch(err => {
-      if (err === errorDoesNotExist) {
-        //if sequence doesn't exist, check if block exists:
-        //  block exists -> null
-        //  block DNE -> rejection
-        return blockExists(blockId, projectId)
-          .then(() => Promise.resolve(null))
-          .catch(() => Promise.reject(errorDoesNotExist));
-      }
-      return Promise.reject(err);
-    });
+export const sequenceGet = (md5) => {
+  return sequenceExists(md5)
+    .then(path => fileRead(path, false));
 };
 
-//todo - validate sequence
-export const sequenceWrite = (blockId, sequence, projectId) => {
-  const sequencePath = filePaths.createBlockSequencePath(blockId, projectId);
-  return blockExists(blockId, projectId)
-    .then(() => fileWrite(sequencePath, sequence, false))
-    .then(() => _blockCommit(blockId, projectId, commitMessages.messageSequenceUpdate(blockId, sequence)))
+//blockId and projectId optional, will create commit if provided
+export const sequenceWrite = (md5, sequence, blockId, projectId) => {
+  const sequencePath = filePaths.createSequencePath(md5);
+  return fileWrite(sequencePath, sequence, false)
+  //.then(() => {
+  //  if (blockId && projectId) {
+  //    return _blockCommit(blockId, projectId, commitMessages.messageSequenceUpdate(blockId, sequence));
+  //  }
+  //})
     .then(() => sequence);
 };
 
-export const sequenceDelete = (blockId, projectId) => {
-  return sequenceExists(blockId, projectId)
-    .then(path => fileDelete(path))
-    .then(() => _blockCommit(blockId, projectId, commitMessages.messageSequenceUpdate(blockId, false)));
+//unassociate sequence, commit block
+export const sequenceRemove = (blockId, projectId) => {
+  return _blockCommit(blockId, projectId, commitMessages.messageSequenceUpdate(blockId, false));
 };
+
+//probably dont want to let people do this, since sequence may be referenced by multiple blocks...
+export const sequenceDelete = (md5) => {
+  return sequenceExists(md5)
+    .then(path => fileDelete(path));
+};
+

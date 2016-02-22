@@ -1,20 +1,13 @@
 import Instance from './Instance';
 import invariant from 'invariant';
-import color from '../utils/generators/color';
 import BlockDefinition from '../schemas/Block';
-import { saveBlock, getSequence, writeSequence } from '../middleware/api';
+import { getSequence, writeSequence } from '../middleware/api';
 import AnnotationDefinition from '../schemas/Annotation';
-
-const createSequenceUrl = (blockId, projectId = 'block') => `${projectId}/${blockId}/sequence`;
+import md5 from 'md5';
 
 export default class Block extends Instance {
   constructor(input) {
     super(input, BlockDefinition.scaffold());
-  }
-
-  save(projectId, overwrite = false) {
-    invariant(projectId, 'Project ID required to save');
-    return saveBlock(this, projectId, overwrite);
   }
 
   addComponent(componentId, index) {
@@ -59,30 +52,42 @@ export default class Block extends Instance {
     return this.mutate('rules.sbol', sbol);
   }
 
-  getSequenceUrl() {
-    return createSequenceUrl(this.id);
-  }
-
   /**
    * @description Retrieve the sequence of the block. Retrieves the sequence from the server, since it is stored in a file, returning a promise.
    * @param format {String} accepts 'raw', 'fasta', 'genbank'
    * @returns {Promise} Promise which resolves with the sequence value, or (resolves) with null if no sequence is associated.
    */
   getSequence(format = 'raw') {
-    return getSequence(this.id, format);
+    const sequenceMd5 = this.sequence.md5;
+    if (!sequenceMd5) {
+      return Promise.resolve(null);
+    }
+    return getSequence(sequenceMd5, format);
   }
 
   /**
    * @description Writes the sequence for a block
-   * @param sequence
+   * @param sequence {String}
+   * @param useStrict {Boolean}
    * @returns {Promise} Promise which resolves with the udpated block
    */
-  setSequence(sequence) {
+  setSequence(sequence, useStrict = false) {
     const sequenceLength = sequence.length;
+    const sequenceMd5 = md5(sequence);
 
-    return writeSequence(this.id, sequence)
+    const validatorStrict = /^[acgtu]*$/gi;
+    const validatorLoose = /^[acgturyswkmbdhvn\.\-]*$/gi;
+
+    const validator = !!useStrict ? validatorStrict : validatorLoose;
+
+    if (!validator.test(sequence)) {
+      return Promise.reject('sequence has invalid characters');
+    }
+
+    return writeSequence(sequenceMd5, sequence, this.id)
       .then(() => {
         const updatedSequence = {
+          md5: sequenceMd5,
           length: sequenceLength,
         };
         return this.merge({sequence: updatedSequence});

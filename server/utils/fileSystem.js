@@ -97,6 +97,17 @@ export const directoryMake = (path) => {
   });
 };
 
+export const directoryContents = (path) => {
+  return new Promise((resolve, reject) => {
+    fs.readdir(path, (err, contents) => {
+      if (err) {
+        reject(errorFileSystem);
+      }
+      resolve(contents);
+    });
+  });
+};
+
 export const directoryDelete = (path) => {
   return new Promise((resolve, reject) => {
     rimraf(path, (err) => {
