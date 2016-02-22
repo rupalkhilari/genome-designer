@@ -4,10 +4,11 @@ import BlockDefinition from '../schemas/Block';
 import { getSequence, writeSequence } from '../middleware/api';
 import AnnotationDefinition from '../schemas/Annotation';
 import md5 from 'md5';
+import color from '../utils/generators/color';
 
 export default class Block extends Instance {
   constructor(input) {
-    super(input, BlockDefinition.scaffold());
+    super(input, BlockDefinition.scaffold(), {metadata: {color: color()}});
   }
 
   addComponent(componentId, index) {
