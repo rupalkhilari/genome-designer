@@ -26,8 +26,7 @@ export default class ProjectHeader extends Component {
       <div className="ProjectHeader">
         <div className="ProjectHeader-info">
           <div className="ProjectHeader-breadcrumbs">
-            <Link to={`/projects/`}
-                  className="ProjectHeader-breadcrumb ProjectHeader-lead">Projects</Link>
+            <span className="ProjectHeader-breadcrumb ProjectHeader-lead">Projects</span>
             <span className="ProjectHeader-breadcrumb-separator">&#10095;</span>
             <Link to={`/project/${project.id}`}
                   className="ProjectHeader-breadcrumb ProjectHeader-title">{project.metadata.name}</Link>
