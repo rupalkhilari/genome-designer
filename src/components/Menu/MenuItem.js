@@ -12,12 +12,13 @@ export default class MenuItem extends Component {
   static propTypes = {
     text: PropTypes.string.isRequired,
     action: PropTypes.func.isRequired,
+    disabled: PropTypes.bool,
   };
 
   render() {
     return (
-      <div className="menu-item"
-           onClick={this.props.action}>
+      <div className={'menu-item' + (this.props.disabled ? ' disabled' : '')}
+           onClick={() => !this.props.disabled && this.props.action()}>
         {this.props.text}
       </div>
     );

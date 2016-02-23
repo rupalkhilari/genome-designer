@@ -91,4 +91,13 @@
   &:last-child {
     margin-bottom: 0.5rem;
   }
+
+  &.disabled {
+    color: #999999;
+
+    &:hover {
+      cursor: default;
+      background: inherit;
+    }
+  }
 }
