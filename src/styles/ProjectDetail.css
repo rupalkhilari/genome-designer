@@ -48,6 +48,7 @@
       .visible & {
         color: #4c505f;
         padding: 0px;
+        border: 0;
       }
 
       &.disabled {
@@ -70,7 +71,11 @@
   }
 
   &-extensionView {
+    display: none;
     flex-grow: 1;
-  }
 
+    .visible & {
+      display: block;
+    }
+  }
 }

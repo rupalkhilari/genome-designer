@@ -34,7 +34,6 @@ describe('REST', () => {
           .then(log => {
             versionLog = log;
             versions = versionLog.map(commit => commit.sha);
-            console.log(versions);
           });
       });
 
@@ -56,6 +55,7 @@ describe('REST', () => {
             .end((err, result) => {
               if (err) {
                 done(err);
+                return;
               }
 
               versioning.log(projectRepoPath)
@@ -79,6 +79,7 @@ describe('REST', () => {
             .end((err, result) => {
               if (err) {
                 done(err);
+                return;
               }
 
               versioning.log(projectRepoPath)
@@ -91,7 +92,7 @@ describe('REST', () => {
         });
       });
 
-      it('POST /:projectId/commit/ creates a snapshot, accepting a message', (done) => {
+      it('POST /:projectId/commit/ creates a snapshot, accepting a message, returns a SHA', (done) => {
         const messageText = 'some message text';
         versioning.log(projectRepoPath).then(firstResults => {
           const url = `/data/${projectId}/commit`;
@@ -99,11 +100,15 @@ describe('REST', () => {
             .post(url)
             .send({message: messageText})
             .expect(200)
-            .expect('Content-Type', /text/)
+            .expect('Content-Type', /json/)
             .end((err, result) => {
               if (err) {
                 done(err);
+                return;
               }
+
+              expect(result.sha).to.be.defined;
+              expect(result.message).to.be.defined;
 
               versioning.log(projectRepoPath)
                 .then(secondResults => {
@@ -126,7 +131,10 @@ describe('REST', () => {
           .expect(200)
           .expect('Content-Type', /json/)
           .end((err, result) => {
-            if (err) { done(err); }
+            if (err) {
+              done(err);
+              return;
+            }
             expect(result.body).to.eql(projectData);
             done();
           });
@@ -141,7 +149,10 @@ describe('REST', () => {
           .expect(200)
           .expect('Content-Type', /json/)
           .end((err, result) => {
-            if (err) { done(err); }
+            if (err) {
+              done(err);
+              return;
+            }
             expect(result.body).to.eql(blockData);
             done();
           });

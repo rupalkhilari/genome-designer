@@ -10,5 +10,5 @@ storage/test/*
 temp.*
 *.pyc
 *__pycache__*
-extensions/*/*/inputs
-extensions/*/*/outputs
+plugins/*/*/inputs
+plugins/*/*/outputs

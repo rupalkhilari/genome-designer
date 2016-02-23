@@ -28,7 +28,8 @@ ADD . /app
 
 #setup node
 ADD package.json /app/package.json
-RUN npm install && npm update -g npm
+RUN npm update -g npm && npm install
+RUN npm run install-extensions
 
 RUN cd /app 
 

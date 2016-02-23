@@ -23,7 +23,8 @@ export const uiSetCurrent = (blocks) => {
 export const uiAddCurrent = (blocksToAdd) => {
   return (dispatch, getState) => {
     const { currentBlocks } = getState().ui;
-    const blocks = [...new Set([...currentBlocks, ...blocksToAdd])];
+    const base = Array.isArray(currentBlocks) ? currentBlocks : [];
+    const blocks = [...new Set([...base, ...blocksToAdd])];
     dispatch({
       type: ActionTypes.UI_SET_CURRENT,
       blocks,
