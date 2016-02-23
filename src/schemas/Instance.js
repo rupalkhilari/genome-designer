@@ -11,7 +11,7 @@ const InstanceDefinition = new SchemaDefinition({
     'ID of the instance',
   ],
   parents: [
-    fields.arrayOf(ParentDefinition).required,
+    fields.arrayOf(ParentDefinition.validate.bind(ParentDefinition)).required,
     'Ancestral parents from which object is derived, with newest first',
   ],
   metadata: [
