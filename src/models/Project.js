@@ -1,15 +1,9 @@
 import Instance from './Instance';
-import { saveProject } from '../middleware/api';
+import ProjectDefinition from '../schemas/Project';
 
 export default class Project extends Instance {
-  constructor(...args) {
-    super(...args, {
-      components: [],
-    });
-  }
-
-  save() {
-    return saveProject(this);
+  constructor(input) {
+    super(input, ProjectDefinition.scaffold());
   }
 
   addComponents(...components) {

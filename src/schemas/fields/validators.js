@@ -1,6 +1,5 @@
 import safeValidate from './safeValidate';
 import urlRegex from 'url-regex';
-import semverRegex from 'semver-regex';
 
 /**
  * note that everything exported in this file is tested - so only export real validators
@@ -16,7 +15,6 @@ import semverRegex from 'semver-regex';
  */
 
 export const id = params => input => {
-  //todo - real validation
   const regex = /^(\w+-)?[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
   if (!regex.test(input)) {
@@ -116,8 +114,10 @@ export const version = params => input => {
     return new Error(`${input} is not a string`);
   }
 
-  if (!semverRegex().test(input)) {
-    return new Error(`${input} is not a valid version`);
+  const shaRegex = /^[0-9a-f]{40}$/;
+
+  if (!shaRegex.test(input)) {
+    return new Error(`${input} is not a valid SHA1 version`);
   }
 };
 
@@ -188,7 +188,7 @@ export const oneOfType = (types, {required = false} = {}) => input => {
   const checker = type => {
     return isFunction(type) ?
       safeValidate(type, required, input) :
-      input instanceof type;
+    input instanceof type;
   };
 
   if (!types.some(checker)) {

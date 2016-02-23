@@ -1,27 +1,39 @@
-# Inherit from node v4 docker image
-FROM node:4-wheezy
+# Inherit from ubuntu docker image
+FROM ubuntu:14.04
 
+
+RUN apt-get install -y software-properties-common 
+RUN add-apt-repository ppa:ubuntu-toolchain-r/test
+
+# Explicit set of apt-get commands to workaround issue https://github.com/nodegit/nodegit/issues/886 . Workaround instructions here: http://stackoverflow.com/questions/16605623/where-can-i-get-a-copy-of-the-file-libstdc-so-6-0-15
+RUN apt-get update && apt-get install -y curl gcc-4.9 libstdc++6 
 RUN apt-get update
-RUN apt-get install -y curl wget
+RUN apt-get upgrade -y
+RUN apt-get dist-upgrade
 
-ADD . /app
+RUN apt-get update && \
+	apt-get install -y python python-dev python-pip git build-essential wget && \
+	curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash - && \
+	sudo apt-get -y install nodejs && \	
+	apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-#setup node
-ADD package.json /app/package.json
-RUN npm update -g npm
-RUN cd /app && npm install
+#everything needed by extensions
+RUN yes | pip install biopython
 
 EXPOSE 3000
 ENV PORT=3000
 
 WORKDIR /app
+ADD . /app
+
+#setup node
+ADD package.json /app/package.json
+RUN npm update -g npm && npm install
+RUN npm run install-extensions
+
+RUN cd /app 
 
 # Redis now launch via docker-compose and is referenced via link
-ENTRYPOINT ["npm"]
-CMD  ["run", "start"]
+CMD  ["npm" ,"run", "start"]
 
-#everything needed by extensions
-RUN apt-get install -y python python-pip
-RUN yes | pip install biopython
 
-RUN cd ~; perl -MNet::FTP -e '$ftp = new Net::FTP("ftp.ncbi.nlm.nih.gov", Passive => 1); $ftp->login; $ftp->binary; $ftp->get("/entrez/entrezdirect/edirect.zip");' unzip -u -q edirect.zip; rm edirect.zip; export PATH=$PATH:$HOME/edirect; ./edirect/setup.sh

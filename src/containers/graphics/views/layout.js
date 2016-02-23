@@ -1,7 +1,6 @@
 import Box2D from '../geometry/box2d';
 import Vector2D from '../geometry/vector2d';
 import Node2D from '../scenegraph2d/node2d';
-import Block2D from '../scenegraph2d/block2d';
 import SBOL2D from '../scenegraph2d/sbol2d';
 import kT from './layoutconstants';
 import invariant from 'invariant';
@@ -84,6 +83,7 @@ export default class Layout {
   nodeFromElement(element) {
     return this.parts2nodes[element];
   }
+
   /**
    * create a node, if not already created for the given piece.
    * Add to our hash for tracking
@@ -92,23 +92,13 @@ export default class Layout {
    * @return {[type]}            [description]
    */
   partFactory(part, appearance) {
-    // if the part type has changed remove it before updating to a new node/glyph
-    const partType = this.isSBOL(part) ? sbolType : blockType;
-    if (this.partTypes[part] && this.partTypes[part] !== partType) {
-      this.removePart(part);
-    }
-
     if (!this.nodeFromElement(part)) {
       const props = Object.assign({}, {
         sg: this.sceneGraph,
       }, appearance);
       let node = null;
-      if (this.isSBOL(part)) {
-        props.sbolName = this.blocks[part].rules.sbol;
-        node = new SBOL2D(props);
-      } else {
-        node = new Block2D(props);
-      }
+      props.sbolName = this.isSBOL(part) ? this.blocks[part].rules.sbol : null;
+      node = new SBOL2D(props);
       this.sceneGraph.root.appendChild(node);
       this.map(part, node);
     }
@@ -346,6 +336,11 @@ export default class Layout {
       // create the node representing the part
       this.partFactory(part, kT.partAppearance);
 
+      // set sbol part name if any
+      this.nodeFromElement(part).set({
+        sbolName: this.isSBOL(part) ? this.blocks[part].rules.sbol : null,
+      });
+
       // measure element text or used condensed spacing
       const td = this.measureText(this.nodeFromElement(part), this.partName(part), layoutOptions.condensed);
 
@@ -362,12 +357,6 @@ export default class Layout {
         text: this.partName(part),
         fill: this.partMeta(part, 'color'),
       });
-
-      if (this.isSBOL(part)) {
-        this.nodeFromElement(part).set({
-          sbolName: this.blocks[part].rules.sbol,
-        });
-      }
 
       // set next part position
       xp += td.x;

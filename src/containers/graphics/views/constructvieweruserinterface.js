@@ -1,6 +1,8 @@
 import UserInterface from '../scenegraph2d/userinterface';
 import { sbol as sbolDragType } from '../../../constants/DragTypes';
 import DnD from '../dnd/dnd';
+import Vector2D from '../geometry/vector2d';
+import kT from './layoutconstants';
 
 // # of pixels of mouse movement before a drag is triggered.
 const dragThreshold = 8;
@@ -30,7 +32,16 @@ export default class ConstructViewerUserInterface extends UserInterface {
    */
   topNodeAt(point) {
     const hits = this.sg.findNodesAt(point);
-    return hits.length ? hits.pop() : null;
+    // nodes might include anything added to the scenegraph
+    // so work backwards in the list and return the first
+    // block found
+    for (let i = hits.length - 1; i >= 0; i--) {
+      if (this.layout.elementFromNode(hits[i])) {
+        return hits[i];
+      }
+    }
+    // no hits or no blocks in the hits
+    return null;
   }
   /**
    * return the top most block at a given location
@@ -87,7 +98,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
       if ((point.x - AABB.x) > AABB.width - edgeThreshold) {
         edge = 'right';
       }
-      return {block, edge}
+      return {block, edge};
     }
     // if no edit then return the right edge of the last block
     const count = this.construct.components.length;
@@ -105,6 +116,44 @@ export default class ConstructViewerUserInterface extends UserInterface {
    */
   get construct() {
     return this.constructViewer.props.construct;
+  }
+  /**
+   * mouse enter/leave are used to ensure no block is in the hover state
+   */
+  mouseEnter(event) {
+    this.setHover();
+  }
+  mouseLeave(event) {
+    this.setHover();
+  }
+  /**
+   * set the given block to the hover state
+   */
+  setHover(block) {
+    if (this.hover) {
+      this.hover.node.set({
+        hover: false,
+      });
+      this.hover.node.updateBranch();
+      this.hover = null;
+    }
+    if (block) {
+      this.hover = {
+        block: block,
+        node: this.layout.nodeFromElement(block),
+      };
+      this.hover.node.set({
+        hover: true,
+      });
+      this.hover.node.updateBranch();
+    }
+  }
+
+  /**
+   * mouse move handler ( note, not the same as drag which is with a button held down )
+   */
+  mouseMove(evt, point) {
+    this.setHover(this.topBlockAt(point));
   }
   /**
    * mouse down handler
@@ -126,17 +175,25 @@ export default class ConstructViewerUserInterface extends UserInterface {
         this.constructViewer.constructSelected(this.constructViewer.props.construct.id);
       }
 
-      const node = this.layout.nodeFromElement(block);
       if (evt.shiftKey || window.__e2eShiftKey) {
         // range select
         this.constructViewer.blockAddToSelections([block]);
       } else
-      if (evt.metaKey || evt.altKey){
+      if (evt.metaKey || evt.altKey) {
         // toggle block in selections
         this.constructViewer.blockToggleSelected([block]);
       } else {
         // otherwise single select the block
         this.constructViewer.blockSelected([block]);
+        // if they clicked the context menu area, open it
+        // for now, open a context menu
+        const globalPoint = this.mouseTrap.mouseToGlobal(evt);
+        if (this.getBlockRegion(block, globalPoint) === 'dots') {
+          this.constructViewer.openPopup({
+            blockPopupMenuOpen: true,
+            menuPosition: globalPoint,
+          });
+        }
       }
     } else {
       // select construct if no block clicked and deselect all blocks
@@ -144,17 +201,35 @@ export default class ConstructViewerUserInterface extends UserInterface {
       this.constructViewer.constructSelected(this.constructViewer.props.constructId);
     }
   }
-
+  /**
+   * return an indication of where in the block this point lies.
+   * One of ['none', 'main, 'dots']
+   */
+  getBlockRegion(block, globalPoint) {
+    // substract window scrolling from global point to get viewport coordinates
+    const vpt = globalPoint.sub(new Vector2D(window.scrollX, window.scrollY));
+    // compare against viewport bounds of node representing the block
+    const box = this.layout.nodeFromElement(block).el.getBoundingClientRect();
+    // compare to bounds
+    if (vpt.x < box.left || vpt.x > box.right || vpt.y < box.top || vpt.y > box.bottom) {
+      return 'none';
+    }
+    // context menu area?
+    if (vpt.x >= box.right - kT.contextDotsW) {
+      return 'dots';
+    }
+    // in block but nowhere special
+    return 'main';
+  }
   /**
    * list of all selected blocks, based on our selected scenegraph blocks
    * @return {[type]} [description]
    */
   get selectedElements() {
     return this.selections.map((node) => {
-      return this.layout.elementFromNode(node)
+      return this.layout.elementFromNode(node);
     });
   }
-
   /**
    * move drag handler, if the user initiates a drag of a block hand over
    * to the DND manager to handle
@@ -170,8 +245,6 @@ export default class ConstructViewerUserInterface extends UserInterface {
         this.constructViewer.blockAddToSelections([block]);
         // get global point as starting point for drag
         const globalPoint = this.mouseTrap.mouseToGlobal(evt);
-        // create proxy and drag
-        const node = this.layout.nodeFromElement(block);
         // proxy representing 1 ore more blocks
         const proxy = this.makeDragProxy();
         // remove the blocks, unless meta key pressed
@@ -197,12 +270,12 @@ export default class ConstructViewerUserInterface extends UserInterface {
     const div = document.createElement('div');
     div.style.display = 'inline-block';
     div.style.position = 'relative';
-    const nodes = this.selectedElements.map(e => this.layout.nodeFromElement(e));
+    const nodes = this.selectedElements.map(elem => this.layout.nodeFromElement(elem));
     const limit = Math.min(5, nodes.length);
     let x = 0;
     let width = 0;
     let height = 0;
-    for(var i = 0; i < limit; i += 1) {
+    for (let i = 0; i < limit; i += 1) {
       const node = nodes[i].el;
       const clone = node.cloneNode(true);
       clone.style.position = 'absolute';
@@ -241,7 +314,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
     // convert global point to local space via our mousetrap
     const localPosition = this.mouseTrap.globalToLocal(globalPosition, this.el);
     // there is a different highlight / UX experience depending on what is being dragged
-    const { item, type } = payload;
+    const { type } = payload;
     if (type === sbolDragType) {
       // sbol symbol so we highlight the targeted block
       const hit = this.topBlockAndOptionalVerticalEdgeAt(localPosition);
@@ -254,7 +327,6 @@ export default class ConstructViewerUserInterface extends UserInterface {
       } else {
         this.showDefaultInsertPoint();
       }
-
     } else {
       // block, so we highlight the insertion point
       const hit = this.topBlockAndVerticalEdgeAt(localPosition);
