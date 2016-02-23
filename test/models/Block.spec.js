@@ -102,21 +102,5 @@ describe('Model', () => {
           });
       });
     });
-
-    describe('save()', () => {
-      it('exists', () => {
-        expect(typeof block.save).to.equal('function');
-      });
-
-      //need to pass in project (a valid one, so can commit project)
-      it.skip('persists it', (done) => {
-        block.save()
-          .then(json => {
-            expect(json).to.eql(block);
-            done();
-          })
-          .catch(done);
-      });
-    });
   });
 });
