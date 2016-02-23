@@ -1,4 +1,4 @@
-import { expect } from 'chai';
+import { assert } from 'chai';
 import { runNode } from '../../plugins/compute/runNode';
 const fs = require('fs');
 import path from 'path';
@@ -15,7 +15,7 @@ describe('Plugins', () => {
         }
         runNode('translate_dna_example', input, {})
           .then(result => {
-            expect(result.Protein === 'NLSTV').to.equal(true);
+            assert(result.Protein === 'NLSTV', 'result incorrect');
             done();
           })
           .catch(done);

@@ -48,7 +48,7 @@ ORIGIN
 //`;
 
 describe('Plugins', () => {
-  describe.only('Genbank Plugin', () => {
+  describe('Genbank Plugin', () => {
     it('should import Genbank file that has nested blocks', function importGB(done) {
       importBlock('genbank', sampleGenbank)
         .then(output => {

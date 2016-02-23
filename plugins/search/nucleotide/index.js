@@ -1,38 +1,27 @@
+import * as filePaths from '../../../server/utils/filePaths';
+import * as fileSystem from '../../../server/utils/fileSystem';
+import path from 'path';
 const exec = require('child_process').exec;
-const fs = require('fs');
 const uuid = require('node-uuid');
 
-module.exports = exports = {};
 const dbName = 'nucleotide';
+const createRandomStorageFile = () => filePaths.createStorageUrl('temp-' + uuid.v4());
 
-exports.search = function search(searchString, maxResults = 10) {
-  const promise = new Promise((resolve, reject) => {
-    const outputFile = 'storage/test/temp-' + uuid.v4();
-    function readOutput() {
-      fs.readFile(outputFile, 'utf8', (err, data) => {
-        fs.unlink(outputFile);
-        if (err) {
-          reject(err.message);
-          return;
-        }
-        resolve(JSON.parse(data));
-      });
-    }
+export const search = (searchString, maxResults = 10) => {
+  const outputFile = createRandomStorageFile();
+  const command = `python ${path.resolve(__dirname, 'search.py')} ${dbName} "${searchString}" ${maxResults} ${outputFile}`;
 
-    exec('python extensions/search/nucleotide/search.py ' + dbName + ' "' + searchString + '" ' + maxResults + ' ' + outputFile, (err, stdout) => {
+  return new Promise((resolve, reject) => {
+    exec(command, (err, stdout, stderr) => {
       if (err) {
-        reject(err.message);
-        return;
+        reject(err);
+      } else {
+        resolve(stdout);
       }
-      readOutput();
     });
-  });
-
-  return promise;
+  })
+    .then(() => fileSystem.fileRead(outputFile));
+  //todo - delete file?
 };
 
-exports.exportProject = function exportProject(proj, blocks) {
-};
-
-exports.importProject = function importProject(gbstr) {
-};
+export default search;
