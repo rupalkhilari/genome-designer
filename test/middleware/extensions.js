@@ -5,16 +5,14 @@ const { assert, expect } = chai;
 
 describe('Middleware', () => {
   describe('Extensions', () => {
-    it('getExtensionsInfo() should be able get extension manifests', done => {
+    it('getExtensionsInfo() should be able get extension manifests', () => {
       return api.getExtensionsInfo()
         .then(output => {
-          console.log(output);
           assert(typeof output === 'object', 'wrong format for info');
-          assert(Object.keys(output.every(key => {
+          assert(Object.keys(output).every(key => {
             const manifest = output[key];
             return manifest.name && manifest.version && manifest.region;
-          })), 'some extensions are not in correct format');
-          done();
+          }), 'some extensions are not in correct format');
         });
     });
   });
