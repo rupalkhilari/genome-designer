@@ -5,7 +5,7 @@ import { searchString } from '../../plugins/search/search';
 describe('Plugins', () => {
   describe('NCBI Search Plugin', () => {
     it('should be able to search the Nucleotide DB', function nucleotide() {
-      this.timeout(30000);
+      this.timeout(60000);
 
       const query = 'carboxylase';
       return searchString('nucleotide', query, 2)

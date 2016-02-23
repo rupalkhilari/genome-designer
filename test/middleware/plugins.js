@@ -62,7 +62,7 @@ describe('Middleware', () => {
     });
 
     it('search() should be able search NCBI nucleotide DB', function testFunc(done) {
-      this.timeout(30000);  //searching NCBI
+      this.timeout(60000);  //searching NCBI
 
       const input = {query: 'carboxylase', max: 2};
       return api.search('nucleotide', input)
