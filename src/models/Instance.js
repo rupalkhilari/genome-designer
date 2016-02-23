@@ -25,8 +25,8 @@ export default class Instance {
     merge(this,
       subclassBase,
       InstanceDefinition.scaffold(),
-      parsedInput,
-      moreFields
+      moreFields,
+      parsedInput
     );
 
     if (process.env.NODE_ENV !== 'production') {
@@ -55,7 +55,8 @@ export default class Instance {
   //clone by default just uses the ID, however,
   clone(parentSha) {
     const self = cloneDeep(this);
-    invariant(parentSha || self.version, 'Version (e.g. of project) is required to clone');
+    console.log(parentSha, self.version, !!parentSha || !!self.version);
+    invariant(!!parentSha || !!self.version, 'Version (e.g. of project) is required to clone');
 
     const versionOfParent = (!!parentSha ? parentSha : self.version);
     const latestParent = {

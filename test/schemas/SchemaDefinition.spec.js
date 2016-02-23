@@ -83,6 +83,10 @@ describe('Schema', () => {
         const description = testDefinition.describe();
         expect(description.external.field === simpleFieldDescription);
       });
+
+      it('works on arrayOf() etc.', (done) => {
+        //todo
+      });
     });
 
     describe('Cloning', () => {
