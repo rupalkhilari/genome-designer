@@ -10,6 +10,13 @@ export const projectGet = (projectId) => {
   };
 };
 
+export const projectGetVersion = (projectId) => {
+  return (dispatch, getState) => {
+    const project = _getProjectFromStore(projectId, getState());
+    return project.version;
+  };
+};
+
 export const projectHasBlock = (projectId, blockId) => {
   return (dispatch, getState) => {
     const project = _getProjectFromStore(projectId, getState());

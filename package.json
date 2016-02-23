@@ -75,7 +75,7 @@
     "redux-router": "^1.0.0-beta7",
     "redux-thunk": "^0.1.0",
     "rimraf": "^2.5.1",
-    "semver-regex": "^1.0.0",
+    "sha1": "^1.1.1",
     "url-regex": "^3.0.0",
     "yamljs": "^0.2.4"
   },

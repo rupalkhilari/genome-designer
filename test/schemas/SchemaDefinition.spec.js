@@ -57,7 +57,7 @@ describe('Schema', () => {
           id: [
             fields.id({prefix}).required,
             'Prefixed ID of the instance',
-          ]
+          ],
         });
         const scaffold = Extended.scaffold();
 

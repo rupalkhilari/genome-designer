@@ -7,12 +7,17 @@ import InstanceDefinition from './Instance';
  @description
  Project is the container for a body of work. It consists primarily of constructs
 
-*/
+ */
 
 const ProjectDefinition = InstanceDefinition.extend({
   id: [
     fields.id({prefix: 'project'}).required,
     'Project UUID',
+  ],
+
+  version: [
+    fields.version().required,
+    'SHA1 version of project',
   ],
 
   components: [

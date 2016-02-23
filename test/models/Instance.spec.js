@@ -1,5 +1,6 @@
 import Instance from '../../src/models/Instance';
 import chai from 'chai';
+import sha1 from 'sha1';
 
 const { assert, expect } = chai;
 
@@ -73,18 +74,23 @@ describe('Model', () => {
     });
 
     it('can be cloned, and update the parents array, with newest first', () => {
+      const parentSha = sha1('someversion');
       const inst = new Instance({
+        version: parentSha,
         prior: 'field',
       });
       expect(inst.parents.length).to.equal(0);
 
       const clone = inst.clone();
       expect(clone.parents.length).to.equal(1);
-      expect(clone.parents[0]).to.equal(inst.id);
+      expect(clone.parents[0]).to.eql({id: inst.id, sha: parentSha});
 
       const second = clone.clone();
       expect(second.parents.length).to.equal(2);
-      expect(second.parents).to.eql([clone.id, inst.id]);
+      expect(second.parents).to.eql([
+        {id: clone.id, sha: parentSha},
+        {id: inst.id, sha: parentSha},
+      ]);
     });
   });
 });
