@@ -1,96 +1,76 @@
+import * as filePaths from '../../../server/utils/filePaths';
+import * as fileSystem from '../../../server/utils/fileSystem';
+import path from 'path';
+import Project from '../../../src/models/Project';
+import Block from '../../../src/models/Block';
+
 const exec = require('child_process').exec;
-const fs = require('fs');
 const uuid = require('node-uuid');
 
-module.exports = exports = {};
+//todo - should validate blocks coming in / going out
 
-function runCmd(cmd, input, inputFile, outputFile) {
-  const promise = new Promise((resolve, reject) => {
-    function readOutput() {
-      try {
-        fs.readFile(outputFile, 'utf8', (err, data) => {
-          //fs.unlink(inputFile);
-          //fs.unlink(outputFile);
+const createRandomStorageFile = () => filePaths.createStorageUrl('temp-' + uuid.v4());
+
+const runCommand = (command, input, inputFile, outputFile) => {
+  return fileSystem.fileWrite(inputFile, input, false)
+    .then(() => {
+      return new Promise((resolve, reject) => {
+        exec(command, (err, stdout) => {
           if (err) {
             reject(err);
           }
-          resolve(data);
+          else resolve(stdout);
         });
-      } catch (exception) {
-        reject("input format is incorrect");
-      }
-    }
-
-    function runPy() {
-      exec(cmd, (err, stdout) => {
-        if (err) {
-          console.log(err);
-        }
-        readOutput();
       });
-    }
-
-    fs.writeFile(inputFile, input, 'utf8', (err, data) => {
-      if (err) {
-        reject(err);
-        return;
-      }
-      runPy();
-    });
-  });
-
-  return promise;
-}
-
-exports.exportBlock = function exportBlock(block, blocks) {
-  const proj = {
-    'id': uuid.v4(),
-    'metadata': {
-      'authors': [],
-      'tags': {},
-      'version': '',
-    },
-    'components': [block.id],
-  };
-  blocks[block.id] = block;
-  return exports.exportProject(proj, blocks);
+    })
+    .then(() => fileSystem.fileRead(outputFile, false));
 };
 
-exports.importBlock = function importBlock(gbstr) {
-  return exports.importProject(gbstr)
-        .then(result => {
-          if (result && result.project && result.blocks &&
-              result.project.components && result.project.components.length > 0) {
-            const bid = result.project.components[0];
-            const block = result.blocks[bid];
-            return Promise.resolve({ block: block, blocks: result.blocks });
-          }
-          return Promise.reject('invalid input string');
-        });
-};
-
-exports.exportProject = function exportProject(proj, blocks) {
+export const exportProject = (project, blocks) => {
+  const inputFile = createRandomStorageFile();
+  const outputFile = createRandomStorageFile();
   const input = {
-    project: proj,
-    blocks: blocks,
+    project,
+    blocks,
   };
-  const inputFile = 'storage/test/temp-' + uuid.v4();
-  const outputFile = 'storage/test/temp-' + uuid.v4();
-  const cmd = 'python extensions/convert/genbank/convert.py to_genbank ' + inputFile + ' ' + outputFile;
-  return runCmd(cmd, JSON.stringify(input), inputFile, outputFile);
+  const cmd = `python ${path.resolve(__dirname, 'convert.py')} to_genbank ${inputFile} ${outputFile}`;
+
+  return runCommand(cmd, JSON.stringify(input), inputFile, outputFile);
 };
 
-exports.importProject = function importProject(gbstr) {
-  const inputFile = 'storage/test/temp-' + uuid.v4();
-  const outputFile = 'storage/test/temp-' + uuid.v4();
-  const cmd = 'python extensions/convert/genbank/convert.py from_genbank ' + inputFile + ' ' + outputFile;
-  return runCmd(cmd, gbstr, inputFile, outputFile)
-          .then(resStr => {
-            try {
-              const res = JSON.parse(resStr);
-              return Promise.resolve(res);
-            } catch (exp) {
-              return Promise.reject(exp.message);
-            }
-          });
+export const importProject = (genbankString) => {
+  const inputFile = createRandomStorageFile();
+  const outputFile = createRandomStorageFile();
+  const cmd = `python ${path.resolve(__dirname, 'convert.py')} from_genbank ${inputFile} ${outputFile}`;
+
+  return runCommand(cmd, genbankString, inputFile, outputFile)
+    .then(resStr => {
+      try {
+        const res = JSON.parse(resStr);
+        return Promise.resolve(res);
+      } catch (err) {
+        return Promise.reject(err);
+      }
+    });
+};
+
+//todo - this is a weird syntax of {block, blocks} and should be made consistent with `rollups` or at the very least better explained why exception is made
+
+export const exportBlock = (block, blocks) => {
+  const proj = new Project();
+  blocks[block.id] = block;
+  return exportProject(proj, blocks);
+};
+
+export const importBlock = (gbstr) => {
+  return importProject(gbstr)
+    .then(result => {
+      if (result && result.project && result.blocks &&
+        result.project.components && result.project.components.length > 0) {
+        const bid = result.project.components[0];
+        const block = result.blocks[bid];
+        return Promise.resolve({block: block, blocks: result.blocks});
+      }
+      return Promise.reject('invalid input string');
+    });
 };

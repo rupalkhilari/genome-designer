@@ -46,11 +46,6 @@ router.post('/:id', jsonParser, (req, resp) => {
   });
 });
 
-//fixme
-router.get('/manifests', jsonParser, (req, resp) => {
-  resp.json(extensionsInfo.search);
-});
-
 //export these functions for testing purpose
 router.searchString = searchString;
 

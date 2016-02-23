@@ -13,27 +13,27 @@ const namespace = 'convert';
 router.use(authenticationMiddleware);
 
 function callImportFunction(funcName, id, data) {
-  return new Promise((resolve, reject) => {
-    getPlugin(namespace, id)
+  return getPlugin(namespace, id)
     .then(mod => {
-      if (mod && mod[funcName]) {
-        try {
-          const func = mod[funcName];
-          func(data)
-          .then(res => {
-            resolve(res);
-          })
-          .catch(err => {
+      return new Promise((resolve, reject) => {
+        if (mod && mod[funcName]) {
+          try {
+            const func = mod[funcName];
+            func(data)
+              .then(res => {
+                resolve(res);
+              })
+              .catch(err => {
+                reject(err);
+              });
+          } catch (err) {
             reject(err);
-          });
-        } catch (err) {
-          reject(err);
+          }
+        } else {
+          reject('No import option named ' + id + ' for projects');
         }
-      } else {
-        reject('No import option named ' + id + ' for projects');
-      }
+      });
     });
-  });
 }
 
 function importProject(id, data) {
@@ -47,12 +47,12 @@ function importBlock(id, data) {
 //this function is just trying to avoid redundant code
 function importThenCatch(promise, resp) {
   promise
-  .then(res => {
-    resp.json(res);
-  })
-  .catch(err => {
-    resp.status(500).send(err);
-  });
+    .then(res => {
+      resp.json(res);
+    })
+    .catch(err => {
+      resp.status(500).send(err);
+    });
 }
 
 router.post('/project/:id', jsonParser, (req, resp) => {

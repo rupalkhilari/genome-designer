@@ -1,11 +1,7 @@
 import path from 'path';
 import * as fileSystem from '../../server/utils/fileSystem';
-
-const fs = require('fs');
 const exec = require('promised-exec');
 const yaml = require('yamljs');
-const mkpath = require('mkpath');
-const readMultipleFiles = require('read-multiple-files');
 
 export const getNodeDir = (id) => {
   return path.resolve(__dirname, id);
@@ -24,7 +20,8 @@ export const runCmd = (id, cmd) => {
     .then((error, stdout, stderr) => {
       return Promise.resolve(true);
     }).catch(err => {
-      console.log(err);
+      //fixme - this is not true
+      console.error(err);
       //apparently, even warning messages trigger this section of exec, so it 'usually' ok
       return Promise.resolve(true);
     });
