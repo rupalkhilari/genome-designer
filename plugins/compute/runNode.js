@@ -1,6 +1,6 @@
 import path from 'path';
 import * as fileSystem from '../../server/utils/fileSystem';
-const exec = require('promised-exec');
+const exec = require('child_process').exec;
 const yaml = require('yamljs');
 
 export const getNodeDir = (id) => {
@@ -13,18 +13,18 @@ export const getNodeDir = (id) => {
  */
 export const runCmd = (id, cmd) => {
   const dir = getNodeDir(id);
+  const command = `cd ${dir}; ${cmd}`;
 
-  const fullCmd = 'cd ' + dir + '; ' + cmd;
-
-  return exec(fullCmd)
-    .then((error, stdout, stderr) => {
-      return Promise.resolve(true);
-    }).catch(err => {
-      //fixme - this is not true
-      console.error(err);
-      //apparently, even warning messages trigger this section of exec, so it 'usually' ok
-      return Promise.resolve(true);
+  return new Promise((resolve, reject) => {
+    exec(command, (err, stdout, stderr) => {
+      if (err) {
+        console.log(stdout);
+        console.log(stderr);
+        reject(err);
+      }
+      else resolve(stdout);
     });
+  });
 };
 
 /**
