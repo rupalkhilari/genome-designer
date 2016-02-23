@@ -57,7 +57,7 @@ describe('Schema', () => {
           id: [
             fields.id({prefix}).required,
             'Prefixed ID of the instance',
-          ]
+          ],
         });
         const scaffold = Extended.scaffold();
 
@@ -82,10 +82,6 @@ describe('Schema', () => {
       it('describe() with nested schema definitions', () => {
         const description = testDefinition.describe();
         expect(description.external.field === simpleFieldDescription);
-      });
-
-      it('works on arrayOf() etc.', (done) => {
-        //todo
       });
     });
 

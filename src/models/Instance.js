@@ -55,7 +55,6 @@ export default class Instance {
   //clone by default just uses the ID, however,
   clone(parentSha) {
     const self = cloneDeep(this);
-    console.log(parentSha, self.version, !!parentSha || !!self.version);
     invariant(!!parentSha || !!self.version, 'Version (e.g. of project) is required to clone');
 
     const versionOfParent = (!!parentSha ? parentSha : self.version);

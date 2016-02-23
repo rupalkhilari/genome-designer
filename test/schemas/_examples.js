@@ -49,6 +49,6 @@ export const makeParent = () => ({
   sha: sha1('' + Math.floor(Math.random() * 10000000)),
 });
 
-export const blockWithParent = merge(Block, {
+export const blockWithParents = merge(Block, {
   parents: [makeParent(), makeParent()],
 });

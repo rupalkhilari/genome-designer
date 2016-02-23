@@ -114,9 +114,9 @@ export const version = params => input => {
     return new Error(`${input} is not a string`);
   }
 
-  const shaRegex = /^[0-9a-f]{5,40}$/;
+  const shaRegex = /^[0-9a-f]{40}$/;
 
-  if (!shaRegex().test(input)) {
+  if (!shaRegex.test(input)) {
     return new Error(`${input} is not a valid SHA1 version`);
   }
 };
