@@ -16,7 +16,6 @@ export default class ModalWindow extends Component {
     open: PropTypes.bool.isRequired,
     closeModal: PropTypes.func.isRequired,
     closeOnClickOutside: PropTypes.bool,
-    buttons: PropTypes.array,
     title: PropTypes.string.isRequired,
     payload: PropTypes.object.isRequired,
   };
@@ -28,46 +27,16 @@ export default class ModalWindow extends Component {
       this.props.closeModal();
     }
   }
-  /**
-   * when one of the buttons in the button bar is clicked.
-   */
-  onButtonClick(evt) {
-    this.props.closeModal(evt.target.innerHTML);
-  }
 
-  /**
-   * buttons should be array of object thus:
-   * {
-   *   text: "Ok",
-   *   primary: [true/false]
-   * }
-   */
-  renderButtons() {
-    if (this.props.buttons) {
-      const buttons = this.props.buttons.map(button => {
-        return (
-          <button
-            className={button.primary ? 'button button-primary' : 'button button-normal'}
-            key={button.text}
-            onClick={this.onButtonClick.bind(this)}>
-            {button.text}
-          </button>);
-      });
-      return <ModalButtonBar>{buttons}</ModalButtonBar>;
-    }
-    return null;
-  }
 
-  /**
+  /*
    * render modal dialog with owner supplied payload and optional buttons.
    */
   render() {
     // only render contents if open
     const contents = this.props.open
     ? (<div className="modal-window">
-        <div className="modal-window-title">{this.props.title}</div>
         {this.props.payload}
-        {this.renderButtons()}
       </div>)
     : null;
     return (

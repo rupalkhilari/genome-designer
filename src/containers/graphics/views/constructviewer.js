@@ -312,15 +312,9 @@ export class ConstructViewer extends Component {
         {this.blockContextMenu()}
         <ModalWindow
           open={this.state.modalOpen}
-          title="Construct Viewer Modal"
-          payload={<div className="payload"/>}
+          payload={<div/>}
           closeOnClickOutside
-          buttons={
-            [
-              {text: 'Ok', primary: true},
-              {text: 'Cancel', primary: false},
-            ]}
-          closeModal={(buttonText) => {
+          closeModal={() => {
             this.setState({
               modalOpen: false,
             });

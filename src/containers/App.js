@@ -1,5 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import GlobalNav from './GlobalNav';
+import AuthenticationForms from './authentication/authenticationforms';
+
 
 import '../styles/App.css';
 
@@ -16,6 +18,7 @@ export class App extends Component {
     return (
       <div className="App">
         <GlobalNav />
+        <AuthenticationForms />
         <div className="App-pageContent">
           {children}
         </div>

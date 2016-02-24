@@ -1,0 +1,88 @@
+:root {
+--radius: 3px;
+--element-height: 3rem;
+--inputcolor: #E1E2E5;
+--textcolor: #747784;
+--primarycolor: #343A4D;
+--errorcolor: #FF6A5E;
+--fontsize: 1.25rem;
+}
+
+.authentication-form {
+  width: 500px;
+  padding-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 1.5rem;
+}
+
+.authentication-form * {
+  width: 80%;
+  margin-bottom: 0.5rem;
+  border-radius: var(--radius);
+}
+
+.authentication-form .title {
+  font-size: var(--element-height * 0.5);
+  color: var(--textcolor);
+  text-align:center;
+  margin-top: 1rem;
+  margin-bottom: 2rem !important;
+}
+
+.authentication-form input {
+  height: var(--element-height);
+  font-size: var(--fontsize);
+  border-radius: var(--radius);
+  border: 1px solid whitesmoke;
+  background-color: var(--inputcolor);
+  text-indent: 0.5rem;
+  outline: none;
+  color: var(--primarycolor);
+}
+.authentication-form input:focus {
+  border: 1px solid lightgray;
+}
+
+.authentication-form button {
+  height: var(--element-height);
+  font-size: var(--fontsize);
+  border-radius: 0;
+  cursor: pointer;
+}
+.authentication-form button[type="button"]  {
+  background-color: white;
+  border: none;
+  color: textcolor;
+}
+.authentication-form button[type="submit"] {
+  background-color: var(--primarycolor);
+  color: white;
+  border: none;
+}
+.authentication-form .error {
+  color: var(--errorcolor);
+  font-size: var(--fontsize);
+  text-align: center;
+}
+.authentication-form label {
+  font-size: var(--fontsize);
+  color: var(--textcolor);
+}
+.authentication-form .checkbox {
+  display: flex;
+  align-items: center;
+}
+.authentication-form .checkbox span {
+  font-size: var(--fontsize);
+  white-space: nowrap;
+  margin-top: 3px;
+  margin-bottom: 0;
+  color: var(--textcolor);
+}
+.authentication-form .checkbox input {
+  width: 1rem;
+  height: auto;
+  margin-bottom: 0;
+}

@@ -1,22 +1,23 @@
-import React from 'react';
+import React, { Component, PropTypes } from 'react';
+import 'isomorphic-fetch';
 
-export default function ResetPassword(props) {
-  return (
-    <div style={{display: 'inline-block'}}>
-      <form className="authenticate-form">
-        <h1>Reset Password</h1>
-        <div className="row">
-          <label>New Password</label>
-          <input type="password"/>
+export default class ResetForm extends Component {
+
+  static propTypes = {
+
+  };
+
+  render() {
+    return (
+      <div className="container">
+        <div className="authentication-form">
+          <div className="title">Reset Password</div>
+          <input className="input" placeholder="Email Address"/>
+          <div className="error">Email address is not registered.</div>
+          <button type="submit">Submit Request</button>
+          <button type="button">Cancel</button>
         </div>
-        <div className="row">
-          <label>Confirm Password</label>
-          <input type="password"/>
-        </div>
-        <div className="right">
-          <button className="button button-primary" type="submit">Update Password</button>
-        </div>
-      </form>
-    </div>
-  );
+      </div>
+    );
+  }
 }
