@@ -229,7 +229,7 @@ class GlobalNav extends Component {
   render() {
     return (
       <div className="GlobalNav">
-        <Link className="GlobalNav-title" to="\">GD</Link>
+        <span className="GlobalNav-title">GD</span>
         {this.props.showMainMenu ? this.menuBar() : null}
       </div>
     );

@@ -1,0 +1,27 @@
+.InventoryGroupProjects {
+
+  &-item {
+
+    &-toggle {
+      width: 1em;
+      height: 1em;
+      padding-right: 1em;
+
+      &:after {
+        content: '>';
+      }
+
+      &.active:after {
+        content: 'v';
+      }
+    }
+
+    &-title {
+
+    }
+
+    &-contents {
+
+    }
+  }
+}
