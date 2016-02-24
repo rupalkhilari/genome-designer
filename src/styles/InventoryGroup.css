@@ -9,14 +9,15 @@
     padding: 0.5em 1em;
     margin: 0 -var(--SidePanel-width-padding-content);
     font-size: 1.25em;
-    background-color: transparent;
+    font-weight: 200;
+    background-color: rgba(255,255,255,0.25);
   }
 
   &.active {
     flex-grow: 1;
 
     .InventoryGroup-heading {
-      background-color: rgba(255,255,255,0.25);
+      background-color: transparent;
     }
   }
 

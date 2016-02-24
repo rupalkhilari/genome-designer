@@ -32,7 +32,6 @@ class GlobalNav extends Component {
 
   menuBar() {
     const recentProjects = this.state.recentProjects
-    .filter(project => !!project)
     .map(project => ({
       text: project.metadata.name || 'My Project',
       action: () => {
