@@ -13,11 +13,7 @@ describe('REST', () => {
     describe('versioning', function gitTests() {
       this.timeout(10000);
       const pathRepo = createStorageUrl('testrepo');
-      directoryMake(pathRepo);
-
-      before((done) => {
-        rimraf(pathRepo, done);
-      });
+      before(() => directoryMake(pathRepo));
 
       describe('initialization', () => {
         it('initialize() should initialize a repo', (done) => {
@@ -92,6 +88,15 @@ describe('REST', () => {
                 assert(output.indexOf(file1Path) < 0);
                 done();
               });
+            });
+        });
+
+        it('getCommit(path, sha) returns the commit for a given SHA', () => {
+          return versioning.getCommit(pathRepo, commitSha)
+            .then(commit => {
+              expect(commit.message).to.equal(commitMessage);
+              expect(commit.sha).to.equal(commitSha);
+              expect(commit.date).to.be.defined;
             });
         });
       });

@@ -1,23 +1,37 @@
+import invariant from 'invariant';
 import * as ActionTypes from '../constants/ActionTypes';
 import BlockDefinition from '../schemas/Block';
-import { writeFile } from '../middleware/api';
 import Block from '../models/Block';
+import { saveBlock, loadBlock } from '../middleware/api';
 import * as selectors from '../selectors/blocks';
 
 //Promise
-export const blockSave = (blockId) => {
+export const blockSave = (blockId, projectId) => {
+  invariant(projectId, 'project ID required to save block'); //todo - assume from router?
   return (dispatch, getState) => {
     const block = getState().blocks[blockId];
-    //todo - static method
-    return block.save()
-      .then(response => response.json())
-      .then(json => {
+    return saveBlock(block, projectId)
+      .then(block => {
         dispatch({
           type: ActionTypes.BLOCK_SAVE,
           block,
         });
-        return json;
+        return block;
       });
+  };
+};
+
+//Promise
+export const blockLoad = (blockId) => {
+  return (dispatch, getState) => {
+    return loadBlock(blockId)
+    .then(block => {
+      dispatch({
+        type: ActionTypes.BLOCK_LOAD,
+        block,
+      });
+      return block;
+    });
   };
 };
 
@@ -232,14 +246,12 @@ export const blockGetSequence = (blockId, format) => {
 };
 
 //Promise
-//todo - server needs to return the block
 //future - validate
-//future - trigger history actions
-export const blockSetSequence = (blockId, sequence) => {
+export const blockSetSequence = (blockId, sequence, useStrict) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
 
-    return oldBlock.setSequence(sequence)
+    return oldBlock.setSequence(sequence, useStrict)
       .then(block => {
         dispatch({
           type: ActionTypes.BLOCK_SET_SEQUENCE,
