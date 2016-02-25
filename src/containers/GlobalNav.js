@@ -40,14 +40,14 @@ class GlobalNav extends Component {
             {
               text: 'Recent Projects',
               disabled: true,
-            },
+            },{/*
             ...(this.state.recentProjects.map(project => ({
               text: project.metadata.name || 'My Project',
               action: () => {
                 this.props.projectLoad(project.id)
                   .then(() => this.props.pushState(null, `/project/${project.id}`));
               },
-            }))),
+            })))*/},
             {},
             {
               text: 'Save Project',

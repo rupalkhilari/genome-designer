@@ -5,7 +5,6 @@ import App from './containers/App';
 import DashboardPage from './containers/DashboardPage';
 import ProjectPage from './containers/ProjectPage';
 import AboutPage from './components/AboutPage';
-import SignInPage from './components/authentication/SignInPage';
 import SupportPage from './components/SupportPage';
 
 //Routes are specified as a separate component so they can hotloaded
@@ -23,7 +22,6 @@ export default(
      */}
 
     <Route path="/about" component={AboutPage}/>
-    <Route path="/signin" component={SignInPage}/>
     <Route path="/support" component={SupportPage}/>
     <Route path="/project/:projectId" component={ProjectPage}/>
 

@@ -13,8 +13,9 @@ export default class ResetForm extends Component {
         <div className="authentication-form">
           <div className="title">Reset Password</div>
           <input className="input" placeholder="Email Address"/>
-          <div className="error">Email address is not registered.</div>
-          <button type="submit">Submit Request</button>
+          <input className="input" placeholder="Confirm Email Address"/>
+          <div className="error">The email addresses do not match</div>
+          <button type="submit">Reset</button>
           <button type="button">Cancel</button>
         </div>
       </div>
