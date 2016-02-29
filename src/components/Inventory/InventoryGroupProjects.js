@@ -3,6 +3,8 @@ import { connect } from 'react-redux';
 import { listProjects } from '../../middleware/api';
 import { projectGet, projectListAllBlocks } from '../../selectors/projects';
 import { projectLoad } from '../../actions/projects';
+import { block as blockDragType } from '../../constants/DragTypes';
+import InventoryList from './InventoryList';
 
 import '../../styles/InventoryGroupProjects.css';
 
@@ -19,7 +21,7 @@ export class InventoryGroupProjects extends Component {
   };
 
   componentDidMount() {
-    listProjects().then(projects => this.setState({recentProjects: projects}));
+    listProjects().then(projects => this.setState({ recentProjects: projects }));
   }
 
   toggleExpandProject = (projectId) => {
@@ -28,21 +30,22 @@ export class InventoryGroupProjects extends Component {
     //this is pretty hack and should be cleaned up
     //todo - should cache this
     this.props.projectLoad(projectId)
-    .then(() => this.props.projectListAllBlocks(projectId))
-    .then(blocks => {
-      this.setState({
-        expandedProjects: Object.assign(this.state.expandedProjects, {[projectId]: blocks}),
+      .then(() => this.props.projectListAllBlocks(projectId))
+      .then(blocks => {
+        this.setState({
+          expandedProjects: Object.assign(this.state.expandedProjects, { [projectId]: blocks }),
+        });
       });
-    });
   };
 
   render() {
     const { recentProjects, expandedProjects } = this.state;
 
-    const projectList = (!recentProjects.length)
-      ?
+    const projectList =
+      (!recentProjects.length)
+        ?
       (<p>no projects</p>)
-      :
+        :
       recentProjects.map(project => {
         const isExpanded = expandedProjects[project.id];
         return (
@@ -54,12 +57,8 @@ export class InventoryGroupProjects extends Component {
               <span>{project.metadata.name || 'My Project'}</span>
             </a>
             {isExpanded && <div className="InventoryGroupProjects-item-contents">
-            {expandedProjects[project.id].map((block, index) => {
-              //todo - order constructs first
-              return (<div key={block.id}>
-                <span>{block.metadata.name || `Block ${index + 1}`}</span>
-              </div>);
-            })}
+              <InventoryList inventoryType={blockDragType}
+                             items={expandedProjects[project.id]}/>
             </div>}
           </div>);
       });
