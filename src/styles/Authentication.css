@@ -4,6 +4,9 @@ form.authenticate-form {
   background-color: white;
   padding: 1rem;
 }
+form.authentication-form .prompt {
+  font-size: 
+}
 form.authenticate-form .row {
   margin-bottom: 1rem;
 }

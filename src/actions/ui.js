@@ -1,5 +1,18 @@
 import * as ActionTypes from '../constants/ActionTypes';
 
+/**
+ * form names, one of: [ 'signin', 'signup', 'forgot', 'reset', 'account', 'none' ]
+ */
+export const uiShowAuthenticationForm = (name) => {
+  return (dispatch, getState) => {
+    dispatch({
+      type: ActionTypes.UI_SHOW_AUTHENTICATION_FORM,
+      authenticationForm: name,
+    });
+    return name;
+  };
+};
+
 export const uiShowMainMenu = (showMainMenu) => {
   return (dispatch, getState) => {
     dispatch({

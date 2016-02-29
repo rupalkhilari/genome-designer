@@ -77,8 +77,7 @@
 .authentication-form .checkbox span {
   font-size: var(--fontsize);
   white-space: nowrap;
-  margin-top: 3px;
-  margin-bottom: 0;
+  margin: 3px 0 0 0.5rem;
   color: var(--textcolor);
 }
 .authentication-form .checkbox input {
