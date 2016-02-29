@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { inventorySearch } from '../../actions/inventory';
 import { block as blockDragType } from '../../constants/DragTypes';
+import debounce from 'lodash.debounce';
 
 import defaultBlocks from '../../inventory/andrea';
 import exampleSearch from '../../inventory/egf/egf_example';
@@ -21,12 +22,15 @@ export class InventoryGroupSearch extends Component {
     searchResults: parseResults(exampleSearch),
   };
 
+  componentDidMount() {
+    const searchingFunction = (term) => searchApi.search(term)
+      .then(searchResults => this.setState({ searchResults }));
+    this.debouncedSearch = debounce(searchingFunction, 200);
+  }
+
   handleSearchChange = (value) => {
     this.props.inventorySearch(value);
-
-    //todo - debounce
-    searchApi.search(value)
-      .then(searchResults => this.setState({searchResults}));
+    this.debouncedSearch(value);
   };
 
   render() {

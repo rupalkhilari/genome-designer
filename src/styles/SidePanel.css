@@ -76,7 +76,7 @@
     display: flex;
     flex-grow: 1;
     width: var(--width-SidePanel-open);
-    padding: 0 var(--SidePanel-width-padding-content) var(--SidePanel-width-padding-heading);
+    padding: 0 var(--SidePanel-width-padding-content);
     opacity: 0;
 
     .visible & {

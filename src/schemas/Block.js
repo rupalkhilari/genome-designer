@@ -32,7 +32,7 @@ const BlockDefinition = InstanceDefinition.extend({
 
   source: [
     fields.shape({
-      id: validators.id(),
+      id: validators.string(),
       remoteId: validators.string(),
     }).required,
     `Source (Inventory) ID of the Part`,

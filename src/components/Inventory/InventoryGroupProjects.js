@@ -8,6 +8,8 @@ import InventoryList from './InventoryList';
 
 import '../../styles/InventoryGroupProjects.css';
 
+const loadedProjects = {};
+
 export class InventoryGroupProjects extends Component {
   static propTypes = {
     projectLoad: PropTypes.func.isRequired,
@@ -29,9 +31,14 @@ export class InventoryGroupProjects extends Component {
     // later, we'll want a way of pruning the store so it doesn't get too huge
     //this is pretty hack and should be cleaned up
     //todo - should cache this
-    this.props.projectLoad(projectId)
-      .then(() => this.props.projectListAllBlocks(projectId))
+
+    const loadedPromise = loadedProjects[projectId]
+      ? Promise.resolve(loadedProjects[projectId])
+      : this.props.projectLoad(projectId).then(() => this.props.projectListAllBlocks(projectId));
+
+    loadedPromise
       .then(blocks => {
+        Object.assign(loadedProjects, { [projectId]: blocks });
         this.setState({
           expandedProjects: Object.assign(this.state.expandedProjects, { [projectId]: blocks }),
         });
