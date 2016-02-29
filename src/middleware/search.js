@@ -7,7 +7,7 @@ const flatten = list => list.reduce(
 
 export const search = (term, sourceList = ['egf']) => {
   invariant(Array.isArray(sourceList), 'must pass array for search source list');
-  invariant(sourceList.every(source => sources.includes(source)));
+  invariant(sourceList.every(source => sources.includes(source)), `sourceList contains source not in the list of supported sources: ${sourceList} // ${sources}`);
 
   return Promise.all(
     sourceList.map(source => registry[source].search(term))

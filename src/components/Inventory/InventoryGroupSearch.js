@@ -6,6 +6,7 @@ import { block as blockDragType } from '../../constants/DragTypes';
 import defaultBlocks from '../../inventory/andrea';
 import exampleSearch from '../../inventory/egf/egf_example';
 import parseResults from '../../inventory/egf/egf_parseResults';
+import * as searchApi from '../../middleware/search';
 
 import InventorySearch from './InventorySearch';
 import InventoryList from './InventoryList';
@@ -16,24 +17,27 @@ export class InventoryGroupSearch extends Component {
     inventorySearch: PropTypes.func.isRequired,
   };
 
+  state = {
+    searchResults: parseResults(exampleSearch),
+  };
+
   handleSearchChange = (value) => {
     this.props.inventorySearch(value);
 
-    //todo - debounced - actually run search
-
+    //todo - debounce
+    searchApi.search(value)
+      .then(searchResults => this.setState({searchResults}));
   };
 
   render() {
     const { searchTerm } = this.props;
-    const searchRegex = new RegExp(searchTerm, 'gi');
+    const { searchResults } = this.state;
 
-    //pending search functionality
-    //const items = defaultBlocks;
+    //if we want to filter down results while next query running
+    //const searchRegex = new RegExp(searchTerm, 'gi');
+    //const listingItems = items.filter(item => searchRegex.test(item.metadata.name) || searchRegex.test(item.rules.sbol));
 
-    //dummy search
-    const items = parseResults(exampleSearch);
-
-    const listingItems = items.filter(item => searchRegex.test(item.metadata.name) || searchRegex.test(item.rules.sbol));
+    const listingItems = searchResults;
 
     return (
       <div className="InventoryGroup-content InventoryGroupSearch">

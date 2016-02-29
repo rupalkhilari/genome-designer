@@ -1,5 +1,4 @@
 import * as ActionTypes from '../constants/ActionTypes';
-import * as searchApi from '../middleware/search';
 
 export const inventorySearch = (searchTerm) => {
   return (dispatch, getState) => {
@@ -7,12 +6,6 @@ export const inventorySearch = (searchTerm) => {
       type: ActionTypes.INVENTORY_SEARCH,
       searchTerm,
     });
-
-    searchApi.search(searchTerm)
-      .then(results => {
-
-      });
-
     return searchTerm;
   };
 };
