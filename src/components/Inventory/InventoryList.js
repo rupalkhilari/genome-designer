@@ -8,12 +8,12 @@ export default class InventoryList extends Component {
   static propTypes = {
     inventoryType: PropTypes.string.isRequired,
     items: PropTypes.arrayOf(PropTypes.shape({
-      id: PropTypes.string.isRequired,
+      id: PropTypes.string,
     })).isRequired,
   };
 
   render() {
-    const { items, inventoryType } = this.props;
+    const { items, keyOn, inventoryType } = this.props;
 
     return (
       <div className="InventoryList">

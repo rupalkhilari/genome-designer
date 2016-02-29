@@ -80,8 +80,6 @@ function mapStateToProps(state) {
 
   const constructs = project.components.map(componentId => state.blocks[componentId]);
 
-  console.log(project, state);
-
   return {
     projectId,
     constructId,

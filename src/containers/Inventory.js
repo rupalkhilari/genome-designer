@@ -17,6 +17,12 @@ export class Inventory extends Component {
     activeTab: 'search',
   };
 
+  setActiveTab = (index) => {
+    this.setState({
+      activeTab: index,
+    });
+  };
+
   toggle = (forceVal) => {
     this.props.inventoryToggleVisibility(forceVal);
     window.setTimeout(() => {
@@ -24,14 +30,8 @@ export class Inventory extends Component {
     }, 300);
   };
 
-  setActiveTab = (index) => {
-    this.setState({
-      activeTab: index,
-    });
-  };
-
   render() {
-    const { isVisible, projects } = this.props;
+    const { isVisible } = this.props;
     const { activeTab } = this.state;
 
     return (
@@ -56,8 +56,7 @@ export class Inventory extends Component {
             <InventoryGroup title="My Projects"
                             type="projects"
                             isActive={activeTab === 'projects'}
-                            setActive={() => this.setActiveTab('projects')}
-                            projects={projects}/>
+                            setActive={() => this.setActiveTab('projects')}/>
             <InventoryGroup title="Sketch Library"
                             type="sbol"
                             isActive={activeTab === 'sbol'}

@@ -35,6 +35,7 @@ export default class InventoryItem extends Component {
       type: this.props.inventoryType,
     });
   }
+
   /**
    * make a drag and drop proxy for the item
    */

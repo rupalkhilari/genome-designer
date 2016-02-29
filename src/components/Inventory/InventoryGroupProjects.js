@@ -8,7 +8,6 @@ import '../../styles/InventoryGroupProjects.css';
 
 export class InventoryGroupProjects extends Component {
   static propTypes = {
-    projects: PropTypes.object.isRequired,
     projectLoad: PropTypes.func.isRequired,
     projectGet: PropTypes.func.isRequired,
     projectListAllBlocks: PropTypes.func.isRequired,
@@ -27,6 +26,7 @@ export class InventoryGroupProjects extends Component {
     // load the project and its blocks into the store
     // later, we'll want a way of pruning the store so it doesn't get too huge
     //this is pretty hack and should be cleaned up
+    //todo - should cache this
     this.props.projectLoad(projectId)
     .then(() => this.props.projectListAllBlocks(projectId))
     .then(blocks => {
@@ -39,15 +39,16 @@ export class InventoryGroupProjects extends Component {
   render() {
     const { recentProjects, expandedProjects } = this.state;
 
-    const projectList = (!recentProjects.length) ?
-      'no projects' :
+    const projectList = (!recentProjects.length)
+      ?
+      (<p>no projects</p>)
+      :
       recentProjects.map(project => {
         const isExpanded = expandedProjects[project.id];
-
         return (
           <div key={project.id}
                className="InventoryItem InventoryGroupProjects-item">
-            <span className={'InventoryGroupProjects-item-toggle' + (isExpanded ? ' active': '')}/>
+            <span className={'InventoryGroupProjects-item-toggle' + (isExpanded ? ' active' : '')}/>
             <a className="InventoryGroupProjects-item-title"
                onClick={() => this.toggleExpandProject(project.id)}>
               <span>{project.metadata.name || 'My Project'}</span>
@@ -71,16 +72,7 @@ export class InventoryGroupProjects extends Component {
   }
 }
 
-function mapStateToProps(state, props) {
-  //this will list the projects available from this user's session
-  const { projects } = state;
-
-  return {
-    projects,
-  };
-}
-
-export default connect(mapStateToProps, {
+export default connect(() => ({}), {
   projectLoad,
   projectGet,
   projectListAllBlocks,
