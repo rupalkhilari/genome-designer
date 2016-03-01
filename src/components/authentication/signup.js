@@ -75,7 +75,6 @@ class RegisterForm extends Component {
    * display server errors in the most logical way
    */
   showServerErrors(json) {
-    debugger;
     invariant(json && json.message, 'We expected an error message');
     if (json.path === 'email' && json.type === 'unique violation') {
       this.setState({
@@ -176,7 +175,6 @@ class RegisterForm extends Component {
         return;
       }
       // set the user
-      debugger;
       this.props.userSetUser({
         userid: json.uuid,
         email: json.email,

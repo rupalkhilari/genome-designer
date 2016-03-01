@@ -11,7 +11,6 @@ export default function inventory(state = initialState, action) {
   switch (action.type) {
     case ActionTypes.USER_SET_USER: {
       const { userid, email, firstName, lastName } = action.user;
-      debugger;
       return Object.assign({}, state, {
         userid: userid,
         email: email,
