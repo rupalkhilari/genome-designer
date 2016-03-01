@@ -27,12 +27,16 @@
 
   &-item {
     display: inline-block;
-    padding: 1px 5px;
+    padding: 2px 5px;
+    margin: 1px 0;
+    width: 100%;
     border-radius: 3px;
+    transition: background-color var(--timing-fast) ease-out;
 
     &:hover,
     .isDragging & {
       background-color: var(--colors-selected);
+      transition-duration: var(--timing-extrafast);
     }
   }
 

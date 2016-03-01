@@ -1,23 +1,27 @@
+@import 'variables.css';
+
 .InventoryGroupProjects {
 
   &-item {
 
     &-toggle {
-      width: 1em;
-      height: 1em;
-      padding-right: 1em;
+      width: 10px;
+      height: 10px;
+      display: inline-block;
+      margin-right: 0.5em;
+      background-image: url('/images/ui/disclosure_triangle_closed.svg');
+      background-position: top left;
+      background-repeat: no-repeat;
+      background-size: contain;
+      transition: transform var(--timing-extrafast) ease-out;
 
-      &:after {
-        content: '>';
-      }
-
-      &.active:after {
-        content: 'v';
+      &.active {
+        transform: rotate(90deg);
       }
     }
 
-    &-title {
-
+    .active > &-title {
+      color: var(--colors-selected);
     }
 
     &-contents {

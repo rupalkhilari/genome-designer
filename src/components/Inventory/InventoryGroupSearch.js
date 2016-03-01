@@ -37,11 +37,9 @@ export class InventoryGroupSearch extends Component {
     const { searchTerm } = this.props;
     const { searchResults } = this.state;
 
-    //if we want to filter down results while next query running
-    //const searchRegex = new RegExp(searchTerm, 'gi');
-    //const listingItems = items.filter(item => searchRegex.test(item.metadata.name) || searchRegex.test(item.rules.sbol));
-
-    const listingItems = searchResults;
+    //want to filter down results while next query running
+    const searchRegex = new RegExp(searchTerm, 'gi');
+    const listingItems = searchResults.filter(item => searchRegex.test(item.metadata.name) || searchRegex.test(item.rules.sbol));
 
     return (
       <div className="InventoryGroup-content InventoryGroupSearch">

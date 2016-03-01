@@ -32,17 +32,25 @@ export class InventoryGroupProjects extends Component {
     //this is pretty hack and should be cleaned up
     //todo - should cache this
 
-    const loadedPromise = loadedProjects[projectId]
-      ? Promise.resolve(loadedProjects[projectId])
-      : this.props.projectLoad(projectId).then(() => this.props.projectListAllBlocks(projectId));
+    const newState = !this.state.expandedProjects[projectId];
+    if (newState) {
+      const loadedPromise = loadedProjects[projectId]
+        ? Promise.resolve(loadedProjects[projectId])
+        : this.props.projectLoad(projectId).then(() => this.props.projectListAllBlocks(projectId));
 
-    loadedPromise
-      .then(blocks => {
-        Object.assign(loadedProjects, { [projectId]: blocks });
-        this.setState({
-          expandedProjects: Object.assign(this.state.expandedProjects, { [projectId]: blocks }),
+      loadedPromise
+        .then(blocks => {
+          Object.assign(loadedProjects, { [projectId]: blocks });
+          //lame - do this here so dont need to worry about it being undefined in render
+          this.setState({
+            expandedProjects: Object.assign(this.state.expandedProjects, { [projectId]: newState }),
+          });
         });
+    } else {
+      this.setState({
+        expandedProjects: Object.assign(this.state.expandedProjects, { [projectId]: false }),
       });
+    }
   };
 
   render() {
@@ -57,7 +65,7 @@ export class InventoryGroupProjects extends Component {
         const isExpanded = expandedProjects[project.id];
         return (
           <div key={project.id}
-               className="InventoryItem InventoryGroupProjects-item">
+               className={'InventoryItem InventoryGroupProjects-item' + (isExpanded ? ' active' : '')}>
             <span className={'InventoryGroupProjects-item-toggle' + (isExpanded ? ' active' : '')}/>
             <a className="InventoryGroupProjects-item-title"
                onClick={() => this.toggleExpandProject(project.id)}>
@@ -65,7 +73,7 @@ export class InventoryGroupProjects extends Component {
             </a>
             {isExpanded && <div className="InventoryGroupProjects-item-contents">
               <InventoryList inventoryType={blockDragType}
-                             items={expandedProjects[project.id]}/>
+                             items={loadedProjects[project.id]}/>
             </div>}
           </div>);
       });
