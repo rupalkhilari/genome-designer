@@ -92,9 +92,9 @@ export default class UserInterface {
       sel.style.width = bounds.width + 'px';
       sel.style.height = bounds.height + 'px';
     });
+
     // remove any elements no longer required.
-    const keys = Object.keys(this.selectionMap);
-    keys.forEach(nodeUUID => {
+    Object.keys(this.selectionMap).forEach(nodeUUID => {
       if (!this.selections.find(node => nodeUUID === node.uuid)) {
         const element = this.selectionMap[nodeUUID];
         delete this.selectionMap[nodeUUID];

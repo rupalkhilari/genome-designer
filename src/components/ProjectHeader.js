@@ -1,6 +1,4 @@
 import React, { Component, PropTypes } from 'react';
-import { Link } from 'react-router';
-
 import '../styles/ProjectHeader.css';
 
 export default class ProjectHeader extends Component {
