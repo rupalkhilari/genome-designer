@@ -61,10 +61,14 @@
   color: white;
   border: none;
 }
+/* errors are hidden by default, add the .visible class to make them appear*/
 .authentication-form .error {
-  color: var(--errorcolor);
+  color: transparent;
   font-size: var(--fontsize);
   text-align: center;
+}
+.authentication-form .visible {
+  color: var(--errorcolor);
 }
 .authentication-form label {
   font-size: var(--fontsize);

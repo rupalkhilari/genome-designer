@@ -6,6 +6,7 @@ import inventory from './inventory';
 import inspector from './inspector';
 import projects from './projects';
 import ui from './ui';
+import user from './user';
 
 const rootReducer = combineReducers({
   router,
@@ -14,6 +15,7 @@ const rootReducer = combineReducers({
   inspector,
   projects,
   ui,
+  user,
 });
 
 export default rootReducer;
