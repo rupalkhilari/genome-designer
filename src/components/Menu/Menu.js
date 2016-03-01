@@ -26,7 +26,7 @@ export default class Menu extends Component {
         </div>
         {this.props.isOpen && (
           <div className="menu-dropdown-container">
-            {this.props.menuItems.map(item => {
+            {this.props.menuItems.map((item, index) => {
               const boundAction = () => {
                 item.action();
                 this.toggle(false);
@@ -34,7 +34,7 @@ export default class Menu extends Component {
               return (
                 item.text ?
                   (<MenuItem text={item.text} disabled={!!item.disabled} action={boundAction}/>) :
-                  (<MenuSeparator />)
+                  (<MenuSeparator key={index} />)
                 );
             })}
           </div>

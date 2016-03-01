@@ -31,6 +31,7 @@ import {
    uiSetCurrentConstruct,
   } from '../../../actions/ui';
 import invariant from 'invariant';
+import { projectGetVersion } from '../../../selectors/projects';
 
 export class ConstructViewer extends Component {
 
@@ -52,6 +53,7 @@ export class ConstructViewer extends Component {
     blockAddComponent: PropTypes.func,
     blockRemoveComponent: PropTypes.func,
     blockGetParents: PropTypes.func,
+    projectGetVersion: PropTypes.func,
     blocks: PropTypes.object,
     ui: PropTypes.object,
   };
@@ -159,9 +161,10 @@ export class ConstructViewer extends Component {
     // add all blocks in the payload
     const blocks = Array.isArray(payload.item) ? payload.item : [payload.item];
     const clones = [];
+    const projectVersion = this.props.projectGetVersion(this.props.projectId);
     blocks.forEach(block => {
-      const clone = this.props.blockClone(block);
-      this.props.blockAddComponent(parent.id, clone.id, index++);
+      const clone = this.props.blockClone(block, projectVersion);
+      this.props.blockAddComponent(this.props.construct.id, clone.id, index++);
       clones.push(clone.id);
     });
     // return all the newly inserted blocks
@@ -385,6 +388,7 @@ export default connect(mapStateToProps, {
   blockGetParents,
   blockSetSbol,
   blockRename,
+  projectGetVersion,
   uiAddCurrent,
   uiSetCurrent,
   uiSetCurrentConstruct,
