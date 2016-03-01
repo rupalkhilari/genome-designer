@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { inventorySearch } from '../../actions/inventory';
 import { block as blockDragType } from '../../constants/DragTypes';
-import debounce from 'lodash.debounce';
+import { debounce } from 'lodash';
 
 import defaultBlocks from '../../inventory/andrea';
 import exampleSearch from '../../inventory/egf/exampleResults';
@@ -13,6 +13,13 @@ import * as searchApi from '../../middleware/search';
 import InventorySources from './InventorySources';
 import InventorySearch from './InventorySearch';
 import InventoryList from './InventoryList';
+import InventoryListGroup from './InventoryListGroup';
+
+//todo - remove (testing)
+const defaultSearchResults = {
+  igem: [],
+  egf: parseResults(exampleSearch),
+};
 
 export class InventoryGroupSearch extends Component {
   static propTypes = {
@@ -23,7 +30,7 @@ export class InventoryGroupSearch extends Component {
   state = {
     searching: false,
     sourceList: getSources(),
-    searchResults: parseResults(exampleSearch), //todo - remove (testing)
+    searchResults: defaultSearchResults,
   };
 
   componentDidMount() {
@@ -36,7 +43,9 @@ export class InventoryGroupSearch extends Component {
           searchResults,
         }))
         .catch(err => {
-          /*dont do anything for now ... */
+          this.setState({
+            searchResults: defaultSearchResults,
+          });
         })
         .then(() => this.setState({ searching: false }));
     };
@@ -48,6 +57,7 @@ export class InventoryGroupSearch extends Component {
     const { sourceList } = this.state;
     const newSourceList = sourceList.length ? sourceList.slice() : getSources();
 
+    //xor, reset if empty
     const indexOfSource = newSourceList.indexOf(source);
     if (indexOfSource >= 0) {
       newSourceList.splice(indexOfSource, 1);
@@ -65,6 +75,10 @@ export class InventoryGroupSearch extends Component {
     this.props.inventorySearch(value);
     this.debouncedSearch(value);
   };
+  
+  handleToggle = (nextState) => {
+    
+  };
 
   render() {
     const { searchTerm } = this.props;
@@ -72,9 +86,8 @@ export class InventoryGroupSearch extends Component {
 
     //want to filter down results while next query running
     const searchRegex = new RegExp(searchTerm, 'gi');
-    const listingItems = searchResults.filter(item => searchRegex.test(item.metadata.name) || searchRegex.test(item.rules.sbol));
 
-    //todo - filter source
+    //todo - filter by source
 
     return (
       <div className={'InventoryGroup-content InventoryGroupSearch'}>
@@ -83,8 +96,21 @@ export class InventoryGroupSearch extends Component {
         <InventorySources registry={registry}
                           sourceList={sourceList}
                           onSourceToggle={this.onSourceToggle}/>
-        <InventoryList inventoryType={blockDragType}
-                       items={listingItems}/>
+
+        {Object.keys(searchResults).map(key => {
+          const group = searchResults[key];
+          const listingItems = group.filter(item => searchRegex.test(item.metadata.name) || searchRegex.test(item.rules.sbol));
+
+          return (
+            <InventoryListGroup title={`${key} (${listingItems.length})`}
+                                key={key}
+                                onToggle={this.handleToggle}>
+              <InventoryList inventoryType={blockDragType}
+                             items={listingItems}/>
+            </InventoryListGroup>
+          );
+        })}
+
         {searching && <div className="loader"/>}
       </div>
     );

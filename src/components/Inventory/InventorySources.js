@@ -36,6 +36,7 @@ export default class InventorySources extends Component {
                  className="InventorySources-source">
               <input type="checkbox"
                      className="InventorySources-toggler"
+                     readOnly
                      checked={sourceList.includes(key)}/>{source.name}</div>
           );
         })}

@@ -1,0 +1,41 @@
+@import 'variables.css';
+
+.InventoryListGroup {
+  display: flex;
+  flex-direction: column;
+  padding: 0 0 0.5em;
+
+  &-title {}
+
+  &-toggle {
+    width: 10px;
+    height: 10px;
+    display: inline-block;
+    margin-right: 0.5em;
+    background-image: url('/images/ui/disclosure_triangle_closed.svg');
+    background-position: top left;
+    background-repeat: no-repeat;
+    background-size: contain;
+    transition: transform var(--timing-extrafast) ease-out;
+  }
+
+  &-contents {
+    flex-shrink: 1;
+    margin-left: 1.5em;
+    overflow-y: scroll;
+  }
+
+  &.expanded {
+    flex-grow: 1;
+
+    .InventoryListGroup-toggle {
+      transform: rotate(90deg);
+    }
+  }
+
+  &.active {
+    .InventoryListGroup-title {
+      color: var(--colors-selected);
+    }
+  }
+}
