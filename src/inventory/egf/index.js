@@ -1,10 +1,24 @@
 import fetch from 'isomorphic-fetch';
-import parseResults from './egf_parseResults';
+import parseResults from './parseResults';
+import queryString from 'query-string';
 
 export const url = 'http://ec2-52-30-192-126.eu-west-1.compute.amazonaws.com:8001/collections';
 
-export const search = (term) => {
-  return fetch(`${url}/search/${term}`)
+export const name = 'Edinburgh Genome Foundry';
+
+export const search = (term, options) => {
+  const opts = Object.assign(
+    {
+      start: 0,
+      entries: 50,
+    },
+    options,
+    {
+      collection: 'yeastfab',
+    }
+  );
+
+  return fetch(`${url}/search/${term}?${queryString.stringify(opts)}`)
     .then(resp => resp.json())
     .then(results => parseResults(results));
 };

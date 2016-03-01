@@ -1,11 +1,24 @@
 import fetch from 'isomorphic-fetch';
+import parseResults from './parseResults';
+import queryString from 'query-string';
 
-//todo - pending valentin support
+export const url = 'http://ec2-52-30-192-126.eu-west-1.compute.amazonaws.com:8001/collections';
 
-export const url = 'http://ec2-52-30-192-126.eu-west-1.compute.amazonaws.com:8001/collections/igem';
+export const name = 'iGEM Registry';
 
-export const search = (term) => {
-  return fetch(`${url}/search/${term}`)
+export const search = (term, options = {}) => {
+  const opts = Object.assign(
+    {
+      start: 0,
+      entries: 50,
+    },
+    options,
+    {
+      collection: 'igem',
+    }
+  );
+
+  return fetch(`${url}/search/${term}?${queryString.stringify(opts)}`)
     .then(resp => resp.json())
     .then(results => parseResults(results));
 };

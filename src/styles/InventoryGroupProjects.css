@@ -15,17 +15,20 @@
       background-size: contain;
       transition: transform var(--timing-extrafast) ease-out;
 
-      &.active {
+      &.expanded {
         transform: rotate(90deg);
       }
     }
 
-    .active > &-title {
-      color: var(--colors-selected);
+    &-title {
+
+      &.active {
+        color: var(--colors-selected);
+      }
     }
 
     &-contents {
-
+      margin-left: 1.5em;
     }
   }
 }

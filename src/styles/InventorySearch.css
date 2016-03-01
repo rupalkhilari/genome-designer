@@ -8,8 +8,12 @@
     border: 1px solid white;
     border-radius: 2px;
     margin: 0 0 0.5em;
-    padding: 0.4em 0.5em;
+    padding: 0.5em 2em 0.5em 0.4em;
     background: white;
     color: var(--colors-text);
+    background-image: url('/images/ui/search.svg');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center right;
   }
 }
