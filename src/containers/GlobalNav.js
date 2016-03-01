@@ -242,9 +242,6 @@ class GlobalNav extends Component {
             }, {
               text: 'My Account',
               action: () => {this.props.uiShowAuthenticationForm('account')},
-            },{
-              text: 'Sign Out',
-              action: () => {},
             },
           ],
         },
@@ -256,7 +253,7 @@ class GlobalNav extends Component {
       <div className="GlobalNav">
         <Link className="GlobalNav-title" to="\">GD</Link>
         {this.props.showMainMenu ? this.menuBar() : null}
-        <UserWidget></UserWidget>
+        <UserWidget/>
       </div>
     );
   }

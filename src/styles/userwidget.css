@@ -1,3 +1,5 @@
+@import './variables.css';
+
 .userwidget {
   height: 40px;
   display: flex;
@@ -6,6 +8,7 @@
   position: fixed;
   top: 5px;
   right: 5px;
+  z-index: var(--zMenuContainer);
 }
 .userwidget .signed-out {
   color: dodgerblue;

@@ -1,7 +1,11 @@
 import React, { Component, PropTypes } from 'react';
+import ReactDOM from 'react-dom';
+import PopupMenu from '../../components/Menu/PopupMenu';
+import Vector2D from '../../containers/graphics/geometry/vector2d';
 import { connect } from 'react-redux';
 import 'isomorphic-fetch';
 import { uiShowAuthenticationForm } from '../../actions/ui';
+import { userSetUser } from '../../actions/user';
 
 import '../../styles/userwidget.css';
 
@@ -9,11 +13,81 @@ class UserWidget extends Component {
 
   static propTypes = {
     uiShowAuthenticationForm: PropTypes.func.isRequired,
+    userSetUser: PropTypes.func.isRequired,
   };
+
+  constructor() {
+    super();
+    this.state = {
+      menuOpen: false,
+      menuPosition: new Vector2D(),
+    };
+  }
 
   onSignIn(evt) {
     evt.preventDefault();
     this.props.uiShowAuthenticationForm('signin');
+  }
+
+  onShowMenu() {
+    const b = ReactDOM.findDOMNode(this).getBoundingClientRect();
+    this.setState({
+      menuOpen: true,
+      menuPosition: new Vector2D(b.left - 200, b.top + b.height),
+    });
+  }
+
+  closeMenu() {
+    this.setState({
+      menuOpen: false,
+    });
+  }
+
+  signOut() {
+
+    const endPoint = `${window.location.origin}/auth/logout`;
+
+    fetch(endPoint, {
+      credentials: 'include',
+      method: 'GET',
+    })
+    .then(() => {
+      // set the user
+      this.props.userSetUser({
+        userid: null,
+        email: null,
+        firstName: null,
+        lastName: null,
+      });
+    })
+    .catch((reason) => {
+      alert('Logout Failed');
+    });
+
+  }
+
+  contextMenu() {
+    return (<PopupMenu
+      open={this.state.menuOpen}
+      position={this.state.menuPosition}
+      closePopup={this.closeMenu.bind(this)}
+      menuItems={
+        [
+          {
+            text: <b>{this.props.user.email}</b>,
+          },
+          {
+            text: 'My Account',
+            action: () => {
+              this.props.uiShowAuthenticationForm('account');
+            },
+          },
+          {
+            text: 'Sign Out',
+            action: this.signOut.bind(this)
+          },
+        ]
+      }/>);
   }
 
   render() {
@@ -21,7 +95,8 @@ class UserWidget extends Component {
       // signed in user
       return (
         <div className="userwidget">
-          <div className="signed-in">{this.props.user.email.substr(0, 1)}</div>
+          <div onClick={this.onShowMenu.bind(this)} className="signed-in">{this.props.user.email.substr(0, 1)}</div>
+          {this.contextMenu()}
         </div>
       )
     }
@@ -41,4 +116,5 @@ function mapStateToProps(state) {
 }
 export default connect(mapStateToProps, {
   uiShowAuthenticationForm,
+  userSetUser,
 })(UserWidget);
