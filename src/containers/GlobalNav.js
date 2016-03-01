@@ -3,6 +3,7 @@ import {Link} from 'react-router';
 import {connect} from 'react-redux';
 import {pushState} from 'redux-router';
 import MenuBar from '../components/Menu/MenuBar';
+import UserWidget from '../components/authentication/userwidget';
 import { listProjects } from '../middleware/api';
 import { projectCreate, projectAddConstruct, projectSave, projectLoad } from '../actions/projects';
 import { blockCreate } from '../actions/blocks';
@@ -255,6 +256,7 @@ class GlobalNav extends Component {
       <div className="GlobalNav">
         <Link className="GlobalNav-title" to="\">GD</Link>
         {this.props.showMainMenu ? this.menuBar() : null}
+        <UserWidget></UserWidget>
       </div>
     );
   }
