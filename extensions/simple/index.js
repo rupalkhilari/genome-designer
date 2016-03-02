@@ -49,8 +49,10 @@
 
 	var manifest = __webpack_require__(/*! json!./package.json */ 1);
 	
-	function render(container) {
+	function render(container, options) {
 	  container.innerHTML = 'extension loaded!';
+	
+	  console.log(options.boundingBox);
 	
 	  //throw an error for debugging debugging
 	  //require('./externalFile.js').doBadThing();

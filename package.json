@@ -7,7 +7,7 @@
     "start": "babel-node server/devServer.js",
     "clean": "rimraf lib dist coverage",
     "postinstall": "npm run install-extensions && npm run selenium",
-    "install-extensions": "cd server/extensions && npm install --only=prod --no-bin-link --no-optional",
+    "install-extensions": "cd server/extensions && rm -rf node_modules && npm install --only=prod --no-bin-link --no-optional",
     "check": "npm run lint && npm run test",
     "lint": "eslint src server extensions; exit 0;",
     "lint-jscs": "jscs src server",

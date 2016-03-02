@@ -30,9 +30,13 @@ export class ProjectDetail extends Component {
   //todo - need to provide a way to unregister event handlers (e.g. an un-render() callback)
   loadExtension = (manifest) => {
     try {
-      manifest.render(this.refs.extensionView);
       this.toggle(true);
-      this.setState({currentExtension: manifest});
+      this.setState({ currentExtension: manifest });
+
+      setTimeout(() => {
+        const boundingBox = this.refs.extensionContainer.getBoundingClientRect();
+        manifest.render(this.refs.extensionView, {boundingBox});
+      });
     } catch (err) {
       console.error('error loading / rendering extension!', manifest);
       throw err;
@@ -74,7 +78,8 @@ export class ProjectDetail extends Component {
     return (
       <div className={'ProjectDetail' + (this.props.isVisible ? ' visible' : '')}>
         {header}
-        <div className="ProjectDetail-chrome">
+        <div className="ProjectDetail-chrome"
+             ref="extensionContainer">
           <div ref="extensionView"
                className="ProjectDetail-extensionView"></div>
         </div>

@@ -1,7 +1,9 @@
 var manifest = require('json!./package.json');
 
-function render(container) {
+function render(container, options) {
   container.innerHTML = 'extension loaded!';
+
+  console.log(options.boundingBox);
 
   //throw an error for debugging debugging
   //require('./externalFile.js').doBadThing();
