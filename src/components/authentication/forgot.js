@@ -85,7 +85,9 @@ class ForgotForm extends Component {
           <input ref="emailAddress" className="input" placeholder="Registered Email Address"/>
           <div className={`error ${this.state.emailError.visible ? 'visible' : ''}`}>{`${this.state.emailError.text}`}</div>
           <button type="submit">Submit Request</button>
-          <button type="button">Cancel</button>
+            <button type="button" onClick={() => {
+                this.props.uiShowAuthenticationForm('none');
+              }}>Cancel</button>
         </form>
       </div>
     );
