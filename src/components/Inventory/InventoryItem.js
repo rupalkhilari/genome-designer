@@ -55,7 +55,9 @@ export default class InventoryItem extends Component {
         (!!imagePath ? ' hasImage' : '')}>
         <a className="InventoryItem-item">
           {!!imagePath && <img className="InventoryItem-image" src={imagePath}/> }
-          <span className="InventoryItem-text">{item.metadata.name}</span>
+          <span className="InventoryItem-text">
+            {item.metadata.name || 'Unnamed'}
+          </span>
         </a>
       </div>
     );

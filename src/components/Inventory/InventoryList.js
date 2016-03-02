@@ -13,7 +13,7 @@ export default class InventoryList extends Component {
   };
 
   render() {
-    const { items, keyOn, inventoryType } = this.props;
+    const { items, inventoryType } = this.props;
 
     return (
       <div className="InventoryList">
