@@ -97,6 +97,11 @@ class SignInForm extends Component {
 
   }
 
+  onRegister(evt) {
+    evt.preventDefault();
+    this.props.uiShowAuthenticationForm('signup');
+  }
+
   render() {
     return (
       <div className="container">
@@ -109,6 +114,8 @@ class SignInForm extends Component {
           <button type="button" onClick={() => {
               this.props.uiShowAuthenticationForm('none');
             }}>Cancel</button>
+          
+          <a href="/" onClick={this.onRegister.bind(this)}>New Users Register Here</a>
         </form>
       </div>
     );

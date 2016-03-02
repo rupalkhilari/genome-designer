@@ -74,7 +74,7 @@ class UserWidget extends Component {
       menuItems={
         [
           {
-            text: <b>{this.props.user.email}</b>,
+            text: <b>{`${this.props.user.firstName} ${this.props.user.lastName}`}</b>, 
           },
           {
             text: 'My Account',
@@ -95,7 +95,7 @@ class UserWidget extends Component {
       // signed in user
       return (
         <div className="userwidget">
-          <div onClick={this.onShowMenu.bind(this)} className="signed-in">{this.props.user.email.substr(0, 1)}</div>
+          <div onClick={this.onShowMenu.bind(this)} className="signed-in">{this.props.user.firstName.substr(0, 1)}</div>
           {this.contextMenu()}
         </div>
       )

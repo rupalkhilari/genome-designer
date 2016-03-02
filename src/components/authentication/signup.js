@@ -164,7 +164,12 @@ class RegisterForm extends Component {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({email: this.emailAddress, password: this.password}),
+      body: JSON.stringify({
+        email: this.emailAddress,
+        password: this.password,
+        firstName: this.firstName,
+        lastName: this.lastName,
+      }),
     })
     .then((response) => {
       return response.json();
