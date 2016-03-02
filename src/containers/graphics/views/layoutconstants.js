@@ -20,16 +20,20 @@ const condensedText = 40;
 const bannerHeight = 18;
 // inset of layout in graph
 const insetX = 0;
-const insetY = bannerHeight;
+const insetY = 0;
+// inset of nested constructs
+const nestedInsetX = 20;
+const nestedInsetY = 20;
 // font size
 const titleFontSize = '20px';
 const blockFontSize = '12px';
-// minimum width for layouts
-const minWidth = 400;
 // background
 const background = 'rgb(52, 57, 77)';
 // size of sbol icons
 const sbolIcon = 27;
+// min size of layout
+const minWidth = blockH * 4;
+const minHeight = blockH;
 
 export default {
   // layout algorithms
@@ -50,9 +54,12 @@ export default {
   condensedText: condensedText,
   insetX: insetX,
   insetY: insetY,
-  minWidth: minWidth,
+  nestedInsetX: nestedInsetX,
+  nestedInsetY: nestedInsetY,
   bannerHeight: bannerHeight,
   sbolIcon: sbolIcon,
+  minWidth: minWidth,
+  minHeight: minHeight,
 
   // display properties for various elements
   titleAppearance: {

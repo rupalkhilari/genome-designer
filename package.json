@@ -37,6 +37,7 @@
     "npm": ">= 3.7.1"
   },
   "dependencies": {
+    "ansi-to-html-umd": "^0.4.2",
     "bootstrap": "^3.3.6",
     "d3": "^3.5.12",
     "deep-freeze": "0.0.1",
