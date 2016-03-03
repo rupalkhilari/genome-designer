@@ -5,6 +5,7 @@ import App from './containers/App';
 import DashboardPage from './containers/DashboardPage';
 import ProjectPage from './containers/ProjectPage';
 import AboutPage from './components/AboutPage';
+import HomePage from './components/homepage';
 import SupportPage from './components/SupportPage';
 
 //Routes are specified as a separate component so they can hotloaded
@@ -23,9 +24,10 @@ export default(
 
     <Route path="/about" component={AboutPage}/>
     <Route path="/support" component={SupportPage}/>
+    <Route path="/homepage" component={HomePage}/>
     <Route path="/project/:projectId" component={ProjectPage}/>
 
-    <IndexRedirect to="/project/test" />
+    <IndexRedirect to="/homepage" />
 
   </Route>
 );

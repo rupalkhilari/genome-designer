@@ -1,0 +1,16 @@
+.homepage {
+  text-align: center;
+  width: 100%;
+}
+.homepage .faceplate {
+  width: 50%;
+  height: 10rem;
+  display: inline-block;
+  margin-top: 5rem;
+}
+.faceplate a {
+  color: white;
+  text-decoration: none;
+  font-size: 1rem;
+  padding: 0 1rem 0 1rem;
+}
