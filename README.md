@@ -53,6 +53,7 @@ docker-compose up
 # Method ii
 # in one terminal:
 cd ~/src/bio-user-platform
+bash /Applications/Docker/Docker\ Quickstart\ Terminal.app/Contents/Resources/Scripts/start.sh
 eval "$(docker-machine env default)"
 npm run storage
 #
