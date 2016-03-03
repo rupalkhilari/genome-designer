@@ -5,11 +5,13 @@ import InputSimple from './InputSimple';
 import ColorPicker from './ui/ColorPicker';
 import SymbolPicker from './ui/SymbolPicker';
 
-//for now, assumes only blocks. Later, may need to pass a type as well
+//todo - support readOnly mode (e.g. in inputs)
+//todo - better handle multiple blocks vs. instance
 
 export class InspectorBlock extends Component {
   static propTypes = {
     instance: PropTypes.object.isRequired,
+    readOnly: PropTypes.bool.isRequired,
     currentBlocks: PropTypes.array,
     blockSetColor: PropTypes.func.isRequired,
     blockSetSbol: PropTypes.func.isRequired,

@@ -11,6 +11,7 @@ import '../styles/SidePanel.css';
 export class Inspector extends Component {
   static propTypes = {
     isVisible: PropTypes.bool.isRequired,
+    readOnly: PropTypes.bool.isRequired,
     inspectorToggleVisibility: PropTypes.func.isRequired,
     currentBlocks: PropTypes.array,
     project: PropTypes.object,
@@ -25,24 +26,26 @@ export class Inspector extends Component {
   };
 
   render() {
-    const { isVisible, block, project } = this.props;
+    const { isVisible, block, project, readOnly } = this.props;
 
     return (
       <div className={'SidePanel Inspector' + (isVisible ? ' visible' : '')}>
 
         <div className="SidePanel-heading">
           <button className="button-nostyle SidePanel-heading-trigger Inspector-trigger"
-                onClick={() => this.toggle()}/>
+                  onClick={() => this.toggle()}/>
           <div className="SidePanel-heading-content">
             <span className="SidePanel-heading-title">Inspector</span>
             <button className="button-nostyle SidePanel-heading-close"
-               onClick={() => this.toggle(false)}/>
+                    onClick={() => this.toggle(false)}/>
           </div>
         </div>
 
         <div className="SidePanel-content">
           {block ?
-            (<InspectorBlock instance={block} currentBlocks={this.props.currentBlocks}/>) :
+            (<InspectorBlock instance={block}
+                             readOnly={readOnly}
+                             currentBlocks={this.props.currentBlocks}/>) :
             (<InspectorProject instance={project}/>) }
         </div>
       </div>
@@ -51,16 +54,24 @@ export class Inspector extends Component {
 }
 
 function mapStateToProps(state, props) {
-  const { isVisible } = state.inspector;
+  const { isVisible, forceBlocks } = state.inspector;
   const { currentBlocks, currentConstructId } = state.ui;
-  //todo - accomodate block not being in the store (i.e. existing remotely)
-  const block = currentBlocks && currentBlocks.length ? state.blocks[currentBlocks[0]] : state.blocks[currentConstructId];
+
+  //use forceBlock if available, otherwise use selected blocks
+  const block = forceBlocks.length ?
+    forceBlocks :
+    (currentBlocks && currentBlocks.length) ?
+      state.blocks[currentBlocks[0]] :
+      state.blocks[currentConstructId]; //todo - is this a sane default? Want to allow project sometimes...
+
+  const readOnly = !!forceBlock;
 
   const { projectId } = state.router.params;
   const project = state.projects[projectId];
 
   return {
     isVisible,
+    readOnly,
     currentBlocks,
     block,
     project,

@@ -13,6 +13,7 @@ export const uiShowMainMenu = (showMainMenu) => {
 
 export const uiSetCurrent = (blocks) => {
   return (dispatch, getState) => {
+    invariant(Array.isArray(blocks), 'must pass array to uiSetCurrent');
     dispatch({
       type: ActionTypes.UI_SET_CURRENT,
       blocks,

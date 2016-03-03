@@ -1,11 +1,14 @@
 import React, { Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
 import ReactDOM from 'react-dom';
 import DnD from '../../containers/graphics/dnd/dnd';
 import MouseTrap from '../../containers/graphics/mousetrap';
 
+import { inspectorToggleVisibility, inspectorForceBlocks } from '../../actions/inspector';
+
 import '../../styles/InventoryItem.css';
 
-export default class InventoryItem extends Component {
+export class InventoryItem extends Component {
   static propTypes = {
     inventoryType: PropTypes.string.isRequired,
     item: PropTypes.shape({
@@ -15,6 +18,9 @@ export default class InventoryItem extends Component {
       }).isRequired,
     }).isRequired,
     onDrop: PropTypes.func,
+    onSelect: PropTypes.func,
+    inspectorToggleVisibility: PropTypes.func.isRequired,
+    inspectorForceBlocks: PropTypes.func.isRequired,
   };
 
   componentDidMount() {
@@ -36,13 +42,25 @@ export default class InventoryItem extends Component {
       type: this.props.inventoryType,
     }, {
       onDrop: (target, position) => {
-        console.log('droppped', target);
         if (this.props.onDrop) {
           return this.props.onDrop(this.props.item, target, position);
         }
-      }
+      },
     });
   }
+
+  handleClick = () => {
+    //todo - promise - get more data first
+    //todo - add class selected, based on inspector current blocks
+    const { item, onSelect, inspectorToggleVisibility, inspectorForceBlocks } = this.props;
+
+    const promise = (!!onSelect) ? onSelect(item) : Promise.resolve(item);
+
+    promise.then(result => {
+      inspectorForceBlocks([result]);
+      inspectorToggleVisibility(true);
+    });
+  };
 
   /**
    * make a drag and drop proxy for the item
@@ -61,7 +79,8 @@ export default class InventoryItem extends Component {
     return (
       <div className={'InventoryItem' +
         (!!imagePath ? ' hasImage' : '')}>
-        <a className="InventoryItem-item">
+        <a className="InventoryItem-item"
+           onClick={this.handleClick}>
           {!!imagePath && <img className="InventoryItem-image" src={imagePath}/> }
           <span className="InventoryItem-text">
             {item.metadata.name || 'Unnamed'}
@@ -71,3 +90,8 @@ export default class InventoryItem extends Component {
     );
   }
 }
+
+export default connect(() => ({}), {
+  inspectorForceBlocks,
+  inspectorToggleVisibility,
+})(InventoryItem);
