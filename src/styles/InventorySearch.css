@@ -17,3 +17,11 @@
     background-position: center right;
   }
 }
+
+.InventoryGroupSearch {
+  &-groups {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+  }
+}

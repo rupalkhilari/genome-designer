@@ -27,7 +27,8 @@ export default class InventoryListGroup extends Component {
     if (!manual) {
       this.setState({ expanded: nextState });
     }
-    onToggle(nextState);
+
+    onToggle && onToggle(nextState);
   };
 
   render() {

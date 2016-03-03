@@ -9,7 +9,11 @@ export const registry = {
 
 export const register = (source) => {
   invariant(false, 'not supported yet');
+
   //todo - checks
+  invariant(typeof source.get === 'function');
+  invariant(typeof source.search === 'function');
+
   //todo - add to registry
 };
 

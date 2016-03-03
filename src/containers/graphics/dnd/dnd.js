@@ -17,7 +17,9 @@ class DnD {
   // start a drag operation using the given element proxy for display purposes
   // and starting from the given global position. Payload is any object representing
   // what is being dragged
-  startDrag(elementProxy, globalPosition, payload) {
+  // valid options:
+  //  - onDrop(target) - can return a payload to use onDrop
+  startDrag(elementProxy, globalPosition, payload, options = {}) {
     // the body must have position relative for this to work ( or we could add
     // an element to act as a drag surface but that seems like overkill )
     document.body.style.position = 'relative';
@@ -45,6 +47,9 @@ class DnD {
 
     // set initial target we are over, necessary for dragEnter, dragLeave callbacks
     this.lastTarget = null;
+
+    //set hooks
+    this.onDrop = options.onDrop || (() => {});
 
     // save the payload for dropping
     this.payload = payload;
@@ -97,6 +102,7 @@ class DnD {
       }
     }
   }
+
   /**
    * mouse up during drag
    */
@@ -104,8 +110,17 @@ class DnD {
     invariant(this.proxy, 'not expecting mouse events when not dragging');
     const globalPosition = this.mouseToGlobal(evt);
     const target = this.findTargetAt(globalPosition);
+
     if (target && target.options && target.options.drop) {
-      target.options.drop.call(this, globalPosition, this.payload);
+      //save for sync cleanup...
+      const savedPayload = this.payload;
+      
+      //call onDrop handler, which will immediately resolve to nothing if wasnt passed in
+      Promise.resolve(this.onDrop(target, globalPosition))
+        .then((result) => {
+          const payload = (typeof result !== 'undefined') ? result : savedPayload;
+          target.options.drop.call(this, globalPosition, payload);
+        });
     }
     // ensure lastTarget gets a dragLeave incase they rely on it for cleanup
     if (this.lastTarget && this.lastTarget.options.dragLeave) {
@@ -162,7 +177,7 @@ class DnD {
    */
   registerTarget(element, options) {
     invariant(element, 'expected an element to register');
-    this.targets.push({element, options});
+    this.targets.push({ element, options });
   }
 
   /**
@@ -182,6 +197,7 @@ class DnD {
     const domRECT = element.getBoundingClientRect();
     return new Box2D(domRECT.left + window.scrollX, domRECT.top + window.scrollY, domRECT.width, domRECT.height);
   }
+
   /**
    * x-browser solution for the global mouse position
    */

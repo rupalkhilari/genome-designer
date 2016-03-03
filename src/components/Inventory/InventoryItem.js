@@ -14,6 +14,7 @@ export default class InventoryItem extends Component {
         image: PropTypes.string,
       }).isRequired,
     }).isRequired,
+    onDrop: PropTypes.func,
   };
 
   componentDidMount() {
@@ -33,6 +34,13 @@ export default class InventoryItem extends Component {
     DnD.startDrag(this.makeDnDProxy(), globalPoint, {
       item: this.props.item,
       type: this.props.inventoryType,
+    }, {
+      onDrop: (target, position) => {
+        console.log('droppped', target);
+        if (this.props.onDrop) {
+          return this.props.onDrop(this.props.item, target, position);
+        }
+      }
     });
   }
 
