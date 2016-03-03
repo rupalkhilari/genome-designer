@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import {connect} from 'react-redux';
-import { uiShowAuthenticationForm } from '../../actions/ui';
+import { uiShowAuthenticationForm, uiSetGrunt } from '../../actions/ui';
 import 'isomorphic-fetch';
 import invariant from 'invariant';
 
@@ -11,7 +11,7 @@ import invariant from 'invariant';
 const errors = {
   emailError: {
     visible: false,
-    text: ' ',
+    text: '&nbsp;',
   },
 };
 
@@ -19,6 +19,7 @@ class ForgotForm extends Component {
 
   static propTypes = {
     uiShowAuthenticationForm: PropTypes.func.isRequired,
+    uiSetGrunt: PropTypes.func.isRequired,
   };
 
   constructor() {
@@ -38,7 +39,7 @@ class ForgotForm extends Component {
     // reset errors
     this.setState({
       emailError: false,
-      text: ' ',
+      text: '&nbsp;',
     });
 
     // get the API end point
@@ -67,6 +68,8 @@ class ForgotForm extends Component {
         });
         return;
       }
+      // show grunt
+      this.props.uiSetGrunt(`A link to reset your password has been sent to ${this.emailAddress}`);
       // close the form
       this.props.uiShowAuthenticationForm('none')
     })
@@ -98,4 +101,5 @@ function mapStateToProps(state) {
 
 export default connect(mapStateToProps, {
   uiShowAuthenticationForm,
+  uiSetGrunt,
 })(ForgotForm);

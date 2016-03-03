@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import {connect} from 'react-redux';
-import { uiShowAuthenticationForm } from '../../actions/ui';
+import { uiShowAuthenticationForm, uiSetGrunt } from '../../actions/ui';
 import { userSetUser } from '../../actions/user';
 import 'isomorphic-fetch';
 import invariant from 'invariant';
@@ -40,6 +40,7 @@ class RegisterForm extends Component {
 
   static propTypes = {
     uiShowAuthenticationForm: PropTypes.func.isRequired,
+    uiSetGrunt: PropTypes.func.isRequired,
     userSetUser: PropTypes.func.isRequired,
   };
 
@@ -186,9 +187,11 @@ class RegisterForm extends Component {
         firstName: json.firstName,
         lastName: json.lastName,
       });
+      // set grunt message with signup information
+      this.props.uiSetGrunt(`You are now registered and signed in as ${json.firstName} ${json.lastName} ( ${json.email} )`);
+
       // close the form
       this.props.uiShowAuthenticationForm('none')
-      console.log(JSON.stringify(json, null, 2));
     })
     .catch((reason) => {
       this.showServerErrors({
@@ -244,5 +247,6 @@ function mapStateToProps(state) {
 
 export default connect(mapStateToProps, {
   uiShowAuthenticationForm,
+  uiSetGrunt,
   userSetUser,
 })(RegisterForm);

@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import {connect} from 'react-redux';
-import { uiShowAuthenticationForm } from '../../actions/ui';
+import { uiShowAuthenticationForm, uiSetGrunt } from '../../actions/ui';
 import { userSetUser } from '../../actions/user';
 import 'isomorphic-fetch';
 import invariant from 'invariant';
@@ -44,6 +44,7 @@ class AccountForm extends Component {
 
   static propTypes = {
     uiShowAuthenticationForm: PropTypes.func.isRequired,
+    uiSetGrunt: PropTypes.func.isRequired,
     userSetUser: PropTypes.func.isRequired,
   };
 
@@ -117,29 +118,23 @@ class AccountForm extends Component {
     });
   }
   /**
-   * basic validation occurs on client i.e. matching email addresses, Passwords
-   * and all required fields present
+   * most fields are optional except current password. If password or email are supplied
+   * the confirmation field must match.
    */
   clientValidation() {
     // reset all error messages
     const newState = Object.assign({}, errors)
+
     // parse individual problems and report
     if (!this.currentPassword) {
       newState.currentPasswordError = { visible: true, text: 'Please enter your current password'};
     }
-    if (!this.firstName || !this.lastName) {
-      newState.nameError = { visible: true, text: 'Please enter a first and last name'};
-    }
-    if (!this.emailAddress) {
-      newState.email1Error = { visible: true, text: 'Please enter an email address'};
-    }
-    if (!this.emailConfirm || this.emailAddress !== this.emailConfirm) {
+
+    if (this.emailAddress && this.emailAddress !== this.emailConfirm) {
       newState.email2Error = { visible: true, text: 'Email addresses do not match'};
     }
-    if (!this.password) {
-      newState.password1Error = { visible: true, text: 'Please enter a password'};
-    }
-    if (!this.passwordConfirm || this.password !== this.passwordConfirm) {
+
+    if (this.password && this.password !== this.passwordConfirm) {
       newState.password2Error = { visible: true, text: 'Passwords do not match'};
     }
 
@@ -160,7 +155,22 @@ class AccountForm extends Component {
       return;
     }
     // get the API end point
-    const endPoint = `${window.location.origin}/auth/register`;
+    const endPoint = `${window.location.origin}/auth/update-all`;
+
+    // most fields are optional except the current password
+    const payload = {password: this.currentPassword};
+    if (this.firstName) {
+      payload.firstName = this.firstName;
+    }
+    if (this.lastName) {
+      payload.lastName = this.lastName;
+    }
+    if (this.emailAddress) {
+      payload.email = this.emailAddress;
+    }
+    if (this.password) {
+      payload.newPassword = this.password;
+    }
 
     fetch(endPoint, {
       credentials: 'include', // allow cookies
@@ -169,7 +179,7 @@ class AccountForm extends Component {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({email: this.emailAddress, password: this.password}),
+      body: JSON.stringify(payload),
     })
     .then((response) => {
       return response.json();
@@ -179,22 +189,28 @@ class AccountForm extends Component {
         this.showServerErrors(json);
         return;
       }
+      const email = json.email || this.props.user.email;
+      const firstName = json.firstName || this.props.user.firstName;
+      const lastName = json.lastName || this.props.user.lastName;
+
       // set the user
       this.props.userSetUser({
         userid: json.uuid,
-        email: json.email,
-        firstName: json.firstName,
-        lastName: json.lastName,
+        email: email,
+        firstName: firstName,
+        lastName: lastName,
       });
+      // show grunt
+      this.props.uiSetGrunt(`Account updated to ${firstName} ${lastName} ( ${email} )`);
+
       // close the form
       this.props.uiShowAuthenticationForm('none')
-      console.log(JSON.stringify(json, null, 2));
     })
     .catch((reason) => {
       this.showServerErrors({
         message: 'Unexpected error, please check your connection'
       });
-      console.error(`Exception: ${reason.toString()}`);
+      alert(`Exception: ${reason.toString()}`);
     });
 
   }
@@ -207,13 +223,13 @@ class AccountForm extends Component {
         <input ref="currentPassword" type="password" className="input" placeholder="Current Password"/>
         <div className={`error ${this.state.currentPasswordError.visible ? 'visible' : ''}`}>{`${this.state.currentPasswordError.text}`}</div>
 
-        <input ref="firstName" className="input" placeholder="First Name"/>
-        <input ref="lastName" className="input" placeholder="Last Name"/>
+        <input ref="firstName" className="input" placeholder="First Name" defaultValue={this.props.user.firstName}/>
+        <input ref="lastName" className="input" placeholder="Last Name"  defaultValue={this.props.user.lastName}/>
         <div className={`error ${this.state.nameError.visible ? 'visible' : ''}`}>{`${this.state.nameError.text}`}</div>
 
         <div className={`error ${this.state.email1Error.visible ? 'visible' : ''}`}>{`${this.state.email1Error.text}`}</div>
-        <input ref="emailAddress" className="input" placeholder="Email Address"/>
-        <input ref="emailConfirm" className="input" placeholder="Confirm Email Address"/>
+        <input ref="emailAddress" className="input" placeholder="Email Address"  defaultValue={this.props.user.email}/>
+        <input ref="emailConfirm" className="input" placeholder="Confirm Email Address"  defaultValue={this.props.user.email}/>
         <div className={`error ${this.state.email2Error.visible ? 'visible' : ''}`}>{`${this.state.email2Error.text}`}</div>
 
         <div className={`error ${this.state.password1Error.visible ? 'visible' : ''}`}>{`${this.state.password1Error.text}`}</div>
@@ -230,10 +246,13 @@ class AccountForm extends Component {
   }
 }
 function mapStateToProps(state) {
-  return {};
+  return {
+    user: state.user
+  };
 }
 
 export default connect(mapStateToProps, {
   uiShowAuthenticationForm,
+  uiSetGrunt,
   userSetUser,
 })(AccountForm);

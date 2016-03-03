@@ -6,6 +6,7 @@ export const initialState = {
   currentConstructId: null,
   showMainMenu: false,
   authenticationForm: 'none',
+  gruntMessage: null,
 };
 
 export default function inventory(state = initialState, action) {
@@ -29,6 +30,10 @@ export default function inventory(state = initialState, action) {
     case ActionTypes.UI_SHOW_MAIN_MENU : {
       const { showMainMenu } = action;
       return Object.assign({}, state, {showMainMenu});
+    }
+    case ActionTypes.UI_SET_GRUNT : {
+      const { gruntMessage } = action;
+      return Object.assign({}, state, {gruntMessage});
     }
     default : {
       return state;

@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import {connect} from 'react-redux';
-import { uiShowAuthenticationForm } from '../../actions/ui';
+import { uiShowAuthenticationForm, uiSetGrunt } from '../../actions/ui';
 import { userSetUser } from '../../actions/user';
 import 'isomorphic-fetch';
 import invariant from 'invariant';
@@ -25,6 +25,7 @@ class RegisterForm extends Component {
 
   static propTypes = {
     uiShowAuthenticationForm: PropTypes.func.isRequired,
+    uiSetGrunt: PropTypes.func.isRequired,
   };
 
   constructor() {
@@ -53,6 +54,29 @@ class RegisterForm extends Component {
         text: json.message,
       }
     });
+  }
+
+  // return a hash of the query strings
+  getQueryStrings() {
+    const assoc = {};
+    const decode = function(s) {
+      return decodeURIComponent(s.replace(/\+/g, " "));
+    };
+    const queryString = location.search.substring(1);
+    const keyValues = queryString.split('&');
+
+    for (let i in keyValues) {
+      const key = keyValues[i].split('=');
+      if (key.length > 1) {
+        assoc[decode(key[0])] = decode(key[1]);
+      }
+    }
+    return assoc;
+  }
+
+  // return a single named parameter from the query string
+  getParameter(name) {
+    return this.getQueryStrings()[name];
   }
   /**
    * basic validation occurs on client i.e. matching email addresses, Passwords
@@ -97,8 +121,8 @@ class RegisterForm extends Component {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        email: 'will need email from the URL',
-        forgotPasswordHash: 'will need the real hash from the URL',
+        email: this.getParameter('e'),
+        forgotPasswordHash: this.getParameter('h'),
         newPassword: this.password,
       }),
     })
@@ -110,6 +134,7 @@ class RegisterForm extends Component {
         this.showServerErrors(json);
         return;
       }
+      this.props.uiSetGrunt(`Your password for ${this.getParameter('e')} has been set. You may now sign in.`);
       // success so open the login form
       this.props.uiShowAuthenticationForm('signin')
     })
@@ -146,4 +171,5 @@ function mapStateToProps(state) {
 
 export default connect(mapStateToProps, {
   uiShowAuthenticationForm,
+  uiSetGrunt,
 })(RegisterForm);

@@ -23,6 +23,16 @@ export const uiShowMainMenu = (showMainMenu) => {
   };
 };
 
+export const uiSetGrunt = (gruntMessage) => {
+  return (dispatch, getState) => {
+    dispatch({
+      type: ActionTypes.UI_SET_GRUNT,
+      gruntMessage,
+    });
+    return gruntMessage;
+  };
+};
+
 export const uiSetCurrent = (blocks) => {
   return (dispatch, getState) => {
     dispatch({

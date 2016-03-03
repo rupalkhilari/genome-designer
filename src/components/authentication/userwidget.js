@@ -4,7 +4,7 @@ import PopupMenu from '../../components/Menu/PopupMenu';
 import Vector2D from '../../containers/graphics/geometry/vector2d';
 import { connect } from 'react-redux';
 import 'isomorphic-fetch';
-import { uiShowAuthenticationForm } from '../../actions/ui';
+import { uiShowAuthenticationForm, uiSetGrunt } from '../../actions/ui';
 import { userSetUser } from '../../actions/user';
 
 import '../../styles/userwidget.css';
@@ -13,7 +13,9 @@ class UserWidget extends Component {
 
   static propTypes = {
     uiShowAuthenticationForm: PropTypes.func.isRequired,
+    uiSetGrunt: PropTypes.func.isRequired,
     userSetUser: PropTypes.func.isRequired,
+    user: PropTypes.object,
   };
 
   constructor() {
@@ -59,9 +61,11 @@ class UserWidget extends Component {
         firstName: null,
         lastName: null,
       });
+      // show a grunt
+      this.props.uiSetGrunt('Your are now signed out');
     })
     .catch((reason) => {
-      alert('Logout Failed');
+  this.props.uiSetGrunt('There was a problem signing you out');
     });
 
   }
@@ -74,7 +78,7 @@ class UserWidget extends Component {
       menuItems={
         [
           {
-            text: <b>{`${this.props.user.firstName} ${this.props.user.lastName}`}</b>, 
+            text: <b>{`${this.props.user.firstName} ${this.props.user.lastName}`}</b>,
           },
           {
             text: 'My Account',
@@ -116,5 +120,6 @@ function mapStateToProps(state) {
 }
 export default connect(mapStateToProps, {
   uiShowAuthenticationForm,
+  uiSetGrunt,
   userSetUser,
 })(UserWidget);
