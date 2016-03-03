@@ -199,7 +199,16 @@ class RegisterForm extends Component {
 
   }
 
+  onSignIn(evt) {
+    evt.preventDefault();
+    this.props.uiShowAuthenticationForm('signin');
+  }
+
   render() {
+
+    const tos = "http://www.autodesk.com/company/legal-notices-trademarks/terms-of-service-autodesk360-web-services";
+    const privacy = "http://www.autodesk.com/company/legal-notices-trademarks/privacy-statement";
+
     return (
       <div className="container">
         <form className="authentication-form" onSubmit={this.onSubmit.bind(this)}>
@@ -218,13 +227,14 @@ class RegisterForm extends Component {
           <div className={`error ${this.state.password2Error.visible ? 'visible' : ''}`}>{`${this.state.password2Error.text}`}</div>
           <div className="checkbox">
             <input ref="tos" type="checkbox"/>
-            <span>Please agree to our terms of service</span>
+            <span>Please agree to the <a target="_blank" href={tos}>Terms of Service</a><br/>and <a target="_blank" href={privacy}>Autodesk Privacy Statement</a></span>
           </div>
           <div className={`error ${this.state.tosError.visible ? 'visible' : ''}`}>{`${this.state.tosError.text}`}</div>
           <button type="submit">Sign Up</button>
           <button type="button" onClick={() => {
               this.props.uiShowAuthenticationForm('none');
             }}>Cancel</button>
+          <a href="/" onClick={this.onSignIn.bind(this)}>Existing Users Sign In Here</a>
         </form>
       </div>
     );

@@ -58,7 +58,7 @@ class ForgotForm extends Component {
       return response.json();
     })
     .then((json) => {
-      if (json.message === "Invalid email") {
+      if (json.message === "Invalid email" || json.message === "missing email") {
         this.setState({
           emailError: {
             visible: true,
