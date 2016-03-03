@@ -104,20 +104,18 @@ class SignInForm extends Component {
 
   render() {
     return (
-      <div className="container">
-        <form className="authentication-form" onSubmit={this.onSubmit.bind(this)}>
-          <div className="title">Sign In</div>
-          <input ref="emailAddress" className="input" placeholder="Email Address"/>
-          <input type="password" ref="password" className="input" placeholder="Password"/>
-          <div className={`error ${this.state.signinError.visible ? 'visible' : ''}`}>{`${this.state.signinError.text}`}</div>
-          <button type="submit">Sign In</button>
-          <button type="button" onClick={() => {
-              this.props.uiShowAuthenticationForm('none');
-            }}>Cancel</button>
-          
-          <a href="/" onClick={this.onRegister.bind(this)}>New Users Register Here</a>
-        </form>
-      </div>
+      <form className="authentication-form" onSubmit={this.onSubmit.bind(this)}>
+        <div className="title">Sign In</div>
+        <input ref="emailAddress" className="input" placeholder="Email Address"/>
+        <input type="password" ref="password" className="input" placeholder="Password"/>
+        <div className={`error ${this.state.signinError.visible ? 'visible' : ''}`}>{`${this.state.signinError.text}`}</div>
+        <button type="submit">Sign In</button>
+        <button type="button" onClick={() => {
+            this.props.uiShowAuthenticationForm('none');
+          }}>Cancel</button>
+
+        <a href="/" onClick={this.onRegister.bind(this)}>New Users Register Here</a>
+      </form>
     );
   }
 }

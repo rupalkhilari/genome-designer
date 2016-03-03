@@ -210,33 +210,31 @@ class RegisterForm extends Component {
     const privacy = "http://www.autodesk.com/company/legal-notices-trademarks/privacy-statement";
 
     return (
-      <div className="container">
-        <form className="authentication-form" onSubmit={this.onSubmit.bind(this)}>
-          <div className="title">Sign Up</div>
+      <form className="authentication-form" onSubmit={this.onSubmit.bind(this)}>
+        <div className="title">Sign Up</div>
 
-          <input ref="firstName" className="input" placeholder="First Name"/>
-          <input ref="lastName" className="input" placeholder="Last Name"/>
-          <div className={`error ${this.state.nameError.visible ? 'visible' : ''}`}>{`${this.state.nameError.text}`}</div>
-          <div className={`error ${this.state.email1Error.visible ? 'visible' : ''}`}>{`${this.state.email1Error.text}`}</div>
-          <input ref="emailAddress" className="input" placeholder="Email Address"/>
-          <input ref="emailConfirm" className="input" placeholder="Confirm Email Address"/>
-          <div className={`error ${this.state.email2Error.visible ? 'visible' : ''}`}>{`${this.state.email2Error.text}`}</div>
-          <div className={`error ${this.state.password1Error.visible ? 'visible' : ''}`}>{`${this.state.password1Error.text}`}</div>
-           <input ref="password" type="password" className="input" placeholder="Password"/>
-          <input ref="passwordConfirm" type="password" className="input" placeholder="Confirm Password"/>
-          <div className={`error ${this.state.password2Error.visible ? 'visible' : ''}`}>{`${this.state.password2Error.text}`}</div>
-          <div className="checkbox">
-            <input ref="tos" type="checkbox"/>
-            <span>Please agree to the <a target="_blank" href={tos}>Terms of Service</a><br/>and <a target="_blank" href={privacy}>Autodesk Privacy Statement</a></span>
-          </div>
-          <div className={`error ${this.state.tosError.visible ? 'visible' : ''}`}>{`${this.state.tosError.text}`}</div>
-          <button type="submit">Sign Up</button>
-          <button type="button" onClick={() => {
-              this.props.uiShowAuthenticationForm('none');
-            }}>Cancel</button>
-          <a href="/" onClick={this.onSignIn.bind(this)}>Existing Users Sign In Here</a>
-        </form>
-      </div>
+        <input ref="firstName" className="input" placeholder="First Name"/>
+        <input ref="lastName" className="input" placeholder="Last Name"/>
+        <div className={`error ${this.state.nameError.visible ? 'visible' : ''}`}>{`${this.state.nameError.text}`}</div>
+        <div className={`error ${this.state.email1Error.visible ? 'visible' : ''}`}>{`${this.state.email1Error.text}`}</div>
+        <input ref="emailAddress" className="input" placeholder="Email Address"/>
+        <input ref="emailConfirm" className="input" placeholder="Confirm Email Address"/>
+        <div className={`error ${this.state.email2Error.visible ? 'visible' : ''}`}>{`${this.state.email2Error.text}`}</div>
+        <div className={`error ${this.state.password1Error.visible ? 'visible' : ''}`}>{`${this.state.password1Error.text}`}</div>
+         <input ref="password" type="password" className="input" placeholder="Password"/>
+        <input ref="passwordConfirm" type="password" className="input" placeholder="Confirm Password"/>
+        <div className={`error ${this.state.password2Error.visible ? 'visible' : ''}`}>{`${this.state.password2Error.text}`}</div>
+        <div className="checkbox">
+          <input ref="tos" type="checkbox"/>
+          <span>Please agree to the <a target="_blank" href={tos}>Terms of Service</a><br/>and <a target="_blank" href={privacy}>Autodesk Privacy Statement</a></span>
+        </div>
+        <div className={`error ${this.state.tosError.visible ? 'visible' : ''}`}>{`${this.state.tosError.text}`}</div>
+        <button type="submit">Sign Up</button>
+        <button type="button" onClick={() => {
+            this.props.uiShowAuthenticationForm('none');
+          }}>Cancel</button>
+        <a href="/" onClick={this.onSignIn.bind(this)}>Existing Users Sign In Here</a>
+      </form>
     );
   }
 }

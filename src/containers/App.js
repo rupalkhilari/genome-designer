@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import GlobalNav from './GlobalNav';
 import AuthenticationForms from './authentication/authenticationforms';
+import RibbonGrunt from '../components/ribbongrunt';
 
 
 import '../styles/App.css';
@@ -19,6 +20,7 @@ export class App extends Component {
       <div className="App">
         <GlobalNav />
         <AuthenticationForms />
+        <RibbonGrunt />
         <div className="App-pageContent">
           {children}
         </div>
