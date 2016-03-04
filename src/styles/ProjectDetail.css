@@ -17,6 +17,7 @@
 
   &-heading {
     display: flex;
+    position: relative;
     margin: 0 0 10px;
 
     &-close,
@@ -61,13 +62,15 @@
     }
 
     &-close {
-      align-self: flex-end;
+      position: absolute;
+      top: 0;
+      right: 0;
       background-image: url('/images/ui/close_icon_dark.svg');
     }
   }
 
   &-chrome {
-
+    flex-grow: 1;
   }
 
   &-extensionView {
