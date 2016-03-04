@@ -12,3 +12,4 @@ temp.*
 *__pycache__*
 plugins/*/*/inputs
 plugins/*/*/outputs
+storage/
