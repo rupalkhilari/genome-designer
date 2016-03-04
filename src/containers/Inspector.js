@@ -13,9 +13,8 @@ export class Inspector extends Component {
     isVisible: PropTypes.bool.isRequired,
     readOnly: PropTypes.bool.isRequired,
     inspectorToggleVisibility: PropTypes.func.isRequired,
-    currentBlocks: PropTypes.array,
+    instances: PropTypes.array,
     project: PropTypes.object,
-    block: PropTypes.object,
   };
 
   toggle = (forceVal) => {
@@ -26,10 +25,12 @@ export class Inspector extends Component {
   };
 
   render() {
-    const { isVisible, block, project, readOnly } = this.props;
+    const { isVisible, instances, project, readOnly } = this.props;
 
     return (
-      <div className={'SidePanel Inspector' + (isVisible ? ' visible' : '')}>
+      <div className={'SidePanel Inspector' +
+      (isVisible ? ' visible' : '') +
+      (readOnly ? ' readOnly' : '')}>
 
         <div className="SidePanel-heading">
           <button className="button-nostyle SidePanel-heading-trigger Inspector-trigger"
@@ -42,10 +43,9 @@ export class Inspector extends Component {
         </div>
 
         <div className="SidePanel-content">
-          {block ?
-            (<InspectorBlock instance={block}
-                             readOnly={readOnly}
-                             currentBlocks={this.props.currentBlocks}/>) :
+          {(instances && instances.length) ?
+            (<InspectorBlock instances={instances}
+                             readOnly={readOnly}/>) :
             (<InspectorProject instance={project}/>) }
         </div>
       </div>
@@ -58,13 +58,13 @@ function mapStateToProps(state, props) {
   const { currentBlocks, currentConstructId } = state.ui;
 
   //use forceBlock if available, otherwise use selected blocks
-  const block = forceBlocks.length ?
+  const instances = forceBlocks.length ?
     forceBlocks :
     (currentBlocks && currentBlocks.length) ?
       state.blocks[currentBlocks[0]] :
       state.blocks[currentConstructId]; //todo - is this a sane default? Want to allow project sometimes...
 
-  const readOnly = !!forceBlock;
+  const readOnly = !!forceBlocks;
 
   const { projectId } = state.router.params;
   const project = state.projects[projectId];
@@ -72,8 +72,7 @@ function mapStateToProps(state, props) {
   return {
     isVisible,
     readOnly,
-    currentBlocks,
-    block,
+    instances,
     project,
   };
 }

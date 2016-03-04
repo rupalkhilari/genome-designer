@@ -9,6 +9,6 @@ export const inspectorGetCurrentSelection = () => {
     const state = getState();
     const { forceBlocks } = state.inspector;
     const { currentBlocks } = state.ui;
-    return (typeof forceBlock !== 'undefined') ? [forceBlock] : currentBlocks;
+    return (typeof forceBlocks !== 'undefined') ? forceBlocks : currentBlocks;
   };
 };

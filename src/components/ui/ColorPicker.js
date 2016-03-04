@@ -4,14 +4,14 @@ import { colors } from '../../utils/generators/color';
 import '../../styles/Picker.css';
 import '../../styles/ColorPicker.css';
 
-export const ColorPicker = ({current, onSelect}) => {
+export const ColorPicker = ({current, readOnly, onSelect}) => {
   return (
-    <div className="Picker ColorPicker">
+    <div className={'Picker ColorPicker' + (!!readOnly ? ' readOnly' : '')}>
       <div className="Picker-content">
         {colors.map(color => {
           return (<a className={'Picker-item' + (current === color ? ' active' : '')}
                      key={color}
-                     onClick={onSelect.bind(this, color)}
+                     onClick={() => !readOnly && onSelect(color)}
                      style={{backgroundColor: color}}/>);
         })}
     </div>
@@ -20,6 +20,7 @@ export const ColorPicker = ({current, onSelect}) => {
 };
 
 ColorPicker.propTypes = {
+  readOnly: PropTypes.bool,
   current: PropTypes.string,
   onSelect: PropTypes.func,
 };

@@ -5,6 +5,7 @@ import DnD from '../../containers/graphics/dnd/dnd';
 import MouseTrap from '../../containers/graphics/mousetrap';
 
 import { inspectorToggleVisibility, inspectorForceBlocks } from '../../actions/inspector';
+import { inspectorGetCurrentSelection } from '../../selectors/inspector';
 
 import '../../styles/InventoryItem.css';
 
@@ -19,6 +20,7 @@ export class InventoryItem extends Component {
     }).isRequired,
     onDrop: PropTypes.func,
     onSelect: PropTypes.func,
+    forceBlocks: PropTypes.array.isRequired,
     inspectorToggleVisibility: PropTypes.func.isRequired,
     inspectorForceBlocks: PropTypes.func.isRequired,
   };
@@ -50,8 +52,6 @@ export class InventoryItem extends Component {
   }
 
   handleClick = () => {
-    //todo - promise - get more data first
-    //todo - add class selected, based on inspector current blocks
     const { item, onSelect, inspectorToggleVisibility, inspectorForceBlocks } = this.props;
 
     const promise = (!!onSelect) ? onSelect(item) : Promise.resolve(item);
@@ -75,10 +75,12 @@ export class InventoryItem extends Component {
   render() {
     const item = this.props.item;
     const imagePath = item.metadata.image;
+    const isSelected = this.props.forceBlocks.indexOf(item) >= 0;
 
     return (
       <div className={'InventoryItem' +
-        (!!imagePath ? ' hasImage' : '')}>
+        (!!imagePath ? ' hasImage' : '') +
+        (!!isSelected ? ' selected' : '')}>
         <a className="InventoryItem-item"
            onClick={this.handleClick}>
           {!!imagePath && <img className="InventoryItem-image" src={imagePath}/> }
@@ -91,7 +93,12 @@ export class InventoryItem extends Component {
   }
 }
 
-export default connect(() => ({}), {
+export default connect((state) => {
+  return {
+    forceBlocks: state.inspector.forceBlocks,
+  };
+}, {
+  inspectorGetCurrentSelection,
   inspectorForceBlocks,
   inspectorToggleVisibility,
 })(InventoryItem);

@@ -1,5 +1,6 @@
 import * as ActionTypes from '../constants/ActionTypes';
 import * as BlockSelector from '../selectors/blocks';
+import invariant from 'invariant';
 
 export const uiShowMainMenu = (showMainMenu) => {
   return (dispatch, getState) => {

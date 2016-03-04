@@ -35,4 +35,10 @@
       border-color: white;
     }
   }
+
+  &.readOnly {
+    .Picker-item {
+      cursor: default;
+    }
+  }
 }
