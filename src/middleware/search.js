@@ -9,7 +9,7 @@ const zip = (keys, vals) => keys.reduce(
   (acc, key, ind) => Object.assign(acc, { [key]: vals[ind] }), {}
 );
 
-//todo - ideally, farm these out separately without a Promise.all
+//todo - ideally, farm these out separately without a Promise.all (dont wait for all to resolve)
 export const search = (term, options, sourceList = []) => {
   const sources = getSources();
 
@@ -17,14 +17,17 @@ export const search = (term, options, sourceList = []) => {
   invariant(Array.isArray(sourceList), 'must pass array for search source list');
   invariant(sourceList.every(source => sources.includes(source)), `sourceList contains source not in the list of supported sources: ${sourceList} // ${sources}`);
 
-  if (!term.length) {
-    return Promise.resolve({});
-  }
-
   const searchSources = (sourceList.length === 0) ? sources : sourceList;
 
   return Promise.all(
-    searchSources.map(source => registry[source].search(term, options))
+    searchSources.map(source => {
+      //todo - better default
+      //dont search if no term, just return empty set
+      if (!term.length) {
+        return Promise.resolve([]);
+      }
+      return registry[source].search(term, options);
+    })
     )
     .then(results => zip(searchSources, results));
 };

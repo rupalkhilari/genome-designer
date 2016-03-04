@@ -41,6 +41,7 @@ export class InventoryGroupSearch extends Component {
           searchResults,
         }))
         .catch(err => {
+          console.log('couldnt fetch results!', err);
           this.setState({
             searchResults: defaultSearchResults,
           });

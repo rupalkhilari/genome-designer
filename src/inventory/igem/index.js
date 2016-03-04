@@ -20,7 +20,11 @@ export const search = (term, options = {}) => {
 
   return fetch(`${url}/search/${term}?${queryString.stringify(opts)}`)
     .then(resp => resp.json())
-    .then(results => parseResults(results));
+    .then(results => parseResults(results))
+    .catch(err => {
+      console.error(err);
+      return [];
+    });
 };
 
 export const get = (id) => {
