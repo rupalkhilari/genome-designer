@@ -64,7 +64,7 @@ class UserWidget extends Component {
       });
       // show a grunt
       this.props.uiSetGrunt('Your are now signed out');
-      this.props.pushState(null, '/');
+      this.props.pushState(null, '/auth/signin');
     })
     .catch((reason) => {
       this.props.uiSetGrunt('There was a problem signing you out');

@@ -24,6 +24,15 @@ export default class HomePage extends Component {
     this.props.uiShowAuthenticationForm('signup');
   }
 
+  // this route can result from path like 'homepage/signin', 'homepage', 'homepage/register' etc.
+  // If the final path is the name of an authorization form we will show it
+  componentDidMount() {
+    const authForm = window.location.pathname.split('/').pop();
+    if (['signin', 'signup', 'account', 'reset', 'forgot']) {
+      this.props.uiShowAuthenticationForm(authForm);
+    }
+  }
+
   render() {
     return (
       <div className="homepage">

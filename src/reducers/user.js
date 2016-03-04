@@ -7,7 +7,7 @@ export const initialState = {
   lastName: null
 };
 
-export default function inventory(state = initialState, action) {
+export default function user(state = initialState, action) {
   switch (action.type) {
     case ActionTypes.USER_SET_USER: {
       const { userid, email, firstName, lastName } = action.user;
