@@ -22,8 +22,10 @@ export function parseResult(result) {
   });
 }
 
-export default function parseResults(results) {
+export function parseResults(results) {
   invariant(Array.isArray(results), 'results must be an array');
 
   return results.map(parseResult);
 }
+
+export default parseResults;

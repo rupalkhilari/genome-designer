@@ -79,7 +79,6 @@ export class InventoryGroupSearch extends Component {
     if (source && id) {
       return registry[source].get(id)
         .then(result => {
-          console.log(result);
           return result;
         });
     }

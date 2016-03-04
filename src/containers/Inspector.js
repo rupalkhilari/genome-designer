@@ -61,8 +61,10 @@ function mapStateToProps(state, props) {
   const instances = forceBlocks.length ?
     forceBlocks :
     (currentBlocks && currentBlocks.length) ?
-      state.blocks[currentBlocks[0]] :
-      state.blocks[currentConstructId]; //todo - is this a sane default? Want to allow project sometimes...
+      [state.blocks[currentBlocks[0]]] :
+      (currentConstructId) ?
+        [state.blocks[currentConstructId]] :
+        [];
 
   const readOnly = !!forceBlocks;
 

@@ -49,7 +49,8 @@ class DnD {
     this.lastTarget = null;
 
     //set hooks
-    this.onDrop = options.onDrop || (() => {});
+    this.onDrop = options.onDrop || (() => {
+      });
 
     // save the payload for dropping
     this.payload = payload;
@@ -114,11 +115,13 @@ class DnD {
     if (target && target.options && target.options.drop) {
       //save for sync cleanup...
       const savedPayload = this.payload;
-      
+
       //call onDrop handler, which will immediately resolve to nothing if wasnt passed in
       Promise.resolve(this.onDrop(target, globalPosition))
         .then((result) => {
-          const payload = (typeof result !== 'undefined') ? result : savedPayload;
+          const payload = (typeof result !== 'undefined') ?
+            Object.assign(savedPayload, {item: result}) :
+            savedPayload;
           target.options.drop.call(this, globalPosition, payload);
         });
     }
