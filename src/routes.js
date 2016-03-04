@@ -11,6 +11,16 @@ import SupportPage from './components/SupportPage';
 //Routes are specified as a separate component so they can hotloaded
 //see: https://github.com/rackt/redux-router/issues/44#issuecomment-140198502
 
+function requireAuth(nextState, replace) {
+  //if (!auth.loggedIn()) {
+  if (true) {
+    replace({
+      pathname: '/',
+      state: { nextPathname: nextState.location.pathname }
+    })
+  }
+}
+
 export default(
   <Route path="/" component={App}>
 
@@ -25,7 +35,7 @@ export default(
     <Route path="/about" component={AboutPage}/>
     <Route path="/support" component={SupportPage}/>
     <Route path="/homepage" component={HomePage}/>
-    <Route path="/project/:projectId" component={ProjectPage}/>
+    <Route path="/project/:projectId" component={ProjectPage} onEnter={requireAuth}/>
 
     <IndexRedirect to="/homepage" />
 
