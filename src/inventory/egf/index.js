@@ -1,5 +1,5 @@
 import fetch from 'isomorphic-fetch';
-import { parseResults, parseResult } from './parseResults';
+import { parseResults, parseFullResult } from './parseResults';
 import queryString from 'query-string';
 
 export const url = 'http://ec2-52-30-192-126.eu-west-1.compute.amazonaws.com:8001/collections';
@@ -26,5 +26,5 @@ export const search = (term, options) => {
 export const get = (id) => {
   return fetch(`${url}/yeastfab/parts/${id}`)
     .then(resp => resp.json())
-    .then(result => parseResult(result));
+    .then(result => parseFullResult(result));
 };

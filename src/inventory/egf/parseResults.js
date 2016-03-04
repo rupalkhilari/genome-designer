@@ -1,12 +1,18 @@
 import invariant from 'invariant';
 import Block from '../../models/Block';
 
-export function parseResult(result) {
-  const { name, part_type } = result;
-  let partType = part_type.toLowerCase();
+function normalizePartType(inputType) {
+  let partType = inputType.toLowerCase();
   if (partType === 'orf') {
     partType = 'cds';
   }
+
+  return partType;
+}
+
+function parseBasicFields(result) {
+  const { name, part_type } = result;
+  const partType = normalizePartType(part_type);
 
   return new Block({
     metadata: {
@@ -22,10 +28,22 @@ export function parseResult(result) {
   });
 }
 
+//sync
+export function parseSearchResult(result) {
+  return parseBasicFields(result);
+}
+
+//async
+export function parseFullResult(result) {
+  const { sequence } = result;
+  const block = parseBasicFields(result);
+  return block.setSequence(sequence);
+}
+
 export function parseResults(results) {
   invariant(Array.isArray(results), 'results must be an array');
 
-  return results.map(parseResult);
+  return results.map(parseSearchResult);
 }
 
 export default parseResults;
