@@ -38,7 +38,6 @@ export default class InputSimple extends Component {
 
   handleKeyUp = (event) => {
     if (this.props.readOnly) {
-      console.log('prevent!');
       //todo - shouldn't change the value
       event.preventDefault();
     }

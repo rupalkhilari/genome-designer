@@ -70,10 +70,8 @@ export class InventoryGroupProjects extends Component {
       const promise = this.handleLoadProject(projectId);
       window.setTimeout(() => {
         if (this.clicks === 1) {
-          console.log('single!');
           promise.then(() => this.handleToggleProject(nextState, projectId));
         } else {
-          console.log('double');
           promise.then(() => this.handleOpenProject(nextState, projectId));
         }
         this.clicks = 0;
