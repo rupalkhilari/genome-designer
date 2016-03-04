@@ -66,7 +66,7 @@ function mapStateToProps(state, props) {
         [state.blocks[currentConstructId]] :
         [];
 
-  const readOnly = !!forceBlocks;
+  const readOnly = forceBlocks.length >= 1;
 
   const { projectId } = state.router.params;
   const project = state.projects[projectId];
