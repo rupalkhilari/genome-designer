@@ -87,14 +87,16 @@ export class ConstructViewer extends Component {
     // initial render won't call componentDidUpdate so force an update to the layout/scenegraph
     this.update();
     // handle window resize to reflow the layout
-    window.addEventListener('resize', debounce(this.windowResized.bind(this), 15));
+    this.resizeDebounced = debounce(this.windowResized.bind(this));
+    window.addEventListener('resize', this.resizeDebounced , 15);
   }
 
   /**
-   * update scene graph after the react component updates
+   * ensure we don't get any resize events after dismounting
    */
-  componentDidUpdate() {
-    this.update();
+  componentWillUnmount() {
+    this.resizeDebounced.cancel();
+    window.removeEventListener('resize', this.resizeDebounced);
   }
 
   /**
@@ -198,6 +200,7 @@ export class ConstructViewer extends Component {
     this.sg.availableWidth = this.dom.clientWidth;
     this.sg.availableHeight = this.dom.clientHeight;
     this.forceUpdate();
+
   }
 
   /**
