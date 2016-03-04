@@ -17,15 +17,18 @@ export const projectGetVersion = (projectId) => {
   };
 };
 
+//returns constructs first, then all blocks afterwards, order not guaranteed
 export const projectListAllBlocks = (projectId) => {
   return (dispatch, getState) => {
     const project = _getProjectFromStore(projectId, getState());
-    return project.components.reduce((acc, componentId) => {
-      const construct = dispatch(blockSelectors.blockGet(componentId));
+    const constructs = [];
+    const blocks = project.components.reduce((acc, componentId) => {
+      constructs.push(dispatch(blockSelectors.blockGet(componentId)));
       const constructChildren = dispatch(blockSelectors.blockGetChildrenRecursive(componentId));
-      acc.push(construct, ...constructChildren);
+      acc.push(...constructChildren);
       return acc;
     }, []);
+    return constructs.concat(blocks);
   };
 };
 

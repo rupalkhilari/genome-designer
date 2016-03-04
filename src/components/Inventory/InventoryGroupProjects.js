@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import { pushState } from 'redux-router';
 import { listProjects } from '../../middleware/api';
 import { projectGet, projectListAllBlocks } from '../../selectors/projects';
 import { projectLoad } from '../../actions/projects';
@@ -16,7 +17,13 @@ export class InventoryGroupProjects extends Component {
     projectLoad: PropTypes.func.isRequired,
     projectGet: PropTypes.func.isRequired,
     projectListAllBlocks: PropTypes.func.isRequired,
+    pushState: PropTypes.func.isRequired,
   };
+
+  constructor() {
+    super();
+    this.clicks = 0;
+  }
 
   state = {
     recentProjects: [],
@@ -27,38 +34,51 @@ export class InventoryGroupProjects extends Component {
     listProjects().then(projects => this.setState({ recentProjects: projects }));
   }
 
-  handleToggleProject = (nextState, projectId) => {
+  handleLoadProject = (projectId) => {
     //todo - dont load blocks into store until the project is loaded (update selector)
+    //todo - caching should be at API level, not in this component
 
-    const loadedPromise = !nextState || !!loadedProjects[projectId]
+    return !!loadedProjects[projectId]
       ?
       Promise.resolve(loadedProjects[projectId])
       :
       this.props.projectLoad(projectId)
-        .then((project) => {
-          //move constructs to top, sorted
-          const components = project.components;
-          const blocks = this.props.projectListAllBlocks(projectId);
-          const constructs = blocks.reduce((acc, block, index) => {
-            if (components.includes(block.id)) {
-              acc.push(block);
-              blocks.splice(index, 1);
-            }
-
-            return acc;
-          }, []);
-          constructs.sort((one, two) => components.indexOf(one.id) - components.indexOf(two.id));
-          return constructs.concat(blocks);
-        })
+        .then((project) => this.props.projectListAllBlocks(projectId))
         .then(blocks => {
           Object.assign(loadedProjects, { [projectId]: blocks });
           return loadedProjects[projectId];
         });
+  };
 
-    return loadedPromise
+  handleOpenProject = (nextState, projectId) => {
+    this.props.projectLoad(projectId)
+      .then(() => this.props.pushState(null, `/project/${projectId}`));
+  };
+
+  handleToggleProject = (nextState, projectId) => {
+    this.handleLoadProject(projectId)
       .then(() => this.setState({
         expandedProjects: Object.assign(this.state.expandedProjects, { [projectId]: nextState }),
       }));
+  };
+
+  handleOnToggle = (nextState, projectId) => {
+    //handle double-click to open
+    this.clicks++;
+    if (this.clicks === 1) {
+      //todo - handle this promise better - don't want to request more than once
+      const promise = this.handleLoadProject(projectId);
+      window.setTimeout(() => {
+        if (this.clicks === 1) {
+          console.log('single!');
+          promise.then(() => this.handleToggleProject(nextState, projectId));
+        } else {
+          console.log('double');
+          promise.then(() => this.handleOpenProject(nextState, projectId));
+        }
+        this.clicks = 0;
+      }, 300);
+    }
   };
 
   render() {
@@ -78,7 +98,7 @@ export class InventoryGroupProjects extends Component {
                                 title={project.metadata.name || 'My Project'}
                                 manual
                                 isExpanded={isExpanded}
-                                onToggle={(nextState) => this.handleToggleProject(nextState, project.id)}
+                                onToggle={(nextState) => this.handleOnToggle(nextState, project.id)}
                                 isActive={isActive}>
               <InventoryList inventoryType={blockDragType}
                              items={loadedProjects[project.id]}/>
@@ -106,4 +126,5 @@ export default connect(mapStateToProps, {
   projectLoad,
   projectGet,
   projectListAllBlocks,
+  pushState,
 })(InventoryGroupProjects);
