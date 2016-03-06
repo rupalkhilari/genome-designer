@@ -1,3 +1,5 @@
+@import 'variables.css';
+
 .Picker {
   line-height: 0;
   display: flex;
