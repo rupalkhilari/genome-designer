@@ -60,8 +60,8 @@ if (process.env.BIO_NANO_AUTH) {
 } else {
   app.use(require('cookie-parser')());
   // import the mocked auth routes
-  app.use(require('./utils/local-auth').mockUser);
-  var authRouter = require('./utils/local-auth').router;
+  app.use(require('./auth/local').mockUser);
+  const authRouter = require('./auth/local').router;
   app.use('/auth', authRouter);
 }
 
