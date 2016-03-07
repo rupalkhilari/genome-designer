@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component, PropTypes, Children } from 'react';
 import { pushState } from 'react-router';
 import {connect} from 'react-redux';
 import 'isomorphic-fetch';
@@ -14,11 +14,7 @@ class RouteWrapper extends Component {
   }
 
   render() {
-    return (
-      <div>
-        {this.props.user.userid ? this.props.children : null}
-      </div>
-    )
+    return this.props.user.userid ? Children.only(this.props.children) : null;
   }
 }
 

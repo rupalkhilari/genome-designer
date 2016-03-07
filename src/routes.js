@@ -15,29 +15,20 @@ import RouteWrapper from './components/authentication/routewrapper';
 //see: https://github.com/rackt/redux-router/issues/44#issuecomment-140198502
 
 
-function requireAuth(nextState, replace) {
-  if (false) {
-    replace({
-      pathname: '/',
-      state: { nextPathname: nextState.location.pathname }
-    });
-  }
-}
-
 export default(
   <Route path="/" component={App}>
 
     <Route component={RouteWrapper}>
-      <Route path="/about" component={AboutPage}/>
+      <Route path="/auth/account" component={HomePage}/>
+      <Route path="/project/:projectId" component={ProjectPage}/>
     </Route>
+    <Route path="/about" component={AboutPage}/>
     <Route path="/support" component={SupportPage}/>
     <Route path="/auth/signin" component={HomePage}/>
     <Route path="/auth/signup" component={HomePage}/>
     <Route path="/auth/reset" component={HomePage}/>
     <Route path="/auth/forgot" component={HomePage}/>
-    <Route path="/auth/account" component={HomePage}/>
     <Route path="/homepage" component={HomePage}/>
-    <Route path="/project/:projectId" component={ProjectPage} onEnter={requireAuth}/>
 
     <IndexRedirect to="/homepage" />
 
