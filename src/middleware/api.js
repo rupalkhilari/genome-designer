@@ -24,43 +24,44 @@ export const searchPath = (id) => serverRoot + 'search/' + id;
 export const dataApiPath = (path) => serverRoot + 'data/' + path;
 export const fileApiPath = (path) => serverRoot + 'file/' + path;
 
-//hack - set testing stub from start for now so all requests work
-let sessionKey = 'testingStub';
+//let this get flashed in
+let user = {};
 
-export const getSessionKey = () => {
-  return sessionKey;
+export const getUserInfo  = () => {
+  return Object.assign({}, user);
+};
+
+//future - dont expose this
+export const setUserInfo = () => {
+  
 };
 
 const headersGet = () => ({
   method: 'GET',
-  headers: {
-    'Cookie': sessionKey,
-  },
+  credentials: 'include',
 });
 
 const headersPost = (body, mimeType = 'application/json') => ({
   method: 'POST',
+  credentials: 'include',
   headers: {
     'Content-Type': mimeType,
-    'Cookie': sessionKey,
   },
   body,
 });
 
 const headersPut = (body, mimeType = 'application/json') => ({
   method: 'PUT',
+  credentials: 'include',
   headers: {
     'Content-Type': mimeType,
-    'Cookie': sessionKey,
   },
   body,
 });
 
 const headersDelete = () => ({
   method: 'DELETE',
-  headers: {
-    'Cookie': sessionKey,
-  },
+  credentials: 'include',
 });
 
 /*************************
@@ -83,19 +84,24 @@ export const login = (user, password) => {
   };
 
   return fetch(serverRoot + `auth/login`, fetchOptions)
-    .then(resp => {
-      const cookie = resp.headers.getAll("set-cookie").join(';');
-      sessionKey = cookie;
-      return cookie;
-      // ignoring the user object that is passed as the response body
-    }).catch(function (e) {
+    .then(resp => resp.json())
+    .then(json => {
+      user = {
+        userid: json.uuid,
+        email: json.email,
+        firstName: json.firstName,
+        lastName: json.lastName,
+      };
+    })
+    .catch(function (e) {
       console.log('fetch login error', e);
       throw e;
     });
 };
 
+//todo - rewrite
 // use established sessionKey to get the user object
-export const user = () => {
+export const getUser = () => {
   var headers = new Headers();
   headers.set('Content-Type', 'application/json');
   headers.set('Cookie', sessionKey);

@@ -7,6 +7,7 @@ import ProjectPage from './containers/ProjectPage';
 import AboutPage from './components/AboutPage';
 import HomePage from './components/homepage';
 import SupportPage from './components/SupportPage';
+import RouteWrapper from './components/authentication/routewrapper';
 
 
 
@@ -15,28 +16,20 @@ import SupportPage from './components/SupportPage';
 
 
 function requireAuth(nextState, replace) {
-  //if (!auth.loggedIn()) {
   if (false) {
-    debugger;
     replace({
       pathname: '/',
       state: { nextPathname: nextState.location.pathname }
-    })
+    });
   }
 }
 
 export default(
   <Route path="/" component={App}>
 
-    {/* todo - signout page w/ dynamic routing */
-      /* todo - signout page w/ dynamic routing */}
-
-    {/*
-     //Redirect to project page, use sidepanel, no dashboard.
-     <IndexRoute component={DashboardPage}/>
-     */}
-
-    <Route path="/about" component={AboutPage}/>
+    <Route component={RouteWrapper}>
+      <Route path="/about" component={AboutPage}/>
+    </Route>
     <Route path="/support" component={SupportPage}/>
     <Route path="/auth/signin" component={HomePage}/>
     <Route path="/auth/signup" component={HomePage}/>

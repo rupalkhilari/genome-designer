@@ -1,15 +1,27 @@
 import React, { Component, PropTypes } from 'react';
+import {connect} from 'react-redux';
 import GlobalNav from './GlobalNav';
+import { userSetUser } from '../actions/user';
 import AuthenticationForms from './authentication/authenticationforms';
 import RibbonGrunt from '../components/ribbongrunt';
 
 
 import '../styles/App.css';
 
-export class App extends Component {
+class App extends Component {
   static propTypes = {
     children: PropTypes.node, // Injected by React Router
+    userSetUser: PropTypes.func.isRequired,
   };
+
+  constructor(props) {
+    super();
+    // flashedUser is a global variable injected into the rendered html via the jade engine ( see index.jade
+    // and app.js for more details )
+    if (flashedUser.userid && !props.user.userid) {
+      props.userSetUser(flashedUser);
+    }
+  }
 
   render() {
     const { children } = this.props;
@@ -30,4 +42,12 @@ export class App extends Component {
   }
 }
 
-export default App;
+function mapStateToProps(state) {
+  return {
+    user: state.user,
+  };
+}
+
+export default connect(mapStateToProps, {
+  userSetUser,
+})(App);

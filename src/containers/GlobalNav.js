@@ -7,7 +7,6 @@ import UserWidget from '../components/authentication/userwidget';
 import { listProjects } from '../middleware/api';
 import { projectCreate, projectAddConstruct, projectSave, projectLoad } from '../actions/projects';
 import { blockCreate } from '../actions/blocks';
-import { uiShowAuthenticationForm } from '../actions/ui';
 
 import '../styles/GlobalNav.css';
 
@@ -21,7 +20,6 @@ class GlobalNav extends Component {
     currentProjectId: PropTypes.string,
     blockCreate: PropTypes.func.isRequired,
     showMainMenu: PropTypes.bool.isRequired,
-    uiShowAuthenticationForm: PropTypes.func.isRequired,
   };
 
   state = {
@@ -224,27 +222,6 @@ class GlobalNav extends Component {
             },
           ],
         },
-        {
-          text: 'AUTHENTICATION',
-          items: [
-            {
-              text: 'Sign In',
-              action: () => {this.props.uiShowAuthenticationForm('signin')},
-            }, {
-              text: 'Sign Up',
-              action: () => {this.props.uiShowAuthenticationForm('signup')},
-            }, {
-              text: 'Forgot Password',
-              action: () => {this.props.uiShowAuthenticationForm('forgot')},
-            }, {
-              text: 'Reset Password',
-              action: () => {this.props.uiShowAuthenticationForm('reset')},
-            }, {
-              text: 'My Account',
-              action: () => {this.props.uiShowAuthenticationForm('account')},
-            },
-          ],
-        },
       ]}/>);
   }
 
@@ -273,5 +250,4 @@ export default connect(mapStateToProps, {
   projectLoad,
   blockCreate,
   pushState,
-  uiShowAuthenticationForm,
 })(GlobalNav);
