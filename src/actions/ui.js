@@ -1,5 +1,6 @@
 import * as ActionTypes from '../constants/ActionTypes';
 import * as BlockSelector from '../selectors/blocks';
+import invariant from 'invariant';
 
 export const uiShowMainMenu = (showMainMenu) => {
   return (dispatch, getState) => {
@@ -13,6 +14,7 @@ export const uiShowMainMenu = (showMainMenu) => {
 
 export const uiSetCurrent = (blocks) => {
   return (dispatch, getState) => {
+    invariant(Array.isArray(blocks), 'must pass array to uiSetCurrent');
     dispatch({
       type: ActionTypes.UI_SET_CURRENT,
       blocks,

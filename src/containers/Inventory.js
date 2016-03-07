@@ -1,33 +1,26 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { inventoryToggleVisibility } from '../actions/inventory';
-import andreaBlocks from '../inventory/andrea';
 import inventorySbol from '../inventory/sbol';
-
-import InventoryGroups from '../components/Inventory/InventoryGroups';
+import InventoryGroup from '../components/Inventory/inventoryGroup';
 
 import '../styles/Inventory.css';
 import '../styles/SidePanel.css';
-
-// find a new home for this when dynamic, consider Plug-in friendly
-// should also better enumerate types...
-const inventoryData = [
-  {
-    name: 'Foundry',
-    type: 'block',
-    items: andreaBlocks,
-  },
-  {
-    name: 'Symbols',
-    type: 'sbol',
-    items: inventorySbol,
-  },
-];
 
 export class Inventory extends Component {
   static propTypes = {
     isVisible: PropTypes.bool.isRequired,
     inventoryToggleVisibility: PropTypes.func.isRequired,
+  };
+
+  state = {
+    activeTab: 'search',
+  };
+
+  setActiveTab = (index) => {
+    this.setState({
+      activeTab: index,
+    });
   };
 
   toggle = (forceVal) => {
@@ -39,22 +32,37 @@ export class Inventory extends Component {
 
   render() {
     const { isVisible } = this.props;
+    const { activeTab } = this.state;
 
     return (
       <div className={'SidePanel Inventory' + (isVisible ? ' visible' : '')}>
         <div className="SidePanel-heading">
           <span className="SidePanel-heading-trigger Inventory-trigger"
-                onClick={() => this.toggle()} />
+                onClick={() => this.toggle()}/>
           <div className="SidePanel-heading-content">
             <span className="SidePanel-heading-title">Inventory</span>
             <a className="SidePanel-heading-close"
                ref="close"
-               onClick={() => this.toggle(false)} />
+               onClick={() => this.toggle(false)}/>
           </div>
         </div>
 
         <div className="SidePanel-content">
-          <InventoryGroups groups={inventoryData}/>
+          <div className="Inventory-groups">
+            <InventoryGroup title="Search"
+                            type="search"
+                            isActive={activeTab === 'search'}
+                            setActive={() => this.setActiveTab('search')}/>
+            <InventoryGroup title="My Projects"
+                            type="projects"
+                            isActive={activeTab === 'projects'}
+                            setActive={() => this.setActiveTab('projects')}/>
+            <InventoryGroup title="Sketch Library"
+                            type="sbol"
+                            isActive={activeTab === 'sbol'}
+                            setActive={() => this.setActiveTab('sbol')}
+                            items={inventorySbol}/>
+          </div>
         </div>
       </div>
     );

@@ -11,10 +11,10 @@ import '../styles/SidePanel.css';
 export class Inspector extends Component {
   static propTypes = {
     isVisible: PropTypes.bool.isRequired,
+    readOnly: PropTypes.bool.isRequired,
     inspectorToggleVisibility: PropTypes.func.isRequired,
-    currentBlocks: PropTypes.array,
+    instances: PropTypes.array,
     project: PropTypes.object,
-    block: PropTypes.object,
   };
 
   toggle = (forceVal) => {
@@ -25,24 +25,27 @@ export class Inspector extends Component {
   };
 
   render() {
-    const { isVisible, block, project } = this.props;
+    const { isVisible, instances, project, readOnly } = this.props;
 
     return (
-      <div className={'SidePanel Inspector' + (isVisible ? ' visible' : '')}>
+      <div className={'SidePanel Inspector' +
+      (isVisible ? ' visible' : '') +
+      (readOnly ? ' readOnly' : '')}>
 
         <div className="SidePanel-heading">
           <button className="button-nostyle SidePanel-heading-trigger Inspector-trigger"
-                onClick={() => this.toggle()}/>
+                  onClick={() => this.toggle()}/>
           <div className="SidePanel-heading-content">
             <span className="SidePanel-heading-title">Inspector</span>
             <button className="button-nostyle SidePanel-heading-close"
-               onClick={() => this.toggle(false)}/>
+                    onClick={() => this.toggle(false)}/>
           </div>
         </div>
 
         <div className="SidePanel-content">
-          {block ?
-            (<InspectorBlock instance={block} currentBlocks={this.props.currentBlocks}/>) :
+          {(instances && instances.length) ?
+            (<InspectorBlock instances={instances}
+                             readOnly={readOnly}/>) :
             (<InspectorProject instance={project}/>) }
         </div>
       </div>
@@ -51,18 +54,27 @@ export class Inspector extends Component {
 }
 
 function mapStateToProps(state, props) {
-  const { isVisible } = state.inspector;
+  const { isVisible, forceBlocks } = state.inspector;
   const { currentBlocks, currentConstructId } = state.ui;
-  const block = currentBlocks && currentBlocks.length ? state.blocks[currentBlocks[0]] : state.blocks[currentConstructId];
+
+  //use forceBlock if available, otherwise use selected blocks
+  const instances = forceBlocks.length ?
+    forceBlocks :
+    (currentBlocks && currentBlocks.length) ?
+      [state.blocks[currentBlocks[0]]] :
+      (currentConstructId) ?
+        [state.blocks[currentConstructId]] :
+        [];
+
+  const readOnly = forceBlocks.length >= 1;
 
   const { projectId } = state.router.params;
   const project = state.projects[projectId];
 
   return {
     isVisible,
-    currentBlocks,
-    ui: state.ui,
-    block,
+    readOnly,
+    instances,
     project,
   };
 }

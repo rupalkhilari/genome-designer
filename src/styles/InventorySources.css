@@ -1,0 +1,39 @@
+@import 'variables.css';
+
+.InventorySources {
+  position: relative;
+  opacity: 0.6;
+  transition: opacity var(--timing-fast) ease-out;
+  padding-bottom: 1em;
+
+  &-cog {
+    cursor: pointer;
+    font-size: 16px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    margin-right: 0.5em;
+    background-image: url('/images/ui/gear.svg');
+    background-repeat: no-repeat;
+    background-size: contain;
+  }
+
+  &-sources {
+    margin-left: 2em;
+  }
+
+  &-source {
+    padding: 0.25em;
+  }
+
+  &-toggler {
+    margin-right: 0.5em;
+  }
+
+  &.expanded {
+    opacity: 1;
+  }
+}

@@ -25,14 +25,22 @@
     text-overflow: ellipsis;
   }
 
+  &.selected {
+    background-color: rgba(255,255,255,0.2);
+  }
+
   &-item {
     display: inline-block;
-    padding: 1px 5px;
+    padding: 2px 5px;
+    margin: 1px 0;
+    width: 100%;
     border-radius: 3px;
+    transition: background-color var(--timing-fast) ease-out;
 
     &:hover,
     .isDragging & {
       background-color: var(--colors-selected);
+      transition: 0s;
     }
   }
 

@@ -1,3 +1,5 @@
+@import 'variables.css';
+
 .Picker {
   line-height: 0;
   display: flex;
@@ -25,14 +27,29 @@
     background-color: rgba(255,255,255,0.2);
     background-size: contain;
     text-align:center;
+    transition: border-color var(--timing-fast) ease-out;
 
     &:nth-child(4n + 1) {
       clear: left;
     }
 
+    &:hover {
+      border-color: rgba(255,255,255,0.5);
+    }
+
     &.active {
       cursor: default;
       border-color: white;
+    }
+  }
+
+  &.readOnly {
+    .Picker-item {
+      cursor: default;
+
+      &:hover {
+        border-color: inherit;
+      }
     }
   }
 }
