@@ -238,6 +238,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
     if (distance > dragThreshold) {
       // start a block drag if we have one
       const block = this.topBlockAt(startPoint);
+      // must be dragging a selected block
       if (block) {
         // cancel our own mouse operations for now
         this.mouseTrap.cancelDrag();

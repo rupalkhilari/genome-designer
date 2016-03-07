@@ -2,6 +2,7 @@
 
 .ProjectHeader {
   display: flex;
+  flex-shrink: 0;
   margin: 10px;
   flex-direction: row;
   justify-content: space-between;

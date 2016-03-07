@@ -28,11 +28,20 @@ class GlobalNav extends Component {
   };
 
   componentDidMount() {
-    //todo - should update...
     listProjects().then(projects => this.setState({recentProjects: projects}));
   }
 
   menuBar() {
+    const recentProjects = this.state.recentProjects
+    .filter(project => !!project)
+    .map(project => ({
+      text: project.metadata.name || 'My Project',
+      action: () => {
+        this.props.projectLoad(project.id)
+          .then(() => this.props.pushState(null, `/project/${project.id}`));
+      },
+    }));
+
     return (<MenuBar
       menus={[
         {
@@ -41,14 +50,8 @@ class GlobalNav extends Component {
             {
               text: 'Recent Projects',
               disabled: true,
-            },{/*
-            ...(this.state.recentProjects.map(project => ({
-              text: project.metadata.name || 'My Project',
-              action: () => {
-                this.props.projectLoad(project.id)
-                  .then(() => this.props.pushState(null, `/project/${project.id}`));
-              },
-            })))*/},
+            },
+            ...recentProjects,
             {},
             {
               text: 'Save Project',

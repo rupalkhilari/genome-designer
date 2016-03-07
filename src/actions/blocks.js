@@ -25,13 +25,13 @@ export const blockSave = (blockId, projectId) => {
 export const blockLoad = (blockId) => {
   return (dispatch, getState) => {
     return loadBlock(blockId)
-    .then(block => {
-      dispatch({
-        type: ActionTypes.BLOCK_LOAD,
-        block,
+      .then(block => {
+        dispatch({
+          type: ActionTypes.BLOCK_LOAD,
+          block,
+        });
+        return block;
       });
-      return block;
-    });
   };
 };
 
@@ -46,10 +46,19 @@ export const blockCreate = (initialModel) => {
   };
 };
 
-//note - this action accepts either a block JSON directly, or the ID, since inventory items may not be in the store, so we need to pass the block directly
-//note - Does a deep clone by default, adds all child blocks to store
-export const blockClone = (blockInput, shallowOnly = false) => {
+/**
+ * @description
+ * Clones a block (and its children by default)
+ *
+ * @param blockInput {ID|Object} JSON of block directly, or ID. Accept both since inventory items may not be in the store, so we need to pass the block directly. Prefer to use ID.
+ * @param projectVersion {String(SHA)} version of the project
+ * @param shallowOnly {Boolean} Does a deep clone by default, adds all child blocks to store
+ * @returns {Object} clone block (root node if has children)
+ */
+export const blockClone = (blockInput, projectVersion, shallowOnly = false) => {
   return (dispatch, getState) => {
+    invariant(projectVersion, 'project version is required to clone blocks, so their ancestry is correclty pinned. There is a selector to retrieve the project version.');
+
     let oldBlock;
     if (typeof blockInput === 'string') {
       oldBlock = getState().blocks[blockInput];
@@ -60,7 +69,7 @@ export const blockClone = (blockInput, shallowOnly = false) => {
     }
 
     if (!!shallowOnly || !oldBlock.components.length) {
-      const block = oldBlock.clone();
+      const block = oldBlock.clone(projectVersion);
       dispatch({
         type: ActionTypes.BLOCK_CLONE,
         block,
@@ -70,7 +79,7 @@ export const blockClone = (blockInput, shallowOnly = false) => {
 
     const allChildren = dispatch(selectors.blockGetChildrenRecursive(oldBlock.id));
     const allToClone = [oldBlock, ...allChildren];
-    const unmappedClones = allToClone.map(block => block.clone());
+    const unmappedClones = allToClone.map(block => block.clone(projectVersion));
 
     //update IDs in components
     const cloneIdMap = allToClone.reduce((acc, next, index) => {

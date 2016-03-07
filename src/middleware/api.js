@@ -248,6 +248,8 @@ export const writeSequence = (md5, sequence, blockId) => {
  File API
  *************************/
 
+//note - you need to unpack the responses yourself (e.g. resp => resp.json())
+
 //returns a fetch object, for you to parse yourself (doesnt automatically convert to json)
 export const readFile = (fileName) => {
   return fetch(fileApiPath(fileName), headersGet());
@@ -271,61 +273,42 @@ export const writeFile = (fileName = uuid.v4(), contents) => {
 //todo - these should be in their own file...
 
 export const computeWorkflow = (id, inputs) => {
-  try {
-    const stringified = JSON.stringify(inputs);
-    return fetch(computePath(`${id}`), headersPost(stringified));
-  } catch (err) {
-    return Promise.reject('error stringifying input object');
-  }
+  const stringified = JSON.stringify(inputs);
+  return fetch(computePath(`${id}`), headersPost(stringified))
+    .then(resp => resp.json());
 };
 
 export const exportBlock = (id, inputs) => {
-  try {
-    const stringified = JSON.stringify(inputs);
-    return fetch(exportPath(`block/${id}`), headersPost(stringified));
-  } catch (err) {
-    return Promise.reject('error stringifying input object');
-  }
+  const stringified = JSON.stringify(inputs);
+  return fetch(exportPath(`block/${id}`), headersPost(stringified))
+    .then(resp => resp.json());
 };
 
 export const exportProject = (id, inputs) => {
-  try {
-    const stringified = JSON.stringify(inputs);
-    return fetch(exportPath(`project/${id}`), headersPost(stringified));
-  } catch (err) {
-    return Promise.reject('error stringifying input object');
-  }
+  const stringified = JSON.stringify(inputs);
+  return fetch(exportPath(`project/${id}`), headersPost(stringified))
+    .then(resp => resp.json());
 };
 
 export const importBlock = (id, input) => {
-  try {
-    return fetch(importPath(`block/${id}`), headersPost(JSON.stringify({text: input})));
-  } catch (err) {
-    return Promise.reject('error stringifying input object');
-  }
+  const stringified = JSON.stringify({text: input});
+  return fetch(importPath(`block/${id}`), headersPost(stringified))
+    .then(resp => resp.json());
 };
 
 export const importProject = (id, input) => {
-  try {
-    return fetch(importPath(`project/${id}`), headersPost(JSON.stringify({text: input})));
-  } catch (err) {
-    return Promise.reject('error stringifying input object');
-  }
+  const stringified = JSON.stringify({text: input});
+  return fetch(importPath(`project/${id}`), headersPost(stringified))
+    .then(resp => resp.json());
 };
 
 export const search = (id, inputs) => {
-  try {
-    const stringified = JSON.stringify(inputs);
-    return fetch(searchPath(`${id}`), headersPost(stringified));
-  } catch (err) {
-    return Promise.reject('error stringifying input object');
-  }
+  const stringified = JSON.stringify(inputs);
+  return fetch(searchPath(`${id}`), headersPost(stringified))
+    .then(resp => resp.json());
 };
 
-export const getManifests = (id) => {
-  try {
-    return fetch(serverRoot + id + '/manifests', headersGet());
-  } catch (err) {
-    return Promise.reject('no such extension category: ' + id);
-  }
+export const getExtensionsInfo = () => {
+  return fetch(serverRoot + 'extensions/list', headersGet())
+    .then(resp => resp.json());
 };

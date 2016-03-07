@@ -6,10 +6,12 @@ import config from './../webpack.config.dev.js';
 
 import dataRouter from './data/index';
 import fileRouter from './file/index';
-import extRouter from '../extensions/compute/api';
-import importRouter from '../extensions/convert/import';
-import exportRouter from '../extensions/convert/export';
-import searchRouter from '../extensions/search/search';
+import extensionsRouter from './extensions/index';
+
+import computeRouter from '../plugins/compute/api';
+import importRouter from '../plugins/convert/import';
+import exportRouter from '../plugins/convert/export';
+import searchRouter from '../plugins/search/search';
 
 
 const DEFAULT_PORT = 3000;
@@ -34,7 +36,6 @@ app.use(require('webpack-dev-middleware')(compiler, {
   noInfo: true,
   publicPath: config.output.publicPath,
 }));
-
 app.use(require('webpack-hot-middleware')(compiler));
 
 
@@ -64,12 +65,13 @@ if (process.env.BIO_NANO_AUTH) {
   app.use('/auth', authRouter);
 }
 
-// all these should require authentication middleware
-
+//primary routes
 app.use('/data', dataRouter);
 app.use('/file', fileRouter);
+app.use('/extensions', extensionsRouter);
 
-app.use('/compute', extRouter);
+//hardwired extensions
+app.use('/compute', computeRouter);
 app.use('/import', importRouter);
 app.use('/export', exportRouter);
 app.use('/search', searchRouter);

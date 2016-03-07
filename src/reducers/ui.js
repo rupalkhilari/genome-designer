@@ -1,7 +1,8 @@
 import * as ActionTypes from '../constants/ActionTypes';
+import invariant from 'invariant';
 
 export const initialState = {
-  currentBlocks: null,
+  currentBlocks: [],
   detailViewVisible: false,
   currentConstructId: null,
   showMainMenu: false,
@@ -21,6 +22,7 @@ export default function inventory(state = initialState, action) {
     }
     case ActionTypes.UI_SET_CURRENT : {
       const { blocks } = action;
+      invariant(Array.isArray(blocks), 'must pass array to UI_SET_CURRENT');
       return Object.assign({}, state, {currentBlocks: blocks});
     }
     case ActionTypes.UI_TOGGLE_DETAIL_VIEW : {

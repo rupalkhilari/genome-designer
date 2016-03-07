@@ -1,4 +1,5 @@
 import * as ActionTypes from '../constants/ActionTypes';
+import * as BlockSelector from '../selectors/blocks';
 
 /**
  * form names, one of: [ 'signin', 'signup', 'forgot', 'reset', 'account', 'none' ]
@@ -46,7 +47,8 @@ export const uiSetCurrent = (blocks) => {
 export const uiAddCurrent = (blocksToAdd) => {
   return (dispatch, getState) => {
     const { currentBlocks } = getState().ui;
-    const blocks = [...new Set([...currentBlocks, ...blocksToAdd])];
+    const base = Array.isArray(currentBlocks) ? currentBlocks : [];
+    const blocks = [...new Set([...base, ...blocksToAdd])];
     dispatch({
       type: ActionTypes.UI_SET_CURRENT,
       blocks,
@@ -84,9 +86,10 @@ export const uiSetCurrentConstruct = (constructId) => {
     const { currentBlocks } = state.ui;
 
     if (Array.isArray(currentBlocks) && currentBlocks.length) {
-      const construct = state.blocks[constructId];
+      //const construct = state.blocks[constructId];
+      const children = dispatch(BlockSelector.blockGetChildrenRecursive(constructId));
       const blocks = currentBlocks.filter(blockId => {
-        return construct.components.includes(blockId);
+        return children.some(block => block.id === blockId);
       });
       dispatch({
         type: ActionTypes.UI_SET_CURRENT,
