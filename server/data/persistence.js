@@ -54,12 +54,15 @@ const _blockRead = (blockId, projectId, sha) => {
     .then(string => JSON.parse(string));
 };
 
+//todo - handle initial permissions
 const _projectSetup = (projectId) => {
   const projectPath = filePaths.createProjectPath(projectId);
+  const projectDataPath = filePaths.createProjectDataPath(projectId);
   const blockDirectory = filePaths.createBlockDirectoryPath(projectId);
   return directoryMake(projectPath)
+    .then(() => directoryMake(projectDataPath))
     .then(() => directoryMake(blockDirectory))
-    .then(() => versioning.initialize(projectPath));
+    .then(() => versioning.initialize(projectDataPath));
 };
 
 const _blockSetup = (blockId, projectId) => {
@@ -79,17 +82,17 @@ const _blockWrite = (blockId, block = {}, projectId) => {
 
 //expects a well-formed commit message from commitMessages.js
 const _projectCommit = (projectId, message) => {
-  const path = filePaths.createProjectPath(projectId);
+  const projectDataPath = filePaths.createProjectDataPath(projectId);
   const commitMessage = !message ? commitMessages.messageProject(projectId) : message;
-  return versioning.commit(path, commitMessage)
-    .then(sha => versioning.getCommit(path, sha));
+  return versioning.commit(projectDataPath, commitMessage)
+    .then(sha => versioning.getCommit(projectDataPath, sha));
 };
 
 //expects a well-formed commit message from commitMessages.js
 const _blockCommit = (blockId, projectId, message) => {
-  const projectPath = filePaths.createProjectPath(projectId);
+  const projectDataPath = filePaths.createProjectDataPath(projectId);
   const commitMessage = !message ? commitMessages.messageBlock(blockId) : message;
-  return versioning.commit(projectPath, commitMessage)
+  return versioning.commit(projectDataPath, commitMessage)
     .then(sha => versioning.getCommit(path, sha));
 };
 
@@ -167,6 +170,7 @@ export const blockGet = (blockId, projectId, sha) => {
 
 //CREATE
 
+//todo - take in user object for initial permissions
 export const projectCreate = (projectId, project) => {
   return projectAssertNew(projectId)
     .then(() => _projectSetup(projectId))

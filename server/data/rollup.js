@@ -4,6 +4,7 @@ import * as persistence from './persistence';
 import * as filePaths from '../utils/filePaths';
 import * as fileSystem from '../utils/fileSystem';
 
+//todo - limit to those for which you have access
 export const getAllProjectManifests = () => {
   const directory = filePaths.createProjectsDirectoryPath();
   return fileSystem.directoryContents(directory)
