@@ -50,7 +50,7 @@ export class ProjectDetail extends Component {
     const header = (this.props.isVisible) ?
       (
         <div className="ProjectDetail-heading">
-          <a className="ProjectDetail-heading-extension visible">{this.state.currentExtension.name}</a>
+          <a className="ProjectDetail-heading-extension visible">{this.state.currentExtension.readable || this.state.currentExtension.name}</a>
           <a ref="close"
              className="ProjectDetail-heading-close"
              onClick={() => this.toggle(false)}/>
