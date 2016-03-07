@@ -2,7 +2,6 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import { errorNoIdProvided, errorInvalidModel, errorInvalidRoute, errorDoesNotExist } from './../utils/errors';
 import findProjectFromBlock from './findProjectFromBlock';
-import { authenticationMiddleware } from './../utils/authentication';
 import * as persistence from './persistence';
 import * as rollup from './rollup';
 
@@ -15,9 +14,6 @@ const textParser = bodyParser.text();
 /***************************
  Middleware
  ****************************/
-
-//Login and session validator
-router.use(authenticationMiddleware);
 
 router.use(jsonParser);
 

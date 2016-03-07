@@ -11,6 +11,7 @@ import importRouter from '../extensions/convert/import';
 import exportRouter from '../extensions/convert/export';
 import searchRouter from '../extensions/search/search';
 
+
 const DEFAULT_PORT = 3000;
 const port = parseInt(process.argv[2], 10) || process.env.PORT || DEFAULT_PORT;
 const hostname = '0.0.0.0';
@@ -21,6 +22,10 @@ const compiler = webpack(config);
 
 //logging middleware
 app.use(morgan('dev'));
+
+// view engine setup
+app.set('views', path.join(__dirname, '../src'));
+app.set('view engine', 'jade');
 
 // Register Hotloading Middleware
 // ----------------------------------------------------
@@ -86,7 +91,7 @@ app.get('/version', function(req, res) {
 
 //so that any routing is delegated to the client
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../src/index.html'));
+  res.render('index.jade', req.user);
 });
 
 app.listen(port, hostname, (err) => {
