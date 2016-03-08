@@ -38,10 +38,12 @@ export default class HomePage extends Component {
         <div className="homepage-footer">
           <div className="homepage-footer-list">New in version 1.0
             <ul>
-              <li><span>&bull;</span>DNA Design</li>
-              <li><span>&bull;</span>Authentication</li>
-              <li><span>&bull;</span>Free Lunches</li>
-              <li><span>&bull;</span>Double Bonus</li>
+              <li><span>&bull;</span>Washington</li>
+              <li><span>&bull;</span>John Adams</li>
+              <li><span>&bull;</span>Thomas Jefferson</li>
+              <li><span>&bull;</span>James Madison</li>
+              <li><span>&bull;</span>James Monroe</li>
+              <li><span>&bull;</span>John Qunicy Adams</li>
             </ul>
           </div>
         </div>
