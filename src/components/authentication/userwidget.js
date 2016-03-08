@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import 'isomorphic-fetch';
 import { uiShowAuthenticationForm, uiSetGrunt } from '../../actions/ui';
 import { userSetUser } from '../../actions/user';
+import { logout } from '../../middleware/api';
 
 import '../../styles/userwidget.css';
 
@@ -48,12 +49,7 @@ class UserWidget extends Component {
 
   signOut() {
 
-    const endPoint = `${window.location.origin}/auth/logout`;
-
-    fetch(endPoint, {
-      credentials: 'include',
-      method: 'GET',
-    })
+    logout()
     .then(() => {
       // set the user
       this.props.userSetUser({

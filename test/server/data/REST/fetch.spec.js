@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import fetch from 'isomorphic-fetch';
 import Project from '../../../../src/models/Project';
-import { dataApiPath, getSessionKey } from '../../../../src/middleware/api';
+import { dataApiPath } from '../../../../src/middleware/api';
 import devServer from '../../../../server/devServer';
 
 describe('REST', () => {
@@ -22,7 +22,6 @@ describe('REST', () => {
         method: 'put',
         headers: {
           'Content-type': 'application/json',
-          'sessionkey': getSessionKey(),
         },
         body: JSON.stringify(testProject),
       })

@@ -175,9 +175,9 @@ describe('REST', () => {
         it('projectWrite() creates repo if necessary', () => {
           return persistence.projectWrite(projectId, projectData)
             .then(() => directoryExists(projectRepoPath))
-            .then(result => assert(result))
+            .then(result => assert(result, 'directory didnt exist!'))
             .then(() => versioning.isInitialized(projectRepoPath))
-            .then(result => assert(result));
+            .then(result => assert(result, 'was not initialized!'));
         });
 
         it('projectWrite() validates the project', () => {
@@ -185,7 +185,7 @@ describe('REST', () => {
           //start with write to reset
           return persistence.projectWrite(projectId, projectData)
             .then(() => persistence.projectWrite(projectId, invalidData))
-            .then(() => assert(false))
+            .then(() => assert(false, 'shouldnt happen'))
             .catch(err => expect(err).to.equal(errorInvalidModel))
             .then(() => fileRead(projectManifestPath))
             .then(result => expect(result).to.eql(projectData));

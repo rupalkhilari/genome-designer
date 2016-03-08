@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import request from 'supertest';
-import { getSessionKey, login, user } from '../../../src/middleware/api';
+import { login, getUser } from '../../../src/middleware/api';
 
 const devServer = require('../../../server/devServer');
 
@@ -50,20 +50,8 @@ describe('REST', () => {
         });
     });
 
-    it('getSessionKey() should return the same session key as login()', (done) => {
-      var savedSessionKey = getSessionKey();
-      return login(dummyUser.email, dummyUser.password)
-        .then(sessionkey => {
-          expect(savedSessionKey).to.equal(sessionkey);
-          done();
-        })
-        .catch(function (e) {
-          done(e);
-        });
-    });
-
     it('should fetch a user object with a session key', (done) => {
-      return user().then(user => {
+      return getUser().then(user => {
         expect(user).to.be.not.null;
         expect(user.uuid).to.be.not.null;
         expect(typeof user.uuid).to.be.equal("string");

@@ -195,7 +195,7 @@ export const blockCreate = (blockId, block, projectId) => {
 //SET (WRITE + MERGE)
 
 export const projectWrite = (projectId, project, userId) => {
-  const idedProject = Object.assign({}, project, {id: projectId});
+  const idedProject = Object.assign({}, project, { id: projectId });
 
   if (!validateProject(idedProject)) {
     return Promise.reject(errorInvalidModel);
@@ -212,13 +212,13 @@ export const projectWrite = (projectId, project, userId) => {
 export const projectMerge = (projectId, project, userId) => {
   return projectGet(projectId)
     .then(oldProject => {
-      const merged = merge({}, oldProject, project, {id: projectId});
+      const merged = merge({}, oldProject, project, { id: projectId });
       return projectWrite(projectId, merged, userId);
     });
 };
 
 export const blockWrite = (blockId, block, projectId) => {
-  const idedBlock = Object.assign({}, block, {id: blockId});
+  const idedBlock = Object.assign({}, block, { id: blockId });
 
   if (!validateBlock(idedBlock)) {
     return Promise.reject(errorInvalidModel);
@@ -235,7 +235,7 @@ export const blockWrite = (blockId, block, projectId) => {
 export const blockMerge = (blockId, block, projectId) => {
   return blockGet(blockId, projectId)
     .then(oldBlock => {
-      const merged = merge({}, oldBlock, block, {id: blockId});
+      const merged = merge({}, oldBlock, block, { id: blockId });
       return blockWrite(blockId, merged, projectId);
     });
 };
@@ -265,7 +265,8 @@ export const blockDelete = (blockId, projectId) => {
 
 export const sequenceExists = (md5) => {
   const sequencePath = filePaths.createSequencePath(md5);
-  return fileExists(sequencePath);
+  return fileExists(sequencePath)
+    .then(() => sequencePath);
 };
 
 export const sequenceGet = (md5) => {

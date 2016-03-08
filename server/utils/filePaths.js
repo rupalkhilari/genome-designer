@@ -44,7 +44,7 @@ export const createProjectDataPath = (projectId, ...rest) => {
 };
 
 export const createProjectPermissionsPath = (projectId) => {
-  createProjectPath(projectId, permissionsFilename);
+  return createProjectPath(projectId, permissionsFilename);
 };
 
 export const createProjectManifestPath = (projectId) => {
