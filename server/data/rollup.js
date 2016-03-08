@@ -44,16 +44,19 @@ export const getProjectRollup = (projectId) => {
     }));
 };
 
-export const writeProjectRollup = (projectId, rollup) => {
+export const writeProjectRollup = (projectId, rollup, userId) => {
   const { project, blocks } = rollup;
   const newBlockIds = blocks.map(block => block.id);
+
   invariant(projectId === project.id, 'rollup project ID does not match');
 
   return persistence.projectExists(projectId)
     .catch(err => {
       //if the project doesn't exist, let's make it
       if (err === errorDoesNotExist) {
-        return persistence.projectCreate(projectId, project);
+        invariant(userId, 'userID is necessary to create a project from rollup');
+
+        return persistence.projectCreate(projectId, project, userId);
       }
       return Promise.reject(err);
     })

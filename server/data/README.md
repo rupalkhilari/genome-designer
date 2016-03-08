@@ -44,6 +44,12 @@ In the scheme below, `/data/` is under git version control
     /<md5>
 ```
 
+### Permissions
+
+Permissions are checked in `index.js`... All other files assume that they are being called when valid / permissions have been validated. Utilities are available in `permissions.js`
+
+Sequences can be accessed by anybody, and are not owned by anybody.
+
 ## Files
 
 ### index.js
@@ -69,3 +75,7 @@ Constants for various commit messages + generators so messages are consistent + 
 ### rollup.js
 
 Utilities for creating / reading / writing rollups.
+
+### permissions.js
+
+Utilities for creating permission files for a project, and validating permissions. Also exports a routing middleware function for checking permissions. 

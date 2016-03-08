@@ -1,9 +1,10 @@
-import * as filePaths from './../utils/filePaths';
+import * as filePaths from '../utils/filePaths';
 import { exec } from 'child_process';
+import { errorCouldntFindProjectId } from '../utils/errors';
 
 export const findProjectFromBlock = (blockId) => {
   if (!blockId) {
-    return Promise.reject(null);
+    return Promise.reject(errorCouldntFindProjectId);
   }
 
   return new Promise((resolve, reject) => {
@@ -18,7 +19,7 @@ export const findProjectFromBlock = (blockId) => {
           ] = lines[0].split('/').reverse();
         resolve(idProject);
       } else {
-        reject(null);
+        reject(errorCouldntFindProjectId);
       }
     });
   });

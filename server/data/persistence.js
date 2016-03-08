@@ -1,11 +1,13 @@
+import invariant from 'invariant';
+import path from 'path';
+import merge from 'lodash.merge';
 import { errorDoesNotExist, errorAlreadyExists, errorInvalidModel, errorVersioningSystem } from '../utils/errors';
 import { validateBlock, validateProject } from '../utils/validation';
 import * as filePaths from './../utils/filePaths';
 import * as versioning from './versioning';
 import * as commitMessages from './commitMessages';
-import path from 'path';
-import merge from 'lodash.merge';
 import { fileExists, fileRead, fileWrite, fileDelete, directoryMake, directoryDelete } from '../utils/fileSystem';
+import * as permissions from './permissions';
 
 const _projectExists = (projectId, sha) => {
   const manifestPath = filePaths.createProjectManifestPath(projectId);
@@ -54,14 +56,14 @@ const _blockRead = (blockId, projectId, sha) => {
     .then(string => JSON.parse(string));
 };
 
-//todo - handle initial permissions
-const _projectSetup = (projectId) => {
+const _projectSetup = (projectId, userId) => {
   const projectPath = filePaths.createProjectPath(projectId);
   const projectDataPath = filePaths.createProjectDataPath(projectId);
   const blockDirectory = filePaths.createBlockDirectoryPath(projectId);
   return directoryMake(projectPath)
     .then(() => directoryMake(projectDataPath))
     .then(() => directoryMake(blockDirectory))
+    .then(() => permissions.createProjectPermissions(projectId, userId))
     .then(() => versioning.initialize(projectDataPath));
 };
 
@@ -170,13 +172,15 @@ export const blockGet = (blockId, projectId, sha) => {
 
 //CREATE
 
-//todo - take in user object for initial permissions
-export const projectCreate = (projectId, project) => {
+export const projectCreate = (projectId, project, userId) => {
+  invariant(userId, 'user id is required');
+
   return projectAssertNew(projectId)
-    .then(() => _projectSetup(projectId))
+    .then(() => _projectSetup(projectId, userId))
     .then(() => _projectWrite(projectId, project))
-    //keep this initial commit message, even when not auto-commiting for all atomic operations
-    .then(() => _projectCommit(projectId, commitMessages.messageCreateProject(projectId)))
+    //MAY keep this initial commit message, even when not auto-commiting for all atomic operations
+    //since create is a different operation than just called projectWrite / projectMerge
+    //.then(() => _projectCommit(projectId, commitMessages.messageCreateProject(projectId)))
     .then(() => project);
 };
 
@@ -190,7 +194,7 @@ export const blockCreate = (blockId, block, projectId) => {
 
 //SET (WRITE + MERGE)
 
-export const projectWrite = (projectId, project) => {
+export const projectWrite = (projectId, project, userId) => {
   const idedProject = Object.assign({}, project, {id: projectId});
 
   if (!validateProject(idedProject)) {
@@ -199,17 +203,17 @@ export const projectWrite = (projectId, project) => {
 
   //create directory etc. if doesn't exist
   return projectExists(projectId)
-    .catch(() => _projectSetup(projectId))
+    .catch(() => _projectSetup(projectId, userId))
     .then(() => _projectWrite(projectId, idedProject))
     //.then(() => _projectCommit(projectId))
     .then(() => idedProject);
 };
 
-export const projectMerge = (projectId, project) => {
+export const projectMerge = (projectId, project, userId) => {
   return projectGet(projectId)
     .then(oldProject => {
       const merged = merge({}, oldProject, project, {id: projectId});
-      return projectWrite(projectId, merged);
+      return projectWrite(projectId, merged, userId);
     });
 };
 
