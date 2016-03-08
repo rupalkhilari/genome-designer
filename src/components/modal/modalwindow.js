@@ -1,6 +1,5 @@
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
-import ModalButtonBar from './modalbuttonbar';
 
 import '../../../src/styles/Modal.css';
 

@@ -1,12 +1,12 @@
-import React, { Component, PropTypes, Children } from 'react';
-import { pushState } from 'react-router';
+import React, { Component, PropTypes } from 'react';
 import {connect} from 'react-redux';
 import 'isomorphic-fetch';
-import invariant from 'invariant';
 
 class RouteWrapper extends Component {
 
   static propTypes = {
+    user: PropTypes.object,
+    children: PropTypes.object,
   };
 
   constructor(props) {
@@ -14,7 +14,7 @@ class RouteWrapper extends Component {
   }
 
   render() {
-    return this.props.user.userid ? Children.only(this.props.children) : null;
+    return this.props.user.userid ? React.Children.only(this.props.children) : null;
   }
 }
 

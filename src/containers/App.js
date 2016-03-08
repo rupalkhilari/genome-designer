@@ -1,3 +1,4 @@
+/*global flashedUser*/
 import React, { Component, PropTypes } from 'react';
 import {connect} from 'react-redux';
 import GlobalNav from './GlobalNav';
@@ -12,6 +13,7 @@ class App extends Component {
   static propTypes = {
     children: PropTypes.node, // Injected by React Router
     userSetUser: PropTypes.func.isRequired,
+    user: PropTypes.object,
   };
 
   constructor(props) {

@@ -5,7 +5,6 @@ import { userSetUser } from '../../actions/user';
 import 'isomorphic-fetch';
 import invariant from 'invariant';
 
-
 /**
  * default visibility and text for error labels
  * @type {Object}
@@ -28,28 +27,6 @@ class SignInForm extends Component {
   constructor() {
     super();
     this.state = Object.assign({}, errors);
-  }
-
-  get emailAddress() {
-    return this.refs.emailAddress.value.trim();
-  }
-  get password() {
-    return this.refs.password.value.trim();
-  }
-
-  /**
-   * display server errors in the most logical way
-   */
-  showServerErrors(json) {
-    invariant(json && json.message, 'We expected an error message');
-
-    // any unrecognized errors are displayed below the tos
-    this.setState({
-      signinError: {
-        visible: true,
-        text: json.message,
-      }
-    });
   }
 
   // on form submission, first perform client side validation then submit
@@ -92,16 +69,36 @@ class SignInForm extends Component {
     })
     .catch((reason) => {
       this.showServerErrors({
-        message: 'Unexpected error, please check your connection'
+        message: 'Unexpected error, please check your connection',
       });
-      console.error(`Exception: ${reason.toString()}`);
     });
-
   }
 
   onRegister(evt) {
     evt.preventDefault();
     this.props.uiShowAuthenticationForm('signup');
+  }
+
+  get emailAddress() {
+    return this.refs.emailAddress.value.trim();
+  }
+  get password() {
+    return this.refs.password.value.trim();
+  }
+
+  /**
+   * display server errors in the most logical way
+   */
+  showServerErrors(json) {
+    invariant(json && json.message, 'We expected an error message');
+
+    // any unrecognized errors are displayed below the tos
+    this.setState({
+      signinError: {
+        visible: true,
+        text: json.message,
+      },
+    });
   }
 
   render() {
@@ -113,9 +110,8 @@ class SignInForm extends Component {
         <div className={`error ${this.state.signinError.visible ? 'visible' : ''}`}>{`${this.state.signinError.text}`}</div>
         <button type="submit">Sign In</button>
         <button type="button" onClick={() => {
-            this.props.uiShowAuthenticationForm('none');
-          }}>Cancel</button>
-
+          this.props.uiShowAuthenticationForm('none');
+        }}>Cancel</button>
         <a href="/" onClick={this.onRegister.bind(this)}>New Users Register Here</a>
       </form>
     );

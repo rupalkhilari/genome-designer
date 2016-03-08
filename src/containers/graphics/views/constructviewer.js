@@ -97,9 +97,14 @@ export class ConstructViewer extends Component {
     this.update();
     // handle window resize to reflow the layout
     this.resizeDebounced = debounce(this.windowResized.bind(this));
-    window.addEventListener('resize', this.resizeDebounced , 15);
+    window.addEventListener('resize', this.resizeDebounced, 15);
   }
-
+  /**
+   * update scene graph after the react component updates
+   */
+  componentDidUpdate() {
+    this.update();
+  }
   /**
    * ensure we don't get any resize events after dismounting
    */
@@ -233,7 +238,6 @@ export class ConstructViewer extends Component {
     this.sg.availableWidth = this.dom.clientWidth;
     this.sg.availableHeight = this.dom.clientHeight;
     this.forceUpdate();
-
   }
 
   /**
@@ -249,13 +253,6 @@ export class ConstructViewer extends Component {
    */
   get sceneGraphEl() {
     return this.dom.querySelector('.sceneGraph');
-  }
-
-  /**
-   * update scene graph after the react component updates
-   */
-  componentDidUpdate() {
-    this.update();
   }
 
   /**

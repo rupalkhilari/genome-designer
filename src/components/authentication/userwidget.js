@@ -17,6 +17,7 @@ class UserWidget extends Component {
     uiSetGrunt: PropTypes.func.isRequired,
     userSetUser: PropTypes.func.isRequired,
     user: PropTypes.object,
+    pushState: PropTypes.func.isRequired,
   };
 
   constructor() {
@@ -33,10 +34,10 @@ class UserWidget extends Component {
   }
 
   onShowMenu() {
-    const b = ReactDOM.findDOMNode(this).getBoundingClientRect();
+    const box = ReactDOM.findDOMNode(this).getBoundingClientRect();
     this.setState({
       menuOpen: true,
-      menuPosition: new Vector2D(b.left - 200, b.top + b.height),
+      menuPosition: new Vector2D(box.left - 200, box.top + box.height),
     });
   }
 
@@ -47,9 +48,7 @@ class UserWidget extends Component {
   }
 
   signOut() {
-
     const endPoint = `${window.location.origin}/auth/logout`;
-
     fetch(endPoint, {
       credentials: 'include',
       method: 'GET',
@@ -69,7 +68,6 @@ class UserWidget extends Component {
     .catch((reason) => {
       this.props.uiSetGrunt('There was a problem signing you out');
     });
-
   }
 
   contextMenu() {
@@ -90,7 +88,7 @@ class UserWidget extends Component {
           },
           {
             text: 'Sign Out',
-            action: this.signOut.bind(this)
+            action: this.signOut.bind(this),
           },
         ]
       }/>);
@@ -104,7 +102,7 @@ class UserWidget extends Component {
           <div onClick={this.onShowMenu.bind(this)} className="signed-in">{this.props.user.firstName.substr(0, 1)}</div>
           {this.contextMenu()}
         </div>
-      )
+      );
     }
     // signed out user
     return (

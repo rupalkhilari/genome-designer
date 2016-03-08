@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import {connect} from 'react-redux';
 import 'isomorphic-fetch';
-import invariant from 'invariant';
 import { uiSetGrunt } from '../actions/ui';
 import '../../src/styles/ribbongrunt.css';
 
@@ -12,10 +11,19 @@ class RibbonGrunt extends Component {
 
   static propTypes = {
     gruntMessage: PropTypes.string,
+    uiSetGrunt: PropTypes.func.isRequired,
   };
 
   constructor() {
     super();
+  }
+
+  // if we going to show a message then start or extend the close timer
+  componentWillReceiveProps(nextProps) {
+    window.clearTimeout(this.closeTimer);
+    if (nextProps.gruntMessage) {
+      this.closeTimer = window.setTimeout(this.close.bind(this), DISPLAY_TIME);
+    }
   }
 
   close() {
@@ -25,14 +33,6 @@ class RibbonGrunt extends Component {
 
   cancelTimer() {
     window.clearTimeout(this.closeTimer);
-  }
-
-  // if we going to show a message then start or extend the close timer
-  componentWillReceiveProps(nextProps) {
-    window.clearTimeout(this.closeTimer);
-    if (nextProps.gruntMessage) {
-      this.closeTimer = window.setTimeout(this.close.bind(this), DISPLAY_TIME);
-    }
   }
 
   render() {
