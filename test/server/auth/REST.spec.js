@@ -5,9 +5,8 @@ import { login, getUser } from '../../../src/middleware/api';
 const devServer = require('../../../server/devServer');
 
 describe('REST', () => {
-  describe('/login', () => {
+  describe.only('/login', () => {
     let server;
-    let sessionKey;
     const dummyUser = {
       email: 'bio.nano.dev@autodesk.com',
       password: 'HelpMe#1',
@@ -37,27 +36,27 @@ describe('REST', () => {
         .expect(200, done);
     });
 
-    it('should login using client middleware login()', (done) => {
+    it('should login using client middleware login()', () => {
       return login(dummyUser.email, dummyUser.password)
-        .then(sessionkey => {
-          expect(sessionkey).to.be.not.null;
-          expect(typeof sessionkey).to.equal("string");
-          sessionKey = sessionkey;
-          done();
-        })
-        .catch(function (e) {
-          done(e);
+        .then(userInfo => {
+          expect(userInfo).to.be.not.null;
+          expect(userInfo.uuid).to.be.not.null;
+          expect(userInfo.email).to.be.not.null;
         });
     });
 
-    it('should fetch a user object with a session key', (done) => {
-      return getUser().then(user => {
-        expect(user).to.be.not.null;
-        expect(user.uuid).to.be.not.null;
-        expect(typeof user.uuid).to.be.equal("string");
-        done();
-      });
+    it('login() should set a cookie');
+
+    it('should fetch a user object with a session key, if you are logged in', () => {
+      return getUser()
+        .then(user => {
+          expect(user).to.be.not.null;
+          expect(user.uuid).to.be.not.null;
+          expect(typeof user.uuid).to.be.equal('string');
+        });
     });
+
+    it('logout() should clear cookie');
 
     //it('[future] should return the session key in the database');
     //it('[future] should ensure user exists');

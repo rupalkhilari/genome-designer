@@ -82,20 +82,9 @@ export const logout = () => {
   return fetch(serverRoot + `auth/logout`, headersGet());
 };
 
-//todo - rewrite
 // use established sessionKey to get the user object
 export const getUser = () => {
-  const headers = new Headers();
-  headers.set('Content-Type', 'application/json');
-  headers.set('Cookie', sessionKey);
-
-  const fetchOptions = {
-    method: 'GET',
-    headers: headers,
-    credentials: 'same-origin',
-  };
-
-  return fetch(serverRoot + `auth/current-user`, fetchOptions)
+  return fetch(serverRoot + `auth/current-user`, headersGet())
     .then(resp => {
       return resp.json();
     })
