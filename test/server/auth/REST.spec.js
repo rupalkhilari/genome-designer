@@ -1,11 +1,11 @@
-import { expect } from 'chai';
+import { assert, expect } from 'chai';
 import request from 'supertest';
 import { login, getUser } from '../../../src/middleware/api';
 
 const devServer = require('../../../server/devServer');
 
 describe('REST', () => {
-  describe.only('/login', () => {
+  describe.only('auth', () => {
     let server;
     const dummyUser = {
       email: 'bio.nano.dev@autodesk.com',
@@ -29,34 +29,43 @@ describe('REST', () => {
       server.close();
     });
 
-    it('should return a 200', (done) => {
+    it('/auth/login route should return a 200', (done) => {
       request(server)
         .post('/auth/login')
         .send(dummyUser)
         .expect(200, done);
     });
 
-    it('should login using client middleware login()', () => {
-      return login(dummyUser.email, dummyUser.password)
-        .then(userInfo => {
-          expect(userInfo).to.be.not.null;
-          expect(userInfo.uuid).to.be.not.null;
-          expect(userInfo.email).to.be.not.null;
-        });
+    it('/auth/login should set a cookie on the client', (done) => {
+      request(server)
+        .post('/auth/login')
+        .send(dummyUser)
+        .expect((res) => {
+          const cookie = res.headers['set-cookie'].join(';');
+          assert(cookie, 'no cookie on response for login...');
+        })
+        .end(done);
     });
 
-    it('login() should set a cookie');
+    it('/auth/cookies should return cookies sent on request', (done) => {
+      const agent = request.agent(server);
 
-    it('should fetch a user object with a session key, if you are logged in', () => {
-      return getUser()
-        .then(user => {
-          expect(user).to.be.not.null;
-          expect(user.uuid).to.be.not.null;
-          expect(typeof user.uuid).to.be.equal('string');
+      agent
+        .post('/auth/login')
+        .send(dummyUser)
+        .end((err, res) => {
+          const cookie = res.headers['set-cookie'].join(';');
+          assert(cookie, 'no cookie on response for login...');
+
+          agent
+            .get('/auth/cookies')
+            .expect((res) => {
+              expect(res.text).to.not.equal(':(');
+              expect(res.text).to.equal('mock-auth');
+            })
+            .end(done);
         });
     });
-
-    it('logout() should clear cookie');
 
     //it('[future] should return the session key in the database');
     //it('[future] should ensure user exists');

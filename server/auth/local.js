@@ -7,7 +7,7 @@ var defaultUser = {
 };
 
 router.post('/login', function (req, res) {
-  res.cookie('sess', 'mock-auth');
+  res.cookie('sess', 'mock-auth', {httpOnly: false});
   res.statusCode = 200;
   res.send(defaultUser);
   return res.end();
@@ -15,7 +15,8 @@ router.post('/login', function (req, res) {
 
 router.get('/current-user', function (req, res) {
   if (req.cookies.sess == null) {
-    console.log("didn't find the session cookie; check the mock login route. returning mock user anyway");
+    console.log("didn't find the session cookie; check the mock login route.");
+    return res.status(401).end();
   }
 
   if (req.user == null) {
@@ -27,6 +28,12 @@ router.get('/current-user', function (req, res) {
   res.statusCode = 200;
   res.send(req.user);
   return res.end();
+});
+
+//testing only
+router.get('/cookies', function(req, res) {
+  if (req.cookies.sess) res.send(req.cookies.sess);
+  else res.send(':(');
 });
 
 var mockUser = function (req, res, next) {
