@@ -1,6 +1,7 @@
 import uuid from 'node-uuid';
 import fetch from 'isomorphic-fetch';
 import invariant from 'invariant';
+import merge from 'lodash.merge';
 import ProjectDefinition from '../schemas/Project';
 import BlockDefinition from '../schemas/Block';
 
@@ -26,33 +27,39 @@ export const fileApiPath = (path) => serverRoot + 'file/' + path;
 
 //header helpers for fetch
 
-const headersGet = () => ({
+//set default options for testing (jsdom doesn't set cookies on fetch)
+let defaultOptions = {};
+if (process.env.NODE_ENV === 'test') {
+  defaultOptions = { headers: { Cookie: 'sess=mock-auth' } };
+}
+
+const headersGet = (overrides) => merge(defaultOptions, {
   method: 'GET',
-  credentials: 'include',
-});
+  credentials: 'same-origin',
+}, overrides);
 
-const headersPost = (body, mimeType = 'application/json') => ({
+const headersPost = (body, overrides) => merge(defaultOptions, {
   method: 'POST',
-  credentials: 'include',
+  credentials: 'same-origin',
   headers: {
-    'Content-Type': mimeType,
+    'Content-Type': 'application/json',
   },
   body,
-});
+}, overrides);
 
-const headersPut = (body, mimeType = 'application/json') => ({
+const headersPut = (body, overrides) => merge(defaultOptions, {
   method: 'PUT',
-  credentials: 'include',
+  credentials: 'same-origin',
   headers: {
-    'Content-Type': mimeType,
+    'Content-Type': 'application/json',
   },
   body,
-});
+}, overrides);
 
-const headersDelete = () => ({
+const headersDelete = (overrides) => merge(defaultOptions, {
   method: 'DELETE',
-  credentials: 'include',
-});
+  credentials: 'same-origin',
+}, overrides);
 
 /*************************
  Authentication API

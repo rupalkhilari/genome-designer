@@ -5,7 +5,7 @@ import { login, getUser } from '../../../src/middleware/api';
 const devServer = require('../../../server/devServer');
 
 describe('REST', () => {
-  describe.only('auth', () => {
+  describe('auth', () => {
     let server;
     const dummyUser = {
       email: 'bio.nano.dev@autodesk.com',

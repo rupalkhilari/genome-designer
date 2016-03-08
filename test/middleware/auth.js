@@ -29,17 +29,17 @@ describe('middleware', () => {
       server.close();
     });
 
-    it('login() should login using client middleware', () => {
+    it('login() receive the user object', () => {
       return login(dummyUser.email, dummyUser.password)
         .then(userInfo => {
           expect(userInfo).to.be.not.null;
           expect(userInfo.uuid).to.be.not.null;
           expect(userInfo.email).to.be.not.null;
-
-          //todo - check client cookies
-          console.log('cookies!', document.cookie);
         });
     });
+
+    //not sure how to test this... jsdom doesn't set cookies apparently
+    it('login() should set a cookie');
 
     it('getUser() should fetch a user object if you are logged in', () => {
       return getUser()
@@ -50,6 +50,7 @@ describe('middleware', () => {
         });
     });
 
+    //not sure how to test this...
     it('logout() should clear cookie');
   });
 });

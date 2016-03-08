@@ -1,19 +1,19 @@
 import express from 'express';
 const router = express.Router();
 
-var defaultUser = {
+const defaultUser = {
   uuid: "0",
   email: "developer@localhost",
 };
 
-router.post('/login', function (req, res) {
-  res.cookie('sess', 'mock-auth', {httpOnly: false});
+router.post('/login', (req, res) => {
+  res.cookie('sess', 'mock-auth');
   res.statusCode = 200;
   res.send(defaultUser);
   return res.end();
 });
 
-router.get('/current-user', function (req, res) {
+router.get('/current-user', (req, res) => {
   if (req.cookies.sess == null) {
     console.log("didn't find the session cookie; check the mock login route.");
     return res.status(401).end();
@@ -31,12 +31,14 @@ router.get('/current-user', function (req, res) {
 });
 
 //testing only
-router.get('/cookies', function(req, res) {
-  if (req.cookies.sess) res.send(req.cookies.sess);
+router.get('/cookies', (req, res) => {
+  if (req.cookies.sess) {
+    res.send(req.cookies.sess);
+  }
   else res.send(':(');
 });
 
-var mockUser = function (req, res, next) {
+const mockUser = (req, res, next) => {
   if (req.cookies.sess != null) {
     Object.assign(req, { user: defaultUser });
   }
