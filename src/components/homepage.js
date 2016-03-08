@@ -27,22 +27,29 @@ export default class HomePage extends Component {
     evt.preventDefault();
     this.props.uiShowAuthenticationForm('signin');
   }
-  signUp(evt) {
-    evt.preventDefault();
-    this.props.uiShowAuthenticationForm('signup');
-  }
 
   render() {
     return (
       <div className="homepage">
-        <div className="faceplate">
-          <a href="/" onClick={this.signIn.bind(this)}>Sign In</a>
-          <a href="/" onClick={this.signUp.bind(this)}>Sign Up</a>
+        <img className="homepage-background" src="/images/homepage/background.png"/>
+        <img className="homepage-title" src="/images/homepage/genomedesigner.png"/>
+        <img className="homepage-autodesk" src="/images/homepage/autodesk-logo.png"/>
+        <div className="homepage-getstarted" onClick={this.signIn.bind(this)}>Get started</div>
+        <div className="homepage-footer">
+          <div className="homepage-footer-list">New in version 1.0
+            <ul>
+              <li><span>&bull;</span>DNA Design</li>
+              <li><span>&bull;</span>Authentication</li>
+              <li><span>&bull;</span>Free Lunches</li>
+              <li><span>&bull;</span>Double Bonus</li>
+            </ul>
+          </div>
         </div>
       </div>
     );
   }
 }
+
 
 function mapStateToProps(state) {
   return {};

@@ -165,6 +165,15 @@ class AccountForm extends Component {
       });
       return;
     }
+    if (json.message === 'Authentication Failure') {
+      this.setState({
+        currentPasswordError: {
+          visible: true,
+          text: 'Incorrect password',
+        },
+      });
+      return;
+    }
     if (json.message === 'password minimum length not met') {
       this.setState({
         password1Error: {
