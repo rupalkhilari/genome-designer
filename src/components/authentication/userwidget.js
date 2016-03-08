@@ -4,7 +4,6 @@ import {pushState} from 'redux-router';
 import PopupMenu from '../../components/Menu/PopupMenu';
 import Vector2D from '../../containers/graphics/geometry/vector2d';
 import { connect } from 'react-redux';
-import 'isomorphic-fetch';
 import { uiShowAuthenticationForm, uiSetGrunt } from '../../actions/ui';
 import { userSetUser } from '../../actions/user';
 import { logout } from '../../middleware/api';

@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { pushState } from 'react-router';
 import {connect} from 'react-redux';
-import 'isomorphic-fetch';
 import invariant from 'invariant';
 
 class RouteWrapper extends Component {
