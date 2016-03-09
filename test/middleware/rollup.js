@@ -69,7 +69,7 @@ describe('Middleware', () => {
       const a_projectId = project.id;
       const b_roll = Object.assign(createExampleRollup(), {project});
 
-      const a_path = filePaths.createProjectPath(a_projectId);
+      const a_path = filePaths.createProjectDataPath(a_projectId);
       let a_log;
 
       return api.saveProject(a_projectId, a_roll)
@@ -80,6 +80,7 @@ describe('Middleware', () => {
         .then(() => api.saveProject(a_projectId, b_roll))
         .then(() => versioning.log(a_path))
         .then(log => {
+          assert(Number.isNumber(log.length), 'log error in wrong format, got ' + log);
           expect(a_log.length + 1).to.equal(log.length);
         });
     });

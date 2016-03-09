@@ -28,7 +28,7 @@ const blockDeterminatorMiddleware = (req, res, next) => {
   if (projectId === 'block' && blockId) {
     findProjectFromBlock(blockId)
       .then(projectId => {
-        Object.assign(req, {projectId});
+        Object.assign(req, { projectId });
         next();
       })
       .catch(err => {
@@ -49,12 +49,12 @@ const blockDeterminatorMiddleware = (req, res, next) => {
 /******** PARAMS ***********/
 
 router.param('projectId', (req, res, next, id) => {
-  Object.assign(req, {projectId: id});
+  Object.assign(req, { projectId: id });
   next();
 });
 
 router.param('blockId', (req, res, next, id) => {
-  Object.assign(req, {blockId: id});
+  Object.assign(req, { blockId: id });
   next();
 });
 
@@ -117,41 +117,37 @@ router.route('/sequence/:md5/:blockId?')
 // routes for non-atomic operations
 // response/request with data in format {project: {}, blocks: [], ...}
 // e.g. used in autosave, loading / saving whole project
-router.route('/projects/:projectId?')
-  .all(jsonParser)
+router.route('/projects/:projectId')
+  .all(jsonParser, permissionsMiddleware)
   .get((req, res) => {
-    //todo - apply portion of permissions middleware
     const { projectId } = req;
-
-    if (projectId) {
-      rollup.getProjectRollup(projectId)
-        .then(roll => {
-          res.status(200).json(roll);
-        })
-        .catch(err => {
-          res.status(400).send(err);
-        });
-    } else {
-      rollup.getAllProjectManifests()
-        .then(metadatas => res.status(200).json(metadatas))
-        .catch(err => {
-          res.status(500).send(err);
-        });
-    }
+    rollup.getProjectRollup(projectId)
+      .then(roll => {
+        res.status(200).json(roll);
+      })
+      .catch(err => {
+        res.status(400).send(err);
+      });
   })
-  .post(permissionsMiddleware, (req, res) => {
+  .post((req, res) => {
     const { projectId, user } = req;
     const roll = req.body;
 
     rollup.writeProjectRollup(projectId, roll, user.uuid)
       .then(() => persistence.projectSave(projectId))
-      .then(() => {
-        res.status(200).send();
-      })
+      .then(commit => res.status(200).json(commit))
       .catch(err => {
         console.log(err);
         res.status(400).send(err);
       });
+  });
+
+router.route('/projects')
+  .all(jsonParser)
+  .get((req, res) => {
+    rollup.getAllProjectManifests()
+      .then(metadatas => res.status(200).json(metadatas))
+      .catch(err => res.status(500).send(err));
   });
 
 router.route('/:projectId/commit/:sha?')

@@ -149,6 +149,7 @@ const blockAssertNew = (blockId, projectId) => {
 //resolve with null if does not exist
 
 export const projectGet = (projectId, sha) => {
+  console.log('getting ' + projectId, sha);
   return projectExists(projectId, sha)
     .then(() => _projectRead(projectId, sha))
     .catch(err => {
