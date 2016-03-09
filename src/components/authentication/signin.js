@@ -103,7 +103,7 @@ class SignInForm extends Component {
 
   render() {
     return (
-      <form className="authentication-form" onSubmit={this.onSubmit.bind(this)}>
+      <form id="auth-signin" className="authentication-form" onSubmit={this.onSubmit.bind(this)}>
         <div className="title">Sign In</div>
         <input ref="emailAddress" className="input" placeholder="Email Address"/>
         <input type="password" ref="password" className="input" placeholder="Password"/>

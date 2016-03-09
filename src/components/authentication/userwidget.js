@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
-import {pushState} from 'redux-router';
+import {push} from 'redux-router';
 import PopupMenu from '../../components/Menu/PopupMenu';
 import Vector2D from '../../containers/graphics/geometry/vector2d';
 import { connect } from 'react-redux';
@@ -17,7 +17,7 @@ class UserWidget extends Component {
     uiSetGrunt: PropTypes.func.isRequired,
     userSetUser: PropTypes.func.isRequired,
     user: PropTypes.object,
-    pushState: PropTypes.func.isRequired,
+    push: PropTypes.func.isRequired,
   };
 
   constructor() {
@@ -63,7 +63,7 @@ class UserWidget extends Component {
       });
       // show a grunt
       this.props.uiSetGrunt('Your are now signed out');
-      this.props.pushState(null, '/auth/signin');
+      this.props.push('/homepage');
     })
     .catch((reason) => {
       this.props.uiSetGrunt('There was a problem signing you out');
@@ -122,5 +122,5 @@ export default connect(mapStateToProps, {
   uiShowAuthenticationForm,
   uiSetGrunt,
   userSetUser,
-  pushState,
+  push,
 })(UserWidget);

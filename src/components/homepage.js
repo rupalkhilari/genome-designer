@@ -36,14 +36,14 @@ export default class HomePage extends Component {
         <img className="homepage-autodesk" src="/images/homepage/autodesk-logo.png"/>
         <div className="homepage-getstarted" onClick={this.signIn.bind(this)}>Get started</div>
         <div className="homepage-footer">
-          <div className="homepage-footer-list">New in version 1.0
+          <div className="homepage-footer-list">USA version 1.0
             <ul>
-              <li><span>&bull;</span>Washington</li>
+              <li><span>&bull;</span>George Washington</li>
               <li><span>&bull;</span>John Adams</li>
               <li><span>&bull;</span>Thomas Jefferson</li>
               <li><span>&bull;</span>James Madison</li>
               <li><span>&bull;</span>James Monroe</li>
-              <li><span>&bull;</span>John Qunicy Adams</li>
+              <li><span>&bull;</span>John Quincy Adams</li>
             </ul>
           </div>
         </div>
