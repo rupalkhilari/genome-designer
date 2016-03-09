@@ -96,10 +96,11 @@ class UserWidget extends Component {
       // signed in user
       return (
         <div className="userwidget">
-          <div onClick={this.onShowMenu.bind(this)} className="signed-in">{this.props.user.firstName.substr(0, 1)}</div>
+          <div onClick={this.onShowMenu.bind(this)} className="signed-in">
+            {this.props.user.firstName ? this.props.user.firstName.substr(0, 1) : '?'}</div>
           {this.contextMenu()}
         </div>
-      )
+      );
     }
     // signed out user
     return (
