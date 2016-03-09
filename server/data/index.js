@@ -118,8 +118,9 @@ router.route('/sequence/:md5/:blockId?')
 // response/request with data in format {project: {}, blocks: [], ...}
 // e.g. used in autosave, loading / saving whole project
 router.route('/projects/:projectId?')
-  .all(jsonParser, permissionsMiddleware)
+  .all(jsonParser)
   .get((req, res) => {
+    //todo - apply portion of permissions middleware
     const { projectId } = req;
 
     if (projectId) {
@@ -138,7 +139,7 @@ router.route('/projects/:projectId?')
         });
     }
   })
-  .post((req, res) => {
+  .post(permissionsMiddleware, (req, res) => {
     const { projectId, user } = req;
     const roll = req.body;
 

@@ -33,12 +33,12 @@ if (process.env.NODE_ENV === 'test') {
   defaultOptions = { headers: { Cookie: 'sess=mock-auth' } };
 }
 
-const headersGet = (overrides) => merge(defaultOptions, {
+const headersGet = (overrides) => merge({}, defaultOptions, {
   method: 'GET',
   credentials: 'same-origin',
 }, overrides);
 
-const headersPost = (body, overrides) => merge(defaultOptions, {
+const headersPost = (body, overrides) => merge({}, defaultOptions, {
   method: 'POST',
   credentials: 'same-origin',
   headers: {
@@ -47,7 +47,7 @@ const headersPost = (body, overrides) => merge(defaultOptions, {
   body,
 }, overrides);
 
-const headersPut = (body, overrides) => merge(defaultOptions, {
+const headersPut = (body, overrides) => merge({}, defaultOptions, {
   method: 'PUT',
   credentials: 'same-origin',
   headers: {
@@ -56,7 +56,7 @@ const headersPut = (body, overrides) => merge(defaultOptions, {
   body,
 }, overrides);
 
-const headersDelete = (overrides) => merge(defaultOptions, {
+const headersDelete = (overrides) => merge({}, defaultOptions, {
   method: 'DELETE',
   credentials: 'same-origin',
 }, overrides);
@@ -237,7 +237,9 @@ export const readFile = (fileName) => {
 
 // if contents === null, then the file is deleted
 // Set contents to '' to empty the file
-export const writeFile = (fileName = uuid.v4(), contents) => {
+export const writeFile = (fileName, contents) => {
+  invariant(fileName, 'file name is required');
+
   const filePath = fileApiPath(fileName);
 
   if (contents === null) {

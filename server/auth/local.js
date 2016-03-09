@@ -4,6 +4,8 @@ const router = express.Router();
 const defaultUser = {
   uuid: "0",
   email: "developer@localhost",
+  firstName: 'Dev',
+  lastName: 'Eloper',
 };
 
 router.post('/login', (req, res) => {
