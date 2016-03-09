@@ -10,7 +10,6 @@ const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
   strict: false, //allow values other than arrays and objects
 });
-const textParser = bodyParser.text();
 
 /***************************
  Middleware
@@ -78,7 +77,7 @@ router.route('/sequence/:md5/:blockId?')
       .then(sequence => {
         //not entirely sure what this means... the file is empty?
         if (!sequence) {
-          res.status(204).send('');
+          return res.status(204).send('');
         }
         res.status(200)
           .set('Content-Type', 'text/plain')
@@ -86,7 +85,7 @@ router.route('/sequence/:md5/:blockId?')
       })
       .catch(err => {
         if (err === errorDoesNotExist) {
-          res.status(400).send(errorDoesNotExist);
+          return res.status(400).send(errorDoesNotExist);
         }
         res.status(500).send(err);
       });
@@ -105,9 +104,7 @@ router.route('/sequence/:md5/:blockId?')
           return persistence.sequenceWrite(md5, sequence);
         }
       })
-      .then(() => {
-        res.status(200).send();
-      })
+      .then(() => res.status(200).send())
       .catch(err => res.status(500).send(err));
   })
   .delete((req, res) => {
@@ -122,12 +119,8 @@ router.route('/projects/:projectId')
   .get((req, res) => {
     const { projectId } = req;
     rollup.getProjectRollup(projectId)
-      .then(roll => {
-        res.status(200).json(roll);
-      })
-      .catch(err => {
-        res.status(400).send(err);
-      });
+      .then(roll => res.status(200).json(roll))
+      .catch(err => res.status(400).send(err));
   })
   .post((req, res) => {
     const { projectId, user } = req;
@@ -202,11 +195,13 @@ router.route('/:projectId/:blockId')
     persistence.blockGet(blockId, projectId)
       .then(result => {
         if (!result) {
-          res.status(204).json(null);
+          return res.status(204).json(null);
         }
         res.json(result);
       })
-      .catch(err => res.status(500).send(err));
+      .catch(err => {
+        res.status(500).send(err);
+      });
   })
   .put((req, res) => {
     const { projectId, blockId } = req;
@@ -216,7 +211,7 @@ router.route('/:projectId/:blockId')
       .then(result => res.json(result))
       .catch(err => {
         if (err === errorInvalidModel) {
-          res.status(400).send(errorInvalidModel);
+          return res.status(400).send(errorInvalidModel);
         }
         res.status(500).send(err);
       });
@@ -233,7 +228,7 @@ router.route('/:projectId/:blockId')
       .then(merged => res.json(merged))
       .catch(err => {
         if (err === errorInvalidModel) {
-          res.status(400).send(errorInvalidModel);
+          return res.status(400).send(errorInvalidModel);
         }
         res.status(500).send(err);
       });
@@ -255,7 +250,7 @@ router.route('/:projectId')
     persistence.projectGet(projectId)
       .then(result => {
         if (!result) {
-          res.status(204).json(null);
+          return res.status(204).json(null);
         }
         res.json(result);
       })
@@ -269,7 +264,7 @@ router.route('/:projectId')
       .then(result => res.json(result))
       .catch(err => {
         if (err === errorInvalidModel) {
-          res.status(400).send(errorInvalidModel);
+          return res.status(400).send(errorInvalidModel);
         }
         res.status(500).send(err);
       });
@@ -279,14 +274,14 @@ router.route('/:projectId')
     const project = req.body;
 
     if (!!project.id && project.id !== projectId) {
-      res.status(400).send(errorInvalidModel);
+      return res.status(400).send(errorInvalidModel);
     }
 
     persistence.projectMerge(projectId, project, user.uuid)
       .then(merged => res.status(200).send(merged))
       .catch(err => {
         if (err === errorInvalidModel) {
-          res.status(400).send(errorInvalidModel);
+          return res.status(400).send(errorInvalidModel);
         }
         res.status(500).send(err);
       });

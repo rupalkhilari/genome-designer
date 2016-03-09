@@ -80,7 +80,7 @@ describe('Middleware', () => {
         .then(() => api.saveProject(a_projectId, b_roll))
         .then(() => versioning.log(a_path))
         .then(log => {
-          assert(Number.isNumber(log.length), 'log error in wrong format, got ' + log);
+          assert(typeof log.length === 'number', 'log error in wrong format, got ' + log);
           expect(a_log.length + 1).to.equal(log.length);
         });
     });

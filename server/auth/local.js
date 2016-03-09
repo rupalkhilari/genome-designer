@@ -16,13 +16,13 @@ router.post('/login', (req, res) => {
 });
 
 router.get('/current-user', (req, res) => {
-  if (req.cookies.sess == null) {
-    console.log("didn't find the session cookie; check the mock login route.");
+  if (req.cookies.sess === null) {
+    console.log('didnt find the session cookie; check the mock login route.');
     return res.status(401).end();
   }
 
-  if (req.user == null) {
-    console.log("auth middleware error; req.user is null");
+  if (req.user === null) {
+    console.log('auth middleware error; req.user is null');
     res.statusCode = 500;
     return res.end();
   }
@@ -41,7 +41,7 @@ router.get('/cookies', (req, res) => {
 });
 
 const mockUser = (req, res, next) => {
-  if (req.cookies.sess != null) {
+  if (req.cookies.sess !== null) {
     Object.assign(req, { user: defaultUser });
   }
   next();
