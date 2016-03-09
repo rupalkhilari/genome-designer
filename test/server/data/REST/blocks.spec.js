@@ -1,4 +1,5 @@
 import { assert, expect } from 'chai';
+import uuid from 'node-uuid';
 import request from 'supertest';
 import Project from '../../../../src/models/Project';
 import Block from '../../../../src/models/Block';
@@ -9,6 +10,7 @@ describe('REST', () => {
   describe('Data', () => {
     describe('Blocks', () => {
       let server;
+      const userId = uuid.v4();
       const projectData = new Project();
       const projectId = projectData.id;
 
@@ -23,7 +25,7 @@ describe('REST', () => {
       const patchedBlock = blockData.merge(blockPatch);
 
       before(() => {
-        return persistence.projectCreate(projectId, projectData)
+        return persistence.projectCreate(projectId, projectData, userId)
           .then(() => persistence.blockCreate(blockId, blockData, projectId));
       });
 

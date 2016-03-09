@@ -1,5 +1,6 @@
 import { assert, expect } from 'chai';
 import path from 'path';
+import uuid from 'node-uuid';
 import { errorInvalidModel, errorAlreadyExists, errorDoesNotExist } from '../../../server/utils/errors';
 import { fileExists, fileRead, fileWrite, fileDelete, directoryExists, directoryMake, directoryDelete } from '../../../server/utils/fileSystem';
 
@@ -14,12 +15,13 @@ import { createExampleRollup } from '../../utils/rollup';
 describe('REST', () => {
   describe('Data', () => {
     describe('Rollup', () => {
+      const userId = uuid.v4();
       const roll = createExampleRollup();
       const project = roll.project;
       const projectId = project.id;
       const [blockP, blockA, blockB, blockC, blockD, blockE] = roll.blocks;
       before(() => {
-        return persistence.projectCreate(projectId, project);
+        return persistence.projectCreate(projectId, project, userId);
       });
 
       it('createRollup() has structure { project: project, blocks: [...blocks] }', () => {
@@ -28,7 +30,7 @@ describe('REST', () => {
       });
 
       it('writeProjectRollup() writes a whole rollup', () => {
-        return rollup.writeProjectRollup(projectId, roll)
+        return rollup.writeProjectRollup(projectId, roll, userId)
           .then(() => Promise
             .all([
               persistence.projectGet(projectId),
@@ -59,7 +61,7 @@ describe('REST', () => {
         const editBlockA = blockA.mutate('components', newComponentsBlockA);
 
         const newRoll = rollup.createRollup(project, blockP, editBlockA, blockB, blockD, blockE, blockF);
-        return rollup.writeProjectRollup(projectId, newRoll)
+        return rollup.writeProjectRollup(projectId, newRoll, userId)
           .then(() => Promise
             .all([
               persistence.projectGet(projectId),

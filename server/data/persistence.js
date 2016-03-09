@@ -11,48 +11,48 @@ import * as permissions from './permissions';
 
 const _projectExists = (projectId, sha) => {
   const manifestPath = filePaths.createProjectManifestPath(projectId);
-  const projectPath = filePaths.createProjectPath(projectId);
+  const projectDataPath = filePaths.createProjectDataPath(projectId);
 
   if (!sha) {
     return fileExists(manifestPath);
   }
-  return versioning.versionExists(projectPath, sha);
+  return versioning.versionExists(projectDataPath, sha);
 };
 
 const _blockExists = (blockId, projectId, sha) => {
   const manifestPath = filePaths.createBlockManifestPath(blockId, projectId);
-  const projectPath = filePaths.createProjectPath(projectId);
-  const relativePath = path.relative(projectPath, manifestPath);
+  const projectDataPath = filePaths.createProjectDataPath(projectId);
+  const relativePath = path.relative(projectDataPath, manifestPath);
 
   if (!sha) {
     return fileExists(manifestPath);
   }
-  return versioning.versionExists(projectPath, sha, relativePath);
+  return versioning.versionExists(projectDataPath, sha, relativePath);
 };
 
 const _projectRead = (projectId, sha) => {
   const manifestPath = filePaths.createProjectManifestPath(projectId);
-  const projectPath = filePaths.createProjectPath(projectId);
-  const relativePath = path.relative(projectPath, manifestPath);
+  const projectDataPath = filePaths.createProjectDataPath(projectId);
+  const relativePath = path.relative(projectDataPath, manifestPath);
 
   if (!sha) {
     return fileRead(manifestPath);
   }
 
-  return versioning.checkout(projectPath, relativePath, sha)
+  return versioning.checkout(projectDataPath, relativePath, sha)
     .then(string => JSON.parse(string));
 };
 
 const _blockRead = (blockId, projectId, sha) => {
   const manifestPath = filePaths.createBlockManifestPath(blockId, projectId);
-  const projectPath = filePaths.createProjectPath(projectId);
-  const relativePath = path.relative(projectPath, manifestPath);
+  const projectDataPath = filePaths.createProjectDataPath(projectId);
+  const relativePath = path.relative(projectDataPath, manifestPath);
 
   if (!sha) {
     return fileRead(manifestPath);
   }
 
-  return versioning.checkout(projectPath, relativePath, sha)
+  return versioning.checkout(projectDataPath, relativePath, sha)
     .then(string => JSON.parse(string));
 };
 
@@ -60,6 +60,7 @@ const _projectSetup = (projectId, userId) => {
   const projectPath = filePaths.createProjectPath(projectId);
   const projectDataPath = filePaths.createProjectDataPath(projectId);
   const blockDirectory = filePaths.createBlockDirectoryPath(projectId);
+
   return directoryMake(projectPath)
     .then(() => directoryMake(projectDataPath))
     .then(() => directoryMake(blockDirectory))

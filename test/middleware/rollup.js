@@ -1,4 +1,5 @@
 import chai from 'chai';
+import uuid from 'node-uuid';
 import fs from 'fs';
 import * as api from '../../src/middleware/api';
 const { assert, expect } = chai;
@@ -16,11 +17,12 @@ import { createExampleRollup } from '../utils/rollup';
 describe('Middleware', () => {
   describe('Rollup', () => {
     //create a test project to load
+    const userId = uuid.v4();
     const roll = createExampleRollup();
     const project = roll.project;
     const projectId = project.id;
 
-    before(() => rollup.writeProjectRollup(projectId, roll));
+    before(() => rollup.writeProjectRollup(projectId, roll, userId));
 
     it('listProjects() lists available projects', () => {
       return api.listProjects()

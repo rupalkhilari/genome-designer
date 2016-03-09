@@ -11,7 +11,7 @@ export const filePath = 'file';
 export const sequencePath = 'sequence';
 export const blockPath = 'blocks';
 export const projectPath = 'projects';
-export const projectDataPath = 'projects';
+export const projectDataPath = 'data';
 
 export const permissionsFilename = 'permissions.json';
 export const manifestFilename = 'manifest.json';
@@ -51,8 +51,8 @@ export const createProjectManifestPath = (projectId) => {
   return createProjectDataPath(projectId, manifestFilename);
 };
 
-export const createBlockDirectoryPath = (projectId) => {
-  return createProjectDataPath(projectId, blockPath);
+export const createBlockDirectoryPath = (projectId, ...rest) => {
+  return createProjectDataPath(projectId, blockPath, ...rest);
 };
 
 //BLOCKS
@@ -62,7 +62,7 @@ export const createBlockPath = (blockId, projectId, ...rest) => {
   //future, may automatically fetch projectId somehow
   invariant(projectId, 'Project ID required');
 
-  return createProjectDataPath(projectId, blockPath, blockId, ...rest);
+  return createBlockDirectoryPath(projectId, blockId, ...rest);
 };
 
 export const createBlockManifestPath = (blockId, projectId) => {

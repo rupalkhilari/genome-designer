@@ -4,9 +4,15 @@ import * as persistence from './persistence';
 import * as filePaths from '../utils/filePaths';
 import * as fileSystem from '../utils/fileSystem';
 
-//todo - limit to those for which you have access
-export const getAllProjectManifests = () => {
+export const getAllProjectManifests = (userId) => {
   const directory = filePaths.createProjectsDirectoryPath();
+
+  if (userId) {
+    //todo - limit to those for which you have access
+  } else {
+    // do we want to handle this?
+  }
+
   return fileSystem.directoryContents(directory)
     .then(projects => {
       return Promise.all(projects.map(project => persistence.projectGet(project)));

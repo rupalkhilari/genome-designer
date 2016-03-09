@@ -11,7 +11,7 @@ describe('REST', () => {
       devServer.listen(3000, done);
     });
 
-    it('basic test', (done) => {
+    it('basic test', () => {
       const testProject = new Project({
         notes: {
           some: 'note',
@@ -21,7 +21,7 @@ describe('REST', () => {
       return fetch(dataApiPath(`${testProject.id}`), {
         method: 'put',
         headers: {
-          'Content-type': 'application/json',
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(testProject),
       })
@@ -31,7 +31,6 @@ describe('REST', () => {
         })
         .then(json => {
           expect(json).to.eql(testProject);
-          done();
         });
     });
   });

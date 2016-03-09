@@ -1,4 +1,3 @@
-import uuid from 'node-uuid';
 import fetch from 'isomorphic-fetch';
 import invariant from 'invariant';
 import merge from 'lodash.merge';
@@ -198,8 +197,7 @@ export const snapshot = (projectId, rollup, message = 'Project Snapshot') => {
   const stringified = JSON.stringify({ message });
   const url = dataApiPath(`${projectId}/commit`);
 
-  return saveProject(projectId, rollup)
-    .then(() => fetch(url, headersPost(stringified)))
+  return fetch(url, headersPost(stringified))
     .then(resp => resp.json());
 };
 
