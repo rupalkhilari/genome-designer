@@ -11,7 +11,7 @@ import Block from '../../../src/models/Block';
 import * as filePaths from '../../../server/utils/filePaths';
 import * as versioning from '../../../server/data/versioning';
 import * as persistence from '../../../server/data/persistence';
-import findProjectFromBlock from '../../../server/data/findProjectFromBlock';
+import { findProjectFromBlock } from '../../../server/data/querying';
 
 //todo - can probably de-dupe many of these setup / before() clauses, they are pretty similar
 
