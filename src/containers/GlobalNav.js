@@ -31,7 +31,6 @@ class GlobalNav extends Component {
         {
           text: 'FILE',
           items: [
-            {},
             {
               text: 'Save Project',
               action: () => {
