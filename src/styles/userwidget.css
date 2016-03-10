@@ -9,24 +9,25 @@
   top: 5px;
   right: 8px;
   z-index: var(--zMenuContainer);
-}
-.userwidget .signed-out {
-  color: dodgerblue;
-  pointer: cursor;
-  text-decoration: none;
-}
-.userwidget .signed-out:hover {
-  text-decoration: underline;
-}
-.userwidget .signed-in {
-  width: 34px;
-  height: 34px;
-  line-height: 34px;
-  text-align: center;
-  border-radius: 100%;
-  background-color: lightgray;
-  color: white;
-  text-transform: uppercase;
-  font-size: 1.5rem;
-  cursor: pointer;
+
+  .signed-out {
+    color: dodgerblue;
+    pointer: cursor;
+    text-decoration: none;
+  }
+  .signed-out:hover {
+    text-decoration: underline;
+  }
+  .signed-in {
+    width: 34px;
+    height: 34px;
+    line-height: 34px;
+    text-align: center;
+    border-radius: 100%;
+    background-color: lightgray;
+    color: white;
+    text-transform: uppercase;
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
 }
