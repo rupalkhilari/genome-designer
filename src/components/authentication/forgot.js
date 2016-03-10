@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import {connect} from 'react-redux';
 import { uiShowAuthenticationForm, uiSetGrunt } from '../../actions/ui';
 import invariant from 'invariant';
-import 'isomorphic-fetch';
+import { forgot } from '../../middleware/api';
 
 /**
  * default visibility and text for error labels
@@ -38,45 +38,30 @@ class ForgotForm extends Component {
       text: '&nbsp;',
     });
 
-    // get the API end point
-    const endPoint = `${window.location.origin}/auth/forgot-password`;
-
-    fetch(endPoint, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email: this.emailAddress,
-      }),
-    })
-    .then((response) => {
-      return response.json();
-    })
-    .then((json) => {
-      if (json.message === 'Invalid email' || json.message === 'missing email') {
+    forgot(this.emailAddress)
+      .then((json) => {
+        if (json.message === 'Invalid email' || json.message === 'missing email') {
+          this.setState({
+            emailError: {
+              visible: true,
+              text: 'Unrecognized email address',
+            },
+          });
+          return;
+        }
+        // show grunt
+        this.props.uiSetGrunt(`A link to reset your password has been sent to ${this.emailAddress}`);
+        // close the form
+        this.props.uiShowAuthenticationForm('none');
+      })
+      .catch((reason) => {
         this.setState({
           emailError: {
             visible: true,
-            text: 'Unrecognized email address',
+            text: 'Unexpected error, please check your connection',
           },
         });
-        return;
-      }
-      // show grunt
-      this.props.uiSetGrunt(`A link to reset your password has been sent to ${this.emailAddress}`);
-      // close the form
-      this.props.uiShowAuthenticationForm('none');
-    })
-    .catch((reason) => {
-      this.setState({
-        emailError: {
-          visible: true,
-          text: 'Unexpected error, please check your connection',
-        },
       });
-    });
   }
 
   get emailAddress() {

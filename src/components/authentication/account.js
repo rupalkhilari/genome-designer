@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import { uiShowAuthenticationForm, uiSetGrunt } from '../../actions/ui';
 import { userSetUser } from '../../actions/user';
 import invariant from 'invariant';
+import { updateAccount } from '../../middleware/api';
 
 /**
  * default visibility and text for error labels
@@ -80,45 +81,34 @@ class AccountForm extends Component {
       payload.newPassword = this.password;
     }
 
-    fetch(endPoint, {
-      credentials: 'include', // allow cookies
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    })
-    .then((response) => {
-      return response.json();
-    })
-    .then((json) => {
-      if (json.message) {
-        this.showServerErrors(json);
-        return;
-      }
-      const email = json.email || this.props.user.email;
-      const firstName = json.firstName || this.props.user.firstName;
-      const lastName = json.lastName || this.props.user.lastName;
+    updateAccount(payload)
+      .then((json) => {
+        if (json.message) {
+          this.showServerErrors(json);
+          return;
+        }
+        const email = json.email || this.props.user.email;
+        const firstName = json.firstName || this.props.user.firstName;
+        const lastName = json.lastName || this.props.user.lastName;
 
-      // set the user
-      this.props.userSetUser({
-        userid: json.uuid,
-        email: email,
-        firstName: firstName,
-        lastName: lastName,
-      });
-      // show grunt
-      this.props.uiSetGrunt(`Account updated to ${firstName} ${lastName} ( ${email} )`);
+        // set the user
+        this.props.userSetUser({
+          userid: json.uuid,
+          email: email,
+          firstName: firstName,
+          lastName: lastName,
+        });
+        // show grunt
+        this.props.uiSetGrunt(`Account updated to ${firstName} ${lastName} ( ${email} )`);
 
-      // close the form
-      this.props.uiShowAuthenticationForm('none');
-    })
-    .catch((reason) => {
-      this.showServerErrors({
-        message: 'Unexpected error, please check your connection',
+        // close the form
+        this.props.uiShowAuthenticationForm('none');
+      })
+      .catch((reason) => {
+        this.showServerErrors({
+          message: 'Unexpected error, please check your connection',
+        });
       });
-    });
   }
 
   /**

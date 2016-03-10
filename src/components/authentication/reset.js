@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import {connect} from 'react-redux';
 import { uiShowAuthenticationForm, uiSetGrunt } from '../../actions/ui';
 import { userSetUser } from '../../actions/user';
+import { reset } from '../../middleware/api';
 import invariant from 'invariant';
 
 /**
@@ -40,39 +41,22 @@ class RegisterForm extends Component {
     if (this.clientValidation()) {
       return;
     }
-    // get the API end point
-    const endPoint = `${window.location.origin}/auth/reset-password`;
 
-    fetch(endPoint, {
-      credentials: 'include', // allow cookies
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email: this.getParameter('e'),
-        forgotPasswordHash: this.getParameter('h'),
-        newPassword: this.password,
-      }),
-    })
-    .then((response) => {
-      return response.json();
-    })
-    .then((json) => {
-      if (json.message) {
-        this.showServerErrors(json);
-        return;
-      }
-      this.props.uiSetGrunt(`Your password for ${this.getParameter('e')} has been set. You may now sign in.`);
-      // success so open the login form
-      this.props.uiShowAuthenticationForm('signin');
-    })
-    .catch((reason) => {
-      this.showServerErrors({
-        message: 'Unexpected error, please check your connection',
+    reset(this.getParameter('e'), this.getParameter('h'), this.password)
+      .then((json) => {
+        if (json.message) {
+          this.showServerErrors(json);
+          return;
+        }
+        this.props.uiSetGrunt(`Your password for ${this.getParameter('e')} has been set. You may now sign in.`);
+        // success so open the login form
+        this.props.uiShowAuthenticationForm('signin');
+      })
+      .catch((reason) => {
+        this.showServerErrors({
+          message: 'Unexpected error, please check your connection',
+        });
       });
-    });
   }
 
   // return a hash of the query strings

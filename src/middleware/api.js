@@ -75,11 +75,50 @@ export const login = (user, password) => {
   return fetch(serverRoot + `auth/login`, headersPost(stringified))
     .then(resp => resp.json())
     .then(json => {
-      console.log('logged in', json);
       return json;
     })
     .catch((err) => {
-      console.log('fetch login error', err);
+      throw err;
+    });
+};
+
+export const forgot = (email) => {
+  const body = { email }
+  const stringified = JSON.stringify(body);
+  return fetch(serverRoot + `auth/forgot-password`, headersPost(stringified))
+    .then(resp => resp.json())
+    .then(json => {
+      return json;
+    })
+    .catch((err) => {
+      throw err;
+    });
+};
+
+export const reset = (email, forgotPasswordHash, newPassword) => {
+  const body = { email, forgotPasswordHash, newPassword }
+  const stringified = JSON.stringify(body);
+  return fetch(serverRoot + `auth/reset-password`, headersPost(stringified))
+    .then(resp => resp.json())
+    .then(json => {
+      return json;
+    })
+    .catch((err) => {
+      throw err;
+    });
+};
+
+// login with email and password and set the sessionKey (cookie) for later use
+export const updateAccount = (payload) => {
+  const body = payload;
+  const stringified = JSON.stringify(body);
+
+  return fetch(serverRoot + `auth/update-all`, headersPost(stringified))
+    .then(resp => resp.json())
+    .then(json => {
+      return json;
+    })
+    .catch((err) => {
       throw err;
     });
 };
@@ -95,7 +134,6 @@ export const getUser = () => {
       return resp.json();
     })
     .catch((err) => {
-      console.log('fetch user error', err);
       throw err;
     });
 };
