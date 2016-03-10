@@ -5,6 +5,10 @@
   flex-direction: column;
   padding: 0 0 0.5em;
 
+  &-heading {
+    flex-shrink: 0;
+  }
+
   &-title {
 
   }
@@ -23,18 +27,11 @@
 
   &-contents {
     flex-grow: 1;
-    height: 0;
-    margin-left: 1.5em;
+    margin: 0.5em 0 0.5em 1.75em;
     overflow-y: scroll;
   }
 
   &.expanded {
-    flex-grow: 1;
-
-    .InventoryListGroup-title {
-      padding: 0 0 0.5em;
-    }
-
     .InventoryListGroup-toggle {
       transform: rotate(90deg);
     }
