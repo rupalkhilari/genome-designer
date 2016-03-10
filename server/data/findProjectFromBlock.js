@@ -1,20 +1,30 @@
-import * as filePaths from './../utils/filePaths';
+import * as filePaths from '../utils/filePaths';
 import { exec } from 'child_process';
+import { errorCouldntFindProjectId } from '../utils/errors';
 
 export const findProjectFromBlock = (blockId) => {
   if (!blockId) {
-    return Promise.reject(null);
+    return Promise.reject(errorCouldntFindProjectId);
   }
 
   return new Promise((resolve, reject) => {
     const storagePath = filePaths.createStorageUrl(filePaths.projectPath);
     exec(`cd ${storagePath} && find . -type d -name ${blockId}`, (err, output) => {
-      const lines = output.split('/n');
+      if (err) {
+        return reject(err);
+      }
+
+      const lines = output.split('\n');
+      lines.pop(); //get rid of the last empty line
       if (lines.length === 1) {
-        const [ /* idBlock */, /*blocks_directory*/, idProject ] = lines[0].split('/').reverse();
+        const [ /* idBlock */,
+          /* blocks/ */,
+          /* data/ */,
+          idProject,
+          ] = lines[0].split('/').reverse();
         resolve(idProject);
       } else {
-        reject(null);
+        reject(errorCouldntFindProjectId);
       }
     });
   });

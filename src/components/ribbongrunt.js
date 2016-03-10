@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import {connect} from 'react-redux';
-import 'isomorphic-fetch';
+import invariant from 'invariant';
 import { uiSetGrunt } from '../actions/ui';
 import '../../src/styles/ribbongrunt.css';
 

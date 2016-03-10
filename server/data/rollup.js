@@ -1,14 +1,16 @@
 import invariant from 'invariant';
 import { errorDoesNotExist } from '../utils/errors';
 import * as persistence from './persistence';
+import * as permissions from './permissions';
 import * as filePaths from '../utils/filePaths';
 import * as fileSystem from '../utils/fileSystem';
 
-export const getAllProjectManifests = () => {
-  const directory = filePaths.createProjectsDirectoryPath();
-  return fileSystem.directoryContents(directory)
-    .then(projects => {
-      return Promise.all(projects.map(project => persistence.projectGet(project)));
+export const getAllProjectManifests = (userId) => {
+  invariant(userId, 'user id is required to get list of manifests');
+
+  return permissions.listProjectsWithAccess(userId)
+    .then(projectIds => {
+      return Promise.all(projectIds.map(project => persistence.projectGet(project)));
     });
 };
 
@@ -43,16 +45,19 @@ export const getProjectRollup = (projectId) => {
     }));
 };
 
-export const writeProjectRollup = (projectId, rollup) => {
+export const writeProjectRollup = (projectId, rollup, userId) => {
   const { project, blocks } = rollup;
   const newBlockIds = blocks.map(block => block.id);
+
   invariant(projectId === project.id, 'rollup project ID does not match');
 
   return persistence.projectExists(projectId)
     .catch(err => {
       //if the project doesn't exist, let's make it
       if (err === errorDoesNotExist) {
-        return persistence.projectCreate(projectId, project);
+        invariant(userId, 'userID is necessary to create a project from rollup');
+
+        return persistence.projectCreate(projectId, project, userId);
       }
       return Promise.reject(err);
     })

@@ -11,11 +11,23 @@
     border: 0;
     width: 100%;
     color: inherit;
-    
+
     &:focus {
       cursor: text;
       background: white;
       color: black;
+    }
+  }
+
+  &.readOnly {
+    .InputSimple-input {
+      cursor: default;
+
+      &:focus {
+        cursor: default;
+        background: inherit;
+        color: inherit;
+      }
     }
   }
 }

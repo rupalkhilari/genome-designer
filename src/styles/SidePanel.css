@@ -11,7 +11,7 @@
   top: 0;
   bottom: 0;
   background: var(--colors-bluegreyDark);
-  color: var(--colors-white);
+  color: var(--colors-greyLight);
   transition-property: width, opacity;
   transition-duration: var(--timing-fast);
   will-change: width;
@@ -76,7 +76,7 @@
     display: flex;
     flex-grow: 1;
     width: var(--width-SidePanel-open);
-    padding: 0 var(--SidePanel-width-padding-content) var(--SidePanel-width-padding-heading);
+    padding: 0 var(--SidePanel-width-padding-content);
     opacity: 0;
 
     .visible & {

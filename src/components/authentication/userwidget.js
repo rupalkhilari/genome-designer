@@ -4,9 +4,9 @@ import {push} from 'redux-router';
 import PopupMenu from '../../components/Menu/PopupMenu';
 import Vector2D from '../../containers/graphics/geometry/vector2d';
 import { connect } from 'react-redux';
-import 'isomorphic-fetch';
 import { uiShowAuthenticationForm, uiSetGrunt } from '../../actions/ui';
 import { userSetUser } from '../../actions/user';
+import { logout } from '../../middleware/api';
 
 import '../../styles/userwidget.css';
 
@@ -48,11 +48,8 @@ class UserWidget extends Component {
   }
 
   signOut() {
-    const endPoint = `${window.location.origin}/auth/logout`;
-    fetch(endPoint, {
-      credentials: 'include',
-      method: 'GET',
-    })
+
+    logout()
     .then(() => {
       // set the user
       this.props.userSetUser({
@@ -99,7 +96,8 @@ class UserWidget extends Component {
       // signed in user
       return (
         <div className="userwidget">
-          <div onClick={this.onShowMenu.bind(this)} className="signed-in">{this.props.user.firstName.substr(0, 1)}</div>
+          <div onClick={this.onShowMenu.bind(this)} className="signed-in">
+            {this.props.user.firstName ? this.props.user.firstName.substr(0, 1) : '?'}</div>
           {this.contextMenu()}
         </div>
       );

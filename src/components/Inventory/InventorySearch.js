@@ -18,7 +18,7 @@ export default class InventorySearch extends Component {
         <input className="InventorySearch-input"
                type="text"
                value={this.props.searchTerm}
-               placeholder="Filter Blocks"
+               placeholder="Keyword, biological function"
                onChange={this.handleSearchChange} />
       </div>
     );

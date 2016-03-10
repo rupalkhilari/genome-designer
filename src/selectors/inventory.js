@@ -9,3 +9,9 @@ export const inventoryGetSearchTerm = () => {
     return getState().inventory.searchTerm;
   };
 };
+
+export const inventoryGetSearchResults = () => {
+  return (dispatch, getState) => {
+    return getState().inventory.searchResults;
+  };
+};

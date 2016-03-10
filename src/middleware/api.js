@@ -1,6 +1,6 @@
-import uuid from 'node-uuid';
 import fetch from 'isomorphic-fetch';
 import invariant from 'invariant';
+import merge from 'lodash.merge';
 import ProjectDefinition from '../schemas/Project';
 import BlockDefinition from '../schemas/Block';
 
@@ -24,45 +24,41 @@ export const searchPath = (id) => serverRoot + 'search/' + id;
 export const dataApiPath = (path) => serverRoot + 'data/' + path;
 export const fileApiPath = (path) => serverRoot + 'file/' + path;
 
-//let this get flashed in
-let user = {};
+//header helpers for fetch
 
-export const getUserInfo  = () => {
-  return Object.assign({}, user);
-};
+//set default options for testing (jsdom doesn't set cookies on fetch)
+let defaultOptions = {};
+if (process.env.NODE_ENV === 'test') {
+  defaultOptions = { headers: { Cookie: 'sess=mock-auth' } };
+}
 
-//future - dont expose this
-export const setUserInfo = () => {
-  
-};
-
-const headersGet = () => ({
+const headersGet = (overrides) => merge({}, defaultOptions, {
   method: 'GET',
-  credentials: 'include',
-});
+  credentials: 'same-origin',
+}, overrides);
 
-const headersPost = (body, mimeType = 'application/json') => ({
+const headersPost = (body, overrides) => merge({}, defaultOptions, {
   method: 'POST',
-  credentials: 'include',
+  credentials: 'same-origin',
   headers: {
-    'Content-Type': mimeType,
+    'Content-Type': 'application/json',
   },
   body,
-});
+}, overrides);
 
-const headersPut = (body, mimeType = 'application/json') => ({
+const headersPut = (body, overrides) => merge({}, defaultOptions, {
   method: 'PUT',
-  credentials: 'include',
+  credentials: 'same-origin',
   headers: {
-    'Content-Type': mimeType,
+    'Content-Type': 'application/json',
   },
   body,
-});
+}, overrides);
 
-const headersDelete = () => ({
+const headersDelete = (overrides) => merge({}, defaultOptions, {
   method: 'DELETE',
-  credentials: 'include',
-});
+  credentials: 'same-origin',
+}, overrides);
 
 /*************************
  Authentication API
@@ -70,54 +66,37 @@ const headersDelete = () => ({
 
 // login with email and password and set the sessionKey (cookie) for later use
 export const login = (user, password) => {
-  var body = {
+  const body = {
     email: user,
     password: password,
   };
+  const stringified = JSON.stringify(body);
 
-  var fetchOptions = {
-    method: 'POST',
-    body: JSON.stringify(body),
-    headers: new Headers({
-      'Content-Type': 'application/json'
-    }),
-  };
-
-  return fetch(serverRoot + `auth/login`, fetchOptions)
+  return fetch(serverRoot + `auth/login`, headersPost(stringified))
     .then(resp => resp.json())
     .then(json => {
-      user = {
-        userid: json.uuid,
-        email: json.email,
-        firstName: json.firstName,
-        lastName: json.lastName,
-      };
+      console.log('logged in', json);
+      return json;
     })
-    .catch(function (e) {
-      console.log('fetch login error', e);
-      throw e;
+    .catch((err) => {
+      console.log('fetch login error', err);
+      throw err;
     });
 };
 
-//todo - rewrite
+export const logout = () => {
+  return fetch(serverRoot + `auth/logout`, headersGet());
+};
+
 // use established sessionKey to get the user object
 export const getUser = () => {
-  var headers = new Headers();
-  headers.set('Content-Type', 'application/json');
-  headers.set('Cookie', sessionKey);
-
-  var fetchOptions = {
-    method: 'GET',
-    headers: headers,
-    credentials: "same-origin"
-  };
-
-  return fetch(serverRoot + `auth/current-user`, fetchOptions)
+  return fetch(serverRoot + `auth/current-user`, headersGet())
     .then(resp => {
       return resp.json();
-    }).catch(function (e) {
-      console.log('fetch user error', e);
-      throw e;
+    })
+    .catch((err) => {
+      console.log('fetch user error', err);
+      throw err;
     });
 };
 
@@ -171,7 +150,8 @@ export const saveBlock = (block, projectId, overwrite = false) => {
 export const listProjects = () => {
   const url = dataApiPath('projects');
   return fetch(url, headersGet())
-    .then(resp => resp.json());
+    .then(resp => resp.json())
+    .then(projects => projects.filter(project => !!project));
 };
 
 //saves just the project manifest to file system
@@ -215,11 +195,10 @@ export const snapshot = (projectId, rollup, message = 'Project Snapshot') => {
   invariant(projectId, 'Project ID required to snapshot');
   invariant(!message || typeof message === 'string', 'optional message for snapshot must be a string');
 
-  const stringified = JSON.stringify({message});
+  const stringified = JSON.stringify({ message });
   const url = dataApiPath(`${projectId}/commit`);
 
-  return saveProject(projectId, rollup)
-    .then(() => fetch(url, headersPost(stringified)))
+  return fetch(url, headersPost(stringified))
     .then(resp => resp.json());
 };
 
@@ -239,7 +218,7 @@ export const getSequence = (md5, format) => {
 
 export const writeSequence = (md5, sequence, blockId) => {
   const url = getSequenceUrl(md5, blockId);
-  const stringified = JSON.stringify({sequence});
+  const stringified = JSON.stringify({ sequence });
 
   return fetch(url, headersPost(stringified));
 };
@@ -257,7 +236,9 @@ export const readFile = (fileName) => {
 
 // if contents === null, then the file is deleted
 // Set contents to '' to empty the file
-export const writeFile = (fileName = uuid.v4(), contents) => {
+export const writeFile = (fileName, contents) => {
+  invariant(fileName, 'file name is required');
+
   const filePath = fileApiPath(fileName);
 
   if (contents === null) {
@@ -291,13 +272,13 @@ export const exportProject = (id, inputs) => {
 };
 
 export const importBlock = (id, input) => {
-  const stringified = JSON.stringify({text: input});
+  const stringified = JSON.stringify({ text: input });
   return fetch(importPath(`block/${id}`), headersPost(stringified))
     .then(resp => resp.json());
 };
 
 export const importProject = (id, input) => {
-  const stringified = JSON.stringify({text: input});
+  const stringified = JSON.stringify({ text: input });
   return fetch(importPath(`project/${id}`), headersPost(stringified))
     .then(resp => resp.json());
 };

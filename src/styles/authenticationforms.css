@@ -15,89 +15,90 @@
   flex-direction: column;
   align-items: center;
   font-size: 1.5rem;
-}
 
-.authentication-form * {
-  width: 80%;
-  margin-bottom: 0.5rem;
-  border-radius: var(--radius);
-}
+  * {
+    width: 80%;
+    margin-bottom: 0.5rem;
+    border-radius: var(--radius);
+  }
 
-.authentication-form .title {
-  font-size: var(--element-height * 0.5);
-  color: var(--textcolor);
-  text-align:center;
-  margin-top: 1rem;
-  margin-bottom: 2rem !important;
-}
+  .title {
+    font-size: var(--element-height * 0.5);
+    color: var(--textcolor);
+    text-align:center;
+    margin-top: 1rem;
+    margin-bottom: 2rem !important;
+  }
 
-.authentication-form input {
-  height: var(--element-height);
-  font-size: var(--fontsize);
-  border-radius: var(--radius);
-  border: 1px solid whitesmoke;
-  background-color: var(--inputcolor);
-  text-indent: 0.5rem;
-  outline: none;
-  color: var(--primarycolor);
-}
-.authentication-form input:focus {
-  border: 1px solid lightgray;
-}
+  input {
+    height: var(--element-height);
+    font-size: var(--fontsize);
+    border-radius: var(--radius);
+    border: 1px solid whitesmoke;
+    background-color: var(--inputcolor);
+    text-indent: 0.5rem;
+    outline: none;
+    color: var(--primarycolor);
+  }
+  input:focus {
+    border: 1px solid lightgray;
+  }
 
-.authentication-form button {
-  height: var(--element-height);
-  font-size: var(--fontsize);
-  border-radius: 0;
-  cursor: pointer;
-}
-.authentication-form button[type="button"]  {
-  background-color: white;
-  border: none;
-  color: textcolor;
-}
-.authentication-form button[type="submit"] {
-  background-color: var(--primarycolor);
-  color: white;
-  border: none;
-}
-/* errors are hidden by default, add the .visible class to make them appear*/
-.authentication-form .error {
-  color: transparent;
-  font-size: var(--fontsize);
-  text-align: center;
-}
-.authentication-form .visible {
-  color: var(--errorcolor);
-}
-.authentication-form label {
-  font-size: var(--fontsize);
-  color: var(--textcolor);
-}
-.authentication-form .checkbox {
-  display: flex;
-  align-items: center;
-}
-.authentication-form .checkbox span {
-  font-size: var(--fontsize);
-  white-space: nowrap;
-  margin: 3px 0 0 0.5rem;
-  color: var(--textcolor);
-}
-.authentication-form .checkbox input {
-  width: 1rem;
-  height: auto;
-  margin-bottom: 0;
-}
-.authentication-form .checkbox a {
-  color: dodgerblue;
-}
-.authentication-form a {
-  font-size: var(--fontsize);
-  color: var(--textcolor);
-  text-decoration: none;
-  cursor: pointer;
-}
-.authentication-form a:hover {
-  text-decoration: underline;
+  button {
+    height: var(--element-height);
+    font-size: var(--fontsize);
+    border-radius: 0;
+    cursor: pointer;
+  }
+  button[type="button"]  {
+    background-color: white;
+    border: none;
+    color: textcolor;
+  }
+  button[type="submit"] {
+    background-color: var(--primarycolor);
+    color: white;
+    border: none;
+  }
+  /* errors are hidden by default, add the .visible class to make them appear*/
+  .error {
+    color: transparent;
+    font-size: var(--fontsize);
+    text-align: center;
+  }
+  .visible {
+    color: var(--errorcolor);
+  }
+  label {
+    font-size: var(--fontsize);
+    color: var(--textcolor);
+  }
+  .checkbox {
+    display: flex;
+    align-items: center;
+  }
+  .checkbox span {
+    font-size: var(--fontsize);
+    white-space: nowrap;
+    margin: 3px 0 0 0.5rem;
+    color: var(--textcolor);
+  }
+  .checkbox input {
+    width: 1rem;
+    height: auto;
+    margin-bottom: 0;
+  }
+  .checkbox a {
+    color: dodgerblue;
+  }
+  a {
+    font-size: var(--fontsize);
+    color: var(--textcolor);
+    text-decoration: none;
+    cursor: pointer;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+
 }

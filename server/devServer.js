@@ -1,4 +1,5 @@
 import path from 'path';
+import fs from 'fs';
 import express from 'express';
 import webpack from 'webpack';
 import morgan from 'morgan';
@@ -13,16 +14,30 @@ import importRouter from '../plugins/convert/import';
 import exportRouter from '../plugins/convert/export';
 import searchRouter from '../plugins/search/search';
 
-
 const DEFAULT_PORT = 3000;
 const port = parseInt(process.argv[2], 10) || process.env.PORT || DEFAULT_PORT;
 const hostname = '0.0.0.0';
 
-var ROOT = path.dirname(__dirname);
+const ROOT = path.dirname(__dirname);
 const app = express();
 const compiler = webpack(config);
 
-//logging middleware
+//error logging middleware
+if (process.env.NODE_ENV !== 'production') {
+  app.use((err, req, res, next) => {
+    console.log('hit error logging middleware', err, req, res, next);
+    if (err) {
+      console.error(err);
+      if (res.headersSent) {
+        return next(err);
+      }
+      res.status(502).send(err);
+    }
+    return next();
+  });
+}
+
+//HTTP logging middleware
 app.use(morgan('dev'));
 
 // view engine setup
@@ -37,7 +52,6 @@ app.use(require('webpack-dev-middleware')(compiler, {
   publicPath: config.output.publicPath,
 }));
 app.use(require('webpack-hot-middleware')(compiler));
-
 
 // Register API middleware
 // ----------------------------------------------------
@@ -60,8 +74,8 @@ if (process.env.BIO_NANO_AUTH) {
 } else {
   app.use(require('cookie-parser')());
   // import the mocked auth routes
-  app.use(require('./utils/local-auth').mockUser);
-  var authRouter = require('./utils/local-auth').router;
+  app.use(require('./auth/local').mockUser);
+  const authRouter = require('./auth/local').router;
   app.use('/auth', authRouter);
 }
 
@@ -82,13 +96,13 @@ app.use('/search', searchRouter);
 //Static Files
 app.use('/images', express.static(path.join(__dirname, '../src/images')));
 
-app.get('/version', function(req, res) {
-	try {
-		var version = require('fs').readFileSync(path.join(ROOT, 'VERSION'));
-		res.send(version);
-	} catch(ignored) {
-		res.send('Missing VERSION file');
-	}
+app.get('/version', (req, res) => {
+  try {
+    const version = fs.readFileSync(path.join(ROOT, 'VERSION'));
+    res.send(version);
+  } catch (ignored) {
+    res.send('Missing VERSION file');
+  }
 });
 
 //so that any routing is delegated to the client
@@ -96,6 +110,7 @@ app.get('*', (req, res) => {
   res.render('index.jade', req.user);
 });
 
+//start the server by default
 app.listen(port, hostname, (err) => {
   if (err) {
     console.log(err);

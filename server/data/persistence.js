@@ -1,65 +1,71 @@
+import invariant from 'invariant';
+import path from 'path';
+import merge from 'lodash.merge';
 import { errorDoesNotExist, errorAlreadyExists, errorInvalidModel, errorVersioningSystem } from '../utils/errors';
 import { validateBlock, validateProject } from '../utils/validation';
 import * as filePaths from './../utils/filePaths';
 import * as versioning from './versioning';
 import * as commitMessages from './commitMessages';
-import path from 'path';
-import merge from 'lodash.merge';
 import { fileExists, fileRead, fileWrite, fileDelete, directoryMake, directoryDelete } from '../utils/fileSystem';
+import * as permissions from './permissions';
 
 const _projectExists = (projectId, sha) => {
   const manifestPath = filePaths.createProjectManifestPath(projectId);
-  const projectPath = filePaths.createProjectPath(projectId);
+  const projectDataPath = filePaths.createProjectDataPath(projectId);
 
   if (!sha) {
     return fileExists(manifestPath);
   }
-  return versioning.versionExists(projectPath, sha);
+  return versioning.versionExists(projectDataPath, sha);
 };
 
 const _blockExists = (blockId, projectId, sha) => {
   const manifestPath = filePaths.createBlockManifestPath(blockId, projectId);
-  const projectPath = filePaths.createProjectPath(projectId);
-  const relativePath = path.relative(projectPath, manifestPath);
+  const projectDataPath = filePaths.createProjectDataPath(projectId);
+  const relativePath = path.relative(projectDataPath, manifestPath);
 
   if (!sha) {
     return fileExists(manifestPath);
   }
-  return versioning.versionExists(projectPath, sha, relativePath);
+  return versioning.versionExists(projectDataPath, sha, relativePath);
 };
 
 const _projectRead = (projectId, sha) => {
   const manifestPath = filePaths.createProjectManifestPath(projectId);
-  const projectPath = filePaths.createProjectPath(projectId);
-  const relativePath = path.relative(projectPath, manifestPath);
+  const projectDataPath = filePaths.createProjectDataPath(projectId);
+  const relativePath = path.relative(projectDataPath, manifestPath);
 
   if (!sha) {
     return fileRead(manifestPath);
   }
 
-  return versioning.checkout(projectPath, relativePath, sha)
+  return versioning.checkout(projectDataPath, relativePath, sha)
     .then(string => JSON.parse(string));
 };
 
 const _blockRead = (blockId, projectId, sha) => {
   const manifestPath = filePaths.createBlockManifestPath(blockId, projectId);
-  const projectPath = filePaths.createProjectPath(projectId);
-  const relativePath = path.relative(projectPath, manifestPath);
+  const projectDataPath = filePaths.createProjectDataPath(projectId);
+  const relativePath = path.relative(projectDataPath, manifestPath);
 
   if (!sha) {
     return fileRead(manifestPath);
   }
 
-  return versioning.checkout(projectPath, relativePath, sha)
+  return versioning.checkout(projectDataPath, relativePath, sha)
     .then(string => JSON.parse(string));
 };
 
-const _projectSetup = (projectId) => {
+const _projectSetup = (projectId, userId) => {
   const projectPath = filePaths.createProjectPath(projectId);
+  const projectDataPath = filePaths.createProjectDataPath(projectId);
   const blockDirectory = filePaths.createBlockDirectoryPath(projectId);
+
   return directoryMake(projectPath)
+    .then(() => directoryMake(projectDataPath))
     .then(() => directoryMake(blockDirectory))
-    .then(() => versioning.initialize(projectPath));
+    .then(() => permissions.createProjectPermissions(projectId, userId))
+    .then(() => versioning.initialize(projectDataPath));
 };
 
 const _blockSetup = (blockId, projectId) => {
@@ -79,17 +85,17 @@ const _blockWrite = (blockId, block = {}, projectId) => {
 
 //expects a well-formed commit message from commitMessages.js
 const _projectCommit = (projectId, message) => {
-  const path = filePaths.createProjectPath(projectId);
+  const projectDataPath = filePaths.createProjectDataPath(projectId);
   const commitMessage = !message ? commitMessages.messageProject(projectId) : message;
-  return versioning.commit(path, commitMessage)
-    .then(sha => versioning.getCommit(path, sha));
+  return versioning.commit(projectDataPath, commitMessage)
+    .then(sha => versioning.getCommit(projectDataPath, sha));
 };
 
 //expects a well-formed commit message from commitMessages.js
 const _blockCommit = (blockId, projectId, message) => {
-  const projectPath = filePaths.createProjectPath(projectId);
+  const projectDataPath = filePaths.createProjectDataPath(projectId);
   const commitMessage = !message ? commitMessages.messageBlock(blockId) : message;
-  return versioning.commit(projectPath, commitMessage)
+  return versioning.commit(projectDataPath, commitMessage)
     .then(sha => versioning.getCommit(path, sha));
 };
 
@@ -143,9 +149,9 @@ const blockAssertNew = (blockId, projectId) => {
 //resolve with null if does not exist
 
 export const projectGet = (projectId, sha) => {
-  return projectExists(projectId, sha)
-    .then(() => _projectRead(projectId, sha))
+  return _projectRead(projectId, sha)
     .catch(err => {
+      console.log('error reading project ' + projectId, err);
       if (err === errorDoesNotExist && !sha) {
         return Promise.resolve(null);
       }
@@ -155,8 +161,7 @@ export const projectGet = (projectId, sha) => {
 };
 
 export const blockGet = (blockId, projectId, sha) => {
-  return blockExists(blockId, projectId, sha)
-    .then(() => _blockRead(blockId, projectId, sha))
+  return _blockRead(blockId, projectId, sha)
     .catch(err => {
       if (err === errorDoesNotExist) {
         return Promise.resolve(null);
@@ -167,12 +172,15 @@ export const blockGet = (blockId, projectId, sha) => {
 
 //CREATE
 
-export const projectCreate = (projectId, project) => {
+export const projectCreate = (projectId, project, userId) => {
+  invariant(userId, 'user id is required');
+
   return projectAssertNew(projectId)
-    .then(() => _projectSetup(projectId))
+    .then(() => _projectSetup(projectId, userId))
     .then(() => _projectWrite(projectId, project))
-    //keep this initial commit message, even when not auto-commiting for all atomic operations
-    .then(() => _projectCommit(projectId, commitMessages.messageCreateProject(projectId)))
+    //MAY keep this initial commit message, even when not auto-commiting for all atomic operations
+    //since create is a different operation than just called projectWrite / projectMerge
+    //.then(() => _projectCommit(projectId, commitMessages.messageCreateProject(projectId)))
     .then(() => project);
 };
 
@@ -186,8 +194,8 @@ export const blockCreate = (blockId, block, projectId) => {
 
 //SET (WRITE + MERGE)
 
-export const projectWrite = (projectId, project) => {
-  const idedProject = Object.assign({}, project, {id: projectId});
+export const projectWrite = (projectId, project, userId) => {
+  const idedProject = Object.assign({}, project, { id: projectId });
 
   if (!validateProject(idedProject)) {
     return Promise.reject(errorInvalidModel);
@@ -195,22 +203,22 @@ export const projectWrite = (projectId, project) => {
 
   //create directory etc. if doesn't exist
   return projectExists(projectId)
-    .catch(() => _projectSetup(projectId))
+    .catch(() => _projectSetup(projectId, userId))
     .then(() => _projectWrite(projectId, idedProject))
     //.then(() => _projectCommit(projectId))
     .then(() => idedProject);
 };
 
-export const projectMerge = (projectId, project) => {
+export const projectMerge = (projectId, project, userId) => {
   return projectGet(projectId)
     .then(oldProject => {
-      const merged = merge({}, oldProject, project, {id: projectId});
-      return projectWrite(projectId, merged);
+      const merged = merge({}, oldProject, project, { id: projectId });
+      return projectWrite(projectId, merged, userId);
     });
 };
 
 export const blockWrite = (blockId, block, projectId) => {
-  const idedBlock = Object.assign({}, block, {id: blockId});
+  const idedBlock = Object.assign({}, block, { id: blockId });
 
   if (!validateBlock(idedBlock)) {
     return Promise.reject(errorInvalidModel);
@@ -227,7 +235,7 @@ export const blockWrite = (blockId, block, projectId) => {
 export const blockMerge = (blockId, block, projectId) => {
   return blockGet(blockId, projectId)
     .then(oldBlock => {
-      const merged = merge({}, oldBlock, block, {id: blockId});
+      const merged = merge({}, oldBlock, block, { id: blockId });
       return blockWrite(blockId, merged, projectId);
     });
 };
@@ -257,7 +265,8 @@ export const blockDelete = (blockId, projectId) => {
 
 export const sequenceExists = (md5) => {
   const sequencePath = filePaths.createSequencePath(md5);
-  return fileExists(sequencePath);
+  return fileExists(sequencePath)
+    .then(() => sequencePath);
 };
 
 export const sequenceGet = (md5) => {
