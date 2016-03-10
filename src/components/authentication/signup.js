@@ -263,8 +263,8 @@ class RegisterForm extends Component {
         <button
           type="button"
           onClick={() => {
-          this.props.uiShowAuthenticationForm('none');
-        }}>Cancel</button>
+            this.props.uiShowAuthenticationForm('none');
+          }}>Cancel</button>
         <a
           href="/"
           onClick={this.onSignIn.bind(this)}>Existing Users Sign In Here</a>

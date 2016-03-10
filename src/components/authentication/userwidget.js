@@ -48,7 +48,6 @@ class UserWidget extends Component {
   }
 
   signOut() {
-
     logout()
     .then(() => {
       // set the user

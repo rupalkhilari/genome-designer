@@ -29,28 +29,6 @@ class SignInForm extends Component {
     this.state = Object.assign({}, errors);
   }
 
-  get emailAddress() {
-    return this.refs.emailAddress.value.trim();
-  }
-
-  get password() {
-    return this.refs.password.value.trim();
-  }
-
-  /**
-   * display server errors in the most logical way
-   */
-  showServerErrors(json) {
-    invariant(json && json.message, 'We expected an error message');
-
-    // any unrecognized errors are displayed below the tos
-    this.setState({
-      signinError: {
-        visible: true,
-        text: json.message,
-      }
-    });
-  }
 
   // on form submission, first perform client side validation then submit
   // to the server if that goes well.
@@ -78,10 +56,9 @@ class SignInForm extends Component {
       })
       .catch((reason) => {
         this.showServerErrors({
-          message: 'Unexpected error, please check your connection'
+          message: 'Unexpected error, please check your connection',
         });
       });
-
   }
 
   onRegister(evt) {
@@ -95,7 +72,20 @@ class SignInForm extends Component {
   get password() {
     return this.refs.password.value.trim();
   }
+  /**
+   * display server errors in the most logical way
+   */
+  showServerErrors(json) {
+    invariant(json && json.message, 'We expected an error message');
 
+    // any unrecognized errors are displayed below the tos
+    this.setState({
+      signinError: {
+        visible: true,
+        text: json.message,
+      },
+    });
+  }
   /**
    * display server errors in the most logical way
    */
@@ -133,8 +123,8 @@ class SignInForm extends Component {
         <button
           type="button"
           onClick={() => {
-          this.props.uiShowAuthenticationForm('none');
-        }}>Cancel</button>
+            this.props.uiShowAuthenticationForm('none');
+          }}>Cancel</button>
         <a
           href="/"
           onClick={this.onRegister.bind(this)}>New Users Register Here</a>

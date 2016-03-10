@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import {connect} from 'react-redux';
 import { uiShowAuthenticationForm, uiSetGrunt } from '../../actions/ui';
-import { userSetUser } from '../../actions/user';
 import { reset } from '../../middleware/api';
 import invariant from 'invariant';
 
@@ -153,8 +152,8 @@ class RegisterForm extends Component {
         <button
           type="button"
           onClick={() => {
-          this.props.uiShowAuthenticationForm('none');
-        }}>Cancel</button>
+            this.props.uiShowAuthenticationForm('none');
+          }}>Cancel</button>
       </form>
     );
   }

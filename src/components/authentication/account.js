@@ -63,8 +63,6 @@ class AccountForm extends Component {
     if (this.clientValidation()) {
       return;
     }
-    // get the API end point
-    const endPoint = `${window.location.origin}/auth/update-all`;
 
     // most fields are optional except the current password
     const payload = {password: this.currentPassword};
@@ -271,8 +269,8 @@ class AccountForm extends Component {
         <button
           type="button"
           onClick={() => {
-          this.props.uiShowAuthenticationForm('none');
-        }}>Cancel</button>
+            this.props.uiShowAuthenticationForm('none');
+          }}>Cancel</button>
       </form>
     );
   }
