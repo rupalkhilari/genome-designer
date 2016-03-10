@@ -150,7 +150,8 @@ export const saveBlock = (block, projectId, overwrite = false) => {
 export const listProjects = () => {
   const url = dataApiPath('projects');
   return fetch(url, headersGet())
-    .then(resp => resp.json());
+    .then(resp => resp.json())
+    .then(projects => projects.filter(project => !!project));
 };
 
 //saves just the project manifest to file system

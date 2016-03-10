@@ -1,11 +1,10 @@
 import React, {Component, PropTypes} from 'react';
-import {Link} from 'react-router';
 import {connect} from 'react-redux';
-import {pushState} from 'redux-router';
+import { pushState } from 'redux-router';
 import MenuBar from '../components/Menu/MenuBar';
 import UserWidget from '../components/authentication/userwidget';
 import { listProjects } from '../middleware/api';
-import { projectCreate, projectAddConstruct, projectSave, projectLoad } from '../actions/projects';
+import { projectCreate, projectAddConstruct, projectSave } from '../actions/projects';
 import { blockCreate } from '../actions/blocks';
 
 import '../styles/GlobalNav.css';
@@ -16,7 +15,6 @@ class GlobalNav extends Component {
     projectCreate: PropTypes.func.isRequired,
     projectAddConstruct: PropTypes.func.isRequired,
     projectSave: PropTypes.func.isRequired,
-    projectLoad: PropTypes.func.isRequired,
     currentProjectId: PropTypes.string,
     blockCreate: PropTypes.func.isRequired,
     showMainMenu: PropTypes.bool.isRequired,
@@ -27,31 +25,12 @@ class GlobalNav extends Component {
     recentProjects: [],
   };
 
-  componentDidMount() {
-    listProjects().then(projects => this.setState({recentProjects: projects}));
-  }
-
   menuBar() {
-    const recentProjects = this.state.recentProjects
-    .filter(project => !!project)
-    .map(project => ({
-      text: project.metadata.name || 'My Project',
-      action: () => {
-        this.props.projectLoad(project.id)
-          .then(() => this.props.pushState(null, `/project/${project.id}`));
-      },
-    }));
-
     return (<MenuBar
       menus={[
         {
           text: 'FILE',
           items: [
-            {
-              text: 'Recent Projects',
-              disabled: true,
-            },
-            ...recentProjects,
             {},
             {
               text: 'Save Project',
@@ -231,7 +210,7 @@ class GlobalNav extends Component {
   render() {
     return (
       <div className="GlobalNav">
-        <Link className="GlobalNav-title" to="\">GD</Link>
+        <span className="GlobalNav-title">GD</span>
         {this.props.showMainMenu ? this.menuBar() : null}
         <UserWidget/>
       </div>
@@ -250,7 +229,6 @@ export default connect(mapStateToProps, {
   projectAddConstruct,
   projectCreate,
   projectSave,
-  projectLoad,
   blockCreate,
   pushState,
 })(GlobalNav);

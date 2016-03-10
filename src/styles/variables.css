@@ -11,7 +11,7 @@
   --colors-bluegrey: #292D40; /*canvas*/
   --colors-bluegreyLight: #444753; /*detail*/
   --colors-bluegreyDark: #181B26; /*sides*/
-  --colors-selected: #88aaff;
+  --colors-selected: #4186ff;
 
   --colors-text: #222;
 
@@ -50,6 +50,7 @@
   /* Timing
   ==================== */
 
+  --timing-extrafast: 0.05s;
   --timing-fast: 0.15s;
 
   /* Z Order

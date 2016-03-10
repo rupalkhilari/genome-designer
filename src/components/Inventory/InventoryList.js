@@ -8,12 +8,13 @@ export default class InventoryList extends Component {
   static propTypes = {
     inventoryType: PropTypes.string.isRequired,
     items: PropTypes.arrayOf(PropTypes.shape({
-      id: PropTypes.string.isRequired,
+      id: PropTypes.string,
     })).isRequired,
+    onDrop: PropTypes.func,
   };
 
   render() {
-    const { items, inventoryType } = this.props;
+    const { items, inventoryType, onDrop } = this.props;
 
     return (
       <div className="InventoryList">
@@ -21,6 +22,7 @@ export default class InventoryList extends Component {
           return (
             <InventoryItem key={item.id}
                            inventoryType={inventoryType}
+                           onDrop={onDrop}
                            item={item}/>
           );
         })}

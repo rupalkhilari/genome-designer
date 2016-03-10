@@ -1,5 +1,6 @@
 import * as ActionTypes from '../constants/ActionTypes';
 import * as BlockSelector from '../selectors/blocks';
+import invariant from 'invariant';
 
 /**
  * form names, one of: [ 'signin', 'signup', 'forgot', 'reset', 'account', 'none' ]
@@ -36,6 +37,7 @@ export const uiSetGrunt = (gruntMessage) => {
 
 export const uiSetCurrent = (blocks) => {
   return (dispatch, getState) => {
+    invariant(Array.isArray(blocks), 'must pass array to uiSetCurrent');
     dispatch({
       type: ActionTypes.UI_SET_CURRENT,
       blocks,
