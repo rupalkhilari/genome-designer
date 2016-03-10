@@ -226,28 +226,61 @@ class AccountForm extends Component {
 
   render() {
     return (
-      <form id="account-form" className="authentication-form" onSubmit={this.onSubmit.bind(this)}>
+      <form
+        id="account-form"
+        className="authentication-form"
+        onSubmit={this.onSubmit.bind(this)}>
         <div className="title">Update Account</div>
 
-        <input ref="currentPassword" type="password" className="input" placeholder="Current Password"/>
+        <input
+          ref="currentPassword"
+          type="password"
+          className="input"
+          placeholder="Current Password"/>
         <div className={`error ${this.state.currentPasswordError.visible ? 'visible' : ''}`}>{`${this.state.currentPasswordError.text}`}</div>
 
-        <input ref="firstName" className="input" placeholder="First Name" defaultValue={this.props.user.firstName}/>
-        <input ref="lastName" className="input" placeholder="Last Name" defaultValue={this.props.user.lastName}/>
+        <input
+          ref="firstName"
+          className="input"
+          placeholder="First Name"
+          defaultValue={this.props.user.firstName}/>
+        <input
+          ref="lastName"
+          className="input"
+          placeholder="Last Name"
+          defaultValue={this.props.user.lastName}/>
         <div className={`error ${this.state.nameError.visible ? 'visible' : ''}`}>{`${this.state.nameError.text}`}</div>
 
         <div className={`error ${this.state.email1Error.visible ? 'visible' : ''}`}>{`${this.state.email1Error.text}`}</div>
-        <input ref="emailAddress" className="input" placeholder="Email Address" defaultValue={this.props.user.email}/>
-        <input ref="emailConfirm" className="input" placeholder="Confirm Email Address" defaultValue={this.props.user.email}/>
+        <input
+          ref="emailAddress"
+          className="input"
+          placeholder="Email Address"
+          defaultValue={this.props.user.email}/>
+        <input
+          ref="emailConfirm"
+          className="input"
+          placeholder="Confirm Email Address"
+          defaultValue={this.props.user.email}/>
         <div className={`error ${this.state.email2Error.visible ? 'visible' : ''}`}>{`${this.state.email2Error.text}`}</div>
 
         <div className={`error ${this.state.password1Error.visible ? 'visible' : ''}`}>{`${this.state.password1Error.text}`}</div>
-        <input ref="password" type="password" className="input" placeholder="Password"/>
-        <input ref="passwordConfirm" type="password" className="input" placeholder="Confirm Password"/>
+        <input
+          ref="password"
+          type="password"
+          className="input"
+          placeholder="Password"/>
+        <input
+          ref="passwordConfirm"
+          type="password"
+          className="input"
+          placeholder="Confirm Password"/>
         <div className={`error ${this.state.password2Error.visible ? 'visible' : ''}`}>{`${this.state.password2Error.text}`}</div>
 
         <button type="submit">Update Account</button>
-        <button type="button" onClick={() => {
+        <button
+          type="button"
+          onClick={() => {
           this.props.uiShowAuthenticationForm('none');
         }}>Cancel</button>
       </form>

@@ -146,16 +146,29 @@ class RegisterForm extends Component {
 
   render() {
     return (
-      <form id="reset-form" className="authentication-form" onSubmit={this.onSubmit.bind(this)}>
+      <form
+        id="reset-form"
+        className="authentication-form"
+        onSubmit={this.onSubmit.bind(this)}>
         <div className="title">Reset Password</div>
 
         <div className={`error ${this.state.password1Error.visible ? 'visible' : ''}`}>{`${this.state.password1Error.text}`}</div>
-         <input ref="password" type="password" className="input" placeholder="Password"/>
-        <input ref="passwordConfirm" type="password" className="input" placeholder="Confirm Password"/>
+         <input
+           ref="password"
+           type="password"
+           className="input"
+           placeholder="Password"/>
+        <input
+          ref="passwordConfirm"
+          type="password"
+          className="input"
+          placeholder="Confirm Password"/>
         <div className={`error ${this.state.password2Error.visible ? 'visible' : ''}`}>{`${this.state.password2Error.text}`}</div>
 
         <button type="submit">Reset Password</button>
-        <button type="button" onClick={() => {
+        <button
+          type="button"
+          onClick={() => {
           this.props.uiShowAuthenticationForm('none');
         }}>Cancel</button>
       </form>
