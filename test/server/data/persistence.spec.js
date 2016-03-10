@@ -15,7 +15,7 @@ import { findProjectFromBlock } from '../../../server/data/querying';
 
 //todo - can probably de-dupe many of these setup / before() clauses, they are pretty similar
 
-describe('REST', () => {
+describe('Server', () => {
   describe('Data', () => {
     describe('persistence', function persistenceTests() {
       describe('existence + reading', () => {

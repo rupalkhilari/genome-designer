@@ -12,7 +12,7 @@ import * as persistence from '../../../server/data/persistence';
 
 import { createExampleRollup } from '../../utils/rollup';
 
-describe('REST', () => {
+describe('Server', () => {
   describe('Data', () => {
     describe('Rollup', () => {
       const userId = uuid.v4();

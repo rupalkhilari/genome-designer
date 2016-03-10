@@ -4,7 +4,7 @@ import { login, getUser } from '../../../src/middleware/api';
 
 const devServer = require('../../../server/devServer');
 
-describe('REST', () => {
+describe('Server', () => {
   describe('auth', () => {
     let server;
     const dummyUser = {
