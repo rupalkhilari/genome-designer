@@ -152,7 +152,10 @@ router.route('/:projectId/commit/:sha?')
 
     if (sha) {
       persistence.projectGet(projectId, sha)
-        .then(project => res.status(200).json(project))
+        .then(project => {
+          console.log('got project', project);
+          res.status(200).json(project)
+        })
         .catch(err => res.status(500).send(err));
     } else {
       //todo - get project history

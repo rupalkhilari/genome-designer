@@ -25,8 +25,7 @@ const compiler = webpack(config);
 //error logging middleware
 if (process.env.NODE_ENV !== 'production') {
   app.use((err, req, res, next) => {
-    console.log('hit middleware', err, req, res, next);
-    //todo - why is this not picking up errors...
+    console.log('hit error logging middleware', err, req, res, next);
     if (err) {
       console.error(err);
       if (res.headersSent) {
