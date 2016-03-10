@@ -1,7 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import { errorNoIdProvided, errorInvalidModel, errorInvalidRoute, errorDoesNotExist, errorCouldntFindProjectId } from './../utils/errors';
-import findProjectFromBlock from './findProjectFromBlock';
+import * as querying from './querying';
 import * as persistence from './persistence';
 import * as rollup from './rollup';
 import { permissionsMiddleware } from './permissions';
@@ -25,7 +25,7 @@ const blockDeterminatorMiddleware = (req, res, next) => {
   const { projectId, blockId } = req;
 
   if (projectId === 'block' && blockId) {
-    findProjectFromBlock(blockId)
+    querying.findProjectFromBlock(blockId)
       .then(projectId => {
         Object.assign(req, { projectId });
         next();
@@ -91,19 +91,10 @@ router.route('/sequence/:md5/:blockId?')
       });
   })
   .post((req, res) => {
-    const { md5, blockId } = req.params;
+    const { md5 } = req.params;
     const { sequence } = req.body;
 
-    findProjectFromBlock(blockId)
-      .then(projectId => {
-        return persistence.sequenceWrite(md5, sequence, blockId, projectId);
-      })
-      .catch(err => {
-        //idempotent, but make sure this is an error from findProjectFromBlock
-        if (err === errorCouldntFindProjectId) {
-          return persistence.sequenceWrite(md5, sequence);
-        }
-      })
+    persistence.sequenceWrite(md5, sequence)
       .then(() => res.status(200).send())
       .catch(err => res.status(500).send(err));
   })
@@ -140,7 +131,7 @@ router.route('/projects')
   .get((req, res) => {
     const { user } = req;
 
-    rollup.getAllProjectManifests(user.uuid)
+    querying.getAllProjectManifests(user.uuid)
       .then(metadatas => res.status(200).json(metadatas))
       .catch(err => res.status(500).send(err));
   });
@@ -156,7 +147,7 @@ router.route('/:projectId/commit/:sha?')
       persistence.projectGet(projectId, sha)
         .then(project => {
           console.log('got project', project);
-          res.status(200).json(project)
+          res.status(200).json(project);
         })
         .catch(err => res.status(500).send(err));
     } else {
@@ -165,7 +156,7 @@ router.route('/:projectId/commit/:sha?')
     }
   })
   .post((req, res) => {
-    //you can POST a field `message` for the commit, receieve the SHA
+    //you can POST a field `message` for the commit, receive the SHA
     const { projectId } = req;
     const { message } = req.body;
 
