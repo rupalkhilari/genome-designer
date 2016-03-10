@@ -151,7 +151,7 @@ const blockAssertNew = (blockId, projectId) => {
 export const projectGet = (projectId, sha) => {
   return _projectRead(projectId, sha)
     .catch(err => {
-      console.log('error reading', err);
+      console.log('error reading project ' + projectId, err);
       if (err === errorDoesNotExist && !sha) {
         return Promise.resolve(null);
       }

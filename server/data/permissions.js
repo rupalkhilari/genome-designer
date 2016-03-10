@@ -1,8 +1,7 @@
+import { exec } from 'child_process';
 import * as filePaths from '../utils/filePaths';
 import * as fileSystem from '../utils/fileSystem';
 import { errorDoesNotExist } from '../utils/errors';
-
-//testing
 
 export const createProjectPermissions = (projectId, userId) => {
   const projectPermissionsPath = filePaths.createProjectPermissionsPath(projectId);
@@ -10,6 +9,30 @@ export const createProjectPermissions = (projectId, userId) => {
   return fileSystem.fileWrite(projectPermissionsPath, contents);
 };
 
+//search each permissions.json by user ID to find projects they have access to
+export const listProjectsWithAccess = (userId) => {
+  const directory = filePaths.createProjectsDirectoryPath();
+  return new Promise((resolve, reject) => {
+    exec(`cd ${directory} && grep -e "${userId}" --include=permissions.json -Rl .`, (err, output) => {
+      if (err) {
+        return reject(err);
+      }
+
+      const lines = output.split('\n');
+      lines.pop(); //get rid of the last empty line
+      const projectIds = lines.map(line => {
+        const [/*dot*/,
+          projectId,
+          /*permission.json*/
+          ] = line.split('/');
+        return projectId;
+      });
+      return resolve(projectIds);
+    });
+  });
+};
+
+//check access to a particular project
 export const checkProjectAccess = (projectId, userId, projectMustExist = false) => {
   const projectPermissionsPath = filePaths.createProjectPermissionsPath(projectId);
   return fileSystem.fileRead(projectPermissionsPath)

@@ -1,21 +1,16 @@
 import invariant from 'invariant';
 import { errorDoesNotExist } from '../utils/errors';
 import * as persistence from './persistence';
+import * as permissions from './permissions';
 import * as filePaths from '../utils/filePaths';
 import * as fileSystem from '../utils/fileSystem';
 
 export const getAllProjectManifests = (userId) => {
-  const directory = filePaths.createProjectsDirectoryPath();
+  invariant(userId, 'user id is required to get list of manifests');
 
-  if (userId) {
-    //todo - limit to those for which you have access
-  } else {
-    // do we want to handle this?
-  }
-
-  return fileSystem.directoryContents(directory)
-    .then(projects => {
-      return Promise.all(projects.map(project => persistence.projectGet(project)));
+  return permissions.listProjectsWithAccess(userId)
+    .then(projectIds => {
+      return Promise.all(projectIds.map(project => persistence.projectGet(project)));
     });
 };
 

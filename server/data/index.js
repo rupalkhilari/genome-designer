@@ -138,7 +138,9 @@ router.route('/projects/:projectId')
 router.route('/projects')
   .all(jsonParser)
   .get((req, res) => {
-    rollup.getAllProjectManifests()
+    const { user } = req;
+
+    rollup.getAllProjectManifests(user.uuid)
       .then(metadatas => res.status(200).json(metadatas))
       .catch(err => res.status(500).send(err));
   });
