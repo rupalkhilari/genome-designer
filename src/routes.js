@@ -15,15 +15,15 @@ export default(
   <Route path="/" component={App}>
 
     <Route component={RouteWrapper}>
-      <Route path="/auth/account" component={HomePage}/>
+      <Route path="/homepage/account" component={HomePage}/>
       <Route path="/project/:projectId" component={ProjectPage}/>
     </Route>
     <Route path="/about" component={AboutPage}/>
     <Route path="/support" component={SupportPage}/>
-    <Route path="/auth/signin" component={HomePage}/>
-    <Route path="/auth/signup" component={HomePage}/>
-    <Route path="/auth/reset" component={HomePage}/>
-    <Route path="/auth/forgot" component={HomePage}/>
+    <Route path="/homepage/signin" component={HomePage}/>
+    <Route path="/homepage/signup" component={HomePage}/>
+    <Route path="/homepage/reset" component={HomePage}/>
+    <Route path="/homepage/forgot" component={HomePage}/>
     <Route path="/homepage" component={HomePage}/>
 
     <IndexRedirect to="/homepage" />

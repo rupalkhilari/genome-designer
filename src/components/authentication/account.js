@@ -227,7 +227,7 @@ class AccountForm extends Component {
 
   render() {
     return (
-      <form className="authentication-form" onSubmit={this.onSubmit.bind(this)}>
+      <form id="account-form" className="authentication-form" onSubmit={this.onSubmit.bind(this)}>
         <div className="title">Update Account</div>
 
         <input ref="currentPassword" type="password" className="input" placeholder="Current Password"/>

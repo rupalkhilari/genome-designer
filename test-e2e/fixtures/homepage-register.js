@@ -23,9 +23,21 @@ var registerViaHomepage = function(browser) {
     // create fields with viable values including a random email
   var email = new Date().getTime() + '@hotmail.com';
   var password = '123456';
+  var firstName = 'George';
+  var lastName = 'Washington';
+
   browser
-    .setValue('#auth-signup input:nth-of-type(1)', 'George')
-    .setValue('#auth-signup input:nth-of-type(2)', 'Washington')
+    .clearValue('#auth-signup input:nth-of-type(1)')
+    .clearValue('#auth-signup input:nth-of-type(1)')
+    .clearValue('#auth-signup input:nth-of-type(2)')
+    .clearValue('#auth-signup input:nth-of-type(3)')
+    .clearValue('#auth-signup input:nth-of-type(4)')
+    .clearValue('#auth-signup input:nth-of-type(5)')
+    .clearValue('#auth-signup input:nth-of-type(6)')
+
+    .setValue('#auth-signup input:nth-of-type(1)', firstName)
+    .setValue('#auth-signup input:nth-of-type(1)', firstName)
+    .setValue('#auth-signup input:nth-of-type(2)', lastName)
     .setValue('#auth-signup input:nth-of-type(3)', email)
     .setValue('#auth-signup input:nth-of-type(4)', email)
     .setValue('#auth-signup input:nth-of-type(5)', password)
@@ -34,8 +46,8 @@ var registerViaHomepage = function(browser) {
     .submitForm('#auth-signup')
     .waitForElementPresent('div.signed-in', 5000, 'expected to be signed in');
 
-  return {email, password};
-  
+  return {email, password, firstName, lastName};
+
 }
 
 module.exports = registerViaHomepage;

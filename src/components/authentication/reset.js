@@ -146,7 +146,7 @@ class RegisterForm extends Component {
 
   render() {
     return (
-      <form className="authentication-form" onSubmit={this.onSubmit.bind(this)}>
+      <form id="reset-form" className="authentication-form" onSubmit={this.onSubmit.bind(this)}>
         <div className="title">Reset Password</div>
 
         <div className={`error ${this.state.password1Error.visible ? 'visible' : ''}`}>{`${this.state.password1Error.text}`}</div>

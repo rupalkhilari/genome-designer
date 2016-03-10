@@ -84,7 +84,7 @@ class ForgotForm extends Component {
 
   render() {
     return (
-      <form className="authentication-form" onSubmit={this.onSubmit.bind(this)}>
+      <form id="forgot-form" className="authentication-form" onSubmit={this.onSubmit.bind(this)}>
         <div className="title">Forgot Password</div>
         <input ref="emailAddress" className="input" placeholder="Registered Email Address"/>
         <div className={`error ${this.state.emailError.visible ? 'visible' : ''}`}>{`${this.state.emailError.text}`}</div>

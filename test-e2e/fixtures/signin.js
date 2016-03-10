@@ -8,7 +8,9 @@ var signout = function(browser, credentials) {
     // expect 1 error, missing credentials
     .assert.countelements('.error.visible', 1)
     // try with bad credentials
+    .clearValue('#auth-signin input:nth-of-type(1)')
     .setValue('#auth-signin input:nth-of-type(1)', 'billgates@microsoft.com')
+    .clearValue('#auth-signin input:nth-of-type(2)')
     .setValue('#auth-signin input:nth-of-type(2)', credentials.password)
     .submitForm('#auth-signin')
     // expect 1 error, bad credentials
