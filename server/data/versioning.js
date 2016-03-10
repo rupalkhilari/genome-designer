@@ -165,8 +165,6 @@ export const versionExists = (path, sha = 'HEAD', file) => {
 export const checkout = (path, file, sha = 'HEAD') => {
   invariant(file, 'file path is required');
 
-  console.log('checking out', path, file, sha);
-
   return nodegit.Repository.open(makePath(path))
     .then(repo => {
       if (!sha || sha === 'HEAD') {
@@ -174,6 +172,7 @@ export const checkout = (path, file, sha = 'HEAD') => {
       }
       return repo.getCommit(sha);
     })
+    .catch(err => Promise.reject(errorDoesNotExist))
     .then(commit => {
       return commit.getEntry(file)
         .then(entry => {
@@ -185,7 +184,10 @@ export const checkout = (path, file, sha = 'HEAD') => {
         });
     })
     .catch(err => {
-      console.log(err);
+      //if got the error of the commit not existing, lets just re-reject with it
+      if (err === errorDoesNotExist) {
+        return Promise.reject(errorDoesNotExist);
+      }
       return Promise.reject(errorVersioningSystem);
     });
 };

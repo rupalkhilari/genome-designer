@@ -1,5 +1,6 @@
 import { assert, expect } from 'chai';
 import path from 'path';
+import uuid from 'node-uuid';
 import merge from 'lodash.merge';
 import md5 from 'md5';
 import { errorInvalidModel, errorAlreadyExists, errorDoesNotExist } from '../../../server/utils/errors';
@@ -22,7 +23,8 @@ describe('REST', () => {
         const projectData = new Project({metadata: {name: projectName}});
         const projectId = projectData.id;
         const projectPath = filePaths.createProjectPath(projectId);
-        const projectManifestPath = path.resolve(projectPath, filePaths.manifestFilename);
+        const projectDataPath = filePaths.createProjectDataPath(projectId);
+        const projectManifestPath = path.resolve(projectDataPath, filePaths.manifestFilename);
 
         const blockName = 'blockA';
         const blockData = new Block({metadata: {name: blockName}});
@@ -37,6 +39,7 @@ describe('REST', () => {
         before(() => {
           return directoryDelete(projectPath)
             .then(() => directoryMake(projectPath))
+            .then(() => directoryMake(projectDataPath))
             .then(() => fileWrite(projectManifestPath, projectData))
             .then(() => directoryMake(blockPath))
             .then(() => fileWrite(blockManifestPath, blockData))
@@ -100,9 +103,11 @@ describe('REST', () => {
       });
 
       describe('creation', () => {
+        const userId = uuid.v4();
+
         const projectData = new Project();
         const projectId = projectData.id;
-        const projectRepoPath = filePaths.createProjectPath(projectId);
+        const projectRepoDataPath = filePaths.createProjectDataPath(projectId);
         const projectManifestPath = filePaths.createProjectManifestPath(projectId);
 
         const blockData = new Block();
@@ -111,7 +116,7 @@ describe('REST', () => {
         const blockManifestPath = filePaths.createBlockManifestPath(blockId, projectId);
 
         before(() => {
-          return persistence.projectCreate(projectId, projectData)
+          return persistence.projectCreate(projectId, projectData, userId)
             .then(() => persistence.blockCreate(blockId, blockData, projectId));
         });
 
@@ -120,28 +125,26 @@ describe('REST', () => {
             .then(result => assert(result))
             .then(() => fileRead(projectManifestPath))
             .then(result => expect(result).to.eql(projectData))
-            .then(() => versioning.isInitialized(projectRepoPath))
+            .then(() => versioning.isInitialized(projectRepoDataPath))
             .then(result => assert(result === true));
         });
 
-        it('projectCreate() creates a git commit with the initial version', () => {
-          return versioning.log(projectRepoPath)
+        it('projectCreate() creates a git commit for initialialization, but writing', () => {
+          return versioning.log(projectRepoDataPath)
             .then(result => {
-              //initialize + first commit
-              assert(result.length >= 2);
+              //initialize, not first commit
+              assert(result.length === 1, 'too many commits created');
             });
         });
 
         it('projectCreate() rejects if exists', () => {
-          return persistence.projectCreate(projectId, {})
+          return persistence.projectCreate(projectId, {}, userId)
             .then(() => assert(false))
             .catch(err => expect(err).to.equal(errorAlreadyExists));
         });
 
         it('blockCreate() creates a block folder', () => {
           return directoryExists(blockPath)
-            .then(result => assert(result))
-            .then(() => fileExists(projectManifestPath))
             .then(result => assert(result))
             .then(() => fileRead(blockManifestPath))
             .then(result => expect(result).to.eql(blockData));
@@ -155,9 +158,11 @@ describe('REST', () => {
       });
 
       describe('write + merge', () => {
+        const userId = uuid.v4();
+
         const projectData = new Project();
         const projectId = projectData.id;
-        const projectRepoPath = filePaths.createProjectPath(projectId);
+        const projectRepoDataPath = filePaths.createProjectDataPath(projectId);
         const projectManifestPath = filePaths.createProjectManifestPath(projectId);
 
         const blockData = new Block();
@@ -173,17 +178,17 @@ describe('REST', () => {
         const blockPatch = {rules: {sbol: 'promoter'}};
 
         it('projectWrite() creates repo if necessary', () => {
-          return persistence.projectWrite(projectId, projectData)
-            .then(() => directoryExists(projectRepoPath))
+          return persistence.projectWrite(projectId, projectData, userId)
+            .then(() => directoryExists(projectRepoDataPath))
             .then(result => assert(result, 'directory didnt exist!'))
-            .then(() => versioning.isInitialized(projectRepoPath))
+            .then(() => versioning.isInitialized(projectRepoDataPath))
             .then(result => assert(result, 'was not initialized!'));
         });
 
         it('projectWrite() validates the project', () => {
           const invalidData = {my: 'data'};
           //start with write to reset
-          return persistence.projectWrite(projectId, projectData)
+          return persistence.projectWrite(projectId, projectData, userId)
             .then(() => persistence.projectWrite(projectId, invalidData))
             .then(() => assert(false, 'shouldnt happen'))
             .catch(err => expect(err).to.equal(errorInvalidModel))
@@ -194,13 +199,13 @@ describe('REST', () => {
         it('projectMerge() forces the ID', () => {
           const invalidData = {id: 'impossible'};
           const comparison = projectData;
-          return persistence.projectMerge(projectId, invalidData)
+          return persistence.projectMerge(projectId, invalidData, userId)
             .then(result => expect(result).to.eql(comparison));
         });
 
         it('projectWrite() overwrites the project', () => {
           const overwrite = projectData.merge(projectPatch);
-          return persistence.projectWrite(projectId, overwrite)
+          return persistence.projectWrite(projectId, overwrite, userId)
             .then(() => fileRead(projectManifestPath))
             .then(result => expect(result).to.eql(overwrite));
         });
@@ -208,7 +213,7 @@ describe('REST', () => {
         it('projectMerge() accepts a partial project', () => {
           const merged = merge({}, projectData, projectPatch);
           //start with write to reset
-          return persistence.projectWrite(projectId, projectData)
+          return persistence.projectWrite(projectId, projectData, userId)
             .then(() => persistence.projectMerge(projectId, projectPatch))
             .then(result => expect(result).to.eql(merged))
             .then(() => fileRead(projectManifestPath))
@@ -217,7 +222,7 @@ describe('REST', () => {
 
         it('projectMerge() validates the project', () => {
           const invalidData = {metadata: 'impossible'};
-          return persistence.projectMerge(projectId, invalidData)
+          return persistence.projectMerge(projectId, invalidData, userId)
             .then(() => assert(false))
             .catch(err => expect(err).to.equal(errorInvalidModel));
         });
@@ -254,10 +259,10 @@ describe('REST', () => {
         });
 
         it('blockWrite() does not make the project commit', () => {
-          return versioning.log(projectRepoPath).then(firstResults => {
+          return versioning.log(projectRepoDataPath).then(firstResults => {
             const overwrite = blockData.merge(blockPatch);
             return persistence.blockWrite(blockId, overwrite, projectId)
-              .then(() => versioning.log(projectRepoPath))
+              .then(() => versioning.log(projectRepoDataPath))
               .then((secondResults) => {
                 expect(secondResults.length).to.equal(firstResults.length);
               });
@@ -289,9 +294,11 @@ describe('REST', () => {
       });
 
       describe('deletion', () => {
+        const userId = uuid.v4();
+
         const projectData = new Project();
         const projectId = projectData.id;
-        const projectRepoPath = filePaths.createProjectPath(projectId);
+        const projectRepoDataPath = filePaths.createProjectDataPath(projectId);
         const projectManifestPath = filePaths.createProjectManifestPath(projectId);
 
         const blockData = new Block();
@@ -302,7 +309,7 @@ describe('REST', () => {
         //hack(ish) - creating at beginning of each because chaining tests is hard, and beforeEach will encounter race condition
 
         it('projectDelete() deletes the folder', () => {
-          return persistence.projectWrite(projectId, projectData)
+          return persistence.projectWrite(projectId, projectData, userId)
             .then(() => fileRead(projectManifestPath))
             .then(result => expect(result).to.eql(projectData))
             .then(() => persistence.projectDelete(projectId))
@@ -312,7 +319,7 @@ describe('REST', () => {
         });
 
         it('blockDelete() deletes block', () => {
-          return persistence.projectWrite(projectId, projectData)
+          return persistence.projectWrite(projectId, projectData, userId)
             .then(() => persistence.blockWrite(blockId, blockData, projectId))
             .then(() => fileRead(blockManifestPath))
             .then(result => expect(result).to.eql(blockData))
@@ -323,14 +330,15 @@ describe('REST', () => {
         });
 
         it('blockDelete() does not create a commit', () => {
-          return persistence.projectWrite(projectId, projectData)
+          return persistence.projectWrite(projectId, projectData, userId)
             .then(() => persistence.blockWrite(blockId, blockData, projectId))
             .then(() => {
-              return versioning.log(projectRepoPath)
+              return versioning.log(projectRepoDataPath)
                 .then(firstResults => {
                   return persistence.blockDelete(blockId, projectId)
-                    .then(() => versioning.log(projectRepoPath))
+                    .then(() => versioning.log(projectRepoDataPath))
                     .then((secondResults) => {
+                      console.log(firstResults, secondResults);
                       expect(secondResults.length).to.equal(firstResults.length);
                     });
                 });
@@ -339,12 +347,14 @@ describe('REST', () => {
       });
 
       describe('versioning', () => {
+        const userId = uuid.v4();
+
         let versionLog;
         let versions;
         const nonExistentSHA = '795c5751c8e0b0c9b5993ec81928cd89f7eefd27';
         const projectData = new Project();
         const projectId = projectData.id;
-        const projectRepoPath = filePaths.createProjectPath(projectId);
+        const projectRepoDataPath = filePaths.createProjectDataPath(projectId);
         const newProject = projectData.merge({projectData: 'new stuff'});
 
         const blockData = new Block();
@@ -355,14 +365,14 @@ describe('REST', () => {
         const sequenceMd5 = md5(blockSequence);
 
         before(() => {
-          return persistence.projectCreate(projectId, projectData)
+          return persistence.projectCreate(projectId, projectData, userId) //3
             .then(() => persistence.blockCreate(blockId, blockData, projectId))
-            .then(() => persistence.projectSave(projectId))
+            .then(() => persistence.projectSave(projectId)) //2
             .then(() => persistence.projectWrite(projectId, newProject))
-            .then(() => persistence.projectSave(projectId))
+            .then(() => persistence.projectSave(projectId)) //1
             .then(() => persistence.blockWrite(blockId, newBlock, projectId))
-            .then(() => persistence.projectSave(projectId))
-            .then(() => versioning.log(projectRepoPath))
+            .then(() => persistence.projectSave(projectId)) //0
+            .then(() => versioning.log(projectRepoDataPath))
             .then(log => {
               versionLog = log;
               versions = versionLog.map(commit => commit.sha);
@@ -392,7 +402,7 @@ describe('REST', () => {
         });
 
         it('projectGet() resolves to correct file when given version', () => {
-          return persistence.projectGet(projectId, versions[3])
+          return persistence.projectGet(projectId, versions[2])
             .then(project => expect(project).to.eql(projectData));
         });
 
@@ -423,7 +433,7 @@ describe('REST', () => {
 
         it('sequenceWrite() does not create commit even if given blockId and projectId', () => {
           return persistence.sequenceWrite(sequenceMd5, blockSequence, blockId, projectId)
-          .then(() => versioning.log(projectRepoPath))
+          .then(() => versioning.log(projectRepoDataPath))
           .then(log => {
             expect(log.length).to.equal(versionLog.length);
           });
