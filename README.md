@@ -19,7 +19,7 @@ environment variable to `1` or by using the `auth-test` npm target.
 npm run auth
 ```
 
-Running this command will attempt to access `git.autodesk.com`.
+Running this command will attempt to access `git.autodesk.com`. [gotcha][]
 
 #### manual user authentication setup
 If you want to use/test user authentication locally, do the following:
@@ -77,3 +77,11 @@ API_END_POINT="http://$(docker-machine ip default):8080/api" npm run auth
 #### user authentication tests
 
 Currently authentication tests in `test/server/auth/REST.spec.js` require access to an Authentication Server.
+
+#### npm install from git.autodesk.com authentication fails [gotcha] ####
+
+Currently npm won't prompt for username and password when attempting to install a package from a private GitHub
+repository. So, if you haven't saved credentials for `git.autodesk.com` into your git credential cache, running
+`npm run auth` or `npm run auth-test` will fail when it tries to pull the authentication package from `git.autodesk.com`.
+The easiest way to save git credentials is to clone a repository. Instructions for setting up credential caching
+can be found [here](https://help.github.com/articles/caching-your-github-password-in-git/).
