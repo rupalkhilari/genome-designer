@@ -8,6 +8,8 @@ import HomePage from './../components/homepage';
 import SupportPage from './../components/SupportPage';
 import RouteWrapper from './../components/authentication/routewrapper';
 
+import checkProjectOnEnter from './checkProjectOnEnter';
+
 //Routes are specified as a separate component so they can hotloaded
 //see: https://github.com/rackt/redux-router/issues/44#issuecomment-140198502
 
