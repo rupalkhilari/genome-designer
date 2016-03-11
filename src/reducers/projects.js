@@ -22,7 +22,13 @@ export default function projects(state = initialState, action) {
   case ActionTypes.PROJECT_RENAME :
   case ActionTypes.PROJECT_ADD_CONSTRUCT : {
     const { project } = action;
-    return Object.assign({}, state, {[project.id]: project});
+    return Object.assign({}, state, { [project.id]: project });
+  }
+
+  case ActionTypes.PROJECT_LIST : {
+    const { projects } = action;
+    const zippedProjects = projects.reduce((acc, project) => Object.assign(acc, { [project.id]: project }), {});
+    return Object.assign({}, state, zippedProjects);
   }
 
   default : {
