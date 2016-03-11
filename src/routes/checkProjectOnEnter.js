@@ -16,6 +16,6 @@ export default function checkProjectOnEnter(nextState, replace, callback, dispat
 
     promise
       .then(() => callback())
-      .catch(err => replace());
+      .catch(err => replace('/'));
   });
 }
