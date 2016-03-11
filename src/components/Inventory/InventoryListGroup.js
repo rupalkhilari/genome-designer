@@ -7,6 +7,7 @@ export default class InventoryListGroup extends Component {
   static propTypes = {
     title: PropTypes.string.isRequired,
     children: PropTypes.node.isRequired,
+    disabled: PropTypes.bool,
     manual: PropTypes.bool,
     isExpanded: PropTypes.bool,
     onToggle: PropTypes.func, //you are required for maintaining state...
@@ -22,7 +23,12 @@ export default class InventoryListGroup extends Component {
   }
 
   handleToggle = () => {
-    const { manual, isExpanded, onToggle } = this.props;
+    const { disabled, manual, isExpanded, onToggle } = this.props;
+
+    if (disabled) {
+      return;
+    }
+
     const nextState = manual ? !isExpanded : !this.state.expanded;
     if (!manual) {
       this.setState({ expanded: nextState });
@@ -32,12 +38,13 @@ export default class InventoryListGroup extends Component {
   };
 
   render() {
-    const { title, manual, isExpanded, isActive, children } = this.props;
+    const { title, manual, isExpanded, isActive, children, disabled } = this.props;
     const expanded = manual ? isExpanded : this.state.expanded;
 
     return (
       <div className={'InventoryListGroup' +
       (expanded ? ' expanded' : '') +
+      (disabled ? ' disabled' : '') +
       (isActive ? ' active' : '')}>
         <div onClick={this.handleToggle}>
           <span className="InventoryListGroup-toggle"/>

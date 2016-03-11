@@ -44,6 +44,7 @@
       width: var(--SidePanel-trigger-width);
       height: var(--SidePanel-trigger-width);
       min-width: var(--SidePanel-trigger-width);
+      cursor: pointer;
       /* temp */
       text-align: center;
       margin: 0;

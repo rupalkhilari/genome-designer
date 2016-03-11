@@ -45,4 +45,8 @@
       color: var(--colors-selected);
     }
   }
+
+  &.disabled {
+    color: var(--colors-grey);
+  }
 }
