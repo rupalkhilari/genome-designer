@@ -74,11 +74,6 @@ export const projectLoad = (projectId) => {
         const projectModel = new Project(project);
 
         //todo (future) - transaction
-        dispatch({
-          type: ActionTypes.PROJECT_LOAD,
-          project: projectModel,
-        });
-
         blocks.forEach((blockObject) => {
           const block = new Block(blockObject);
           dispatch({
@@ -86,6 +81,12 @@ export const projectLoad = (projectId) => {
             block,
           });
         });
+
+        dispatch({
+          type: ActionTypes.PROJECT_LOAD,
+          project: projectModel,
+        });
+
         return project;
       });
   };
