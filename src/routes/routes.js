@@ -8,20 +8,16 @@ import HomePage from './../components/homepage';
 import SupportPage from './../components/SupportPage';
 import RouteWrapper from './../components/authentication/routewrapper';
 
-import checkProjectOnEnter from './checkProjectOnEnter';
-
 //Routes are specified as a separate component so they can hotloaded
 //see: https://github.com/rackt/redux-router/issues/44#issuecomment-140198502
 
-export default function getRoutes({dispatch, getState}) {
-  return (
+export default (
     <Route path="/" component={App}>
 
       <Route component={RouteWrapper}>
         <Route path="/homepage/account" component={HomePage}/>
         <Route path="/project/:projectId"
-               component={ProjectPage}
-               onEnter={(nextState, replace, cb) => checkProjectOnEnter(nextState, replace, cb, dispatch, getState)}/>
+               component={ProjectPage}/>
       </Route>
       <Route path="/about" component={AboutPage}/>
       <Route path="/support" component={SupportPage}/>
@@ -34,5 +30,4 @@ export default function getRoutes({dispatch, getState}) {
       <IndexRedirect to="/homepage"/>
 
     </Route>
-  );
-}
+);
