@@ -1,6 +1,7 @@
 import uuid from 'node-uuid';
 import fetch from 'isomorphic-fetch';
 import invariant from 'invariant';
+import { getItem, setItem } from './localStorageCache';
 import ProjectDefinition from '../schemas/Project';
 import BlockDefinition from '../schemas/Block';
 
@@ -171,7 +172,7 @@ export const snapshot = (projectId, rollup, message = 'Project Snapshot') => {
   invariant(projectId, 'Project ID required to snapshot');
   invariant(!message || typeof message === 'string', 'optional message for snapshot must be a string');
 
-  const stringified = JSON.stringify({message});
+  const stringified = JSON.stringify({ message });
   const url = dataApiPath(`${projectId}/commit`);
 
   return saveProject(projectId, rollup)
@@ -189,13 +190,24 @@ const getSequenceUrl = (md5, blockId, format) => dataApiPath(`sequence/${md5}` +
 export const getSequence = (md5, format) => {
   const url = getSequenceUrl(md5, undefined, format);
 
+  const cached = getItem(md5);
+  if (cached) {
+    return Promise.resolve(cached);
+  }
+
   return fetch(url, headersGet())
-    .then((resp) => resp.text());
+    .then((resp) => resp.text())
+    .then(sequence => {
+      setItem(md5, sequence);
+      return sequence;
+    });
 };
 
 export const writeSequence = (md5, sequence, blockId) => {
   const url = getSequenceUrl(md5, blockId);
-  const stringified = JSON.stringify({sequence});
+  const stringified = JSON.stringify({ sequence });
+
+  setItem(md5, sequence);
 
   return fetch(url, headersPost(stringified));
 };
@@ -247,13 +259,13 @@ export const exportProject = (id, inputs) => {
 };
 
 export const importBlock = (id, input) => {
-  const stringified = JSON.stringify({text: input});
+  const stringified = JSON.stringify({ text: input });
   return fetch(importPath(`block/${id}`), headersPost(stringified))
     .then(resp => resp.json());
 };
 
 export const importProject = (id, input) => {
-  const stringified = JSON.stringify({text: input});
+  const stringified = JSON.stringify({ text: input });
   return fetch(importPath(`project/${id}`), headersPost(stringified))
     .then(resp => resp.json());
 };
