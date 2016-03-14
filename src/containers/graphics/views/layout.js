@@ -27,6 +27,7 @@ export default class Layout {
       showHeader: true,
       insetX: 0,
       insetY: 0,
+      initialRowXLimit: -Infinity,
     }, options);
 
     // prep data structures for layout`
@@ -426,6 +427,10 @@ export default class Layout {
     // additional vertical space consumed on every row for nested constructs
     let nestedVertical = 0;
 
+    // width of first row is effected by parent block, so we have to track
+    // which row we are on.
+    let rowIndex = 0;
+
     // update / make all the parts
     ct.components.forEach(part => {
       // create a row bar as neccessary
@@ -433,8 +438,10 @@ export default class Layout {
         row = this.rowFactory(new Box2D(this.insetX, yp - kT.rowBarH, 0, kT.rowBarH));
       }
       // resize row bar to current row width
-      const rw = xp - this.insetX;
-      row.set({translateX: this.insetX + rw / 2, width: rw});
+      const rowStart = this.insetX;
+      const rowEnd = row === 0 ? Math.max(xp, this.initialRowXLimit) : xp;
+      const rowWidth = rowEnd - rowStart;
+      row.set({translateX: rowStart + rowWidth / 2, width: rowWidth});
 
       // create the node representing the part
       this.partFactory(part, kT.partAppearance);
@@ -454,6 +461,7 @@ export default class Layout {
         yp += kT.rowH + nestedVertical;
         nestedVertical = 0;
         row = this.rowFactory(new Box2D(xp, yp - kT.rowBarH, 0, kT.rowBarH));
+        rowIndex += 1;
       }
 
       // update part, including its text and color
@@ -480,6 +488,9 @@ export default class Layout {
             insetY: nestedY,
           });
         }
+        // update minimum x extend of first rowH
+        nestedLayout.initialRowXLimit = this.getConnectionRowLimit(part);
+
         // ensure layout has the latest position ( parent may have moved )
         nestedLayout.insetX = nestedX;
         nestedLayout.insetY = nestedY;
@@ -506,8 +517,10 @@ export default class Layout {
 
     // ensure final row has the final row width
     if (row) {
-      const rw = xp - this.insetX;
-      row.set({translateX: this.insetX + rw / 2, width: rw});
+      const rowStart = this.insetX;
+      const rowEnd = rowIndex === 0 ? Math.max(xp, this.initialRowXLimit) : xp;
+      const rowWidth = rowEnd - rowStart;
+      row.set({translateX: rowStart + rowWidth / 2, width: rowWidth});
     }
     // cleanup dangling connections
     this.releaseConnections();
@@ -541,9 +554,16 @@ export default class Layout {
     this.sceneGraph.ui.setSelections(selectedNodes);
 
     // return the height consumed by the layout
-    return heightUsed + nestedVertical;
+    return heightUsed + nestedVertical + kT.rowBarH;
   }
 
+  // the connector drops from the center of the source part, so the initial
+  // row limit for the child is the right edge of this point
+  getConnectionRowLimit(sourcePart) {
+    const cnodes = this.connectionInfo(sourcePart);
+    const sourceRectangle = cnodes.sourceNode.getAABB();
+    return sourceRectangle.center.x + kT.rowBarW / 2;
+  }
   /**
    * update / create the connection between the part which must be the
    * parent of a nested construct.
@@ -556,8 +576,8 @@ export default class Layout {
     let connector = this.connectors[key];
     if (!connector) {
       const line = new LineNode2D({
-        line: new Line2D(new Vector2D(20, 20), new Vector2D(400, 400)),
-        strokeWidth: '4',
+        line: new Line2D(new Vector2D(), new Vector2D()),
+        strokeWidth: kT.rowBarW,
         sg: this.sceneGraph,
         parent: this.sceneGraph.root,
       });
@@ -568,8 +588,8 @@ export default class Layout {
     const sourceRectangle = cnodes.sourceNode.getAABB();
     const destinationRectangle = cnodes.destinationNode.getAABB();
     connector.line.set({
-      stroke: cnodes.sourceNode.fill,
-      line: new Line2D(sourceRectangle.center, destinationRectangle.center),
+      stroke: this.baseColor,
+      line: new Line2D(sourceRectangle.center, new Vector2D(sourceRectangle.center.x, destinationRectangle.y)),
     });
     // ensure the connectors are always behind the blocks
     connector.line.sendToBack();

@@ -14,7 +14,7 @@ const initialState = {
   }),
   block2: new Block({
     id: 'block2',
-    components: [child6.id, child7.id],
+    components: [],
   }),
   [child1.id]: new Block(child1),
   [child2.id]: new Block(Object.assign({}, child2, {
