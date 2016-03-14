@@ -399,6 +399,7 @@ export default class Layout {
    * @return {[type]} [description]
    */
   layout(layoutOptions) {
+    if (this.construct.id === 'block1') console.time('Layout');
     // set the new reference key
     this.updateReference += 1;
     // shortcut
@@ -453,7 +454,6 @@ export default class Layout {
 
       // measure element text or used condensed spacing
       const td = this.measureText(this.nodeFromElement(part), this.partName(part), layoutOptions.condensed);
-      //const td = this.measureText(this.nodeFromElement(part), part, layoutOptions.condensed);
 
       // if position would exceed x limit then wrap
       if (xp + td.x > mx) {
@@ -552,6 +552,8 @@ export default class Layout {
     }
     // apply selections to scene graph
     this.sceneGraph.ui.setSelections(selectedNodes);
+
+    if (this.construct.id === 'block1') console.timeEnd('Layout');
 
     // return the height consumed by the layout
     return heightUsed + nestedVertical + kT.rowBarH;
