@@ -248,17 +248,18 @@ export default class Layout {
     }
   }
   /**
-   * create the vertical bar as necessary
-   * @return {[type]} [description]
+   * create the vertical bar as necessary and update its color
    */
   verticalFactory() {
     if (!this.vertical) {
       this.vertical = new Node2D(Object.assign({
         sg: this.sceneGraph,
-        fill: this.baseColor,
       }, kT.verticalAppearance));
       this.sceneGraph.root.appendChild(this.vertical);
     }
+    this.vertical.set({
+      fill: this.baseColor,
+    });
   }
   /**
    * create or recycle a row on demand. resetRows
@@ -276,12 +277,14 @@ export default class Layout {
     } else {
       row = new Node2D(Object.assign({
         sg: this.sceneGraph,
-        fill: this.baseColor,
       }, kT.rowAppearance));
       this.sceneGraph.root.appendChild(row);
     }
-    // set bounds
-    row.set({bounds});
+    // set bounds and update to current color
+    row.set({
+      bounds: bounds,
+      fill: this.baseColor
+    });
 
     // save into new rows so we know this row is in use
     this.newRows.push(row);
@@ -482,12 +485,15 @@ export default class Layout {
         if (!nestedLayout) {
           nestedLayout = this.nestedLayouts[part] = new Layout(this.constructViewer, this.sceneGraph, {
             layoutAlgorithm: this.layoutAlgorithm,
-            baseColor: this.baseColor,
             showHeader: false,
             insetX: nestedX,
             insetY: nestedY,
           });
         }
+
+        // update base color of nested construct skeleton
+        nestedLayout.baseColor = this.partMeta(part, 'color');
+
         // update minimum x extend of first rowH
         nestedLayout.initialRowXLimit = this.getConnectionRowLimit(part);
 
@@ -590,7 +596,7 @@ export default class Layout {
     const sourceRectangle = cnodes.sourceNode.getAABB();
     const destinationRectangle = cnodes.destinationNode.getAABB();
     connector.line.set({
-      stroke: this.baseColor,
+      stroke: this.partMeta(cnodes.sourceBlock.id, 'color'),
       line: new Line2D(sourceRectangle.center, new Vector2D(sourceRectangle.center.x, destinationRectangle.y)),
     });
     // ensure the connectors are always behind the blocks
