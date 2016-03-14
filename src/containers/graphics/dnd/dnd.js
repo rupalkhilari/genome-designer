@@ -17,7 +17,9 @@ class DnD {
   // start a drag operation using the given element proxy for display purposes
   // and starting from the given global position. Payload is any object representing
   // what is being dragged
-  startDrag(elementProxy, globalPosition, payload) {
+  // valid options:
+  //  - onDrop(target) - can return a payload to use onDrop
+  startDrag(elementProxy, globalPosition, payload, options = {}) {
     // the body must have position relative for this to work ( or we could add
     // an element to act as a drag surface but that seems like overkill )
     document.body.style.position = 'relative';
@@ -46,6 +48,10 @@ class DnD {
     // set initial target we are over, necessary for dragEnter, dragLeave callbacks
     this.lastTarget = null;
 
+    //set hooks
+    this.onDrop = options.onDrop || (() => {
+      });
+
     // save the payload for dropping
     this.payload = payload;
   }
@@ -58,7 +64,7 @@ class DnD {
     invariant(this.proxy, 'not expecting mouse events when not dragging');
     const globalPosition = this.mouseToGlobal(evt);
     this.updateProxyPosition(globalPosition);
-    const target = this.findTargetAt(evt);
+    const target = this.findTargetAt(globalPosition);
     // dragLeave callback as necessary
     if (target !== this.lastTarget && this.lastTarget && this.lastTarget.options.dragLeave) {
       this.lastTarget.options.dragLeave.call(this, globalPosition, this.payload);
@@ -73,16 +79,51 @@ class DnD {
     if (target && target.options && target.options.dragOver) {
       target.options.dragOver.call(this, globalPosition, this.payload);
     }
+
+    // clear selection after all drag events
+    this.clearSelection();
   }
+
+  /**
+   * clear all browser selections, becareful
+   */
+  clearSelection() {
+    let selection = null;
+    if (window.getSelection) {
+      selection = window.getSelection();
+    } else if (document.selection) {
+      selection = document.selection;
+    }
+    if (selection) {
+      if (selection.empty) {
+        selection.empty();
+      }
+      if (selection.removeAllRanges) {
+        selection.removeAllRanges();
+      }
+    }
+  }
+
   /**
    * mouse up during drag
    */
   onMouseUp(evt) {
     invariant(this.proxy, 'not expecting mouse events when not dragging');
-    const target = this.findTargetAt(evt);
+    const globalPosition = this.mouseToGlobal(evt);
+    const target = this.findTargetAt(globalPosition);
+
     if (target && target.options && target.options.drop) {
-      const globalPosition = this.mouseToGlobal(evt);
-      target.options.drop.call(this, globalPosition, this.payload);
+      //save for sync cleanup...
+      const savedPayload = this.payload;
+
+      //call onDrop handler, which will immediately resolve to nothing if wasnt passed in
+      Promise.resolve(this.onDrop(target, globalPosition))
+        .then((result) => {
+          const payload = (typeof result !== 'undefined') ?
+            Object.assign(savedPayload, {item: result}) :
+            savedPayload;
+          target.options.drop.call(this, globalPosition, payload);
+        });
     }
     // ensure lastTarget gets a dragLeave incase they rely on it for cleanup
     if (this.lastTarget && this.lastTarget.options.dragLeave) {
@@ -123,10 +164,9 @@ class DnD {
   /**
    * given a mouse event, find the drop target if any at the given location
    */
-  findTargetAt(event) {
-    const globalPoint = this.mouseToGlobal(event);
+  findTargetAt(globalPoint) {
     return this.targets.find(options => {
-      return this.getDocumentBounds(options.element).pointInBox(globalPoint);
+      return this.getElementBounds(options.element).pointInBox(globalPoint);
     });
   }
 
@@ -140,7 +180,7 @@ class DnD {
    */
   registerTarget(element, options) {
     invariant(element, 'expected an element to register');
-    this.targets.push({element, options});
+    this.targets.push({ element, options });
   }
 
   /**
@@ -155,36 +195,28 @@ class DnD {
   /**
    * return the bounds of the element in document coordinates.
    */
-  getDocumentBounds(_element) {
-    // first get the elements document position.
-    invariant(_element, 'Bad parameter');
-    // use the elements offset + the nearest positioned element, back to the root to find
-    // the absolute position of the element
-    let element = _element;
-    let curleft = element.offsetLeft;
-    let curtop = element.offsetTop;
-    while (element.offsetParent) {
-      element = element.offsetParent;
-      curleft += element.offsetLeft;
-      curtop += element.offsetTop;
-    }
-    // curLeft, curTop are the position,  now get the viewport size
-    const bounds = _element.getBoundingClientRect();
-    // now we can return the document size
-    return new Box2D(curleft, curtop, bounds.width, bounds.height);
+  getElementBounds(element) {
+    invariant(element, 'Bad parameter');
+    const domRECT = element.getBoundingClientRect();
+    return new Box2D(domRECT.left + window.scrollX, domRECT.top + window.scrollY, domRECT.width, domRECT.height);
   }
+
   /**
-   * x-browser solution for the document coordinates of the given mouse event
+   * x-browser solution for the global mouse position
    */
-  mouseToGlobal(evt) {
-    // get the position in document coordinates, allowing for browsers that don't have pageX/pageY
-    let pageX = evt.pageX;
-    let pageY = evt.pageY;
-    if (pageX === undefined) {
-      pageX = evt.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
-      pageY = evt.clientY + document.body.scrollTop + document.documentElement.scrollTop;
-    }
-    return new Vector2D(pageX, pageY);
+  mouseToGlobal(event) {
+    invariant(arguments.length === 1, 'expect only an event for this method');
+    const parentPosition = this.getElementPosition(event.target);
+    return new Vector2D(event.offsetX + parentPosition.x, event.offsetY + parentPosition.y);
+  }
+
+  /**
+   * return the top/left of the element relative to the document. Includes any scrolling.
+   */
+  getElementPosition(element) {
+    invariant(element && arguments.length === 1, 'Bad parameter');
+    const domRECT = element.getBoundingClientRect();
+    return new Vector2D(domRECT.left + window.scrollX, domRECT.top + window.scrollY);
   }
 }
 

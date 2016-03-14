@@ -3,7 +3,7 @@ var webpack = require('webpack');
 var webpackBase = require('./webpack.config.base');
 
 module.exports = Object.assign({}, webpackBase, {
-  devtool: 'source-map',
+  devtool: 'inline-source-map',
   entry  : [
     'webpack-hot-middleware/client',
     './src/index'
@@ -26,14 +26,22 @@ module.exports = Object.assign({}, webpackBase, {
   module : {
     loaders: [
       {
+        test: /\.json$/,
+        loader: 'json-loader'
+      },
+      {
         test   : /\.js$/,
-        loaders: ['babel'],
+        loader: 'babel-loader',
         include: path.join(__dirname, 'src'),
         exclude: /node_modules/
       },
       {
-        test  : /\.css$/,
+        test: /\.css$/,
         loader: 'style-loader!css-loader!postcss-loader'
+      },
+      {
+        test: /\.(png|woff|woff2|eot|ttf|svg)$/,
+        loader: 'url-loader?limit=100000'
       }
     ]
   }

@@ -8,13 +8,16 @@ const initialState = {
       name: 'My Test Project',
       description: 'Create a versatile and robust templating system for combinatorial recombinant designs using Yeast parts from EGF.',
     },
-    components: ['block1', 'block2'],
+    //components: ['block1', 'block2'],
+    components: ['block1'],
   }),
 };
 
 export default function projects(state = initialState, action) {
   switch (action.type) {
   case ActionTypes.PROJECT_CREATE :
+  //case ActionTypes.PROJECT_SAVE :
+  case ActionTypes.PROJECT_LOAD :
   case ActionTypes.PROJECT_MERGE :
   case ActionTypes.PROJECT_RENAME :
   case ActionTypes.PROJECT_ADD_CONSTRUCT : {

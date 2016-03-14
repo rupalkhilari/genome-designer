@@ -12,13 +12,13 @@ export default class InventoryGroupSbol extends Component {
         image: PropTypes.string.isRequired,
       }).isRequired,
     })).isRequired,
-  }
+  };
 
   render() {
     const { items } = this.props;
 
     return (
-      <div className="InventoryGroup InventoryGroupSbol">
+      <div className="InventoryGroup-content InventoryGroupSbol">
         <InventoryList inventoryType={sbolDragType}
                        items={items}/>
       </div>

@@ -1,8 +1,39 @@
+import invariant from 'invariant';
 import * as ActionTypes from '../constants/ActionTypes';
-import uuid from 'node-uuid';
 import BlockDefinition from '../schemas/Block';
-import { writeFile } from '../middleware/api';
 import Block from '../models/Block';
+import { saveBlock, loadBlock } from '../middleware/api';
+import * as selectors from '../selectors/blocks';
+
+//Promise
+export const blockSave = (blockId, projectId) => {
+  invariant(projectId, 'project ID required to save block'); //todo - assume from router?
+  return (dispatch, getState) => {
+    const block = getState().blocks[blockId];
+    return saveBlock(block, projectId)
+      .then(block => {
+        dispatch({
+          type: ActionTypes.BLOCK_SAVE,
+          block,
+        });
+        return block;
+      });
+  };
+};
+
+//Promise
+export const blockLoad = (blockId) => {
+  return (dispatch, getState) => {
+    return loadBlock(blockId)
+      .then(block => {
+        dispatch({
+          type: ActionTypes.BLOCK_LOAD,
+          block,
+        });
+        return block;
+      });
+  };
+};
 
 export const blockCreate = (initialModel) => {
   return (dispatch, getState) => {
@@ -15,52 +46,68 @@ export const blockCreate = (initialModel) => {
   };
 };
 
-//this action accepts either the block directly, or the ID
-//inventory items may not be in the store, so we need to pass the block directly
-export const blockClone = (blockInput) => {
+/**
+ * @description
+ * Clones a block (and its children by default)
+ *
+ * @param blockInput {ID|Object} JSON of block directly, or ID. Accept both since inventory items may not be in the store, so we need to pass the block directly. Prefer to use ID.
+ * @param projectVersion {String(SHA)} version of the project
+ * @param shallowOnly {Boolean} Does a deep clone by default, adds all child blocks to store
+ * @returns {Object} clone block (root node if has children)
+ */
+export const blockClone = (blockInput, projectVersion, shallowOnly = false) => {
   return (dispatch, getState) => {
+    invariant(projectVersion, 'project version is required to clone blocks, so their ancestry is correclty pinned. There is a selector to retrieve the project version.');
+
     let oldBlock;
     if (typeof blockInput === 'string') {
       oldBlock = getState().blocks[blockInput];
     } else if (BlockDefinition.validate(blockInput)) {
-      oldBlock = blockInput;
+      oldBlock = new Block(blockInput);
     } else {
       throw new Error('invalid input to blockClone', blockInput);
     }
 
-    //hack - should hit the server
-    const block = new Block(Object.assign({}, oldBlock, {
-      id: uuid.v4(),
-      parent: oldBlock.id,
-    }));
+    if (!!shallowOnly || !oldBlock.components.length) {
+      const block = oldBlock.clone(projectVersion);
+      dispatch({
+        type: ActionTypes.BLOCK_CLONE,
+        block,
+      });
+      return block;
+    }
 
-    dispatch({
-      type: ActionTypes.BLOCK_CLONE,
-      block,
+    const allChildren = dispatch(selectors.blockGetChildrenRecursive(oldBlock.id));
+    const allToClone = [oldBlock, ...allChildren];
+    const unmappedClones = allToClone.map(block => block.clone(projectVersion));
+
+    //update IDs in components
+    const cloneIdMap = allToClone.reduce((acc, next, index) => {
+      acc[next.id] = unmappedClones[index].id;
+      return acc;
+    }, {});
+    const clones = unmappedClones.map(clone => {
+      const newComponents = clone.components.map(componentId => cloneIdMap[componentId]);
+      return clone.mutate('components', newComponents);
     });
 
-    return block;
-  };
-};
-
-//Promise
-export const blockSave = (blockId) => {
-  return (dispatch, getState) => {
-    const block = getState().blocks[blockId];
-    //todo - static method
-    return block.save()
-      .then(response => response.json())
-      .then(json => {
-        dispatch({
-          type: ActionTypes.BLOCK_SAVE,
-          block,
-        });
-        return json;
+    //add clones to the store
+    //todo - transaction
+    clones.forEach(block => {
+      dispatch({
+        type: ActionTypes.BLOCK_CLONE,
+        block,
       });
+    });
+
+    //return the clone of root passed in
+    const rootId = cloneIdMap[oldBlock.id];
+    const root = clones.find(clone => clone.id === rootId);
+    return root;
   };
 };
 
-//this is a backup for performing arbitrary mutations
+//this is a backup for performing arbitrary mutations. You shouldn't use this.
 export const blockMerge = (blockId, toMerge) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
@@ -72,6 +119,21 @@ export const blockMerge = (blockId, toMerge) => {
     return block;
   };
 };
+
+//todo - remove from all constructs
+export const blockDelete = (blockId) => {
+  return (dispatch, getState) => {
+    dispatch({
+      type: ActionTypes.BLOCK_DELETE,
+      blockId,
+    });
+    return blockId;
+  };
+};
+
+/***************************************
+ * Metadata things
+ ***************************************/
 
 export const blockRename = (blockId, name) => {
   return (dispatch, getState) => {
@@ -97,8 +159,26 @@ export const blockSetColor = (blockId, color) => {
   };
 };
 
+export const blockSetSbol = (blockId, sbol) => {
+  return (dispatch, getState) => {
+    const oldBlock = getState().blocks[blockId];
+    const block = oldBlock.setSbol(sbol);
+    dispatch({
+      type: ActionTypes.BLOCK_SET_SBOL,
+      block,
+    });
+    return block;
+  };
+};
+
+/***************************************
+ * Components
+ ***************************************/
+
 export const blockAddComponent = (blockId, componentId, index) => {
   return (dispatch, getState) => {
+    //todo - should remove from all other constructs
+
     const oldBlock = getState().blocks[blockId];
     const block = oldBlock.addComponent(componentId, index);
     dispatch({
@@ -136,17 +216,9 @@ export const blockMoveComponent = (blockId, componentId, newIndex) => {
   };
 };
 
-export const blockSetSbol = (blockId, sbol) => {
-  return (dispatch, getState) => {
-    const oldBlock = getState().blocks[blockId];
-    const block = oldBlock.setSbol(sbol);
-    dispatch({
-      type: ActionTypes.BLOCK_SET_SBOL,
-      block,
-    });
-    return block;
-  };
-};
+/***************************************
+ * Sequence / annotations
+ ***************************************/
 
 export const blockAnnotate = (blockId, annotation) => {
   return (dispatch, getState) => {
@@ -172,6 +244,7 @@ export const blockRemoveAnnotation = (blockId, annotationId) => {
   };
 };
 
+//Non-mutating
 //Promise
 //ignore format for now
 export const blockGetSequence = (blockId, format) => {
@@ -181,28 +254,19 @@ export const blockGetSequence = (blockId, format) => {
   };
 };
 
-//todo - should this be async? or assume setting sequence will work? validate here?
-//future - also trigger some history actions
-export const blockSetSequence = (blockId, sequence) => {
+//Promise
+//future - validate
+export const blockSetSequence = (blockId, sequence, useStrict) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
-    // If we are editing the sequence, or sequence doesn't exist, we want to set the sequence for the child block, not change the sequence of the parent part.
-    // When setting, it doesn't really matter, we just always want to set via filename which matches this block.
-    const sequenceUrl = oldBlock.getSequenceUrl(true);
-    const sequenceLength = sequence.length;
 
-    //todo - validate sequence
-    //what do we do if this fails???
-    writeFile(sequenceUrl, sequence)
-    .then()
-    .catch();
-
-    const withUrl = oldBlock.setSequenceUrl(sequenceUrl);
-    const block = withUrl.mutate('sequence.length', sequenceLength);
-    dispatch({
-      type: ActionTypes.BLOCK_SET_SEQUENCE,
-      block,
-    });
-    return block;
+    return oldBlock.setSequence(sequence, useStrict)
+      .then(block => {
+        dispatch({
+          type: ActionTypes.BLOCK_SET_SEQUENCE,
+          block,
+        });
+        return block;
+      });
   };
 };

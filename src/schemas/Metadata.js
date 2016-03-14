@@ -15,10 +15,6 @@ const MetadataDefinition = new SchemaDefinition({
     fields.arrayOf(validators.id(), {required: true}).required,
     'IDs of authors',
   ],
-  version: [
-    fields.version().required,
-    'Semantic version of Instance',
-  ],
   tags: [
     fields.object().required,
     'Dictionary of tags defining object',

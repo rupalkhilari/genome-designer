@@ -11,39 +11,41 @@ import '../styles/SidePanel.css';
 export class Inspector extends Component {
   static propTypes = {
     isVisible: PropTypes.bool.isRequired,
+    readOnly: PropTypes.bool.isRequired,
     inspectorToggleVisibility: PropTypes.func.isRequired,
-    currentBlock: PropTypes.string,
+    instances: PropTypes.array,
     project: PropTypes.object,
-    block: PropTypes.object,
-  }
+  };
 
   toggle = (forceVal) => {
     this.props.inspectorToggleVisibility(forceVal);
     window.setTimeout(() => {
       window.dispatchEvent(new Event('resize'));
     }, 300);
-  }
+  };
 
   render() {
-    const { isVisible, currentBlock, block, project } = this.props;
+    const { isVisible, instances, project, readOnly } = this.props;
 
     return (
-      <div className={'SidePanel Inspector' + (isVisible ? ' visible' : '')}>
+      <div className={'SidePanel Inspector' +
+      (isVisible ? ' visible' : '') +
+      (readOnly ? ' readOnly' : '')}>
 
         <div className="SidePanel-heading">
-          <span className="SidePanel-heading-trigger Inspector-trigger"
-                onClick={() => this.toggle()}/>
+          <button className="button-nostyle SidePanel-heading-trigger Inspector-trigger"
+                  onClick={() => this.toggle()}/>
           <div className="SidePanel-heading-content">
             <span className="SidePanel-heading-title">Inspector</span>
-            <a ref="close"
-               className="SidePanel-heading-close"
-               onClick={() => this.toggle(false)}/>
+            <button className="button-nostyle SidePanel-heading-close"
+                    onClick={() => this.toggle(false)}/>
           </div>
         </div>
 
         <div className="SidePanel-content">
-          {!!currentBlock ?
-            (<InspectorBlock instance={block}/>) :
+          {(instances && instances.length) ?
+            (<InspectorBlock instances={instances}
+                             readOnly={readOnly}/>) :
             (<InspectorProject instance={project}/>) }
         </div>
       </div>
@@ -52,17 +54,27 @@ export class Inspector extends Component {
 }
 
 function mapStateToProps(state, props) {
-  const { isVisible } = state.inspector;
-  const { currentBlock } = state.ui;
-  const block = state.blocks[currentBlock];
+  const { isVisible, forceBlocks } = state.inspector;
+  const { currentBlocks, currentConstructId } = state.ui;
+
+  //use forceBlock if available, otherwise use selected blocks
+  const instances = forceBlocks.length ?
+    forceBlocks :
+    (currentBlocks && currentBlocks.length) ?
+      [state.blocks[currentBlocks[0]]] :
+      (currentConstructId) ?
+        [state.blocks[currentConstructId]] :
+        [];
+
+  const readOnly = forceBlocks.length >= 1;
 
   const { projectId } = state.router.params;
   const project = state.projects[projectId];
 
   return {
     isVisible,
-    currentBlock,
-    block,
+    readOnly,
+    instances,
     project,
   };
 }

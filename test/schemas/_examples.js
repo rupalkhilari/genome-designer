@@ -1,6 +1,6 @@
 import uuid from 'node-uuid';
-
-//todo - these should be generators so IDs change
+import sha1 from 'sha1';
+import merge from 'lodash.merge';
 
 /*
  * Note that there are scaffolding functions available on each schema.
@@ -9,9 +9,9 @@ import uuid from 'node-uuid';
 
 export const Block = {
   id: uuid.v4(),
+  parents: [],
   metadata: {
     authors: [],
-    version: '0.0.0',
     tags: {},
   },
   sequence: {
@@ -26,9 +26,10 @@ export const Block = {
 
 export const Project = {
   id: uuid.v4(),
+  version: sha1('project!'),
+  parents: [],
   metadata: {
     authors: [],
-    version: '0.0.0',
     tags: {},
   },
   components: [],
@@ -42,3 +43,12 @@ export const Annotation = {
   optimizability: 'none',
   sequence: 'acgtagc',
 };
+
+export const makeParent = () => ({
+  id: uuid.v4(),
+  sha: sha1('' + Math.floor(Math.random() * 10000000)),
+});
+
+export const blockWithParents = merge(Block, {
+  parents: [makeParent(), makeParent()],
+});

@@ -20,18 +20,21 @@ import SequenceDefinition from './Sequence';
  */
 
 const BlockDefinition = InstanceDefinition.extend({
-  /*
-   Part-like fields for sequence and sequence annotations, inventory source
-   */
+  id: [
+    fields.id({prefix: 'block'}).required,
+    'Block UUID',
+  ],
+
   sequence: [
     SequenceDefinition,
     `Associated Sequence (url, not the sequence itself), and Annotations etc. associated`,
   ],
+
   source: [
     fields.shape({
-      id: validators.id(),
-      existsAsPart: validators.bool(),
-    }),
+      id: validators.string(),
+      remoteId: validators.string(),
+    }).required,
     `Source (Inventory) ID of the Part`,
   ],
 

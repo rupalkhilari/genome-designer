@@ -25,25 +25,41 @@ export default class MouseTrap {
     // Options are:
     //
     // element: HTMLElement - the element which we listen to
+    // mouseEnter: Function - callback for mouseenter event (event)
+    // mouseLeave: Function - callback for mouseleave event (event)
     // mouseDown: Function - callback for mousedown event (point, event)
     // mouseMove: Function - callback for mousemove event (point, event)
-    // mouseDrag: Function - callback for mousemove with button help down event (point, event)
-    // mouseUp: Function - callback for mouseup event (point, event)
+    // mouseDrag: Function - callback for mousemove with button held down event (point, event)
+    // mouseUp: Function - callback for mouseup event (point, event) only when mousedown preceeded.
     this.options = Object.assign({}, options);
     invariant(this.options.element, 'options must contain an element');
     this.element = options.element;
 
     // create bound versions of the listener which we can remove as well as add
+    this.mouseEnter = this.onMouseEnter.bind(this);
+    this.mouseLeave = this.onMouseLeave.bind(this);
     this.mouseDown = this.onMouseDown.bind(this);
     this.mouseMove = this.onMouseMove.bind(this);
     this.mouseDrag = this.onMouseDrag.bind(this);
     this.mouseUp = this.onMouseUp.bind(this);
+    // mouse enter/leave are always running
+    this.element.addEventListener('mouseenter', this.mouseEnter);
+    this.element.addEventListener('mouseleave', this.mouseLeave);
     // sink the mousedown, later dynamically add the move/up handlers
     this.element.addEventListener('mousedown', this.mouseDown);
     // for normal mouse move with no button we track via the target element itself
     this.element.addEventListener('mousemove', this.mouseMove);
   }
 
+  /**
+   * mouse enter/leave handlers
+   */
+  onMouseEnter(event) {
+    this.callback('mouseEnter', event);
+  }
+  onMouseLeave(event) {
+    this.callback('mouseLeave', event);
+  }
   /**
    * mouse down handler, invoked on our target element
    */
@@ -54,7 +70,7 @@ export default class MouseTrap {
     }
     // get local position and record the starting position and setup
     // move/up handlers on the body
-    const localPosition = this.mouseToLocal(event, event.currentTarget);
+    const localPosition = new Vector2D(event.offsetX, event.offsetY);
     this.dragging = {
       startPosition: localPosition,
     };
@@ -69,7 +85,7 @@ export default class MouseTrap {
    * mousemove event
    */
   onMouseMove(event) {
-    const localPosition = this.mouseToLocal(event, this.element);
+    const localPosition = this.globalToLocal(this.mouseToGlobal(event), this.element);
     this.callback('mouseMove', event, localPosition);
   }
 
@@ -79,11 +95,10 @@ export default class MouseTrap {
   onMouseDrag(event) {
     invariant(this.dragging, 'only expect mouse moves during a drag');
     // send the mouse move, then check for the begin of a drag
-    const localPosition = this.mouseToLocal(event, this.element);
-    const startPosition = this.dragging.startPosition;
+    const localPosition = this.globalToLocal(this.mouseToGlobal(event), this.element);
     const distance = localPosition.sub(this.dragging.startPosition).len();
     // invoke optional callback
-    this.callback('mouseDrag', event, localPosition, startPosition, distance);
+    this.callback('mouseDrag', event, localPosition, this.dragging.startPosition, distance);
   }
 
   /**
@@ -95,7 +110,7 @@ export default class MouseTrap {
       return;
     }
     invariant(this.dragging, 'only expect mouse up during a drag');
-    const localPosition = this.mouseToLocal(event, this.element);
+    const localPosition = this.globalToLocal(this.mouseToGlobal(event), this.element);
     this.cancelDrag();
     this.callback('mouseUp', event, localPosition);
   }
@@ -115,8 +130,10 @@ export default class MouseTrap {
   /**
    * if given, invoke one of the named optional callbacks with a clone of the local point
    */
-  callback(eventName) {
+  callback(eventName, event) {
     if (this.options[eventName]) {
+      // if the client wants a callback preventDefault
+      event.preventDefault();
       // slice the event name off the arguments but forward everything else
       const args = Array.prototype.slice.call(arguments, 1);
       this.options[eventName].apply(this, args);
@@ -127,36 +144,13 @@ export default class MouseTrap {
    * cleanup all event listeners. Instance cannot be used after this.
    */
   dispose() {
+    this.element.removeEventListener('mouseenter', this.mouseEnter);
+    this.element.removeEventListener('mouseleave', this.mouseLeave);
     this.element.removeEventListener('mousedown', this.mouseDown);
     this.element.removeEventListener('mousemove', this.mouseMove);
     this.cancelDrag();
     this.dragging = this.element = this.owner = null;
   }
-
-  /**
-   * x-browser solution for the global mouse position
-   */
-  mouseToGlobal(event) {
-    // get the position in document coordinates, allowing for browsers that don't have pageX/pageY
-    let pageX = event.pageX;
-    let pageY = event.pageY;
-    if (pageX === undefined) {
-      pageX = event.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
-      pageY = event.clientY + document.body.scrollTop + document.documentElement.scrollTop;
-    }
-    return new Vector2D(pageX, pageY);
-  }
-
-  /**
-   * Get the client area coordinates for a given mouse event and HTML element.
-   * @param {MouseEvent} event - mouse event you are interested in
-   * @param {HTMLElement} element - element for which you want local coordinates
-   */
-
-   mouseToLocal(event, element) {
-     invariant(event && element, 'Bad parameters');
-     return this.globalToLocal(this.mouseToGlobal(event), element);
-   }
 
   /**
    * convert page coordinates into local coordinates
@@ -165,31 +159,25 @@ export default class MouseTrap {
    * @returns {G.Vector2D}
    */
   globalToLocal(vector, element) {
-    invariant(vector && element, 'Bad parameters');
-    const point = this.documentOffset(element);
-    return new Vector2D(vector.x - point.left, vector.y - point.top);
+    invariant(vector && element && arguments.length === 2, 'Needs a vector and an element');
+    return vector.sub(this.documentOffset(element));
+  }
+
+  /**
+   * x-browser solution for the global mouse position
+   */
+  mouseToGlobal(event) {
+    invariant(arguments.length === 1, 'expect only an event for this method');
+    const parentPosition = this.documentOffset(event.target);
+    return new Vector2D(event.offsetX + parentPosition.x, event.offsetY + parentPosition.y);
   }
 
   /**
    * return the top/left of the element relative to the document. Includes any scrolling.
-   * @param {HTMLElement} element
-   * @returns {{left: Number, top: Number}}
    */
-  documentOffset(_element) {
-    invariant(_element, 'Bad parameter');
-    // use the elements offset + the nearest positioned element, back to the root to find
-    // the absolute position of the element
-    let element = _element;
-    let curleft = element.offsetLeft;
-    let curtop = element.offsetTop;
-    while (element.offsetParent) {
-      element = element.offsetParent;
-      curleft += element.offsetLeft;
-      curtop += element.offsetTop;
-    }
-    return {
-      left: curleft,
-      top: curtop,
-    };
+  documentOffset(element) {
+    invariant(element && arguments.length === 1, 'Bad parameter');
+    const domRECT = element.getBoundingClientRect();
+    return new Vector2D(domRECT.left + window.scrollX, domRECT.top + window.scrollY);
   }
 }

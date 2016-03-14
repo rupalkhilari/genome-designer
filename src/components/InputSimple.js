@@ -5,6 +5,7 @@ import '../styles/InputSimple.css';
 export default class InputSimple extends Component {
   static propTypes = {
     placeholder: PropTypes.string,
+    readOnly: PropTypes.bool,
     default: PropTypes.string,
     updateOnBlur: PropTypes.bool,
     useTextarea: PropTypes.bool,
@@ -31,23 +32,30 @@ export default class InputSimple extends Component {
 
   handleBlur = (event) => {
     if (this.props.updateOnBlur) {
-      this.props.onChange(this.getInputValue());
+      this.handleSubmission();
     }
-  }
+  };
 
   handleKeyUp = (event) => {
+    if (this.props.readOnly) {
+      //todo - shouldn't change the value
+      event.preventDefault();
+    }
     if (event.keyCode === 13 || !this.props.updateOnBlur) {
       this.handleSubmission();
     }
-  }
+  };
 
   handleSubmission = (event) => {
-    this.props.onChange(this.getInputValue());
-  }
+    if (!this.props.readOnly) {
+      this.props.onChange(this.getInputValue());
+    }
+  };
 
   render() {
     return (
-      <div className="InputSimple">
+      <div className={'InputSimple' +
+      (this.props.readOnly ? ' readOnly' : '')}>
         {(this.props.useTextarea) &&
         <textarea
           ref="input"

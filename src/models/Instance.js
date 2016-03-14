@@ -2,15 +2,17 @@ import uuid from 'node-uuid';
 import pathSet from 'lodash.set';
 import merge from 'lodash.merge';
 import cloneDeep from 'lodash.clonedeep';
+import invariant from 'invariant';
+import InstanceDefinition from '../schemas/Instance';
 
 /**
  * @description
  * you can pass as argument to the constructor either:
  *  - an object, which will extend the created instance
- *  - a string, to use as a forced ID (todo - deprecate)
+ *  - a string, to use as a forced ID (todo - deprecate - this is for testing...)
  */
 export default class Instance {
-  constructor(input = uuid.v4(), subclassBase) {
+  constructor(input = uuid.v4(), subclassBase, moreFields) {
     let parsedInput;
     if (!!input && typeof input === 'object') {
       parsedInput = input;
@@ -20,20 +22,10 @@ export default class Instance {
       parsedInput = {};
     }
 
-    //todo - do we want to force a new ID?
-
     merge(this,
       subclassBase,
-      {
-        id: uuid.v4(),
-        metadata: {
-          name: '',
-          description: '',
-          version: '1.0.0',
-          authors: [],
-          tags: {},
-        },
-      },
+      InstanceDefinition.scaffold(),
+      moreFields,
       parsedInput
     );
 
@@ -60,5 +52,20 @@ export default class Instance {
     return new this.constructor(base);
   }
 
+  //clone by default just uses the ID, however,
+  clone(parentSha) {
+    const self = cloneDeep(this);
+    invariant(!!parentSha || !!self.version, 'Version (e.g. of project) is required to clone');
 
+    const versionOfParent = (!!parentSha ? parentSha : self.version);
+    const latestParent = {
+      id: self.id,
+      sha: versionOfParent,
+    };
+    const clone = Object.assign(self, {
+      id: uuid.v4(),
+      parents: [latestParent].concat(self.parents),
+    });
+    return new this.constructor(clone);
+  }
 }

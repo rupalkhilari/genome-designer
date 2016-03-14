@@ -2,6 +2,7 @@ import * as validatorFunctions from './validators';
 import createFieldType from './createFieldType';
 import mapValues from '../../utils/object/mapValues';
 import uuid from 'node-uuid';
+import sha1 from 'sha1';
 
 /**
  * @name fields
@@ -33,7 +34,10 @@ const fields = mapValues({
   id: {
     baseValidator: validatorFunctions.id,
     typeDescription: 'A UUID',
-    scaffold: () => { return uuid.v4(); },
+    scaffold: (params) => {
+      const prefix = '' + ((params && params.prefix) ? (params.prefix.toLowerCase() + '-') : '');
+      return prefix + uuid.v4();
+    },
   },
   string: {
     baseValidator: validatorFunctions.string,
@@ -85,8 +89,8 @@ const fields = mapValues({
   },
   version: {
     baseValidator: validatorFunctions.version,
-    typeDescription: 'String conforming to semantic versioning',
-    scaffold: () => '1.0.0',
+    typeDescription: 'String representing a git SHA',
+    scaffold: () => sha1('' + Math.floor((Math.random() * 10000000) + 1) + Date.now()),
   },
   url: {
     baseValidator: validatorFunctions.url,

@@ -1,10 +1,15 @@
 import React, { Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
+import ReactDOM from 'react-dom';
 import DnD from '../../containers/graphics/dnd/dnd';
 import MouseTrap from '../../containers/graphics/mousetrap';
 
+import { inspectorToggleVisibility, inspectorForceBlocks } from '../../actions/inspector';
+import { inspectorGetCurrentSelection } from '../../selectors/inspector';
+
 import '../../styles/InventoryItem.css';
 
-export default class InventoryItem extends Component {
+export class InventoryItem extends Component {
   static propTypes = {
     inventoryType: PropTypes.string.isRequired,
     item: PropTypes.shape({
@@ -13,10 +18,15 @@ export default class InventoryItem extends Component {
         image: PropTypes.string,
       }).isRequired,
     }).isRequired,
-  }
+    onDrop: PropTypes.func,
+    onSelect: PropTypes.func,
+    forceBlocks: PropTypes.array.isRequired,
+    inspectorToggleVisibility: PropTypes.func.isRequired,
+    inspectorForceBlocks: PropTypes.func.isRequired,
+  };
 
   componentDidMount() {
-    const dom = React.findDOMNode(this);
+    const dom = ReactDOM.findDOMNode(this);
     this.mouseTrap = new MouseTrap({
       element: dom,
       mouseDrag: this.mouseDrag.bind(this),
@@ -32,8 +42,25 @@ export default class InventoryItem extends Component {
     DnD.startDrag(this.makeDnDProxy(), globalPoint, {
       item: this.props.item,
       type: this.props.inventoryType,
+    }, {
+      onDrop: (target, position) => {
+        if (this.props.onDrop) {
+          return this.props.onDrop(this.props.item, target, position);
+        }
+      },
     });
   }
+
+  handleClick = () => {
+    const { item, onSelect, inspectorToggleVisibility, inspectorForceBlocks } = this.props;
+
+    const promise = (!!onSelect) ? onSelect(item) : Promise.resolve(item);
+
+    promise.then(result => {
+      inspectorForceBlocks([result]);
+      inspectorToggleVisibility(true);
+    });
+  };
 
   /**
    * make a drag and drop proxy for the item
@@ -48,15 +75,30 @@ export default class InventoryItem extends Component {
   render() {
     const item = this.props.item;
     const imagePath = item.metadata.image;
+    const isSelected = this.props.forceBlocks.indexOf(item) >= 0;
 
     return (
       <div className={'InventoryItem' +
-        (!!imagePath ? ' hasImage' : '')}>
-        <a className="InventoryItem-item">
+        (!!imagePath ? ' hasImage' : '') +
+        (!!isSelected ? ' selected' : '')}>
+        <a className="InventoryItem-item"
+           onClick={this.handleClick}>
           {!!imagePath && <img className="InventoryItem-image" src={imagePath}/> }
-          <span className="InventoryItem-text">{item.metadata.name}</span>
+          <span className="InventoryItem-text">
+            {item.metadata.name || 'Unnamed'}
+          </span>
         </a>
       </div>
     );
   }
 }
+
+export default connect((state) => {
+  return {
+    forceBlocks: state.inspector.forceBlocks,
+  };
+}, {
+  inspectorGetCurrentSelection,
+  inspectorForceBlocks,
+  inspectorToggleVisibility,
+})(InventoryItem);

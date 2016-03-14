@@ -12,10 +12,6 @@ export default class UserInterface {
     this.el.className = 'scenegraph-userinterface';
     // append after our scenegraph
     this.sg.parent.parentNode.insertBefore(this.el, this.sg.parent.nextSibiling);
-    // sink mouse events
-    this.el.addEventListener('mousedown', this.onMouseDown);
-    // this.el.addEventListener('mousemove', this.onMouseMove);
-    // this.el.addEventListener('mouseup', this.onMouseUp);
     // base class can handle simple selections based on the AABB of nodes
     this.selections = [];
     // maps selected node UUID's to their display glyph
@@ -23,6 +19,8 @@ export default class UserInterface {
     // mouse tracker
     this.mouseTrap = new MouseTrap({
       element: this.el,
+      mouseEnter: this.mouseEnter.bind(this),
+      mouseLeave: this.mouseLeave.bind(this),
       mouseDown: this.mouseDown.bind(this),
       mouseMove: this.mouseMove.bind(this),
       mouseDrag: this.mouseDrag.bind(this),
@@ -41,10 +39,15 @@ export default class UserInterface {
    * add to selections, ignores if already present
    * @param {[type]} node [description]
    */
-  addToSelections(node) {
-    invariant(node.sg === this.sg, 'node is not in our scenegraph');
-    if (!this.isSelected(node)) {
-      this.selections.push(node);
+  addToSelections(nodes) {
+    let added = 0;
+    (nodes || []).forEach(node => {
+      if (!this.isSelected(node)) {
+        this.selections.push(node);
+        added += 1;
+      }
+    });
+    if (added) {
       this.updateSelections();
     }
   }
@@ -89,9 +92,9 @@ export default class UserInterface {
       sel.style.width = bounds.width + 'px';
       sel.style.height = bounds.height + 'px';
     });
+
     // remove any elements no longer required.
-    const keys = Object.keys(this.selectionMap);
-    keys.forEach(nodeUUID => {
+    Object.keys(this.selectionMap).forEach(nodeUUID => {
       if (!this.selections.find(node => nodeUUID === node.uuid)) {
         const element = this.selectionMap[nodeUUID];
         delete this.selectionMap[nodeUUID];
@@ -111,6 +114,14 @@ export default class UserInterface {
     return div;
   }
 
+  /**
+   * this is the actual mouse down event you should override in descendant classes
+   */
+  mouseEnter(event) {}
+  /**
+   * this is the actual mouse down event you should override in descendant classes
+   */
+  mouseLeave(event) {}
   /**
    * this is the actual mouse down event you should override in descendant classes
    */
