@@ -3,7 +3,7 @@ import UndoManager from './UndoManager';
 
 export default (config) => {
   const params = Object.assign({
-    trackAll: true, //todo - default should be false
+    trackAll: false,
     debug: (process && process.env && process.env.NODE_ENV !== 'production'),
     stateKey: 'undo',
   }, config);
@@ -12,25 +12,21 @@ export default (config) => {
     debug: params.debug,
   });
 
-  /*
-   // ignoring because lose easy equality check between new computed state and prior state.
-   // can add back in if merging here won't affect other === checks down the line, but think this through!
-   // also, users they will just call actions (i.e. those we expose, not ones provided by this module), and only need to know about this if they want to e.g. show an dynamically disabled undo button
-   // utility to merge undo state additions and state from other reducers
-   const mergeState = (state) => {
-   return Object.assign({
-   [params.stateKey]: {
-   past: manager.getPast().length,
-   future: manager.getFuture().length,
-   },
-   }, state);
-   };
-   */
+  // utility to merge undo state additions and state from other reducers
+  //by merging directly onto the state, keep reference equality check
+  const mergeState = (state) => {
+    return Object.assign(state, {
+      [params.stateKey]: {
+        past: manager.getPast().length,
+        future: manager.getFuture().length,
+      },
+    });
+  };
 
   return (reducer) => {
     //generate initial state
-    //const initialState = mergeState(reducer(undefined, {}));
-    const initialState = reducer(undefined, {});
+    const initialState = mergeState(reducer(undefined, {}));
+    //const initialState = reducer(undefined, {});
 
     return (state = initialState, action) => {
       switch (action.type) {
@@ -51,7 +47,8 @@ export default (config) => {
         return manager.abort();
 
       default :
-        const nextState = reducer(state, action);
+        const nextState = mergeState(reducer(state, action));
+        //const nextState = reducer(state, action);
 
         //if nothing has changed, dont bother hitting UndoManager
         if (nextState === state) {

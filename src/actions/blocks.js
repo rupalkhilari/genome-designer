@@ -114,6 +114,7 @@ export const blockMerge = (blockId, toMerge) => {
     const block = oldBlock.merge(toMerge);
     dispatch({
       type: ActionTypes.BLOCK_MERGE,
+      undoable: true,
       block,
     });
     return block;
@@ -141,6 +142,7 @@ export const blockRename = (blockId, name) => {
     const block = oldBlock.mutate('metadata.name', name);
     dispatch({
       type: ActionTypes.BLOCK_RENAME,
+      undoable: true,
       block,
     });
     return block;
@@ -153,6 +155,7 @@ export const blockSetColor = (blockId, color) => {
     const block = oldBlock.mutate('metadata.color', color);
     dispatch({
       type: ActionTypes.BLOCK_SET_COLOR,
+      undoable: true,
       block,
     });
     return block;
@@ -165,6 +168,7 @@ export const blockSetSbol = (blockId, sbol) => {
     const block = oldBlock.setSbol(sbol);
     dispatch({
       type: ActionTypes.BLOCK_SET_SBOL,
+      undoable: true,
       block,
     });
     return block;
@@ -183,6 +187,7 @@ export const blockAddComponent = (blockId, componentId, index) => {
     const block = oldBlock.addComponent(componentId, index);
     dispatch({
       type: ActionTypes.BLOCK_COMPONENT_ADD,
+      undoable: true,
       block,
     });
     return block;
@@ -198,6 +203,7 @@ export const blockRemoveComponent = (blockId, ...componentIds) => {
 
     dispatch({
       type: ActionTypes.BLOCK_COMPONENT_REMOVE,
+      undoable: true,
       block,
     });
     return block;
@@ -210,6 +216,7 @@ export const blockMoveComponent = (blockId, componentId, newIndex) => {
     const block = oldBlock.moveComponent(componentId, newIndex);
     dispatch({
       type: ActionTypes.BLOCK_COMPONENT_MOVE,
+      undoable: true,
       block,
     });
     return block;
@@ -226,6 +233,7 @@ export const blockAnnotate = (blockId, annotation) => {
     const block = oldBlock.annotate(annotation);
     dispatch({
       type: ActionTypes.BLOCK_ANNOTATE,
+      undoable: true,
       block,
     });
     return block;
@@ -238,6 +246,7 @@ export const blockRemoveAnnotation = (blockId, annotationId) => {
     const block = oldBlock.removeAnnotation(annotationId);
     dispatch({
       type: ActionTypes.BLOCK_REMOVE_ANNOTATION,
+      undoable: true,
       block,
     });
     return block;
@@ -255,7 +264,6 @@ export const blockGetSequence = (blockId, format) => {
 };
 
 //Promise
-//future - validate
 export const blockSetSequence = (blockId, sequence, useStrict) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
@@ -264,6 +272,7 @@ export const blockSetSequence = (blockId, sequence, useStrict) => {
       .then(block => {
         dispatch({
           type: ActionTypes.BLOCK_SET_SEQUENCE,
+          undoable: true,
           block,
         });
         return block;

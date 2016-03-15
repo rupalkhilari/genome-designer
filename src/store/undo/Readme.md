@@ -57,6 +57,8 @@ Actions can have an additional field `undoable`, which, when true, will `update(
 }
 ```
 
+Alternatively, you can pass in the parameter `trackAll: true` to the configuration of the reducer enhancer (see below).
+
 ### Reducer Enhancer
 
 # update this!
@@ -84,3 +86,5 @@ stateKey {String}           //todo - determine whether doing this
 ###Todo
 
 - support limit of states to track
+- discuss undo of saving a project / block
+- pruning the store of unneeded blocks / projects
