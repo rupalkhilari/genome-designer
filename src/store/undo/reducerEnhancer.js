@@ -60,7 +60,7 @@ export default (config) => {
         }
 
         //if action is marked as undoable, or set trackAll, update the manager
-        if (!!action.undoable || params.filter(action) === true) {
+        if (!!action.undoable || params.filter(action, state) === true) {
           return manager.update(nextState, action);
         }
 

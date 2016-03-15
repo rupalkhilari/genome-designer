@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
-import ModalWindow from '../../components//modal/modalwindow';
+import ModalWindow from '../../components/modal/modalwindow';
 import SignUpForm from '../../components/authentication/signup';
 import SignInForm from '../../components/authentication/signin';
 import ForgotForm from '../../components/authentication/forgot';
