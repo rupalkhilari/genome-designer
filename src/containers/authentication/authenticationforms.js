@@ -12,7 +12,6 @@ import '../../../src/styles/authenticationforms.css';
 
 class AuthenticationForms extends Component {
   static propTypes = {
-    pushState: PropTypes.func.isRequired,
     uiShowAuthenticationForm: PropTypes.func.isRequired,
     authenticationForm: PropTypes.string,
   };

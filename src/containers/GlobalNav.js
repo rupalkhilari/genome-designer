@@ -87,7 +87,7 @@ class GlobalNav extends Component {
             }, {
               text: 'Redo',
               action: () => {
-              this.props.redo();
+                this.props.redo();
               },
             }, {}, {
               text: 'Cut',

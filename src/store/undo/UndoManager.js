@@ -18,8 +18,8 @@ import * as history from './history';
 /* eslint-disable no-console */
 
 export default class UndoManager {
-  constructor(config) {
-    this.history = history.createHistory();
+  constructor(initialState, config) {
+    this.history = history.createHistory(initialState);
 
     this.transactionDepth = 0;
     this.transactionState = null;
@@ -46,7 +46,7 @@ export default class UndoManager {
 
   update = (state, action) => {
     //if same state, ignore it
-    if (state === this.history.present) {
+    if (state === this.getCurrentState()) {
       return state;
     }
 
@@ -60,7 +60,7 @@ export default class UndoManager {
       return state;
     }
 
-    //todo - verify this is correct.
+    //todo - verify this is how we want to handle this
     if (this.transactionDepth > 0) {
       this.setTransactionState(state);
       return state;
@@ -70,25 +70,36 @@ export default class UndoManager {
 
     if (this.debug) {
       console.log('UndoManager: updating state' + (this.transactionDepth > 0 ? ' (in transaction)' : ''), action);
-      console.groupEnd();
     }
 
     return this.getCurrentState();
   };
 
   undo = () => {
+    if (this.debug) {
+      console.log(`UndoManager: undo`);
+    }
+
     this.history = history.undo(this.history);
     this.setTransactionState(null);
     return this.getCurrentState();
   };
 
   redo = () => {
+    if (this.debug) {
+      console.log(`UndoManager: redo`);
+    }
+
     this.history = history.redo(this.history);
     this.setTransactionState(null);
     return this.getCurrentState();
   };
 
   jump = (number) => {
+    if (this.debug) {
+      console.log(`UndoManager: jump`);
+    }
+
     this.history = history.jump(this.history, number);
     this.setTransactionState(null);
     return this.getCurrentState();
@@ -111,6 +122,8 @@ export default class UndoManager {
     }
 
     this.setTransactionState(this.getPresent());
+
+    return this.getCurrentState();
   };
 
   commit = () => {

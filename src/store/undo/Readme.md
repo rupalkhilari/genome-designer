@@ -78,13 +78,14 @@ undo: {
 Object with the following keys:
 
 ```
-trackAll {boolean}
+filter {function} - passed the action, function to track whether should be added to undo, returning true is yes
 debug {boolean}
 stateKey {String}           //todo - determine whether doing this
 ```
 
 ###Todo
 
+- todo - save the actions (2D array to handle transactions)
 - support limit of states to track
 - discuss undo of saving a project / block
 - pruning the store of unneeded blocks / projects

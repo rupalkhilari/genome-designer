@@ -22,6 +22,9 @@ export function update(history, newState) {
 
 export function undo(history) {
   const { past, present, future } = history;
+
+  console.log(past, present, future);
+
   if (past.length <= 0) {
     console.warn('called undo with no past in history');
     return history;
@@ -62,6 +65,9 @@ export function jump(history, steps) {
   if (steps === 0) return history;
   if (steps === -1) return undo(history);
   if (steps === 1) return redo(history);
+
+  //todo - check number of steps out
+
   if (steps < -1) {
     //past
     return {
