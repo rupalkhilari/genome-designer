@@ -1,5 +1,8 @@
-import { routerStateReducer as router } from 'redux-router';
+import { routerReducer as router } from 'react-router-redux';
 import { combineReducers } from 'redux';
+import undoReducerCreator from '../store/undo/reducerEnhancer';
+
+const undoReducerWrapper = undoReducerCreator();
 
 import blocks from './blocks';
 import inventory from './inventory';
@@ -18,4 +21,6 @@ const rootReducer = combineReducers({
   user,
 });
 
-export default rootReducer;
+const undoableReducer = undoReducerWrapper(rootReducer);
+
+export default undoableReducer;
