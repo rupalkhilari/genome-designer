@@ -171,8 +171,6 @@ export class ConstructViewer extends Component {
     const projectVersion = this.props.projectGetVersion(this.props.projectId);
     blocks.forEach(block => {
       const clone = this.props.blockClone(block, projectVersion);
-      //this.props.blockAddComponent(this.props.construct.id, clone.id, index++);
-      console.log(`PARENTID: ${parent.id}`)
       this.props.blockAddComponent(parent.id, clone.id, index++);
       clones.push(clone.id);
     });

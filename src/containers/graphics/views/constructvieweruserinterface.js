@@ -175,7 +175,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
         this.constructViewer.constructSelected(this.constructViewer.props.construct.id);
       }
 
-      if (evt.shiftKey || window.__e2eShiftKey) {
+      if (evt.shiftKey) {
         // range select
         this.constructViewer.blockAddToSelections([block]);
       } else
@@ -188,11 +188,21 @@ export default class ConstructViewerUserInterface extends UserInterface {
         // if they clicked the context menu area, open it
         // for now, open a context menu
         const globalPoint = this.mouseTrap.mouseToGlobal(evt);
-        if (this.getBlockRegion(block, globalPoint) === 'dots') {
+        const region = this.getBlockRegion(block, globalPoint);
+        switch (region) {
+
+          case 'dots':
           this.constructViewer.openPopup({
             blockPopupMenuOpen: true,
             menuPosition: globalPoint,
           });
+          break;
+
+          case 'triangle':
+          const node = this.layout.nodeFromElement(block);
+          node.showChildren = !node.showChildren;
+          this.layout.redraw();
+          break;
         }
       }
     } else {
@@ -209,7 +219,8 @@ export default class ConstructViewerUserInterface extends UserInterface {
     // substract window scrolling from global point to get viewport coordinates
     const vpt = globalPoint.sub(new Vector2D(window.scrollX, window.scrollY));
     // compare against viewport bounds of node representing the block
-    const box = this.layout.nodeFromElement(block).el.getBoundingClientRect();
+    const node = this.layout.nodeFromElement(block);
+    const box = node.el.getBoundingClientRect();
     // compare to bounds
     if (vpt.x < box.left || vpt.x > box.right || vpt.y < box.top || vpt.y > box.bottom) {
       return 'none';
@@ -217,6 +228,18 @@ export default class ConstructViewerUserInterface extends UserInterface {
     // context menu area?
     if (vpt.x >= box.right - kT.contextDotsW) {
       return 'dots';
+    }
+    // child expander, if present
+    if (node.hasChildren) {
+      const triSize = 18;     // width / height equilateral triangle, slightly larger than css but makes for a better feel
+      const insetX = vpt.x - box.left;
+      const insetY = vpt.y - box.top;
+      if (insetX < triSize && insetY < triSize) {
+        // whatever the x position is ( 0..triSize ), y must be less than trisize - x
+        if (insetY <= (triSize - insetX)) {
+          return 'triangle';
+        }
+      }
     }
     // in block but nowhere special
     return 'main';

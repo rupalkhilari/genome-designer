@@ -12,12 +12,19 @@ export default class SBOLGlyph2D extends Glyph2D {
    */
   constructor(node) {
     super(node);
+    // basic div block
     this.el = document.createElement('div');
     this.el.className = 'sbol-glyph';
+    // possible sbol symbol
     this.img = document.createElement('img');
     this.img.className = 'sbol-icon';
     this.img.setAttribute('src', '/images/sbolSymbols/terminator.svg');
     this.el.appendChild(this.img);
+    // possible child indicator
+    this.triangle = document.createElement('div');
+    this.triangle.className = 'nw-triangle';
+    this.el.appendChild(this.triangle);
+    // add our outer container to the node element
     this.node.el.appendChild(this.el);
   }
 
@@ -47,5 +54,6 @@ export default class SBOLGlyph2D extends Glyph2D {
     } else {
       this.img.style.display = 'none';
     }
+    this.triangle.style.display = this.node.hasChildren ? 'block' : 'none';
   }
 }

@@ -131,16 +131,21 @@ export default class Layout {
    * @return {[type]}            [description]
    */
   partFactory(part, appearance) {
-    if (!this.nodeFromElement(part)) {
+    let node = this.nodeFromElement(part);
+    if (!node) {
       const props = Object.assign({}, {
         sg: this.sceneGraph,
       }, appearance);
-      let node = null;
       props.sbolName = this.isSBOL(part) ? this.blocks[part].rules.sbol : null;
       node = new SBOL2D(props);
       this.sceneGraph.root.appendChild(node);
       this.map(part, node);
     }
+    // hide/or child expand/collapse glyph
+    node.set({
+      hasChildren: this.hasChildren(part),
+    });
+
   }
   /**
    * return one of the meta data properties for a part.
@@ -361,6 +366,19 @@ export default class Layout {
 
     return heightUsed;
   }
+  // update using the same parameters as the full call to update. Useful when
+  // only minor view state changes have occured. Performs an immediate update
+  // of the scene graph as well.
+  redraw() {
+    this.update(
+      this.construct,
+      this.layoutAlgorithm,
+      this.blocks,
+      this.currentBlocks,
+      this.currentConstructId
+    );
+    this.sceneGraph.root.updateBranch();
+  }
 
   /**
    * one of several different layout algorithms
@@ -476,7 +494,7 @@ export default class Layout {
       });
 
       // render children ( nested constructs )
-      if (this.hasChildren(part)) {
+      if (this.hasChildren(part) && this.nodeFromElement(part).showChildren) {
         // establish the position
         const nestedX = this.insetX + kT.nestedInsetX;
         const nestedY = yp + nestedVertical + kT.blockH + kT.nestedInsetY;
