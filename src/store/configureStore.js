@@ -1,6 +1,7 @@
 import { createStore, applyMiddleware, compose } from 'redux';
 import thunk from 'redux-thunk';
 //import createLogger from 'redux-logger';
+import { routerMiddleware } from 'react-router-redux';
 import saveLastActionMiddleware from './saveLastActionMiddleware';
 import rootReducer from '../reducers/index';
 
@@ -14,6 +15,8 @@ const middleware = [
   thunk,
   //custom middleware for event system + last action
   saveLastActionMiddleware,
+  //routing middleware so you can import actions from react-redux-router
+  routerMiddleware,
 ];
 
 let finalCreateStore;

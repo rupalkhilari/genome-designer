@@ -64,7 +64,8 @@ export default (config) => {
           return manager.update(nextState, action);
         }
 
-        return nextState;
+        //if not tracked as undoable, update present state
+        return manager.silentUpdate(nextState, action);
       }
     };
   };

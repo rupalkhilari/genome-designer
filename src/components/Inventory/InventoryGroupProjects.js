@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { pushState } from 'redux-router';
+import { push } from 'react-router-redux';
 import { projectGet, projectListAllBlocks } from '../../selectors/projects';
 import { projectList, projectLoad } from '../../actions/projects';
 import { block as blockDragType } from '../../constants/DragTypes';
@@ -22,7 +22,7 @@ export class InventoryGroupProjects extends Component {
     projectLoad: PropTypes.func.isRequired,
     projectGet: PropTypes.func.isRequired,
     projectListAllBlocks: PropTypes.func.isRequired,
-    pushState: PropTypes.func.isRequired,
+    push: PropTypes.func.isRequired,
   };
 
   constructor() {
@@ -62,7 +62,7 @@ export class InventoryGroupProjects extends Component {
 
   handleOpenProject = (nextState, projectId) => {
     this.handleLoadProject(projectId)
-      .then(() => this.props.pushState(null, `/project/${projectId}`));
+      .then(() => this.props.push(null, `/project/${projectId}`));
   };
 
   handleToggleProject = (nextState, projectId) => {
@@ -137,5 +137,5 @@ export default connect(mapStateToProps, {
   projectLoad,
   projectGet,
   projectListAllBlocks,
-  pushState,
+  push,
 })(InventoryGroupProjects);

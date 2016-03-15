@@ -1,6 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
-import { pushState } from 'redux-router';
+import { push } from 'react-router-redux';
 import MenuBar from '../components/Menu/MenuBar';
 import UserWidget from '../components/authentication/userwidget';
 import { projectCreate, projectAddConstruct, projectSave } from '../actions/projects';
@@ -13,7 +13,7 @@ class GlobalNav extends Component {
   static propTypes = {
     undo: PropTypes.func.isRequired,
     redo: PropTypes.func.isRequired,
-    pushState: PropTypes.func.isRequired,
+    push: PropTypes.func.isRequired,
     projectCreate: PropTypes.func.isRequired,
     projectAddConstruct: PropTypes.func.isRequired,
     projectSave: PropTypes.func.isRequired,
@@ -44,7 +44,7 @@ class GlobalNav extends Component {
               text: 'New Project',
               action: () => {
                 const project = this.props.projectCreate();
-                this.props.pushState(null, `/project/${project.id}`);
+                this.props.push(null, `/project/${project.id}`);
               },
             }, {
               text: 'New Construct',
@@ -236,5 +236,5 @@ export default connect(mapStateToProps, {
   blockCreate,
   undo,
   redo,
-  pushState,
+  push,
 })(GlobalNav);

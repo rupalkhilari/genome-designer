@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { pushState } from 'redux-router';
+import { push } from 'react-router-redux';
 import ConstructViewer from './graphics/views/constructviewer';
 import ProjectDetail from '../components/ProjectDetail';
 import ProjectHeader from '../components/ProjectHeader';
@@ -18,7 +18,7 @@ class ProjectPage extends Component {
     projectId: PropTypes.string.isRequired,
     constructs: PropTypes.array.isRequired,
     projectLoad: PropTypes.func.isRequired,
-    pushState: PropTypes.func.isRequired,
+    push: PropTypes.func.isRequired,
     uiShowMainMenu: PropTypes.func.isRequired,
   };
 
@@ -37,7 +37,7 @@ class ProjectPage extends Component {
 
     if (!project || !project.metadata) {
       this.props.projectLoad(projectId)
-        .catch(err => this.props.pushState('/'));
+        .catch(err => this.props.push('/'));
       return <p>loading project...</p>;
     }
 
@@ -91,6 +91,6 @@ function mapStateToProps(state, ownProps) {
 
 export default connect(mapStateToProps, {
   projectLoad,
-  pushState,
+  push,
   uiShowMainMenu,
 })(ProjectPage);
