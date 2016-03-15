@@ -23,7 +23,6 @@ class ProjectPage extends Component {
   constructor(props) {
     super(props);
     this.layoutAlgorithm = 'wrap';
-    this.props.uiShowMainMenu(true);
   }
 
   onLayoutChanged = () => {

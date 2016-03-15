@@ -5,7 +5,7 @@ export const initialState = {
   currentBlocks: [],
   detailViewVisible: false,
   currentConstructId: null,
-  showMainMenu: false,
+  showMainMenu: true,
 };
 
 export default function inventory(state = initialState, action) {

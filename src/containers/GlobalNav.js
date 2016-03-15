@@ -4,11 +4,14 @@ import { pushState } from 'redux-router';
 import MenuBar from '../components/Menu/MenuBar';
 import { projectCreate, projectAddConstruct, projectSave } from '../actions/projects';
 import { blockCreate } from '../actions/blocks';
+import { undo, redo } from '../store/undo/actions';
 
 import '../styles/GlobalNav.css';
 
 class GlobalNav extends Component {
   static propTypes = {
+    undo: PropTypes.func.isRequired,
+    redo: PropTypes.func.isRequired,
     pushState: PropTypes.func.isRequired,
     projectCreate: PropTypes.func.isRequired,
     projectAddConstruct: PropTypes.func.isRequired,
@@ -78,10 +81,14 @@ class GlobalNav extends Component {
           items: [
             {
               text: 'Undo',
-              action: () => {},
+              action: () => {
+                this.props.undo();
+              },
             }, {
               text: 'Redo',
-              action: () => {},
+              action: () => {
+              this.props.redo();
+              },
             }, {}, {
               text: 'Cut',
               action: () => {},
@@ -227,5 +234,7 @@ export default connect(mapStateToProps, {
   projectCreate,
   projectSave,
   blockCreate,
+  undo,
+  redo,
   pushState,
 })(GlobalNav);

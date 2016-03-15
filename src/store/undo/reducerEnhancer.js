@@ -1,5 +1,5 @@
 import * as ActionTypes from './ActionTypes';
-import * as UndoManager from './UndoManager';
+import UndoManager from './UndoManager';
 
 export default (config) => {
   const params = Object.assign({
@@ -60,7 +60,7 @@ export default (config) => {
 
         //if action is marked as undoable, or set trackAll, update the manager
         if (action.undoable || !!params.trackAll) {
-          return manager.update(nextState);
+          return manager.update(nextState, action);
         }
 
         return nextState;

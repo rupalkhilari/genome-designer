@@ -44,7 +44,7 @@ export default class UndoManager {
     return this.transactionState;
   };
 
-  update = (state) => {
+  update = (state, action) => {
     //if same state, ignore it
     if (state === this.history.present) {
       return state;
@@ -69,7 +69,7 @@ export default class UndoManager {
     this.history = history.update(this.history, state);
 
     if (this.debug) {
-      console.log('UndoManager: updating state' + (this.transactionDepth > 0 ? ' (in transaction)' : ''));
+      console.log('UndoManager: updating state' + (this.transactionDepth > 0 ? ' (in transaction)' : ''), action);
       console.groupEnd();
     }
 
