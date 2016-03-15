@@ -16,6 +16,7 @@ const loadedProjects = {
 export class InventoryGroupProjects extends Component {
   static propTypes = {
     projects: PropTypes.object.isRequired,
+    projectId: PropTypes.string.isRequired,
     currentProject: PropTypes.string.isRequired,
     projectList: PropTypes.func.isRequired,
     projectLoad: PropTypes.func.isRequired,
@@ -122,7 +123,7 @@ export class InventoryGroupProjects extends Component {
 }
 
 function mapStateToProps(state, props) {
-  const { projectId } = state.router.params;
+  const { projectId } = props;
   const { projects } = state;
 
   return {

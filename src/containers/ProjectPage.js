@@ -44,6 +44,7 @@ class ProjectPage extends Component {
     const constructViewers = constructs.map(construct => {
       return (
         <ConstructViewer key={construct.id}
+                         projectId={projectId}
                          constructId={construct.id}
                          layoutAlgorithm={this.layoutAlgorithm}/>
       );
@@ -51,7 +52,7 @@ class ProjectPage extends Component {
 
     return (
       <div className="ProjectPage">
-        <Inventory />
+        <Inventory projectId={projectId} />
 
         <div className="ProjectPage-content">
 
@@ -64,14 +65,14 @@ class ProjectPage extends Component {
           <ProjectDetail project={project}/>
         </div>
 
-        <Inspector />
+        <Inspector projectId={projectId} />
       </div>
     );
   }
 }
 
-function mapStateToProps(state) {
-  const { projectId } = state.router.params;
+function mapStateToProps(state, ownProps) {
+  const projectId = ownProps.params.projectId;
   const project = state.projects[projectId];
 
   if (!project) {

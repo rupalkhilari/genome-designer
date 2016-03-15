@@ -6,7 +6,6 @@ import { userSetUser } from '../actions/user';
 import AuthenticationForms from './authentication/authenticationforms';
 import RibbonGrunt from '../components/ribbongrunt';
 
-
 import '../styles/App.css';
 
 class App extends Component {
@@ -14,6 +13,7 @@ class App extends Component {
     children: PropTypes.node, // Injected by React Router
     userSetUser: PropTypes.func.isRequired,
     user: PropTypes.object,
+    currentProjectId: PropTypes.string,
   };
 
   constructor(props) {
@@ -26,13 +26,13 @@ class App extends Component {
   }
 
   render() {
-    const { children } = this.props;
+    const { currentProjectId, children } = this.props;
 
     const DevTools = (process.env.NODE_ENV !== 'production') ? require('./DevTools') : 'div';
 
     return (
       <div className="App">
-        <GlobalNav />
+        <GlobalNav currentProjectId={currentProjectId} />
         <AuthenticationForms />
         <RibbonGrunt />
         <div className="App-pageContent">
@@ -44,8 +44,9 @@ class App extends Component {
   }
 }
 
-function mapStateToProps(state) {
+function mapStateToProps(state, ownProps) {
   return {
+    currentProjectId: ownProps.params.projectId,
     user: state.user,
   };
 }

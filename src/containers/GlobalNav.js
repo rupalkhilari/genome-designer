@@ -225,7 +225,6 @@ class GlobalNav extends Component {
 
 function mapStateToProps(state) {
   return {
-    currentProjectId: state.router.params.projectId,
     showMainMenu: state.ui.showMainMenu,
   };
 }
