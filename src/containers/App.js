@@ -1,6 +1,5 @@
-/*global flashedUser*/
 import React, { Component, PropTypes } from 'react';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import GlobalNav from './GlobalNav';
 import { userSetUser } from '../actions/user';
 import AuthenticationForms from './authentication/authenticationforms';
@@ -32,7 +31,7 @@ class App extends Component {
 
     return (
       <div className="App">
-        <GlobalNav currentProjectId={currentProjectId} />
+        <GlobalNav currentProjectId={currentProjectId}/>
         <AuthenticationForms />
         <RibbonGrunt />
         <div className="App-pageContent">

@@ -2,8 +2,6 @@ import { routerReducer as router } from 'react-router-redux';
 import { combineReducers } from 'redux';
 import undoReducerCreator from '../store/undo/reducerEnhancer';
 
-const undoReducerWrapper = undoReducerCreator();
-
 import blocks from './blocks';
 import inventory from './inventory';
 import inspector from './inspector';
@@ -21,6 +19,6 @@ const rootReducer = combineReducers({
   user,
 });
 
-const undoableReducer = undoReducerWrapper(rootReducer);
+const undoableReducer = undoReducerCreator({})(rootReducer);
 
 export default undoableReducer;

@@ -1,12 +1,12 @@
-import React, {Component, PropTypes} from 'react';
+import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import { push } from 'react-router-redux';
 import PopupMenu from '../../components/Menu/PopupMenu';
 import Vector2D from '../../containers/graphics/geometry/vector2d';
-import {connect} from 'react-redux';
-import {uiShowAuthenticationForm, uiSetGrunt} from '../../actions/ui';
-import {userSetUser} from '../../actions/user';
-import {logout} from '../../middleware/api';
+import { connect } from 'react-redux';
+import { uiShowAuthenticationForm, uiSetGrunt } from '../../actions/ui';
+import { userSetUser } from '../../actions/user';
+import { logout } from '../../middleware/api';
 
 import '../../styles/userwidget.css';
 
@@ -104,7 +104,7 @@ class UserWidget extends Component {
     // signed out user
     return (
       <div className="userwidget">
-        <a href="#" className="signed-out" onClick={this.onSignIn.bind(this)}>SIGN IN</a>
+        <a className="signed-out" onClick={this.onSignIn.bind(this)}>SIGN IN</a>
       </div>
     );
   }

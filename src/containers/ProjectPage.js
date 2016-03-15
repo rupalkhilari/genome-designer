@@ -38,7 +38,7 @@ class ProjectPage extends Component {
     if (!project || !project.metadata) {
       this.props.projectLoad(projectId)
         .catch(err => this.props.push('/'));
-      return <p>loading project...</p>;
+      return (<p>loading project...</p>);
     }
 
     const constructViewers = constructs.map(construct => {
