@@ -2,6 +2,7 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import { pushState } from 'redux-router';
 import MenuBar from '../components/Menu/MenuBar';
+import UserWidget from '../components/authentication/userwidget';
 import { projectCreate, projectAddConstruct, projectSave } from '../actions/projects';
 import { blockCreate } from '../actions/blocks';
 import { undo, redo } from '../store/undo/actions';
@@ -32,7 +33,6 @@ class GlobalNav extends Component {
         {
           text: 'FILE',
           items: [
-            {},
             {
               text: 'Save Project',
               action: () => {
@@ -217,6 +217,7 @@ class GlobalNav extends Component {
       <div className="GlobalNav">
         <span className="GlobalNav-title">GD</span>
         {this.props.showMainMenu ? this.menuBar() : null}
+        <UserWidget/>
       </div>
     );
   }

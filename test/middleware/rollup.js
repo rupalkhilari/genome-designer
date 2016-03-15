@@ -1,4 +1,5 @@
 import chai from 'chai';
+import uuid from 'node-uuid';
 import fs from 'fs';
 import * as api from '../../src/middleware/api';
 const { assert, expect } = chai;
@@ -16,11 +17,12 @@ import { createExampleRollup } from '../utils/rollup';
 describe('Middleware', () => {
   describe('Rollup', () => {
     //create a test project to load
+    const userId = uuid.v4();
     const roll = createExampleRollup();
     const project = roll.project;
     const projectId = project.id;
 
-    before(() => rollup.writeProjectRollup(projectId, roll));
+    before(() => rollup.writeProjectRollup(projectId, roll, userId));
 
     it('listProjects() lists available projects', () => {
       return api.listProjects()
@@ -67,7 +69,7 @@ describe('Middleware', () => {
       const a_projectId = project.id;
       const b_roll = Object.assign(createExampleRollup(), {project});
 
-      const a_path = filePaths.createProjectPath(a_projectId);
+      const a_path = filePaths.createProjectDataPath(a_projectId);
       let a_log;
 
       return api.saveProject(a_projectId, a_roll)
@@ -78,6 +80,7 @@ describe('Middleware', () => {
         .then(() => api.saveProject(a_projectId, b_roll))
         .then(() => versioning.log(a_path))
         .then(log => {
+          assert(typeof log.length === 'number', 'log error in wrong format, got ' + log);
           expect(a_log.length + 1).to.equal(log.length);
         });
     });

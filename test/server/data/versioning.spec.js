@@ -8,7 +8,7 @@ import * as versioning from '../../../server/data/versioning';
 import { fileExists, fileRead, fileWrite, fileDelete, directoryMake, directoryDelete } from '../../../server/utils/fileSystem';
 import { errorDoesNotExist } from '../../../server/utils/errors';
 
-describe('REST', () => {
+describe('Server', () => {
   describe('Data', () => {
     describe('versioning', function gitTests() {
       this.timeout(10000);

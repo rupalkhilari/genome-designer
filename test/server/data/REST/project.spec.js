@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import uuid from 'node-uuid';
 import request from 'supertest';
 import Project from '../../../../src/models/Project';
 import * as persistence from '../../../../server/data/persistence';
@@ -8,6 +9,7 @@ describe('REST', () => {
   describe('Data', () => {
     describe('Projects', () => {
       let server;
+      const userId = uuid.v4();
       const initialFields = {initial: 'value'};
       const projectData = new Project(initialFields);
       const projectId = projectData.id;
@@ -19,7 +21,7 @@ describe('REST', () => {
       const patchedProject = projectData.merge(projectPatch);
 
       before(() => {
-        return persistence.projectCreate(projectId, projectData);
+        return persistence.projectCreate(projectId, projectData, userId);
       });
 
       beforeEach('server setup', () => {

@@ -1,6 +1,7 @@
 import { assert, expect } from 'chai';
 import request from 'supertest';
 import md5 from 'md5';
+import uuid from 'node-uuid';
 import Project from '../../../../src/models/Project';
 import Block from '../../../../src/models/Block';
 import * as persistence from '../../../../server/data/persistence';
@@ -10,6 +11,7 @@ describe('REST', () => {
   describe('Data', () => {
     describe('Sequence', () => {
       let server;
+      const userId = uuid.v4();
       const projectData = new Project();
       const projectId = projectData.id;
 
@@ -25,7 +27,7 @@ describe('REST', () => {
       const blockId = blockData.id;
 
       before(() => {
-        return persistence.projectCreate(projectId, projectData)
+        return persistence.projectCreate(projectId, projectData, userId)
           .then(() => persistence.blockCreate(blockId, blockData, projectId))
           .then(() => persistence.sequenceWrite(sequenceMd5, sequence));
       });

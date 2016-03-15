@@ -68,7 +68,7 @@ export const commit = (path, message = 'commit message') => {
     .then((commitId) => '' + commitId) //just being explicit what is returned
     .catch((err) => {
       console.error(err);
-      Promise.reject(errorVersioningSystem);
+      return Promise.reject(errorVersioningSystem);
     });
 };
 
@@ -86,7 +86,7 @@ export const getCommit = (path, sha) => {
     }))
     .catch((err) => {
       console.error(err);
-      Promise.reject(errorVersioningSystem);
+      return Promise.reject(errorVersioningSystem);
     });
 };
 
@@ -124,7 +124,7 @@ export const log = (path, filter = () => true) => {
         history.start();
       });
     })
-    .catch(err => errorVersioningSystem);
+    .catch(err => Promise.reject(errorVersioningSystem));
 };
 
 export const versionExists = (path, sha = 'HEAD', file) => {
@@ -172,17 +172,24 @@ export const checkout = (path, file, sha = 'HEAD') => {
       }
       return repo.getCommit(sha);
     })
+    .catch(err => Promise.reject(errorDoesNotExist))
     .then(commit => {
       return commit.getEntry(file)
         .then(entry => {
           return entry.getBlob()
             .then(blob => {
-              //console.log(entry.filename(), entry.sha(), blob.rawsize());
+              //console.log('got blob', entry.filename(), entry.sha(), blob.rawsize());
               return blob.toString();
             });
         });
     })
-    .catch(err => errorVersioningSystem);
+    .catch(err => {
+      //if got the error of the commit not existing, lets just re-reject with it
+      if (err === errorDoesNotExist) {
+        return Promise.reject(errorDoesNotExist);
+      }
+      return Promise.reject(errorVersioningSystem);
+    });
 };
 
 //todo - required once support versioning API

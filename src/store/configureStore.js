@@ -1,7 +1,5 @@
 import { createStore, applyMiddleware, compose } from 'redux';
-import { reduxReactRouter } from 'redux-router';
-import createHistory from 'history/lib/createBrowserHistory';
-import routes from '../routes';
+import reduxRouter from '../routes/reduxRouter';
 import thunk from 'redux-thunk';
 //import createLogger from 'redux-logger';
 import saveLastActionMiddleware from './saveLastActionMiddleware';
@@ -34,7 +32,7 @@ if (process.env.NODE_ENV !== 'production') {
   finalCreateStore = applyMiddleware(...middleware)(createStore);
 }
 
-finalCreateStore = reduxReactRouter({ routes, createHistory })(finalCreateStore);
+finalCreateStore = reduxRouter(finalCreateStore);
 
 // expose reducer so you can pass in only one reducer for tests
 // (probably need to compose the way rootReducer does)
