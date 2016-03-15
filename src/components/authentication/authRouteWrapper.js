@@ -7,10 +7,6 @@ class RouteWrapper extends Component {
     children: PropTypes.object,
   };
 
-  constructor(props) {
-    super();
-  }
-
   render() {
     if (this.props.user.userid) {
       return React.Children.only(this.props.children);

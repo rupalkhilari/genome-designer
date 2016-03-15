@@ -9,7 +9,7 @@ import ProjectPage from '../containers/ProjectPage';
 import AboutPage from '../components/AboutPage';
 import HomePage from '../components/homepage';
 import SupportPage from '../components/SupportPage';
-import RouteWrapper from '../components/authentication/routewrapper';
+import AuthRouteWrapper from '../components/authentication/authRouteWrapper';
 
 const history = syncHistoryWithStore(browserHistory, store, {
   selectLocationState: state => state.router,
@@ -19,7 +19,7 @@ export default (
   <Router history={history}>
     <Route path="/" component={App}>
 
-      <Route component={RouteWrapper}>
+      <Route component={AuthRouteWrapper}>
         <Route path="/homepage/account" component={HomePage}/>
         <Route path="/project/:projectId"
                component={ProjectPage}/>

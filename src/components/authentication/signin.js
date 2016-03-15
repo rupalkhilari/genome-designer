@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import {connect} from 'react-redux';
+import { push } from 'react-router-redux';
 import { uiShowAuthenticationForm, uiSetGrunt } from '../../actions/ui';
 import { userSetUser } from '../../actions/user';
 import invariant from 'invariant';
@@ -22,6 +23,7 @@ class SignInForm extends Component {
     uiShowAuthenticationForm: PropTypes.func.isRequired,
     uiSetGrunt: PropTypes.func.isRequired,
     userSetUser: PropTypes.func.isRequired,
+    push: PropTypes.func.isRequired,
   };
 
   constructor() {
@@ -53,6 +55,7 @@ class SignInForm extends Component {
         this.props.uiSetGrunt(`You are now signed in as ${json.firstName} ${json.lastName} ( ${json.email} )`);
         // close the form
         this.props.uiShowAuthenticationForm('none');
+        this.props.push('/project/test');
       })
       .catch((reason) => {
         this.showServerErrors({
@@ -141,4 +144,5 @@ export default connect(mapStateToProps, {
   uiShowAuthenticationForm,
   uiSetGrunt,
   userSetUser,
+  push,
 })(SignInForm);
