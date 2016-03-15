@@ -367,10 +367,27 @@ export default class Node2D {
    * @return {Node2D}
    */
   updateBranch() {
+
+    // if this is called on the root node of a scene graph the node is temporarily
+    // remove from its parent to prevent costly reflows
+    let tempParent = null;
+    if (this.isRoot) {
+      if (this.el.parentElement) {
+        tempParent = this.el.parentElement;
+        this.el.parentElement.removeChild(this.el);
+      }
+    }
+
     this.update();
     this.children.forEach(child => {
       child.updateBranch();
     });
+
+    //re-attach to DOM if we were removed for updating
+    if (tempParent) {
+      tempParent.appendChild(this.el);
+    }
+
     return this.el;
   }
 }

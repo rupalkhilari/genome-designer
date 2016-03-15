@@ -26,7 +26,10 @@ export default class SceneGraph2D {
 
     // create our root node, which represents the view matrix and to which
     // all other nodes in the graph are ultimately attached.
-    this.root = new Node2D({sg: this});
+    this.root = new Node2D({
+      sg: this,
+      isRoot: true,
+    });
 
     // root is appended directly to the scene graph BUT without setting a parent node.
     this.parent.appendChild(this.root.el);

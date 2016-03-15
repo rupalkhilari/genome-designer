@@ -10,11 +10,10 @@ export default class Vector2D {
    * @param {Number} x
    * @param {Number} y
    */
-  constructor(x = 0, y = 0) {
-    invariant(isRealNumber(x) && isRealNumber(y), 'Bad parameters');
+  constructor(x, y) {
     // this._v = [x, y];
-    this.x = x;
-    this.y = y;
+    this.x = x || 0;
+    this.y = y || 0;
   }
 
   // get x() {

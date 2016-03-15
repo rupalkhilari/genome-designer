@@ -113,7 +113,7 @@ class DnD {
     const target = this.findTargetAt(globalPosition);
 
     if (target && target.options && target.options.drop) {
-      target.options.drop.call(this, globalPosition, this.payload);
+      target.options.drop.call(this, globalPosition, this.payload, evt);
       // //save for sync cleanup...
       // const savedPayload = this.payload;
       //

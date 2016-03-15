@@ -28,6 +28,7 @@ export default class Layout {
       insetX: 0,
       insetY: 0,
       initialRowXLimit: -Infinity,
+      rootLayout: true,
     }, options);
 
     // prep data structures for layout`
@@ -47,14 +48,18 @@ export default class Layout {
 
   /**
    * size the scene graph to just accomodate all the nodes that are present.
+   * This is only performed for the root layout ( nested constructs should not
+   * perform this operation, as per the rootLayout property )
    * @return {[type]} [description]
    */
   autoSizeSceneGraph() {
-    const aabb = this.sceneGraph.getAABB();
-    if (aabb) {
-      this.sceneGraph.width = Math.max(aabb.right, kT.minWidth);
-      this.sceneGraph.height = Math.max(aabb.bottom, kT.minHeight);
-      this.sceneGraph.updateSize();
+    if (this.rootLayout) {
+      const aabb = this.sceneGraph.getAABB();
+      if (aabb) {
+        this.sceneGraph.width = Math.max(aabb.right, kT.minWidth);
+        this.sceneGraph.height = Math.max(aabb.bottom, kT.minHeight);
+        this.sceneGraph.updateSize();
+      }
     }
   }
   /**
@@ -506,6 +511,7 @@ export default class Layout {
             showHeader: false,
             insetX: nestedX,
             insetY: nestedY,
+            rootLayout: false,
           });
         }
 

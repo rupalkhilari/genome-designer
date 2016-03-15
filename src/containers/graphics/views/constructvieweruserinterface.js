@@ -365,8 +365,8 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * user dropped the payload on us at the given position. Defer the insertion
    * to our actual constructViewer which has all the necessary props
    */
-  onDrop(globalPosition, payload) {
-    const blocks = this.constructViewer.addItemAtInsertionPoint(payload, this.insertion);
+  onDrop(globalPosition, payload, event) {
+    const blocks = this.constructViewer.addItemAtInsertionPoint(payload, this.insertion, event);
     this.constructViewer.blockSelected(blocks);
     this.constructViewer.constructSelected(this.constructViewer.props.constructId);
   }
