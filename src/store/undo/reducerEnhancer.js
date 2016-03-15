@@ -1,18 +1,14 @@
 import * as ActionTypes from './ActionTypes';
 import * as UndoManager from './UndoManager';
 
-//todo - need to figure out how to update store on commit() and abort() - cannot initiate these changes from the reducer. Probably need to create an action to do this. Probably best for consistency if its all actions...
-
 export default (config) => {
   const params = Object.assign({
-    limit: false,
-    trackAll: false,
-    debug: (process.env.NODE_ENV !== 'production'),
+    trackAll: true, //todo - default should be false
+    debug: (process && process.env && process.env.NODE_ENV !== 'production'),
     stateKey: 'undo',
   }, config);
 
   const manager = new UndoManager({
-    limit: params.limit,
     debug: params.debug,
   });
 
@@ -50,11 +46,8 @@ export default (config) => {
         manager.transact();
         return state;
       case ActionTypes.COMMIT :
-        //todo - decide if to pass in state here. should not return here???
-        manager.commit();
-        return state;
+        return manager.commit();
       case ActionTypes.ABORT :
-        //todo - should revert here
         return manager.abort();
 
       default :

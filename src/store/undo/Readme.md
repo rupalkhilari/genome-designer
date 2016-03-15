@@ -76,8 +76,11 @@ undo: {
 Object with the following keys:
 
 ```
-limit {false || number}
 trackAll {boolean}
 debug {boolean}
 stateKey {String}           //todo - determine whether doing this
 ```
+
+###Todo
+
+- support limit of states to track

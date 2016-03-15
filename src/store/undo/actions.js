@@ -12,3 +12,15 @@ export const jump = (number) => ({
   type: ActionTypes.JUMP,
   number,
 });
+
+export const transact = () => ({
+  type: ActionTypes.TRANSACT,
+});
+
+export const commit = () => ({
+  type: ActionTypes.COMMIT,
+});
+
+export const abort = () => ({
+  type: ActionTypes.ABORT,
+});
