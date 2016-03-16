@@ -2,7 +2,7 @@
 set -e
 
 VERSION_FILE="./node_modules/bio-user-platform/package.json"
-VERSION="0.3.0"
+VERSION="0.4.0"
 
 correct_cwd () {
     if [ ! -f "package.json" ]

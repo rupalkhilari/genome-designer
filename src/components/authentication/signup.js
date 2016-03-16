@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import {connect} from 'react-redux';
 import { uiShowAuthenticationForm, uiSetGrunt } from '../../actions/ui';
-import { userSetUser } from '../../actions/user';
+import { userRegister } from '../../actions/user';
 import invariant from 'invariant';
 
 /**
@@ -40,7 +40,7 @@ class RegisterForm extends Component {
   static propTypes = {
     uiShowAuthenticationForm: PropTypes.func.isRequired,
     uiSetGrunt: PropTypes.func.isRequired,
-    userSetUser: PropTypes.func.isRequired,
+    userRegister: PropTypes.func.isRequired,
   };
 
   constructor() {
@@ -57,47 +57,24 @@ class RegisterForm extends Component {
     if (this.clientValidation()) {
       return;
     }
-    // get the API end point
-    const endPoint = `${window.location.origin}/auth/register`;
 
-    fetch(endPoint, {
-      credentials: 'include', // allow cookies
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email: this.emailAddress,
-        password: this.password,
-        firstName: this.firstName,
-        lastName: this.lastName,
-      }),
-    })
-    .then((response) => {
-      return response.json();
+    this.props.userRegister({
+      email: this.emailAddress,
+      password: this.password,
+      firstName: this.firstName,
+      lastName: this.lastName,
     })
     .then((json) => {
-      if (json.message) {
-        this.showServerErrors(json);
-        return;
-      }
-      // set the user
-      this.props.userSetUser({
-        userid: json.uuid,
-        email: json.email,
-        firstName: json.firstName,
-        lastName: json.lastName,
-      });
       // set grunt message with signup information
       this.props.uiSetGrunt(`You are now registered and signed in as ${json.firstName} ${json.lastName} ( ${json.email} )`);
-
       // close the form
       this.props.uiShowAuthenticationForm('none');
     })
     .catch((reason) => {
+      const defaultMessage = 'Unexpected error, please check your connection';
+      const { message = defaultMessage } = reason;
       this.showServerErrors({
-        message: 'Unexpected error, please check your connection',
+        message,
       });
     });
   }
@@ -279,5 +256,5 @@ function mapStateToProps(state) {
 export default connect(mapStateToProps, {
   uiShowAuthenticationForm,
   uiSetGrunt,
-  userSetUser,
+  userRegister,
 })(RegisterForm);
