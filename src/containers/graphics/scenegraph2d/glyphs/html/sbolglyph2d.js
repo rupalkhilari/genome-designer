@@ -55,5 +55,6 @@ export default class SBOLGlyph2D extends Glyph2D {
       this.img.style.display = 'none';
     }
     this.triangle.style.display = this.node.hasChildren ? 'block' : 'none';
+    this.triangle.style.borderTopColor = this.node.showChildren ? 'white' : '#292D40';
   }
 }

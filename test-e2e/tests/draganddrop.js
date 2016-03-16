@@ -5,6 +5,9 @@ var signin = require('../fixtures/signin');
 module.exports = {
   'Test drag and drop on an empty project.' : function (browser) {
 
+    // maximize for graphical tests
+    browser.windowMaximize('current');
+
     // register via fixture
     var credentials = homepageRegister(browser);
 
@@ -29,7 +32,8 @@ module.exports = {
     // click and drag first inventory item
       .moveToElement('.InventoryItem-item', 10, 10)
       .mouseButtonDown(0)
-      .moveToElement('.sbol-glyph', 10, 10)
+      .moveToElement('.sbol-glyph', 50, 10)
+      .pause(10000)
       .mouseButtonUp(0)
       .assert.countelements('.sbol-glyph', 8)
       .end();
