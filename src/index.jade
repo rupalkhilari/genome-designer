@@ -1,0 +1,15 @@
+doctype html
+html
+  head
+    title Genome Designer
+    script.
+        // global variables inserted by templating on server
+        var flashedUser = {
+            email           : "#{email}",
+            userid          : "#{uuid}",
+            firstName       : "#{firstName}",
+            lastName        : "#{lastName}",
+        };
+  body
+    #root
+    script(src='/static/bundle.js')

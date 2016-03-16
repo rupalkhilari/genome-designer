@@ -16,17 +16,11 @@ render(
   document.getElementById('root')
 );
 
-// login on app start by default for all subsequent API requests...
-// need to handle this much better. this is so lame.
-// really, this isnt necessary yet, as there is a testingStub Key in middleware/api.js for now
-server.login();
-
 //expose various things on the window, e.g. for extensions
 const exposed = global.gd = {};
 Object.assign(exposed, {
   registerExtension,
   actionTypes,
-  actions,
   api: orchestrator, //expose better....
   store: {
     dispatch: store.dispatch,
@@ -38,5 +32,4 @@ Object.assign(exposed, {
       });
     },
   },
-  server,
 });

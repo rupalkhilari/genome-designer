@@ -5,20 +5,20 @@
   flex-direction: column;
   align-content: center;
   min-height: 30px;
-  height: 0;
+  flex-basis: 0;
   background-color: var(--colors-bluegreyLight);
-  padding: 8px 10px;
 
   &.visible {
     background-color: var(--colors-white);
     flex-grow: 1;
-    height: 600px;
+    min-height: 400px;
   }
 
   &-heading {
     display: flex;
     position: relative;
-    margin: 0 0 10px;
+    flex-shrink: 0;
+    padding: 10px;
 
     &-close,
     &-toggle {
@@ -63,13 +63,14 @@
 
     &-close {
       position: absolute;
-      top: 0;
-      right: 0;
+      top: 5px;
+      right: 5px;
       background-image: url('/images/ui/close_icon_dark.svg');
     }
   }
 
   &-chrome {
+    display: flex;
     flex-grow: 1;
   }
 
@@ -78,7 +79,7 @@
     flex-grow: 1;
 
     .visible & {
-      display: block;
+      display: flex;
     }
   }
 }

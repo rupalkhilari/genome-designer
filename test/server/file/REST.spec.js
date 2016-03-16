@@ -5,7 +5,7 @@ import { createFilePath } from '../../../server/utils/filePaths';
 
 const devServer = require('../../../server/devServer');
 
-describe('REST', () => {
+describe('Server', () => {
   describe('Files', () => {
     let server;
     beforeEach('server setup', () => {

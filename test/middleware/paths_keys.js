@@ -21,10 +21,6 @@ describe('Middleware', () => {
       assert(/data\/somepath/.test(fakepath));
     });
 
-    it('getSessionKey() should return current session key', () => {
-      expect(api.getSessionKey()).to.be.a.string;
-    });
-
-    it('getSessionKey() should be null before logging in'); //future
+    it('getUserInfo() should get current user info, synchronously'); //future
   });
 });

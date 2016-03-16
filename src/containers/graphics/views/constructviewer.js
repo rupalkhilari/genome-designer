@@ -96,14 +96,21 @@ export class ConstructViewer extends Component {
     // initial render won't call componentDidUpdate so force an update to the layout/scenegraph
     this.update();
     // handle window resize to reflow the layout
-    window.addEventListener('resize', debounce(this.windowResized.bind(this), 15));
+    this.resizeDebounced = debounce(this.windowResized.bind(this));
+    window.addEventListener('resize', this.resizeDebounced, 15);
   }
-
   /**
    * update scene graph after the react component updates
    */
   componentDidUpdate() {
     this.update();
+  }
+  /**
+   * ensure we don't get any resize events after dismounting
+   */
+  componentWillUnmount() {
+    this.resizeDebounced.cancel();
+    window.removeEventListener('resize', this.resizeDebounced);
   }
 
   /**
@@ -249,13 +256,6 @@ export class ConstructViewer extends Component {
   }
 
   /**
-   * update scene graph after the react component updates
-   */
-  componentDidUpdate() {
-    this.update();
-  }
-
-  /**
    * update the layout and then the scene graph
    */
   update() {
@@ -350,15 +350,9 @@ export class ConstructViewer extends Component {
         {this.blockContextMenu()}
         <ModalWindow
           open={this.state.modalOpen}
-          title="Construct Viewer Modal"
-          payload={<div className="payload"/>}
+          payload={<div/>}
           closeOnClickOutside
-          buttons={
-            [
-              {text: 'Ok', primary: true},
-              {text: 'Cancel', primary: false},
-            ]}
-          closeModal={(buttonText) => {
+          closeModal={() => {
             this.setState({
               modalOpen: false,
             });

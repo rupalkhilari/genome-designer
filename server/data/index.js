@@ -1,23 +1,19 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import { errorNoIdProvided, errorInvalidModel, errorInvalidRoute, errorDoesNotExist } from './../utils/errors';
-import findProjectFromBlock from './findProjectFromBlock';
-import { authenticationMiddleware } from './../utils/authentication';
+import { errorNoIdProvided, errorInvalidModel, errorInvalidRoute, errorDoesNotExist, errorCouldntFindProjectId } from './../utils/errors';
+import * as querying from './querying';
 import * as persistence from './persistence';
 import * as rollup from './rollup';
+import { permissionsMiddleware } from './permissions';
 
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
   strict: false, //allow values other than arrays and objects
 });
-const textParser = bodyParser.text();
 
 /***************************
  Middleware
  ****************************/
-
-//Login and session validator
-router.use(authenticationMiddleware);
 
 router.use(jsonParser);
 
@@ -29,9 +25,9 @@ const blockDeterminatorMiddleware = (req, res, next) => {
   const { projectId, blockId } = req;
 
   if (projectId === 'block' && blockId) {
-    findProjectFromBlock(blockId)
+    querying.findProjectFromBlock(blockId)
       .then(projectId => {
-        Object.assign(req, {projectId});
+        Object.assign(req, { projectId });
         next();
       })
       .catch(err => {
@@ -52,12 +48,12 @@ const blockDeterminatorMiddleware = (req, res, next) => {
 /******** PARAMS ***********/
 
 router.param('projectId', (req, res, next, id) => {
-  Object.assign(req, {projectId: id});
+  Object.assign(req, { projectId: id });
   next();
 });
 
 router.param('blockId', (req, res, next, id) => {
-  Object.assign(req, {blockId: id});
+  Object.assign(req, { blockId: id });
   next();
 });
 
@@ -81,7 +77,7 @@ router.route('/sequence/:md5/:blockId?')
       .then(sequence => {
         //not entirely sure what this means... the file is empty?
         if (!sequence) {
-          res.status(204).send('');
+          return res.status(204).send('');
         }
         res.status(200)
           .set('Content-Type', 'text/plain')
@@ -89,28 +85,17 @@ router.route('/sequence/:md5/:blockId?')
       })
       .catch(err => {
         if (err === errorDoesNotExist) {
-          res.status(400).send(errorDoesNotExist);
+          return res.status(400).send(errorDoesNotExist);
         }
         res.status(500).send(err);
       });
   })
   .post((req, res) => {
-    const { md5, blockId } = req.params;
+    const { md5 } = req.params;
     const { sequence } = req.body;
 
-    findProjectFromBlock(blockId)
-      .then(projectId => {
-        return persistence.sequenceWrite(md5, sequence, blockId, projectId);
-      })
-      .catch(() => {
-        //todo - only want to catch the findProjectFromBlock
-        //couldn't find projectId or no block ID provided, just write the sequence
-        //todo - ensure that this is an error from findProjectFromBlock
-        return persistence.sequenceWrite(md5, sequence);
-      })
-      .then(() => {
-        res.status(200).send();
-      })
+    persistence.sequenceWrite(md5, sequence)
+      .then(() => res.status(200).send())
       .catch(err => res.status(500).send(err));
   })
   .delete((req, res) => {
@@ -120,44 +105,39 @@ router.route('/sequence/:md5/:blockId?')
 // routes for non-atomic operations
 // response/request with data in format {project: {}, blocks: [], ...}
 // e.g. used in autosave, loading / saving whole project
-router.route('/projects/:projectId?')
-  .all(jsonParser)
+router.route('/projects/:projectId')
+  .all(jsonParser, permissionsMiddleware)
   .get((req, res) => {
     const { projectId } = req;
-
-    if (projectId) {
-      rollup.getProjectRollup(projectId)
-        .then(roll => {
-          res.status(200).json(roll);
-        })
-        .catch(err => {
-          res.status(400).send(err);
-        });
-    } else {
-      rollup.getAllProjectManifests()
-        .then(metadatas => res.status(200).json(metadatas))
-        .catch(err => {
-          res.status(500).send(err);
-        });
-    }
+    rollup.getProjectRollup(projectId)
+      .then(roll => res.status(200).json(roll))
+      .catch(err => res.status(400).send(err));
   })
   .post((req, res) => {
-    const { projectId } = req;
+    const { projectId, user } = req;
     const roll = req.body;
-    //todo - create project if not created
 
-    rollup.writeProjectRollup(projectId, roll)
+    rollup.writeProjectRollup(projectId, roll, user.uuid)
       .then(() => persistence.projectSave(projectId))
-      .then(() => {
-        res.status(200).send();
-      })
+      .then(commit => res.status(200).json(commit))
       .catch(err => {
         console.log(err);
         res.status(400).send(err);
       });
   });
 
+router.route('/projects')
+  .all(jsonParser)
+  .get((req, res) => {
+    const { user } = req;
+
+    querying.getAllProjectManifests(user.uuid)
+      .then(metadatas => res.status(200).json(metadatas))
+      .catch(err => res.status(500).send(err));
+  });
+
 router.route('/:projectId/commit/:sha?')
+  .all(permissionsMiddleware)
   .get((req, res) => {
     //pass the SHA you want, otherwise send commit log
     const { projectId } = req;
@@ -165,15 +145,18 @@ router.route('/:projectId/commit/:sha?')
 
     if (sha) {
       persistence.projectGet(projectId, sha)
-        .then(project => res.status(200).json(project))
+        .then(project => {
+          console.log('got project', project);
+          res.status(200).json(project);
+        })
         .catch(err => res.status(500).send(err));
     } else {
-      //todo
+      //todo - get project history
       res.status(501).send('not supported yet');
     }
   })
   .post((req, res) => {
-    //you can POST a field `message` for the commit, receieve the SHA
+    //you can POST a field `message` for the commit, receive the SHA
     const { projectId } = req;
     const { message } = req.body;
 
@@ -185,7 +168,7 @@ router.route('/:projectId/commit/:sha?')
 
 //pass SHA you want, otherwise get commit log
 router.route('/:projectId/:blockId/commit/:sha?')
-  .all(blockDeterminatorMiddleware)
+  .all(blockDeterminatorMiddleware, permissionsMiddleware)
   .get((req, res) => {
     const { blockId, projectId } = req;
     const { sha } = req.params;
@@ -195,24 +178,26 @@ router.route('/:projectId/:blockId/commit/:sha?')
         .then(project => res.status(200).json(project))
         .catch(err => res.status(500).send(err));
     } else {
-      //todo
+      //todo - get block history
       res.status(501).send('not supported yet');
     }
   });
 
 router.route('/:projectId/:blockId')
-  .all(blockDeterminatorMiddleware)
+  .all(blockDeterminatorMiddleware, permissionsMiddleware)
   .get((req, res) => {
     const { projectId, blockId } = req;
 
     persistence.blockGet(blockId, projectId)
       .then(result => {
         if (!result) {
-          res.status(204).json(null);
+          return res.status(204).json(null);
         }
         res.json(result);
       })
-      .catch(err => res.status(500).send(err));
+      .catch(err => {
+        res.status(500).send(err);
+      });
   })
   .put((req, res) => {
     const { projectId, blockId } = req;
@@ -222,7 +207,7 @@ router.route('/:projectId/:blockId')
       .then(result => res.json(result))
       .catch(err => {
         if (err === errorInvalidModel) {
-          res.status(400).send(errorInvalidModel);
+          return res.status(400).send(errorInvalidModel);
         }
         res.status(500).send(err);
       });
@@ -239,7 +224,7 @@ router.route('/:projectId/:blockId')
       .then(merged => res.json(merged))
       .catch(err => {
         if (err === errorInvalidModel) {
-          res.status(400).send(errorInvalidModel);
+          return res.status(400).send(errorInvalidModel);
         }
         res.status(500).send(err);
       });
@@ -253,6 +238,7 @@ router.route('/:projectId/:blockId')
   });
 
 router.route('/:projectId')
+  .all(permissionsMiddleware)
   .get((req, res) => {
     const { projectId } = req;
     //const { depth } = req.query; //future
@@ -260,38 +246,38 @@ router.route('/:projectId')
     persistence.projectGet(projectId)
       .then(result => {
         if (!result) {
-          res.status(204).json(null);
+          return res.status(204).json(null);
         }
         res.json(result);
       })
       .catch(err => res.status(500).send(err));
   })
   .put((req, res) => {
-    const { projectId } = req;
+    const { projectId, user } = req;
     const project = req.body;
 
-    persistence.projectWrite(projectId, project)
+    persistence.projectWrite(projectId, project, user.uuid)
       .then(result => res.json(result))
       .catch(err => {
         if (err === errorInvalidModel) {
-          res.status(400).send(errorInvalidModel);
+          return res.status(400).send(errorInvalidModel);
         }
         res.status(500).send(err);
       });
   })
   .post((req, res) => {
-    const { projectId } = req;
+    const { projectId, user } = req;
     const project = req.body;
 
     if (!!project.id && project.id !== projectId) {
-      res.status(400).send(errorInvalidModel);
+      return res.status(400).send(errorInvalidModel);
     }
 
-    persistence.projectMerge(projectId, project)
+    persistence.projectMerge(projectId, project, user.uuid)
       .then(merged => res.status(200).send(merged))
       .catch(err => {
         if (err === errorInvalidModel) {
-          res.status(400).send(errorInvalidModel);
+          return res.status(400).send(errorInvalidModel);
         }
         res.status(500).send(err);
       });

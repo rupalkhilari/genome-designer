@@ -8,7 +8,9 @@ mkpath('storage/test/sequence');
 
 //DOM SETUP
 
-global.document = jsdom('<!doctype html><html><body></body></html>');
+global.document = jsdom('<!doctype html><html><body></body></html>', {
+  cookie: 'blah=demoCookie',
+});
 global.window = document.defaultView;
 global.navigator = global.window.navigator;
 window.console = global.console;

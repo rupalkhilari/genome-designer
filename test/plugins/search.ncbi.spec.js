@@ -1,10 +1,10 @@
 import { assert } from 'chai';
 import { searchString } from '../../plugins/search/search';
 
-//todo - this is a very brittle test
+//todo - refactor. this is a very brittle test
 describe('Plugins', () => {
   describe('NCBI Search Plugin', () => {
-    it('should be able to search the Nucleotide DB', function nucleotide() {
+    it.skip('should be able to search the Nucleotide DB', function nucleotide() {
       this.timeout(60000);
 
       const query = 'carboxylase';
