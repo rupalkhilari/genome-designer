@@ -1,5 +1,5 @@
 import invariant from 'invariant';
-import * as history from './history';
+import StoreHistory from './storeHistory';
 
 //todo - may need to prohibit silent updates in a transaction... how else to reconcile?
 /*
@@ -22,7 +22,7 @@ import * as history from './history';
 
 export default class UndoManager {
   constructor(initialState, config) {
-    this.history = history.createHistory(initialState);
+    this.history = new StoreHistory(initialState);
 
     this.transactionDepth = 0;
     this.transactionState = null;
@@ -49,10 +49,11 @@ export default class UndoManager {
 
   silentUpdate = (state, action) => {
     if (this.debug) {
-      console.log(`UndoManager: silent update (not undoable)`, action);
+      //too many updates
+      //console.log(`UndoManager: silent update (not undoable)`, action);
     }
 
-    Object.assign(this.history, { present: state });
+    this.history.patch(state);
     return this.getCurrentState();
   };
 
@@ -78,7 +79,7 @@ export default class UndoManager {
       return state;
     }
 
-    this.history = history.update(this.history, state);
+    this.history.update(state);
 
     if (this.debug) {
       console.log('UndoManager: updating state' + (this.transactionDepth > 0 ? ' (in transaction)' : ''), action);
@@ -92,7 +93,7 @@ export default class UndoManager {
       console.log(`UndoManager: undo`);
     }
 
-    this.history = history.undo(this.history);
+    this.history.undo();
     this.setTransactionState(null);
     return this.getCurrentState();
   };
@@ -102,7 +103,7 @@ export default class UndoManager {
       console.log(`UndoManager: redo`);
     }
 
-    this.history = history.redo(this.history);
+    this.history.redo();
     this.setTransactionState(null);
     return this.getCurrentState();
   };
@@ -112,7 +113,7 @@ export default class UndoManager {
       console.log(`UndoManager: jump`);
     }
 
-    this.history = history.jump(this.history, number);
+    this.history.jump(number);
     this.setTransactionState(null);
     return this.getCurrentState();
   };
