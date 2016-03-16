@@ -21,7 +21,8 @@ describe('Middleware', () => {
             expect(file).to.eql(fileContents);
             done();
           });
-        });
+        })
+        .catch(done);
     });
 
     it('writeFile() shuold delete if contents are null', function writeFileDelete(done) {
@@ -57,13 +58,14 @@ describe('Middleware', () => {
           .then(text => {
             expect(text).to.equal(fileContents);
             done();
-          });
+          })
+          .catch(done);
       });
     });
 
     it('readFile / writeFile should work with multiple files', function multipleFiles(done) {
       //only takes a long time the first time docker build is run
-      this.timeout(500000);
+      this.timeout(30000);
 
       const file1Path = 'test/file1';
       const file1Contents = 'exhibit a';
@@ -96,7 +98,8 @@ describe('Middleware', () => {
           expect(files[0]).to.equal(file1Contents);
           expect(files[1]).to.equal(file2Contents);
           done();
-        });
+        })
+        .catch(done);
     });
   });
 });

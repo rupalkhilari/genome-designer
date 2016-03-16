@@ -1,4 +1,5 @@
 import path from 'path';
+import fs from 'fs';
 import express from 'express';
 import webpack from 'webpack';
 import morgan from 'morgan';
@@ -13,28 +14,70 @@ import importRouter from '../plugins/convert/import';
 import exportRouter from '../plugins/convert/export';
 import searchRouter from '../plugins/search/search';
 
-import { authRouter } from './utils/authentication';
-
 const DEFAULT_PORT = 3000;
 const port = parseInt(process.argv[2], 10) || process.env.PORT || DEFAULT_PORT;
 const hostname = '0.0.0.0';
 
-var ROOT = path.dirname(__dirname);
+const ROOT = path.dirname(__dirname);
 const app = express();
 const compiler = webpack(config);
 
-//logging middleware
+//error logging middleware
+if (process.env.NODE_ENV !== 'production') {
+  app.use((err, req, res, next) => {
+    console.log('hit error logging middleware', err, req, res, next);
+    if (err) {
+      console.error(err);
+      if (res.headersSent) {
+        return next(err);
+      }
+      res.status(502).send(err);
+    }
+    return next();
+  });
+}
+
+//HTTP logging middleware
 app.use(morgan('dev'));
 
-//Hotloading Middleware
+// view engine setup
+app.set('views', path.join(__dirname, '../src'));
+app.set('view engine', 'jade');
+
+// Register Hotloading Middleware
+// ----------------------------------------------------
+
 app.use(require('webpack-dev-middleware')(compiler, {
   noInfo: true,
   publicPath: config.output.publicPath,
 }));
 app.use(require('webpack-hot-middleware')(compiler));
 
-//authentication
-app.use('/auth', authRouter);
+// Register API middleware
+// ----------------------------------------------------
+
+// insert some form of user authentication
+// the auth routes are currently called from the client and expect JSON responses
+if (process.env.BIO_NANO_AUTH) {
+  console.log("real user authentication enabled");
+  var initAuthMiddleware = require('bio-user-platform').initAuthMiddleware;
+
+  // TODO load a custom configuration here
+  // disable all redirects
+  var authConfig = {
+    logoutLanding: false,
+    loginLanding: false,
+    loginFailure: false,
+    apiEndPoint: process.env.API_END_POINT || "http://localhost:8080/api",
+  };
+  app.use(initAuthMiddleware(authConfig));
+} else {
+  app.use(require('cookie-parser')());
+  // import the mocked auth routes
+  app.use(require('./auth/local').mockUser);
+  const authRouter = require('./auth/local').router;
+  app.use('/auth', authRouter);
+}
 
 //primary routes
 app.use('/data', dataRouter);
@@ -53,20 +96,21 @@ app.use('/search', searchRouter);
 //Static Files
 app.use('/images', express.static(path.join(__dirname, '../src/images')));
 
-app.get('/version', function(req, res) {
-	try {
-		var version = require('fs').readFileSync(path.join(ROOT, 'VERSION'));
-		res.send(version);
-	} catch(ignored) {
-		res.send('Missing VERSION file');
-	}
+app.get('/version', (req, res) => {
+  try {
+    const version = fs.readFileSync(path.join(ROOT, 'VERSION'));
+    res.send(version);
+  } catch (ignored) {
+    res.send('Missing VERSION file');
+  }
 });
 
 //so that any routing is delegated to the client
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../src/index.html'));
+  res.render('index.jade', req.user);
 });
 
+//start the server by default
 app.listen(port, hostname, (err) => {
   if (err) {
     console.log(err);

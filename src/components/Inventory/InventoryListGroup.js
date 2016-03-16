@@ -46,7 +46,8 @@ export default class InventoryListGroup extends Component {
       (expanded ? ' expanded' : '') +
       (disabled ? ' disabled' : '') +
       (isActive ? ' active' : '')}>
-        <div onClick={this.handleToggle}>
+        <div className="InventoryListGroup-heading"
+             onClick={this.handleToggle}>
           <span className="InventoryListGroup-toggle"/>
           <a className="InventoryListGroup-title">
             <span>{title}</span>

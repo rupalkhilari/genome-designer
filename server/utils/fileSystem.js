@@ -44,7 +44,11 @@ export const fileRead = (path, jsonParse = true) => {
   return new Promise((resolve, reject) => {
     fs.readFile(path, 'utf8', (err, result) => {
       if (err) {
-        reject(err);
+        if (err.code === 'ENOENT') {
+          reject(errorDoesNotExist);
+        } else {
+          reject(err);
+        }
       }
       const parsed = !!jsonParse ? parser(result) : result;
       resolve(parsed);

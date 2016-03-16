@@ -16,7 +16,9 @@
     "nightwatch": "node ./node_modules/nightwatch/bin/nightwatch",
     "selenium": "node ./node_modules/selenium-standalone/bin/selenium-standalone install",
     "start-docker": "docker build -t genome-designer . && docker run --privileged -v /var/run/docker.sock:/run/docker.sock -i -p 3000:3000 -t genome-designer",
-    "create-ecoli-db": "python extensions/foundry/ecoli/generate_db.py jdon extensions/foundry/ecoli/ecoli.genes.json extensions/foundry/ecoli.json"
+    "create-ecoli-db": "python extensions/foundry/ecoli/generate_db.py jdon extensions/foundry/ecoli/ecoli.genes.json extensions/foundry/ecoli.json",
+    "auth": "EMAIL=1 ./bin/server-auth.sh",
+    "auth-test": "COMMAND=\"mocha --compilers js:babel-register,css:test/css-null-compiler.js --require ./test/setup.js --timeout=10000 test/server/auth/REST.spec.js\" ./bin/server-auth.sh"
   },
   "repository": {
     "type": "git",
@@ -39,12 +41,14 @@
   "dependencies": {
     "ansi-to-html-umd": "^0.4.2",
     "bootstrap": "^3.3.6",
+    "cookie-parser": "^1.4.1",
     "d3": "^3.5.12",
     "deep-freeze": "0.0.1",
     "fast-csv": "^1.0.0",
     "history": "^1.17.0",
     "invariant": "^2.2.0",
     "isomorphic-fetch": "^2.1.1",
+    "jade": "^1.11.0",
     "jquery": "^2.1.4",
     "load-script": "^1.0.0",
     "lodash": "^4.5.1",
@@ -67,7 +71,7 @@
     "react-bootstrap": "^0.28.2",
     "react-dom": "0.14.2",
     "react-redux": "^3.1.0",
-    "react-router": "^1.0.3",
+    "react-router": "^2.0.0",
     "read-multiple-files": "^1.1.1",
     "redux": "^3.0.2",
     "redux-logger": "^2.0.2",
@@ -119,7 +123,7 @@
     "redux-devtools-dock-monitor": "^1.0.1",
     "redux-devtools-log-monitor": "^1.0.2",
     "rimraf": "^2.3.4",
-    "selenium-standalone": "^4.7.1",
+    "selenium-standalone": "4.9.1",
     "sinon": "^1.17.2",
     "sinon-chai": "^2.8.0",
     "style-loader": "^0.13.0",

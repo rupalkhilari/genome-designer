@@ -1,11 +1,16 @@
+/*global flashedUser*/
 import React, { Component, PropTypes } from 'react';
+import {connect} from 'react-redux';
+import GlobalNav from './GlobalNav';
+import AuthenticationForms from './authentication/authenticationforms';
 import GlobalNav from './GlobalNav';
 
 import '../styles/App.css';
 
-export class App extends Component {
+class App extends Component {
   static propTypes = {
     children: PropTypes.node, // Injected by React Router
+    user: PropTypes.object,
   };
 
   render() {
@@ -16,6 +21,7 @@ export class App extends Component {
     return (
       <div className="App">
         <GlobalNav />
+        <AuthenticationForms />
         <div className="App-pageContent">
           {children}
         </div>
@@ -25,4 +31,11 @@ export class App extends Component {
   }
 }
 
-export default App;
+function mapStateToProps(state) {
+  return {
+    user: state.user,
+  };
+}
+
+export default connect(mapStateToProps, {
+})(App);

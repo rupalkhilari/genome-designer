@@ -61,7 +61,7 @@ function mapStateToProps(state, props) {
   const instances = forceBlocks.length ?
     forceBlocks :
     (currentBlocks && currentBlocks.length) ?
-      [state.blocks[currentBlocks[0]]] :
+      currentBlocks.map(blockId => state.blocks[blockId]) :
       (currentConstructId) ?
         [state.blocks[currentConstructId]] :
         [];

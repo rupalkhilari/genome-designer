@@ -16,26 +16,28 @@ export class InspectorBlock extends Component {
   };
 
   setBlockName = (name) => {
-    this.props.instances.forEach((blockId) => {
-      this.props.blockRename(blockId, name);
+    this.props.instances.forEach((block) => {
+      this.props.blockRename(block.id, name);
     });
   };
 
   setBlockDescription = (description) => {
-    this.props.instances.forEach((blockId) => {
-      this.props.blockMerge(blockId, {metadata: {description}});
+    this.props.instances.forEach((block) => {
+      this.props.blockMerge(block.id, {metadata: {description}});
     });
   };
 
   selectColor = (color) => {
-    this.props.instances.forEach((blockId) => {
-      this.props.blockSetColor(blockId, color);
+    this.props.instances.forEach((block) => {
+      this.props.blockSetColor(block.id, color);
     });
   };
 
   selectSymbol = (symbol) => {
-    this.props.instances.forEach((blockId) => {
-      this.props.blockSetSbol(blockId, symbol);
+    console.log(this.props.instances);
+    this.props.instances.forEach((block) => {
+      console.log('setting block ' + block.id + ' to ' + symbol);
+      this.props.blockSetSbol(block.id, symbol);
     });
   };
 

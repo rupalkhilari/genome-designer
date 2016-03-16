@@ -2,7 +2,7 @@
 
 ## Overview
 
-This section of the API is for saving Projects and Blocks. Projects are saved as directories, and versioned under git. Blocks are directories under projects. Using the provided persistence interface, git versioning should be handled automatically. 
+This section of the API is for saving Projects and Blocks. Projects are saved as directories, and versioned under git. Blocks are directories under projects. Using the provided persistence interface, git versioning should be handled automatically.
 
 Sequences are saved under their md5 hash, and in a separate folder. The md5 is computed on the client, and `block.sequence.md5` notes this value, which is used for retrieving the sequence.
 
@@ -10,7 +10,7 @@ Sequences are saved under their md5 hash, and in a separate folder. The md5 is c
 
 A project will NOT gain a commit whenever something happens (e.g. create, save, destroy). Commits happen with autosaving, which will be triggered by the client every few minutes when there are changes. 
 
-Snapshots are just commits with a specific message
+Snapshots are just commits with a specific message.
 
 ### Format
 
@@ -27,16 +27,28 @@ Autosaving / loading models are passed as a `rollup`, which takes the format:
 
 ### Directory Structure 
 
+In the scheme below, `/data/` is under git version control
+
+```
 /<projectId>
-    manifest.json
-    /blocks
-        /<blockId>
-            manifest.json
-        /<blockId>
-            manifest.json
+    permissions.json
+    data/
+        manifest.json
+        /blocks
+            /<blockId>
+                manifest.json
+            /<blockId>
+                manifest.json
 /sequence
     /<md5>
     /<md5>
+```
+
+### Permissions
+
+Permissions are checked in `index.js`... All other files assume that they are being called when valid / permissions have been validated. Utilities are available in `permissions.js`
+
+Sequences can be accessed by anybody, and are not owned by anybody.
 
 ## Files
 
@@ -63,3 +75,7 @@ Constants for various commit messages + generators so messages are consistent + 
 ### rollup.js
 
 Utilities for creating / reading / writing rollups.
+
+### permissions.js
+
+Utilities for creating permission files for a project, and validating permissions. Also exports a routing middleware function for checking permissions. 
