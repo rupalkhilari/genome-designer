@@ -69,8 +69,6 @@ export class ProjectDetail extends Component {
                    onClick={this.loadExtension.bind(null, manifest)}>{manifest.readable || manifest.name}</a>
               );
             })}
-            <a className="ProjectDetail-heading-extension disabled">3D Protein Preview</a>
-            <a className="ProjectDetail-heading-extension disabled">CRISPR</a>
           </div>
         </div>
       );
