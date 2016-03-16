@@ -1,5 +1,6 @@
 import fetch from 'isomorphic-fetch';
 import invariant from 'invariant';
+import { getItem, setItem } from './localStorageCache';
 import merge from 'lodash.merge';
 import ProjectDefinition from '../schemas/Project';
 import BlockDefinition from '../schemas/Block';
@@ -76,7 +77,7 @@ export const login = (user, password) => {
     .then(resp => resp.json())
     .then(json => {
       if (json.message) {
-          return Promise.reject(json);
+        return Promise.reject(json);
       }
       return json;
     });
@@ -89,14 +90,14 @@ export const register = (user) => {
     .then(resp => resp.json())
     .then(json => {
       if (json.message) {
-          return Promise.reject(json);
+        return Promise.reject(json);
       }
       return json;
     });
 };
 
 export const forgot = (email) => {
-  const body = { email }
+  const body = { email };
   const stringified = JSON.stringify(body);
   return fetch(serverRoot + `auth/forgot-password`, headersPost(stringified))
     .then(resp => resp.json());
@@ -240,13 +241,24 @@ const getSequenceUrl = (md5, blockId, format) => dataApiPath(`sequence/${md5}` +
 export const getSequence = (md5, format) => {
   const url = getSequenceUrl(md5, undefined, format);
 
+  const cached = getItem(md5);
+  if (cached) {
+    return Promise.resolve(cached);
+  }
+
   return fetch(url, headersGet())
-    .then((resp) => resp.text());
+    .then((resp) => resp.text())
+    .then(sequence => {
+      setItem(md5, sequence);
+      return sequence;
+    });
 };
 
 export const writeSequence = (md5, sequence, blockId) => {
   const url = getSequenceUrl(md5, blockId);
   const stringified = JSON.stringify({ sequence });
+
+  setItem(md5, sequence);
 
   return fetch(url, headersPost(stringified));
 };
