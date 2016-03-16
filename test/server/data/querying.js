@@ -11,7 +11,7 @@ import { createExampleRollup } from '../../utils/rollup';
 
 describe('Server', () => {
   describe('Data', () => {
-    describe.only('Querying', () => {
+    describe('Querying', () => {
       const myUserId = uuid.v4();
       const myRolls = [1, 2, 3, 4].map(createExampleRollup);
       const myRollIds = myRolls.map(roll => roll.project.id);
