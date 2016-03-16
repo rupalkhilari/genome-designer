@@ -25,6 +25,7 @@
     padding: var(--SidePanel-width-padding-heading);;
     position: relative;
     display: flex;
+    flex-shrink: 0;
     align-items: center;
     justify-content: center;
 
@@ -75,6 +76,7 @@
   &-content {
     display: flex;
     flex-grow: 1;
+    flex-shrink: 0;
     width: var(--width-SidePanel-open);
     padding: 0 var(--SidePanel-width-padding-content);
     opacity: 0;

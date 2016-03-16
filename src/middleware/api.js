@@ -75,10 +75,23 @@ export const login = (user, password) => {
   return fetch(serverRoot + `auth/login`, headersPost(stringified))
     .then(resp => resp.json())
     .then(json => {
+      if (json.message) {
+          return Promise.reject(json);
+      }
       return json;
-    })
-    .catch((err) => {
-      throw err;
+    });
+};
+
+export const register = (user) => {
+  invariant(user.email && user.password && user.firstName && user.lastName, 'wrong format user');
+  const stringified = JSON.stringify(user);
+  return fetch(serverRoot + `auth/register`, headersPost(stringified))
+    .then(resp => resp.json())
+    .then(json => {
+      if (json.message) {
+          return Promise.reject(json);
+      }
+      return json;
     });
 };
 
@@ -86,26 +99,14 @@ export const forgot = (email) => {
   const body = { email }
   const stringified = JSON.stringify(body);
   return fetch(serverRoot + `auth/forgot-password`, headersPost(stringified))
-    .then(resp => resp.json())
-    .then(json => {
-      return json;
-    })
-    .catch((err) => {
-      throw err;
-    });
+    .then(resp => resp.json());
 };
 
 export const reset = (email, forgotPasswordHash, newPassword) => {
   const body = { email, forgotPasswordHash, newPassword }
   const stringified = JSON.stringify(body);
   return fetch(serverRoot + `auth/reset-password`, headersPost(stringified))
-    .then(resp => resp.json())
-    .then(json => {
-      return json;
-    })
-    .catch((err) => {
-      throw err;
-    });
+    .then(resp => resp.json());
 };
 
 // login with email and password and set the sessionKey (cookie) for later use
@@ -114,13 +115,7 @@ export const updateAccount = (payload) => {
   const stringified = JSON.stringify(body);
 
   return fetch(serverRoot + `auth/update-all`, headersPost(stringified))
-    .then(resp => resp.json())
-    .then(json => {
-      return json;
-    })
-    .catch((err) => {
-      throw err;
-    });
+    .then(resp => resp.json());
 };
 
 export const logout = () => {
@@ -130,12 +125,7 @@ export const logout = () => {
 // use established sessionKey to get the user object
 export const getUser = () => {
   return fetch(serverRoot + `auth/current-user`, headersGet())
-    .then(resp => {
-      return resp.json();
-    })
-    .catch((err) => {
-      throw err;
-    });
+    .then(resp => resp.json());
 };
 
 /*************************

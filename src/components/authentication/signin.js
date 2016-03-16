@@ -1,9 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import {connect} from 'react-redux';
 import { uiShowAuthenticationForm, uiSetGrunt } from '../../actions/ui';
-import { userSetUser } from '../../actions/user';
 import invariant from 'invariant';
-import { login } from '../../middleware/api';
+import { userLogin } from '../../actions/user';
 
 /**
  * default visibility and text for error labels
@@ -21,7 +20,7 @@ class SignInForm extends Component {
   static propTypes = {
     uiShowAuthenticationForm: PropTypes.func.isRequired,
     uiSetGrunt: PropTypes.func.isRequired,
-    userSetUser: PropTypes.func.isRequired,
+    userLogin: PropTypes.func.isRequired,
   };
 
   constructor() {
@@ -36,27 +35,18 @@ class SignInForm extends Component {
     // submission occurs via REST not form submission
     evt.preventDefault();
 
-    login(this.emailAddress, this.password)
-      .then((json) => {
-        if (json.message) {
-          this.showServerErrors(json);
-          return;
-        }
-        // set the user
-        this.props.userSetUser({
-          userid: json.uuid,
-          email: json.email,
-          firstName: json.firstName,
-          lastName: json.lastName,
-        });
+    this.props.userLogin(this.emailAddress, this.password)
+      .then(user => {
         // set grunt message with login information
-        this.props.uiSetGrunt(`You are now signed in as ${json.firstName} ${json.lastName} ( ${json.email} )`);
+        this.props.uiSetGrunt(`You are now signed in as ${user.firstName} ${user.lastName} ( ${user.email} )`);
         // close the form
         this.props.uiShowAuthenticationForm('none');
       })
       .catch((reason) => {
+        const defaultMessage = 'Unexpected error, please check your connection';
+        const { message = defaultMessage } = reason;
         this.showServerErrors({
-          message: 'Unexpected error, please check your connection',
+          message,
         });
       });
   }
@@ -140,5 +130,5 @@ function mapStateToProps(state) {
 export default connect(mapStateToProps, {
   uiShowAuthenticationForm,
   uiSetGrunt,
-  userSetUser,
+  userLogin,
 })(SignInForm);

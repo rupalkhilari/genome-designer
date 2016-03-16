@@ -1,18 +1,8 @@
 import invariant from 'invariant';
 import { errorDoesNotExist } from '../utils/errors';
 import * as persistence from './persistence';
-import * as permissions from './permissions';
 import * as filePaths from '../utils/filePaths';
 import * as fileSystem from '../utils/fileSystem';
-
-export const getAllProjectManifests = (userId) => {
-  invariant(userId, 'user id is required to get list of manifests');
-
-  return permissions.listProjectsWithAccess(userId)
-    .then(projectIds => {
-      return Promise.all(projectIds.map(project => persistence.projectGet(project)));
-    });
-};
 
 //note - expects the project to already exist.
 export const getAllBlockIdsInProject = (projectId) => {

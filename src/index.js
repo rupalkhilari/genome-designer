@@ -21,8 +21,6 @@ const exposed = global.gd = {};
 Object.assign(exposed, {
   registerExtension,
   actionTypes,
-  actions, //todo - deprecate
-  server, //todo - deprecate
   api: orchestrator, //expose better....
   store: {
     dispatch: store.dispatch,
