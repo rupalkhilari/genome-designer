@@ -29,13 +29,45 @@ module.exports = {
       .waitForElementPresent('.InventoryItem-item', 5000, 'expected an inventory item')
       .waitForElementPresent('.sbol-glyph', 5000, 'expected a block to drop on')
       .assert.countelements('.sbol-glyph', 7)
-    // click and drag first inventory item
-      .moveToElement('.InventoryItem-item', 10, 10)
-      .mouseButtonDown(0)
-      .moveToElement('.sbol-glyph', 50, 10)
-      .pause(10000)
+      // click and drag first inventory item
+      .moveToElement('.InventoryItem-item:nth-of-type(1)', 10, 10)
+      .mouseButtonDown(0);
+
+      // generate mouse move events on body from source to destination
+      browser.execute(function() {
+        var body = document.body.getBoundingClientRect();
+        var src = document.querySelector('.InventoryItem-item:nth-of-type(1)').getBoundingClientRect();
+        var dst = document.querySelector('.sbol-glyph:nth-of-type(1)').getBoundingClientRect();
+        var start = {
+          x: src.left + body.left,
+          y: src.top + body.top,
+        };
+        var end = {
+          x: dst.left + body.left + 30,
+          y: dst.top + body.top + 10,
+        };
+        var lenx = end.x - start.x;
+        var leny = end.y - start.y;
+
+        var pts = [];
+        for(var i = 0; i <= 1; i += 0.1) {
+          var xp = start.x + lenx * i;
+          var yp = start.y + leny * i;
+          pts.push({x:xp, y: yp});
+        }
+        return pts;
+      }, [], function(result) {
+        var pts = result.value;
+        for(var i = 0; i < pts.length; i +=1 ) {
+          browser.moveToElement('body', pts[i].x, pts[i].y);
+        }
+      });
+
+    browser
+      .moveToElement('.sbol-glyph:nth-of-type(1)', 50, 10)
       .mouseButtonUp(0)
       .assert.countelements('.sbol-glyph', 8)
+      .pause(5000)
       .end();
   }
 };
