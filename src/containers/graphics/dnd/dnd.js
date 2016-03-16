@@ -125,14 +125,14 @@ class DnD {
             savedPayload;
           target.options.drop.call(this, globalPosition, payload, evt);
           // ensure lastTarget gets a dragLeave incase they rely on it for cleanup
-          if (this.lastTarget && this.lastTarget.options.dragLeave) {
-            this.lastTarget.options.dragLeave.call(this);
+          if (target && target.options.dragLeave) {
+            target.options.dragLeave.call(this);
           }
         });
     } else {
       // ensure lastTarget gets a dragLeave incase they rely on it for cleanup
-      if (this.lastTarget && this.lastTarget.options.dragLeave) {
-        this.lastTarget.options.dragLeave.call(this);
+      if (target && target.options.dragLeave) {
+        target.options.dragLeave.call(this);
       }
     }
 
