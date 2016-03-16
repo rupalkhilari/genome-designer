@@ -113,22 +113,27 @@ class DnD {
     const target = this.findTargetAt(globalPosition);
 
     if (target && target.options && target.options.drop) {
-      target.options.drop.call(this, globalPosition, this.payload, evt);
-      // //save for sync cleanup...
-      // const savedPayload = this.payload;
-      //
-      // //call onDrop handler, which will immediately resolve to nothing if wasnt passed in
-      // Promise.resolve(this.onDrop(target, globalPosition))
-      //   .then((result) => {
-      //     const payload = (typeof result !== 'undefined') ?
-      //       Object.assign(savedPayload, {item: result}) :
-      //       savedPayload;
-      //     target.options.drop.call(this, globalPosition, payload);
-      //   });
-    }
-    // ensure lastTarget gets a dragLeave incase they rely on it for cleanup
-    if (this.lastTarget && this.lastTarget.options.dragLeave) {
-      this.lastTarget.options.dragLeave.call(this);
+      //target.options.drop.call(this, globalPosition, this.payload, evt);
+      //save for sync cleanup...
+      const savedPayload = this.payload;
+
+      //call onDrop handler, which will immediately resolve to nothing if wasnt passed in
+      Promise.resolve(this.onDrop(target, globalPosition))
+        .then((result) => {
+          const payload = (typeof result !== 'undefined') ?
+            Object.assign(savedPayload, {item: result}) :
+            savedPayload;
+          target.options.drop.call(this, globalPosition, payload, evt);
+          // ensure lastTarget gets a dragLeave incase they rely on it for cleanup
+          if (this.lastTarget && this.lastTarget.options.dragLeave) {
+            this.lastTarget.options.dragLeave.call(this);
+          }
+        });
+    } else {
+      // ensure lastTarget gets a dragLeave incase they rely on it for cleanup
+      if (this.lastTarget && this.lastTarget.options.dragLeave) {
+        this.lastTarget.options.dragLeave.call(this);
+      }
     }
 
     this.cancelDrag();
