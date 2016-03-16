@@ -1,0 +1,75 @@
+import { expect } from 'chai';
+import StoreHistory from '../../../src/store/undo/storeHistory';
+
+describe('Store', () => {
+  describe('Undo', () => {
+    describe('storeHistory', () => {
+      const initialState = { my: 'state' };
+      const stateA = { my: 'milkshake' };
+      const stateB = { brings: 'all the boys' };
+      const stateC = { to: 'the yard' };
+      const history = new StoreHistory(initialState);
+
+      it('should create history with initialState as present, and arrays past and future', () => {
+        expect(history.present).to.eql(initialState);
+        expect(history.past).to.eql([]);
+        expect(history.future).to.eql([]);
+      });
+
+      it('should have undo(), redo(), update(), patch()', () => {
+        expect(typeof history.undo).to.equal('function');
+        expect(typeof history.redo).to.equal('function');
+        expect(typeof history.update).to.equal('function');
+        expect(typeof history.patch).to.equal('function');
+      });
+
+      it('undo() does nothing when there is no past, no error', () => {
+        history.undo();
+        expect(history.present).to.equal(initialState);
+      });
+
+      it('update() creates new present, moves present to past', () => {
+        history.update(stateA);
+        expect(history.present).to.eql(stateA);
+        expect(history.past).to.eql([initialState]);
+      });
+
+      it('update() works again', () => {
+        history.update(stateB);
+        expect(history.past).to.eql([initialState, stateA]);
+        expect(history.present).to.eql(stateB);
+      });
+
+      it('should maintain object references', () => {
+        expect(history.present).to.equal(stateB);
+      });
+
+      it('undo() goes back a step', () => {
+        expect(history.present).to.equal(stateB);
+        history.undo();
+        expect(history.present).to.equal(stateA);
+        expect(history.past).to.eql([initialState]);
+        expect(history.future).to.eql([stateB]);
+      });
+
+      it('redo() goes forward a step', () => {
+        expect(history.future).to.eql([stateB]);
+        history.redo();
+        expect(history.present).to.eql(stateB);
+        expect(history.future).to.eql([]);
+        expect(history.past).to.eql([initialState, stateA]);
+      });
+
+      it('redo() does nothing when there is no future, no error', () => {
+        history.redo();
+        expect(history.present).to.equal(stateB);
+      });
+
+      it('update() deletes the future', () => {
+        history.future = [{ some: 'things' }, { in: 'the future' }];
+        history.update(stateC);
+        expect(history.future).to.eql([]);
+      });
+    });
+  });
+});
