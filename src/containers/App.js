@@ -3,7 +3,6 @@ import React, { Component, PropTypes } from 'react';
 import {connect} from 'react-redux';
 import GlobalNav from './GlobalNav';
 import AuthenticationForms from './authentication/authenticationforms';
-import GlobalNav from './GlobalNav';
 
 import '../styles/App.css';
 
