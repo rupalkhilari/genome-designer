@@ -1,6 +1,7 @@
 var signout = function(browser, credentials) {
   browser
     // sign back in with previous credentials
+    .waitForElementPresent('a.signed-out', 5000, 'expected a sign out button')
     .click('a.signed-out')
     .waitForElementPresent('#auth-signin', 5000, 'Expected sign in dialog to become visible')
     // try submitting with no credentials

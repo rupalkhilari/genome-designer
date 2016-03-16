@@ -5,8 +5,7 @@ import PopupMenu from '../../components/Menu/PopupMenu';
 import Vector2D from '../../containers/graphics/geometry/vector2d';
 import { connect } from 'react-redux';
 import { uiShowAuthenticationForm, uiSetGrunt } from '../../actions/ui';
-import { userSetUser } from '../../actions/user';
-import { logout } from '../../middleware/api';
+import { userLogout } from '../../actions/user';
 
 import '../../styles/userwidget.css';
 
@@ -15,9 +14,9 @@ class UserWidget extends Component {
   static propTypes = {
     uiShowAuthenticationForm: PropTypes.func.isRequired,
     uiSetGrunt: PropTypes.func.isRequired,
-    userSetUser: PropTypes.func.isRequired,
     user: PropTypes.object,
     push: PropTypes.func.isRequired,
+    userLogout: PropTypes.func.isRequired,
   };
 
   constructor() {
@@ -48,22 +47,15 @@ class UserWidget extends Component {
   }
 
   signOut() {
-    logout()
-      .then(() => {
-        // set the user
-        this.props.userSetUser({
-          userid: null,
-          email: null,
-          firstName: null,
-          lastName: null,
-        });
-        // show a grunt
-        this.props.uiSetGrunt('Your are now signed out');
-        this.props.push('/homepage');
-      })
-      .catch((reason) => {
-        this.props.uiSetGrunt('There was a problem signing you out');
-      });
+    this.props.userLogout()
+    .then(() => {
+      // show a grunt
+      this.props.uiSetGrunt('Your are now signed out');
+      this.props.push('/homepage');
+    })
+    .catch((reason) => {
+      this.props.uiSetGrunt('There was a problem signing you out');
+    });
   }
 
   contextMenu() {
@@ -119,6 +111,6 @@ function mapStateToProps(state) {
 export default connect(mapStateToProps, {
   uiShowAuthenticationForm,
   uiSetGrunt,
-  userSetUser,
   push,
+  userLogout,
 })(UserWidget);

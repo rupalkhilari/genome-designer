@@ -1,5 +1,6 @@
 import fetch from 'isomorphic-fetch';
 import invariant from 'invariant';
+import { getItem, setItem } from './localStorageCache';
 import merge from 'lodash.merge';
 import ProjectDefinition from '../schemas/Project';
 import BlockDefinition from '../schemas/Block';
@@ -75,52 +76,47 @@ export const login = (user, password) => {
   return fetch(serverRoot + `auth/login`, headersPost(stringified))
     .then(resp => resp.json())
     .then(json => {
+      if (json.message) {
+        return Promise.reject(json);
+      }
       return json;
-    })
-    .catch((err) => {
-      throw err;
+    });
+};
+
+export const register = (user) => {
+  invariant(user.email && user.password && user.firstName && user.lastName, 'wrong format user');
+  const stringified = JSON.stringify(user);
+  return fetch(serverRoot + `auth/register`, headersPost(stringified))
+    .then(resp => resp.json())
+    .then(json => {
+      if (json.message) {
+        return Promise.reject(json);
+      }
+      return json;
     });
 };
 
 export const forgot = (email) => {
-  const body = { email }
+  const body = { email };
   const stringified = JSON.stringify(body);
   return fetch(serverRoot + `auth/forgot-password`, headersPost(stringified))
-    .then(resp => resp.json())
-    .then(json => {
-      return json;
-    })
-    .catch((err) => {
-      throw err;
-    });
+    .then(resp => resp.json());
 };
 
 export const reset = (email, forgotPasswordHash, newPassword) => {
   const body = { email, forgotPasswordHash, newPassword }
   const stringified = JSON.stringify(body);
   return fetch(serverRoot + `auth/reset-password`, headersPost(stringified))
-    .then(resp => resp.json())
-    .then(json => {
-      return json;
-    })
-    .catch((err) => {
-      throw err;
-    });
+    .then(resp => resp.json());
 };
 
-// login with email and password and set the sessionKey (cookie) for later use
+// update account
 export const updateAccount = (payload) => {
   const body = payload;
   const stringified = JSON.stringify(body);
 
   return fetch(serverRoot + `auth/update-all`, headersPost(stringified))
-    .then(resp => resp.json())
-    .then(json => {
-      return json;
-    })
-    .catch((err) => {
-      throw err;
-    });
+    .then(resp => resp.json());
 };
 
 export const logout = () => {
@@ -130,12 +126,7 @@ export const logout = () => {
 // use established sessionKey to get the user object
 export const getUser = () => {
   return fetch(serverRoot + `auth/current-user`, headersGet())
-    .then(resp => {
-      return resp.json();
-    })
-    .catch((err) => {
-      throw err;
-    });
+    .then(resp => resp.json());
 };
 
 /*************************
@@ -250,13 +241,24 @@ const getSequenceUrl = (md5, blockId, format) => dataApiPath(`sequence/${md5}` +
 export const getSequence = (md5, format) => {
   const url = getSequenceUrl(md5, undefined, format);
 
+  const cached = getItem(md5);
+  if (cached) {
+    return Promise.resolve(cached);
+  }
+
   return fetch(url, headersGet())
-    .then((resp) => resp.text());
+    .then((resp) => resp.text())
+    .then(sequence => {
+      setItem(md5, sequence);
+      return sequence;
+    });
 };
 
 export const writeSequence = (md5, sequence, blockId) => {
   const url = getSequenceUrl(md5, blockId);
   const stringified = JSON.stringify({ sequence });
+
+  setItem(md5, sequence);
 
   return fetch(url, headersPost(stringified));
 };

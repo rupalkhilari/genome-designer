@@ -13,6 +13,10 @@
   background-color: var(--background);
   color: var(--color);
   text-align: center;
+  position: fixed;
+  top: 4rem;
+  z-index: 1;
+  width: 100%;
 }
 .ribbongrunt button {
   float: right;

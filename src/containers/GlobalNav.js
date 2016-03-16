@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import { push } from 'react-router-redux';
 import MenuBar from '../components/Menu/MenuBar';
 import UserWidget from '../components/authentication/userwidget';
+import RibbonGrunt from '../components/ribbongrunt';
 import { projectCreate, projectAddConstruct, projectSave } from '../actions/projects';
 import { blockCreate } from '../actions/blocks';
 import { undo, redo } from '../store/undo/actions';
@@ -215,6 +216,7 @@ class GlobalNav extends Component {
   render() {
     return (
       <div className="GlobalNav">
+        <RibbonGrunt />
         <span className="GlobalNav-title">GD</span>
         {this.props.showMainMenu ? this.menuBar() : null}
         <UserWidget/>

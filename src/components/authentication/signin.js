@@ -2,9 +2,8 @@ import React, { Component, PropTypes } from 'react';
 import {connect} from 'react-redux';
 import { push } from 'react-router-redux';
 import { uiShowAuthenticationForm, uiSetGrunt } from '../../actions/ui';
-import { userSetUser } from '../../actions/user';
 import invariant from 'invariant';
-import { login } from '../../middleware/api';
+import { userLogin } from '../../actions/user';
 
 /**
  * default visibility and text for error labels
@@ -22,7 +21,7 @@ class SignInForm extends Component {
   static propTypes = {
     uiShowAuthenticationForm: PropTypes.func.isRequired,
     uiSetGrunt: PropTypes.func.isRequired,
-    userSetUser: PropTypes.func.isRequired,
+    userLogin: PropTypes.func.isRequired,
     push: PropTypes.func.isRequired,
   };
 
@@ -31,35 +30,25 @@ class SignInForm extends Component {
     this.state = Object.assign({}, errors);
   }
 
-
   // on form submission, first perform client side validation then submit
   // to the server if that goes well.
   onSubmit(evt) {
     // submission occurs via REST not form submission
     evt.preventDefault();
 
-    login(this.emailAddress, this.password)
-      .then((json) => {
-        if (json.message) {
-          this.showServerErrors(json);
-          return;
-        }
-        // set the user
-        this.props.userSetUser({
-          userid: json.uuid,
-          email: json.email,
-          firstName: json.firstName,
-          lastName: json.lastName,
-        });
+    this.props.userLogin(this.emailAddress, this.password)
+      .then(user => {
         // set grunt message with login information
-        this.props.uiSetGrunt(`You are now signed in as ${json.firstName} ${json.lastName} ( ${json.email} )`);
+        this.props.uiSetGrunt(`You are now signed in as ${user.firstName} ${user.lastName} ( ${user.email} )`);
         // close the form
         this.props.uiShowAuthenticationForm('none');
         this.props.push('/project/test');
       })
       .catch((reason) => {
+        const defaultMessage = 'Unexpected error, please check your connection';
+        const { message = defaultMessage } = reason;
         this.showServerErrors({
-          message: 'Unexpected error, please check your connection',
+          message,
         });
       });
   }
@@ -74,20 +63,6 @@ class SignInForm extends Component {
   }
   get password() {
     return this.refs.password.value.trim();
-  }
-  /**
-   * display server errors in the most logical way
-   */
-  showServerErrors(json) {
-    invariant(json && json.message, 'We expected an error message');
-
-    // any unrecognized errors are displayed below the tos
-    this.setState({
-      signinError: {
-        visible: true,
-        text: json.message,
-      },
-    });
   }
   /**
    * display server errors in the most logical way
@@ -143,6 +118,6 @@ function mapStateToProps(state) {
 export default connect(mapStateToProps, {
   uiShowAuthenticationForm,
   uiSetGrunt,
-  userSetUser,
+  userLogin,
   push,
 })(SignInForm);

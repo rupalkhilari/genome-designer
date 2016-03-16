@@ -1,6 +1,8 @@
 @import './variables.css';
 
 .InventorySearch {
+  flex-shrink: 0;
+
   input,
   input:focus {
     width: 100%;
