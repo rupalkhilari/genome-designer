@@ -1,12 +1,13 @@
 var homepageRegister = require('../fixtures/homepage-register');
 var signout = require('../fixtures/signout');
 var signin = require('../fixtures/signin');
+var dragFromTo = require('../fixtures/dragfromto');
 
 module.exports = {
-  'Test drag and drop on an empty project.' : function (browser) {
+  'Test drag and drop on test project.' : function (browser) {
 
     // maximize for graphical tests
-    browser.windowMaximize('current');
+    browser.windowSize('current', 1200, 900);
 
     // register via fixture
     var credentials = homepageRegister(browser);
@@ -26,48 +27,20 @@ module.exports = {
       // click the second inventory group to open it
       .click('.InventoryListGroup:nth-of-type(2)')
       // expect at least one inventory item and one block to drop on
-      .waitForElementPresent('.InventoryItem-item', 5000, 'expected an inventory item')
+      .waitForElementPresent('.InventoryItem', 5000, 'expected an inventory item')
       .waitForElementPresent('.sbol-glyph', 5000, 'expected a block to drop on')
       .assert.countelements('.sbol-glyph', 7)
-      // click and drag first inventory item
-      .moveToElement('.InventoryItem-item:nth-of-type(1)', 10, 10)
-      .mouseButtonDown(0);
 
-      // generate mouse move events on body from source to destination
-      browser.execute(function() {
-        var body = document.body.getBoundingClientRect();
-        var src = document.querySelector('.InventoryItem-item:nth-of-type(1)').getBoundingClientRect();
-        var dst = document.querySelector('.sbol-glyph:nth-of-type(1)').getBoundingClientRect();
-        var start = {
-          x: src.left + body.left,
-          y: src.top + body.top,
-        };
-        var end = {
-          x: dst.left + body.left + 30,
-          y: dst.top + body.top + 10,
-        };
-        var lenx = end.x - start.x;
-        var leny = end.y - start.y;
-
-        var pts = [];
-        for(var i = 0; i <= 1; i += 0.1) {
-          var xp = start.x + lenx * i;
-          var yp = start.y + leny * i;
-          pts.push({x:xp, y: yp});
-        }
-        return pts;
-      }, [], function(result) {
-        var pts = result.value;
-        for(var i = 0; i < pts.length; i +=1 ) {
-          browser.moveToElement('body', pts[i].x, pts[i].y);
-        }
-      });
+    // drag an item from the inventory
+    for(var i = 0; i < 20; i += 1) {
+      dragFromTo(
+          browser,
+          '.InventoryItem:nth-of-type(' + (i + 1) + ')', 10, 10,
+          '.sbol-glyph:nth-of-type(1)', 30, 10);
+    }
 
     browser
-      .moveToElement('.sbol-glyph:nth-of-type(1)', 50, 10)
-      .mouseButtonUp(0)
-      .assert.countelements('.sbol-glyph', 8)
-      .pause(5000)
+      .assert.countelements('.sbol-glyph', 27)
       .end();
   }
 };
