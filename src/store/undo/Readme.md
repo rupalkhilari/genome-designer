@@ -26,6 +26,7 @@ While JSON.stringify() would allow for nice string equality checks, we are using
 ```
 //state tracking
 update(state) - add state node if (state !=== newState) and subject to transactions, clears future steps, returns new state.
+patch(state) - updates present state, does not add state node
 
 //transactions (called directly)
 transact() - begin a transaction (increment counter, so nesting handled)
@@ -61,7 +62,25 @@ Alternatively, you can pass in the parameter `trackAll: true` to the configurati
 
 ### Reducer Enhancer
 
-# update this!
+Catches all events, and saves them to the undoManager as appropriate:
+
+```
+P = patch()
+U = update()
+N = undo()
+R = redo()
+T = transact()
+C = commit()
+                    U  P  T  U   U P   C  P  U
+                          |            |
+                  --1--2--|--3---4-5---|--6--7----
+undoable actions: --*-----|--*---*-----|-----*----
+ history.present:   1  2  2  2   2 2   5  6  7
+transactionState:   -  -  2  3   4 5   -  -  -
+transactionDepth:   0  0  1  1   1 1   0  0  0
+```
+
+# update this! - need to export reducer
 
 Adds key `undo` (you can rename this in config) to the store:
 
@@ -85,7 +104,7 @@ stateKey {String}           //todo - determine whether doing this
 
 ###Todo
 
-- todo - save the actions (2D array to handle transactions)
+- todo - save the actions (2D array to handle transactions?)
 - support limit of states to track
 - discuss undo of saving a project / block
 - pruning the store of unneeded blocks / projects

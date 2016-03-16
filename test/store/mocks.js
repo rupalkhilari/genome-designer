@@ -1,3 +1,4 @@
+import invariant from 'invariant';
 import thunk from 'redux-thunk';
 import { applyMiddleware, createStore, combineReducers } from 'redux';
 import { expect } from 'chai';
@@ -8,6 +9,7 @@ const middlewares = [
   saveLastActionMiddleware,
 ];
 
+//note - not an undoable store
 //first two arguments required,
 //combineUnderNamespace to create namespaced store automatically
 export function simpleStore(initialState, reducer, combineUnderNamespace) {
@@ -25,12 +27,8 @@ export function simpleStore(initialState, reducer, combineUnderNamespace) {
  * Creates a mock of Redux store with middleware, into which you can pass expected actions, and function to run on the last action. Does not fully emulate the store, as in it does not have reducers and does not actually change the state.
  */
 export function mockStore(getState, expectedActions, onLastAction) {
-  if (!Array.isArray(expectedActions)) {
-    throw new Error('expectedActions should be an array of expected actions.');
-  }
-  if (typeof onLastAction !== 'undefined' && typeof onLastAction !== 'function') {
-    throw new Error('onLastAction should either be undefined or function.');
-  }
+  invariant(Array.isArray(expectedActions), 'expectedActions should be an array of expected actions.');
+  invariant(typeof onLastAction === 'undefined' || typeof onLastAction === 'function', 'onLastAction should either be undefined or function.');
 
   function mockStoreWithoutMiddleware() {
     return {

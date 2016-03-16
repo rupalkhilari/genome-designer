@@ -2,22 +2,6 @@ import invariant from 'invariant';
 import StoreHistory from './storeHistory';
 
 //todo - may need to prohibit silent updates in a transaction... how else to reconcile?
-/*
- * S = silentUpdate()
- * U = update()
- * T = transact()
- * C = commit()
- *
- *                     U  S  T  U   U S   C  S  U
- *                           |            |
- *                   --1--2--|--3---4-5---|--6--7----
- * undoable actions: --*-----|--*---*-----|-----*----
- *
- *  history.present:   1  2  2  2   2 2   5  6  7
- * transactionState:   -  -  2  3   4 5   -  -  -
- * transactionDepth:   0  0  1  1   1 1   0  0  0
- */
-
 /* eslint-disable no-console */
 
 export default class UndoManager {
@@ -47,10 +31,15 @@ export default class UndoManager {
     return this.transactionState;
   };
 
-  silentUpdate = (state, action) => {
+  patch = (state, action) => {
     if (this.debug) {
       //too many updates
       //console.log(`UndoManager: silent update (not undoable)`, action);
+    }
+
+    if (this.transactionDepth > 0) {
+      this.setTransactionState(state);
+      return state;
     }
 
     this.history.patch(state);
@@ -70,7 +59,7 @@ export default class UndoManager {
         console.log(`UndoManager: ignoring update (ignoring ${this.ignores} more)`);
       }
 
-      return this.silentUpdate(state, action);
+      return this.patch(state, action);
     }
 
     //todo - verify this is how we want to handle this

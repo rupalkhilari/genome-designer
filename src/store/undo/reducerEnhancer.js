@@ -4,7 +4,7 @@ import UndoManager from './UndoManager';
 export default (config) => {
   const params = Object.assign({
     filter: () => false,
-    debug: (process && process.env && process.env.NODE_ENV !== 'production'),
+    debug: (process && process.env && process.env.NODE_ENV === 'dev'),
     stateKey: 'undo',
   }, config);
 
@@ -65,7 +65,7 @@ export default (config) => {
         }
 
         //if not tracked as undoable, update present state
-        return manager.silentUpdate(nextState, action);
+        return manager.patch(nextState, action);
       }
     };
   };

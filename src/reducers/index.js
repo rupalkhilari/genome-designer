@@ -9,7 +9,7 @@ import projects from './projects';
 import ui from './ui';
 import user from './user';
 
-const rootReducer = combineReducers({
+export const rootReducer = combineReducers({
   router,
   blocks,
   inventory,
