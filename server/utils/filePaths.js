@@ -11,7 +11,9 @@ export const filePath = 'file';
 export const sequencePath = 'sequence';
 export const blockPath = 'blocks';
 export const projectPath = 'projects';
+export const projectDataPath = 'data';
 
+export const permissionsFilename = 'permissions.json';
 export const manifestFilename = 'manifest.json';
 
 //All files are put in the storage folder (until platform comes along)
@@ -37,12 +39,20 @@ export const createProjectPath = (projectId, ...rest) => {
   return createStorageUrl(projectPath, projectId, ...rest);
 };
 
-export const createProjectManifestPath = (projectId) => {
-  return createProjectPath(projectId, manifestFilename);
+export const createProjectDataPath = (projectId, ...rest) => {
+  return createProjectPath(projectId, projectDataPath, ...rest);
 };
 
-export const createBlockDirectoryPath = (projectId) => {
-  return createProjectPath(projectId, blockPath);
+export const createProjectPermissionsPath = (projectId) => {
+  return createProjectPath(projectId, permissionsFilename);
+};
+
+export const createProjectManifestPath = (projectId) => {
+  return createProjectDataPath(projectId, manifestFilename);
+};
+
+export const createBlockDirectoryPath = (projectId, ...rest) => {
+  return createProjectDataPath(projectId, blockPath, ...rest);
 };
 
 //BLOCKS
@@ -52,7 +62,7 @@ export const createBlockPath = (blockId, projectId, ...rest) => {
   //future, may automatically fetch projectId somehow
   invariant(projectId, 'Project ID required');
 
-  return createProjectPath(projectId, blockPath, blockId, ...rest);
+  return createBlockDirectoryPath(projectId, blockId, ...rest);
 };
 
 export const createBlockManifestPath = (blockId, projectId) => {

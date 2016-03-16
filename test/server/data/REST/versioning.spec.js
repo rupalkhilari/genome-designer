@@ -1,5 +1,6 @@
 import { assert, expect } from 'chai';
 import request from 'supertest';
+import uuid from 'node-uuid';
 import Project from '../../../../src/models/Project';
 import Block from '../../../../src/models/Block';
 import * as filePaths from '../../../../server/utils/filePaths';
@@ -13,24 +14,25 @@ describe('REST', () => {
       let server;
       let versionLog;
       let versions;
+      const userId = uuid.v4();
       const projectData = new Project();
       const projectId = projectData.id;
-      const projectRepoPath = filePaths.createProjectPath(projectId);
-      const newProject = projectData.merge({projectData: 'new stuff'});
+      const projectRepoDataPath = filePaths.createProjectDataPath(projectId);
+      const newProject = projectData.merge({ projectData: 'new stuff' });
 
       const blockData = new Block();
       const blockId = blockData.id;
-      const newBlock = blockData.merge({blockData: 'new data'});
+      const newBlock = blockData.merge({ blockData: 'new data' });
 
       before(() => {
-        return persistence.projectCreate(projectId, projectData)
+        return persistence.projectCreate(projectId, projectData, userId) //0
           .then(() => persistence.blockCreate(blockId, blockData, projectId))
-          .then(() => persistence.projectSave(projectId))
-          .then(() => persistence.projectWrite(projectId, newProject))
-          .then(() => persistence.projectSave(projectId))
+          .then(() => persistence.projectSave(projectId)) //1
+          .then(() => persistence.projectWrite(projectId, newProject, userId))
+          .then(() => persistence.projectSave(projectId)) //2
           .then(() => persistence.blockWrite(blockId, newBlock, projectId))
-          .then(() => persistence.projectSave(projectId))
-          .then(() => versioning.log(projectRepoPath))
+          .then(() => persistence.projectSave(projectId)) //3
+          .then(() => versioning.log(projectRepoDataPath))
           .then(log => {
             versionLog = log;
             versions = versionLog.map(commit => commit.sha);
@@ -45,7 +47,7 @@ describe('REST', () => {
       });
 
       it('POST /:projectId does not create commit', (done) => {
-        versioning.log(projectRepoPath).then(firstResults => {
+        versioning.log(projectRepoDataPath).then(firstResults => {
           const url = `/data/${projectId}`;
           request(server)
             .post(url)
@@ -58,7 +60,7 @@ describe('REST', () => {
                 return;
               }
 
-              versioning.log(projectRepoPath)
+              versioning.log(projectRepoDataPath)
                 .then(secondResults => {
                   expect(secondResults.length).to.equal(firstResults.length);
                   done();
@@ -69,7 +71,7 @@ describe('REST', () => {
       });
 
       it('POST /:projectId/:blockId does not create commit', (done) => {
-        versioning.log(projectRepoPath).then(firstResults => {
+        versioning.log(projectRepoDataPath).then(firstResults => {
           const url = `/data/${projectId}/${blockId}`;
           request(server)
             .post(url)
@@ -82,7 +84,7 @@ describe('REST', () => {
                 return;
               }
 
-              versioning.log(projectRepoPath)
+              versioning.log(projectRepoDataPath)
                 .then(secondResults => {
                   expect(secondResults.length).to.equal(firstResults.length);
                   done();
@@ -94,11 +96,11 @@ describe('REST', () => {
 
       it('POST /:projectId/commit/ creates a snapshot, accepting a message, returns a SHA', (done) => {
         const messageText = 'some message text';
-        versioning.log(projectRepoPath).then(firstResults => {
+        versioning.log(projectRepoDataPath).then(firstResults => {
           const url = `/data/${projectId}/commit`;
           request(server)
             .post(url)
-            .send({message: messageText})
+            .send({ message: messageText })
             .expect(200)
             .expect('Content-Type', /json/)
             .end((err, result) => {
@@ -110,7 +112,7 @@ describe('REST', () => {
               expect(result.sha).to.be.defined;
               expect(result.message).to.be.defined;
 
-              versioning.log(projectRepoPath)
+              versioning.log(projectRepoDataPath)
                 .then(secondResults => {
                   expect(secondResults.length).to.equal(firstResults.length + 1);
                   const lastCommit = secondResults.slice().shift();
@@ -125,15 +127,14 @@ describe('REST', () => {
       it('GET /:projectId/commit returns the git log');
 
       it('GET /:projectId/commit/:sha returns the project at a certain point', (done) => {
-        const url = `/data/${projectId}/commit/${versions[3]}`;
+        const url = `/data/${projectId}/commit/${versions[2]}`;
         request(server)
           .get(url)
           .expect(200)
           .expect('Content-Type', /json/)
           .end((err, result) => {
             if (err) {
-              done(err);
-              return;
+              return done(err);
             }
             expect(result.body).to.eql(projectData);
             done();
