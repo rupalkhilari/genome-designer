@@ -27,6 +27,8 @@ export default class Layout {
       showHeader: true,
       insetX: 0,
       insetY: 0,
+      initialRowXLimit: -Infinity,
+      rootLayout: true,
     }, options);
 
     // prep data structures for layout`
@@ -46,14 +48,18 @@ export default class Layout {
 
   /**
    * size the scene graph to just accomodate all the nodes that are present.
+   * This is only performed for the root layout ( nested constructs should not
+   * perform this operation, as per the rootLayout property )
    * @return {[type]} [description]
    */
   autoSizeSceneGraph() {
-    const aabb = this.sceneGraph.getAABB();
-    if (aabb) {
-      this.sceneGraph.width = Math.max(aabb.right, kT.minWidth);
-      this.sceneGraph.height = Math.max(aabb.bottom, kT.minHeight);
-      this.sceneGraph.updateSize();
+    if (this.rootLayout) {
+      const aabb = this.sceneGraph.getAABB();
+      if (aabb) {
+        this.sceneGraph.width = Math.max(aabb.right, kT.minWidth);
+        this.sceneGraph.height = Math.max(aabb.bottom, kT.minHeight);
+        this.sceneGraph.updateSize();
+      }
     }
   }
   /**
@@ -130,16 +136,21 @@ export default class Layout {
    * @return {[type]}            [description]
    */
   partFactory(part, appearance) {
-    if (!this.nodeFromElement(part)) {
+    let node = this.nodeFromElement(part);
+    if (!node) {
       const props = Object.assign({}, {
         sg: this.sceneGraph,
       }, appearance);
-      let node = null;
       props.sbolName = this.isSBOL(part) ? this.blocks[part].rules.sbol : null;
       node = new SBOL2D(props);
       this.sceneGraph.root.appendChild(node);
       this.map(part, node);
     }
+    // hide/or child expand/collapse glyph
+    node.set({
+      hasChildren: this.hasChildren(part),
+    });
+
   }
   /**
    * return one of the meta data properties for a part.
@@ -247,17 +258,18 @@ export default class Layout {
     }
   }
   /**
-   * create the vertical bar as necessary
-   * @return {[type]} [description]
+   * create the vertical bar as necessary and update its color
    */
   verticalFactory() {
     if (!this.vertical) {
       this.vertical = new Node2D(Object.assign({
         sg: this.sceneGraph,
-        fill: this.baseColor,
       }, kT.verticalAppearance));
       this.sceneGraph.root.appendChild(this.vertical);
     }
+    this.vertical.set({
+      fill: this.baseColor,
+    });
   }
   /**
    * create or recycle a row on demand. resetRows
@@ -275,12 +287,14 @@ export default class Layout {
     } else {
       row = new Node2D(Object.assign({
         sg: this.sceneGraph,
-        fill: this.baseColor,
       }, kT.rowAppearance));
       this.sceneGraph.root.appendChild(row);
     }
-    // set bounds
-    row.set({bounds});
+    // set bounds and update to current color
+    row.set({
+      bounds: bounds,
+      fill: this.baseColor
+    });
 
     // save into new rows so we know this row is in use
     this.newRows.push(row);
@@ -357,6 +371,19 @@ export default class Layout {
 
     return heightUsed;
   }
+  // update using the same parameters as the full call to update. Useful when
+  // only minor view state changes have occured. Performs an immediate update
+  // of the scene graph as well.
+  redraw() {
+    this.update(
+      this.construct,
+      this.layoutAlgorithm,
+      this.blocks,
+      this.currentBlocks,
+      this.currentConstructId
+    );
+    this.sceneGraph.root.updateBranch();
+  }
 
   /**
    * one of several different layout algorithms
@@ -398,6 +425,7 @@ export default class Layout {
    * @return {[type]} [description]
    */
   layout(layoutOptions) {
+    if (this.construct.id === 'block1') console.time('Layout');
     // set the new reference key
     this.updateReference += 1;
     // shortcut
@@ -426,6 +454,10 @@ export default class Layout {
     // additional vertical space consumed on every row for nested constructs
     let nestedVertical = 0;
 
+    // width of first row is effected by parent block, so we have to track
+    // which row we are on.
+    let rowIndex = 0;
+
     // update / make all the parts
     ct.components.forEach(part => {
       // create a row bar as neccessary
@@ -433,8 +465,10 @@ export default class Layout {
         row = this.rowFactory(new Box2D(this.insetX, yp - kT.rowBarH, 0, kT.rowBarH));
       }
       // resize row bar to current row width
-      const rw = xp - this.insetX;
-      row.set({translateX: this.insetX + rw / 2, width: rw});
+      const rowStart = this.insetX;
+      const rowEnd = row === 0 ? Math.max(xp, this.initialRowXLimit) : xp;
+      const rowWidth = rowEnd - rowStart;
+      row.set({translateX: rowStart + rowWidth / 2, width: rowWidth});
 
       // create the node representing the part
       this.partFactory(part, kT.partAppearance);
@@ -446,7 +480,6 @@ export default class Layout {
 
       // measure element text or used condensed spacing
       const td = this.measureText(this.nodeFromElement(part), this.partName(part), layoutOptions.condensed);
-      //const td = this.measureText(this.nodeFromElement(part), part, layoutOptions.condensed);
 
       // if position would exceed x limit then wrap
       if (xp + td.x > mx) {
@@ -454,6 +487,7 @@ export default class Layout {
         yp += kT.rowH + nestedVertical;
         nestedVertical = 0;
         row = this.rowFactory(new Box2D(xp, yp - kT.rowBarH, 0, kT.rowBarH));
+        rowIndex += 1;
       }
 
       // update part, including its text and color
@@ -465,7 +499,7 @@ export default class Layout {
       });
 
       // render children ( nested constructs )
-      if (this.hasChildren(part)) {
+      if (this.hasChildren(part) && this.nodeFromElement(part).showChildren) {
         // establish the position
         const nestedX = this.insetX + kT.nestedInsetX;
         const nestedY = yp + nestedVertical + kT.blockH + kT.nestedInsetY;
@@ -474,12 +508,19 @@ export default class Layout {
         if (!nestedLayout) {
           nestedLayout = this.nestedLayouts[part] = new Layout(this.constructViewer, this.sceneGraph, {
             layoutAlgorithm: this.layoutAlgorithm,
-            baseColor: this.baseColor,
             showHeader: false,
             insetX: nestedX,
             insetY: nestedY,
+            rootLayout: false,
           });
         }
+
+        // update base color of nested construct skeleton
+        nestedLayout.baseColor = this.partMeta(part, 'color');
+
+        // update minimum x extend of first rowH
+        nestedLayout.initialRowXLimit = this.getConnectionRowLimit(part);
+
         // ensure layout has the latest position ( parent may have moved )
         nestedLayout.insetX = nestedX;
         nestedLayout.insetY = nestedY;
@@ -506,8 +547,10 @@ export default class Layout {
 
     // ensure final row has the final row width
     if (row) {
-      const rw = xp - this.insetX;
-      row.set({translateX: this.insetX + rw / 2, width: rw});
+      const rowStart = this.insetX;
+      const rowEnd = rowIndex === 0 ? Math.max(xp, this.initialRowXLimit) : xp;
+      const rowWidth = rowEnd - rowStart;
+      row.set({translateX: rowStart + rowWidth / 2, width: rowWidth});
     }
     // cleanup dangling connections
     this.releaseConnections();
@@ -540,10 +583,19 @@ export default class Layout {
     // apply selections to scene graph
     this.sceneGraph.ui.setSelections(selectedNodes);
 
+    if (this.construct.id === 'block1') console.timeEnd('Layout');
+
     // return the height consumed by the layout
-    return heightUsed + nestedVertical;
+    return heightUsed + nestedVertical + kT.rowBarH;
   }
 
+  // the connector drops from the center of the source part, so the initial
+  // row limit for the child is the right edge of this point
+  getConnectionRowLimit(sourcePart) {
+    const cnodes = this.connectionInfo(sourcePart);
+    const sourceRectangle = cnodes.sourceNode.getAABB();
+    return sourceRectangle.center.x + kT.rowBarW / 2;
+  }
   /**
    * update / create the connection between the part which must be the
    * parent of a nested construct.
@@ -556,8 +608,8 @@ export default class Layout {
     let connector = this.connectors[key];
     if (!connector) {
       const line = new LineNode2D({
-        line: new Line2D(new Vector2D(20, 20), new Vector2D(400, 400)),
-        strokeWidth: '4',
+        line: new Line2D(new Vector2D(), new Vector2D()),
+        strokeWidth: kT.rowBarW,
         sg: this.sceneGraph,
         parent: this.sceneGraph.root,
       });
@@ -568,8 +620,8 @@ export default class Layout {
     const sourceRectangle = cnodes.sourceNode.getAABB();
     const destinationRectangle = cnodes.destinationNode.getAABB();
     connector.line.set({
-      stroke: cnodes.sourceNode.fill,
-      line: new Line2D(sourceRectangle.center, destinationRectangle.center),
+      stroke: this.partMeta(cnodes.sourceBlock.id, 'color'),
+      line: new Line2D(sourceRectangle.center, new Vector2D(sourceRectangle.center.x, destinationRectangle.y)),
     });
     // ensure the connectors are always behind the blocks
     connector.line.sendToBack();

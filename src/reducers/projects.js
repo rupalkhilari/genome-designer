@@ -8,8 +8,8 @@ const initialState = {
       name: 'My Test Project',
       description: 'Create a versatile and robust templating system for combinatorial recombinant designs using Yeast parts from EGF.',
     },
-    //components: ['block1', 'block2'],
-    components: ['block1'],
+    components: ['block1', 'block2'],
+    //components: ['block1'],
   }),
 };
 

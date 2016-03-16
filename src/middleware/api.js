@@ -110,7 +110,7 @@ export const reset = (email, forgotPasswordHash, newPassword) => {
     .then(resp => resp.json());
 };
 
-// login with email and password and set the sessionKey (cookie) for later use
+// update account
 export const updateAccount = (payload) => {
   const body = payload;
   const stringified = JSON.stringify(body);

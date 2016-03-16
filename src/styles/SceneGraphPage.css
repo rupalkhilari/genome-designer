@@ -1,3 +1,4 @@
+@import "./variables.css";
 
 .sceneGraph {
   position: relative;
@@ -146,4 +147,17 @@
   height: 4px;
   border-radius: 100%;
   background-color: black;
+}
+/*indicate an sbol glyph block has children, clicking toggle the associated*/
+/*nested construct*/
+.nw-triangle {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 0;
+  height: 0;
+  border-top-width: 12px;
+  border-top-style: solid;
+  border-top-color: --colors-bluegrey;
+  border-right: 12px solid transparent;
 }
