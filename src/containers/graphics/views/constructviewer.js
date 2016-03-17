@@ -132,14 +132,12 @@ export class ConstructViewer extends Component {
     const { item, type } = payload;
     // get the immediate parent ( which might not be the top level block if this is a nested construct )
     let parent = insertionPoint ? this.getBlockParent(insertionPoint.block) : this.props.construct;
-
     if (type === sbolDragType) {
-      // must have an insertion point for sbol
+
+      // insert next to block, inject into a block, or add as the first block of an empty construct
       if (insertionPoint) {
-        // blocks with an sbol symbol can be dropped on an edge and get inserted
-        // as a new block or can simply update the sbol symbol for the block at the drop site.
         if (insertionPoint.edge) {
-          // insert new block
+          // create new block
           const block = this.props.blockCreate({rules: {sbol: item.id}});
           // get index of insertion allowing for the edge closest to the drop if provided
           const index = parent.components.indexOf(insertionPoint.block) + (insertionPoint.edge === 'right' ? 1 : 0);
@@ -151,6 +149,12 @@ export class ConstructViewer extends Component {
         // drop on existing block
         this.props.blockSetSbol(insertionPoint.block, item.id);
         return [insertionPoint.block];
+      } else {
+        // create new block
+        const block = this.props.blockCreate({rules: {sbol: item.id}});
+        // the construct must be empty, add as the first child of the construct
+        this.props.blockAddComponent(parent.id, block.id, 0);
+        return [block.id];
       }
     }
 
