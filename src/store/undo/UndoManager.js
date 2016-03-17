@@ -107,6 +107,11 @@ export default class UndoManager {
     return this.getCurrentState();
   };
 
+  //doesnt affect transactions, just clear the history
+  purge = () => {
+    this.history = new StoreHistory(this.getPresent());
+  };
+
   ignore = (steps) => {
     this.ignores = steps === null ? 0 : this.ignores + steps;
     if (this.debug) {
