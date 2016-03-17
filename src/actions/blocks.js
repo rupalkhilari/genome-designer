@@ -126,6 +126,7 @@ export const blockDelete = (blockId) => {
   return (dispatch, getState) => {
     dispatch({
       type: ActionTypes.BLOCK_DELETE,
+      undoable: true,
       blockId,
     });
     return blockId;
