@@ -4,9 +4,12 @@ import * as ActionTypes from './ActionTypes';
 import SectionManager from './SectionManager';
 import UndoManager from './UndoManager';
 
+//future - test support for reducerEnhancing the whole store.
+
+//note - this creates a singleton. May want to offer ability to create multiple of these for some reason (but this is kinda anti-redux) - also so can configure things like action fields undoable and undoPurge
 const undoManager = new UndoManager();
 
-//hack - curently required to be last reducer (to run after enhancers have run to update undoManager, relying on key order)
+//hack - curently required to be last reducer (to run after enhancers have run to update undoManager, relying on key order in combineReducers)
 export const undoReducer = (state = {}, action) => {
   const { past, future, time } = undoManager.getCurrentState();
 
@@ -23,6 +26,7 @@ export const undoReducer = (state = {}, action) => {
 
 export const undoReducerEnhancerCreator = (config) => {
   const params = Object.assign({
+    initTypes: ['@@redux/INIT', '@@INIT'],
     purgeOn: () => false,
     filter: () => false,
     debug: (process && process.env && process.env.NODE_ENV === 'dev'),
@@ -73,10 +77,15 @@ export const undoReducerEnhancerCreator = (config) => {
       const nextState = reducer(state, action);
 
       //on redux init types, reset the history
-      if (['@@redux/INIT', '@@INIT'].some(type => type === action.type)) {
+      if (params.initTypes.some(type => type === action.type)) {
         undoManager.purge();
         undoManager.patch(nextState, action);
         return sectionManager.getCurrentState();
+      }
+
+      //if marked to purge, lets clear the history
+      if (!!action.undoPurge || params.purgeOn(action, nextState, state)) {
+        undoManager.purge(action);
       }
 
       //if nothing has changed, dont bother hitting UndoManager
@@ -85,12 +94,7 @@ export const undoReducerEnhancerCreator = (config) => {
       }
 
       //if we make it this far, then this reducer has been affected and we can assume the action is specific to this section of reducers
-      //todo - ensure dont call manager functions twice, or are idempotent
-
-      //if marked to purge, lets clear the history
-      if (!!action.undoPurge || params.purgeOn(action, state)) {
-        undoManager.purge(action);
-      } else if (!!action.undoable || params.filter(action, state)) {
+      if (!!action.undoable || params.filter(action, nextState, state)) {
         //shouldnt have undoPurge and undoable on same action
         undoManager.insert(key, nextState, action);
       } else {
@@ -103,5 +107,8 @@ export const undoReducerEnhancerCreator = (config) => {
     };
   };
 };
+
+export const makeUndoable = (action) => Object.assign(action, {undoable: true});
+export const makePurging = (action) => Object.assign(action, {undoPurge: true});
 
 export default undoReducerEnhancerCreator;

@@ -45,7 +45,7 @@ class GlobalNav extends Component {
               text: 'New Project',
               action: () => {
                 const project = this.props.projectCreate();
-                this.props.push(null, `/project/${project.id}`);
+                this.props.push(`/project/${project.id}`);
               },
             }, {
               text: 'New Construct',

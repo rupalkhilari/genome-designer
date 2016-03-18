@@ -1,4 +1,5 @@
-import { routerReducer as router } from 'react-router-redux';
+import { routerReducer as router, LOCATION_CHANGE } from 'react-router-redux';
+import { USER_SET_USER } from '../constants/ActionTypes';
 import { combineReducers } from 'redux';
 import { undoReducer, undoReducerEnhancerCreator } from '../store/undo/reducerEnhancer';
 
@@ -9,7 +10,11 @@ import projects from './projects';
 import ui from './ui';
 import user from './user';
 
-const undoReducerEnhancer = undoReducerEnhancerCreator();
+const purgingEvents = [LOCATION_CHANGE, USER_SET_USER];
+
+const undoReducerEnhancer = undoReducerEnhancerCreator({
+  purgeOn: (action) => purgingEvents.some(type => type === action.type),
+});
 
 export const rootReducer = combineReducers({
   blocks: undoReducerEnhancer(blocks),

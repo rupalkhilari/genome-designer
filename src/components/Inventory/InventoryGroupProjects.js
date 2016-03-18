@@ -62,7 +62,7 @@ export class InventoryGroupProjects extends Component {
 
   handleOpenProject = (nextState, projectId) => {
     this.handleLoadProject(projectId)
-      .then(() => this.props.push(null, `/project/${projectId}`));
+      .then(() => this.props.push(`/project/${projectId}`));
   };
 
   handleToggleProject = (nextState, projectId) => {

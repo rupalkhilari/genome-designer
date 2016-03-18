@@ -3,7 +3,7 @@ import SectionManager from '../../../src/store/undo/SectionManager';
 
 describe('Store', () => {
   describe('Undo', () => {
-    describe.only('SectionManager', () => {
+    describe('SectionManager', () => {
       const initialState = { state: 'value' };
       const stateA = { state: 'A' };
       const stateB = { state: 'B', newVal: 'B' };
