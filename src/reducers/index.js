@@ -12,14 +12,14 @@ import user from './user';
 const undoReducerEnhancer = undoReducerEnhancerCreator();
 
 export const rootReducer = combineReducers({
-  undo: undoReducer,
-  blocks: undoReducerEnhancer(blocks, 'blocks'),
-  projects: undoReducerEnhancer(projects, 'projects'),
+  blocks: undoReducerEnhancer(blocks),
+  projects: undoReducerEnhancer(projects),
   router,
   inventory,
   inspector,
   ui,
   user,
+  undo: undoReducer,
 });
 
 export default rootReducer;

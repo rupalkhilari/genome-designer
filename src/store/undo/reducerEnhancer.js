@@ -1,3 +1,4 @@
+import uuid from 'node-uuid';
 import invariant from 'invariant';
 import * as ActionTypes from './ActionTypes';
 import SectionManager from './SectionManager';
@@ -5,6 +6,7 @@ import UndoManager from './UndoManager';
 
 const undoManager = new UndoManager();
 
+//todo - ensure this runs after the enhancer has run (relies on key order in rootReducer currently)
 export const undoReducer = (state = {}, action) => {
   const { past, future, time } = undoManager.getCurrentState();
 
@@ -26,7 +28,7 @@ export const undoReducerEnhancerCreator = (config) => {
     debug: (process && process.env && process.env.NODE_ENV === 'dev'),
   }, config);
 
-  return (reducer, key) => {
+  return (reducer, key = reducer.name || uuid.v4()) => {
     invariant(key, 'key is required, key in e.g. combineReducers');
     const initialState = reducer(undefined, {});
 
