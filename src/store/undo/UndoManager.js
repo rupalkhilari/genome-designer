@@ -73,8 +73,10 @@ export default class UndoManager {
     this.assignLastAction(action);
 
     const lastItem = this.getLastHistoryItem();
-    this.slaves[lastItem.key].undo();
-    this.future.unshift(this.past.pop());
+    if (lastItem) {
+      this.slaves[lastItem.key].undo();
+      this.future.unshift(this.past.pop());
+    }
   }
 
   redo(action) {
@@ -82,8 +84,10 @@ export default class UndoManager {
     this.assignLastAction(action);
 
     const nextItem = this.getFirstFutureItem();
-    this.slaves[nextItem.key].redo();
-    this.past.push(this.future.shift());
+    if (nextItem) {
+      this.slaves[nextItem.key].redo();
+      this.past.push(this.future.shift());
+    }
   }
 
   jump(number, action) {
@@ -117,7 +121,7 @@ export default class UndoManager {
     return {
       past: this.past.length,
       future: this.future.length,
-      time: lastItem ? lastItem : +(new Date()),
+      time: lastItem ? lastItem.time : +(new Date()),
     };
   }
 }
