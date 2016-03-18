@@ -23,6 +23,12 @@ export default class UndoManager {
     this.lastAction = action;
   }
 
+  doOnce = (action, func) => {
+    if (action === this.lastAction) return;
+    this.assignLastAction(action);
+    func();
+  };
+
   addHistoryItem(key, action) {
     const payload = {
       key,
@@ -44,77 +50,57 @@ export default class UndoManager {
     return this.future.length ? this.future[0] : null;
   }
 
-  insert(key, state, action) {
-    this.assignLastAction(action);
+  insert = (key, state, action) => this.doOnce(action, () => {
     this.addHistoryItem(key, action);
     this.slaves[key].insert(state, action);
-  }
+  });
 
-  patch(key, state, action) {
-    this.assignLastAction(action);
+  patch = (key, state, action) => this.doOnce(action, () => {
     this.slaves[key].patch(state, action);
-  }
+  });
 
-  purge(action) {
-    if (action === this.lastAction) return;
-    this.assignLastAction(action);
-
+  purge = (action) => this.doOnce(action, () => {
     //reset past and future
     this.past.length = 0;
     this.future.length = 0;
 
     //clean up slaves (not technically necessary, but for GC)
     Object.keys(this.slaves).forEach(key => this.slaves[key].purge());
-  }
+  });
 
-  undo(action) {
-    if (action === this.lastAction) return;
-
-    this.assignLastAction(action);
-
+  undo = (action) => this.doOnce(action, () => {
     const lastItem = this.getLastHistoryItem();
     if (lastItem) {
       this.slaves[lastItem.key].undo();
       this.future.unshift(this.past.pop());
     }
-  }
+  });
 
-  redo(action) {
-    if (action === this.lastAction) return;
-    this.assignLastAction(action);
-
+  redo = (action) => this.doOnce(action, () => {
     const nextItem = this.getFirstFutureItem();
     if (nextItem) {
       this.slaves[nextItem.key].redo();
       this.past.push(this.future.shift());
     }
-  }
+  });
 
-  jump(number, action) {
-    if (action === this.lastAction) return;
-    this.assignLastAction(action);
+  jump = (number, action) => this.doOnce(action, () => {
     invariant(false, 'jump not yet implemented');
-  }
+  });
 
   //transactions are just delegated to section reducers to handle
 
-  transact(action) {
-    if (action === this.lastAction) return;
-    this.assignLastAction(action);
+  transact = (action) => this.doOnce(action, () => {
     Object.keys(this.slaves).forEach(key => this.slaves[key].transact());
-  }
+  });
 
-  commit(action) {
-    if (action === this.lastAction) return;
-    this.assignLastAction(action);
+  commit = (action) => this.doOnce(action, () => {
     Object.keys(this.slaves).forEach(key => this.slaves[key].commit());
-  }
+  });
 
-  abort(action) {
-    if (action === this.lastAction) return;
-    this.assignLastAction(action);
+  abort = (action) => this.doOnce(action, () => {
     Object.keys(this.slaves).forEach(key => this.slaves[key].abort());
-  }
+  });
 
   getCurrentState() {
     const lastItem = this.getLastHistoryItem();

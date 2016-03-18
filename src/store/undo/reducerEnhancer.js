@@ -75,7 +75,7 @@ export const undoReducerEnhancerCreator = (config) => {
       //on redux init types, reset the history
       if (['@@redux/INIT', '@@INIT'].some(type => type === action.type)) {
         undoManager.purge();
-        sectionManager.patch(nextState, action);
+        undoManager.patch(nextState, action);
         return sectionManager.getCurrentState();
       }
 
@@ -99,7 +99,6 @@ export const undoReducerEnhancerCreator = (config) => {
       }
 
       //should be consistent with the return if undoActionCalled
-      //todo - verify this is the same as nextState
       return sectionManager.getCurrentState();
     };
   };
