@@ -10,6 +10,7 @@ export default class SectionManager {
 
     this.transactionDepth = 0;
     this.transactionState = null;
+    this.transactionFailure = false;
 
     this.debug = config.debug;
   }
@@ -25,6 +26,7 @@ export default class SectionManager {
   getFuture = () => this.history.future;
 
   setTransactionState = (state) => {
+    this.transactionFailure = false;
     this.transactionState = state;
     return this.transactionState;
   };
@@ -44,19 +46,23 @@ export default class SectionManager {
 
   insert = (state, action) => {
     //if same state, ignore it
-    if (state === this.getCurrentState()) {
+    if (state === this.getPresent()) {
       return state;
     }
 
     //todo - verify this is how we want to handle this
     if (this.transactionDepth > 0) {
+      if (this.debug) {
+        console.log('SectionManager insert(): updating transaction state' + (this.transactionDepth > 0 ? ' (in transaction)' : ''), action);
+      }
+
       return this.setTransactionState(state);
     }
 
     this.history.insert(state);
 
     if (this.debug) {
-      console.log('SectionManager: updating state' + (this.transactionDepth > 0 ? ' (in transaction)' : ''), action);
+      console.log('SectionManager: insert() updating state' + (this.transactionDepth > 0 ? ' (in transaction)' : ''), action);
     }
 
     return this.getCurrentState();
@@ -64,7 +70,7 @@ export default class SectionManager {
 
   undo = () => {
     if (this.debug) {
-      console.log(`SectionManager: undo`);
+      console.log(`SectionManager: undo()`);
     }
 
     this.history.undo();
@@ -74,7 +80,7 @@ export default class SectionManager {
 
   redo = () => {
     if (this.debug) {
-      console.log(`SectionManager: redo`);
+      console.log(`SectionManager: redo()`);
     }
 
     this.history.redo();
@@ -84,7 +90,7 @@ export default class SectionManager {
 
   jump = (number) => {
     if (this.debug) {
-      console.log(`SectionManager: jump`);
+      console.log(`SectionManager: jump()`);
     }
 
     this.history.jump(number);
@@ -101,7 +107,7 @@ export default class SectionManager {
     this.transactionDepth++;
 
     if (this.debug) {
-      console.group(`SectionManager: Beginning Transaction (depth = ${this.transactionDepth})`);
+      console.group && console.group(`SectionManager: Beginning Transaction (depth = ${this.transactionDepth})`);
     }
 
     this.setTransactionState(this.getPresent());
@@ -114,13 +120,16 @@ export default class SectionManager {
     this.transactionDepth--;
 
     if (this.debug) {
-      console.log('SectionManager: committing transaction. ' +
+      console.log('SectionManager: commit() ' +
+        (this.transactionFailure ? 'failed (aborted).' : 'committing...') +
         (this.transactionDepth === 0 ? 'all transactions complete' : 'nested transaction'));
-      console.groupEnd();
+      console.groupEnd && console.groupEnd();
     }
 
     if (this.transactionDepth === 0) {
-      this.insert(this.transactionState);
+      if (!this.transactionFailure) {
+        this.insert(this.transactionState);
+      }
       this.setTransactionState(null);
     }
 
@@ -135,12 +144,13 @@ export default class SectionManager {
       console.warn('SectionManager will handle nested transactions with depth greater than one by reverting to the state at start of all transactions, when all of the transactions abort / commit');
     }
 
+    this.transactionFailure = true;
     this.transactionDepth--;
 
     if (this.debug) {
       console.log('SectionManager: aborting transaction. ' +
         (this.transactionDepth === 0 ? 'all transactions complete' : 'nested transaction'));
-      console.groupEnd();
+      console.groupEnd && console.groupEnd();
     }
 
     if (this.transactionDepth === 0) {

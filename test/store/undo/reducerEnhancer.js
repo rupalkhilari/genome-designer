@@ -1,9 +1,17 @@
-import * as actions from '../../../src/store/undo/actions';
+import {expect, assert} from 'chai';
+import { undoReducerEnhancerCreator } from '../../../src/store/undo/reducerEnhancer';
 
 describe('Store', () => {
   describe('Undo', () => {
     describe('reducerEnhancer', () => {
-      it('accepts a configuration');
+      const undoReducerEnhancer = undoReducerEnhancerCreator();
+
+      it('accepts a configuration', () => {
+        expect(typeof undoReducerEnhancerCreator).to.equal('function');
+        expect(undoReducerEnhancerCreator.bind({config: 'stuff'})).to.not.throw();
+        expect(undoReducerEnhancer).to.equal('function');
+      });
+
       it(`doesnt affect the store on its own`);
       it(`makes updates when an action has the field 'undoable'`);
       it('patches on non-undoable actions');

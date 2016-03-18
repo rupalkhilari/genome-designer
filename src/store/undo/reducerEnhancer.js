@@ -6,7 +6,7 @@ import UndoManager from './UndoManager';
 
 const undoManager = new UndoManager();
 
-//todo - ensure this runs after the enhancer has run (relies on key order in rootReducer currently)
+//hack - curently required to be last reducer (to run after enhancers have run to update undoManager, relying on key order)
 export const undoReducer = (state = {}, action) => {
   const { past, future, time } = undoManager.getCurrentState();
 

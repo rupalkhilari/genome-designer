@@ -28,13 +28,13 @@ describe('Store', () => {
         expect(history.present).to.equal(initialState);
       });
 
-      it('update() creates new present, moves present to past', () => {
+      it('insert() creates new present, moves present to past', () => {
         history.insert(stateA);
         expect(history.present).to.eql(stateA);
         expect(history.past).to.eql([initialState]);
       });
 
-      it('update() works again', () => {
+      it('insert() works again', () => {
         history.insert(stateB);
         expect(history.past).to.eql([initialState, stateA]);
         expect(history.present).to.eql(stateB);
