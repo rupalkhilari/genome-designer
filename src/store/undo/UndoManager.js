@@ -1,180 +1,123 @@
 import invariant from 'invariant';
-import StoreHistory from './storeHistory';
-
-//todo - may need to prohibit silent updates in a transaction... how else to reconcile?
-/* eslint-disable no-console */
+import TransactionManager from './SectionManager';
 
 export default class UndoManager {
-  constructor(initialState, config) {
-    this.history = new StoreHistory(initialState);
+  constructor(config = {}) {
+    this.slaves = {};
+
+    //dont want a storeHistory because no present necessary
+    this.past = [];
+    this.future = [];
+
+    this.lastAction = null;
 
     this.transactionDepth = 0;
-    this.transactionState = null;
-
-    this.ignores = 0;
-
-    this.debug = config.debug;
   }
 
-  getCurrentState = () => {
-    return (!!this.transactionState) ?
-      this.transactionState :
-      this.history.present;
-  };
+  register(key, transactionManager) {
+    invariant(transactionManager instanceof TransactionManager, 'must pass TransactionManager');
+    Object.assign(this.slaves, { [key]: transactionManager });
+  }
 
-  getPresent = () => this.history.present;
-  getPast = () => this.history.past;
-  getFuture = () => this.history.future;
+  assignLastAction(action) {
+    this.lastAction = action;
+  }
 
-  setTransactionState = (state) => {
-    this.transactionState = state;
-    return this.transactionState;
-  };
+  addHistoryItem(key, action) {
+    const payload = {
+      key,
+      action,
+      time: +(new Date()),
+    };
+    this.past.push(payload);
 
-  patch = (state, action) => {
-    if (this.debug) {
-      //too many updates
-      //console.log(`UndoManager: silent update (not undoable)`, action);
-    }
+    //purge the history once you make an insertion (like StoreHistory)
+    this.future.length = 0;
+  }
 
-    if (this.transactionDepth > 0) {
-      this.setTransactionState(state);
-      return state;
-    }
+  getLastHistoryItem() {
+    const pastLength = this.past.length;
+    return pastLength ? this.past[pastLength - 1] : null;
+  }
 
-    this.history.patch(state);
-    return this.getCurrentState();
-  };
+  getFirstFutureItem() {
+    return this.future.length ? this.future[0] : null;
+  }
 
-  update = (state, action) => {
-    //if same state, ignore it
-    if (state === this.getCurrentState()) {
-      return state;
-    }
+  insert(key, state, action) {
+    this.assignLastAction(action);
+    this.addHistoryItem(key, action);
+    this.slaves[key].insert(state, action);
+  }
 
-    if (this.ignores > 0) {
-      this.ignores--;
+  patch(key, state, action) {
+    this.assignLastAction(action);
+    this.slaves[key].patch(state, action);
+  }
 
-      if (this.debug) {
-        console.log(`UndoManager: ignoring update (ignoring ${this.ignores} more)`);
-      }
+  purge(action) {
+    if (action === this.lastAction) return;
+    this.assignLastAction(action);
 
-      return this.patch(state, action);
-    }
+    //reset past and future
+    this.past.length = 0;
+    this.future.length = 0;
 
-    //todo - verify this is how we want to handle this
-    if (this.transactionDepth > 0) {
-      this.setTransactionState(state);
-      return state;
-    }
+    //clean up slaves (not technically necessary, but for GC)
+    Object.keys(this.slaves).forEach(key => this.slaves[key].purge());
+  }
 
-    this.history.update(state);
+  undo(action) {
+    if (action === this.lastAction) return;
 
-    if (this.debug) {
-      console.log('UndoManager: updating state' + (this.transactionDepth > 0 ? ' (in transaction)' : ''), action);
-    }
+    this.assignLastAction(action);
 
-    return this.getCurrentState();
-  };
+    const lastItem = this.getLastHistoryItem();
+    this.slaves[lastItem.key].undo();
+    this.future.unshift(this.past.pop());
+  }
 
-  undo = () => {
-    if (this.debug) {
-      console.log(`UndoManager: undo`);
-    }
+  redo(action) {
+    if (action === this.lastAction) return;
+    this.assignLastAction(action);
 
-    this.history.undo();
-    this.setTransactionState(null);
-    return this.getCurrentState();
-  };
+    const nextItem = this.getFirstFutureItem();
+    this.slaves[nextItem.key].redo();
+    this.past.push(this.future.shift());
+  }
 
-  redo = () => {
-    if (this.debug) {
-      console.log(`UndoManager: redo`);
-    }
+  jump(number, action) {
+    if (action === this.lastAction) return;
+    this.assignLastAction(action);
+    invariant(false, 'jump not yet implemented');
+  }
 
-    this.history.redo();
-    this.setTransactionState(null);
-    return this.getCurrentState();
-  };
+  //transactions are just delegated to section reducers to handle
 
-  jump = (number) => {
-    if (this.debug) {
-      console.log(`UndoManager: jump`);
-    }
+  transact(action) {
+    if (action === this.lastAction) return;
+    this.assignLastAction(action);
+    Object.keys(this.slaves).forEach(key => this.slaves[key].transact());
+  }
 
-    this.history.jump(number);
-    this.setTransactionState(null);
-    return this.getCurrentState();
-  };
+  commit(action) {
+    if (action === this.lastAction) return;
+    this.assignLastAction(action);
+    Object.keys(this.slaves).forEach(key => this.slaves[key].commit());
+  }
 
-  //doesnt affect transactions, just clear the history
-  purge = () => {
-    this.history = new StoreHistory(this.getPresent());
-  };
+  abort(action) {
+    if (action === this.lastAction) return;
+    this.assignLastAction(action);
+    Object.keys(this.slaves).forEach(key => this.slaves[key].abort());
+  }
 
-  ignore = (steps) => {
-    this.ignores = steps === null ? 0 : this.ignores + steps;
-    if (this.debug) {
-      console.log(`UndoManager: set to ignore ${this.ignores} updates`);
-    }
-
-    return this.ignores;
-  };
-
-  transact = () => {
-    this.transactionDepth++;
-
-    if (this.debug) {
-      console.group(`UndoManager: Beginning Transaction (depth = ${this.transactionDepth})`);
-    }
-
-    this.setTransactionState(this.getPresent());
-
-    return this.getCurrentState();
-  };
-
-  commit = () => {
-    invariant(this.transactionDepth > 0, 'not in a transaction');
-    this.transactionDepth--;
-
-    if (this.debug) {
-      console.log('UndoManager: committing transaction. ' +
-        (this.transactionDepth === 0 ? 'all transactions complete' : 'nested transaction'));
-      console.groupEnd();
-    }
-
-    if (this.transactionDepth === 0) {
-      this.update(this.transactionState);
-      this.setTransactionState(null);
-    }
-
-    return this.getPresent();
-  };
-
-  abort = () => {
-    invariant(this.transactionDepth > 0, 'not in a transaction');
-
-    //todo - need to handle nested transactions... do we just go back to the start of all of them?
-    if (this.transactionDepth > 1) {
-      console.warn('UndoManager will handle nested transactions with depth greater than one by reverting to the state at start of all transactions, when all of the transactions abort / commit');
-    }
-
-    this.transactionDepth--;
-
-    if (this.debug) {
-      console.log('UndoManager: aborting transaction. ' +
-        (this.transactionDepth === 0 ? 'all transactions complete' : 'nested transaction'));
-      console.groupEnd();
-    }
-
-    if (this.transactionDepth === 0) {
-      this.setTransactionState(null);
-    }
-
-    return this.getPresent();
-  };
-
-  inTransaction = () => (this.transactionDepth > 0);
+  getCurrentState() {
+    const lastItem = this.getLastHistoryItem();
+    return {
+      past: this.past.length,
+      future: this.future.length,
+      time: lastItem ? lastItem : +(new Date()),
+    };
+  }
 }
-
-/* eslint-enable no-console */

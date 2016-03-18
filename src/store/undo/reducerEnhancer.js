@@ -1,72 +1,106 @@
+import invariant from 'invariant';
 import * as ActionTypes from './ActionTypes';
+import SectionManager from './SectionManager';
 import UndoManager from './UndoManager';
 
-export default (config) => {
+const undoManager = new UndoManager();
+
+export const undoReducer = (state = {}, action) => {
+  const { past, future, time } = undoManager.getCurrentState();
+
+  if (state.past === past && state.future === future) {
+    return state;
+  }
+
+  return {
+    past,
+    future,
+    time,
+  };
+};
+
+export const undoReducerEnhancerCreator = (config) => {
   const params = Object.assign({
+    purgeOn: () => false,
     filter: () => false,
     debug: (process && process.env && process.env.NODE_ENV === 'dev'),
-    stateKey: 'undo',
   }, config);
 
-  // utility to merge undo state additions and state from other reducers
-  //by merging directly onto the state, keep reference equality check
-  const mergeState = (state) => {
-    return state;
+  return (reducer, key) => {
+    invariant(key, 'key is required, key in e.g. combineReducers');
+    const initialState = reducer(undefined, {});
 
-    /*
-    //todo - need to use combine reducers or something, not assign directly
-    return Object.assign(state, {
-      [params.stateKey]: {
-        past: manager.getPast().length,
-        future: manager.getFuture().length,
-      },
-    });
-    */
-  };
-
-  return (reducer) => {
-    //generate initial state
-    const initialState = mergeState(reducer(undefined, {}));
-    //const initialState = reducer(undefined, {});
-
-    const manager = new UndoManager(initialState, {
-      debug: params.debug,
-    });
+    //create a manager for this section of the store, register()
+    const sectionManager = new SectionManager(initialState, params);
+    undoManager.register(key, sectionManager);
 
     return (state = initialState, action) => {
       switch (action.type) {
       case ActionTypes.UNDO :
-        return manager.undo();
+        undoManager.undo(action);
+        break;
       case ActionTypes.REDO :
-        return manager.redo();
+        undoManager.redo(action);
+        break;
       case ActionTypes.JUMP :
         const { number } = action;
-        return manager.jump(number);
+        undoManager.jump(number, action);
+        break;
 
       case ActionTypes.TRANSACT :
-        return manager.transact();
+        undoManager.transact();
+        break;
       case ActionTypes.COMMIT :
-        return manager.commit();
+        undoManager.commit();
+        break;
       case ActionTypes.ABORT :
-        return manager.abort();
-
-      default :
-        const nextState = mergeState(reducer(state, action));
-        //const nextState = reducer(state, action);
-
-        //if nothing has changed, dont bother hitting UndoManager
-        if (nextState === state) {
-          return state;
-        }
-
-        //if action is marked as undoable, or set trackAll, update the manager
-        if (!!action.undoable || params.filter(action, state) === true) {
-          return manager.update(nextState, action);
-        }
-
-        //if not tracked as undoable, update present state
-        return manager.patch(nextState, action);
+        undoManager.abort();
+        break;
+      default:
+        //no impact on undo manager, compute as normal
       }
+
+      const undoActionCalled = Object.keys(ActionTypes).map(key => ActionTypes[key]).indexOf(action.type) >= 0;
+
+      // if undomanager was called, then dont want to just return the state (will pass === check), want to retrieve state from the reducer.
+      // We don't need to calculate the next state because the action is not relevant
+      if (undoActionCalled) {
+        return sectionManager.getCurrentState();
+      }
+
+      const nextState = reducer(state, action);
+
+      //on redux init types, reset the history
+      if (['@@redux/INIT', '@@INIT'].some(type => type === action.type)) {
+        undoManager.purge();
+        sectionManager.patch(nextState, action);
+        return sectionManager.getCurrentState();
+      }
+
+      //if nothing has changed, dont bother hitting UndoManager
+      if (nextState === state) {
+        return state;
+      }
+
+      //if we make it this far, then this reducer has been affected and we can assume the action is specific to this section of reducers
+      //todo - ensure dont call manager functions twice, or are idempotent
+
+      //if marked to purge, lets clear the history
+      if (!!action.undoPurge || params.purgeOn(action, state)) {
+        undoManager.purge(action);
+      } else if (!!action.undoable || params.filter(action, state)) {
+        //shouldnt have undoPurge and undoable on same action
+        undoManager.insert(key, nextState, action);
+      } else {
+        //if not tracked as undoable, update present state
+        undoManager.patch(key, nextState, action);
+      }
+
+      //should be consistent with the return if undoActionCalled
+      //todo - verify this is the same as nextState
+      return sectionManager.getCurrentState();
     };
   };
 };
+
+export default undoReducerEnhancerCreator;

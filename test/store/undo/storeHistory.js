@@ -19,7 +19,7 @@ describe('Store', () => {
       it('should have undo(), redo(), update(), patch()', () => {
         expect(typeof history.undo).to.equal('function');
         expect(typeof history.redo).to.equal('function');
-        expect(typeof history.update).to.equal('function');
+        expect(typeof history.insert).to.equal('function');
         expect(typeof history.patch).to.equal('function');
       });
 
@@ -29,13 +29,13 @@ describe('Store', () => {
       });
 
       it('update() creates new present, moves present to past', () => {
-        history.update(stateA);
+        history.insert(stateA);
         expect(history.present).to.eql(stateA);
         expect(history.past).to.eql([initialState]);
       });
 
       it('update() works again', () => {
-        history.update(stateB);
+        history.insert(stateB);
         expect(history.past).to.eql([initialState, stateA]);
         expect(history.present).to.eql(stateB);
       });
@@ -67,7 +67,7 @@ describe('Store', () => {
 
       it('update() deletes the future', () => {
         history.future = [{ some: 'things' }, { in: 'the future' }];
-        history.update(stateC);
+        history.insert(stateC);
         expect(history.future).to.eql([]);
       });
     });

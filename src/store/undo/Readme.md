@@ -25,7 +25,7 @@ While JSON.stringify() would allow for nice string equality checks, we are using
 
 ```
 //state tracking
-update(state) - add state node if (state !=== newState) and subject to transactions, clears future steps, returns new state.
+insert(state) - add state node if (state !=== newState) and subject to transactions, clears future steps, returns new state.
 patch(state) - updates present state, does not add state node
 
 //transactions (called directly)
@@ -33,8 +33,6 @@ transact() - begin a transaction (increment counter, so nesting handled)
 commit(full = false) - commit a transaction, all transactions if `full === true`, return new state (throw error if not in transaction)
 abort() - abort a transaction, return prior state (throw error if not in transaction)
 inTransaction() - true/false, if in transaction
-
-ignore(number = 1) - ignore # of `update()`s, pass null to reset
 
 //state movement (are exposed as actions) 
 undo() - return state after going back one step, throw if no past 
@@ -48,17 +46,18 @@ getFuture() - return future states
 
 ### Actions
 
-Actions can have an additional field `undoable`, which, when true, will `update()` the `UndoManager`:
+Actions can have an additional field `undoable`, which, when true, will `insert()` into the `UndoManager`.
+
+Actions may also have a field `undoPurge` which will purge all undo states, e.g. on a route change or user login.
 
 ```
 {
     type <const>
     undoable <boolean>
+    undoPurge <boolean>
     ...rest <payload>
 }
 ```
-
-Alternatively, you can pass in the parameter `trackAll: true` to the configuration of the reducer enhancer (see below).
 
 ### Reducer Enhancer
 
@@ -80,18 +79,6 @@ transactionState:   -  -  2  3   4 5   -  -  -
 transactionDepth:   0  0  1  1   1 1   0  0  0
 ```
 
-# update this! - need to export reducer
-
-Adds key `undo` (you can rename this in config) to the store:
-
-```
-undo: {
-    past: #,
-    future: #,
-    time: <date store was updated>
-}
-```
-
 ##### config
 
 Object with the following keys:
@@ -100,6 +87,27 @@ Object with the following keys:
 filter {function} - passed the action, function to track whether should be added to undo, returning true is yes
 debug {boolean}
 stateKey {String}           //todo - determine whether doing this
+```
+
+### undo reducer
+
+You can add a reducer to track undo state to the store
+
+```js
+import { undoReducer } from ...
+import * as reducers from ...
+
+//combineReducers({
+  undo: undoReducer,
+  ...reducers
+});
+
+//in your store:
+undo: {
+    past: #,
+    future: #,
+    time: <date store was updated>
+}
 ```
 
 ###Todo

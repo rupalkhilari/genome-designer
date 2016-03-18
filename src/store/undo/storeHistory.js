@@ -2,9 +2,7 @@ import invariant from 'invariant';
 
 export default class StoreHistory {
   constructor(initialState) {
-    this.past = [];
-    this.present = initialState;
-    this.future = [];
+    this.reset(initialState);
   }
 
   //silently set present state, without updating past / future
@@ -12,8 +10,8 @@ export default class StoreHistory {
     return Object.assign(this, { present: newState });
   }
 
-  //add a new state, updating present, past, future
-  update(newState) {
+  //add a new state, updating present, past, future (to empty)
+  insert(newState) {
     const { past, present } = this;
 
     return Object.assign(this, {
@@ -93,6 +91,15 @@ export default class StoreHistory {
         .concat(future.slice(0, steps)),
       present: future[steps],
       future: future.slice(steps + 1),
+    });
+  }
+
+  reset(initialState) {
+    const presentState = initialState || this.present;
+    return Object.assign(this, {
+      past: [],
+      present: presentState,
+      future: [],
     });
   }
 }

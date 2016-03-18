@@ -12,7 +12,7 @@ import SupportPage from '../components/SupportPage';
 import AuthRouteWrapper from '../components/authentication/authRouteWrapper';
 
 const history = syncHistoryWithStore(browserHistory, store, {
-  selectLocationState: state => state.router,
+  selectLocationState: (state) => state.router,
 });
 
 export default (
