@@ -17,8 +17,8 @@ const undoReducerEnhancer = undoReducerEnhancerCreator({
 });
 
 export const rootReducer = combineReducers({
-  blocks: undoReducerEnhancer(blocks),
-  projects: undoReducerEnhancer(projects),
+  blocks: undoReducerEnhancer(blocks, 'blocks'),
+  projects: undoReducerEnhancer(projects, 'projects'),
   router,
   inventory,
   inspector,

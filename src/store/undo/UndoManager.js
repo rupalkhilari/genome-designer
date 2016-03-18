@@ -19,6 +19,15 @@ export default class UndoManager {
     Object.assign(this.slaves, { [key]: transactionManager });
   }
 
+  getUndoState() {
+    const lastItem = this.getLastHistoryItem();
+    return {
+      past: this.past.length,
+      future: this.future.length,
+      time: lastItem ? lastItem.time : +(new Date()),
+    };
+  }
+
   assignLastAction(action) {
     this.lastAction = action;
   }
@@ -91,23 +100,14 @@ export default class UndoManager {
   //transactions are just delegated to section reducers to handle
 
   transact = (action) => this.doOnce(action, () => {
-    Object.keys(this.slaves).forEach(key => this.slaves[key].transact());
+    Object.keys(this.slaves).forEach(key => this.slaves[key].transact(action));
   });
 
   commit = (action) => this.doOnce(action, () => {
-    Object.keys(this.slaves).forEach(key => this.slaves[key].commit());
+    Object.keys(this.slaves).forEach(key => this.slaves[key].commit(action));
   });
 
   abort = (action) => this.doOnce(action, () => {
-    Object.keys(this.slaves).forEach(key => this.slaves[key].abort());
+    Object.keys(this.slaves).forEach(key => this.slaves[key].abort(action));
   });
-
-  getCurrentState() {
-    const lastItem = this.getLastHistoryItem();
-    return {
-      past: this.past.length,
-      future: this.future.length,
-      time: lastItem ? lastItem.time : +(new Date()),
-    };
-  }
 }

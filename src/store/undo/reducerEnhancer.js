@@ -1,17 +1,16 @@
-import uuid from 'node-uuid';
 import invariant from 'invariant';
 import * as ActionTypes from './ActionTypes';
 import SectionManager from './SectionManager';
 import UndoManager from './UndoManager';
 
-//future - test support for reducerEnhancing the whole store.
+//future - support for reducerEnhancing the whole store. Key parts will be weird?
 
 //note - this creates a singleton. May want to offer ability to create multiple of these for some reason (but this is kinda anti-redux) - also so can configure things like action fields undoable and undoPurge
 const undoManager = new UndoManager();
 
 //hack - curently required to be last reducer (to run after enhancers have run to update undoManager, relying on key order in combineReducers)
 export const undoReducer = (state = {}, action) => {
-  const { past, future, time } = undoManager.getCurrentState();
+  const { past, future, time } = undoManager.getUndoState();
 
   if (state.past === past && state.future === future) {
     return state;
@@ -32,7 +31,7 @@ export const undoReducerEnhancerCreator = (config) => {
     debug: (process && process.env && process.env.NODE_ENV === 'dev'),
   }, config);
 
-  return (reducer, key = reducer.name || uuid.v4()) => {
+  return (reducer, key = reducer.name) => {
     invariant(key, 'key is required, key in e.g. combineReducers');
     const initialState = reducer(undefined, {});
 
@@ -54,13 +53,13 @@ export const undoReducerEnhancerCreator = (config) => {
         break;
 
       case ActionTypes.TRANSACT :
-        undoManager.transact();
+        undoManager.transact(action);
         break;
       case ActionTypes.COMMIT :
-        undoManager.commit();
+        undoManager.commit(action);
         break;
       case ActionTypes.ABORT :
-        undoManager.abort();
+        undoManager.abort(action);
         break;
       default:
         //no impact on undo manager, compute as normal
@@ -79,7 +78,7 @@ export const undoReducerEnhancerCreator = (config) => {
       //on redux init types, reset the history
       if (params.initTypes.some(type => type === action.type)) {
         undoManager.purge();
-        undoManager.patch(nextState, action);
+        undoManager.patch(key, nextState, action);
         return sectionManager.getCurrentState();
       }
 

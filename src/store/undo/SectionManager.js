@@ -1,7 +1,6 @@
 import invariant from 'invariant';
 import StoreHistory from './storeHistory';
 
-//todo - may need to prohibit silent updates in a transaction... how else to reconcile?
 /* eslint-disable no-console */
 
 export default class SectionManager {
@@ -31,6 +30,7 @@ export default class SectionManager {
     return this.transactionState;
   };
 
+  //todo - verify behavior of patching then inserting... currently, does not create a node
   patch = (state, action) => {
     if (this.debug) {
       console.log(`SectionManager: patching (not undoable)`, action);
@@ -50,7 +50,6 @@ export default class SectionManager {
       return state;
     }
 
-    //todo - verify this is how we want to handle this
     if (this.transactionDepth > 0) {
       if (this.debug) {
         console.log('SectionManager insert(): updating transaction state' + (this.transactionDepth > 0 ? ' (in transaction)' : ''), action);
@@ -59,11 +58,11 @@ export default class SectionManager {
       return this.setTransactionState(state);
     }
 
-    this.history.insert(state);
-
     if (this.debug) {
       console.log('SectionManager: insert() updating state' + (this.transactionDepth > 0 ? ' (in transaction)' : ''), action);
     }
+
+    this.history.insert(state);
 
     return this.getCurrentState();
   };
@@ -103,7 +102,7 @@ export default class SectionManager {
     this.history.reset(this.getCurrentState());
   };
 
-  transact = () => {
+  transact = (action) => {
     this.transactionDepth++;
 
     if (this.debug) {
@@ -115,7 +114,7 @@ export default class SectionManager {
     return this.getCurrentState();
   };
 
-  commit = () => {
+  commit = (action) => {
     invariant(this.transactionDepth > 0, 'not in a transaction');
     this.transactionDepth--;
 
@@ -128,7 +127,7 @@ export default class SectionManager {
 
     if (this.transactionDepth === 0) {
       if (!this.transactionFailure) {
-        this.insert(this.transactionState);
+        this.insert(this.transactionState, action);
       }
       this.setTransactionState(null);
     }
@@ -136,7 +135,7 @@ export default class SectionManager {
     return this.getCurrentState();
   };
 
-  abort = () => {
+  abort = (action) => {
     invariant(this.transactionDepth > 0, 'not in a transaction');
 
     //todo - need to handle nested transactions... do we just go back to the start of all of them?

@@ -7,8 +7,9 @@ describe('Store', () => {
       const initialState = { state: 'value' };
       const stateA = { state: 'A' };
       const stateB = { state: 'B', newVal: 'B' };
+      const stateC = { state: 'C' };
 
-      const manager = new SectionManager(initialState, {debug: true});
+      const manager = new SectionManager(initialState, { debug: true });
 
       it('constructor() creates initial state for present', () => {
         const present = manager.getPresent();
@@ -30,6 +31,12 @@ describe('Store', () => {
       });
 
       it('insert() creates a history node', () => {
+        manager.insert(stateB);
+        expect(manager.getPresent()).to.eql(stateB);
+        expect(manager.getPast()).to.eql([stateA]);
+      });
+
+      it('insert() ignores identical state to present', () => {
         manager.insert(stateB);
         expect(manager.getPresent()).to.eql(stateB);
         expect(manager.getPast()).to.eql([stateA]);
@@ -113,7 +120,7 @@ describe('Store', () => {
           expect(manager.inTransaction()).to.equal(false);
 
           const beforeState = manager.getPresent();
-          const tempState = {state: 'temp'};
+          const tempState = { state: 'temp' };
 
           manager.transact();
           expect(manager.inTransaction()).to.equal(true);
