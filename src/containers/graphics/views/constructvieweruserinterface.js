@@ -177,7 +177,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
 
       if (evt.shiftKey) {
         // range select
-        this.constructViewer.blockAddToSelections([block]);
+        this.constructViewer.blockAddToSelectionsRange(block, this.selectedElements);
       } else
       if (evt.metaKey || evt.altKey) {
         // toggle block in selections

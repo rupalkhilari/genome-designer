@@ -66,11 +66,19 @@ export class InventoryItem extends Component {
    * make a drag and drop proxy for the item
    */
   makeDnDProxy() {
-    const proxy = document.createElement('span');
-    proxy.classList.add('InventoryItemProxy');
+    const proxy = document.createElement('div');
+    proxy.className = 'InventoryItemProxy';
     proxy.innerHTML = this.props.item.metadata.name;
+    const dom = ReactDOM.findDOMNode(this);
+    const img = dom.querySelector('img');
+    if (img) {
+      const imgClone = img.cloneNode();
+      imgClone.removeAttribute('data-reactid');
+      proxy.appendChild(imgClone);
+    }
     return proxy;
   }
+
 
   render() {
     const item = this.props.item;

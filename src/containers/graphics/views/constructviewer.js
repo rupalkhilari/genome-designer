@@ -207,7 +207,6 @@ export class ConstructViewer extends Component {
    */
   constructSelected(id) {
     this.props.uiSetCurrentConstruct(id);
-    this.props.inspectorToggleVisibility(true);
   }
 
   /**
@@ -215,7 +214,6 @@ export class ConstructViewer extends Component {
    */
   blockSelected(partIds) {
     this.props.uiSetCurrent(partIds);
-    this.props.inspectorToggleVisibility(true);
   }
 
   /**
@@ -223,7 +221,6 @@ export class ConstructViewer extends Component {
    */
   blockToggleSelected(partIds) {
     this.props.uiToggleCurrent(partIds);
-    this.props.inspectorToggleVisibility(true);
   }
 
   /**
@@ -231,7 +228,26 @@ export class ConstructViewer extends Component {
    */
   blockAddToSelections(partIds) {
     this.props.uiAddCurrent(partIds);
-    this.props.inspectorToggleVisibility(true);
+  }
+  /**
+   * Join the given block with any other selected block in the same
+   * construct level and select them all
+   */
+  blockAddToSelectionsRange(partId, currentSelections) {
+    // get all the blocks at the same level as this one
+    const levelBlocks = this.props.blocks[this.props.blockGetParents(partId)[0]].components;
+    // find min/max index of these blocks if they are in the currentSelections
+    let min = levelBlocks.indexOf(partId);
+    let max = min;
+    currentSelections.forEach((blockId, index) => {
+      const blockIndex = levelBlocks.indexOf(blockId);
+      if (blockIndex >= 0) {
+        min = Math.min(min, blockIndex);
+        max = Math.max(max, blockIndex);
+      }
+    });
+    // now we can select the entire range
+    this.props.uiAddCurrent(levelBlocks.slice(min, max + 1));
   }
 
   /**
