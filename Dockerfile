@@ -20,18 +20,22 @@ RUN apt-get update && \
 #everything needed by extensions
 RUN yes | pip install biopython
 
+RUN pip install awscli
+
 EXPOSE 3000
 ENV PORT=3000
 
+RUN mkdir /app
 WORKDIR /app
-ADD . /app
 
 #setup node
 ADD package.json /app/package.json
 RUN npm update -g npm && npm install
+
+ADD . /app
 RUN npm run install-extensions
 
 RUN cd /app
 
 # Redis now launch via docker-compose and is referenced via link
-CMD  ["npm" ,"run", "auth"]
+CMD  ["npm" ,"start"]
