@@ -8,18 +8,33 @@ Builds on top of Redux, primarily as a "reducer enhancer" with support for some 
 
 - Support transactions
 - Per-action granularity, not limited to each reducer
+- do not track UI state, just sections of store corresponding to application data
 - Little memory increase
 - Useful debug messages
 
 ## Implementation
 
-By default, adding the reducer enhancer will only add a section to the store `undo`. Actions must be marked as undoable, or you must interact with the UndoManager directly.
+Sections of the store are wrapped in a reducerEnhancer, which creates a SectionManager (one for each section). The enhancer does not change the shape of state.
+ 
+SectionManagers register with an UndoManager singleton.
+
+The enhancer uses the reducer for calculating next states when appropriate, but handles undo state management on its own and avoids the reducer when such an action is passed. 
+
+Past, present, future steps are tracked by the SectionManager for each section. These are flattened and controlled by the UndoManager for the whole store, so that subsequent undos delegate between sections properly.
+
+### reducerEnhancerCreator
+
+Primary entry point, which can be configured. See fields in reducerEnhancer.js
 
 ### UndoManager
 
-Does the actual state management, is called by the reducer. Can be called directly, but usually actions will handle this.
+Does the actual state management, is called by the reducer. Cannot be called directly, use actions instead. Delegates changing of state to SectionManagers, is mostly responsible for orchestrating between the sections.
 
 While JSON.stringify() would allow for nice string equality checks, we are using immutables and would lose our ability to reference equality check.
+
+### SectionManager
+
+Handles each section of the store. 
 
 ##### API
 
@@ -65,12 +80,12 @@ Catches all events, and saves them to the undoManager as appropriate:
 
 ```
 P = patch()
-U = update()
+I = insert()
 N = undo()
 R = redo()
 T = transact()
 C = commit()
-                    U  P  T  U   U P   C  P  U
+                    I  P  T  I   I P   C  P  I
                           |            |
                   --1--2--|--3---4-5---|--6--7----
 undoable actions: --*-----|--*---*-----|-----*----
@@ -114,5 +129,4 @@ undo: {
 
 - todo - save the actions (2D array to handle transactions?)
 - support limit of states to track
-- discuss undo of saving a project / block
 - pruning the store of unneeded blocks / projects
