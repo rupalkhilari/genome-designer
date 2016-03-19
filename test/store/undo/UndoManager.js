@@ -4,7 +4,7 @@ import SectionManager from '../../../src/store/undo/SectionManager';
 
 describe('Store', () => {
   describe('Undo', () => {
-    describe.only('UndoManager', () => {
+    describe('UndoManager', () => {
       const manager = new UndoManager();
 
       const makeDummyAction = () => ({ type: 'someType', data: false });

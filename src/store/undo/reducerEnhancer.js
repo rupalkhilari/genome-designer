@@ -6,11 +6,12 @@ import UndoManager from './UndoManager';
 //future - support for reducerEnhancing the whole store. Key parts will be weird?
 
 //note - this creates a singleton. May want to offer ability to create multiple of these for some reason (but this is kinda anti-redux) - also so can configure things like action fields undoable and undoPurge
-const undoManager = new UndoManager();
+const manager = new UndoManager();
 
 //hack - curently required to be last reducer (to run after enhancers have run to update undoManager, relying on key order in combineReducers)
+//note that if you pass manager into enhancerCreator, this will not work
 export const undoReducer = (state = {}, action) => {
-  const { past, future, time } = undoManager.getUndoState();
+  const { past, future, time } = manager.getUndoState();
 
   if (state.past === past && state.future === future) {
     return state;
@@ -23,7 +24,8 @@ export const undoReducer = (state = {}, action) => {
   };
 };
 
-export const undoReducerEnhancerCreator = (config) => {
+//passing in manager is for testing, but you may not want to use the singleton... but the reducer will not work if you pass it in (WIP)
+export const undoReducerEnhancerCreator = (config, undoManager = manager) => {
   const params = Object.assign({
     initTypes: ['@@redux/INIT', '@@INIT'],
     purgeOn: () => false,
@@ -107,7 +109,7 @@ export const undoReducerEnhancerCreator = (config) => {
   };
 };
 
-export const makeUndoable = (action) => Object.assign(action, {undoable: true});
-export const makePurging = (action) => Object.assign(action, {undoPurge: true});
+export const makeUndoable = (action) => Object.assign(action, { undoable: true });
+export const makePurging = (action) => Object.assign(action, { undoPurge: true });
 
 export default undoReducerEnhancerCreator;

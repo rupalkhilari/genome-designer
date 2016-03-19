@@ -68,14 +68,15 @@ export default class UndoManager {
     this.slaves[key].patch(state, action);
   });
 
-  purge = (action) => this.doOnce(action, () => {
+  //don't wrap in doOnce, so don't block patch() and insert()
+  purge = (action) => {
     //reset past and future
     this.past.length = 0;
     this.future.length = 0;
 
     //clean up slaves (not technically necessary, but for GC)
     Object.keys(this.slaves).forEach(key => this.slaves[key].purge());
-  });
+  };
 
   undo = (action) => this.doOnce(action, () => {
     const lastItem = this.getLastHistoryItem();

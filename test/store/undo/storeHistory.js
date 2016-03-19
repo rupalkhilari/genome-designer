@@ -8,6 +8,7 @@ describe('Store', () => {
       const stateA = { my: 'milkshake' };
       const stateB = { brings: 'all the boys' };
       const stateC = { to: 'the yard' };
+      const stateD = { and: 'theyre like' };
       const history = new StoreHistory(initialState);
 
       it('should create history with initialState as present, and arrays past and future', () => {
@@ -65,9 +66,18 @@ describe('Store', () => {
         expect(history.present).to.equal(stateB);
       });
 
-      it('update() deletes the future', () => {
+      it('insert() deletes the future', () => {
         history.future = [{ some: 'things' }, { in: 'the future' }];
         history.insert(stateC);
+        expect(history.future).to.eql([]);
+      });
+
+      it('patch() updates the present state, deletes future, past unaffected', () => {
+        const oldPast = history.past.slice();
+        history.future = [{ some: 'things' }, { in: 'the future' }];
+        history.patch(stateD);
+        expect(history.past).to.eql(oldPast);
+        expect(history.present).to.eql(stateD);
         expect(history.future).to.eql([]);
       });
     });

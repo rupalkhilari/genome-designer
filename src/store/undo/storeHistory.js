@@ -5,9 +5,12 @@ export default class StoreHistory {
     this.reset(initialState);
   }
 
-  //silently set present state, without updating past / future
+  //silently set present state, reset future, doesnt affect past
   patch(newState) {
-    return Object.assign(this, { present: newState });
+    return Object.assign(this, {
+      present: newState,
+      future: [],
+    });
   }
 
   //add a new state, updating present, past, future (to empty)
