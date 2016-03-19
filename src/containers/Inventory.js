@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { inventoryToggleVisibility } from '../actions/inventory';
 import inventorySbol from '../inventory/sbol';
+import inventoryAndrea from '../inventory/andrea';
 import InventoryGroup from '../components/Inventory/InventoryGroup';
 
 import '../styles/Inventory.css';
@@ -53,6 +54,11 @@ export class Inventory extends Component {
                             type="search"
                             isActive={activeTab === 'search'}
                             setActive={() => this.setActiveTab('search')}/>
+            <InventoryGroup title="EGF Parts"
+                            type="block"
+                            isActive={activeTab === 'egf'}
+                            setActive={() => this.setActiveTab('egf')}
+                            items={inventoryAndrea}/>
             <InventoryGroup title="My Projects"
                             type="projects"
                             isActive={activeTab === 'projects'}
