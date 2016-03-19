@@ -24,7 +24,7 @@ export default class InventoryGroup extends Component {
     case 'projects':
       return (<InventoryGroupProjects {...props} />);
     case 'block':
-      return (<InventoryGroupBlocks {...props} />); //deprecated
+      return (<InventoryGroupBlocks {...props} />);
     default:
       throw new Error(`Type ${type} is not registered in InventoryGroup`);
     }
