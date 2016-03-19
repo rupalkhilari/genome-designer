@@ -3,5 +3,7 @@ genome-designer:
     file: docker-compose-common.yml
     service: genome-designer
   image: quay.io/autodesk_bionano/genomedesigner_genome-designer${BNR_ENV_TAG}
+  environment:
+    API_END_POINT: http://10.37.152.116:8080/api
   command:
-    npm run server-auth.sh
+    npm run server-auth
