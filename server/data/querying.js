@@ -61,5 +61,9 @@ export const getAllProjectManifests = (userId) => {
   return listProjectsWithAccess(userId)
     .then(projectIds => {
       return Promise.all(projectIds.map(project => persistence.projectGet(project)));
+    })
+    .catch(err => {
+      console.error('error getting project manifests', err);
+      return [];
     });
 };
