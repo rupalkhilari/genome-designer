@@ -72,7 +72,7 @@ describe('Store', () => {
         const starting = state.counter;
         state = undoableCounter(state, makeUndoable(increment(10)));
         expect(state.counter).to.equal(starting + 10);
-        state = undoableCounter(state, Object.assign({ undoPurge: true }, increment(5)));
+        state = undoableCounter(state, makePurging(increment(5)));
         expect(state.counter).to.equal(starting + 15);
         state = undoableCounter(state, actions.undo()); //should be impotent
         expect(state.counter).to.equal(starting + 15);
