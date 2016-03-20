@@ -56,7 +56,7 @@ function importThenCatch(promise, resp) {
 }
 
 router.post('/project/:id', jsonParser, (req, resp) => {
-  console.log("HIT THE ROUTE");
+  console.log("HIT THE project ROUTE");
   const { id } = req.params;
   const data = req.body;
 
@@ -72,19 +72,23 @@ router.post('/project/:id', jsonParser, (req, resp) => {
 });
 
 router.post('/block/:id', jsonParser, (req, resp) => {
+  console.log("HIT THE block ROUTE");
   const { id } = req.params;
-  const data = req.body;
 
-  if (data.file) {
-    fs.readFile(data.file, 'utf8', (err, text) => {
-      console.log("About to import!");
-      const promise = importBlock(id, text);
-      importThenCatch(promise, resp);
-    });
-  } else {
-    const promise = importBlock(id, data.text);
+  //assuming contents to be string
+  let buffer = '';
+
+  //get data in parts
+  req.on('data', data => {
+    buffer += data;
+  });
+
+  //received all the data
+  req.on('end', () => {
+    console.log("About to import!", buffer);
+    const promise = importBlock(id, buffer);
     importThenCatch(promise, resp);
-  }
+  });
 });
 
 //export these functions for testing purpose
