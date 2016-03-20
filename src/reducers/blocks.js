@@ -29,6 +29,18 @@ const initialState = {
   [child7.id]: new Block(Object.assign({}, child7)),
 };
 
+/*
+import fs from 'fs';
+
+const fileContents = fs.readFileSync('/Users/flo/Dev/genome-designer-fm/test/res/sampleGenbank.gb', 'utf8');
+const blocks_file = JSON.parse(fileContents);
+
+const floState = blocks_file.map(block => new Block(block))
+    .reduce((acc, block) => Object.assign(acc, { [block.id] : block }));
+
+export default function blocks(state = floState, action) {
+*/
+
 export default function blocks(state = initialState, action) {
   switch (action.type) {
   case ActionTypes.BLOCK_CREATE :

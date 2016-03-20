@@ -56,6 +56,7 @@ function importThenCatch(promise, resp) {
 }
 
 router.post('/project/:id', jsonParser, (req, resp) => {
+  console.log("HIT THE ROUTE");
   const { id } = req.params;
   const data = req.body;
 
@@ -76,6 +77,7 @@ router.post('/block/:id', jsonParser, (req, resp) => {
 
   if (data.file) {
     fs.readFile(data.file, 'utf8', (err, text) => {
+      console.log("About to import!");
       const promise = importBlock(id, text);
       importThenCatch(promise, resp);
     });

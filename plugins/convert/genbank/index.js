@@ -38,19 +38,18 @@ const outputBlocks = [
 //data massating
 const handleBlocks = (outputBlocks) => {
   return Promise.all(
-    outputBlocks.map(outputBlock => {
+    Object.keys(outputBlocks).map(key => {
       // generate a valid block scaffold. This is similar to calling new Block(),
       // but a bit more light weight and easier to work with (models are frozen so you cannot edit them)
       const scaffold = BlockDefinition.scaffold();
+      const outputBlock = outputBlocks[key];
 
       //get the sequence md5
       const sequenceMd5 = outputBlock.sequence ? md5(outputBlock.sequence) : '';
 
       //reassign values
       const toMerge = {
-        metadata: {
-          name: outputBlock.name,
-        },
+        metadata: outputBlock.metadata,
         sequence: {
           md5: sequenceMd5,
           annotations: outputBlock.annotations, //you will likely have to remap these...
@@ -81,16 +80,36 @@ const handleBlocks = (outputBlocks) => {
         Promise.resolve();
 
       //return promise which will resolve with block once done
-      return sequencePromise.then(() => block);
+      return sequencePromise.then(() => ({block: block, id: block.id, oldId: key, children: outputBlocks[key].components}));
     })
   );
 };
 
-const handleProject = (outputProject) => {
+const getNewId = (blockStructureArray, oldId) => {
+  for (var i = 0, len = blockStructureArray.length; i < len; i++) {
+    if (blockStructureArray[i].oldId === oldId) {
+      return blockStructureArray[i].id;
+    }
+  };
+};
+
+const remapHierarchy = (blockArray) => {
+  return blockArray.map(blockStructure => {
+    var newBlock = blockStructure.block;
+    blockStructure.children.map(oldChildId =>  {
+      var newid = getNewId(blockArray, oldChildId);
+      newBlock.components.push(newid);
+    });
+    return newBlock;
+  });
+};
+
+const handleProject = (outputProject, root_block_id) => {
   //just get fields we want using destructuring and use them to merge
   const { name, description } = outputProject;
 
   return merge({}, ProjectDefinition.scaffold(), {
+    components: [root_block_id],
     metadata: {
       name,
       description,
@@ -150,6 +169,7 @@ export const exportProject = (project, blocks) => {
 export const importProject = (genbankString) => {
   const inputFile = createRandomStorageFile();
   const outputFile = createRandomStorageFile();
+  console.log("Importing into: " + outputFile);
   const cmd = `python ${path.resolve(__dirname, 'convert.py')} from_genbank ${inputFile} ${outputFile}`;
 
   return runCommand(cmd, genbankString, inputFile, outputFile)
@@ -174,13 +194,29 @@ export const exportBlock = (block, blocks) => {
 
 export const importBlock = (gbstr) => {
   return importProject(gbstr)
-    .then(result => {
-      if (result && result.project && result.blocks &&
+          .then(result => {
+        if (result && result.project && result.blocks &&
         result.project.components && result.project.components.length > 0) {
-        const bid = result.project.components[0];
-        const block = result.blocks[bid];
-        return Promise.resolve({ block: block, blocks: result.blocks });
-      }
-      return Promise.reject('invalid input string');
-    });
+    return handleBlocks(result.blocks)
+          .then(blocksWithOldIds => {
+            const blocks = remapHierarchy(blocksWithOldIds);
+            const resProject = handleProject(result.project, getNewId(blocksWithOldIds, result.project.components[0]));
+            return { project: resProject, blocks: blocks };
+        });
+  }
+//  return Promise.reject('invalid input string');
+});
+};
+
+export const importBlock_old = (gbstr) => {
+  return importProject(gbstr)
+          .then(result => {
+        if (result && result.project && result.blocks &&
+        result.project.components && result.project.components.length > 0) {
+    const bid = result.project.components[0];
+    const block = result.blocks[bid];
+    return Promise.resolve({ block: block, blocks: result.blocks });
+  }
+  return Promise.reject('invalid input string');
+});
 };

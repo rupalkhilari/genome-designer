@@ -38,6 +38,10 @@ const AnnotationDefinition = new SchemaDefinition({
     fields.number({min: 0}),
     'Location of end of annotation',
   ],
+  notes: [
+    fields.object().required,
+    `Notes about the annotation`,
+  ],
 });
 
 export default AnnotationDefinition;

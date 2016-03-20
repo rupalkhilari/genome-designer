@@ -13,6 +13,12 @@ const initialState = {
   }),
 };
 
+/*const floState = {
+  test: new Project(Object.assign(outputProject, {id: 'test'}));
+};
+
+export default function projects(state = floState, action) {
+*/
 export default function projects(state = initialState, action) {
   switch (action.type) {
   case ActionTypes.PROJECT_CREATE :
