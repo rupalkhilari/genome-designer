@@ -80,9 +80,16 @@ export class InspectorBlock extends Component {
   }
 
   currentSequenceLength() {
-    //todo - reduce
-    if (this.props.instances.length === 1) {
-      return this.props.instances[0].sequence.length + ' bp';
+    if (this.props.instances.length > 1) {
+      const allHaveSequences = this.props.instances.every(instance => instance.sequence.length);
+      if (allHaveSequences) {
+        const reduced = this.props.instances.reduce((acc, instance) => acc + (instance.sequence.length || 0), 0);
+        return reduced + ' bp';
+      }
+      return 'Incomplete Sketch';
+    } else if (this.props.instances.length === 1) {
+      const length = this.props.instances[0].sequence.length;
+      return (length > 0 ? (length + ' bp') : 'No Sequence');
     }
     return 'No Sequence';
   }
