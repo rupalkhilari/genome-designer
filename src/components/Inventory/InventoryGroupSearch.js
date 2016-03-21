@@ -78,19 +78,25 @@ export class InventoryGroupSearch extends Component {
     this.setState({ sourceList: newSourceList });
   };
 
+  getFullItem = (registryKey, item) => {
+    const { source, id } = item.source;
+    if (source && id) {
+      return registry[source].get(id);
+    }
+    return Promise.resolve(item);
+  };
+
   handleSearchChange = (value) => {
     this.props.inventorySearch(value);
     this.debouncedSearch(value);
   };
 
+  handleOnSelect = (registryKey, item) => {
+    return this.getFullItem(registryKey, item);
+  };
+
   handleOnDrop = (registryKey, item, target, position) => {
-    const { source, id } = item.source;
-    if (source && id) {
-      return registry[source].get(id)
-        .then(result => {
-          return result;
-        });
-    }
+    return this.getFullItem(registryKey, item);
   };
 
   render() {
@@ -123,6 +129,7 @@ export class InventoryGroupSearch extends Component {
                               key={key}>
             <InventoryList inventoryType={blockDragType}
                            onDrop={(...args) => this.handleOnDrop(key, ...args)}
+                           onSelect={(...args) => this.handleOnSelect(key, ...args)}
                            items={listingItems}/>
           </InventoryListGroup>
         );
