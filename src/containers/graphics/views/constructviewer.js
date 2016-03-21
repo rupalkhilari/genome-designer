@@ -98,7 +98,7 @@ export class ConstructViewer extends Component {
     this.update();
     // handle window resize to reflow the layout
     this.resizeDebounced = debounce(this.windowResized.bind(this));
-    window.addEventListener('resize', this.resizeDebounced, 5);
+    window.addEventListener('resize', this.resizeDebounced, 2);
   }
   /**
    * update scene graph after the react component updates
