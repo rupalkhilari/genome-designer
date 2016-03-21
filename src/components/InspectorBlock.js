@@ -34,9 +34,7 @@ export class InspectorBlock extends Component {
   };
 
   selectSymbol = (symbol) => {
-    console.log(this.props.instances);
     this.props.instances.forEach((block) => {
-      console.log('setting block ' + block.id + ' to ' + symbol);
       this.props.blockSetSbol(block.id, symbol);
     });
   };

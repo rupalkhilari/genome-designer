@@ -46,7 +46,7 @@ export default class SBOLGlyph2D extends Glyph2D {
       this.img.style.maxWidth = kT.sbolIcon + 'px';
       this.img.style.top = (this.node.height / 2 - kT.sbolIcon / 2) + 'px';
 
-      const svgPath = symbols.find(symbol => symbol.id === this.node.sbolName).metadata.imageThick;
+      const svgPath = symbols.find(symbol => symbol.id === this.node.sbolName).images.thickDark;
       if (this.img.getAttribute('src') !== svgPath) {
         this.img.setAttribute('src', svgPath);
       }
