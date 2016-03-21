@@ -4,6 +4,7 @@ import { inventorySearch } from '../../actions/inventory';
 import { block as blockDragType} from '../../constants/DragTypes';
 import BlockDefinition from '../../schemas/Block';
 import * as validators from '../../schemas/fields/validators';
+import { escapeRegExp } from 'lodash';
 
 import InventorySearch from './InventorySearch';
 import InventoryList from './InventoryList';
@@ -23,7 +24,7 @@ export class InventoryGroupBlocks extends Component {
     const { items, searchTerm } = this.props;
 
     //in the future, we will want smarter searching
-    const searchRegex = new RegExp(searchTerm, 'gi');
+    const searchRegex = new RegExp(escapeRegExp(searchTerm), 'gi');
     const listingItems = items.filter(item => searchRegex.test(item.metadata.name) || searchRegex.test(item.rules.sbol));
 
     return (

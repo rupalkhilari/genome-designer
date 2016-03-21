@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { inventorySearch } from '../../actions/inventory';
 import { block as blockDragType } from '../../constants/DragTypes';
-import { debounce } from 'lodash';
+import { debounce, escapeRegExp } from 'lodash';
 
 import { registry, getSources } from '../../inventory/registry';
 import * as searchApi from '../../middleware/search';
@@ -101,7 +101,7 @@ export class InventoryGroupSearch extends Component {
     const { searching, sourceList, searchResults, sourcesVisible } = this.state;
 
     //want to filter down results while next query running
-    const searchRegex = new RegExp(searchTerm, 'gi');
+    const searchRegex = new RegExp(escapeRegExp(searchTerm), 'gi');
 
     //todo - account for filtering...
     const noSearchResults = Object.keys(searchResults).reduce((acc, key) => acc + searchResults[key].length, 0) === 0;
