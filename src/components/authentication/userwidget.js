@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
-import {push} from 'redux-router';
+import { push } from 'react-router-redux';
 import PopupMenu from '../../components/Menu/PopupMenu';
 import Vector2D from '../../containers/graphics/geometry/vector2d';
 import { connect } from 'react-redux';
@@ -96,7 +96,7 @@ class UserWidget extends Component {
     // signed out user
     return (
       <div className="userwidget">
-        <a href="#" className="signed-out" onClick={this.onSignIn.bind(this)}>SIGN IN</a>
+        <a className="signed-out" onClick={this.onSignIn.bind(this)}>SIGN IN</a>
       </div>
     );
   }
@@ -107,6 +107,7 @@ function mapStateToProps(state) {
     user: state.user,
   };
 }
+
 export default connect(mapStateToProps, {
   uiShowAuthenticationForm,
   uiSetGrunt,

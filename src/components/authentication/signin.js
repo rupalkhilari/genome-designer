@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import {connect} from 'react-redux';
+import { push } from 'react-router-redux';
 import { uiShowAuthenticationForm, uiSetGrunt } from '../../actions/ui';
 import invariant from 'invariant';
 import { userLogin } from '../../actions/user';
@@ -21,13 +22,13 @@ class SignInForm extends Component {
     uiShowAuthenticationForm: PropTypes.func.isRequired,
     uiSetGrunt: PropTypes.func.isRequired,
     userLogin: PropTypes.func.isRequired,
+    push: PropTypes.func.isRequired,
   };
 
   constructor() {
     super();
     this.state = Object.assign({}, errors);
   }
-
 
   // on form submission, first perform client side validation then submit
   // to the server if that goes well.
@@ -41,6 +42,7 @@ class SignInForm extends Component {
         this.props.uiSetGrunt(`You are now signed in as ${user.firstName} ${user.lastName} ( ${user.email} )`);
         // close the form
         this.props.uiShowAuthenticationForm('none');
+        this.props.push('/project/test');
       })
       .catch((reason) => {
         const defaultMessage = 'Unexpected error, please check your connection';
@@ -61,20 +63,6 @@ class SignInForm extends Component {
   }
   get password() {
     return this.refs.password.value.trim();
-  }
-  /**
-   * display server errors in the most logical way
-   */
-  showServerErrors(json) {
-    invariant(json && json.message, 'We expected an error message');
-
-    // any unrecognized errors are displayed below the tos
-    this.setState({
-      signinError: {
-        visible: true,
-        text: json.message,
-      },
-    });
   }
   /**
    * display server errors in the most logical way
@@ -131,4 +119,5 @@ export default connect(mapStateToProps, {
   uiShowAuthenticationForm,
   uiSetGrunt,
   userLogin,
+  push,
 })(SignInForm);

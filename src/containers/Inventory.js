@@ -10,6 +10,7 @@ import '../styles/SidePanel.css';
 
 export class Inventory extends Component {
   static propTypes = {
+    projectId: PropTypes.string,
     isVisible: PropTypes.bool.isRequired,
     inventoryToggleVisibility: PropTypes.func.isRequired,
   };
@@ -32,7 +33,8 @@ export class Inventory extends Component {
   };
 
   render() {
-    const { isVisible } = this.props;
+    //passing in projectId this way is a little hack... probably should use react context in a more cohesive way once break up / refactor project components / App / etc.
+    const { isVisible, projectId } = this.props;
     const { activeTab } = this.state;
 
     return (
@@ -61,6 +63,7 @@ export class Inventory extends Component {
                             items={inventoryAndrea}/>
             <InventoryGroup title="My Projects"
                             type="projects"
+                            projectId={projectId}
                             isActive={activeTab === 'projects'}
                             setActive={() => this.setActiveTab('projects')}/>
             <InventoryGroup title="Sketch Library"
