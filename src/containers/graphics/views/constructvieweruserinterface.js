@@ -169,12 +169,8 @@ export default class ConstructViewerUserInterface extends UserInterface {
     evt.preventDefault();
     const block = this.topBlockAt(point);
     if (block) {
-      // select the construct if not already the selected construct ( changing
-      // the construct will remove blocks that are not part of the construct from the selections )
-      if (this.constructViewer.props.construct.id !== this.constructViewer.props.ui.currentConstructId) {
-        this.constructViewer.constructSelected(this.constructViewer.props.construct.id);
-      }
-
+      // select construct when block selected
+      this.selectConstruct();
       if (evt.shiftKey) {
         // range select
         this.constructViewer.blockAddToSelectionsRange(block, this.selectedElements);
@@ -201,7 +197,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
           case 'triangle':
           const node = this.layout.nodeFromElement(block);
           node.showChildren = !node.showChildren;
-          this.layout.redraw();
+          this.constructViewer.update();
           break;
         }
       }
@@ -209,6 +205,31 @@ export default class ConstructViewerUserInterface extends UserInterface {
       // select construct if no block clicked and deselect all blocks
       this.constructViewer.blockSelected([]);
       this.constructViewer.constructSelected(this.constructViewer.props.constructId);
+    }
+  }
+
+  /**
+   * selected construct is lighter than unselected constructs
+   * @return {[type]} [description]
+   */
+  update() {
+    super.update();
+    this.isSelectedConstruct() ? this.lighten() : this.darken();
+  }
+  /**
+   * true if we are the selected construct
+   */
+  isSelectedConstruct() {
+    return this.constructViewer.props.construct.id === this.constructViewer.props.ui.currentConstructId;
+  }
+  /**
+   * select the construct if not already selected
+   */
+  selectConstruct() {
+    // select the construct if not already the selected construct ( changing
+    // the construct will remove blocks that are not part of the construct from the selections )
+    if (this.constructViewer.props.construct.id !== this.constructViewer.props.ui.currentConstructId) {
+      this.constructViewer.constructSelected(this.constructViewer.props.construct.id);
     }
   }
   /**
@@ -323,6 +344,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
   onDragEnter(globalPoint, payload) {
     this.hideEdgeInsertionPoint();
     this.hideBlockInsertionPoint();
+    this.darken();
   }
   /**
    * drag left the construct viewer
@@ -330,11 +352,22 @@ export default class ConstructViewerUserInterface extends UserInterface {
   onDragLeave() {
     this.hideEdgeInsertionPoint();
     this.hideBlockInsertionPoint();
+    this.lighten();
+  }
+
+  darken() {
+    this.el.style.backgroundColor = 'rgba(0,0,0,0.2)';
+  }
+
+  lighten() {
+    this.el.style.backgroundColor = null;
   }
   /**
    * drag over event
    */
   onDragOver(globalPosition, payload) {
+    // select construct on drag over
+    this.selectConstruct();
     // convert global point to local space via our mousetrap
     const localPosition = this.mouseTrap.globalToLocal(globalPosition, this.el);
     // there is a different highlight / UX experience depending on what is being dragged

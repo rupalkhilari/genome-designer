@@ -65,6 +65,7 @@ export class ConstructViewer extends Component {
       menuPosition: new Vector2D(), // position for any popup menu,
       modalOpen: false,             // controls visibility of test modal window
     };
+    this.update = debounce(this._update.bind(this), 1);
   }
 
   /**
@@ -105,6 +106,7 @@ export class ConstructViewer extends Component {
   componentDidUpdate() {
     this.update();
   }
+
   /**
    * ensure we don't get any resize events after dismounting
    */
@@ -278,7 +280,7 @@ export class ConstructViewer extends Component {
   /**
    * update the layout and then the scene graph
    */
-  update() {
+  _update() {
     this.layout.update(
       this.props.construct,
       this.props.layoutAlgorithm,
@@ -358,8 +360,12 @@ export class ConstructViewer extends Component {
    */
   render() {
     // TODO, can be conditional when master is fixed and this is merged with construct select PR
-    //const menu = this.props.constructId === this.props.ui.currentConstructId
-    const menu = <ConstructViewerMenu constructId={this.props.constructId} layoutAlgorithm={this.props.layoutAlgorithm}/>;
+    let menu = <ConstructViewerMenu
+      open={this.props.construct.id === this.props.ui.currentConstructId}
+      constructId={this.props.constructId}
+      layoutAlgorithm={this.props.layoutAlgorithm}
+      />;
+
 
     const rendered = (
       <div className="construct-viewer" key={this.props.construct.id}>
