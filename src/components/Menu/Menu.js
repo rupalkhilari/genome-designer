@@ -9,7 +9,11 @@ export default class Menu extends Component {
     isOpen: PropTypes.bool.isRequired,
     onToggle: PropTypes.func.isRequired,
     title: PropTypes.string.isRequired,
-    menuItems: PropTypes.array.isRequired,
+    menuItems: PropTypes.arrayOf(PropTypes.shape({
+      text: PropTypes.string,
+      disabled: PropTypes.bool,
+      action: PropTypes.func,
+    })).isRequired,
   };
 
   toggle = (forceVal) => {

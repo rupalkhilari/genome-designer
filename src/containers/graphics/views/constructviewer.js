@@ -391,9 +391,7 @@ export class ConstructViewer extends Component {
 }
 
 function mapStateToProps(state, props) {
-  const { projectId } = state.router.params;
   return {
-    projectId,
     ui: state.ui,
     construct: state.blocks[props.constructId],
     blocks: state.blocks,

@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { pushState } from 'redux-router';
+import { push } from 'react-router-redux';
 import ConstructViewer from './graphics/views/constructviewer';
 import ProjectDetail from '../components/ProjectDetail';
 import ProjectHeader from '../components/ProjectHeader';
@@ -18,14 +18,13 @@ class ProjectPage extends Component {
     projectId: PropTypes.string.isRequired,
     constructs: PropTypes.array.isRequired,
     projectLoad: PropTypes.func.isRequired,
-    pushState: PropTypes.func.isRequired,
+    push: PropTypes.func.isRequired,
     uiShowMainMenu: PropTypes.func.isRequired,
   };
 
   constructor(props) {
     super(props);
     this.layoutAlgorithm = 'wrap';
-    this.props.uiShowMainMenu(true);
   }
 
   onLayoutChanged = () => {
@@ -38,13 +37,14 @@ class ProjectPage extends Component {
 
     if (!project || !project.metadata) {
       this.props.projectLoad(projectId)
-        .catch(err => this.props.pushState('/'));
-      return <p>loading project...</p>;
+        .catch(err => this.props.push('/'));
+      return (<p>loading project...</p>);
     }
 
     const constructViewers = constructs.map(construct => {
       return (
         <ConstructViewer key={construct.id}
+                         projectId={projectId}
                          constructId={construct.id}
                          layoutAlgorithm={this.layoutAlgorithm}/>
       );
@@ -52,7 +52,7 @@ class ProjectPage extends Component {
 
     return (
       <div className="ProjectPage">
-        <Inventory />
+        <Inventory projectId={projectId} />
 
         <div className="ProjectPage-content">
 
@@ -65,14 +65,14 @@ class ProjectPage extends Component {
           <ProjectDetail project={project}/>
         </div>
 
-        <Inspector />
+        <Inspector projectId={projectId} />
       </div>
     );
   }
 }
 
-function mapStateToProps(state) {
-  const { projectId } = state.router.params;
+function mapStateToProps(state, ownProps) {
+  const projectId = ownProps.params.projectId;
   const project = state.projects[projectId];
 
   if (!project) {
@@ -91,6 +91,6 @@ function mapStateToProps(state) {
 
 export default connect(mapStateToProps, {
   projectLoad,
-  pushState,
+  push,
   uiShowMainMenu,
 })(ProjectPage);

@@ -4,8 +4,6 @@ set -e
 VERSION_FILE="./node_modules/bio-user-platform/package.json"
 VERSION="0.4.0"
 
-MODULETMPDIR="/tmp/bio-user-platform/npm"
-
 correct_cwd () {
     if [ ! -f "package.json" ]
     then
@@ -29,9 +27,7 @@ install_platform () {
             return 0
         fi
     fi
-    mkdir -p ${MODULETMPDIR}
-    aws s3 cp s3://bionano-devops-build-artifacts/bio-user-platform/npm/bio-user-platform-${VERSION}.tgz ${MODULETMPDIR}/
-    npm install ${MODULETMPDIR}/bio-user-platform-${VERSION}.tgz
+    npm install git+https://git.autodesk.com:bionano/bio-user-platform.git#v${VERSION}
 }
 
 correct_cwd

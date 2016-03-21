@@ -17,7 +17,7 @@ export const projectList = () => {
           projects,
         });
 
-        return projects
+        return projects;
       });
   };
 };
@@ -99,6 +99,7 @@ export const projectMerge = (projectId, toMerge) => {
     const project = oldProject.merge(toMerge);
     dispatch({
       type: ActionTypes.PROJECT_MERGE,
+      undoable: true,
       project,
     });
     return project;
@@ -111,6 +112,7 @@ export const projectRename = (projectId, newName) => {
     const project = oldProject.mutate('metadata.name', newName);
     dispatch({
       type: ActionTypes.PROJECT_RENAME,
+      undoable: true,
       project,
     });
     return project;
@@ -124,6 +126,7 @@ export const projectAddConstruct = (projectId, componentId) => {
     const project = oldProject.addComponents(componentId);
     dispatch({
       type: ActionTypes.PROJECT_ADD_CONSTRUCT,
+      undoable: true,
       project,
     });
     return project;

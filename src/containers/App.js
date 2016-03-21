@@ -1,6 +1,5 @@
-/*global flashedUser*/
 import React, { Component, PropTypes } from 'react';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import GlobalNav from './GlobalNav';
 import AuthenticationForms from './authentication/authenticationforms';
 
@@ -10,16 +9,17 @@ class App extends Component {
   static propTypes = {
     children: PropTypes.node, // Injected by React Router
     user: PropTypes.object,
+    currentProjectId: PropTypes.string,
   };
 
   render() {
-    const { children } = this.props;
+    const { currentProjectId, children } = this.props;
 
     const DevTools = (process.env.NODE_ENV !== 'production') ? require('./DevTools') : 'div';
 
     return (
       <div className="App">
-        <GlobalNav />
+        <GlobalNav currentProjectId={currentProjectId}/>
         <AuthenticationForms />
         <div className="App-pageContent">
           {children}
@@ -30,8 +30,9 @@ class App extends Component {
   }
 }
 
-function mapStateToProps(state) {
+function mapStateToProps(state, ownProps) {
   return {
+    currentProjectId: ownProps.params.projectId,
     user: state.user,
   };
 }

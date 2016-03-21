@@ -15,7 +15,7 @@ export default class ModalWindow extends Component {
     open: PropTypes.bool.isRequired,
     closeModal: PropTypes.func.isRequired,
     closeOnClickOutside: PropTypes.bool,
-    title: PropTypes.string.isRequired,
+    title: PropTypes.string,
     payload: PropTypes.object.isRequired,
   };
 
