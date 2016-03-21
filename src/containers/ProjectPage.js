@@ -40,7 +40,6 @@ class ProjectPage extends Component {
       this.props.pushState('/');
       return <p>todo - need to handle this (direct request)</p>;
     }
-
     const constructViewers = constructs.map(construct => {
       return (
         <ConstructViewer key={construct.id}

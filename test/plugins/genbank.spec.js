@@ -60,13 +60,6 @@ ORIGIN
         1 acggtt
 //`;
 
-const getBlock = (blockId, allBlocks) => {
-  for (var i = 0; i < allBlocks.length; i++) {
-    if (allBlocks[i].id === blockId)
-      return allBlocks[i];
-  }
-};
-
 describe('Plugins', () => {
   describe.only('Genbank Plugin', () => {
     it.skip('should import Genbank file that has nested blocks', function importGB(done) {
@@ -95,7 +88,7 @@ describe('Plugins', () => {
                     expect(output.project.metadata.name).to.equal('EU912544');
                     expect(output.project.metadata.description).to.equal('Cloning vector pDM313, complete sequence.')
                     expect(output.project.components.length).to.equal(1);
-                    const parentBlock = getBlock(output.project.components[0], output.blocks);
+                    const parentBlock = output.blocks[output.project.components[0]];
                     expect(parentBlock.components.length).to.equal(4);
                     expect(parentBlock.metadata.name).to.equal('EU912544');
                     expect(parentBlock.metadata.description).to.equal('Cloning vector pDM313, complete sequence.');
@@ -107,10 +100,12 @@ describe('Plugins', () => {
                     expect(parentBlock.metadata.data_file_division).to.equal('SYN');
                     expect(parentBlock.metadata.type).to.equal('source');
                     expect(parentBlock.metadata.date).to.equal('06-FEB-2009');
-                    expect(getBlock(parentBlock.components[0], output.blocks).metadata.type).to.equal('promoter');
-                    expect(getBlock(parentBlock.components[1], output.blocks).metadata.type).to.equal('CDS');
-                    expect(getBlock(parentBlock.components[2], output.blocks).metadata.type).to.equal('terminator');
-                    expect(getBlock(parentBlock.components[3], output.blocks).metadata.type).to.equal('rep_origin');
+                    expect(output.blocks[parentBlock.components[0]].metadata.type).to.equal('promoter');
+                    expect(output.blocks[parentBlock.components[0]].rules.sbol).to.equal('promoter');
+                    expect(output.blocks[parentBlock.components[1]].metadata.type).to.equal('CDS');
+                    expect(output.blocks[parentBlock.components[1]].rules.sbol).to.equal('cds');
+                    expect(output.blocks[parentBlock.components[2]].metadata.type).to.equal('terminator');
+                    expect(output.blocks[parentBlock.components[3]].metadata.type).to.equal('rep_origin');
                     for (var key in output.blocks) {
                       expect(BlockDefinition.validate(output.blocks[key])).to.equal(true);
                     };
@@ -126,15 +121,15 @@ describe('Plugins', () => {
           .then(output => {
             expect(output.project).not.to.equal(undefined);
             expect(output.project.components.length === 1).to.equal(true);
-            const parentBlock = getBlock(output.project.components[0], output.blocks);
+            const parentBlock = output.blocks[output.project.components[0]];
             expect(parentBlock.components.length).to.equal(7);
-            expect(getBlock(parentBlock.components[0], output.blocks).metadata.type).to.equal('filler');
-            expect(getBlock(parentBlock.components[1], output.blocks).metadata.type).to.equal('promoter');
-            expect(getBlock(parentBlock.components[2], output.blocks).metadata.type).to.equal('filler');
-            expect(getBlock(parentBlock.components[3], output.blocks).metadata.type).to.equal('CDS');
-            expect(getBlock(parentBlock.components[4], output.blocks).metadata.type).to.equal('filler');
-            expect(getBlock(parentBlock.components[5], output.blocks).metadata.type).to.equal('terminator');
-            expect(getBlock(parentBlock.components[6], output.blocks).metadata.type).to.equal('rep_origin');
+            expect(output.blocks[parentBlock.components[0]].metadata.type).to.equal('filler');
+            expect(output.blocks[parentBlock.components[1]].metadata.type).to.equal('promoter');
+            expect(output.blocks[parentBlock.components[2]].metadata.type).to.equal('filler');
+            expect(output.blocks[parentBlock.components[3]].metadata.type).to.equal('CDS');
+            expect(output.blocks[parentBlock.components[4]].metadata.type).to.equal('filler');
+            expect(output.blocks[parentBlock.components[5]].metadata.type).to.equal('terminator');
+            expect(output.blocks[parentBlock.components[6]].metadata.type).to.equal('rep_origin');
             for (var key in output.blocks) {
               expect(BlockDefinition.validate(output.blocks[key])).to.equal(true);
             };
@@ -150,21 +145,21 @@ describe('Plugins', () => {
           .then(output => {
             expect(output.project).not.to.equal(undefined);
             expect(output.project.components.length === 1).to.equal(true);
-            const parentBlock = getBlock(output.project.components[0], output.blocks);
+            const parentBlock = output.blocks[output.project.components[0]];
             expect(parentBlock.components.length).to.equal(2);
-            var firstBlock = getBlock(parentBlock.components[0], output.blocks);
+            var firstBlock = output.blocks[parentBlock.components[0]];
             expect(firstBlock.metadata.type).to.equal('block');
             expect(firstBlock.components.length).to.be.equal(3);
-            expect(getBlock(firstBlock.components[0], output.blocks).metadata.type).to.equal('promoter');
-            expect(getBlock(firstBlock.components[1], output.blocks).metadata.type).to.equal('CDS');
-            expect(getBlock(firstBlock.components[2], output.blocks).metadata.type).to.equal('filler');
-            var secondBlock = getBlock(parentBlock.components[1], output.blocks);
+            expect(output.blocks[firstBlock.components[0]].metadata.type).to.equal('promoter');
+            expect(output.blocks[firstBlock.components[1]].metadata.type).to.equal('CDS');
+            expect(output.blocks[firstBlock.components[2]].metadata.type).to.equal('filler');
+            var secondBlock = output.blocks[parentBlock.components[1]];
             expect(secondBlock.metadata.type).to.equal('block');
             expect(secondBlock.components.length).to.be.equal(4);
-            expect(getBlock(secondBlock.components[0], output.blocks).metadata.type).to.equal('CDS');
-            expect(getBlock(secondBlock.components[1], output.blocks).metadata.type).to.equal('filler');
-            expect(getBlock(secondBlock.components[2], output.blocks).metadata.type).to.equal('terminator');
-            expect(getBlock(secondBlock.components[3], output.blocks).metadata.type).to.equal('rep_origin');
+            expect(output.blocks[secondBlock.components[0]].metadata.type).to.equal('CDS');
+            expect(output.blocks[secondBlock.components[1]].metadata.type).to.equal('filler');
+            expect(output.blocks[secondBlock.components[2]].metadata.type).to.equal('terminator');
+            expect(output.blocks[secondBlock.components[3]].metadata.type).to.equal('rep_origin');
             for (var key in output.blocks) {
               expect(BlockDefinition.validate(output.blocks[key])).to.equal(true);
             };

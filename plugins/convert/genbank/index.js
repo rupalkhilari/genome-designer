@@ -52,11 +52,13 @@ const handleBlocks = (outputBlocks) => {
         metadata: outputBlock.metadata,
         sequence: {
           md5: sequenceMd5,
-          annotations: outputBlock.annotations, //you will likely have to remap these...
+          annotations: outputBlock.annotations,
+          length: outputBlock.sequence.length,
         },
         source: {
           id: 'genbank',
         },
+        rules: outputBlock.rules,
       };
 
       //be sure to pass in empty project first, so you arent overwriting scaffold each time
@@ -168,8 +170,9 @@ export const exportProject = (project, blocks) => {
 
 export const importProject = (genbankString) => {
   const inputFile = createRandomStorageFile();
+
   const outputFile = createRandomStorageFile();
-  console.log("Importing into: " + outputFile);
+
   const cmd = `python ${path.resolve(__dirname, 'convert.py')} from_genbank ${inputFile} ${outputFile}`;
 
   return runCommand(cmd, genbankString, inputFile, outputFile)
@@ -199,9 +202,16 @@ export const importBlock = (gbstr) => {
         result.project.components && result.project.components.length > 0) {
     return handleBlocks(result.blocks)
           .then(blocksWithOldIds => {
-            const blocks = remapHierarchy(blocksWithOldIds);
+            const remapped_blocks_array = remapHierarchy(blocksWithOldIds);
             const resProject = handleProject(result.project, getNewId(blocksWithOldIds, result.project.components[0]));
-            return { project: resProject, blocks: blocks };
+            var blocks = {};
+            for (var i = 0; i < remapped_blocks_array.length; i++) {
+              blocks[remapped_blocks_array[i].id] = remapped_blocks_array[i];
+            };
+
+            const outputFile = filePaths.createStorageUrl('imported_from_genbank.json');
+            fileSystem.fileWrite(outputFile, { project: resProject, blocks: blocks });
+        return { project: resProject, blocks: blocks };
         });
   }
 //  return Promise.reject('invalid input string');
@@ -210,13 +220,13 @@ export const importBlock = (gbstr) => {
 
 export const importBlock_old = (gbstr) => {
   return importProject(gbstr)
-          .then(result => {
+    .then(result => {
         if (result && result.project && result.blocks &&
         result.project.components && result.project.components.length > 0) {
-    const bid = result.project.components[0];
-    const block = result.blocks[bid];
-    return Promise.resolve({ block: block, blocks: result.blocks });
-  }
-  return Promise.reject('invalid input string');
+          const bid = result.project.components[0];
+          const block = result.blocks[bid];
+          return Promise.resolve({ block: block, blocks: result.blocks });
+        }
+    return Promise.reject('invalid input string');
 });
 };

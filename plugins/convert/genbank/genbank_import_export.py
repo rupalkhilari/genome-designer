@@ -9,7 +9,10 @@ import uuid
 
 sbol_type_table = {
     "CDS": "cds",
-    "regulatory": "promoter" #promoter is actually a subclass of regulatory
+    "regulatory": "promoter", #promoter is actually a subclass of regulatory
+    "promoter": "promoter",
+    "terminator": "terminator",
+    "gene": "cds"
 }
 
 def get_sequence_and_features(block, allblocks):
@@ -75,6 +78,7 @@ def create_block_json(id, sequence, features):
     return {
         "id": id,
         "metadata" : {},
+        "rules": {},
         "components": [],
         "sequence" : {
             "sequence": sequence,
@@ -130,6 +134,7 @@ def genbank_to_block_helper(gb, convert_features=False):
     root_block["metadata"]["type"] = "source"
     root_block["metadata"]["start"] = 0
     root_block["metadata"]["end"] = full_length-1
+    root_block["sequence"]["length"] = full_length
     for annot in gb.annotations:
         try:
             json.dumps(gb.annotations[annot])
@@ -164,14 +169,23 @@ def genbank_to_block_helper(gb, convert_features=False):
                             pass
                 child_block["metadata"]["start"] = start
                 child_block["metadata"]["end"] = end-1
+                child_block["sequence"]["length"] = end-start
                 child_block["metadata"]["strand"] = strand
 
                 if sbol_type:
-                    if "tags" not in child_block["metadata"]:
-                        child_block["metadata"]["tags"] = {}
-                    child_block["metadata"]["tags"]["sbol"] = sbol_type
+                    child_block["rules"]["sbol"] = sbol_type
 
                 child_block["metadata"]["type"] = f.type
+
+                if "name" not in child_block:
+                    if sbol_type == 'cds' and "gene" in f.qualifiers:
+                            child_block["metadata"]["name"] = f.qualifiers["gene"][0]
+                    else:
+                        if sbol_type:
+                            child_block["metadata"]["name"] = sbol_type
+                        elif f.type:
+                            child_block["metadata"]["name"] = f.type
+
                 all_blocks[block_id] = child_block
 
     # Build the hierarchy
@@ -223,6 +237,7 @@ def genbank_to_block_helper(gb, convert_features=False):
                 block_id = str(uuid.uuid4())
                 filler_block = create_block_json(block_id, sequence[current_position:child["metadata"]["start"]], [])
                 filler_block["metadata"]["type"] = "filler"
+                filler_block["metadata"]["name"] = "Filler"
                 filler_block["metadata"]["start"] = current_position
                 filler_block["metadata"]["end"] = child["metadata"]["start"]-1
                 all_blocks[block_id] = filler_block
@@ -232,6 +247,7 @@ def genbank_to_block_helper(gb, convert_features=False):
             block_id = str(uuid.uuid4())
             filler_block = create_block_json(block_id, sequence[current_position:block["metadata"]["end"]+1], [])
             filler_block["metadata"]["type"] = "filler"
+            filler_block["metadata"]["name"] = "Filler"
             filler_block["metadata"]["start"] = current_position
             filler_block["metadata"]["end"] = block["metadata"]["end"]
             all_blocks[block_id] = filler_block

@@ -72,7 +72,6 @@ router.post('/project/:id', jsonParser, (req, resp) => {
 });
 
 router.post('/block/:id', jsonParser, (req, resp) => {
-  console.log("HIT THE block ROUTE");
   const { id } = req.params;
 
   //assuming contents to be string
@@ -85,7 +84,6 @@ router.post('/block/:id', jsonParser, (req, resp) => {
 
   //received all the data
   req.on('end', () => {
-    console.log("About to import!", buffer);
     const promise = importBlock(id, buffer);
     importThenCatch(promise, resp);
   });
