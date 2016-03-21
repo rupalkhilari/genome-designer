@@ -12,13 +12,10 @@ import InventorySearch from './InventorySearch';
 import InventoryList from './InventoryList';
 import InventoryListGroup from './InventoryListGroup';
 
-const defaultSearchResults = {
-  igem: [],
-  egf: [],
-};
+const defaultSearchResults = getSources().reduce((acc, source) => Object.assign(acc, { [source]: [] }), {});
 
 const createSourcesVisible = (valueFunction = () => false) => {
-  return getSources().reduce((acc, source) => Object.assign(acc, {[source]: valueFunction(source)}), {});
+  return getSources().reduce((acc, source) => Object.assign(acc, { [source]: valueFunction(source) }), {});
 };
 
 export class InventoryGroupSearch extends Component {
