@@ -12,7 +12,7 @@ import InstanceDefinition from '../schemas/Instance';
  *  - a string, to use as a forced ID (todo - deprecate - this is for testing...)
  */
 export default class Instance {
-  constructor(input = uuid.v4(), subclassBase, moreFields) {
+  constructor(input, subclassBase, moreFields) {
     let parsedInput;
     if (!!input && typeof input === 'object') {
       parsedInput = input;
@@ -23,8 +23,8 @@ export default class Instance {
     }
 
     merge(this,
-      subclassBase,
       InstanceDefinition.scaffold(),
+      subclassBase,
       moreFields,
       parsedInput
     );
