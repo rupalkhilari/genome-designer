@@ -23,7 +23,7 @@ export class InspectorBlock extends Component {
 
   setBlockDescription = (description) => {
     this.props.instances.forEach((block) => {
-      this.props.blockMerge(block.id, {metadata: {description}});
+      this.props.blockMerge(block.id, { metadata: { description } });
     });
   };
 
@@ -94,8 +94,19 @@ export class InspectorBlock extends Component {
     return 'No Sequence';
   }
 
+  currentAnnotations() {
+    if (this.props.instances.length > 1) {
+      return [];
+    } else if (this.props.instances.length === 1) {
+      return this.props.instances[0].sequence.annotations;
+    }
+    return [];
+  }
+
   render() {
     const { readOnly } = this.props;
+
+    const annotations = this.currentAnnotations();
 
     return (
       <div className="InspectorContent InspectorContentBlock">
@@ -125,6 +136,19 @@ export class InspectorBlock extends Component {
         <SymbolPicker current={this.currentSbolSymbol()}
                       readOnly={readOnly}
                       onSelect={this.selectSymbol}/>
+
+
+        {!!annotations.length && (<h4 className="InspectorContent-heading">Contents</h4>)}
+        {!!annotations.length && (<div className="InspectorContentBlock-Annotations">
+            {annotations.map(annotation => {
+              return (
+                <span className="InspectorContentBlock-Annotation">
+                {annotation.name || annotation.description || '?'}
+              </span>
+              );
+            })}
+          </div>
+        )}
       </div>
     );
   }
