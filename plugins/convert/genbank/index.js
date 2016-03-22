@@ -9,33 +9,7 @@ import ProjectDefinition from '../../../src/schemas/Project';
 import md5 from 'md5';
 import * as persistence from '../../../server/data/persistence';
 
-//EXAMPLE
-
-// you likely will call RunCommand() which will run the python, which writes a file and then reads it.
-// The Python should not be responsible for correct data structure - take out scaffolds from that,
-// and just return JSON objects in format which makes sense for capturing and returning the data available in Genbank files
-// Pass the output to a script like this, which will scaffold + massage it for you, and write the sequence files.
-// Then, pass the output of this section (a promise, which resolves to a `rollup`).
-
-//from python, incomplete definitions:
-
-//whatever project data you want to export.... I just have these fields so that the handling below is consistent
-const outputProject = {
-  name: 'blah blah',
-  description: 'this is a description',
-};
-
-//array of output blocks in whatever format you choose
-const outputBlocks = [
-  {
-    name: 'name',
-    sequence: 'acggatcga',
-    annotations: [],
-  },
-  //etc
-];
-
-//data massating
+//data massaging
 const handleBlocks = (outputBlocks) => {
   return Promise.all(
     Object.keys(outputBlocks).map(key => {
@@ -45,7 +19,7 @@ const handleBlocks = (outputBlocks) => {
       const outputBlock = outputBlocks[key];
 
       //get the sequence md5
-      const sequenceMd5 = outputBlock.sequence ? md5(outputBlock.sequence) : '';
+      const sequenceMd5 = outputBlock.sequence.sequence ? md5(outputBlock.sequence.sequence) : '';
 
       //reassign values
       const toMerge = {
@@ -78,7 +52,7 @@ const handleBlocks = (outputBlocks) => {
 
       //promise, for writing sequence if we have one, or just immediately resolve if we dont
       const sequencePromise = sequenceMd5 ?
-        persistence.sequenceWrite(sequenceMd5, outputBlock.sequence) :
+        persistence.sequenceWrite(sequenceMd5, outputBlock.sequence.sequence) :
         Promise.resolve();
 
       //return promise which will resolve with block once done
@@ -106,33 +80,18 @@ const remapHierarchy = (blockArray) => {
   });
 };
 
-const handleProject = (outputProject, root_block_id) => {
+const handleProject = (outputProject, root_block_ids) => {
   //just get fields we want using destructuring and use them to merge
   const { name, description } = outputProject;
 
   return merge({}, ProjectDefinition.scaffold(), {
-    components: [root_block_id],
+    components: root_block_ids,
     metadata: {
       name,
       description,
     },
   });
 };
-
-/*
- NOTES
- ______
-
- -- You probably dont need to touch file writing and reading too much, but if you do, you should look at fileSystem.js and filePaths.js
- They should be fairly self-explanatory, with examples available here and elsewhere.
-
- -- I would recommend not using the field ID, or not assigning it. Let the scaffold handle that.
-
- -- You can see what the schema consists of by calling describe() on the schema:
- console.log(BlockDefinition.describe());
-
- -- Show/Hide Store in the running app with Ctrl-h (and move it with ctrl-q)
- */
 
 const exec = require('child_process').exec;
 const uuid = require('node-uuid');
@@ -168,7 +127,13 @@ export const exportProject = (project, blocks) => {
   return runCommand(cmd, JSON.stringify(input), inputFile, outputFile);
 };
 
-export const importProject = (genbankString) => {
+export const exportBlock = (block, blocks) => {
+  const proj = new Project();
+  blocks[block.id] = block;
+  return exportProject(proj, blocks);
+};
+
+const importProjectStructure = (genbankString) => {
   const inputFile = createRandomStorageFile();
 
   const outputFile = createRandomStorageFile();
@@ -186,47 +151,28 @@ export const importProject = (genbankString) => {
     });
 };
 
-//todo - this is a weird syntax of {block, blocks} and should be made consistent with `rollups` or at the very least better explained why exception is made
-//see format of rollup in /server/data/README.md
-
-export const exportBlock = (block, blocks) => {
-  const proj = new Project();
-  blocks[block.id] = block;
-  return exportProject(proj, blocks);
-};
-
-export const importBlock = (gbstr) => {
-  return importProject(gbstr)
-          .then(result => {
-        if (result && result.project && result.blocks &&
-        result.project.components && result.project.components.length > 0) {
-    return handleBlocks(result.blocks)
-          .then(blocksWithOldIds => {
-            const remapped_blocks_array = remapHierarchy(blocksWithOldIds);
-            const resProject = handleProject(result.project, getNewId(blocksWithOldIds, result.project.components[0]));
-            var blocks = {};
-            for (var i = 0; i < remapped_blocks_array.length; i++) {
-              blocks[remapped_blocks_array[i].id] = remapped_blocks_array[i];
-            };
-
-            const outputFile = filePaths.createStorageUrl('imported_from_genbank.json');
-            fileSystem.fileWrite(outputFile, { project: resProject, blocks: blocks });
-        return { project: resProject, blocks: blocks };
-        });
-  }
-//  return Promise.reject('invalid input string');
-});
-};
-
-export const importBlock_old = (gbstr) => {
-  return importProject(gbstr)
+export const importProject = (gbstr) => {
+  return importProjectStructure(gbstr)
     .then(result => {
-        if (result && result.project && result.blocks &&
+      if (result && result.project && result.blocks &&
         result.project.components && result.project.components.length > 0) {
-          const bid = result.project.components[0];
-          const block = result.blocks[bid];
-          return Promise.resolve({ block: block, blocks: result.blocks });
+          return handleBlocks(result.blocks)
+            .then(blocksWithOldIds => {
+              const remapped_blocks_array = remapHierarchy(blocksWithOldIds);
+              const newRootBlocks = result.project.components.map((oldBlockId) => {
+                return getNewId(blocksWithOldIds, oldBlockId);
+              });
+              const resProject = handleProject(result.project, newRootBlocks);
+              var blocks = {};
+              for (var i = 0; i < remapped_blocks_array.length; i++) {
+                blocks[remapped_blocks_array[i].id] = remapped_blocks_array[i];
+              };
+
+              const outputFile = filePaths.createStorageUrl('imported_from_genbank.json');
+              fileSystem.fileWrite(outputFile, { project: resProject, blocks: blocks });
+              return { project: resProject, blocks: blocks };
+            });
         }
-    return Promise.reject('invalid input string');
-});
+      else return 'Invalid Genbank format.';
+    });
 };

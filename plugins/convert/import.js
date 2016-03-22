@@ -37,10 +37,6 @@ function importProject(id, data) {
   return callImportFunction('importProject', id, data);
 }
 
-function importBlock(id, data) {
-  return callImportFunction('importBlock', id, data);
-}
-
 //this function is just trying to avoid redundant code
 function importThenCatch(promise, resp) {
   promise
@@ -53,22 +49,6 @@ function importThenCatch(promise, resp) {
 }
 
 router.post('/project/:id', jsonParser, (req, resp) => {
-  console.log("HIT THE project ROUTE");
-  const { id } = req.params;
-  const data = req.body;
-
-  if (data.file) {
-    fs.readFile(data.file, 'utf8', (err, text) => {
-      const promise = importProject(id, text);
-      importThenCatch(promise, resp);
-    });
-  } else {
-    const promise = importProject(id, data.text);
-    importThenCatch(promise, resp);
-  }
-});
-
-router.post('/block/:id', jsonParser, (req, resp) => {
   const { id } = req.params;
 
   //assuming contents to be string
@@ -81,13 +61,12 @@ router.post('/block/:id', jsonParser, (req, resp) => {
 
   //received all the data
   req.on('end', () => {
-    const promise = importBlock(id, buffer);
+    const promise = importProject(id, buffer);
     importThenCatch(promise, resp);
   });
 });
 
 //export these functions for testing purpose
-router.importBlock = importBlock;
 router.importProject = importProject;
 
 module.exports = router;

@@ -258,6 +258,7 @@ def genbank_to_block_helper(gb, convert_features=False):
 
 def genbank_to_project(filename, convert_features=False):
     project = { "components": []}
+    blocks = {}
     generator = SeqIO.parse(open(filename,"r"),"genbank")
     for record in generator:
         gb = record
@@ -265,6 +266,7 @@ def genbank_to_project(filename, convert_features=False):
         project["components"].append(results["root"]["id"])
         project["name"] = results["root"]["metadata"]["name"]
         project["description"] = results["root"]["metadata"]["description"]
+        blocks.update(results["blocks"])
 
-    return { "project": project, "blocks": results["blocks"] }
+    return { "project": project, "blocks": blocks }
 
