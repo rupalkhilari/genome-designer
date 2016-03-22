@@ -25,9 +25,9 @@ module.exports = {
       .clearValue('#account-form input:nth-of-type(4)')
       .clearValue('#account-form input:nth-of-type(5)')
       .clearValue('#account-form input:nth-of-type(6)')
-      .clearValue('#account-form input:nth-of-type(7)')
+      .clearValue('#account-form input:nth-of-type(7)');
 
-      .setValue('#account-form input:nth-of-type(1)', credentials.password)
+      browser.setValue('#account-form input:nth-of-type(1)', credentials.password)
       .setValue('#account-form input:nth-of-type(2)', newCredentials.firstName)
       .setValue('#account-form input:nth-of-type(3)', newCredentials.lastName)
       .setValue('#account-form input:nth-of-type(4)', newCredentials.email)
@@ -35,7 +35,8 @@ module.exports = {
       .setValue('#account-form input:nth-of-type(6)', newCredentials.password)
       .setValue('#account-form input:nth-of-type(7)', newCredentials.password)
       .submitForm('#account-form')
-      .pause(1000)
+      .waitForElementNotPresent('#account-form', 5000, 'expected account form to disappear');
+
     // now sign out and sign in with new credentials
     signout(browser);
     signin(browser, newCredentials);

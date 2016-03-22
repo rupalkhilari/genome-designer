@@ -28,14 +28,12 @@ var registerViaHomepage = function(browser) {
 
   browser
     .clearValue('#auth-signup input:nth-of-type(1)')
-    .clearValue('#auth-signup input:nth-of-type(1)')
     .clearValue('#auth-signup input:nth-of-type(2)')
     .clearValue('#auth-signup input:nth-of-type(3)')
     .clearValue('#auth-signup input:nth-of-type(4)')
     .clearValue('#auth-signup input:nth-of-type(5)')
     .clearValue('#auth-signup input:nth-of-type(6)')
 
-    .setValue('#auth-signup input:nth-of-type(1)', firstName)
     .setValue('#auth-signup input:nth-of-type(1)', firstName)
     .setValue('#auth-signup input:nth-of-type(2)', lastName)
     .setValue('#auth-signup input:nth-of-type(3)', email)

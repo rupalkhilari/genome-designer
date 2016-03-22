@@ -1,9 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import {connect} from 'react-redux';
 import { uiShowAuthenticationForm, uiSetGrunt } from '../../actions/ui';
-import { userSetUser } from '../../actions/user';
 import invariant from 'invariant';
-import { updateAccount } from '../../middleware/api';
+import { userUpdate } from '../../actions/user';
 
 /**
  * default visibility and text for error labels
@@ -45,7 +44,7 @@ class AccountForm extends Component {
   static propTypes = {
     uiShowAuthenticationForm: PropTypes.func.isRequired,
     uiSetGrunt: PropTypes.func.isRequired,
-    userSetUser: PropTypes.func.isRequired,
+    userUpdate: PropTypes.func.isRequired,
     user: PropTypes.object.isRequired,
   };
 
@@ -79,32 +78,18 @@ class AccountForm extends Component {
       payload.newPassword = this.password;
     }
 
-    updateAccount(payload)
-      .then((json) => {
-        if (json.message) {
-          this.showServerErrors(json);
-          return;
-        }
-        const email = json.email || this.props.user.email;
-        const firstName = json.firstName || this.props.user.firstName;
-        const lastName = json.lastName || this.props.user.lastName;
+    this.props.userUpdate(payload)
+      .then((user) => {
 
-        // set the user
-        this.props.userSetUser({
-          userid: json.uuid,
-          email: email,
-          firstName: firstName,
-          lastName: lastName,
-        });
-        // show grunt
-        this.props.uiSetGrunt(`Account updated to ${firstName} ${lastName} ( ${email} )`);
-
-        // close the form
+        // show grunt / close form
+        this.props.uiSetGrunt(`Account updated to ${user.firstName} ${user.lastName} ( ${user.email} )`);
         this.props.uiShowAuthenticationForm('none');
       })
       .catch((reason) => {
+        const defaultMessage = 'Unexpected error, please check your connection';
+        const { message = defaultMessage } = reason;
         this.showServerErrors({
-          message: 'Unexpected error, please check your connection',
+          message,
         });
       });
   }
@@ -143,7 +128,7 @@ class AccountForm extends Component {
    */
   showServerErrors(json) {
     invariant(json && json.message, 'We expected an error message');
-    if (json.path === 'email' && json.type === 'unique violation') {
+    if ((json.path === 'email' && json.type === 'unique violation') || json.message === 'Validation error') {
       this.setState({
         email1Error: {
           visible: true,
@@ -284,5 +269,5 @@ function mapStateToProps(state) {
 export default connect(mapStateToProps, {
   uiShowAuthenticationForm,
   uiSetGrunt,
-  userSetUser,
+  userUpdate,
 })(AccountForm);
