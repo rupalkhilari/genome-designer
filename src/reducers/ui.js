@@ -2,9 +2,9 @@ import * as ActionTypes from '../constants/ActionTypes';
 import invariant from 'invariant';
 
 export const initialState = {
-  currentBlocks: [],
+  currentBlocks: [], //deprecate
+  currentConstructId: null, //deprecate
   detailViewVisible: false,
-  currentConstructId: null,
   showMainMenu: true,
   authenticationForm: 'none',
   gruntMessage: null,
@@ -16,10 +16,12 @@ export default function inventory(state = initialState, action) {
     const { authenticationForm } = action;
     return Object.assign({}, state, {authenticationForm});
   }
+  //deprecate
   case ActionTypes.UI_SET_CURRENT_CONSTRUCT: {
     const { constructId } = action;
     return Object.assign({}, state, {currentConstructId: constructId });
   }
+  //deprecate
   case ActionTypes.UI_SET_CURRENT : {
     const { blocks } = action;
     invariant(Array.isArray(blocks), 'must pass array to UI_SET_CURRENT');

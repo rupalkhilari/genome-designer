@@ -4,10 +4,11 @@ import { combineReducers } from 'redux';
 import { undoReducer, undoReducerEnhancerCreator } from '../store/undo/reducerEnhancer';
 
 import blocks from './blocks';
+import projects from './projects';
 import inventory from './inventory';
 import inspector from './inspector';
-import projects from './projects';
 import ui from './ui';
+import focus from './focus';
 import user from './user';
 
 const purgingEvents = [LOCATION_CHANGE, USER_SET_USER];
@@ -23,6 +24,7 @@ export const rootReducer = combineReducers({
   inventory,
   inspector,
   ui,
+  focus,
   user,
   undo: undoReducer,
 });

@@ -2,7 +2,7 @@ import * as ActionTypes from '../constants/ActionTypes';
 
 export const initialState = {
   isVisible: false,
-  forceBlocks: [],
+  forceBlocks: [], //todo - deprecate
 };
 
 export default function inventory(state = initialState, action) {
@@ -11,6 +11,7 @@ export default function inventory(state = initialState, action) {
     const { nextState } = action;
     return Object.assign({}, state, {isVisible: nextState});
   }
+  //todo - deprecate
   case ActionTypes.INSPECTOR_FORCE_BLOCKS : {
     const { blocks } = action;
     return Object.assign({}, state, {forceBlocks: blocks});

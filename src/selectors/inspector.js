@@ -4,6 +4,7 @@ export const inspectorIsVisible = () => {
   };
 };
 
+//todo - deprecate
 export const inspectorGetCurrentSelection = () => {
   return (dispatch, getState) => {
     const state = getState();

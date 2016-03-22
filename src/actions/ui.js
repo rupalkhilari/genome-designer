@@ -2,11 +2,9 @@ import * as ActionTypes from '../constants/ActionTypes';
 import * as BlockSelector from '../selectors/blocks';
 import invariant from 'invariant';
 
-/**
- * form names, one of: [ 'signin', 'signup', 'forgot', 'reset', 'account', 'none' ]
- */
 export const uiShowAuthenticationForm = (name) => {
   return (dispatch, getState) => {
+    invariant(['signin', 'signup', 'forgot', 'reset', 'account', 'none'].indexOf(name) >= 0, 'attempting to show invalid form name');
     dispatch({
       type: ActionTypes.UI_SHOW_AUTHENTICATION_FORM,
       authenticationForm: name,
@@ -34,6 +32,21 @@ export const uiSetGrunt = (gruntMessage) => {
     return gruntMessage;
   };
 };
+
+export const uiToggleDetailView = (forceState) => {
+  return (dispatch, getState) => {
+    const currentState = getState().ui.detailViewVisible;
+    const nextState = (forceState !== undefined) ? !!forceState : !currentState;
+    dispatch({
+      type: ActionTypes.UI_TOGGLE_DETAIL_VIEW,
+      nextState,
+    });
+    return nextState;
+  };
+};
+
+/* current blocks / construct */
+//todo - deprecate
 
 export const uiSetCurrent = (blocks) => {
   return (dispatch, getState) => {
@@ -104,17 +117,5 @@ export const uiSetCurrentConstruct = (constructId) => {
       constructId,
     });
     return constructId;
-  };
-};
-
-export const uiToggleDetailView = (forceState) => {
-  return (dispatch, getState) => {
-    const currentState = getState().ui.detailViewVisible;
-    const nextState = (forceState !== undefined) ? !!forceState : !currentState;
-    dispatch({
-      type: ActionTypes.UI_TOGGLE_DETAIL_VIEW,
-      nextState,
-    });
-    return nextState;
   };
 };
