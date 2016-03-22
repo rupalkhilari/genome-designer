@@ -65,6 +65,17 @@ const headersDelete = (overrides) => merge({}, defaultOptions, {
  Authentication API
  *************************/
 
+const authFetch = (...args) => {
+  return rejectingFetch(...args)
+    .then(resp => resp.json())
+    .then(json => {
+      if (json.message) {
+        return Promise.reject(json);
+      }
+      return json;
+    });
+};
+
 // login with email and password and set the sessionKey (cookie) for later use
 export const login = (user, password) => {
   const body = {
@@ -73,41 +84,28 @@ export const login = (user, password) => {
   };
   const stringified = JSON.stringify(body);
 
-  return rejectingFetch(serverRoot + `auth/login`, headersPost(stringified))
-    .then(resp => resp.json())
-    .then(json => {
-      if (json.message) {
-        return Promise.reject(json);
-      }
-      return json;
-    });
+  return authFetch(serverRoot + `auth/login`, headersPost(stringified));
 };
 
 export const register = (user) => {
   invariant(user.email && user.password && user.firstName && user.lastName, 'wrong format user');
   const stringified = JSON.stringify(user);
-  return rejectingFetch(serverRoot + `auth/register`, headersPost(stringified))
-    .then(resp => resp.json())
-    .then(json => {
-      if (json.message) {
-        return Promise.reject(json);
-      }
-      return json;
-    });
+
+  return authFetch(serverRoot + `auth/register`, headersPost(stringified));
 };
 
 export const forgot = (email) => {
   const body = { email };
   const stringified = JSON.stringify(body);
-  return rejectingFetch(serverRoot + `auth/forgot-password`, headersPost(stringified))
-    .then(resp => resp.json());
+
+  return authFetch(serverRoot + `auth/forgot-password`, headersPost(stringified));
 };
 
 export const reset = (email, forgotPasswordHash, newPassword) => {
-  const body = { email, forgotPasswordHash, newPassword }
+  const body = { email, forgotPasswordHash, newPassword };
   const stringified = JSON.stringify(body);
-  return rejectingFetch(serverRoot + `auth/reset-password`, headersPost(stringified))
-    .then(resp => resp.json());
+
+  return authFetch(serverRoot + `auth/reset-password`, headersPost(stringified));
 };
 
 // update account
@@ -115,18 +113,16 @@ export const updateAccount = (payload) => {
   const body = payload;
   const stringified = JSON.stringify(body);
 
-  return rejectingFetch(serverRoot + `auth/update-all`, headersPost(stringified))
-    .then(resp => resp.json());
+  return authFetch(serverRoot + `auth/update-all`, headersPost(stringified));
 };
 
 export const logout = () => {
-  return rejectingFetch(serverRoot + `auth/logout`, headersGet());
+  return authFetch(serverRoot + `auth/logout`, headersGet());
 };
 
 // use established sessionKey to get the user object
 export const getUser = () => {
-  return rejectingFetch(serverRoot + `auth/current-user`, headersGet())
-    .then(resp => resp.json());
+  return authFetch(serverRoot + `auth/current-user`, headersGet());
 };
 
 /*************************

@@ -24,8 +24,8 @@ module.exports = {
       // open inspector
       .click('.Inspector-trigger')
       .waitForElementPresent('.SidePanel.Inspector.visible', 5000, 'Expected inspector to be visible')
-      // click the second inventory group to open it
-      .click('.InventoryListGroup:nth-of-type(2)')
+      // click the second inventory group 'EGF Parts' to open it
+      .click('.InventoryGroup:nth-of-type(2) .InventoryGroup-heading')
       // expect at least one inventory item and one block to drop on
       .waitForElementPresent('.InventoryItem', 5000, 'expected an inventory item')
       .waitForElementPresent('.sbol-glyph', 5000, 'expected a block to drop on')

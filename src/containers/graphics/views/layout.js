@@ -371,19 +371,6 @@ export default class Layout {
 
     return heightUsed;
   }
-  // update using the same parameters as the full call to update. Useful when
-  // only minor view state changes have occured. Performs an immediate update
-  // of the scene graph as well.
-  redraw() {
-    this.update(
-      this.construct,
-      this.layoutAlgorithm,
-      this.blocks,
-      this.currentBlocks,
-      this.currentConstructId
-    );
-    this.sceneGraph.root.updateBranch();
-  }
 
   /**
    * one of several different layout algorithms
@@ -425,7 +412,9 @@ export default class Layout {
    * @return {[type]} [description]
    */
   layout(layoutOptions) {
-    if (this.construct.id === 'block1') console.time('Layout');
+    if (this.construct.id === 'block1') {
+      console.time('Layout');
+    }
     // set the new reference key
     this.updateReference += 1;
     // shortcut

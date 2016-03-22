@@ -65,6 +65,7 @@ export class ConstructViewer extends Component {
       menuPosition: new Vector2D(), // position for any popup menu,
       modalOpen: false,             // controls visibility of test modal window
     };
+    this.update = debounce(this._update.bind(this), 1);
   }
 
   /**
@@ -97,7 +98,7 @@ export class ConstructViewer extends Component {
     this.update();
     // handle window resize to reflow the layout
     this.resizeDebounced = debounce(this.windowResized.bind(this));
-    window.addEventListener('resize', this.resizeDebounced, 5);
+    window.addEventListener('resize', this.resizeDebounced, 2);
   }
   /**
    * update scene graph after the react component updates
@@ -105,6 +106,7 @@ export class ConstructViewer extends Component {
   componentDidUpdate() {
     this.update();
   }
+
   /**
    * ensure we don't get any resize events after dismounting
    */
@@ -132,14 +134,12 @@ export class ConstructViewer extends Component {
     const { item, type } = payload;
     // get the immediate parent ( which might not be the top level block if this is a nested construct )
     let parent = insertionPoint ? this.getBlockParent(insertionPoint.block) : this.props.construct;
-
     if (type === sbolDragType) {
-      // must have an insertion point for sbol
+
+      // insert next to block, inject into a block, or add as the first block of an empty construct
       if (insertionPoint) {
-        // blocks with an sbol symbol can be dropped on an edge and get inserted
-        // as a new block or can simply update the sbol symbol for the block at the drop site.
         if (insertionPoint.edge) {
-          // insert new block
+          // create new block
           const block = this.props.blockCreate({rules: {sbol: item.id}});
           // get index of insertion allowing for the edge closest to the drop if provided
           const index = parent.components.indexOf(insertionPoint.block) + (insertionPoint.edge === 'right' ? 1 : 0);
@@ -151,6 +151,12 @@ export class ConstructViewer extends Component {
         // drop on existing block
         this.props.blockSetSbol(insertionPoint.block, item.id);
         return [insertionPoint.block];
+      } else {
+        // create new block
+        const block = this.props.blockCreate({rules: {sbol: item.id}});
+        // the construct must be empty, add as the first child of the construct
+        this.props.blockAddComponent(parent.id, block.id, 0);
+        return [block.id];
       }
     }
 
@@ -203,7 +209,6 @@ export class ConstructViewer extends Component {
    */
   constructSelected(id) {
     this.props.uiSetCurrentConstruct(id);
-    this.props.inspectorToggleVisibility(true);
   }
 
   /**
@@ -211,7 +216,6 @@ export class ConstructViewer extends Component {
    */
   blockSelected(partIds) {
     this.props.uiSetCurrent(partIds);
-    this.props.inspectorToggleVisibility(true);
   }
 
   /**
@@ -219,7 +223,6 @@ export class ConstructViewer extends Component {
    */
   blockToggleSelected(partIds) {
     this.props.uiToggleCurrent(partIds);
-    this.props.inspectorToggleVisibility(true);
   }
 
   /**
@@ -227,7 +230,26 @@ export class ConstructViewer extends Component {
    */
   blockAddToSelections(partIds) {
     this.props.uiAddCurrent(partIds);
-    this.props.inspectorToggleVisibility(true);
+  }
+  /**
+   * Join the given block with any other selected block in the same
+   * construct level and select them all
+   */
+  blockAddToSelectionsRange(partId, currentSelections) {
+    // get all the blocks at the same level as this one
+    const levelBlocks = this.props.blocks[this.props.blockGetParents(partId)[0]].components;
+    // find min/max index of these blocks if they are in the currentSelections
+    let min = levelBlocks.indexOf(partId);
+    let max = min;
+    currentSelections.forEach((blockId, index) => {
+      const blockIndex = levelBlocks.indexOf(blockId);
+      if (blockIndex >= 0) {
+        min = Math.min(min, blockIndex);
+        max = Math.max(max, blockIndex);
+      }
+    });
+    // now we can select the entire range
+    this.props.uiAddCurrent(levelBlocks.slice(min, max + 1));
   }
 
   /**
@@ -258,7 +280,7 @@ export class ConstructViewer extends Component {
   /**
    * update the layout and then the scene graph
    */
-  update() {
+  _update() {
     this.layout.update(
       this.props.construct,
       this.props.layoutAlgorithm,
@@ -338,8 +360,12 @@ export class ConstructViewer extends Component {
    */
   render() {
     // TODO, can be conditional when master is fixed and this is merged with construct select PR
-    //const menu = this.props.constructId === this.props.ui.currentConstructId
-    const menu = <ConstructViewerMenu constructId={this.props.constructId} layoutAlgorithm={this.props.layoutAlgorithm}/>;
+    let menu = <ConstructViewerMenu
+      open={this.props.construct.id === this.props.ui.currentConstructId}
+      constructId={this.props.constructId}
+      layoutAlgorithm={this.props.layoutAlgorithm}
+      />;
+
 
     const rendered = (
       <div className="construct-viewer" key={this.props.construct.id}>
