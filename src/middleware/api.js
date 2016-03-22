@@ -1,4 +1,4 @@
-import fetch from 'isomorphic-fetch';
+import rejectingFetch from './rejectingFetch';
 import invariant from 'invariant';
 import { getItem, setItem } from './localStorageCache';
 import merge from 'lodash.merge';
@@ -73,7 +73,7 @@ export const login = (user, password) => {
   };
   const stringified = JSON.stringify(body);
 
-  return fetch(serverRoot + `auth/login`, headersPost(stringified))
+  return rejectingFetch(serverRoot + `auth/login`, headersPost(stringified))
     .then(resp => resp.json())
     .then(json => {
       if (json.message) {
@@ -86,7 +86,7 @@ export const login = (user, password) => {
 export const register = (user) => {
   invariant(user.email && user.password && user.firstName && user.lastName, 'wrong format user');
   const stringified = JSON.stringify(user);
-  return fetch(serverRoot + `auth/register`, headersPost(stringified))
+  return rejectingFetch(serverRoot + `auth/register`, headersPost(stringified))
     .then(resp => resp.json())
     .then(json => {
       if (json.message) {
@@ -99,14 +99,14 @@ export const register = (user) => {
 export const forgot = (email) => {
   const body = { email };
   const stringified = JSON.stringify(body);
-  return fetch(serverRoot + `auth/forgot-password`, headersPost(stringified))
+  return rejectingFetch(serverRoot + `auth/forgot-password`, headersPost(stringified))
     .then(resp => resp.json());
 };
 
 export const reset = (email, forgotPasswordHash, newPassword) => {
   const body = { email, forgotPasswordHash, newPassword }
   const stringified = JSON.stringify(body);
-  return fetch(serverRoot + `auth/reset-password`, headersPost(stringified))
+  return rejectingFetch(serverRoot + `auth/reset-password`, headersPost(stringified))
     .then(resp => resp.json());
 };
 
@@ -115,17 +115,17 @@ export const updateAccount = (payload) => {
   const body = payload;
   const stringified = JSON.stringify(body);
 
-  return fetch(serverRoot + `auth/update-all`, headersPost(stringified))
+  return rejectingFetch(serverRoot + `auth/update-all`, headersPost(stringified))
     .then(resp => resp.json());
 };
 
 export const logout = () => {
-  return fetch(serverRoot + `auth/logout`, headersGet());
+  return rejectingFetch(serverRoot + `auth/logout`, headersGet());
 };
 
 // use established sessionKey to get the user object
 export const getUser = () => {
-  return fetch(serverRoot + `auth/current-user`, headersGet())
+  return rejectingFetch(serverRoot + `auth/current-user`, headersGet())
     .then(resp => resp.json());
 };
 
@@ -141,7 +141,7 @@ export const createBlock = (block, projectId) => {
     const stringified = JSON.stringify(block);
     const url = dataApiPath(`${projectId}/${block.id}`);
 
-    return fetch(url, headersPut(stringified))
+    return rejectingFetch(url, headersPut(stringified))
       .then(resp => resp.json());
   } catch (err) {
     return Promise.reject('error stringifying block');
@@ -154,7 +154,7 @@ export const loadBlock = (blockId, projectId = 'block') => {
 
   const url = dataApiPath(`${projectId}/${blockId}`);
 
-  return fetch(url, headersGet())
+  return rejectingFetch(url, headersGet())
     .then(resp => resp.json());
 };
 
@@ -168,7 +168,7 @@ export const saveBlock = (block, projectId, overwrite = false) => {
     const url = dataApiPath(`${projectId}/${block.id}`);
     const headers = !!overwrite ? headersPut : headersPost;
 
-    return fetch(url, headers(stringified))
+    return rejectingFetch(url, headers(stringified))
       .then(resp => resp.json());
   } catch (err) {
     return Promise.reject('error stringifying block');
@@ -178,7 +178,7 @@ export const saveBlock = (block, projectId, overwrite = false) => {
 //returns metadata of projects
 export const listProjects = () => {
   const url = dataApiPath('projects');
-  return fetch(url, headersGet())
+  return rejectingFetch(url, headersGet())
     .then(resp => resp.json())
     .then(projects => projects.filter(project => !!project));
 };
@@ -191,7 +191,7 @@ export const saveProjectManifest = (project) => {
     const stringified = JSON.stringify(project);
     const url = dataApiPath(`${project.id}`);
 
-    return fetch(url, headersPost(stringified))
+    return rejectingFetch(url, headersPost(stringified))
       .then(resp => resp.json());
   } catch (err) {
     return Promise.reject('error stringifying project');
@@ -201,7 +201,7 @@ export const saveProjectManifest = (project) => {
 //returns a rollup
 export const loadProject = (projectId) => {
   const url = dataApiPath(`projects/${projectId}`);
-  return fetch(url, headersGet())
+  return rejectingFetch(url, headersGet())
     .then(resp => resp.json());
 };
 
@@ -215,7 +215,7 @@ export const saveProject = (projectId, rollup) => {
   const url = dataApiPath(`projects/${projectId}`);
   const stringified = JSON.stringify(rollup);
 
-  return fetch(url, headersPost(stringified));
+  return rejectingFetch(url, headersPost(stringified));
 };
 
 //explicit, makes a git commit
@@ -227,7 +227,7 @@ export const snapshot = (projectId, rollup, message = 'Project Snapshot') => {
   const stringified = JSON.stringify({ message });
   const url = dataApiPath(`${projectId}/commit`);
 
-  return fetch(url, headersPost(stringified))
+  return rejectingFetch(url, headersPost(stringified))
     .then(resp => resp.json());
 };
 
@@ -246,7 +246,7 @@ export const getSequence = (md5, format) => {
     return Promise.resolve(cached);
   }
 
-  return fetch(url, headersGet())
+  return rejectingFetch(url, headersGet())
     .then((resp) => resp.text())
     .then(sequence => {
       setItem(md5, sequence);
@@ -260,7 +260,7 @@ export const writeSequence = (md5, sequence, blockId) => {
 
   setItem(md5, sequence);
 
-  return fetch(url, headersPost(stringified));
+  return rejectingFetch(url, headersPost(stringified));
 };
 
 /*************************
@@ -271,7 +271,7 @@ export const writeSequence = (md5, sequence, blockId) => {
 
 //returns a fetch object, for you to parse yourself (doesnt automatically convert to json)
 export const readFile = (fileName) => {
-  return fetch(fileApiPath(fileName), headersGet());
+  return rejectingFetch(fileApiPath(fileName), headersGet());
 };
 
 // if contents === null, then the file is deleted
@@ -282,10 +282,10 @@ export const writeFile = (fileName, contents) => {
   const filePath = fileApiPath(fileName);
 
   if (contents === null) {
-    return fetch(filePath, headersDelete());
+    return rejectingFetch(filePath, headersDelete());
   }
 
-  return fetch(filePath, headersPost(contents));
+  return rejectingFetch(filePath, headersPost(contents));
 };
 
 /**************************
@@ -295,41 +295,41 @@ export const writeFile = (fileName, contents) => {
 
 export const computeWorkflow = (id, inputs) => {
   const stringified = JSON.stringify(inputs);
-  return fetch(computePath(`${id}`), headersPost(stringified))
+  return rejectingFetch(computePath(`${id}`), headersPost(stringified))
     .then(resp => resp.json());
 };
 
 export const exportBlock = (id, inputs) => {
   const stringified = JSON.stringify(inputs);
-  return fetch(exportPath(`block/${id}`), headersPost(stringified))
+  return rejectingFetch(exportPath(`block/${id}`), headersPost(stringified))
     .then(resp => resp.json());
 };
 
 export const exportProject = (id, inputs) => {
   const stringified = JSON.stringify(inputs);
-  return fetch(exportPath(`project/${id}`), headersPost(stringified))
+  return rejectingFetch(exportPath(`project/${id}`), headersPost(stringified))
     .then(resp => resp.json());
 };
 
 export const importBlock = (id, input) => {
   const stringified = JSON.stringify({ text: input });
-  return fetch(importPath(`block/${id}`), headersPost(stringified))
+  return rejectingFetch(importPath(`block/${id}`), headersPost(stringified))
     .then(resp => resp.json());
 };
 
 export const importProject = (id, input) => {
   const stringified = JSON.stringify({ text: input });
-  return fetch(importPath(`project/${id}`), headersPost(stringified))
+  return rejectingFetch(importPath(`project/${id}`), headersPost(stringified))
     .then(resp => resp.json());
 };
 
 export const search = (id, inputs) => {
   const stringified = JSON.stringify(inputs);
-  return fetch(searchPath(`${id}`), headersPost(stringified))
+  return rejectingFetch(searchPath(`${id}`), headersPost(stringified))
     .then(resp => resp.json());
 };
 
 export const getExtensionsInfo = () => {
-  return fetch(serverRoot + 'extensions/list', headersGet())
+  return rejectingFetch(serverRoot + 'extensions/list', headersGet())
     .then(resp => resp.json());
 };
