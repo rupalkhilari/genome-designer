@@ -116,7 +116,13 @@ export const updateAccount = (payload) => {
   const stringified = JSON.stringify(body);
 
   return fetch(serverRoot + `auth/update-all`, headersPost(stringified))
-    .then(resp => resp.json());
+    .then(resp => resp.json())
+    .then(json => {
+      if (json.message) {
+        return Promise.reject(json);
+      }
+      return json;
+    });
 };
 
 export const logout = () => {
