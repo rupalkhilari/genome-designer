@@ -250,10 +250,9 @@ export default class Layout {
       }
 
       // update title to current position and text
-      const isSelectedConstruct = this.construct.id === this.currentConstructId;
       this.titleNode.set({
         text: this.construct.metadata.name || this.construct.id,
-        color: isSelectedConstruct ? 'white' : this.baseColor,
+        color: this.baseColor,
       });
     }
   }

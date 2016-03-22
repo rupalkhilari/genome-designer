@@ -4,11 +4,12 @@
   position: relative;
   display: inline-block;
   overflow: hidden;
+  transition: opacity 100ms ease;
 }
-/* any element with an animated transform */
-.transform-animated {
-  /*transition: transform 100ms ease, width 100ms ease;*/
+.sceneGraph-dark {
+  opacity: 0.5;
 }
+
 
 /* base node type in scene graph*/
 .node {
