@@ -4,7 +4,6 @@ import { inventorySearch } from '../../actions/inventory';
 import { block as blockDragType } from '../../constants/DragTypes';
 import { debounce } from 'lodash';
 
-import defaultBlocks from '../../inventory/andrea';
 import { registry, getSources } from '../../inventory/registry';
 import * as searchApi from '../../middleware/search';
 
@@ -13,10 +12,10 @@ import InventorySearch from './InventorySearch';
 import InventoryList from './InventoryList';
 import InventoryListGroup from './InventoryListGroup';
 
-//todo - better solution for default results
-const defaultSearchResults = {
-  igem: [],
-  egf: defaultBlocks,
+const defaultSearchResults = getSources().reduce((acc, source) => Object.assign(acc, { [source]: [] }), {});
+
+const createSourcesVisible = (valueFunction = () => false) => {
+  return getSources().reduce((acc, source) => Object.assign(acc, { [source]: valueFunction(source) }), {});
 };
 
 export class InventoryGroupSearch extends Component {
@@ -28,6 +27,7 @@ export class InventoryGroupSearch extends Component {
   state = {
     searching: false,
     sourceList: getSources(),
+    sourcesVisible: createSourcesVisible(),
     searchResults: defaultSearchResults,
   };
 
@@ -39,6 +39,7 @@ export class InventoryGroupSearch extends Component {
       searchApi.search(term, options, sourceList)
         .then(searchResults => this.setState({
           searchResults,
+          sourcesVisible: createSourcesVisible((source) => !!searchResults[source].length),
         }))
         .catch(err => {
           console.log('couldnt fetch results!', err);
@@ -51,6 +52,13 @@ export class InventoryGroupSearch extends Component {
 
     this.debouncedSearch = debounce(searchingFunction, 200);
   }
+
+  onListGroupToggle = (source) => {
+    console.log(source, this.state.sourcesVisible);
+    this.setState({
+      sourcesVisible: Object.assign(this.state.sourcesVisible, { [source]: !this.state.sourcesVisible[source] }),
+    });
+  };
 
   onSourceToggle = (source) => {
     const { sourceList } = this.state;
@@ -87,11 +95,38 @@ export class InventoryGroupSearch extends Component {
 
   render() {
     const { searchTerm } = this.props;
-    const { searching, sourceList, searchResults } = this.state;
+    const { searching, sourceList, searchResults, sourcesVisible } = this.state;
 
     //want to filter down results while next query running
     const searchRegex = new RegExp(searchTerm, 'gi');
-    //todo - filter by source
+
+    //todo - account for filtering...
+    const noSearchResults = Object.keys(searchResults).reduce((acc, key) => acc + searchResults[key].length, 0) === 0;
+
+    const groupsContent = noSearchResults ?
+      null :
+      sourceList.map(key => {
+        if (!searchResults[key]) {
+          return null;
+        }
+
+        const name = registry[key].name;
+        const group = searchResults[key];
+        const listingItems = group.filter(item => searchRegex.test(item.metadata.name) || searchRegex.test(item.rules.sbol));
+
+        return (
+          <InventoryListGroup title={`${name} (${listingItems.length})`}
+                              disabled={!listingItems.length}
+                              manual
+                              isExpanded={sourcesVisible[key]}
+                              onToggle={() => this.onListGroupToggle(key)}
+                              key={key}>
+            <InventoryList inventoryType={blockDragType}
+                           onDrop={(...args) => this.handleOnDrop(key, ...args)}
+                           items={listingItems}/>
+          </InventoryListGroup>
+        );
+      });
 
     return (
       <div className={'InventoryGroup-content InventoryGroupSearch'}>
@@ -102,19 +137,7 @@ export class InventoryGroupSearch extends Component {
                           onSourceToggle={this.onSourceToggle}/>
 
         <div className="InventoryGroupSearch-groups">
-          {Object.keys(searchResults).map(key => {
-            const group = searchResults[key];
-            const listingItems = group.filter(item => searchRegex.test(item.metadata.name) || searchRegex.test(item.rules.sbol));
-
-            return (
-              <InventoryListGroup title={`${key} (${listingItems.length})`}
-                                  key={key}>
-                <InventoryList inventoryType={blockDragType}
-                               onDrop={(...args) => this.handleOnDrop(key, ...args)}
-                               items={listingItems}/>
-              </InventoryListGroup>
-            );
-          })}
+          {groupsContent}
         </div>
 
         {searching && <div className="loader"/>}

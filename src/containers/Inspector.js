@@ -61,20 +61,23 @@ function mapStateToProps(state, props) {
   const instances = forceBlocks.length ?
     forceBlocks :
     (currentBlocks && currentBlocks.length) ?
-      [state.blocks[currentBlocks[0]]] :
+      currentBlocks.map(blockId => state.blocks[blockId]) :
       (currentConstructId) ?
         [state.blocks[currentConstructId]] :
         [];
 
+  //ensure that blocks removed from store dont error / don't pass empty instances
+  const filteredInstances = instances.filter(el => !!el);
+
   const readOnly = forceBlocks.length >= 1;
 
-  const { projectId } = state.router.params;
+  const { projectId } = props;
   const project = state.projects[projectId];
 
   return {
     isVisible,
     readOnly,
-    instances,
+    instances: filteredInstances,
     project,
   };
 }

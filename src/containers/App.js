@@ -1,21 +1,26 @@
 import React, { Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
 import GlobalNav from './GlobalNav';
+import AuthenticationForms from './authentication/authenticationforms';
 
 import '../styles/App.css';
 
-export class App extends Component {
+class App extends Component {
   static propTypes = {
     children: PropTypes.node, // Injected by React Router
+    user: PropTypes.object,
+    currentProjectId: PropTypes.string,
   };
 
   render() {
-    const { children } = this.props;
+    const { currentProjectId, children } = this.props;
 
     const DevTools = (process.env.NODE_ENV !== 'production') ? require('./DevTools') : 'div';
 
     return (
       <div className="App">
-        <GlobalNav />
+        <GlobalNav currentProjectId={currentProjectId}/>
+        <AuthenticationForms />
         <div className="App-pageContent">
           {children}
         </div>
@@ -25,4 +30,12 @@ export class App extends Component {
   }
 }
 
-export default App;
+function mapStateToProps(state, ownProps) {
+  return {
+    currentProjectId: ownProps.params.projectId,
+    user: state.user,
+  };
+}
+
+export default connect(mapStateToProps, {
+})(App);

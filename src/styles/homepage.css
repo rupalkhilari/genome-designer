@@ -1,0 +1,78 @@
+:root {
+--footer-height: 18rem;
+--button-height: 3rem;
+}
+
+.homepage {
+  width: 100vw;
+  height: 100vh;
+  background-color: black;
+  position: fixed;
+  top: 0;
+
+  &-background {
+    width: 100vw;
+    height: calc(100% - var(--footer-height));
+  }
+
+  &-title {
+    width: 321px;
+    height: 29px;
+    position: fixed;
+    top: calc(100% - 45rem);
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  &-getstarted {
+    position: fixed;
+    top: calc(100% - 36rem);
+    left: 50%;
+    height: var(--button-height);
+    line-height: var(--button-height);
+    border-radius: var(--button-height / 2);
+    padding: 0 6rem 0 6rem;
+    transform: translateX(-50%);
+    font-size: 1.25rem;
+    color: black;
+    background-color: #FF3366;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  &-getstarted:hover {
+    opacity: 0.8;
+  }
+
+  &-autodesk {
+    width: 90px;
+    height: 15px;
+    position: fixed;
+    top: calc(100% - 21rem);
+    left: 2rem;
+  }
+
+  &-footer {
+    position: fixed;
+    color: white;
+    top: calc(100% - var(--footer-height));
+    width: 100%;
+    background-color: #565B69;
+    height: var(--footer-height);
+  }
+  &-footer ul {
+    list-style: none;
+  }
+  &-footer ul span {
+    margin-right: 2rem;
+  }
+  &-footer li {
+    margin-bottom: 0.5rem;
+  }
+  &-footer-list {
+    display: inline-block;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 2rem;
+  }
+}

@@ -8,8 +8,8 @@ const initialState = {
       name: 'My Test Project',
       description: 'Create a versatile and robust templating system for combinatorial recombinant designs using Yeast parts from EGF.',
     },
-    //components: ['block1', 'block2'],
-    components: ['block1'],
+    components: ['block1', 'block2'],
+    //components: ['block1'],
   }),
 };
 
@@ -32,7 +32,13 @@ export default function projects(state = floProjectState, action) {
   case ActionTypes.PROJECT_RENAME :
   case ActionTypes.PROJECT_ADD_CONSTRUCT : {
     const { project } = action;
-    return Object.assign({}, state, {[project.id]: project});
+    return Object.assign({}, state, { [project.id]: project });
+  }
+
+  case ActionTypes.PROJECT_LIST : {
+    const { projects } = action;
+    const zippedProjects = projects.reduce((acc, project) => Object.assign(acc, { [project.id]: project }), {});
+    return Object.assign({}, state, zippedProjects);
   }
 
   default : {

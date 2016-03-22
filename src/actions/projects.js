@@ -1,9 +1,26 @@
 import * as ActionTypes from '../constants/ActionTypes';
-import { saveProject, loadProject, snapshot } from '../middleware/api';
+import { saveProject, loadProject, snapshot, listProjects } from '../middleware/api';
 import * as projectSelectors from '../selectors/projects';
 
 import Block from '../models/Block';
 import Project from '../models/Project';
+
+//Promise
+export const projectList = () => {
+  return (dispatch, getState) => {
+    return listProjects()
+      .then(projectManifests => {
+        const projects = projectManifests.map(manifest => new Project(manifest));
+
+        dispatch({
+          type: ActionTypes.PROJECT_LIST,
+          projects,
+        });
+
+        return projects;
+      });
+  };
+};
 
 //create a new project
 export const projectCreate = (initialModel) => {
@@ -57,11 +74,6 @@ export const projectLoad = (projectId) => {
         const projectModel = new Project(project);
 
         //todo (future) - transaction
-        dispatch({
-          type: ActionTypes.PROJECT_LOAD,
-          project: projectModel,
-        });
-
         blocks.forEach((blockObject) => {
           const block = new Block(blockObject);
           dispatch({
@@ -69,6 +81,12 @@ export const projectLoad = (projectId) => {
             block,
           });
         });
+
+        dispatch({
+          type: ActionTypes.PROJECT_LOAD,
+          project: projectModel,
+        });
+
         return project;
       });
   };
@@ -81,6 +99,7 @@ export const projectMerge = (projectId, toMerge) => {
     const project = oldProject.merge(toMerge);
     dispatch({
       type: ActionTypes.PROJECT_MERGE,
+      undoable: true,
       project,
     });
     return project;
@@ -93,6 +112,7 @@ export const projectRename = (projectId, newName) => {
     const project = oldProject.mutate('metadata.name', newName);
     dispatch({
       type: ActionTypes.PROJECT_RENAME,
+      undoable: true,
       project,
     });
     return project;
@@ -106,6 +126,7 @@ export const projectAddConstruct = (projectId, componentId) => {
     const project = oldProject.addComponents(componentId);
     dispatch({
       type: ActionTypes.PROJECT_ADD_CONSTRUCT,
+      undoable: true,
       project,
     });
     return project;

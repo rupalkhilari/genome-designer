@@ -96,14 +96,21 @@ export class ConstructViewer extends Component {
     // initial render won't call componentDidUpdate so force an update to the layout/scenegraph
     this.update();
     // handle window resize to reflow the layout
-    window.addEventListener('resize', debounce(this.windowResized.bind(this), 15));
+    this.resizeDebounced = debounce(this.windowResized.bind(this));
+    window.addEventListener('resize', this.resizeDebounced, 5);
   }
-
   /**
    * update scene graph after the react component updates
    */
   componentDidUpdate() {
     this.update();
+  }
+  /**
+   * ensure we don't get any resize events after dismounting
+   */
+  componentWillUnmount() {
+    this.resizeDebounced.cancel();
+    window.removeEventListener('resize', this.resizeDebounced);
   }
 
   /**
@@ -121,7 +128,7 @@ export class ConstructViewer extends Component {
    * add the given item using an insertion point from the constructviewer user interface.
    * Insertion point may be null, in which the block is added at the end
    */
-  addItemAtInsertionPoint(payload, insertionPoint) {
+  addItemAtInsertionPoint(payload, insertionPoint, event) {
     const { item, type } = payload;
     // get the immediate parent ( which might not be the top level block if this is a nested construct )
     let parent = insertionPoint ? this.getBlockParent(insertionPoint.block) : this.props.construct;
@@ -153,7 +160,7 @@ export class ConstructViewer extends Component {
       index = parent.components.indexOf(insertionPoint.block) + (insertionPoint.edge === 'right' ? 1 : 0);
     }
     // just a HACK for now to allow new nested construct to be created.
-    if (insertionPoint && insertionPoint.block && window.event.metaKey) {
+    if (insertionPoint && insertionPoint.block && event.metaKey) {
       parent = this.props.blocks[insertionPoint.block];
       index = 0;
     }
@@ -164,7 +171,7 @@ export class ConstructViewer extends Component {
     const projectVersion = this.props.projectGetVersion(this.props.projectId);
     blocks.forEach(block => {
       const clone = this.props.blockClone(block, projectVersion);
-      this.props.blockAddComponent(this.props.construct.id, clone.id, index++);
+      this.props.blockAddComponent(parent.id, clone.id, index++);
       clones.push(clone.id);
     });
     // return all the newly inserted blocks
@@ -246,13 +253,6 @@ export class ConstructViewer extends Component {
    */
   get sceneGraphEl() {
     return this.dom.querySelector('.sceneGraph');
-  }
-
-  /**
-   * update scene graph after the react component updates
-   */
-  componentDidUpdate() {
-    this.update();
   }
 
   /**
@@ -350,15 +350,9 @@ export class ConstructViewer extends Component {
         {this.blockContextMenu()}
         <ModalWindow
           open={this.state.modalOpen}
-          title="Construct Viewer Modal"
-          payload={<div className="payload"/>}
+          payload={<div/>}
           closeOnClickOutside
-          buttons={
-            [
-              {text: 'Ok', primary: true},
-              {text: 'Cancel', primary: false},
-            ]}
-          closeModal={(buttonText) => {
+          closeModal={() => {
             this.setState({
               modalOpen: false,
             });
@@ -371,9 +365,7 @@ export class ConstructViewer extends Component {
 }
 
 function mapStateToProps(state, props) {
-  const { projectId } = state.router.params;
   return {
-    projectId,
     ui: state.ui,
     construct: state.blocks[props.constructId],
     blocks: state.blocks,

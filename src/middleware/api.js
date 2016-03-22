@@ -1,6 +1,7 @@
-import uuid from 'node-uuid';
 import fetch from 'isomorphic-fetch';
 import invariant from 'invariant';
+import { getItem, setItem } from './localStorageCache';
+import merge from 'lodash.merge';
 import ProjectDefinition from '../schemas/Project';
 import BlockDefinition from '../schemas/Block';
 
@@ -24,56 +25,108 @@ export const searchPath = (id) => serverRoot + 'search/' + id;
 export const dataApiPath = (path) => serverRoot + 'data/' + path;
 export const fileApiPath = (path) => serverRoot + 'file/' + path;
 
-//hack - set testing stub from start for now so all requests work
-let sessionKey = 'testingStub';
+//header helpers for fetch
 
-export const getSessionKey = () => {
-  return sessionKey;
-};
+//set default options for testing (jsdom doesn't set cookies on fetch)
+let defaultOptions = {};
+if (process.env.NODE_ENV === 'test') {
+  defaultOptions = { headers: { Cookie: 'sess=mock-auth' } };
+}
 
-const headersGet = () => ({
+const headersGet = (overrides) => merge({}, defaultOptions, {
   method: 'GET',
-  headers: {
-    sessionkey: sessionKey,
-  },
-});
+  credentials: 'same-origin',
+}, overrides);
 
-const headersPost = (body, mimeType = 'application/json') => ({
+const headersPost = (body, overrides) => merge({}, defaultOptions, {
   method: 'POST',
+  credentials: 'same-origin',
   headers: {
-    'Content-Type': mimeType,
-    sessionkey: sessionKey,
+    'Content-Type': 'application/json',
   },
   body,
-});
+}, overrides);
 
-const headersPut = (body, mimeType = 'application/json') => ({
+const headersPut = (body, overrides) => merge({}, defaultOptions, {
   method: 'PUT',
+  credentials: 'same-origin',
   headers: {
-    'Content-Type': mimeType,
-    sessionkey: sessionKey,
+    'Content-Type': 'application/json',
   },
   body,
-});
+}, overrides);
 
-const headersDelete = () => ({
+const headersDelete = (overrides) => merge({}, defaultOptions, {
   method: 'DELETE',
-  headers: {
-    sessionkey: sessionKey,
-  },
-});
+  credentials: 'same-origin',
+}, overrides);
 
 /*************************
  Authentication API
  *************************/
 
+// login with email and password and set the sessionKey (cookie) for later use
 export const login = (user, password) => {
-  return fetch(serverRoot + `auth/login?user=${user}&password=${password}`, headersGet())
+  const body = {
+    email: user,
+    password: password,
+  };
+  const stringified = JSON.stringify(body);
+
+  return fetch(serverRoot + `auth/login`, headersPost(stringified))
     .then(resp => resp.json())
     .then(json => {
-      sessionKey = json.sessionkey;
-      return sessionKey;
+      if (json.message) {
+        return Promise.reject(json);
+      }
+      return json;
     });
+};
+
+export const register = (user) => {
+  invariant(user.email && user.password && user.firstName && user.lastName, 'wrong format user');
+  const stringified = JSON.stringify(user);
+  return fetch(serverRoot + `auth/register`, headersPost(stringified))
+    .then(resp => resp.json())
+    .then(json => {
+      if (json.message) {
+        return Promise.reject(json);
+      }
+      return json;
+    });
+};
+
+export const forgot = (email) => {
+  const body = { email };
+  const stringified = JSON.stringify(body);
+  return fetch(serverRoot + `auth/forgot-password`, headersPost(stringified))
+    .then(resp => resp.json());
+};
+
+export const reset = (email, forgotPasswordHash, newPassword) => {
+  const body = { email, forgotPasswordHash, newPassword }
+  const stringified = JSON.stringify(body);
+  return fetch(serverRoot + `auth/reset-password`, headersPost(stringified))
+    .then(resp => resp.json());
+};
+
+// update account
+export const updateAccount = (payload) => {
+  const body = payload;
+  const stringified = JSON.stringify(body);
+
+  return fetch(serverRoot + `auth/update-all`, headersPost(stringified))
+    .then(resp => resp.json());
+};
+
+export const logout = () => {
+  return fetch(serverRoot + `auth/logout`, headersGet());
+};
+
+// use established sessionKey to get the user object
+export const getUser = () => {
+  return fetch(serverRoot + `auth/current-user`, headersGet())
+    .then(resp => resp.json());
 };
 
 /*************************
@@ -171,11 +224,10 @@ export const snapshot = (projectId, rollup, message = 'Project Snapshot') => {
   invariant(projectId, 'Project ID required to snapshot');
   invariant(!message || typeof message === 'string', 'optional message for snapshot must be a string');
 
-  const stringified = JSON.stringify({message});
+  const stringified = JSON.stringify({ message });
   const url = dataApiPath(`${projectId}/commit`);
 
-  return saveProject(projectId, rollup)
-    .then(() => fetch(url, headersPost(stringified)))
+  return fetch(url, headersPost(stringified))
     .then(resp => resp.json());
 };
 
@@ -189,13 +241,24 @@ const getSequenceUrl = (md5, blockId, format) => dataApiPath(`sequence/${md5}` +
 export const getSequence = (md5, format) => {
   const url = getSequenceUrl(md5, undefined, format);
 
+  const cached = getItem(md5);
+  if (cached) {
+    return Promise.resolve(cached);
+  }
+
   return fetch(url, headersGet())
-    .then((resp) => resp.text());
+    .then((resp) => resp.text())
+    .then(sequence => {
+      setItem(md5, sequence);
+      return sequence;
+    });
 };
 
 export const writeSequence = (md5, sequence, blockId) => {
   const url = getSequenceUrl(md5, blockId);
-  const stringified = JSON.stringify({sequence});
+  const stringified = JSON.stringify({ sequence });
+
+  setItem(md5, sequence);
 
   return fetch(url, headersPost(stringified));
 };
@@ -213,7 +276,9 @@ export const readFile = (fileName) => {
 
 // if contents === null, then the file is deleted
 // Set contents to '' to empty the file
-export const writeFile = (fileName = uuid.v4(), contents) => {
+export const writeFile = (fileName, contents) => {
+  invariant(fileName, 'file name is required');
+
   const filePath = fileApiPath(fileName);
 
   if (contents === null) {
@@ -247,13 +312,13 @@ export const exportProject = (id, inputs) => {
 };
 
 export const importBlock = (id, input) => {
-  const stringified = JSON.stringify({text: input});
+  const stringified = JSON.stringify({ text: input });
   return fetch(importPath(`block/${id}`), headersPost(stringified))
     .then(resp => resp.json());
 };
 
 export const importProject = (id, input) => {
-  const stringified = JSON.stringify({text: input});
+  const stringified = JSON.stringify({ text: input });
   return fetch(importPath(`project/${id}`), headersPost(stringified))
     .then(resp => resp.json());
 };

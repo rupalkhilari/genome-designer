@@ -2,6 +2,19 @@ import * as ActionTypes from '../constants/ActionTypes';
 import * as BlockSelector from '../selectors/blocks';
 import invariant from 'invariant';
 
+/**
+ * form names, one of: [ 'signin', 'signup', 'forgot', 'reset', 'account', 'none' ]
+ */
+export const uiShowAuthenticationForm = (name) => {
+  return (dispatch, getState) => {
+    dispatch({
+      type: ActionTypes.UI_SHOW_AUTHENTICATION_FORM,
+      authenticationForm: name,
+    });
+    return name;
+  };
+};
+
 export const uiShowMainMenu = (showMainMenu) => {
   return (dispatch, getState) => {
     dispatch({
@@ -9,6 +22,16 @@ export const uiShowMainMenu = (showMainMenu) => {
       showMainMenu,
     });
     return showMainMenu;
+  };
+};
+
+export const uiSetGrunt = (gruntMessage) => {
+  return (dispatch, getState) => {
+    dispatch({
+      type: ActionTypes.UI_SET_GRUNT,
+      gruntMessage,
+    });
+    return gruntMessage;
   };
 };
 

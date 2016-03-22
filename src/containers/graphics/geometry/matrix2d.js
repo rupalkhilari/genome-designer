@@ -48,6 +48,7 @@ export default class Matrix2D {
    * ensure all the numbers in the matrix are reasonable
    */
   validate() {
+    return true;
     if (this._v && this._v.length === 9) {
       for (let i = 0; i < 9; i += 1) {
         // all 9 elements should be numbers and not NaN or Infinity or -Infinity

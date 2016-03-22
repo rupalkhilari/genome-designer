@@ -13,6 +13,7 @@ export default class SBOL2D extends Node2D {
       glyph: 'sbol',
       textAlign: 'left',
       textIndent: kT.textPad,
+      showChildren: true,
     }));
     this.dots = new Node2D({
       sg: this.sg,

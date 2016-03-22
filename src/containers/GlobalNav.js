@@ -1,15 +1,20 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
-import { pushState } from 'redux-router';
+import { push } from 'react-router-redux';
 import MenuBar from '../components/Menu/MenuBar';
+import UserWidget from '../components/authentication/userwidget';
+import RibbonGrunt from '../components/ribbongrunt';
 import { projectCreate, projectAddConstruct, projectSave } from '../actions/projects';
 import { blockCreate } from '../actions/blocks';
+import { undo, redo } from '../store/undo/actions';
 
 import '../styles/GlobalNav.css';
 
 class GlobalNav extends Component {
   static propTypes = {
-    pushState: PropTypes.func.isRequired,
+    undo: PropTypes.func.isRequired,
+    redo: PropTypes.func.isRequired,
+    push: PropTypes.func.isRequired,
     projectCreate: PropTypes.func.isRequired,
     projectAddConstruct: PropTypes.func.isRequired,
     projectSave: PropTypes.func.isRequired,
@@ -29,7 +34,6 @@ class GlobalNav extends Component {
         {
           text: 'FILE',
           items: [
-            {},
             {
               text: 'Save Project',
               action: () => {
@@ -41,7 +45,7 @@ class GlobalNav extends Component {
               text: 'New Project',
               action: () => {
                 const project = this.props.projectCreate();
-                this.props.pushState(null, `/project/${project.id}`);
+                this.props.push(`/project/${project.id}`);
               },
             }, {
               text: 'New Construct',
@@ -78,10 +82,14 @@ class GlobalNav extends Component {
           items: [
             {
               text: 'Undo',
-              action: () => {},
+              action: () => {
+                this.props.undo();
+              },
             }, {
               text: 'Redo',
-              action: () => {},
+              action: () => {
+                this.props.redo();
+              },
             }, {}, {
               text: 'Cut',
               action: () => {},
@@ -208,8 +216,10 @@ class GlobalNav extends Component {
   render() {
     return (
       <div className="GlobalNav">
+        <RibbonGrunt />
         <span className="GlobalNav-title">GD</span>
         {this.props.showMainMenu ? this.menuBar() : null}
+        <UserWidget/>
       </div>
     );
   }
@@ -217,7 +227,6 @@ class GlobalNav extends Component {
 
 function mapStateToProps(state) {
   return {
-    currentProjectId: state.router.params.projectId,
     showMainMenu: state.ui.showMainMenu,
   };
 }
@@ -227,5 +236,7 @@ export default connect(mapStateToProps, {
   projectCreate,
   projectSave,
   blockCreate,
-  pushState,
+  undo,
+  redo,
+  push,
 })(GlobalNav);

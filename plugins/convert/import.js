@@ -1,7 +1,6 @@
 import express from 'express';
 import fs from 'fs';
 import bodyParser from 'body-parser';
-import { authenticationMiddleware } from '../../server/utils/authentication';
 import { getPlugin } from '../loadPlugin';
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
@@ -9,8 +8,6 @@ const jsonParser = bodyParser.json({
 });
 
 const namespace = 'convert';
-
-router.use(authenticationMiddleware);
 
 function callImportFunction(funcName, id, data) {
   return getPlugin(namespace, id)

@@ -1,11 +1,12 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { pushState } from 'redux-router';
+import { push } from 'react-router-redux';
 import ConstructViewer from './graphics/views/constructviewer';
 import ProjectDetail from '../components/ProjectDetail';
 import ProjectHeader from '../components/ProjectHeader';
 import Inventory from './Inventory';
 import Inspector from './Inspector';
+import { projectLoad } from '../actions/projects';
 import { uiShowMainMenu } from '../actions/ui';
 
 import '../styles/ProjectPage.css';
@@ -16,14 +17,14 @@ class ProjectPage extends Component {
     project: PropTypes.object.isRequired,
     projectId: PropTypes.string.isRequired,
     constructs: PropTypes.array.isRequired,
-    pushState: PropTypes.func.isRequired,
+    projectLoad: PropTypes.func.isRequired,
+    push: PropTypes.func.isRequired,
     uiShowMainMenu: PropTypes.func.isRequired,
   };
 
   constructor(props) {
     super(props);
     this.layoutAlgorithm = 'wrap';
-    this.props.uiShowMainMenu(true);
   }
 
   onLayoutChanged = () => {
@@ -32,17 +33,17 @@ class ProjectPage extends Component {
   };
 
   render() {
-    const { project, constructs } = this.props;
+    const { project, projectId, constructs } = this.props;
 
-    //todo - need error handling here. Should be in route transition probably?
-    //right now there is some handling in GlobalNav when using ProjectSelect. Doesn't handle request of the URL.
     if (!project || !project.metadata) {
-      this.props.pushState('/');
-      return <p>todo - need to handle this (direct request)</p>;
+      this.props.projectLoad(projectId)
+        .catch(err => this.props.push('/'));
+      return (<p>loading project...</p>);
     }
     const constructViewers = constructs.map(construct => {
       return (
         <ConstructViewer key={construct.id}
+                         projectId={projectId}
                          constructId={construct.id}
                          layoutAlgorithm={this.layoutAlgorithm}/>
       );
@@ -50,7 +51,7 @@ class ProjectPage extends Component {
 
     return (
       <div className="ProjectPage">
-        <Inventory />
+        <Inventory projectId={projectId} />
 
         <div className="ProjectPage-content">
 
@@ -63,29 +64,32 @@ class ProjectPage extends Component {
           <ProjectDetail project={project}/>
         </div>
 
-        <Inspector />
+        <Inspector projectId={projectId} />
       </div>
     );
   }
 }
 
-function mapStateToProps(state) {
-  const { projectId, constructId } = state.router.params;
+function mapStateToProps(state, ownProps) {
+  const projectId = ownProps.params.projectId;
   const project = state.projects[projectId];
 
   if (!project) {
-    return {};
+    return {
+      projectId,
+    };
   }
+
   const constructs = project.components.map(componentId => state.blocks[componentId]);
   return {
     projectId,
-    constructId,
     project,
     constructs,
   };
 }
 
 export default connect(mapStateToProps, {
-  pushState,
+  projectLoad,
+  push,
   uiShowMainMenu,
 })(ProjectPage);

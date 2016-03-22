@@ -18,7 +18,7 @@ export const search = (term, options = {}) => {
     }
   );
 
-  return fetch(`${url}/search/${term}?${queryString.stringify(opts)}`)
+  return fetch(`${url}/search/?query_text=${term}&${queryString.stringify(opts)}`)
     .then(resp => resp.json())
     .then(results => parseResults(results))
     .catch(err => {

@@ -1,23 +1,28 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { pushState } from 'redux-router';
-import { listProjects } from '../../middleware/api';
+import { push } from 'react-router-redux';
 import { projectGet, projectListAllBlocks } from '../../selectors/projects';
-import { projectLoad } from '../../actions/projects';
+import { projectList, projectLoad } from '../../actions/projects';
 import { block as blockDragType } from '../../constants/DragTypes';
 
 import InventoryListGroup from './InventoryListGroup';
 import InventoryList from './InventoryList';
 
-const loadedProjects = {};
+//temp - non-empty to handle test project
+const loadedProjects = {
+  test: [],
+};
 
 export class InventoryGroupProjects extends Component {
   static propTypes = {
+    projects: PropTypes.object.isRequired,
+    projectId: PropTypes.string.isRequired,
     currentProject: PropTypes.string.isRequired,
+    projectList: PropTypes.func.isRequired,
     projectLoad: PropTypes.func.isRequired,
     projectGet: PropTypes.func.isRequired,
     projectListAllBlocks: PropTypes.func.isRequired,
-    pushState: PropTypes.func.isRequired,
+    push: PropTypes.func.isRequired,
   };
 
   constructor() {
@@ -26,15 +31,20 @@ export class InventoryGroupProjects extends Component {
   }
 
   state = {
-    recentProjects: [],
     expandedProjects: {},
   };
 
   componentDidMount() {
-    listProjects().then(projects => this.setState({ recentProjects: projects }));
+    //retrigger on each load?
+    this.props.projectList();
   }
 
   handleLoadProject = (projectId) => {
+    //temporary - handle test project scenario
+    if (projectId === 'test') {
+      return Promise.resolve();
+    }
+
     //todo - dont load blocks into store until the project is loaded (update selector)
     //todo - caching should be at API level, not in this component
 
@@ -51,8 +61,8 @@ export class InventoryGroupProjects extends Component {
   };
 
   handleOpenProject = (nextState, projectId) => {
-    this.props.projectLoad(projectId)
-      .then(() => this.props.pushState(null, `/project/${projectId}`));
+    this.handleLoadProject(projectId)
+      .then(() => this.props.push(`/project/${projectId}`));
   };
 
   handleToggleProject = (nextState, projectId) => {
@@ -66,7 +76,6 @@ export class InventoryGroupProjects extends Component {
     //handle double-click to open
     this.clicks++;
     if (this.clicks === 1) {
-      //todo - handle this promise better - don't want to request more than once
       const promise = this.handleLoadProject(projectId);
       window.setTimeout(() => {
         if (this.clicks === 1) {
@@ -80,26 +89,27 @@ export class InventoryGroupProjects extends Component {
   };
 
   render() {
-    const { currentProject } = this.props;
-    const { recentProjects, expandedProjects } = this.state;
+    const { projects, currentProject } = this.props;
+    const { expandedProjects } = this.state;
 
     const projectList =
-      (!recentProjects.length)
+      (!Object.keys(projects).length)
         ?
         (<p>no projects</p>)
         :
-        recentProjects.map(project => {
-          const isActive = (project.id === currentProject);
-          const isExpanded = expandedProjects[project.id];
+        Object.keys(projects).map(projectId => {
+          const project = projects[projectId];
+          const isActive = (projectId === currentProject);
+          const isExpanded = expandedProjects[projectId];
           return (
-            <InventoryListGroup key={project.id}
-                                title={project.metadata.name || 'My Project'}
+            <InventoryListGroup key={projectId}
+                                title={project.metadata.name || 'Untitled Project'}
                                 manual
                                 isExpanded={isExpanded}
-                                onToggle={(nextState) => this.handleOnToggle(nextState, project.id)}
+                                onToggle={(nextState) => this.handleOnToggle(nextState, projectId)}
                                 isActive={isActive}>
               <InventoryList inventoryType={blockDragType}
-                             items={loadedProjects[project.id]}/>
+                             items={loadedProjects[projectId]}/>
             </InventoryListGroup>
           );
         });
@@ -113,16 +123,19 @@ export class InventoryGroupProjects extends Component {
 }
 
 function mapStateToProps(state, props) {
-  const { projectId } = state.router.params;
+  const { projectId } = props;
+  const { projects } = state;
 
   return {
+    projects,
     currentProject: projectId,
   };
 }
 
 export default connect(mapStateToProps, {
+  projectList,
   projectLoad,
   projectGet,
   projectListAllBlocks,
-  pushState,
+  push,
 })(InventoryGroupProjects);

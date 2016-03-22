@@ -1,14 +1,12 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import { errorDoesNotExist } from '../utils/errors';
-import { authenticationMiddleware } from '../utils/authentication';
 import listExtensions from './registry';
 import loadExtension, { getExtensionInternalPath} from './loadExtension';
 
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json();
 
-router.use(authenticationMiddleware);
 router.use(jsonParser);
 
 router.get('/list', (req, res) => {
