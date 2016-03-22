@@ -125,7 +125,7 @@ def genbank_to_block_helper(gb, convert_features=False):
     all_blocks = {}
     sequence = str(gb.seq)
     full_length = len(sequence)
-    root_id = gb.id
+    root_id = str(uuid.uuid4())
 
     #Collect all the neccessary metadata
     root_block = create_block_json(root_id, sequence, [])
