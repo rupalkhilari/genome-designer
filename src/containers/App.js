@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import GlobalNav from './GlobalNav';
 import AuthenticationForms from './authentication/authenticationforms';
+import ImportGenBankModal from '../components/genbank/import';
 
 import '../styles/App.css';
 
@@ -21,6 +22,7 @@ class App extends Component {
       <div className="App">
         <GlobalNav currentProjectId={currentProjectId}/>
         <AuthenticationForms />
+        <ImportGenBankModal />
         <div className="App-pageContent">
           {children}
         </div>

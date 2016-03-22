@@ -58,4 +58,14 @@
   --zMenu: 100000;
   --zMenuContainer: 1000;
   --zModal:90000;
+
+  /* Modal windows
+  ==================== */
+  --modal-radius: 3px;
+  --modal-element-height: 3rem;
+  --modal-inputcolor: #E1E2E5;
+  --modal-textcolor: #747784;
+  --modal-primarycolor: #343A4D;
+  --modal-errorcolor: #FF6A5E;
+  --modal-fontsize: 1.25rem;
 }

@@ -1,12 +1,4 @@
-:root {
---radius: 3px;
---element-height: 3rem;
---inputcolor: #E1E2E5;
---textcolor: #747784;
---primarycolor: #343A4D;
---errorcolor: #FF6A5E;
---fontsize: 1.25rem;
-}
+@import './variables.css';
 
 .authentication-form {
   width: 500px;
@@ -19,34 +11,34 @@
   * {
     width: 80%;
     margin-bottom: 0.5rem;
-    border-radius: var(--radius);
+    border-radius: var(--modal-radius);
   }
 
   .title {
-    font-size: var(--element-height * 0.5);
-    color: var(--textcolor);
+    font-size: var(--modal-element-height * 0.5);
+    color: var(--modal-textcolor);
     text-align:center;
     margin-top: 1rem;
     margin-bottom: 2rem !important;
   }
 
   input {
-    height: var(--element-height);
-    font-size: var(--fontsize);
-    border-radius: var(--radius);
+    height: var(--modal-element-height);
+    font-size: var(--modal-fontsize);
+    border-radius: var(--modal-radius);
     border: 1px solid whitesmoke;
-    background-color: var(--inputcolor);
+    background-color: var(--modal-inputcolor);
     text-indent: 0.5rem;
     outline: none;
-    color: var(--primarycolor);
+    color: var(--modal-primarycolor);
   }
   input:focus {
     border: 1px solid lightgray;
   }
 
   button {
-    height: var(--element-height);
-    font-size: var(--fontsize);
+    height: var(--modal-element-height);
+    font-size: var(--modal-fontsize);
     border-radius: 0;
     cursor: pointer;
   }
@@ -56,32 +48,32 @@
     color: textcolor;
   }
   button[type="submit"] {
-    background-color: var(--primarycolor);
+    background-color: var(--modal-primarycolor);
     color: white;
     border: none;
   }
   /* errors are hidden by default, add the .visible class to make them appear*/
   .error {
     color: transparent;
-    font-size: var(--fontsize);
+    font-size: var(--modal-fontsize);
     text-align: center;
   }
   .visible {
-    color: var(--errorcolor);
+    color: var(--modal-errorcolor);
   }
   label {
-    font-size: var(--fontsize);
-    color: var(--textcolor);
+    font-size: var(--modal-fontsize);
+    color: var(--modal-textcolor);
   }
   .checkbox {
     display: flex;
     align-items: center;
   }
   .checkbox span {
-    font-size: var(--fontsize);
+    font-size: var(--modal-fontsize);
     white-space: nowrap;
     margin: 3px 0 0 0.5rem;
-    color: var(--textcolor);
+    color: var(--modal-textcolor);
   }
   .checkbox input {
     width: 1rem;
@@ -92,8 +84,8 @@
     color: dodgerblue;
   }
   a {
-    font-size: var(--fontsize);
-    color: var(--textcolor);
+    font-size: var(--modal-fontsize);
+    color: var(--modal-textcolor);
     text-decoration: none;
     cursor: pointer;
   }
