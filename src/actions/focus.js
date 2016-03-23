@@ -138,6 +138,7 @@ export const focusBlocksToggle = (blocksToToggle) => {
 //pass model, takes precedence
 export const focusForceBlocks = (blocks) => {
   return (dispatch, getState) => {
+    //todo - check valid
     dispatch({
       type: ActionTypes.FOCUS_FORCE_BLOCKS,
       blocks,
@@ -147,12 +148,13 @@ export const focusForceBlocks = (blocks) => {
 };
 
 //pass model, takes precedence
-export const focusForceProject = (projectId) => {
+export const focusForceProject = (project) => {
   return (dispatch, getState) => {
+    //todo - check valid
     dispatch({
       type: ActionTypes.FOCUS_FORCE_PROJECT,
-      projectId,
+      project,
     });
-    return projectId;
+    return project;
   };
 };

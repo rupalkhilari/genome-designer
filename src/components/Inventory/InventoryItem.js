@@ -4,8 +4,8 @@ import ReactDOM from 'react-dom';
 import DnD from '../../containers/graphics/dnd/dnd';
 import MouseTrap from '../../containers/graphics/mousetrap';
 
-import { inspectorToggleVisibility, inspectorForceBlocks } from '../../actions/inspector';
-import { inspectorGetCurrentSelection } from '../../selectors/inspector';
+import { inspectorToggleVisibility } from '../../actions/inspector';
+import { focusForceBlocks } from '../../actions/focus';
 
 import '../../styles/InventoryItem.css';
 
@@ -22,7 +22,7 @@ export class InventoryItem extends Component {
     onSelect: PropTypes.func,
     forceBlocks: PropTypes.array.isRequired,
     inspectorToggleVisibility: PropTypes.func.isRequired,
-    inspectorForceBlocks: PropTypes.func.isRequired,
+    focusForceBlocks: PropTypes.func.isRequired,
   };
 
   componentDidMount() {
@@ -52,12 +52,12 @@ export class InventoryItem extends Component {
   }
 
   handleClick = () => {
-    const { item, onSelect, inspectorToggleVisibility, inspectorForceBlocks } = this.props;
+    const { item, onSelect, inspectorToggleVisibility, focusForceBlocks } = this.props;
 
     const promise = (!!onSelect) ? onSelect(item) : Promise.resolve(item);
 
     promise.then(result => {
-      inspectorForceBlocks([result]);
+      focusForceBlocks([result]);
       inspectorToggleVisibility(true);
     });
   };
@@ -103,10 +103,9 @@ export class InventoryItem extends Component {
 
 export default connect((state) => {
   return {
-    forceBlocks: state.inspector.forceBlocks,
+    forceBlocks: state.focus.forceBlocks,
   };
 }, {
-  inspectorGetCurrentSelection,
-  inspectorForceBlocks,
+  focusForceBlocks,
   inspectorToggleVisibility,
 })(InventoryItem);

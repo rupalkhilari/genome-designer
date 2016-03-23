@@ -10,6 +10,7 @@ export class InspectorProject extends Component {
     instance: PropTypes.object.isRequired,
     projectRename: PropTypes.func.isRequired,
     projectMerge: PropTypes.func.isRequired,
+    readOnly: PropTypes.bool.isRequired,
   };
 
   setProjectName = (name) => {
@@ -23,19 +24,21 @@ export class InspectorProject extends Component {
   };
 
   render() {
-    const { instance } = this.props;
+    const { instance, readOnly } = this.props;
 
     return (
       <div className="InspectorContent InspectorContentProject">
         <h4 className="InspectorContent-heading">Name</h4>
         <InputSimple placeholder="Project Name"
                      onChange={this.setProjectName}
+                     readOnly={readOnly}
                      value={instance.metadata.name}/>
 
         <h4 className="InspectorContent-heading">Description</h4>
         <InputSimple placeholder="Project Description"
                      useTextarea
                      onChange={this.setProjectDescription}
+                     readOnly={readOnly}
                      updateOnBlur
                      value={instance.metadata.description}/>
       </div>

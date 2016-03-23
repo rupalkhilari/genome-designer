@@ -1,6 +1,6 @@
-import React, { Component, PropTypes } from 'react';
-import { connect } from 'react-redux';
-import { inspectorToggleVisibility } from '../actions/inspector';
+import React, {Component, PropTypes} from 'react';
+import {connect} from 'react-redux';
+import {inspectorToggleVisibility} from '../actions/inspector';
 
 import InspectorBlock from '../components/InspectorBlock';
 import InspectorProject from '../components/InspectorProject';
@@ -46,7 +46,8 @@ export class Inspector extends Component {
           {(instances && instances.length) ?
             (<InspectorBlock instances={instances}
                              readOnly={readOnly}/>) :
-            (<InspectorProject instance={project}/>) }
+            (<InspectorProject instance={project}
+                               readOnly={readOnly}/>) }
         </div>
       </div>
     );
@@ -54,30 +55,32 @@ export class Inspector extends Component {
 }
 
 function mapStateToProps(state, props) {
-  const { isVisible, forceBlocks } = state.inspector;
-  const { currentBlocks, currentConstructId } = state.ui;
+  const { isVisible } = state.inspector;
+  const { forceBlocks, blocks, forceProject } = state.focus;
 
   //use forceBlock if available, otherwise use selected blocks
-  const instances = forceBlocks.length ?
+  const unfilteredInstances = forceBlocks.length ?
     forceBlocks :
-    (currentBlocks && currentBlocks.length) ?
-      currentBlocks.map(blockId => state.blocks[blockId]) :
-      (currentConstructId) ?
-        [state.blocks[currentConstructId]] :
-        [];
-
+    (blocks && blocks.length) ?
+      blocks.map(blockId => state.blocks[blockId]) :
+      [];
   //ensure that blocks removed from store dont error / don't pass empty instances
-  const filteredInstances = instances.filter(el => !!el);
+  const instances = unfilteredInstances.filter(el => !!el);
 
-  const readOnly = forceBlocks.length >= 1;
+  const { projectId } = props; //from routing
+  const project = !!forceProject ?
+    forceProject :
+    state.projects[projectId];
 
-  const { projectId } = props;
-  const project = state.projects[projectId];
+  //readonly if forceBlocks / forceProject
+  const readOnly = instances.length ?
+    forceBlocks.length :
+    !!forceProject;
 
   return {
     isVisible,
     readOnly,
-    instances: filteredInstances,
+    instances,
     project,
   };
 }
