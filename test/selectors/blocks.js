@@ -1,4 +1,4 @@
-import { expect } from 'chai';
+import { expect, assert } from 'chai';
 import range from '../../src/utils/array/range';
 import * as actions from '../../src/actions/blocks';
 import * as selectors from '../../src/selectors/blocks';
@@ -50,7 +50,7 @@ describe('Selectors', () => {
         const parents = blockStore.dispatch(selectors.blockGetParents(leaf));
         const parentId = parents[0];
         const parent = blockStore.getState().blocks[parentId];
-        expect(parent.components).to.eql(sibs);
+        expect(parent.components).to.eql(sibs.map(sib => sib.id));
       });
 
       it('blockGetIndex()', () => {
@@ -61,6 +61,16 @@ describe('Selectors', () => {
         const parentId = parents[0];
         const parent = blockStore.getState().blocks[parentId];
         expect(parent.components[0]).to.eql(leaf);
+      });
+
+      it('blockGetChildrenByDepth()', () => {
+        const byDepth = blockStore.dispatch(selectors.blockGetChildrenByDepth(root));
+        const keys = Object.keys(byDepth);
+        expect(typeof byDepth).to.equal('object');
+        expect(keys.length).to.equal(depth * siblings);
+        assert(keys.every(key => {
+          return byDepth[key] >= 1 && byDepth[key] <= 5;
+        }), 'wrong values for depth');
       });
     });
   });

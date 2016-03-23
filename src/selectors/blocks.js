@@ -30,6 +30,17 @@ const _getAllChildren = (rootId, store, children = []) => {
   return children;
 };
 
+const _getAllChildrenByDepth = (rootId, store, children = {}, depth = 1) => {
+  const kids = _getChildrenShallow(rootId, store);
+  if (kids.length) {
+    kids.forEach(kid => {
+      children[kid.id] = depth;
+      _getAllChildrenByDepth(kid.id, store, children, depth + 1);
+    });
+  }
+  return children;
+};
+
 const _filterToLeafNodes = (blocks) => blocks.filter(child => !child.components.length);
 
 export const blockGet = (blockId) => {
@@ -58,14 +69,19 @@ export const blockGetParents = (blockId) => {
 //i.e. get construct
 export const blockGetParentRoot = (blockId) => {
   return (dispatch, getState) => {
-    const store = getState();
-    return _getParents(blockId, store).pop();
+    return _getParents(blockId, getState()).pop();
   };
 };
 
 export const blockGetChildrenRecursive = (blockId) => {
   return (dispatch, getState) => {
     return _getAllChildren(blockId, getState());
+  };
+};
+
+export const blockGetChildrenByDepth = (blockId) => {
+  return (dispatch, getState) => {
+    return _getAllChildrenByDepth(blockId, getState());
   };
 };
 
@@ -77,8 +93,9 @@ export const blockGetLeaves = (blockId) => {
 
 export const blockGetSiblings = (blockId) => {
   return (dispatch, getState) => {
-    const parent = _getParentFromStore(blockId, getState(), {});
-    return parent.components || [];
+    const state = getState();
+    const parent = _getParentFromStore(blockId, state, {});
+    return (parent.components || []).map(id => _getBlockFromStore(id, state));
   };
 };
 
