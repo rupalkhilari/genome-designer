@@ -125,16 +125,13 @@ describe('Plugins', () => {
       });
     });
 
-    //todo - this should use a more correct example file, and should validate the blocks
-    //fixme - this test looks like it should fail? what is 'genbank' into exportBlock()?
-    it.skip('should export block to Genbank', function exportGB(done) {
-      fs.readFile(path.resolve(__dirname, '../res/sampleBlocks.json'), 'utf8', (err, sampleBlocksJson) => {
-        const sampleBlocks = JSON.parse(sampleBlocksJson);
-        exportBlock('genbank', sampleBlocks)
+    it('should export simple project to Genbank', function exportGB(done) {
+      fs.readFile(path.resolve(__dirname, '../res/simpleProject.json'), 'utf8', (err, sampleProjectJson) => {
+        const sampleProject = JSON.parse(sampleProjectJson);
+        exportProject('genbank', sampleProject)
           .then(result => {
-            expect(result.indexOf('acggtt') !== -1).to.equal(true);
-            expect(result.indexOf('Double_T') !== -1).to.equal(true);
-            expect(result.indexOf('block           5..6') !== -1).to.equal(true);
+            console.log(result)
+            expect(result).to.contain('LOCUS');
             done();
           })
           .catch(done);

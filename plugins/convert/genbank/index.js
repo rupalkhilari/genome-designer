@@ -180,12 +180,9 @@ export const importProject = (gbstr) => {
     .then(result => {
       if (result && result.project && result.blocks &&
         result.project.components && result.project.components.length > 0) {
-          console.log("There were originally a total blocks of: " + result.blocks.keys().length)
           return handleBlocks(result.blocks)
             .then(blocksWithOldIds => {
-              console.log("After HandleBlocks: " + blocksWithOldIds.length)
               const remapped_blocks_array = remapHierarchy(blocksWithOldIds);
-              console.log("And after remapping: " + remapped_blocks_array.length);
               const newRootBlocks = result.project.components.map((oldBlockId) => {
                 return getNewId(blocksWithOldIds, oldBlockId);
               });
