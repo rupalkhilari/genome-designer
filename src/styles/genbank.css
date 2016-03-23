@@ -9,10 +9,37 @@
   font-size: 1.5rem;
 
   * {
-    width: 80%;
     margin-bottom: 0.5rem;
     border-radius: var(--modal-radius);
   }
+
+  .dropzone {
+    width: 50%;
+    height: 10rem;
+    border-radius: var(--modal-radius);
+    background-color: var(--modal-inputcolor);
+    border: none;
+    margin: 1rem 0 1rem 0;
+    text-align: center;
+    color: white;
+  }
+  .dropzone-hot {
+    background-color: var(--modal-textcolor);
+  }
+  .dropzone-text {
+    font-size: 3rem;
+    color: white;
+    line-height: 10rem;
+  }
+  .file-name {
+    color: var(--modal-textcolor);
+    font-size: 0.9rem;
+  }
+
+  .form-buttons {
+    margin-top: 2rem;
+  }
+
 
   .title {
     font-size: var(--modal-element-height * 0.5);
@@ -20,6 +47,11 @@
     text-align:left;
     margin-top: 1rem;
     margin-bottom: 2rem !important;
+  }
+
+  .error {
+    font-size: var(--modal-fontsize);
+    color: var(--modal-errorcolor);
   }
 
   .input {
@@ -48,5 +80,22 @@
       display: inline-block;
       text-align: left;
     }
+  }
+
+  button {
+    height: var(--modal-element-height);
+    font-size: var(--modal-fontsize);
+    border-radius: 0;
+    cursor: pointer;
+  }
+  button[type="button"]  {
+    background-color: white;
+    border: none;
+    color: textcolor;
+  }
+  button[type="submit"] {
+    background-color: var(--modal-primarycolor);
+    color: white;
+    border: none;
   }
 }

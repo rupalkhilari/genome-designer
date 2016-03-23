@@ -7,6 +7,7 @@ import RibbonGrunt from '../components/ribbongrunt';
 import { projectCreate, projectAddConstruct, projectSave } from '../actions/projects';
 import { blockCreate } from '../actions/blocks';
 import { undo, redo } from '../store/undo/actions';
+import { uiShowGenBankImport } from '../actions/ui';
 
 import '../styles/GlobalNav.css';
 
@@ -64,7 +65,9 @@ class GlobalNav extends Component {
               action: () => {},
             }, {
               text: 'Upload Genbank File',
-              action: () => {},
+              action: () => {
+                this.props.uiShowGenBankImport(true);
+              },
             }, {
               text: 'Download Genbank File',
               action: () => {},
@@ -239,4 +242,5 @@ export default connect(mapStateToProps, {
   undo,
   redo,
   push,
+  uiShowGenBankImport,
 })(GlobalNav);

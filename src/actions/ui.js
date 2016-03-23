@@ -15,6 +15,16 @@ export const uiShowAuthenticationForm = (name) => {
   };
 };
 
+export const uiShowGenBankImport = (bool) => {
+  return (dispatch, getState) => {
+    dispatch({
+      type: ActionTypes.UI_SHOW_GENBANK_IMPORT,
+      showGenBankImport: bool,
+    });
+    return bool;
+  };
+};
+
 export const uiShowMainMenu = (showMainMenu) => {
   return (dispatch, getState) => {
     dispatch({
