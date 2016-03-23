@@ -39,7 +39,9 @@ export const writeProjectRollup = (projectId, rollup, userId) => {
   const { project, blocks } = rollup;
   const newBlockIds = blocks.map(block => block.id);
 
-  invariant(projectId === project.id, 'rollup project ID does not match');
+  if (projectId !== project.id) {
+    return Promise.reject('rollup project ID does not match');
+  }
 
   return persistence.projectExists(projectId)
     .catch(err => {
