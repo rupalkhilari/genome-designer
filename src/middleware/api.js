@@ -117,7 +117,7 @@ export const updateAccount = (payload) => {
 };
 
 export const logout = () => {
-  return authFetch(serverRoot + `auth/logout`, headersGet());
+  return rejectingFetch(serverRoot + `auth/logout`, headersGet());
 };
 
 // use established sessionKey to get the user object
