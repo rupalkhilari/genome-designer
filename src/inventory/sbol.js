@@ -18,12 +18,11 @@ function makeImagePath(fileName, folder = 'thin') {
 
 const symbols = Object.keys(symbolMap).map(key => ({
   id: key,
-  metadata: {
-    name: symbolMap[key],
-    image: makeImagePath(key, 'thickLight'), //inventory pinned to this
-    imageThin: makeImagePath(key, 'thin'),
-    imageThick: makeImagePath(key, 'thickDark'),
-    imageThickLight: makeImagePath(key, 'thickLight'),
+  name: symbolMap[key],
+  images: {
+    thick: makeImagePath(key, 'thickLight'), //inventory
+    thickDark: makeImagePath(key, 'thickDark'),
+    thin: makeImagePath(key, 'thin'),
   },
 }));
 

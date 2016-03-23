@@ -1,26 +1,29 @@
 import React, { Component, PropTypes } from 'react';
 import { sbol as sbolDragType } from '../../constants/DragTypes';
+import inventorySbol from '../../inventory/sbol';
+import BlockDefinition from '../../schemas/Block';
+import merge from 'lodash.merge';
 
 import InventoryList from './InventoryList';
 
 export default class InventoryGroupSbol extends Component {
-  static propTypes = {
-    items: PropTypes.arrayOf(PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      metadata: PropTypes.shape({
-        name: PropTypes.string.isRequired,
-        image: PropTypes.string.isRequired,
-      }).isRequired,
-    })).isRequired,
-  };
+  constructor(props) {
+    super(props);
+
+    this.items = inventorySbol.map(symbol => merge(BlockDefinition.scaffold(), {
+      id: symbol.id,
+      metadata: {
+        name: symbol.name,
+        image: symbol.images.thick,
+      },
+    }));
+  }
 
   render() {
-    const { items } = this.props;
-
     return (
       <div className="InventoryGroup-content InventoryGroupSbol">
         <InventoryList inventoryType={sbolDragType}
-                       items={items}/>
+                       items={this.items}/>
       </div>
     );
   }

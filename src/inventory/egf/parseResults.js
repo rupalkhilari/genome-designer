@@ -14,7 +14,7 @@ function parseBasicFields(result) {
   const { name, part_type } = result;
   const partType = normalizePartType(part_type);
 
-  return new Block({
+  return {
     metadata: {
       name: name,
     },
@@ -25,18 +25,18 @@ function parseBasicFields(result) {
       source: 'egf',
       id: name,
     },
-  });
+  };
 }
 
 //sync
 export function parseSearchResult(result) {
-  return parseBasicFields(result);
+  return new Block(parseBasicFields(result));
 }
 
 //async
 export function parseFullResult(result) {
   const { sequence } = result;
-  const block = parseBasicFields(result);
+  const block = new Block(parseBasicFields(result));
   return block.setSequence(sequence);
 }
 

@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { inventoryToggleVisibility } from '../actions/inventory';
-import inventorySbol from '../inventory/sbol';
 import inventoryAndrea from '../inventory/andrea';
 import InventoryGroup from '../components/Inventory/InventoryGroup';
 
@@ -69,8 +68,7 @@ export class Inventory extends Component {
             <InventoryGroup title="Sketch Library"
                             type="sbol"
                             isActive={activeTab === 'sbol'}
-                            setActive={() => this.setActiveTab('sbol')}
-                            items={inventorySbol}/>
+                            setActive={() => this.setActiveTab('sbol')} />
           </div>
         </div>
       </div>

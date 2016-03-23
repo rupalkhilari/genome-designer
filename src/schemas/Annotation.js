@@ -14,13 +14,13 @@ import SchemaDefinition from './SchemaDefinition';
  Later, we may want to make a field that notes how optimizable the sequence is. E.g. none, codon-optimize, or random sequence. It may be represented as a degenerate sequence?
  */
 const AnnotationDefinition = new SchemaDefinition({
-  id: [
-    fields.id({prefix: 'annotation'}).required,
-    'ID of the annotation',
-  ],
   tags: [
     fields.object(),
     'Dictionary of tags defining annotation',
+  ],
+  name: [
+    fields.string(),
+    'Name of annotation',
   ],
   description: [
     fields.string(),
@@ -37,6 +37,10 @@ const AnnotationDefinition = new SchemaDefinition({
   end: [
     fields.number({min: 0}),
     'Location of end of annotation',
+  ],
+  isForward: [
+    fields.bool(),
+    `true if forward (5'-3'), false if reverse`,
   ],
 });
 

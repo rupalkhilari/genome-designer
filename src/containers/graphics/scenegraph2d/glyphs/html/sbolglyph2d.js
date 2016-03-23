@@ -3,7 +3,6 @@ import Glyph2D from '../glyph2d';
 import kT from '../../../views/layoutconstants';
 import symbols from '../../../../../inventory/sbol';
 
-
 export default class SBOLGlyph2D extends Glyph2D {
 
   /**
@@ -41,16 +40,19 @@ export default class SBOLGlyph2D extends Glyph2D {
     this.el.style.backgroundColor = this.node.fill;
     this.el.style.border = sw ? `${sw}px solid ${this.node.stroke}` : 'none';
     if (this.node.sbolName) {
-      // the icon img tag
-      this.img.style.left = (this.node.width - kT.sbolIcon - 2 - kT.contextDotsW) + 'px';
-      this.img.style.maxWidth = kT.sbolIcon + 'px';
-      this.img.style.top = (this.node.height / 2 - kT.sbolIcon / 2) + 'px';
+      const symbol = symbols.find(symbol => symbol.id === this.node.sbolName);
+      if (symbol) {
+        // the icon img tag
+        this.img.style.left = (this.node.width - kT.sbolIcon - 2 - kT.contextDotsW) + 'px';
+        this.img.style.maxWidth = kT.sbolIcon + 'px';
+        this.img.style.top = (this.node.height / 2 - kT.sbolIcon / 2) + 'px';
 
-      const svgPath = symbols.find(symbol => symbol.id === this.node.sbolName).metadata.imageThick;
-      if (this.img.getAttribute('src') !== svgPath) {
-        this.img.setAttribute('src', svgPath);
+        const svgPath = symbol.images.thickDark;
+        if (this.img.getAttribute('src') !== svgPath) {
+          this.img.setAttribute('src', svgPath);
+        }
+        this.img.style.display = 'block';
       }
-      this.img.style.display = 'block';
     } else {
       this.img.style.display = 'none';
     }

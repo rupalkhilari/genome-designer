@@ -1,5 +1,6 @@
 import invariant from 'invariant';
 import Block from '../../models/Block';
+import merge from 'lodash.merge';
 
 function normalizePartType(inputType) {
   let partType = inputType.toLowerCase();
@@ -14,7 +15,7 @@ function parseBasicFields(result) {
   const { name, part_type } = result;
   const partType = normalizePartType(part_type);
 
-  return new Block({
+  return {
     metadata: {
       name: name,
     },
@@ -25,18 +26,38 @@ function parseBasicFields(result) {
       source: 'igem',
       id: name,
     },
-  });
+  };
 }
 
 //sync
 export function parseSearchResult(result) {
-  return parseBasicFields(result);
+  return new Block(parseBasicFields(result));
 }
 
 //async
 export function parseFullResult(result) {
   const { sequence } = result;
-  const block = parseBasicFields(result);
+  const basics = parseBasicFields(result);
+  const additional = {
+    metadata: {
+      description: result.metadata.part_short_desc,
+      author: result.metadata.part_author,
+      created: result.metadata.part_entered,
+    },
+    sequence: {
+      annotations: result.metadata.features.feature.map(feature => ({
+        isForward: feature.direction === 'forward',
+        start: parseInt(feature.startpos, 10),
+        end: parseInt(feature.endpos, 10),
+        name: feature.title || '',
+        type: feature.type || '',
+      })),
+    },
+    source: {
+      url: result.metadata.part_url,
+    },
+  };
+  const block = new Block(merge(basics, additional));
   return block.setSequence(sequence);
 }
 
