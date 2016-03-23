@@ -51,10 +51,10 @@ export const focusBlocks = (blocks) => {
 
     if (blocks.length) {
       const firstBlockId = blocks[0];
-      //const siblings = BlockSelector.blockGetSiblings(firstBlockId);
+      //const siblings = dispatch(BlockSelector.blockGetSiblings(firstBlockId));
       //invariant(blocks.every(block => siblings.indexOf(block) >= 0), 'must pass siblings, cannot select blocks from multiple levels');
 
-      const constructId = BlockSelector.blockGetParentRoot(firstBlockId);
+      const constructId = dispatch(BlockSelector.blockGetParentRoot(firstBlockId));
       if (constructId !== getState().focus.construct) {
         dispatch({
           type: ActionTypes.FOCUS_CONSTRUCT,
@@ -79,23 +79,7 @@ export const focusBlocksAdd = (blocksToAdd) => {
     const base = getState().focus.blocks;
     const blocks = [...new Set([...base, ...blocksToAdd])];
 
-    //same as in focusBlocks
-    if (blocks.length) {
-      const firstBlockId = blocks[0];
-      const constructId = BlockSelector.blockGetParentRoot(firstBlockId);
-      if (constructId !== getState().focus.construct) {
-        dispatch({
-          type: ActionTypes.FOCUS_CONSTRUCT,
-          constructId,
-        });
-      }
-    }
-
-    dispatch({
-      type: ActionTypes.FOCUS_BLOCKS,
-      blocks,
-    });
-    return blocks;
+    return dispatch(focusBlocks(blocks));
   };
 };
 
@@ -115,23 +99,7 @@ export const focusBlocksToggle = (blocksToToggle) => {
     });
     const blocks = [...blockSet];
 
-    //same as in focusBlocks
-    if (blocks.length) {
-      const firstBlockId = blocks[0];
-      const constructId = BlockSelector.blockGetParentRoot(firstBlockId);
-      if (constructId !== getState().focus.construct) {
-        dispatch({
-          type: ActionTypes.FOCUS_CONSTRUCT,
-          constructId,
-        });
-      }
-    }
-
-    dispatch({
-      type: ActionTypes.FOCUS_BLOCKS,
-      blocks,
-    });
-    return blocks;
+    return dispatch(focusBlocks(blocks));
   };
 };
 

@@ -74,7 +74,7 @@ function mapStateToProps(state, props) {
 
   //readonly if forceBlocks / forceProject
   const readOnly = instances.length ?
-    forceBlocks.length :
+    !!forceBlocks.length :
     !!forceProject;
 
   return {

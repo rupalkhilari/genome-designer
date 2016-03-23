@@ -220,7 +220,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * true if we are the selected construct
    */
   isSelectedConstruct() {
-    return this.constructViewer.props.construct.id === this.constructViewer.props.ui.currentConstructId;
+    return this.constructViewer.props.construct.id === this.constructViewer.props.focus.construct;
   }
   /**
    * select the construct if not already selected
@@ -228,7 +228,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
   selectConstruct() {
     // select the construct if not already the selected construct ( changing
     // the construct will remove blocks that are not part of the construct from the selections )
-    if (this.constructViewer.props.construct.id !== this.constructViewer.props.ui.currentConstructId) {
+    if (this.constructViewer.props.construct.id !== this.constructViewer.props.focus.construct) {
       this.constructViewer.constructSelected(this.constructViewer.props.construct.id);
     }
   }

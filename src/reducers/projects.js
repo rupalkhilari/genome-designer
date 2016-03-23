@@ -1,16 +1,8 @@
 import * as ActionTypes from '../constants/ActionTypes';
-import Project from '../models/Project';
+import { project as testProject } from './testProject';
 
 const initialState = {
-  test: new Project({
-    id: 'test',
-    metadata: {
-      name: 'My Test Project',
-      description: 'Create a versatile and robust templating system for combinatorial recombinant designs using Yeast parts from EGF.',
-    },
-    //components: ['block1', 'block2'],
-    components: ['block1'],
-  }),
+  test: testProject,
 };
 
 export default function projects(state = initialState, action) {
