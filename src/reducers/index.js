@@ -14,6 +14,7 @@ import user from './user';
 const purgingEvents = [LOCATION_CHANGE, USER_SET_USER];
 
 const undoReducerEnhancer = undoReducerEnhancerCreator({
+  debug: false,
   purgeOn: (action) => purgingEvents.some(type => type === action.type),
 });
 

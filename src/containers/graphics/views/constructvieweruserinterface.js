@@ -344,7 +344,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
   onDragEnter(globalPoint, payload) {
     this.hideEdgeInsertionPoint();
     this.hideBlockInsertionPoint();
-    this.darken();
+    this.selectConstruct();
   }
   /**
    * drag left the construct viewer
@@ -352,15 +352,14 @@ export default class ConstructViewerUserInterface extends UserInterface {
   onDragLeave() {
     this.hideEdgeInsertionPoint();
     this.hideBlockInsertionPoint();
-    this.lighten();
   }
 
   darken() {
-    this.el.style.backgroundColor = 'rgba(0,0,0,0.2)';
+    this.sg.darken();
   }
 
   lighten() {
-    this.el.style.backgroundColor = null;
+    this.sg.lighten();
   }
   /**
    * drag over event

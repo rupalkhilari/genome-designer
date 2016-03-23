@@ -1,4 +1,6 @@
 import * as ActionTypes from '../constants/ActionTypes';
+import dummyBlocks from '../inventory/andrea';
+import exampleWithAnnotations from '../inventory/examples/exampleWithAnnotations';
 import { blocks as testBlocks } from './testProject';
 
 const initialState = testBlocks.reduce((acc, block) => Object.assign(acc,

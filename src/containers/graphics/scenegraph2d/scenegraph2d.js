@@ -42,6 +42,17 @@ export default class SceneGraph2D {
     // size our element to initial scene graph size
     this.updateSize();
   }
+
+  /**
+   * darken by changing opacity on parent el
+   */
+  darken() {
+    this.parent.classList.add('sceneGraph-dark');
+  }
+  lighten() {
+    this.parent.classList.remove('sceneGraph-dark');
+  }
+
   /**
    * update our element to the current scene graph size
    * @return {[type]} [description]

@@ -21,7 +21,6 @@ export const search = (term, options, sourceList = []) => {
 
   return Promise.all(
     searchSources.map(source => {
-      //todo - better default
       //dont search if no term, just return empty set
       if (!term.length) {
         return Promise.resolve([]);

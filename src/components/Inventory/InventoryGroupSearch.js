@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { inventorySearch } from '../../actions/inventory';
 import { block as blockDragType } from '../../constants/DragTypes';
-import { debounce } from 'lodash';
+import { debounce, escapeRegExp } from 'lodash';
 
 import { registry, getSources } from '../../inventory/registry';
 import * as searchApi from '../../middleware/search';
@@ -78,19 +78,25 @@ export class InventoryGroupSearch extends Component {
     this.setState({ sourceList: newSourceList });
   };
 
+  getFullItem = (registryKey, item) => {
+    const { source, id } = item.source;
+    if (source && id) {
+      return registry[source].get(id);
+    }
+    return Promise.resolve(item);
+  };
+
   handleSearchChange = (value) => {
     this.props.inventorySearch(value);
     this.debouncedSearch(value);
   };
 
+  handleOnSelect = (registryKey, item) => {
+    return this.getFullItem(registryKey, item);
+  };
+
   handleOnDrop = (registryKey, item, target, position) => {
-    const { source, id } = item.source;
-    if (source && id) {
-      return registry[source].get(id)
-        .then(result => {
-          return result;
-        });
-    }
+    return this.getFullItem(registryKey, item);
   };
 
   render() {
@@ -98,7 +104,7 @@ export class InventoryGroupSearch extends Component {
     const { searching, sourceList, searchResults, sourcesVisible } = this.state;
 
     //want to filter down results while next query running
-    const searchRegex = new RegExp(searchTerm, 'gi');
+    const searchRegex = new RegExp(escapeRegExp(searchTerm), 'gi');
 
     //todo - account for filtering...
     const noSearchResults = Object.keys(searchResults).reduce((acc, key) => acc + searchResults[key].length, 0) === 0;
@@ -123,6 +129,7 @@ export class InventoryGroupSearch extends Component {
                               key={key}>
             <InventoryList inventoryType={blockDragType}
                            onDrop={(...args) => this.handleOnDrop(key, ...args)}
+                           onSelect={(...args) => this.handleOnSelect(key, ...args)}
                            items={listingItems}/>
           </InventoryListGroup>
         );
