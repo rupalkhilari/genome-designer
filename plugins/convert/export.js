@@ -37,10 +37,6 @@ function exportProject(id, input) {
   return callExportFunction('exportProject', 'project', id, input);
 }
 
-function exportBlock(id, input) {
-  return callExportFunction('exportBlock', 'block', id, input);
-}
-
 //this function is just trying to avoid redundant code
 function exportThenCatch(promise, resp) {
   promise
@@ -64,15 +60,7 @@ router.post('/project/:id', jsonParser, (req, resp) => {
   exportThenCatch( promise, resp );
 });
 
-router.post('/block/:id', jsonParser, (req, resp) => {
-  const { id } = req.params;
-  const input = req.body;
-  const promise = exportBlock(id, input);
-  exportThenCatch( promise, resp );
-});
-
 //export these functions for testing purpose
-router.exportBlock = exportBlock;
 router.exportProject = exportProject;
 
 module.exports = router;

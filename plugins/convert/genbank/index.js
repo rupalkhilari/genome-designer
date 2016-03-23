@@ -115,22 +115,46 @@ const runCommand = (command, input, inputFile, outputFile) => {
     .then(() => fileSystem.fileRead(outputFile, false));
 };
 
-export const exportProject = (project, blocks) => {
+const exportProjectStructure = (project, blocks) => {
   const inputFile = createRandomStorageFile();
   const outputFile = createRandomStorageFile();
   const input = {
     project,
     blocks,
   };
+
+  console.log("About to export");
+  console.log(JSON.stringify(input));
+
   const cmd = `python ${path.resolve(__dirname, 'convert.py')} to_genbank ${inputFile} ${outputFile}`;
 
-  return runCommand(cmd, JSON.stringify(input), inputFile, outputFile);
+  return runCommand(cmd, JSON.stringify(input), inputFile, outputFile)
+    .then(resStr => {
+        console.log("Result");
+        console.log(resStr);
+        return Promise.resolve(resStr);
+    });
 };
 
-export const exportBlock = (block, blocks) => {
-  const proj = new Project();
-  blocks[block.id] = block;
-  return exportProject(proj, blocks);
+const loadSequences = (blocks) => {
+  return Promise.all(
+    Object.keys(blocks).map(key => {
+      //promise, for writing sequence if we have one, or just immediately resolve if we dont
+      const sequencePromise = blocks[key].sequence.sequenceMd5 ?
+        persistence.sequenceGet(blocks[key].sequence.sequenceMd5) :
+        Promise.resolve('');
+    })
+  );
+};
+
+export const exportProject = (project, blocks) => {
+  return loadSequences(blocks)
+    .then(blocks_with_sequences => {
+      return exportProjectStructure(project, blocks)
+        .then(exportStr => {
+          return Promise.resolve(exportStr);
+        });
+    });
 };
 
 const importProjectStructure = (genbankString) => {
@@ -156,9 +180,12 @@ export const importProject = (gbstr) => {
     .then(result => {
       if (result && result.project && result.blocks &&
         result.project.components && result.project.components.length > 0) {
+          console.log("There were originally a total blocks of: " + result.blocks.keys().length)
           return handleBlocks(result.blocks)
             .then(blocksWithOldIds => {
+              console.log("After HandleBlocks: " + blocksWithOldIds.length)
               const remapped_blocks_array = remapHierarchy(blocksWithOldIds);
+              console.log("And after remapping: " + remapped_blocks_array.length);
               const newRootBlocks = result.project.components.map((oldBlockId) => {
                 return getNewId(blocksWithOldIds, oldBlockId);
               });
