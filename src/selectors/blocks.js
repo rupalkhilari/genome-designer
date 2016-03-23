@@ -1,3 +1,5 @@
+import BlockDefinition from '../schemas/Block';
+
 /***************************************
  * Parent accessing / store knowledge-requiring
  ***************************************/
@@ -36,16 +38,28 @@ export const blockGet = (blockId) => {
   };
 };
 
+const _getParents = (blockId, store) => {
+  const parents = [];
+  let parent = _getParentFromStore(blockId, store);
+  while (parent) {
+    parents.push(parent.id);
+    parent = _getParentFromStore(parent.id, store);
+  }
+  return parents;
+};
+
 export const blockGetParents = (blockId) => {
   return (dispatch, getState) => {
-    const parents = [];
     const store = getState();
-    let parent = _getParentFromStore(blockId, store);
-    while (parent) {
-      parents.push(parent.id);
-      parent = _getParentFromStore(parent.id, store);
-    }
-    return parents;
+    return _getParents(blockId, store);
+  };
+};
+
+//i.e. get construct
+export const blockGetParentRoot = (blockId) => {
+  return (dispatch, getState) => {
+    const store = getState();
+    return _getParents(blockId, store).pop();
   };
 };
 
@@ -88,5 +102,11 @@ export const blockIsSpec = (blockId) => {
         .every(_checkSingleBlockIsSpec);
     }
     return _checkSingleBlockIsSpec(block);
+  };
+};
+
+export const blockIsValid = (model) => {
+  return (dispatch, getState) => {
+    return BlockDefinition.validate(model);
   };
 };

@@ -1,9 +1,10 @@
 import * as ActionTypes from '../constants/ActionTypes';
 import * as BlockSelector from '../selectors/blocks';
 import invariant from 'invariant';
+import safeValidate from '../schemas/fields/safeValidate';
 import {id as idValidatorCreator} from '../schemas/fields/validators';
 
-const idValidator = idValidatorCreator();
+const idValidator = safeValidate.bind(null, idValidatorCreator(), true);
 
 export const focusProject = (inputProjectId) => {
   return (dispatch, getState) => {
@@ -46,9 +47,21 @@ export const focusConstruct = (inputConstructId) => {
 export const focusBlocks = (blocks) => {
   return (dispatch, getState) => {
     invariant(Array.isArray(blocks), 'must pass array to focus blocks');
+    invariant(blocks.every(block => idValidator(block)), 'must pass array of block IDs');
 
-    //todo - ensure from same level
-    //todo - force construct if different
+    if (blocks.length) {
+      const firstBlockId = blocks[0];
+      //const siblings = BlockSelector.blockGetSiblings(firstBlockId);
+      //invariant(blocks.every(block => siblings.indexOf(block) >= 0), 'must pass siblings, cannot select blocks from multiple levels');
+
+      const constructId = BlockSelector.blockGetParentRoot(firstBlockId);
+      if (constructId !== getState().focus.construct) {
+        dispatch({
+          type: ActionTypes.FOCUS_CONSTRUCT,
+          constructId,
+        });
+      }
+    }
 
     dispatch({
       type: ActionTypes.FOCUS_BLOCKS,
@@ -61,11 +74,23 @@ export const focusBlocks = (blocks) => {
 export const focusBlocksAdd = (blocksToAdd) => {
   return (dispatch, getState) => {
     invariant(Array.isArray(blocksToAdd), 'must pass array to focus blocks');
+    invariant(blocksToAdd.every(block => idValidator(block)), 'must pass array of block IDs');
 
     const base = getState().focus.blocks;
     const blocks = [...new Set([...base, ...blocksToAdd])];
-    //todo - ensure from same level
-    //todo - ensure same construct
+
+    //same as in focusBlocks
+    if (blocks.length) {
+      const firstBlockId = blocks[0];
+      const constructId = BlockSelector.blockGetParentRoot(firstBlockId);
+      if (constructId !== getState().focus.construct) {
+        dispatch({
+          type: ActionTypes.FOCUS_CONSTRUCT,
+          constructId,
+        });
+      }
+    }
+
     dispatch({
       type: ActionTypes.FOCUS_BLOCKS,
       blocks,
@@ -89,6 +114,18 @@ export const focusBlocksToggle = (blocksToToggle) => {
       }
     });
     const blocks = [...blockSet];
+
+    //same as in focusBlocks
+    if (blocks.length) {
+      const firstBlockId = blocks[0];
+      const constructId = BlockSelector.blockGetParentRoot(firstBlockId);
+      if (constructId !== getState().focus.construct) {
+        dispatch({
+          type: ActionTypes.FOCUS_CONSTRUCT,
+          constructId,
+        });
+      }
+    }
 
     dispatch({
       type: ActionTypes.FOCUS_BLOCKS,
