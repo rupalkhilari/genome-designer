@@ -3,6 +3,8 @@ import {connect} from 'react-redux';
 import invariant from 'invariant';
 import ModalWindow from '../modal/modalwindow';
 
+import '../../../src/styles/genbank.css';
+
 class ImportGenBankModal extends Component {
 
   static propTypes = {
@@ -14,16 +16,28 @@ class ImportGenBankModal extends Component {
   }
 
   render() {
-    return null;
-    
     return (
       <div>
         <ModalWindow
           open
           title="Import GenBank File"
-          payload={
-            <h1>Import GenBank Modal</h1>
-          }
+          payload={(
+            <form
+              id="genbank-import-form"
+              className="genbank-import-form">
+              <div className="title">Import</div>
+              <div className="radio">
+                <div>Import data to:</div>
+                <input type="radio" name="destination"/>
+                <div>My Inventory</div>
+              </div>
+              <div className="radio">
+                <div/>
+                <input type="radio" name="destination"/>
+                <div>My Project</div>
+              </div>
+            </form>
+          )}
           closeModal={buttonText => {
             alert('close modal')
           }}
