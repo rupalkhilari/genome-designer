@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import {connect} from 'react-redux';
 import invariant from 'invariant';
 import ModalWindow from '../modal/modalwindow';
+import Dropzone from 'react-dropzone';
 
 import '../../../src/styles/genbank.css';
 
@@ -13,6 +14,10 @@ class ImportGenBankModal extends Component {
 
   constructor() {
     super();
+  }
+
+  onDrop(files) {
+    alert('Received files: ' + files.toString());
   }
 
   render() {
@@ -36,6 +41,9 @@ class ImportGenBankModal extends Component {
                 <input type="radio" name="destination"/>
                 <div>My Project</div>
               </div>
+              <Dropzone onDrop={this.onDrop}>
+                <div>Try dropping some files here, or click to select files to upload.</div>
+              </Dropzone>
             </form>
           )}
           closeModal={buttonText => {
