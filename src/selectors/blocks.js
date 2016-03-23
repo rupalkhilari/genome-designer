@@ -1,3 +1,4 @@
+import invariant from 'invariant';
 import BlockDefinition from '../schemas/Block';
 
 /***************************************
@@ -43,20 +44,25 @@ const _getAllChildrenByDepth = (rootId, store, children = {}, depth = 1) => {
 
 const _filterToLeafNodes = (blocks) => blocks.filter(child => !child.components.length);
 
+const _getParents = (blockId, state) => {
+  const parents = [];
+  let parent = _getParentFromStore(blockId, state);
+  while (parent) {
+    parents.push(parent.id);
+    parent = _getParentFromStore(parent.id, state);
+  }
+  return parents;
+};
+
+const _getSiblings = (blockId, state) => {
+  const parent = _getParentFromStore(blockId, state, {});
+  return (parent.components || []).map(id => _getBlockFromStore(id, state));
+};
+
 export const blockGet = (blockId) => {
   return (dispatch, getState) => {
     return _getBlockFromStore(blockId, getState());
   };
-};
-
-const _getParents = (blockId, store) => {
-  const parents = [];
-  let parent = _getParentFromStore(blockId, store);
-  while (parent) {
-    parents.push(parent.id);
-    parent = _getParentFromStore(parent.id, store);
-  }
-  return parents;
 };
 
 export const blockGetParents = (blockId) => {
@@ -94,8 +100,50 @@ export const blockGetLeaves = (blockId) => {
 export const blockGetSiblings = (blockId) => {
   return (dispatch, getState) => {
     const state = getState();
-    const parent = _getParentFromStore(blockId, state, {});
-    return (parent.components || []).map(id => _getBlockFromStore(id, state));
+    return _getSiblings(blockId, state);
+  };
+};
+
+//this could be optimized...
+const _getBoundingBlocks = (state, ...blockIds) => {
+  console.log(blockIds, state.blocks);
+  const construct = _getParentFromStore(blockIds[0], state);
+  const depthMap = _getAllChildrenByDepth(construct.id, state);
+  const idsToDepth = blockIds.reduce((acc, id) => Object.assign(acc, { [id]: depthMap[id] }), {});
+  const highestLevel = blockIds.reduce((acc, id) => Math.min(acc, idsToDepth[id]), Number.MAX_VALUE);
+  const blocksIdsAtHighest = blockIds.filter(id => idsToDepth[id] === highestLevel);
+  const highSiblings = _getSiblings(blocksIdsAtHighest[0], state);
+
+  //dumb search of all children of siblings to see if focused block present
+  const relevantSiblings = highSiblings.filter(sibling => {
+    if (blockIds.indexOf(sibling.id) >= 0) {
+      return true;
+    }
+    const kids = _getAllChildren(sibling.id, state);
+    return kids.some(kid => blockIds.indexOf(kid.id) >= 0);
+  });
+  const relevantSiblingIds = relevantSiblings.map(sib => sib.id);
+
+  //get the bounds of highest level siblings: [firstId, lastId]
+  return [
+    highSiblings.find(sib => relevantSiblingIds.indexOf(sib.id) >= 0),
+    highSiblings.slice().reverse().find(sib => relevantSiblingIds.indexOf(sib.id) >= 0),
+  ];
+};
+
+export const blockGetBounds = (...blockIds) => {
+  return (dispatch, getState) => {
+    return _getBoundingBlocks(getState(), ...blockIds);
+  };
+};
+
+export const blockGetRange = (...blockIds) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const bounds = _getBoundingBlocks(state, ...blockIds);
+    const siblings = _getSiblings(bounds[0].id, state);
+    const [boundStart, boundEnd] = bounds.map(boundBlock => siblings.findIndex(sibling => sibling.id === boundBlock.id));
+    return siblings.slice(boundStart, boundEnd + 1);
   };
 };
 

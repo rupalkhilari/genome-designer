@@ -31,14 +31,15 @@ describe('Selectors', () => {
     const lineage = [root];
     let leaf;
     let focusParent;
+    let middleChild;
     let focus1;
     let focus2;
 
     /* structure:
-    
+
       root
       |
-      focusParent, -, focus1
+      focusParent, middleChild, focus1
       |
       focus12, -, -
       |
@@ -63,16 +64,16 @@ describe('Selectors', () => {
 
       //focus some blocks
       //note that only the first one has children here
-      [focusParent, /*skip*/, focus1] = store.dispatch(blockSelectors.blockGet(root)).components;
+      [focusParent, middleChild, focus1] = store.dispatch(blockSelectors.blockGet(root)).components;
       [focus2] = store.dispatch(blockSelectors.blockGet(focusParent)).components;
       store.dispatch(actions.focusBlocks([focus1, focus2]));
     });
 
-    it.only('focusGetBlockBounds()', () => {
+    it('focusGetBlockRange()', () => {
       const focused = store.dispatch(selectors.focusGetBlocks());
-      const bounds = store.dispatch(selectors.focusGetBlockBounds());
+      const bounds = store.dispatch(selectors.focusGetBlockRange());
       expect(focused.map(block => block.id)).to.eql([focus1, focus2]);
-      expect(bounds.map(block => block.id)).to.eql([focusParent, focus1]);
+      expect(bounds.map(block => block.id)).to.eql([focusParent, middleChild, focus1]);
     });
   });
 });
