@@ -1,5 +1,4 @@
 import * as ActionTypes from '../constants/ActionTypes';
-import * as BlockSelector from '../selectors/blocks';
 import invariant from 'invariant';
 
 export const uiShowAuthenticationForm = (name) => {

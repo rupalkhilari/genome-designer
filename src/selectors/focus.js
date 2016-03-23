@@ -10,7 +10,8 @@ export const focusGetProject = () => {
 
 export const focusGetConstruct = () => {
   return (dispatch, getState) => {
-    return getState().focus.construct;
+    const state = getState();
+    return state.blocks[state.focus.construct];
   };
 };
 
@@ -22,13 +23,6 @@ export const focusGetBlocks = () => {
       return forceBlocks;
     }
     return blocks.map(blockId => state.blocks[blockId]);
-  };
-};
-
-export const focusGetBlocksOrdered = () => {
-  return (dispatch, getState) => {
-    //todo
-    console.error('todo');
   };
 };
 
