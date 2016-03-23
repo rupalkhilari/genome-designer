@@ -1,6 +1,4 @@
 import * as ActionTypes from '../constants/ActionTypes';
-import dummyBlocks from '../inventory/andrea';
-import exampleWithAnnotations from '../inventory/examples/exampleWithAnnotations';
 import { blocks as testBlocks } from './testProject';
 
 const initialState = testBlocks.reduce((acc, block) => Object.assign(acc,
@@ -22,20 +20,17 @@ export default function blocks(state = initialState, action) {
   case ActionTypes.BLOCK_SET_SEQUENCE :
   case ActionTypes.BLOCK_COMPONENT_ADD :
   case ActionTypes.BLOCK_COMPONENT_MOVE :
-  case ActionTypes.BLOCK_COMPONENT_REMOVE :
-  {
+  case ActionTypes.BLOCK_COMPONENT_REMOVE : {
     const { block } = action;
     return Object.assign({}, state, { [block.id]: block });
   }
-  case ActionTypes.BLOCK_DELETE :
-  {
+  case ActionTypes.BLOCK_DELETE : {
     const { blockId } = action;
     const nextState = Object.assign({}, state);
     delete nextState[blockId];
     return nextState;
   }
-  default :
-  {
+  default : {
     return state;
   }
   }

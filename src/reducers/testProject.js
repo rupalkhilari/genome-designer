@@ -1,16 +1,18 @@
 import Block from '../models/Block';
 import Project from '../models/Project';
 
+import exampleWithAnnotations from '../inventory/examples/exampleWithAnnotations';
 import dummyBlocks from '../inventory/andrea';
 
 const [child1, child2, child3, child4, child5, child6, child7] = dummyBlocks;
 
 const root1 = new Block({
-  components: [child1.id, child2.id, child3.id],
+  components: [exampleWithAnnotations.id, child1.id, child2.id, child3.id],
 });
 
 export const blocks = [
   root1,
+  exampleWithAnnotations,
   new Block(child1),
   new Block(Object.assign({}, child2, {
     components: [child4.id, child5.id],
