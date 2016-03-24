@@ -58,6 +58,7 @@ class ImportGenBankModal extends Component {
       xhr.setRequestHeader("Content-type", null);
       xhr.onload = () => {
         if (xhr.status === 200) {
+          console.log(JSON.parse(xhr.response));
           this.props.uiShowGenBankImport(false);
         } else {
           this.setState({error: `Error uploading file(s): ${xhr.status}`});

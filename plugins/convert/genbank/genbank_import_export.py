@@ -1,4 +1,4 @@
-import requests
+#import requests
 import json
 from io import StringIO
 from Bio import Seq
