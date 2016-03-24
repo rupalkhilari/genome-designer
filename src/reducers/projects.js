@@ -13,15 +13,13 @@ const initialState = {
   }),
 };
 
+/*
 const project_and_blocks = require('../../storage/imported_from_genbank.json');
 
 const floProjectState = { test: project_and_blocks.project };
 
-/*const floState = {
-  test: new Project(Object.assign(outputProject, {id: 'test'}));
-};
 */
-export default function projects(state = floProjectState, action) {
+export default function projects(state = initialState, action) {
 
 //export default function projects(state = initialState, action) {
   switch (action.type) {
