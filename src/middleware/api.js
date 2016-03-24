@@ -11,8 +11,8 @@ import BlockDefinition from '../schemas/Block';
 
 //fetch only supports absolute paths
 //include a check for tests, hardcode for now
-const serverRoot = (/http/gi).test(window.location.protocol) ?
-  `${window.location.protocol}//${window.location.host}/` :
+const serverRoot = (global.location && (/http/gi).test(global.location.protocol)) ?
+  `${global.location.protocol}//${global.location.host}/` :
   'http://localhost:3000/';
 
 //paths related to extensions

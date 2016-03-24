@@ -1,0 +1,188 @@
+{
+  "project": {
+	"id": "project-a219a680-1cb3-4186-adb5-e38474b37739",
+	"parents": [],
+	"metadata": {
+	  "name": "EU912544",
+	  "description": "Cloning vector pDM313, complete sequence.",
+	  "authors": [],
+	  "tags": {}
+	},
+	"version": "f211c5dd336f2a711c1a75331dbdfd6b44d02a76",
+	"components": [
+	  "block-e41d2e94-eaa8-404a-838b-e97063a18e79"
+	],
+	"settings": {}
+  },
+  "blocks": {
+	"block-5815fdf1-2f78-4b2b-96f6-52db4284a59b": {
+	  "id": "block-5815fdf1-2f78-4b2b-96f6-52db4284a59b",
+	  "parents": [],
+	  "metadata": {
+		"name": "terminator",
+		"description": "",
+		"authors": [],
+		"tags": {},
+		"end": 109,
+		"start": 100,
+		"db_xref": "GI:198078162",
+		"type": "terminator",
+		"strand": 1
+	  },
+	  "sequence": {
+		"md5": "aac324448a3f3a55162265ee65aab7f2",
+		"length": 10,
+		"annotations": []
+	  },
+	  "source": {
+		"id": "genbank"
+	  },
+	  "rules": {
+		"sbol": "terminator"
+	  },
+	  "components": [],
+	  "options": [],
+	  "notes": {}
+	},
+	"block-e41d2e94-eaa8-404a-838b-e97063a18e79": {
+	  "id": "block-e41d2e94-eaa8-404a-838b-e97063a18e79",
+	  "parents": [],
+	  "metadata": {
+		"name": "EU912544",
+		"description": "Cloning vector pDM313, complete sequence.",
+		"authors": [],
+		"tags": {},
+		"mol_type": "other DNA",
+		"end": 119,
+		"source": "Cloning vector pDM313",
+		"taxonomy": [
+		  "other sequences",
+		  "artificial sequences",
+		  "vectors"
+		],
+		"gi": "198078160",
+		"db_xref": "taxon:555771",
+		"organism": "Cloning vector pDM313",
+		"note": "GFP-tag for C-terminal fusion",
+		"start": 0,
+		"accessions": [
+		  "EU912544"
+		],
+		"data_file_division": "SYN",
+		"keywords": [
+		  ""
+		],
+		"type": "source",
+		"date": "06-FEB-2009",
+		"sequence_version": 1
+	  },
+	  "sequence": {
+		"md5": "9ee827dec9c8fb0a0bc00744e44f72a0",
+		"length": 120,
+		"annotations": []
+	  },
+	  "source": {
+		"id": "genbank"
+	  },
+	  "rules": {},
+	  "components": [
+		"block-ebccde21-7574-4b74-9f4b-5e250f9fb59e",
+		"block-bc39b435-40d5-4005-b6b5-4a8f0815807b",
+		"block-5815fdf1-2f78-4b2b-96f6-52db4284a59b",
+		"block-ec4ea90d-dcd1-4e47-8829-afcf8e62d7f0"
+	  ],
+	  "options": [],
+	  "notes": {}
+	},
+	"block-bc39b435-40d5-4005-b6b5-4a8f0815807b": {
+	  "id": "block-bc39b435-40d5-4005-b6b5-4a8f0815807b",
+	  "parents": [],
+	  "metadata": {
+		"name": "cds",
+		"description": "",
+		"authors": [],
+		"tags": {},
+		"product": "penicillin beta-lactamase",
+		"end": 99,
+		"start": 40,
+		"codon_start": "1",
+		"transl_table": "11",
+		"db_xref": "GI:198078162",
+		"translation": "MSIQHFRVALIPFFAAFCLPVFAHPETLVKVKDAEDQLGARVGYIELDLNSGKILESFRPEERFPMMSTFKVLLCGAVLSRIDAGQEQLGRRIHYSQNDLVEYSPVTEKHLTDGMTVRELCSAAITMSDNTAANLLLTTIGGPKELTAFLHNMGDHVTRLDRWEPELNEAIPNDERDTTMPVAMATTLRKLLTGELLTLASRQQLIDWMEADKVAGPLLRSALPAGWFIADKSGAGERGSRGIIAALGPDGKPSRIVVIYTTGSQATMDERNRQIAEIGASLIKHW",
+		"type": "CDS",
+		"protein_id": "ACH81569.1",
+		"strand": 1
+	  },
+	  "sequence": {
+		"md5": "89a02295a7081fac685c66363a560112",
+		"length": 60,
+		"annotations": []
+	  },
+	  "source": {
+		"id": "genbank"
+	  },
+	  "rules": {
+		"sbol": "cds"
+	  },
+	  "components": [],
+	  "options": [],
+	  "notes": {}
+	},
+	"block-ebccde21-7574-4b74-9f4b-5e250f9fb59e": {
+	  "id": "block-ebccde21-7574-4b74-9f4b-5e250f9fb59e",
+	  "parents": [],
+	  "metadata": {
+		"name": "promoter",
+		"description": "",
+		"authors": [],
+		"tags": {},
+		"end": 39,
+		"start": 0,
+		"db_xref": "GI:198078161",
+		"type": "promoter",
+		"strand": 1
+	  },
+	  "sequence": {
+		"md5": "c58a0ae45e177bad24720384b5825739",
+		"length": 40,
+		"annotations": []
+	  },
+	  "source": {
+		"id": "genbank"
+	  },
+	  "rules": {
+		"sbol": "promoter"
+	  },
+	  "components": [],
+	  "options": [],
+	  "notes": {}
+	},
+	"block-ec4ea90d-dcd1-4e47-8829-afcf8e62d7f0": {
+	  "id": "block-ec4ea90d-dcd1-4e47-8829-afcf8e62d7f0",
+	  "parents": [],
+	  "metadata": {
+		"name": "rep_origin",
+		"description": "",
+		"authors": [],
+		"tags": {},
+		"end": 119,
+		"note": "pUC ori",
+		"start": 110,
+		"type": "rep_origin",
+		"strand": 1
+	  },
+	  "sequence": {
+		"md5": "fad7d9c7309906529a09443c8a6621e7",
+		"length": 10,
+		"annotations": []
+	  },
+	  "source": {
+		"id": "genbank"
+	  },
+	  "rules": {},
+	  "components": [],
+	  "options": [],
+	  "notes": {}
+	}
+  }
+}

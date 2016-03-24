@@ -42,6 +42,10 @@ const AnnotationDefinition = new SchemaDefinition({
     fields.bool(),
     `true if forward (5'-3'), false if reverse`,
   ],
+  notes: [
+    fields.object().required,
+    `Notes about the annotation`,
+  ],
 });
 
 export default AnnotationDefinition;
