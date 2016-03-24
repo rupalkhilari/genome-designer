@@ -953,26 +953,20 @@ merge(parts[0], {
   sequence: {
     annotations: [
       {
-        id: uuid.v4(),
-        description: 'GFP',
+        name: 'GFP',
         tags: {},
-        optimizability: 'none',
         start: 0,
         end: 50,
       },
       {
-        id: uuid.v4(),
-        description: 'mCherry',
+        name: 'mCherry',
         tags: {},
-        optimizability: 'none',
         start: 40,
         end: 80,
       },
       {
-        id: uuid.v4(),
-        description: 'BglII',
+        name: 'BglII',
         tags: {},
-        optimizability: 'none',
         sequence: 'agatct',
       },
     ],

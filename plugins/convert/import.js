@@ -37,10 +37,6 @@ function importProject(id, data) {
   return callImportFunction('importProject', id, data);
 }
 
-function importBlock(id, data) {
-  return callImportFunction('importBlock', id, data);
-}
-
 //this function is just trying to avoid redundant code
 function importThenCatch(promise, resp) {
   promise
@@ -54,36 +50,23 @@ function importThenCatch(promise, resp) {
 
 router.post('/project/:id', jsonParser, (req, resp) => {
   const { id } = req.params;
-  const data = req.body;
 
-  if (data.file) {
-    fs.readFile(data.file, 'utf8', (err, text) => {
-      const promise = importProject(id, text);
-      importThenCatch(promise, resp);
-    });
-  } else {
-    const promise = importProject(id, data.text);
+  //assuming contents to be string
+  let buffer = '';
+
+  //get data in parts
+  req.on('data', data => {
+    buffer += data;
+  });
+
+  //received all the data
+  req.on('end', () => {
+    const promise = importProject(id, buffer);
     importThenCatch(promise, resp);
-  }
-});
-
-router.post('/block/:id', jsonParser, (req, resp) => {
-  const { id } = req.params;
-  const data = req.body;
-
-  if (data.file) {
-    fs.readFile(data.file, 'utf8', (err, text) => {
-      const promise = importBlock(id, text);
-      importThenCatch(promise, resp);
-    });
-  } else {
-    const promise = importBlock(id, data.text);
-    importThenCatch(promise, resp);
-  }
+  });
 });
 
 //export these functions for testing purpose
-router.importBlock = importBlock;
 router.importProject = importProject;
 
 module.exports = router;

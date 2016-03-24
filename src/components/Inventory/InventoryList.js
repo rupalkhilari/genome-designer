@@ -11,10 +11,11 @@ export default class InventoryList extends Component {
       id: PropTypes.string,
     })).isRequired,
     onDrop: PropTypes.func,
+    onSelect: PropTypes.func,
   };
 
   render() {
-    const { items, inventoryType, onDrop } = this.props;
+    const { items, inventoryType, onDrop, onSelect } = this.props;
 
     return (
       <div className="InventoryList">
@@ -23,6 +24,7 @@ export default class InventoryList extends Component {
             <InventoryItem key={item.id}
                            inventoryType={inventoryType}
                            onDrop={onDrop}
+                           onSelect={onSelect}
                            item={item}/>
           );
         })}
