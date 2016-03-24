@@ -25,11 +25,11 @@ import ConstructViewerMenu from './constructviewermenu';
 import UserInterface from './constructvieweruserinterface';
 import { inspectorToggleVisibility } from '../../../actions/inspector';
 import {
-   uiToggleCurrent,
-   uiSetCurrent,
-   uiAddCurrent,
-   uiSetCurrentConstruct,
-  } from '../../../actions/ui';
+  focusBlocks,
+  focusBlocksAdd,
+  focusBlocksToggle,
+  focusConstruct,
+} from '../../../actions/focus';
 import invariant from 'invariant';
 import { projectGetVersion } from '../../../selectors/projects';
 
@@ -40,11 +40,11 @@ export class ConstructViewer extends Component {
     construct: PropTypes.object.isRequired,
     constructId: PropTypes.string.isRequired,
     layoutAlgorithm: PropTypes.string.isRequired,
-    uiAddCurrent: PropTypes.func.isRequired,
-    uiSetCurrent: PropTypes.func.isRequired,
-    uiSetCurrentConstruct: PropTypes.func.isRequired,
-    uiToggleCurrent: PropTypes.func.isRequired,
     inspectorToggleVisibility: PropTypes.func.isRequired,
+    focusBlocks: PropTypes.func.isRequired,
+    focusBlocksAdd: PropTypes.func.isRequired,
+    focusBlocksToggle: PropTypes.func.isRequired,
+    focusConstruct: PropTypes.func.isRequired,
     currentBlock: PropTypes.array,
     blockSetSbol: PropTypes.func,
     blockCreate: PropTypes.func,
@@ -55,7 +55,7 @@ export class ConstructViewer extends Component {
     blockGetParents: PropTypes.func,
     projectGetVersion: PropTypes.func,
     blocks: PropTypes.object,
-    ui: PropTypes.object,
+    focus: PropTypes.object,
   };
 
   constructor(props) {
@@ -208,28 +208,28 @@ export class ConstructViewer extends Component {
    * select the given block
    */
   constructSelected(id) {
-    this.props.uiSetCurrentConstruct(id);
+    this.props.focusConstruct(id);
   }
 
   /**
    * select the given block
    */
   blockSelected(partIds) {
-    this.props.uiSetCurrent(partIds);
+    this.props.focusBlocks(partIds);
   }
 
   /**
    * select the given block
    */
   blockToggleSelected(partIds) {
-    this.props.uiToggleCurrent(partIds);
+    this.props.focusBlocksToggle(partIds);
   }
 
   /**
    * add the given part by ID to the selections
    */
   blockAddToSelections(partIds) {
-    this.props.uiAddCurrent(partIds);
+    this.props.focusBlocksAdd(partIds);
   }
   /**
    * Join the given block with any other selected block in the same
@@ -249,7 +249,7 @@ export class ConstructViewer extends Component {
       }
     });
     // now we can select the entire range
-    this.props.uiAddCurrent(levelBlocks.slice(min, max + 1));
+    this.props.focusBlocksAdd(levelBlocks.slice(min, max + 1));
   }
 
   /**
@@ -285,8 +285,8 @@ export class ConstructViewer extends Component {
       this.props.construct,
       this.props.layoutAlgorithm,
       this.props.blocks,
-      this.props.ui.currentBlocks,
-      this.props.ui.currentConstructId);
+      this.props.focus.blocks,
+      this.props.focus.construct);
     this.sg.update();
     this.sg.ui.update();
   }
@@ -361,7 +361,7 @@ export class ConstructViewer extends Component {
   render() {
     // TODO, can be conditional when master is fixed and this is merged with construct select PR
     let menu = <ConstructViewerMenu
-      open={this.props.construct.id === this.props.ui.currentConstructId}
+      open={this.props.construct.id === this.props.focus.construct}
       constructId={this.props.constructId}
       layoutAlgorithm={this.props.layoutAlgorithm}
       />;
@@ -392,7 +392,7 @@ export class ConstructViewer extends Component {
 
 function mapStateToProps(state, props) {
   return {
-    ui: state.ui,
+    focus: state.focus,
     construct: state.blocks[props.constructId],
     blocks: state.blocks,
   };
@@ -406,10 +406,10 @@ export default connect(mapStateToProps, {
   blockGetParents,
   blockSetSbol,
   blockRename,
+  focusBlocks,
+  focusBlocksAdd,
+  focusBlocksToggle,
+  focusConstruct,
   projectGetVersion,
-  uiAddCurrent,
-  uiSetCurrent,
-  uiSetCurrentConstruct,
-  uiToggleCurrent,
   inspectorToggleVisibility,
 })(ConstructViewer);
