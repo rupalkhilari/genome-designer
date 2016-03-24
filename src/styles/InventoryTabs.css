@@ -3,21 +3,20 @@
 .InventoryTabs {
   display: flex;
   flex-direction: row;
-  margin-bottom: 0.5em;
-  border-bottom: 1px solid var(--colors-selected);
+  margin-bottom: 1em;
+  padding-bottom: 0.5em;
+  border-bottom: 1px solid var(--colors-grey);
   display: inline-block;
 
   &-tab {
     text-align: center;
-    padding: 0.25em 0.5em;
-    margin-right: 0.75em;
+    padding: 0.5em 0.5em;
+    margin: 0 0.75em 0 0.5em;
     border-bottom: 2px solid transparent;
     transition-duration: var(--timing-fast);
     transition-property: color, border;
     color: var(--colors-grey);
     font-size: var(--font-size-heading);
-    font-weight: 600;
-    padding: 0.25em 0.5em 0;
 
     &:hover {
       color: var(--colors-selected);
