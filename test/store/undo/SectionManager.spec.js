@@ -63,6 +63,7 @@ describe('Store', () => {
 
         it('transact() starts a transaction, doesnt change current state', () => {
           preState = manager.getCurrentState();
+          expect(manager.inTransaction()).to.equal(false);
           manager.transact();
           expect(manager.inTransaction()).to.equal(true);
           expect(manager.getPresent()).to.eql(preState);
@@ -70,6 +71,7 @@ describe('Store', () => {
         });
 
         it('patch() updates transactionState, not present', () => {
+          expect(manager.inTransaction()).to.equal(true);
           manager.patch(txnStateAlt);
           expect(manager.inTransaction()).to.equal(true);
           expect(manager.getPresent()).to.eql(preState);
@@ -89,6 +91,13 @@ describe('Store', () => {
           expect(manager.getPresent()).to.eql(txnState);
           expect(manager.getCurrentState()).to.eql(manager.getPresent());
           expect(manager.getPast().slice().pop()).to.eql(preState);
+        });
+
+        it('commit() does nothing when no changes in transaction, maintains reference', () => {
+          const beforeState = manager.getPresent();
+          manager.transact();
+          manager.commit();
+          expect(manager.getPresent()).to.equal(beforeState);
         });
 
         it('abort() leaves the present state, ends transaction', () => {
