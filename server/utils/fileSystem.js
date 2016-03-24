@@ -61,6 +61,8 @@ export const fileWrite = (path, contents, stringify = true) => {
     const fileContent = !!stringify ? stringifier(contents) : contents;
     fs.writeFile(path, fileContent, 'utf8', (err) => {
       if (err) {
+        console.log('Error writing file');
+        console.log(err);
         reject(err);
       }
       resolve(path);

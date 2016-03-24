@@ -40,7 +40,6 @@ class ProjectPage extends Component {
         .catch(err => this.props.push('/'));
       return (<p>loading project...</p>);
     }
-
     const constructViewers = constructs.map(construct => {
       return (
         <ConstructViewer key={construct.id}

@@ -9,13 +9,16 @@ import uuid
 
 sbol_type_table = {
     "CDS": "cds",
-    "regulatory": "promoter" #promoter is actually a subclass of regulatory
+    "regulatory": "promoter", #promoter is actually a subclass of regulatory
+    "promoter": "promoter",
+    "terminator": "terminator",
+    "gene": "cds"
 }
 
 def get_sequence_and_features(block, allblocks):
-    features = block["sequence"]["features"]
-    for f in features:
-        f["block_id"] = block["id"]
+    features = block["sequence"]["annotations"]
+#   for f in features:
+#       f["block_id"] = block["id"]
 
     if len(block["components"])==0:
         return { "sequence": block["sequence"]["sequence"], "features": features}
@@ -29,43 +32,41 @@ def get_sequence_and_features(block, allblocks):
             seq += output["sequence"]
 
             features.append( {
-                "block_id": block_id,
                 "start" : pos,
                 "end" : len(seq),
-                "type" : "block",
-                "parent_block" : block["id"] + "," + str(i),
             })
 
             for feature in output["features"]:
                 features.append( {
-                    "block_id": feature["block_id"],
                     "start" : feature["start"] + pos,
                     "end" : feature["end"] + pos,
                     "type" : feature["type"],
-                    "parent_block" : feature.get("parent_block",None)
                 })
         return { "sequence": seq, "features": features }
 
 def project_to_genbank(filename, project, allblocks):
-    blocks = project["components"]
+    constructs = project["components"]
     seq_obj_lst = []
 
-    for bid in blocks:
-        block = allblocks.get(bid)
-        if not block:
+    for bid in constructs:
+        construct = allblocks.get(bid)
+        if not construct:
             continue
 
-        output = get_sequence_and_features(block, allblocks)
+        output = get_sequence_and_features(construct, allblocks)
         seq = output["sequence"]
         features = output["features"]
 
-        seq_obj = SeqIO.SeqRecord(Seq.Seq(seq,Seq.Alphabet.DNAAlphabet()),block["id"])
+        seq_obj = SeqIO.SeqRecord(Seq.Seq(seq,Seq.Alphabet.DNAAlphabet()),construct["id"])
         for feature in features:
             sf = SeqFeature.SeqFeature()
             sf.type = feature["type"]
             sf.location = SeqFeature.FeatureLocation(feature["start"],feature["end"])
-            sf.qualifiers["block_id"] = feature.get("block_id","")
-            sf.qualifiers["parent_block"] = feature.get("parent_block",None)
+            #sf.qualifiers["block_id"] = feature.get("block_id","")
+            #sf.qualifiers["parent_block"] = feature.get("parent_block",None)
+            for other_feature_key, other_feature_value in feature.iteritems():
+                if other_feature_key not in ["start", "end", "type"]:
+                    sf.qualifiers[other_feature_key] = other_feature_value
             seq_obj.features.append(sf)
         seq_obj_lst.append(seq_obj)
 
@@ -74,11 +75,7 @@ def project_to_genbank(filename, project, allblocks):
 def create_block_json(id, sequence, features):
     return {
         "id": id,
-        "metadata" : {
-            "authors": [],
-            "tags": {},
-            "version": ""
-        },
+        "metadata" : {},
         "rules": {},
         "components": [],
         "sequence" : {
@@ -87,20 +84,54 @@ def create_block_json(id, sequence, features):
         }
       }
 
+# Determines the kind of relationship between 2 blocks, using only the start and end positions
+def relationship(block1, block2, full_size):
+    if block1["sequence"]["length"] < block2["sequence"]["length"] and block2["metadata"]["start"] <= block1["metadata"]["start"] and block2["metadata"]["end"] >= block1["metadata"]["end"]:
+        return "child"
+    if block1["sequence"]["length"] == block2["sequence"]["length"] and block2["metadata"]["start"] == block1["metadata"]["start"] and block2["metadata"]["end"] == block1["metadata"]["end"]:
+        return "equal"
+    if block1["sequence"]["length"] > block2["sequence"]["length"] and block1["metadata"]["start"] <= block2["metadata"]["start"] and block1["metadata"]["end"] >= block2["metadata"]["end"]:
+        return "parent"
+    if (block1["metadata"]["start"] <= block2["metadata"]["start"] and block1["metadata"]["end"] >= block2["metadata"]["start"]) or \
+        (block1["metadata"]["start"] <= block2["metadata"]["end"] and block1["metadata"]["end"] >= block2["metadata"]["end"]):
+        return "partial"
+    if block1["metadata"]["end"]-1 < block2["metadata"]["start"]:
+        return "before"
+    if block1["metadata"]["start"] > block2["metadata"]["end"]-1:
+        return "after"
+    raise Exception("This relationship between blocks can never happen")
+    return "disjoint"
+
+# Takes a block and makes it a feature of another block, instead of a full block on itself.
+def convert_block_to_feature(all_blocks, to_convert, parent, to_remove_list):
+    feature = { }
+    for key, value in to_convert["metadata"].iteritems():
+        feature[key] = value
+
+    parent["sequence"]["features"].append(feature)
+    to_remove_list.append(to_convert)
+
+    # And also convert to features all the components of the removed block, recursively
+    for to_convert_child_id in to_convert["components"]:
+        to_convert_child = all_blocks[to_convert_child_id]
+        convert_block_to_feature(all_blocks, to_convert_child, parent, to_remove_list)
+
+# Takes a BioPython SeqRecord and converts it to our blocks structures,
+# with temporary ids
 def genbank_to_block_helper(gb, convert_features=False):
     all_blocks = {}
-    block_parents = {}
-    block_start_pos = {}
-    features = []
-    newblocks = 0
     sequence = str(gb.seq)
-    #root_id = str(uuid.uuid4())
-    root_id = gb.id
+    full_length = len(sequence)
+    root_id = str(uuid.uuid4())
 
     #Collect all the neccessary metadata
     root_block = create_block_json(root_id, sequence, [])
     root_block["metadata"]["description"] = gb.description
     root_block["metadata"]["name"] = gb.name
+    root_block["metadata"]["type"] = "source"
+    root_block["metadata"]["start"] = 0
+    root_block["metadata"]["end"] = full_length-1
+    root_block["sequence"]["length"] = full_length
     for annot in gb.annotations:
         try:
             json.dumps(gb.annotations[annot])
@@ -109,99 +140,155 @@ def genbank_to_block_helper(gb, convert_features=False):
             pass
 
     all_blocks[root_id] = root_block
-    #all_blocks[gb.id] = root_block
 
-    for f in gb.features:
+    # Create a block for each feature
+    for f in sorted(gb.features, key = lambda feat: len(feat)):
+
         qualifiers = f.qualifiers
         start = f.location.start.position
         end = f.location.end.position
-
-        feature = {}
-        for q in qualifiers:
-            if q != "block_id" and q != "parent_block":
-                try:
-                    json.dumps(qualifiers[q][0])
-                    feature[q] = qualifiers[q][0]
-                except:
-                    pass
-        feature["start"] = start
-        feature["end"] = end
-        feature["strand"] = f.location.strand
-        feature["type"] = f.type
-
+        strand = f.location.strand
         sbol_type = sbol_type_table.get(f.type)
 
-        if "block_id" in qualifiers:
-            block_id = qualifiers["block_id"][0]
-            if f.type == 'source':
-                continue
-
-            if f.type == "block":
-                child_block = create_block_json(block_id, sequence[start:end], [])
-                if qualifiers.get("parent_block",None):
-                    words = qualifiers["parent_block"][0].split(",")
-                    block_parents[block_id] = {
-                        "id" : words[0],
-                        "index" : int(words[1])
-                    }
-                else:
-                    block_parents[block_id] = {
-                        "id" : root_id,
-                        "index" : newblocks
-                    }
-                    newblocks += 1
-                child_block["metadata"]["tags"]["sbol"] = sbol_type
-                all_blocks[block_id] = child_block
-            else:
-                feature["block_id"] = block_id
-                features.append(feature)
+        if f.type == 'source':
+            for key, value in qualifiers.iteritems():
+                root_block["metadata"][key] = value[0]
         else:
-            if sbol_type and convert_features:
                 block_id = str(uuid.uuid4())
                 child_block = create_block_json(block_id, sequence[start:end], [])
-                child_block["metadata"]["tags"]["sbol"] = sbol_type
+                for q in f.qualifiers:
+                    if q == "name":
+                        child_block["name"] = f.qualifiers[q][0]
+                    else:
+                        try:
+                            json.dumps(qualifiers[q][0])
+                            child_block["metadata"][q] = f.qualifiers[q][0]
+                        except:
+                            pass
+                child_block["metadata"]["start"] = start
+                child_block["metadata"]["end"] = end-1
+                child_block["sequence"]["length"] = end-start
+                child_block["metadata"]["strand"] = strand
+
+                if sbol_type:
+                    child_block["rules"]["sbol"] = sbol_type
+
+                child_block["metadata"]["type"] = f.type
+
+                if "name" not in child_block:
+                    if "label" in f.qualifiers:
+                         child_block["metadata"]["name"] = f.qualifiers["label"][0]
+                    elif sbol_type == 'cds' and "gene" in f.qualifiers:
+                            child_block["metadata"]["name"] = f.qualifiers["gene"][0]
+                    else:
+                        if sbol_type:
+                            child_block["metadata"]["name"] = sbol_type
+                        elif f.type:
+                            child_block["metadata"]["name"] = f.type
+
                 all_blocks[block_id] = child_block
-                block_parents[block_id] = {
-                    "id" : root_id,
-                    "index" : newblocks
-                }
-                newblocks += 1
+
+    # Build the hierarchy
+    # Going through the blocks from shorter to longer, so hopefully we will maximize
+    # the ones that convert to blocks instead of features
+
+    # Hack to make Root the last one (beyond all the other ones with the same length)
+    root_block["metadata"]["end"] = root_block["metadata"]["end"] + 1
+    sorted_blocks = sorted(all_blocks.values(), key=lambda block: block["metadata"]["end"]-block["metadata"]["start"])
+    root_block["metadata"]["end"] = root_block["metadata"]["end"] - 1
+
+    blocks_count = len(sorted_blocks)
+    to_remove = []
+
+    for i in range(blocks_count):
+        block = sorted_blocks[i]
+        if block == root_block:
+            continue
+
+        inserted = False
+
+        parents = []
+        for j in range(i+1, blocks_count):
+            # If it is a child of root, don't add it as child of any other block with the same size
+            if sorted_blocks[j]["sequence"]["length"] == root_block["sequence"]["length"] and sorted_blocks[j] != root_block:
+                continue
+
+            if sorted_blocks[j]["metadata"]["end"] >= block["metadata"]["end"] and sorted_blocks[j]["metadata"]["start"]<=block["metadata"]["start"]:
+                parents.append(sorted_blocks[j])
+
+        for other_block in parents:
+            rel = relationship(block, other_block, full_length)
+            if rel == "child":
+                    i = 0
+                    is_partial_overlap = False
+                    for sib_id in other_block["components"]:
+                        sibling = all_blocks[sib_id]
+                        relationship_to_sibling = relationship(block, sibling, full_length)
+                        if relationship_to_sibling == "after":
+                            i += 1
+                        elif relationship_to_sibling != "before": # Partial match! Just an annotation of the parent
+                            is_partial_overlap = True
+                            break
+                    if not is_partial_overlap:
+                        other_block["components"].insert(i, block["id"])
+                    else:
+                        convert_block_to_feature(all_blocks, block, other_block, to_remove)
+                    inserted = True
+                    break
+            elif rel == "equal":
+                convert_block_to_feature(all_blocks, block, other_block, to_remove)
+                inserted = True
+                break
+
+        if not inserted: # This should never happen because the block should be at least child of root!
+            if block["sequence"]["length"] == root_block["sequence"]["length"]:
+                convert_block_to_feature(all_blocks, block, root_block, to_remove)
             else:
-                feature["block_id"] = root_id
-                features.append(feature)
+                raise Exception('Error processing a block!')
 
-    for block_id in block_parents:
-        parent = block_parents[ block_id ]
-        if block_id in all_blocks and parent["id"] in all_blocks:
-            all_blocks[ parent["id"] ]["components"].insert(int(parent["index"]), block_id)
-            all_blocks[ parent["id"] ]["sequence"]["sequence"] = ""
 
-    for feature in features:
-        block_id = feature["block_id"]
-        del feature["block_id"]
-        if block_id in all_blocks:
-            all_blocks[ block_id ]["sequence"]["features"].append(feature)
-    #del all_blocks[gb.id]
-    return { "block": all_blocks[root_id], "blocks": all_blocks }
+    for removing in to_remove:
+        all_blocks.pop(removing["id"])
+
+    # Plug the holes: For each block that has children, make sure all the sequence is accounted for
+    current_block_structures = [block for block in all_blocks.values()]
+    for block in current_block_structures:
+        current_position = block["metadata"]["start"]
+        i = 0
+        for i,child_id in enumerate(block["components"]):
+            child = all_blocks[child_id]
+            if child["metadata"]["start"] > current_position:
+                block_id = str(uuid.uuid4())
+                filler_block = create_block_json(block_id, sequence[current_position:child["metadata"]["start"]], [])
+                filler_block["metadata"]["type"] = "filler"
+                filler_block["metadata"]["name"] = "Unknown"
+                filler_block["metadata"]["start"] = current_position
+                filler_block["metadata"]["end"] = child["metadata"]["start"]-1
+                all_blocks[block_id] = filler_block
+                block["components"].insert(i, block_id)
+            current_position = child["metadata"]["end"] + 1
+        if i > 0 and current_position < block["metadata"]["end"]:
+            block_id = str(uuid.uuid4())
+            filler_block = create_block_json(block_id, sequence[current_position:block["metadata"]["end"]+1], [])
+            filler_block["metadata"]["type"] = "filler"
+            filler_block["metadata"]["name"] = "Unknown"
+            filler_block["metadata"]["start"] = current_position
+            filler_block["metadata"]["end"] = block["metadata"]["end"]
+            all_blocks[block_id] = filler_block
+            block["components"].insert(i+1, block_id)
+
+    return { "root": all_blocks[root_id], "blocks": all_blocks }
 
 
 def genbank_to_project(filename, convert_features=False):
-    project = {
-      'id': str(uuid.uuid4()),
-      'metadata': {
-        'authors': [],
-        'tags': {},
-        'version': '',
-      },
-      'components': [],
-    };
-    blocks_array = []
-    all_blocks = {}
+    project = { "components": []}
+    blocks = {}
     generator = SeqIO.parse(open(filename,"r"),"genbank")
     for record in generator:
         gb = record
-        one_block = genbank_to_block_helper(gb, convert_features)
-        project["components"].append(one_block["block"]["id"])
-        for bid in one_block["blocks"]:
-            all_blocks[bid] = one_block["blocks"][bid]
-    return { "project": project, "blocks": all_blocks }
+        results = genbank_to_block_helper(gb, convert_features)
+        project["components"].append(results["root"]["id"])
+        project["name"] = results["root"]["metadata"]["name"]
+        project["description"] = results["root"]["metadata"]["description"]
+        blocks.update(results["blocks"])
+    return { "project": project, "blocks": blocks }
