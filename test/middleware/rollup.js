@@ -65,9 +65,8 @@ describe('Middleware', () => {
 
     it('saveProject() creates a commit', () => {
       const a_roll = createExampleRollup();
-      const a_project = roll.project;
-      const a_projectId = project.id;
-      const b_roll = Object.assign(createExampleRollup(), {project});
+      const a_projectId = a_roll.project.id;
+      const b_roll = Object.assign(createExampleRollup(), {project: a_roll.project});
 
       const a_path = filePaths.createProjectDataPath(a_projectId);
       let a_log;

@@ -36,6 +36,7 @@ if (process.env.NODE_ENV !== 'production') {
 
     res.sendFile(extensionFile, (err) => {
       if (err) {
+        console.log('got an error sending extension!', err);
         res.status(err.status).end();
       }
     });
