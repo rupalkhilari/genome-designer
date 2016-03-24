@@ -23,7 +23,7 @@ export class InspectorBlock extends Component {
 
   setBlockDescription = (description) => {
     this.props.instances.forEach((block) => {
-      this.props.blockMerge(block.id, {metadata: {description}});
+      this.props.blockMerge(block.id, { metadata: { description } });
     });
   };
 
@@ -34,9 +34,7 @@ export class InspectorBlock extends Component {
   };
 
   selectSymbol = (symbol) => {
-    console.log(this.props.instances);
     this.props.instances.forEach((block) => {
-      console.log('setting block ' + block.id + ' to ' + symbol);
       this.props.blockSetSbol(block.id, symbol);
     });
   };
@@ -82,15 +80,33 @@ export class InspectorBlock extends Component {
   }
 
   currentSequenceLength() {
-    //todo - reduce
-    if (this.props.instances.length === 1) {
-      return this.props.instances[0].sequence.length + ' bp';
+    if (this.props.instances.length > 1) {
+      const allHaveSequences = this.props.instances.every(instance => instance.sequence.length);
+      if (allHaveSequences) {
+        const reduced = this.props.instances.reduce((acc, instance) => acc + (instance.sequence.length || 0), 0);
+        return reduced + ' bp';
+      }
+      return 'Incomplete Sketch';
+    } else if (this.props.instances.length === 1) {
+      const length = this.props.instances[0].sequence.length;
+      return (length > 0 ? (length + ' bp') : 'No Sequence');
     }
     return 'No Sequence';
   }
 
+  currentAnnotations() {
+    if (this.props.instances.length > 1) {
+      return [];
+    } else if (this.props.instances.length === 1) {
+      return this.props.instances[0].sequence.annotations;
+    }
+    return [];
+  }
+
   render() {
     const { readOnly } = this.props;
+
+    const annotations = this.currentAnnotations();
 
     return (
       <div className="InspectorContent InspectorContentBlock">
@@ -120,6 +136,19 @@ export class InspectorBlock extends Component {
         <SymbolPicker current={this.currentSbolSymbol()}
                       readOnly={readOnly}
                       onSelect={this.selectSymbol}/>
+
+
+        {!!annotations.length && (<h4 className="InspectorContent-heading">Contents</h4>)}
+        {!!annotations.length && (<div className="InspectorContentBlock-Annotations">
+            {annotations.map(annotation => {
+              return (
+                <span className="InspectorContentBlock-Annotation">
+                {annotation.name || annotation.description || '?'}
+              </span>
+              );
+            })}
+          </div>
+        )}
       </div>
     );
   }

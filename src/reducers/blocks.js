@@ -1,5 +1,6 @@
 import * as ActionTypes from '../constants/ActionTypes';
 import dummyBlocks from '../inventory/andrea';
+import exampleWithAnnotations from '../inventory/examples/exampleWithAnnotations';
 
 //import fs from 'fs';
 
@@ -9,15 +10,18 @@ import Block from '../models/Block';
 //testing, default should be {} (but need to hydrate to models)
 //const [child1, child2, child3, child4, child5] = dummyBlocks;
 const [child1, child2, child3, child4, child5, child6, child7] = dummyBlocks;
+const withAnnotations = new Block(exampleWithAnnotations);
+
 const initialState = {
   block1: new Block({
     id: 'block1',
-    components: [child1.id, child2.id, child3.id],
+    components: [withAnnotations.id, child1.id, child2.id, child3.id],
   }),
   block2: new Block({
     id: 'block2',
     components: [],
   }),
+  [withAnnotations.id]: withAnnotations,
   [child1.id]: new Block(child1),
   [child2.id]: new Block(Object.assign({}, child2, {
     components: [child4.id, child5.id],

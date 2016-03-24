@@ -88,7 +88,6 @@ export default {
     strokeWidth: 1,
     stroke: background,
     fontSize: blockFontSize,
-    classes: 'transform-animated',
   },
   connectorAppearance: {
     glyph: 'rectangle',
@@ -98,6 +97,5 @@ export default {
     fontWeight: 'bold',
     fontSize: blockFontSize,
     color: 'gray',
-    classes: 'transform-animated',
   },
 };

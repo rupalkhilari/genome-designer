@@ -1,5 +1,5 @@
 import * as ActionTypes from '../constants/ActionTypes';
-import { register, login, logout } from '../middleware/api';
+import { register, login, logout, updateAccount } from '../middleware/api';
 
 const mapUserFromServer = (serverUser) => ({
   userid: serverUser.uuid,
@@ -46,6 +46,18 @@ export const userLogout = () => {
 export const userRegister = (user) => {
   return (dispatch, getState) => {
     return register(user)
+      .then(user => {
+        const mappedUser = mapUserFromServer(user);
+        const setUserPayload = _userSetUser(mappedUser);
+        dispatch(setUserPayload);
+        return user;
+      });
+  };
+};
+
+export const userUpdate = (user) => {
+  return (dispatch, getState) => {
+    return updateAccount(user)
       .then(user => {
         const mappedUser = mapUserFromServer(user);
         const setUserPayload = _userSetUser(mappedUser);

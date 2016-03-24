@@ -22,8 +22,7 @@ export default class Menu extends Component {
 
   render() {
     return (
-      <div className="menu-dropdown"
-           onMouseLeave={() => this.toggle(false)}>
+      <div className="menu-dropdown">
         <div className={this.props.isOpen ? 'menu-header menu-header-open' : 'menu-header'}
              onClick={this.toggle}>
           {this.props.title}
