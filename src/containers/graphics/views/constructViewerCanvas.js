@@ -3,7 +3,13 @@ import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import { uiSetCurrent } from '../../../actions/ui';
 import { projectAddConstruct } from '../../../actions/projects';
-import { blockCreate } from '../../../actions/blocks';
+import {
+  blockCreate,
+  blockAddComponent,
+  blockClone,
+} from '../../../actions/blocks';
+import { uiSetCurrentConstruct } from '../../../actions/ui';
+import { projectGetVersion } from '../../../selectors/projects';
 import DnD from '../dnd/dnd';
 
 
@@ -22,13 +28,17 @@ export class ConstructViewerCanvas extends Component {
    */
   onDrop(globalPosition, payload, event) {
     // make new construct
-    const block = this.props.blockCreate();
-    this.props.projectAddConstruct(this.props.currentProjectId, block.id);
-    // add the dropped block(s) to the construct, tragically this is complicated
-    // and is already handled by the construct viewers. So hack in a way to pass
-    // the payload to any newly constructed construct viewer.
-    this.droppedBlocks = payload;
-    this.forceUpdate();
+    const construct = this.props.blockCreate();
+    this.props.projectAddConstruct(this.props.currentProjectId, construct.id);
+    // add block(s) to construct
+    const blocks = Array.isArray(payload.item) ? payload.item : [payload.item];
+    const projectVersion = this.props.projectGetVersion(this.props.currentProjectId);
+    blocks.forEach((block, index) => {
+      const clone = this.props.blockClone(block, projectVersion);
+      this.props.blockAddComponent(construct.id, clone.id, index);
+    });
+    // select the new construct
+    this.props.uiSetCurrentConstruct(construct.id);
   }
 
   /**
@@ -74,4 +84,9 @@ export default connect(mapStateToProps, {
   uiSetCurrent,
   projectAddConstruct,
   blockCreate,
+  blockAddComponent,
+  projectGetVersion,
+  uiSetCurrentConstruct,
+  blockCreate,
+  blockClone,
 })(ConstructViewerCanvas);
