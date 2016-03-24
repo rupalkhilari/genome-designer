@@ -9,17 +9,12 @@ module.exports = function (browser, srcSelector, blockIndex) {
     var src = document.querySelector(srcSelector);
     var blocks = src.querySelectorAll('.sbol-glyph');
     var block = blocks[blockIndex];
-    var target = Math.random().toString(36).substr(5);
-    block.setAttribute('data-target', target);
-    return target;
+    return block.getBoundingClientRect();
 
   }, [srcSelector, blockIndex], function(result) {
-
-    var target = result.value;
-    var selector = '[data-target="' + target + '"]';
+    var b = result.value;
     browser
-      .assert.countelements(selector, 1)
-      .moveTo(selector)
+      .moveToElement('body', b.left + 10, b.top + 10)
       .mouseButtonDown(0)
       .mouseButtonUp(0);
   });

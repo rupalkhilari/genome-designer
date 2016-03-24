@@ -172,7 +172,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
     if (block) {
       // select construct when block selected
       this.selectConstruct();
-      if (evt.shiftKey) {
+      if (evt.shiftKey || window.__shifty) {
         // range select
         this.constructViewer.blockAddToSelectionsRange(block, this.selectedElements);
       } else

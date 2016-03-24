@@ -4,7 +4,7 @@ var signin = require('../fixtures/signin');
 var dragFromTo = require('../fixtures/dragfromto');
 var newProject = require('../fixtures/newproject');
 var newConstruct = require('../fixtures/newconstruct');
-var getNthBlock = require('../fixtures/get-nth-block-bounds');
+var clickNthBlock = require('../fixtures/click-nth-block-bounds');
 
 module.exports = {
   'Test that dropping on the project canvas creates a new construct.' : function (browser) {
@@ -53,10 +53,30 @@ module.exports = {
 
     // should have 10 blocks total
     browser.assert.countelements('.sbol-glyph', 10);
-    var blockBounds = getNthBlock(browser, '.sceneGraph', 0);
+    var blockBounds = clickNthBlock(browser, '.sceneGraph', 0);
+
+    // expect 1 selection block
+    browser
+      .waitForElementPresent(".scenegraph-userinterface-selection", 5000, 'expected a selection block')
+      .assert.countelements(".scenegraph-userinterface-selection", 1);
+
+    // shift click all 10 blocks and expect to see 10 selection blocks
+    browser.execute(function() {
+      window.__shifty = true;
+    }, [], function() {});
+
+    for(var i = 0; i < 10; i += 1) {
+      var blockBounds = clickNthBlock(browser, '.sceneGraph', i);
+    }
+
+    browser.execute(function() {
+      window.__shifty = false;
+    }, [], function() {});
+
+    // expect all 10 elements to be selected
+    browser.assert.countelements(".scenegraph-userinterface-selection", 10);
 
     // all done
-    browser.pause(1000000000);
     browser.end();
   }
 };
