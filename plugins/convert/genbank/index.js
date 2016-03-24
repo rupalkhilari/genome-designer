@@ -106,6 +106,7 @@ const runCommand = (command, input, inputFile, outputFile) => {
       return new Promise((resolve, reject) => {
         exec(command, (err, stdout) => {
           if (err) {
+            console.log('Error executing command: '+err);
             reject(err);
           }
           else resolve(stdout);
@@ -123,15 +124,10 @@ const exportProjectStructure = (project, blocks) => {
     blocks,
   };
 
-  console.log("About to export");
-  console.log(JSON.stringify(input));
-
   const cmd = `python ${path.resolve(__dirname, 'convert.py')} to_genbank ${inputFile} ${outputFile}`;
 
   return runCommand(cmd, JSON.stringify(input), inputFile, outputFile)
     .then(resStr => {
-        console.log("Result");
-        console.log(resStr);
         return Promise.resolve(resStr);
     });
 };
@@ -194,6 +190,7 @@ export const importProject = (gbstr) => {
 
               const outputFile = filePaths.createStorageUrl('imported_from_genbank.json');
               fileSystem.fileWrite(outputFile, { project: resProject, blocks: blocks });
+
               return { project: resProject, blocks: blocks };
             });
         }

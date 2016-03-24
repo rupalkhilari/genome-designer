@@ -176,7 +176,9 @@ def genbank_to_block_helper(gb, convert_features=False):
                 child_block["metadata"]["type"] = f.type
 
                 if "name" not in child_block:
-                    if sbol_type == 'cds' and "gene" in f.qualifiers:
+                    if "label" in f.qualifiers:
+                         child_block["metadata"]["name"] = f.qualifiers["label"][0]
+                    elif sbol_type == 'cds' and "gene" in f.qualifiers:
                             child_block["metadata"]["name"] = f.qualifiers["gene"][0]
                     else:
                         if sbol_type:
@@ -189,9 +191,14 @@ def genbank_to_block_helper(gb, convert_features=False):
     # Build the hierarchy
     # Going through the blocks from shorter to longer, so hopefully we will maximize
     # the ones that convert to blocks instead of features
-    to_remove = []
+
+    # Hack to make Root the last one (beyond all the other ones with the same length)
+    root_block["metadata"]["end"] = root_block["metadata"]["end"] + 1
     sorted_blocks = sorted(all_blocks.values(), key=lambda block: block["metadata"]["end"]-block["metadata"]["start"])
+    root_block["metadata"]["end"] = root_block["metadata"]["end"] - 1
+
     blocks_count = len(sorted_blocks)
+    to_remove = []
 
     for i in range(blocks_count):
         block = sorted_blocks[i]
@@ -202,6 +209,10 @@ def genbank_to_block_helper(gb, convert_features=False):
 
         parents = []
         for j in range(i+1, blocks_count):
+            # If it is a child of root, don't add it as child of any other block with the same size
+            if sorted_blocks[j]["sequence"]["length"] == root_block["sequence"]["length"] and sorted_blocks[j] != root_block:
+                continue
+
             if sorted_blocks[j]["metadata"]["end"] >= block["metadata"]["end"] and sorted_blocks[j]["metadata"]["start"]<=block["metadata"]["start"]:
                 parents.append(sorted_blocks[j])
 
@@ -250,7 +261,7 @@ def genbank_to_block_helper(gb, convert_features=False):
                 block_id = str(uuid.uuid4())
                 filler_block = create_block_json(block_id, sequence[current_position:child["metadata"]["start"]], [])
                 filler_block["metadata"]["type"] = "filler"
-                filler_block["metadata"]["name"] = "Filler"
+                filler_block["metadata"]["name"] = "Unknown"
                 filler_block["metadata"]["start"] = current_position
                 filler_block["metadata"]["end"] = child["metadata"]["start"]-1
                 all_blocks[block_id] = filler_block
@@ -260,7 +271,7 @@ def genbank_to_block_helper(gb, convert_features=False):
             block_id = str(uuid.uuid4())
             filler_block = create_block_json(block_id, sequence[current_position:block["metadata"]["end"]+1], [])
             filler_block["metadata"]["type"] = "filler"
-            filler_block["metadata"]["name"] = "Filler"
+            filler_block["metadata"]["name"] = "Unknown"
             filler_block["metadata"]["start"] = current_position
             filler_block["metadata"]["end"] = block["metadata"]["end"]
             all_blocks[block_id] = filler_block
@@ -280,5 +291,4 @@ def genbank_to_project(filename, convert_features=False):
         project["name"] = results["root"]["metadata"]["name"]
         project["description"] = results["root"]["metadata"]["description"]
         blocks.update(results["blocks"])
-
     return { "project": project, "blocks": blocks }
