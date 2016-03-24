@@ -4,6 +4,7 @@ var signin = require('../fixtures/signin');
 var dragFromTo = require('../fixtures/dragfromto');
 var newProject = require('../fixtures/newproject');
 var newConstruct = require('../fixtures/newconstruct');
+var getNthBlock = require('../fixtures/get-nth-block-bounds');
 
 module.exports = {
   'Test that dropping on the project canvas creates a new construct.' : function (browser) {
@@ -52,6 +53,7 @@ module.exports = {
 
     // should have 10 blocks total
     browser.assert.countelements('.sbol-glyph', 10);
+    var blockBounds = getNthBlock(browser, '.sceneGraph', 0);
 
     // all done
     browser.pause(1000000000);

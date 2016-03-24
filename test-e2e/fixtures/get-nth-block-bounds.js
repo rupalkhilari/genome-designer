@@ -1,40 +1,26 @@
 /**
- * get the nth block
+ * get the nth block, within the given selector, bounds in document space
  */
 module.exports = function (browser, srcSelector, blockIndex) {
 
-
   // generate mouse move events on body from source to destination
-  browser.execute(function(srcSelector, srcX, srcY, dstSelector, dstX, dstY) {
-    var body = document.body.getBoundingClientRect();
-    var src = document.querySelector(srcSelector).getBoundingClientRect();
-    var dst = document.querySelector(dstSelector).getBoundingClientRect();
-    var start = {
-      x: src.left + body.left + srcX,
-      y: src.top + body.top + srcY,
-    };
-    var end = {
-      x: dst.left + body.left + dstX,
-      y: dst.top + body.top + dstY,
-    };
-    var lenx = end.x - start.x;
-    var leny = end.y - start.y;
+  browser.execute(function(srcSelector, blockIndex) {
 
-    var pts = [];
-    for(var i = 0; i <= 1; i += 0.1) {
-      var xp = start.x + lenx * i;
-      var yp = start.y + leny * i;
-      pts.push({x:xp, y: yp});
-    }
-    return pts;
-  }, [srcSelector, srcX, srcY, dstSelector, dstX, dstY], function(result) {
-    var pts = result.value;
-    for(var i = 0; i < pts.length; i +=1 ) {
-      browser.moveToElement('body', pts[i].x, pts[i].y);
-    }
+    var src = document.querySelector(srcSelector);
+    var blocks = src.querySelectorAll('.sbol-glyph');
+    var block = blocks[blockIndex];
+    var target = Math.random().toString(36).substr(5);
+    block.setAttribute('data-target', target);
+    return target;
+
+  }, [srcSelector, blockIndex], function(result) {
+
+    var target = result.value;
+    var selector = '[data-target="' + target + '"]';
+    browser
+      .assert.countelements(selector, 1)
+      .moveTo(selector)
+      .mouseButtonDown(0)
+      .mouseButtonUp(0);
   });
-
-  browser
-    .moveToElement(dstSelector, dstX, dstY)
-    .mouseButtonUp(0);
 }
