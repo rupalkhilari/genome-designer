@@ -21,12 +21,14 @@ export class ConstructViewerCanvas extends Component {
    * create a new construct, add dropped block to it
    */
   onDrop(globalPosition, payload, event) {
-    // get project ID, this is suspect
-    const projectKey = Object.keys(this.props.projects)[0];
-    const projectId = this.props.projects[projectKey].id;
     // make new construct
     const block = this.props.blockCreate();
-    this.props.projectAddConstruct(projectId, block.id);
+    this.props.projectAddConstruct(this.props.currentProjectId, block.id);
+    // add the dropped block(s) to the construct, tragically this is complicated
+    // and is already handled by the construct viewers. So hack in a way to pass
+    // the payload to any newly constructed construct viewer.
+    this.droppedBlocks = payload;
+    this.forceUpdate();
   }
 
   /**
@@ -55,6 +57,7 @@ export class ConstructViewerCanvas extends Component {
    * render the component, the scene graph will render later when componentDidUpdate is called
    */
   render() {
+    // map construct viewers so we can propagate projectId and any recently dropped blocks
     return (<div className="ProjectPage-constructs" onClick={this.onClick}>
       {this.props.children}
     </div>)

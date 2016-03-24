@@ -59,7 +59,7 @@ class ProjectPage extends Component {
 
           <ProjectHeader project={project}/>
 
-          <ConstructViewerCanvas>
+          <ConstructViewerCanvas currentProjectId={this.props.projectId}>
             {constructViewers}
           </ConstructViewerCanvas>
 
