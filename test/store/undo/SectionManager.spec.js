@@ -143,6 +143,20 @@ describe('Store', () => {
           expect(manager.getCurrentState()).to.eql(beforeState);
           expect(manager.getCurrentState()).to.eql(manager.getPresent());
         });
+
+        it('commit() outside transaction is idempotent', () => {
+          expect(manager.commit).to.not.throw();
+        });
+
+        it('undo() in transaction ends transaction', () => {
+          expect(manager.inTransaction()).to.equal(false);
+          manager.transact();
+          expect(manager.inTransaction()).to.equal(true);
+          manager.undo();
+          expect(manager.inTransaction()).to.equal(false);
+          manager.commit();
+          expect(manager.inTransaction()).to.equal(false);
+        });
       });
     });
   });
