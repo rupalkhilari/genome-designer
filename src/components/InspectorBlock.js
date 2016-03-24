@@ -1,6 +1,7 @@
-import React, { Component, PropTypes } from 'react';
-import { connect } from 'react-redux';
-import { blockMerge, blockSetColor, blockSetSbol, blockRename } from '../actions/blocks';
+import React, {Component, PropTypes} from 'react';
+import {connect} from 'react-redux';
+import {transact, commit, abort} from '../store/undo/actions';
+import {blockMerge, blockSetColor, blockSetSbol, blockRename} from '../actions/blocks';
 import InputSimple from './InputSimple';
 import ColorPicker from './ui/ColorPicker';
 import SymbolPicker from './ui/SymbolPicker';
@@ -13,6 +14,9 @@ export class InspectorBlock extends Component {
     blockSetSbol: PropTypes.func.isRequired,
     blockMerge: PropTypes.func.isRequired,
     blockRename: PropTypes.func.isRequired,
+    transact: PropTypes.func.isRequired,
+    commit: PropTypes.func.isRequired,
+    abort: PropTypes.func.isRequired,
   };
 
   setBlockName = (name) => {
@@ -37,6 +41,18 @@ export class InspectorBlock extends Component {
     this.props.instances.forEach((block) => {
       this.props.blockSetSbol(block.id, symbol);
     });
+  };
+
+  startTransaction = () => {
+    this.props.transact();
+  };
+
+  endTransaction = (shouldAbort = false) => {
+    if (shouldAbort === true) {
+      this.props.abort();
+      return;
+    }
+    this.props.commit();
   };
 
   /**
@@ -114,6 +130,9 @@ export class InspectorBlock extends Component {
         <InputSimple placeholder="Part Name"
                      readOnly={readOnly}
                      onChange={this.setBlockName}
+                     onFocus={this.startTransaction}
+                     onBlur={this.endTransaction}
+                     onEscape={() => this.endTransaction(true)}
                      value={this.currentName()}/>
 
         <h4 className="InspectorContent-heading">Description</h4>
@@ -121,6 +140,9 @@ export class InspectorBlock extends Component {
                      useTextarea
                      readOnly={readOnly}
                      onChange={this.setBlockDescription}
+                     onFocus={this.startTransaction}
+                     onBlur={this.endTransaction}
+                     onEscape={() => this.endTransaction(true)}
                      updateOnBlur
                      value={this.currentDescription()}/>
 
@@ -159,4 +181,7 @@ export default connect(() => ({}), {
   blockSetSbol,
   blockRename,
   blockMerge,
+  transact,
+  commit,
+  abort,
 })(InspectorBlock);
