@@ -21,7 +21,7 @@ class App extends Component {
       <div className="App">
         <GlobalNav currentProjectId={currentProjectId}/>
         <AuthenticationForms />
-        <div className="App-pageContent">
+        <div className="App-pageContent" currentProjectId={currentProjectId}>
           {children}
         </div>
         <DevTools />

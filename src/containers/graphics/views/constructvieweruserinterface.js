@@ -22,6 +22,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
       dragLeave: this.onDragLeave.bind(this),
       dragOver: this.onDragOver.bind(this),
       drop: this.onDrop.bind(this),
+      zorder: 0,
     });
   }
 
