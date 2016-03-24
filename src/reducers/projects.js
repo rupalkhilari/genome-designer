@@ -19,7 +19,7 @@ const project_and_blocks = require('../../storage/imported_from_genbank.json');
 const floProjectState = { test: project_and_blocks.project };
 
 */
-export default function projects(state = initial, action) {
+export default function projects(state = initialState, action) {
 
 //export default function projects(state = initialState, action) {
   switch (action.type) {
