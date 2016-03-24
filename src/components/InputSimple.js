@@ -51,10 +51,8 @@ export default class InputSimple extends Component {
       return;
     }
     //escape
-    console.log(event.keyCode, this.refs.input);
     if (event.keyCode === 27) {
       this.props.onEscape && this.props.onEscape();
-      console.log(this.refs.input);
       this.refs.input.blur();
       return;
     }

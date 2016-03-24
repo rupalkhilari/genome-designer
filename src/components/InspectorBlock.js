@@ -32,15 +32,19 @@ export class InspectorBlock extends Component {
   };
 
   selectColor = (color) => {
+    this.startTransaction();
     this.props.instances.forEach((block) => {
       this.props.blockSetColor(block.id, color);
     });
+    this.endTransaction();
   };
 
   selectSymbol = (symbol) => {
+    this.startTransaction();
     this.props.instances.forEach((block) => {
       this.props.blockSetSbol(block.id, symbol);
     });
+    this.endTransaction();
   };
 
   startTransaction = () => {
@@ -82,7 +86,7 @@ export class InspectorBlock extends Component {
     if (this.props.instances.length === 1) {
       return this.props.instances[0].metadata.name;
     }
-    return null;
+    return '';
   }
 
   /**
@@ -92,7 +96,7 @@ export class InspectorBlock extends Component {
     if (this.props.instances.length === 1) {
       return this.props.instances[0].metadata.description;
     }
-    return null;
+    return '';
   }
 
   currentSequenceLength() {
@@ -162,9 +166,10 @@ export class InspectorBlock extends Component {
 
         {!!annotations.length && (<h4 className="InspectorContent-heading">Contents</h4>)}
         {!!annotations.length && (<div className="InspectorContentBlock-Annotations">
-            {annotations.map(annotation => {
+            {annotations.map((annotation, idx) => {
               return (
-                <span className="InspectorContentBlock-Annotation">
+                <span className="InspectorContentBlock-Annotation"
+                      key={idx}>
                 {annotation.name || annotation.description || '?'}
               </span>
               );
