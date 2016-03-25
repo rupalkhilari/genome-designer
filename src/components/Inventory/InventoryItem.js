@@ -19,6 +19,8 @@ export class InventoryItem extends Component {
       }).isRequired,
     }).isRequired,
     onDrop: PropTypes.func,
+    onDragStart: PropTypes.func,
+    onDragComplete: PropTypes.func,
     onSelect: PropTypes.func,
     forceBlocks: PropTypes.array.isRequired,
     inspectorToggleVisibility: PropTypes.func.isRequired,
@@ -38,6 +40,10 @@ export class InventoryItem extends Component {
     this.mouseTrap.cancelDrag();
     // get global point as starting point for drag
     const globalPoint = this.mouseTrap.mouseToGlobal(event);
+
+    //onDragStart handler
+    this.props.onDragStart && this.props.onDragStart(this.props.item);
+
     // start DND
     DnD.startDrag(this.makeDnDProxy(), globalPoint, {
       item: this.props.item,
@@ -47,6 +53,9 @@ export class InventoryItem extends Component {
         if (this.props.onDrop) {
           return this.props.onDrop(this.props.item, target, position);
         }
+      },
+      onDragComplete: (target, position, payload) => {
+        this.props.onDragComplete && this.props.onDragComplete(payload.item, target, position);
       },
     });
   }
@@ -78,7 +87,6 @@ export class InventoryItem extends Component {
     }
     return proxy;
   }
-
 
   render() {
     const item = this.props.item;

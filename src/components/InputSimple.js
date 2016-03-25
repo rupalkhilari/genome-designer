@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react';
+import React, {Component, PropTypes} from 'react';
 
 import '../styles/InputSimple.css';
 
@@ -11,6 +11,9 @@ export default class InputSimple extends Component {
     useTextarea: PropTypes.bool,
     value: PropTypes.string.isRequired,
     onChange: PropTypes.func.isRequired,
+    onFocus: PropTypes.func,
+    onBlur: PropTypes.func,
+    onEscape: PropTypes.func,
   };
 
   componentWillReceiveProps(nextProps) {
@@ -30,17 +33,30 @@ export default class InputSimple extends Component {
     this.refs.input.value = val;
   }
 
+  handleFocus = (event) => {
+    this.props.onFocus && this.props.onFocus(event);
+  };
+  
   handleBlur = (event) => {
     if (this.props.updateOnBlur) {
       this.handleSubmission();
     }
+    this.props.onBlur && this.props.onBlur(event);
   };
 
   handleKeyUp = (event) => {
     if (this.props.readOnly) {
       //todo - shouldn't change the value
       event.preventDefault();
+      return;
     }
+    //escape
+    if (event.keyCode === 27) {
+      this.props.onEscape && this.props.onEscape();
+      this.refs.input.blur();
+      return;
+    }
+    //enter
     if (event.keyCode === 13 || !this.props.updateOnBlur) {
       this.handleSubmission();
     }
@@ -63,6 +79,7 @@ export default class InputSimple extends Component {
           placeholder={this.props.placeholder}
           defaultValue={this.props.value || this.props.default}
           onBlur={this.handleBlur}
+          onFocus={this.handleFocus}
           onKeyUp={this.handleKeyUp}/>
         }
         {(!this.props.useTextarea) &&
@@ -73,6 +90,7 @@ export default class InputSimple extends Component {
           placeholder={this.props.placeholder}
           defaultValue={this.props.value || this.props.default}
           onBlur={this.handleBlur}
+          onFocus={this.handleFocus}
           onKeyUp={this.handleKeyUp}/>
         }
       </div>
