@@ -3,7 +3,7 @@ import * as filePaths from '../utils/filePaths';
 import * as persistence from './persistence';
 import invariant from 'invariant';
 import { exec } from 'child_process';
-import flatten from 'lodash';
+import { flatten } from 'lodash';
 import { errorCouldntFindProjectId } from '../utils/errors';
 
 //note - expects the project to already exist.
@@ -102,7 +102,7 @@ export const getAllBlocksWithName = (userId, name) => {
   return getAllBlocksFiltered(userId, filter);
 };
 
-export const getAllBlocksWithSbol = (userId, name) => {
-  const filter = (block, index) => block.rules.sbol === name;
+export const getAllBlocksWithSbol = (userId, sbol) => {
+  const filter = (block, index) => block.rules.sbol === sbol;
   return getAllBlocksFiltered(userId, filter);
 };

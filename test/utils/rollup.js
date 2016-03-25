@@ -20,9 +20,7 @@ export const createExampleRollup = () => {
    * C  D  E
    */
 
-  const blockC = Block.classless({
-    rules: { sbol: 'promoter ' },
-  });
+  const blockC = Block.classless();
   const blockD = Block.classless();
   const blockE = Block.classless();
   const blockB = Block.classless({

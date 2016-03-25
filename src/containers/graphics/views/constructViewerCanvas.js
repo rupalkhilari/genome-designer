@@ -12,7 +12,6 @@ import { uiSetCurrentConstruct } from '../../../actions/ui';
 import { projectGetVersion } from '../../../selectors/projects';
 import DnD from '../dnd/dnd';
 
-
 export class ConstructViewerCanvas extends Component {
 
   static propTypes = {
@@ -61,7 +60,7 @@ export class ConstructViewerCanvas extends Component {
       evt.stopPropagation();
       this.props.uiSetCurrent([]);
     }
-  }
+  };
 
   /**
    * render the component, the scene graph will render later when componentDidUpdate is called
@@ -70,7 +69,7 @@ export class ConstructViewerCanvas extends Component {
     // map construct viewers so we can propagate projectId and any recently dropped blocks
     return (<div className="ProjectPage-constructs" onClick={this.onClick}>
       {this.props.children}
-    </div>)
+    </div>);
   }
 }
 
@@ -87,6 +86,5 @@ export default connect(mapStateToProps, {
   blockAddComponent,
   projectGetVersion,
   uiSetCurrentConstruct,
-  blockCreate,
   blockClone,
 })(ConstructViewerCanvas);
