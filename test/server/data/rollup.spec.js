@@ -59,7 +59,7 @@ describe('Server', () => {
         const newComponentsBlockA = blockA.components.slice();
         newComponentsBlockA.shift(); //remove C
         newComponentsBlockA.push(blockF.id); //add F
-        const editBlockA = blockA.mutate('components', newComponentsBlockA);
+        const editBlockA = Object.assign({}, blockA, {components: newComponentsBlockA});
 
         const newRoll = rollup.createRollup(project, blockP, editBlockA, blockB, blockD, blockE, blockF);
         return rollup.writeProjectRollup(projectId, newRoll, userId)

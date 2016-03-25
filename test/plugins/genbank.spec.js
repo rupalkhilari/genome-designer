@@ -8,7 +8,7 @@ import ProjectDefinition from '../../src/schemas/Project';
 const fs = require('fs');
 
 describe('Plugins', () => {
-  describe.only('Genbank Plugin', () => {
+  describe('Genbank Plugin', () => {
     it('should import Genbank file with contiguous entries as a project', function importGB(done) {
         fs.readFile(path.resolve(__dirname, '../res/sampleGenbankContiguous.gb'), 'utf8', (err, sampleStr) => {
             importProject('genbank', sampleStr)
