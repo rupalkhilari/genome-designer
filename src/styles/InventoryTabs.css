@@ -7,6 +7,7 @@
   padding-bottom: 0.5em;
   border-bottom: 1px solid var(--colors-grey);
   display: inline-block;
+  flex-shrink: 0;
 
   &-tab {
     text-align: center;
