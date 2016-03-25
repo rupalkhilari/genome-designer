@@ -1,6 +1,6 @@
-export const UNDO = 'UNDOABLE_UNDO';
-export const REDO = 'UNDOABLE_REDO';
-export const JUMP = 'UNDOABLE_JUMP';
-export const TRANSACT = 'UNDOABLE_TRANSACT';
-export const COMMIT = 'UNDOABLE_COMMIT';
-export const ABORT = 'UNDOABLE_ABORT';
+export const UNDO = 'UNDO:UNDO';
+export const REDO = 'UNDO:REDO';
+export const JUMP = 'UNDO:JUMP';
+export const TRANSACT = 'UNDO:TRANSACT';
+export const COMMIT = 'UNDO:COMMIT';
+export const ABORT = 'UNDO:ABORT';
