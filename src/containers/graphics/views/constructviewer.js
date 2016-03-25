@@ -7,6 +7,7 @@ import PopupMenu from '../../../components/Menu/PopupMenu';
 import {connect } from 'react-redux';
 import {
   blockCreate,
+  blockDelete,
   blockAddComponent,
   blockClone,
   blockSetSbol,
@@ -187,7 +188,6 @@ export class ConstructViewer extends Component {
    * return the scenegraph node that was representing it.
    */
   removePart(partId) {
-    //this.layout.removePart(partId);
     const parent = this.getBlockParent(partId);
     this.props.blockRemoveComponent(parent.id, partId);
   }
@@ -391,6 +391,7 @@ function mapStateToProps(state, props) {
 
 export default connect(mapStateToProps, {
   blockCreate,
+  blockDelete,
   blockClone,
   blockAddComponent,
   blockRemoveComponent,
