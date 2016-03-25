@@ -166,7 +166,7 @@ export class ConstructViewer extends Component {
       index = parent.components.indexOf(insertionPoint.block) + (insertionPoint.edge === 'right' ? 1 : 0);
     }
     // just a HACK for now to allow new nested construct to be created.
-    if (insertionPoint && insertionPoint.block && event.metaKey) {
+    if (insertionPoint && insertionPoint.block && event && event.metaKey) {
       parent = this.props.blocks[insertionPoint.block];
       index = 0;
     }
