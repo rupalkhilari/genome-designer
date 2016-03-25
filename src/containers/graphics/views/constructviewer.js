@@ -187,10 +187,18 @@ export class ConstructViewer extends Component {
    * return the scenegraph node that was representing it.
    */
   removePart(partId) {
-    const node = this.layout.removePart(partId);
+    //this.layout.removePart(partId);
     const parent = this.getBlockParent(partId);
     this.props.blockRemoveComponent(parent.id, partId);
-    return node;
+  }
+
+  /**
+   * remove all parts in the list
+   */
+  removePartsList(partList) {
+    partList.forEach(part => {
+      this.removePart(part);
+    });
   }
 
   /**
@@ -341,6 +349,9 @@ export class ConstructViewer extends Component {
           },
           {
             text: 'Delete',
+            action: () => {
+              this.removePartsList(this.sg.ui.selectedElements);
+            }
           },
         ]
       }/>);
