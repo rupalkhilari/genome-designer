@@ -4,7 +4,6 @@ import SceneGraph2D from '../scenegraph2d/scenegraph2d';
 import Vector2D from '../geometry/vector2d';
 import Layout from './layout.js';
 import PopupMenu from '../../../components/Menu/PopupMenu';
-import ModalWindow from '../../../components/modal/modalwindow';
 import {connect } from 'react-redux';
 import {
   blockCreate,
@@ -343,15 +342,6 @@ export class ConstructViewer extends Component {
           {
             text: 'Delete',
           },
-          {},
-          {
-            text: 'Open Modal Window',
-            action: () => {
-              this.setState({
-                modalOpen: true,
-              });
-            },
-          },
         ]
       }/>);
   }
@@ -374,16 +364,6 @@ export class ConstructViewer extends Component {
           <div className="sceneGraph"/>
         </div>
         {this.blockContextMenu()}
-        <ModalWindow
-          open={this.state.modalOpen}
-          payload={<div/>}
-          closeOnClickOutside
-          closeModal={() => {
-            this.setState({
-              modalOpen: false,
-            });
-          }}
-          />
       </div>
     );
     return rendered;
