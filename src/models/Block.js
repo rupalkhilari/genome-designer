@@ -17,6 +17,10 @@ export default class Block extends Instance {
     return cloneDeep(new Block(input));
   }
 
+  static validate(input, throwOnError) {
+    return BlockDefinition.validate(input, throwOnError);
+  }
+
   addComponent(componentId, index) {
     const spliceIndex = Number.isInteger(index) ? index : this.components.length;
     const newComponents = this.components.slice();

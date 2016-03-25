@@ -12,6 +12,10 @@ export default class Project extends Instance {
     return cloneDeep(new Project(input));
   }
 
+  static validate(input, throwOnError) {
+    return ProjectDefinition.validate(input, throwOnError);
+  }
+
   addComponents(...components) {
     return this.mutate('components', this.components.concat(components));
   }
