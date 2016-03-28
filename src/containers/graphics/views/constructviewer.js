@@ -122,6 +122,7 @@ export class ConstructViewer extends Component {
    * ensure we don't get any resize events after dismounting
    */
   componentWillUnmount() {
+    delete idToViewer[this.props.constructId];
     this.resizeDebounced.cancel();
     window.removeEventListener('resize', this.resizeDebounced);
   }
