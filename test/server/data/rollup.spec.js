@@ -9,6 +9,7 @@ import Block from '../../../src/models/Block';
 import * as filePaths from '../../../server/utils/filePaths';
 import * as rollup from '../../../server/data/rollup';
 import * as persistence from '../../../server/data/persistence';
+import * as querying from '../../../server/data/querying';
 
 import { createExampleRollup } from '../../utils/rollup';
 
@@ -58,7 +59,7 @@ describe('Server', () => {
         const newComponentsBlockA = blockA.components.slice();
         newComponentsBlockA.shift(); //remove C
         newComponentsBlockA.push(blockF.id); //add F
-        const editBlockA = blockA.mutate('components', newComponentsBlockA);
+        const editBlockA = Object.assign({}, blockA, {components: newComponentsBlockA});
 
         const newRoll = rollup.createRollup(project, blockP, editBlockA, blockB, blockD, blockE, blockF);
         return rollup.writeProjectRollup(projectId, newRoll, userId)
@@ -75,7 +76,7 @@ describe('Server', () => {
               expect(gotF).to.eql(blockF);
               expect(gotC).to.eql(null);
             })
-            .then(() => rollup.getAllBlockIdsInProject(projectId))
+            .then(() => querying.getAllBlockIdsInProject(projectId))
             .then(ids => expect(ids.length).to.equal(6))
           );
       });

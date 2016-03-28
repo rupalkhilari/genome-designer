@@ -3,30 +3,36 @@ import Block from '../../src/models/Block';
 
 import * as rollup from '../../server/data/rollup';
 
+export const numberBlocksInRollup = 6;
+
 /*
-Returns a Rollup in the form { project: project, blocks: [P,A,B,C,D,E] }
+ Returns a Rollup in the form { project: project, blocks: [P,A,B,C,D,E] }
  */
 export const createExampleRollup = () => {
   /**
-   blocks:
-   P - A - C
-   . . . - D
-   . - B - E
+   *
+   * project
+   *    |
+   *    P
+   *  /---\
+   *  A     B
+   * /-\   |
+   * C  D  E
    */
 
-  const blockC = new Block();
-  const blockD = new Block();
-  const blockE = new Block();
-  const blockB = new Block({
+  const blockC = Block.classless();
+  const blockD = Block.classless();
+  const blockE = Block.classless();
+  const blockB = Block.classless({
     components: [blockE.id],
   });
-  const blockA = new Block({
+  const blockA = Block.classless({
     components: [blockC.id, blockD.id],
   });
-  const blockP = new Block({
+  const blockP = Block.classless({
     components: [blockA.id, blockB.id],
   });
-  const project = new Project({
+  const project = Project.classless({
     components: [blockP.id],
   });
   const roll = rollup.createRollup(project, blockP, blockA, blockB, blockC, blockD, blockE);
