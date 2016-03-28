@@ -4,10 +4,10 @@ import SceneGraph2D from '../scenegraph2d/scenegraph2d';
 import Vector2D from '../geometry/vector2d';
 import Layout from './layout.js';
 import PopupMenu from '../../../components/Menu/PopupMenu';
-import ModalWindow from '../../../components/modal/modalwindow';
 import {connect } from 'react-redux';
 import {
   blockCreate,
+  blockDelete,
   blockAddComponent,
   blockClone,
   blockSetSbol,
@@ -188,10 +188,17 @@ export class ConstructViewer extends Component {
    * return the scenegraph node that was representing it.
    */
   removePart(partId) {
-    const node = this.layout.removePart(partId);
     const parent = this.getBlockParent(partId);
     this.props.blockRemoveComponent(parent.id, partId);
-    return node;
+  }
+
+  /**
+   * remove all parts in the list
+   */
+  removePartsList(partList) {
+    partList.forEach(part => {
+      this.removePart(part);
+    });
   }
 
   /**
@@ -342,15 +349,9 @@ export class ConstructViewer extends Component {
           },
           {
             text: 'Delete',
-          },
-          {},
-          {
-            text: 'Open Modal Window',
             action: () => {
-              this.setState({
-                modalOpen: true,
-              });
-            },
+              this.removePartsList(this.sg.ui.selectedElements);
+            }
           },
         ]
       }/>);
@@ -374,16 +375,6 @@ export class ConstructViewer extends Component {
           <div className="sceneGraph"/>
         </div>
         {this.blockContextMenu()}
-        <ModalWindow
-          open={this.state.modalOpen}
-          payload={<div/>}
-          closeOnClickOutside
-          closeModal={() => {
-            this.setState({
-              modalOpen: false,
-            });
-          }}
-          />
       </div>
     );
     return rendered;
@@ -400,6 +391,7 @@ function mapStateToProps(state, props) {
 
 export default connect(mapStateToProps, {
   blockCreate,
+  blockDelete,
   blockClone,
   blockAddComponent,
   blockRemoveComponent,

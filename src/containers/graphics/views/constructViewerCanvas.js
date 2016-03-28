@@ -1,14 +1,13 @@
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
-import { uiSetCurrent } from '../../../actions/ui';
 import { projectAddConstruct } from '../../../actions/projects';
 import {
   blockCreate,
   blockAddComponent,
   blockClone,
 } from '../../../actions/blocks';
-import { uiSetCurrentConstruct } from '../../../actions/ui';
+import { focusConstruct, focusBlocks } from '../../../actions/focus';
 import { projectGetVersion } from '../../../selectors/projects';
 import DnD from '../dnd/dnd';
 
@@ -37,7 +36,7 @@ export class ConstructViewerCanvas extends Component {
       this.props.blockAddComponent(construct.id, clone.id, index);
     });
     // select the new construct
-    this.props.uiSetCurrentConstruct(construct.id);
+    this.props.focusConstruct(construct.id);
   }
 
   /**
@@ -58,7 +57,7 @@ export class ConstructViewerCanvas extends Component {
     if (evt.target === ReactDOM.findDOMNode(this)) {
       evt.preventDefault();
       evt.stopPropagation();
-      this.props.uiSetCurrent([]);
+      this.props.focusBlocks([]);
     }
   };
 
@@ -80,11 +79,12 @@ function mapStateToProps(state, props) {
 }
 
 export default connect(mapStateToProps, {
-  uiSetCurrent,
+  focusConstruct,
+  focusBlocks,
   projectAddConstruct,
   blockCreate,
   blockAddComponent,
   projectGetVersion,
-  uiSetCurrentConstruct,
+  blockCreate,
   blockClone,
 })(ConstructViewerCanvas);

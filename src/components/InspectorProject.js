@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import { transact, commit, abort } from '../store/undo/actions';
 import { projectRename, projectMerge } from '../actions/projects';
 import InputSimple from './InputSimple';
 
@@ -11,6 +12,9 @@ export class InspectorProject extends Component {
     projectRename: PropTypes.func.isRequired,
     projectMerge: PropTypes.func.isRequired,
     readOnly: PropTypes.bool.isRequired,
+    transact: PropTypes.func.isRequired,
+    commit: PropTypes.func.isRequired,
+    abort: PropTypes.func.isRequired,
   };
 
   setProjectName = (name) => {
@@ -19,8 +23,20 @@ export class InspectorProject extends Component {
 
   setProjectDescription = (description) => {
     if (description !== this.props.instance.metadata.description) {
-      this.props.projectMerge(this.props.instance.id, {metadata: {description}});
+      this.props.projectMerge(this.props.instance.id, { metadata: { description } });
     }
+  };
+
+  startTransaction = () => {
+    this.props.transact();
+  };
+
+  endTransaction = (shouldAbort = false) => {
+    if (shouldAbort === true) {
+      this.props.abort();
+      return;
+    }
+    this.props.commit();
   };
 
   render() {
@@ -31,6 +47,9 @@ export class InspectorProject extends Component {
         <h4 className="InspectorContent-heading">Name</h4>
         <InputSimple placeholder="Project Name"
                      onChange={this.setProjectName}
+                     onFocus={this.startTransaction}
+                     onBlur={this.endTransaction}
+                     onEscape={() => this.endTransaction(true)}
                      readOnly={readOnly}
                      value={instance.metadata.name}/>
 
@@ -38,6 +57,9 @@ export class InspectorProject extends Component {
         <InputSimple placeholder="Project Description"
                      useTextarea
                      onChange={this.setProjectDescription}
+                     onFocus={this.startTransaction}
+                     onBlur={this.endTransaction}
+                     onEscape={() => this.endTransaction(true)}
                      readOnly={readOnly}
                      updateOnBlur
                      value={instance.metadata.description}/>
@@ -49,4 +71,7 @@ export class InspectorProject extends Component {
 export default connect(() => ({}), {
   projectRename,
   projectMerge,
+  transact,
+  commit,
+  abort,
 })(InspectorProject);

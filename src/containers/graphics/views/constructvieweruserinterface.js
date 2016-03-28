@@ -172,36 +172,50 @@ export default class ConstructViewerUserInterface extends UserInterface {
     if (block) {
       // select construct when block selected
       this.selectConstruct();
-      if (evt.shiftKey || window.__shifty) {
-        // range select
-        this.constructViewer.blockAddToSelectionsRange(block, this.selectedElements);
-      } else
-      if (evt.metaKey || evt.altKey) {
-        // toggle block in selections
-        this.constructViewer.blockToggleSelected([block]);
-      } else {
-        // otherwise single select the block
-        this.constructViewer.blockSelected([block]);
-        // if they clicked the context menu area, open it
-        // for now, open a context menu
-        const globalPoint = this.mouseTrap.mouseToGlobal(evt);
-        const region = this.getBlockRegion(block, globalPoint);
-        switch (region) {
-
-          case 'dots':
-          this.constructViewer.openPopup({
-            blockPopupMenuOpen: true,
-            menuPosition: globalPoint,
-          });
-          break;
-
-          case 'triangle':
-          const node = this.layout.nodeFromElement(block);
-          node.showChildren = !node.showChildren;
-          this.constructViewer.update();
-          break;
-        }
+      // if the user clicks a sub component ( ... menu accessor or expand / collapse for example )
+      // the clicked block is just added to the selections, otherwise it replaces the selection.
+      // Also, if the shift key is used the block is added and does not replace the selection
+      let action = 'replace';
+      if (evt.shiftKey || window.__shifty ) {
+        action = 'add';
       }
+      if (evt.metaKey || evt.altKey) {
+        action = 'toggle';
+      }
+      // if they clicked the context menu area, open it
+      // for now, open a context menu
+      const globalPoint = this.mouseTrap.mouseToGlobal(evt);
+      const region = this.getBlockRegion(block, globalPoint);
+      switch (region) {
+
+        case 'dots':
+        this.constructViewer.openPopup({
+          blockPopupMenuOpen: true,
+          menuPosition: globalPoint,
+        });
+        // change replace to add if opening the menu
+        if (action === 'replace') {
+          action = 'add';
+        }
+        break;
+
+        case 'triangle':
+        const node = this.layout.nodeFromElement(block);
+        node.showChildren = !node.showChildren;
+        this.constructViewer.update();
+        // change replace to add if opening the menu
+        if (action === 'replace') {
+          action = 'add';
+        }
+        break;
+      }
+      // perform the final selection action using block
+      switch (action) {
+        case 'toggle' : this.constructViewer.blockToggleSelected([block]); break;
+        case 'add': this.constructViewer.blockAddToSelectionsRange(block, this.selectedElements); break;
+        default: this.constructViewer.blockSelected([block]); break;
+      }
+
     } else {
       // select construct if no block clicked and deselect all blocks
       this.constructViewer.blockSelected([]);
@@ -294,15 +308,12 @@ export default class ConstructViewerUserInterface extends UserInterface {
         // proxy representing 1 ore more blocks
         const proxy = this.makeDragProxy();
         // remove the blocks, unless meta key pressed
-        const elements = this.selectedElements.slice(0);
         if (!evt.altKey) {
-          elements.forEach(element => {
-            this.constructViewer.removePart(element);
-          });
+          this.constructViewer.removePartsList(this.selectedElements);
         }
         // start the drag with the proxy and the removed block as the payload
         DnD.startDrag(proxy, globalPoint, {
-          item: elements,
+          item: this.selectedElements,
         });
       }
     }

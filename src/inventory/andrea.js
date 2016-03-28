@@ -955,18 +955,21 @@ merge(parts[0], {
       {
         name: 'GFP',
         tags: {},
+        notes: {},
         start: 0,
         end: 50,
       },
       {
         name: 'mCherry',
         tags: {},
+        notes: {},
         start: 40,
         end: 80,
       },
       {
         name: 'BglII',
         tags: {},
+        notes: {},
         sequence: 'agatct',
       },
     ],
