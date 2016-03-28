@@ -17,7 +17,7 @@ export default class SBOLGlyph2D extends Glyph2D {
     // possible sbol symbol
     this.img = document.createElement('img');
     this.img.className = 'sbol-icon';
-    this.img.setAttribute('src', '/images/sbolSymbols/terminator.svg');
+    this.img.onerror = this.onImageError.bind(this);
     this.el.appendChild(this.img);
     // possible child indicator
     this.triangle = document.createElement('div');
@@ -27,8 +27,14 @@ export default class SBOLGlyph2D extends Glyph2D {
     this.node.el.appendChild(this.el);
   }
 
+  onImageError() {
+    this.wasImageError = true;
+    // hide the image until the uri is changed
+    this.img.style.display = 'none';
+  }
+
   /**
-   * render latest changes //
+   * render latest changes
    */
   update() {
     // basic rectangle
@@ -49,6 +55,7 @@ export default class SBOLGlyph2D extends Glyph2D {
 
         const svgPath = symbol.images.thickDark;
         if (this.img.getAttribute('src') !== svgPath) {
+          this.wasImageError = false;
           this.img.setAttribute('src', svgPath);
         }
         this.img.style.display = 'block';
