@@ -41,6 +41,7 @@ class ProjectPage extends Component {
         .catch(err => this.props.push('/'));
       return (<p>loading project...</p>);
     }
+    // build a list of construct viewers
     const constructViewers = constructs.map(construct => {
       return (
         <ConstructViewer key={construct.id}
@@ -58,7 +59,8 @@ class ProjectPage extends Component {
 
           <ProjectHeader project={project}/>
 
-          <ConstructViewerCanvas currentProjectId={this.props.projectId}>
+          <ConstructViewerCanvas
+            currentProjectId={this.props.projectId}>
             {constructViewers}
           </ConstructViewerCanvas>
 

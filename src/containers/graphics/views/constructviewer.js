@@ -33,6 +33,9 @@ import {
 import invariant from 'invariant';
 import { projectGetVersion } from '../../../selectors/projects';
 
+// static hash for matching viewers to constructs
+const idToViewer = {};
+
 export class ConstructViewer extends Component {
 
   static propTypes = {
@@ -60,12 +63,20 @@ export class ConstructViewer extends Component {
 
   constructor(props) {
     super(props);
+    idToViewer[this.props.constructId] = this;
     this.state = {
       blockPopupMenuOpen: false,    // context menu for blocks
       menuPosition: new Vector2D(), // position for any popup menu,
       modalOpen: false,             // controls visibility of test modal window
     };
     this.update = debounce(this._update.bind(this), 1);
+  }
+
+  /**
+   * given a construct ID return the current viewer if there is one
+   */
+  static getViewerForConstruct(id) {
+    return idToViewer[id];
   }
 
   /**
