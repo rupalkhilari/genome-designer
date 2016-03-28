@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
+import invariant from 'invariant';
 import { connect } from 'react-redux';
 import { projectAddConstruct } from '../../../actions/projects';
 import {
@@ -10,6 +11,7 @@ import {
 import { focusConstruct, focusBlocks } from '../../../actions/focus';
 import { projectGetVersion } from '../../../selectors/projects';
 import DnD from '../dnd/dnd';
+import ConstructViewer from './constructviewer';
 
 export class ConstructViewerCanvas extends Component {
 
@@ -28,14 +30,9 @@ export class ConstructViewerCanvas extends Component {
     // make new construct
     const construct = this.props.blockCreate();
     this.props.projectAddConstruct(this.props.currentProjectId, construct.id);
-    // add block(s) to construct
-    const blocks = Array.isArray(payload.item) ? payload.item : [payload.item];
-    const projectVersion = this.props.projectGetVersion(this.props.currentProjectId);
-    blocks.forEach((block, index) => {
-      const clone = this.props.blockClone(block, projectVersion);
-      this.props.blockAddComponent(construct.id, clone.id, index);
-    });
-    // select the new construct
+    const constructViewer = ConstructViewer.getViewerForConstruct(construct.id);
+    invariant(constructViewer, 'expect to find a viewer for the new construct');
+    constructViewer.addItemAtInsertionPoint(payload, null, null);
     this.props.focusConstruct(construct.id);
   }
 

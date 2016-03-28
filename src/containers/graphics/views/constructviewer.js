@@ -33,6 +33,9 @@ import {
 import invariant from 'invariant';
 import { projectGetVersion } from '../../../selectors/projects';
 
+// static hash for matching viewers to constructs
+const idToViewer = {};
+
 export class ConstructViewer extends Component {
 
   static propTypes = {
@@ -60,12 +63,20 @@ export class ConstructViewer extends Component {
 
   constructor(props) {
     super(props);
+    idToViewer[this.props.constructId] = this;
     this.state = {
       blockPopupMenuOpen: false,    // context menu for blocks
       menuPosition: new Vector2D(), // position for any popup menu,
       modalOpen: false,             // controls visibility of test modal window
     };
     this.update = debounce(this._update.bind(this), 1);
+  }
+
+  /**
+   * given a construct ID return the current viewer if there is one
+   */
+  static getViewerForConstruct(id) {
+    return idToViewer[id];
   }
 
   /**
@@ -173,15 +184,18 @@ export class ConstructViewer extends Component {
 
     // add all blocks in the payload
     const blocks = Array.isArray(payload.item) ? payload.item : [payload.item];
-    const clones = [];
+    // return the list of newly added blocks so we can select them for example
+    const newBlocks = [];
     const projectVersion = this.props.projectGetVersion(this.props.projectId);
     blocks.forEach(block => {
-      const clone = this.props.blockClone(block, projectVersion);
-      this.props.blockAddComponent(parent.id, clone.id, index++);
-      clones.push(clone.id);
+      const newBlock = payload.source === 'inventory'
+        ? this.props.blockClone(block, projectVersion)
+        : this.props.blocks[block];
+      this.props.blockAddComponent(parent.id, newBlock.id, index++);
+      newBlocks.push(newBlock.id);
     });
     // return all the newly inserted blocks
-    return clones;
+    return newBlocks;
   }
   /**
    * remove the given block, which we assume if part of our construct and
