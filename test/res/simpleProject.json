@@ -32,7 +32,8 @@
 	  "sequence": {
 		"md5": "aac324448a3f3a55162265ee65aab7f2",
 		"length": 10,
-		"annotations": []
+		"annotations": [],
+		"sequence": "aaaaaaaaaa"
 	  },
 	  "source": {
 		"id": "genbank"
@@ -74,12 +75,14 @@
 		],
 		"type": "source",
 		"date": "06-FEB-2009",
-		"sequence_version": 1
+		"sequence_version": 1,
+		"original_id": "EU912544.1"
 	  },
 	  "sequence": {
 		"md5": "9ee827dec9c8fb0a0bc00744e44f72a0",
 		"length": 120,
-		"annotations": []
+		"annotations": [],
+		"sequence": "aaaaaaaaaaccccccccccttttttttttaaaaaaaaaaccccccccccttttttttttaaaaaaaaaaccccccccccttttttttttaaaaaaaaaacccccccccctttttttttt"
 	  },
 	  "source": {
 		"id": "genbank"
@@ -116,7 +119,9 @@
 	  "sequence": {
 		"md5": "89a02295a7081fac685c66363a560112",
 		"length": 60,
-		"annotations": []
+		"annotations": [],
+		"sequence": "aaaaaaaaaaccccccccccttttttttttaaaaaaaaaacccccccccctttttttttt"
+
 	  },
 	  "source": {
 		"id": "genbank"
@@ -145,7 +150,8 @@
 	  "sequence": {
 		"md5": "c58a0ae45e177bad24720384b5825739",
 		"length": 40,
-		"annotations": []
+		"annotations": [],
+		"sequence": "aaaaaaaaaaccccccccccttttttttttaaaaaaaaaa"
 	  },
 	  "source": {
 		"id": "genbank"
@@ -174,7 +180,9 @@
 	  "sequence": {
 		"md5": "fad7d9c7309906529a09443c8a6621e7",
 		"length": 10,
-		"annotations": []
+		"annotations": [],
+		"sequence": "aaaaaaaaaa"
+
 	  },
 	  "source": {
 		"id": "genbank"

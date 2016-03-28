@@ -1,10 +1,7 @@
-import requests
 import json
-from io import StringIO
 from Bio import Seq
 from Bio import SeqIO
 from Bio import SeqFeature
-import sys
 import uuid
 
 sbol_type_table = {
@@ -17,8 +14,6 @@ sbol_type_table = {
 
 def get_sequence_and_features(block, allblocks):
     features = block["sequence"]["annotations"]
-#   for f in features:
-#       f["block_id"] = block["id"]
 
     if len(block["components"])==0:
         return { "sequence": block["sequence"]["sequence"], "features": features}
@@ -32,41 +27,43 @@ def get_sequence_and_features(block, allblocks):
             seq += output["sequence"]
 
             features.append( {
+                "block_id": block_id,
                 "start" : pos,
                 "end" : len(seq),
+                "type" : "block",
+                "parent_block" : block["id"] + "," + str(i),
             })
 
             for feature in output["features"]:
                 features.append( {
+                    "block_id": feature["block_id"],
                     "start" : feature["start"] + pos,
                     "end" : feature["end"] + pos,
                     "type" : feature["type"],
+                    "parent_block" : feature.get("parent_block",None)
                 })
         return { "sequence": seq, "features": features }
 
 def project_to_genbank(filename, project, allblocks):
-    constructs = project["components"]
+    blocks = project["components"]
     seq_obj_lst = []
 
-    for bid in constructs:
-        construct = allblocks.get(bid)
-        if not construct:
+    for bid in blocks:
+        block = allblocks.get(bid)
+        if not block:
             continue
 
-        output = get_sequence_and_features(construct, allblocks)
+        output = get_sequence_and_features(block, allblocks)
         seq = output["sequence"]
         features = output["features"]
 
-        seq_obj = SeqIO.SeqRecord(Seq.Seq(seq,Seq.Alphabet.DNAAlphabet()),construct["id"])
+        seq_obj = SeqIO.SeqRecord(Seq.Seq(seq,Seq.Alphabet.DNAAlphabet()),block["metadata"]["original_id"])
         for feature in features:
             sf = SeqFeature.SeqFeature()
             sf.type = feature["type"]
             sf.location = SeqFeature.FeatureLocation(feature["start"],feature["end"])
             #sf.qualifiers["block_id"] = feature.get("block_id","")
             #sf.qualifiers["parent_block"] = feature.get("parent_block",None)
-            for other_feature_key, other_feature_value in feature.iteritems():
-                if other_feature_key not in ["start", "end", "type"]:
-                    sf.qualifiers[other_feature_key] = other_feature_value
             seq_obj.features.append(sf)
         seq_obj_lst.append(seq_obj)
 
@@ -131,6 +128,7 @@ def genbank_to_block_helper(gb, convert_features=False):
     root_block["metadata"]["type"] = "source"
     root_block["metadata"]["start"] = 0
     root_block["metadata"]["end"] = full_length-1
+    root_block["metadata"]["original_id"] = gb.id
     root_block["sequence"]["length"] = full_length
     for annot in gb.annotations:
         try:
@@ -261,7 +259,7 @@ def genbank_to_block_helper(gb, convert_features=False):
                 block_id = str(uuid.uuid4())
                 filler_block = create_block_json(block_id, sequence[current_position:child["metadata"]["start"]], [])
                 filler_block["metadata"]["type"] = "filler"
-                filler_block["metadata"]["name"] = "Unknown"
+                filler_block["metadata"]["name"] = filler_block["sequence"]["sequence"][:3] + '...'
                 filler_block["metadata"]["start"] = current_position
                 filler_block["metadata"]["end"] = child["metadata"]["start"]-1
                 all_blocks[block_id] = filler_block
@@ -271,7 +269,7 @@ def genbank_to_block_helper(gb, convert_features=False):
             block_id = str(uuid.uuid4())
             filler_block = create_block_json(block_id, sequence[current_position:block["metadata"]["end"]+1], [])
             filler_block["metadata"]["type"] = "filler"
-            filler_block["metadata"]["name"] = "Unknown"
+            filler_block["metadata"]["name"] = filler_block["sequence"]["sequence"][:3] + '...'
             filler_block["metadata"]["start"] = current_position
             filler_block["metadata"]["end"] = block["metadata"]["end"]
             all_blocks[block_id] = filler_block

@@ -35,19 +35,22 @@ const initialState = {
   [child7.id]: new Block(Object.assign({}, child7)),
 };
 
-/*
 const project_and_blocks = require('../../storage/imported_from_genbank.json');
 
 const floBlockState = project_and_blocks.blocks;
+var floState = [];
+for (var id in floBlockState) {
+  floState.push(new Block(floBlockState[id]));
+}
+
 var floState = {};
 for (var id in floBlockState) {
   floState[id] = new Block(floBlockState[id]);
 }
 
 export default function blocks(state = floState, action) {
- */
 
-export default function blocks(state = initialState, action) {
+//export default function blocks(state = initialState, action) {
   switch (action.type) {
   case ActionTypes.BLOCK_CREATE :
   //case ActionTypes.BLOCK_SAVE :

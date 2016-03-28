@@ -3,62 +3,76 @@ import * as fileSystem from '../../../server/utils/fileSystem';
 import path from 'path';
 import Project from '../../../src/models/Project';
 import Block from '../../../src/models/Block';
-import merge from 'lodash.merge'
+import merge from 'lodash.merge';
+import _ from 'lodash';
 import BlockDefinition from '../../../src/schemas/Block';
 import ProjectDefinition from '../../../src/schemas/Project';
 import md5 from 'md5';
 import * as persistence from '../../../server/data/persistence';
 
-//data massaging
-const handleBlocks = (outputBlocks) => {
-  return Promise.all(
-    Object.keys(outputBlocks).map(key => {
-      // generate a valid block scaffold. This is similar to calling new Block(),
-      // but a bit more light weight and easier to work with (models are frozen so you cannot edit them)
-      const scaffold = BlockDefinition.scaffold();
-      const outputBlock = outputBlocks[key];
+import {chunk} from 'lodash';
 
-      //get the sequence md5
-      const sequenceMd5 = outputBlock.sequence.sequence ? md5(outputBlock.sequence.sequence) : '';
+const createBlockStructureAndSaveSequence = (block) => {
+  // generate a valid block scaffold. This is similar to calling new Block(),
+  // but a bit more light weight and easier to work with (models are frozen so you cannot edit them)
+  const scaffold = BlockDefinition.scaffold();
 
-      //reassign values
-      const toMerge = {
-        metadata: outputBlock.metadata,
-        sequence: {
-          md5: sequenceMd5,
-          annotations: outputBlock.annotations,
-          length: outputBlock.sequence.length,
-        },
-        source: {
-          id: 'genbank',
-        },
-        rules: outputBlock.rules,
-      };
+  //get the sequence md5
+  const sequenceMd5 = block.sequence ? md5(block.sequence) : '';
 
-      //be sure to pass in empty project first, so you arent overwriting scaffold each time
-      const block = merge({}, scaffold, toMerge);
+  //reassign values
+  const toMerge = {
+    metadata: block.metadata,
+    sequence: {
+      md5: sequenceMd5,
+      annotations: block.annotations, //you will likely have to remap these...
+    },
+    source: {
+      id: 'genbank',
+    },
+    rules: block.rules,
+  };
 
-      //if you want to validate it afterwards (probably for debugging)
-      //This function will log errors about what fields failed validation
-      //you can pass in a second argument of true for this to throw if you want a stack trace
-      const isValid = BlockDefinition.validate(block);
+  //be sure to pass in empty project first, so you arent overwriting scaffold each time
+  const outputBlock = merge({}, scaffold, toMerge);
 
-      //note that if you reject this promise, then Promise.all will reject as well. You probably dont want to do that.
-      //None of the blocks will be available on what is returned. Dont want you to run into that.
-      //Really, you probably just dont want this to happen ever...
-      if (!isValid) {
-        //return Promise.reject('block was not valid:', block);
-      }
+  //if you want to validate it afterwards (probably for debugging)
+  //This function will log errors about what fields failed validation
+  //you can pass in a second argument of true for this to throw if you want a stack trace
+  const isValid = BlockDefinition.validate(outputBlock);
 
-      //promise, for writing sequence if we have one, or just immediately resolve if we dont
-      const sequencePromise = sequenceMd5 ?
-        persistence.sequenceWrite(sequenceMd5, outputBlock.sequence.sequence) :
-        Promise.resolve();
+  //note that if you reject this promise, then Promise.all will reject as well. You probably dont want to do that.
+  //None of the blocks will be available on what is returned. Dont want you to run into that.
+  //Really, you probably just dont want this to happen ever...
+  if (!isValid) {
+    //return Promise.reject('block was not valid:', block);
+  }
 
-      //return promise which will resolve with block once done
-      return sequencePromise.then(() => ({block: block, id: block.id, oldId: key, children: outputBlocks[key].components}));
-    })
-  );
+  //promise, for writing sequence if we have one, or just immediately resolve if we dont
+  const sequencePromise = sequenceMd5 ?
+    persistence.sequenceWrite(sequenceMd5, block.sequence) :
+    Promise.resolve();
+
+  //return promise which will resolve with block once done
+  return sequencePromise.then(() => ({
+    block: outputBlock,
+    id: outputBlock.id,
+    oldId: block.id,
+    children: block.components
+  }));
+};
+
+const createAllBlocks = (outputBlocks) => {
+  const batches = chunk(Object.keys(outputBlocks), 200);
+
+  return batches.reduce((acc, batch) => {
+    return acc.then((allBlocks) => {
+      return Promise.all(batch.map(block => createBlockStructureAndSaveSequence(outputBlocks[block])))
+        .then((createdBatch) => {
+          return allBlocks.concat(createdBatch);
+        });
+    });
+  }, Promise.resolve([]));
 };
 
 const getNewId = (blockStructureArray, oldId) => {
@@ -66,17 +80,18 @@ const getNewId = (blockStructureArray, oldId) => {
     if (blockStructureArray[i].oldId === oldId) {
       return blockStructureArray[i].id;
     }
-  };
+  }
+  ;
 };
 
 const remapHierarchy = (blockArray) => {
   return blockArray.map(blockStructure => {
     var newBlock = blockStructure.block;
-    blockStructure.children.map(oldChildId =>  {
+    blockStructure.children.map(oldChildId => {
       var newid = getNewId(blockArray, oldChildId);
       newBlock.components.push(newid);
     });
-    return newBlock;
+    return new Block(newBlock);
   });
 };
 
@@ -84,13 +99,13 @@ const handleProject = (outputProject, root_block_ids) => {
   //just get fields we want using destructuring and use them to merge
   const { name, description } = outputProject;
 
-  return merge({}, ProjectDefinition.scaffold(), {
+  return new Project(merge({}, ProjectDefinition.scaffold(), {
     components: root_block_ids,
     metadata: {
       name,
       description,
     },
-  });
+  }));
 };
 
 const exec = require('child_process').exec;
@@ -106,7 +121,7 @@ const runCommand = (command, input, inputFile, outputFile) => {
       return new Promise((resolve, reject) => {
         exec(command, (err, stdout) => {
           if (err) {
-            console.log('Error executing command: '+err);
+            console.log('Error executing command: ' + err);
             reject(err);
           }
           else resolve(stdout);
@@ -128,7 +143,7 @@ const exportProjectStructure = (project, blocks) => {
 
   return runCommand(cmd, JSON.stringify(input), inputFile, outputFile)
     .then(resStr => {
-        return Promise.resolve(resStr);
+      return Promise.resolve(resStr);
     });
 };
 
@@ -136,8 +151,8 @@ const loadSequences = (blocks) => {
   return Promise.all(
     Object.keys(blocks).map(key => {
       //promise, for writing sequence if we have one, or just immediately resolve if we dont
-      const sequencePromise = blocks[key].sequence.sequenceMd5 ?
-        persistence.sequenceGet(blocks[key].sequence.sequenceMd5) :
+      const sequencePromise = blocks[key].sequence.md5 ?
+        persistence.sequenceGet(blocks[key].sequence.md5) :
         Promise.resolve('');
     })
   );
@@ -153,7 +168,7 @@ export const exportProject = (project, blocks) => {
     });
 };
 
-const importProjectStructure = (genbankString) => {
+const readGenbankFile = (genbankString) => {
   const inputFile = createRandomStorageFile();
 
   const outputFile = createRandomStorageFile();
@@ -171,29 +186,48 @@ const importProjectStructure = (genbankString) => {
     });
 };
 
-export const importProject = (gbstr) => {
-  return importProjectStructure(gbstr)
+const handleBlocks = (genbankInput) => {
+  return readGenbankFile(genbankInput)
     .then(result => {
       if (result && result.project && result.blocks &&
         result.project.components && result.project.components.length > 0) {
-          return handleBlocks(result.blocks)
-            .then(blocksWithOldIds => {
-              const remapped_blocks_array = remapHierarchy(blocksWithOldIds);
-              const newRootBlocks = result.project.components.map((oldBlockId) => {
-                return getNewId(blocksWithOldIds, oldBlockId);
-              });
-              const resProject = handleProject(result.project, newRootBlocks);
-              var blocks = {};
-              for (var i = 0; i < remapped_blocks_array.length; i++) {
-                blocks[remapped_blocks_array[i].id] = remapped_blocks_array[i];
-              };
-
-              const outputFile = filePaths.createStorageUrl('imported_from_genbank.json');
-              fileSystem.fileWrite(outputFile, { project: resProject, blocks: blocks });
-
-              return { project: resProject, blocks: blocks };
+        return createAllBlocks(result.blocks)
+          .then(blocksWithOldIds => {
+            const remapped_blocks_array = remapHierarchy(blocksWithOldIds);
+            const newRootBlocks = result.project.components.map((oldBlockId) => {
+              return getNewId(blocksWithOldIds, oldBlockId);
             });
-        }
-      else return 'Invalid Genbank format.';
+            return {project: result.project, rootBlocks: newRootBlocks, blocks: remapped_blocks_array};
+          });
+      }
+      else {
+        return 'Invalid Genbank format.';
+      }
+    });
+}
+
+export const importProject = (gbstr) => {
+  return handleBlocks(gbstr)
+    .then((result) => {
+      if (_.isString(result)) {
+        return result;
+      }
+      const resProject = handleProject(result.project, result.rootBlocks);
+
+      const outputFile = filePaths.createStorageUrl('imported_from_genbank.json');
+      fileSystem.fileWrite(outputFile, {project: resProject, blocks: result.blocks});
+
+      return {project: resProject, blocks: result.blocks};
+    });
+}
+
+
+export const importConstruct = (genbankString) => {
+  return handleBlocks(genbankString)
+    .then((rawProjectRootsAndBlocks) => {
+      if (_.isString(rawProjectRootsAndBlocks)) {
+        return rawProjectRootsAndBlocks;
+      }
+      return {roots: rawProjectRootsAndBlocks.rootBlocks, blocks: rawProjectRootsAndBlocks.blocks};
     });
 };
