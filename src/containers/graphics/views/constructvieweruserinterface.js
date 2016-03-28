@@ -312,8 +312,10 @@ export default class ConstructViewerUserInterface extends UserInterface {
           this.constructViewer.removePartsList(this.selectedElements);
         }
         // start the drag with the proxy and the removed block as the payload
+        // and indicate that the source of the drag is another construct viewer
         DnD.startDrag(proxy, globalPoint, {
           item: this.selectedElements,
+          source: 'construct-viewer',
         });
       }
     }

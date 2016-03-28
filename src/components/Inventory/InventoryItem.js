@@ -48,6 +48,7 @@ export class InventoryItem extends Component {
     DnD.startDrag(this.makeDnDProxy(), globalPoint, {
       item: this.props.item,
       type: this.props.inventoryType,
+      source: 'inventory',
     }, {
       onDrop: (target, position) => {
         if (this.props.onDrop) {
