@@ -3,20 +3,7 @@ import { errorDoesNotExist } from '../utils/errors';
 import * as persistence from './persistence';
 import * as filePaths from '../utils/filePaths';
 import * as fileSystem from '../utils/fileSystem';
-
-//note - expects the project to already exist.
-export const getAllBlockIdsInProject = (projectId) => {
-  const directory = filePaths.createBlockDirectoryPath(projectId);
-  return persistence.projectExists(projectId)
-    .then(() => fileSystem.directoryContents(directory));
-};
-
-export const getAllBlocksInProject = (projectId) => {
-  return getAllBlockIdsInProject(projectId)
-    .then(blockIds => {
-      return Promise.all(blockIds.map(blockId => persistence.blockGet(blockId, projectId)));
-    });
-};
+import { getAllBlockIdsInProject, getAllBlocksInProject } from './querying';
 
 export const createRollup = (project, ...blocks) => ({
   project,
@@ -39,7 +26,9 @@ export const writeProjectRollup = (projectId, rollup, userId) => {
   const { project, blocks } = rollup;
   const newBlockIds = blocks.map(block => block.id);
 
-  invariant(projectId === project.id, 'rollup project ID does not match');
+  if (projectId !== project.id) {
+    return Promise.reject('rollup project ID does not match');
+  }
 
   return persistence.projectExists(projectId)
     .catch(err => {

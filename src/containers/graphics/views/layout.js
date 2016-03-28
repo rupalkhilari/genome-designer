@@ -36,6 +36,7 @@ export default class Layout {
     this.nodes2parts = {};
     this.parts2nodes = {};
     this.partTypes = {};
+    this.partUsage = {};
     this.nestedLayouts = {};
     this.connectors = {};
 
@@ -73,32 +74,55 @@ export default class Layout {
     this.parts2nodes[part] = node;
     this.partTypes[part] = this.isSBOL(part) ? sbolType : blockType;
   }
+  /**
+   * flag the part as currently in use i.e. should be rendered.
+   * Parts that are found to be no longer be in use are removed after rendering
+   * along with associated nodes
+   */
+  usePart(part) {
+    this.partUsage[part] = this.updateReference;
+  }
+
+  /**
+   * drop any parts that don't match the current update reference
+   * Also drop nodes associated with the part.
+   */
+  dropParts() {
+    const keys = Object.keys(this.partUsage);
+    keys.forEach(part => {
+      if (this.partUsage[part] < this.updateReference) {
+        const node = this.parts2nodes[part];
+        if (node) {
+          delete this.nodes2parts[node.uuid];
+          delete this.parts2nodes[part];
+          delete this.partTypes[part];
+          delete this.partUsage[part];
+          node.parent.removeChild(node);
+        }
+      }
+    });
+  }
 
   /**
    * remove the part, node and unmap. Return the node ( its isn't disposed )
    * so that is can be reused.
    */
-  removePart(part) {
-    // if we have the part, remove it and return the node
-    const node = this.parts2nodes[part];
-    if (node) {
-      delete this.nodes2parts[node.uuid];
-      delete this.parts2nodes[part];
-      delete this.partTypes[part];
-      node.parent.removeChild(node);
-      return node;
-    }
-    // if here part might be in nested construct
-    const keys = Object.keys(this.nestedLayouts);
-    for (let i = 0; i < keys.length; i += 1) {
-      const node = this.nestedLayouts[keys[i]].removePart(part);
-      if (node) {
-        return node;
-      }
-    }
-    // if here we don't have the part so return null
-    return null;
-  }
+  // removePart(part) {
+  //   // if we have the part, remove it and return the node
+  //   const node = this.parts2nodes[part];
+  //   if (node) {
+  //     delete this.nodes2parts[node.uuid];
+  //     delete this.parts2nodes[part];
+  //     delete this.partTypes[part];
+  //     node.parent.removeChild(node);
+  //   } else {
+  //     // if here part might be in nested construct
+  //     const keys = Object.keys(this.nestedLayouts);
+  //     for (let i = 0; i < keys.length; i += 1) {
+  //       this.nestedLayouts[keys[i]].removePart(part);
+  //     }
+  //   }
+  // }
   /**
    * return the element from the data represented by the given node uuid.
    * This searches this construct and any nested construct to find the part
@@ -150,7 +174,8 @@ export default class Layout {
     node.set({
       hasChildren: this.hasChildren(part),
     });
-
+    // mark part as in use
+    this.usePart(part);
   }
   /**
    * return one of the meta data properties for a part.
@@ -411,9 +436,6 @@ export default class Layout {
    * @return {[type]} [description]
    */
   layout(layoutOptions) {
-    if (this.construct.id === 'block1') {
-      console.time('Layout');
-    }
     // set the new reference key
     this.updateReference += 1;
     // shortcut
@@ -549,6 +571,9 @@ export default class Layout {
     // cleanup and dangling nested constructs
     this.disposeNestedLayouts();
 
+    // drop unused parts and nodes
+    this.dropParts();
+
     // create/show vertical bar
     this.verticalFactory();
 
@@ -570,8 +595,6 @@ export default class Layout {
     }
     // apply selections to scene graph
     this.sceneGraph.ui.setSelections(selectedNodes);
-
-    if (this.construct.id === 'block1') console.timeEnd('Layout');
 
     // return the height consumed by the layout
     return heightUsed + nestedVertical + kT.rowBarH;

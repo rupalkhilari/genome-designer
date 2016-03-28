@@ -171,9 +171,13 @@ class DnD {
    * given a mouse event, find the drop target if any at the given location
    */
   findTargetAt(globalPoint) {
-    return this.targets.find(options => {
+    // find all targets at the given point
+    const hits = this.targets.filter(options => {
       return this.getElementBounds(options.element).pointInBox(globalPoint);
     });
+    // sort by zorder and return the one with the highest values
+    hits.sort((a, b) => {return a.options.zorder - b.options.zorder});
+    return hits.pop();  // undefined on an empty array
   }
 
   /**
@@ -183,9 +187,16 @@ class DnD {
    * dragOver(globalPosition, payload) - when a drag moves over the target, dragEnter is always called first
    * dragLeave(globalPosition, payload) - when a drag leaves the target, if dragEnter was called before NOTE: dragLeave is called even after a successful drop
    * drop(globalPosition, payload) - when a drop occurs - alway follows a dragEnter, dragOver
+   *
+   * options should also include an arbitary z order for the target. Drop targets can be over laid
+   * and the chosen target will be the highest in the z order if there is overlap
+   *
+   * drop handler is not optional and should be included.
    */
   registerTarget(element, options) {
     invariant(element, 'expected an element to register');
+    invariant(options && options.drop, 'expected a drop handler');
+    invariant(options.zorder === +options.zorder, 'z order must be a number');
     this.targets.push({ element, options });
   }
 

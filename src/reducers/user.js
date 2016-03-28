@@ -17,7 +17,7 @@ export default function user(state = initialState, action) {
         userid = null,
         email = null,
         firstName = null,
-        lastName = null
+        lastName = null,
       } = action.user;
 
       return Object.assign({}, state, {

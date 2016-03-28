@@ -13,16 +13,14 @@ class App extends Component {
   };
 
   render() {
-    const { currentProjectId, children } = this.props;
-
     const DevTools = (process.env.NODE_ENV !== 'production') ? require('./DevTools') : 'div';
 
     return (
       <div className="App">
-        <GlobalNav currentProjectId={currentProjectId}/>
+        <GlobalNav currentProjectId={this.props.currentProjectId}/>
         <AuthenticationForms />
         <div className="App-pageContent">
-          {children}
+          {this.props.children}
         </div>
         <DevTools />
       </div>
