@@ -33,6 +33,7 @@ class ProjectPage extends Component {
     this.forceUpdate();
   };
 
+
   render() {
     const { project, projectId, constructs } = this.props;
 

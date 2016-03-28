@@ -122,6 +122,7 @@ export class ConstructViewer extends Component {
    * ensure we don't get any resize events after dismounting
    */
   componentWillUnmount() {
+    delete idToViewer[this.props.constructId];
     this.resizeDebounced.cancel();
     window.removeEventListener('resize', this.resizeDebounced);
   }
@@ -188,7 +189,7 @@ export class ConstructViewer extends Component {
     const newBlocks = [];
     const projectVersion = this.props.projectGetVersion(this.props.projectId);
     blocks.forEach(block => {
-      const newBlock = payload.source === 'inventory'
+      const newBlock = (payload.source === 'inventory' || payload.copying)
         ? this.props.blockClone(block, projectVersion)
         : this.props.blocks[block];
       this.props.blockAddComponent(parent.id, newBlock.id, index++);
