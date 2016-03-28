@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { push } from 'react-router-redux';
 import ConstructViewer from './graphics/views/constructviewer';
+import ConstructViewerCanvas from './graphics/views/constructViewerCanvas';
 import ProjectDetail from '../components/ProjectDetail';
 import ProjectHeader from '../components/ProjectHeader';
 import Inventory from './Inventory';
@@ -32,6 +33,7 @@ class ProjectPage extends Component {
     this.forceUpdate();
   };
 
+
   render() {
     const { project, projectId, constructs } = this.props;
 
@@ -40,6 +42,7 @@ class ProjectPage extends Component {
         .catch(err => this.props.push('/'));
       return (<p>loading project...</p>);
     }
+    // build a list of construct viewers
     const constructViewers = constructs.map(construct => {
       return (
         <ConstructViewer key={construct.id}
@@ -57,9 +60,10 @@ class ProjectPage extends Component {
 
           <ProjectHeader project={project}/>
 
-          <div className="ProjectPage-constructs">
+          <ConstructViewerCanvas
+            currentProjectId={this.props.projectId}>
             {constructViewers}
-          </div>
+          </ConstructViewerCanvas>
 
           <ProjectDetail project={project}/>
         </div>

@@ -26,7 +26,7 @@
       "silent": true,
       "screenshots" : {
         "enabled" : true,
-        "path" : "/test-e2e/screenshots"
+        "path" : "./tests/screenshots"
       },
       "desiredCapabilities": {
         "browserName": "chrome",

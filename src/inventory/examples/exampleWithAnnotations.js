@@ -25,6 +25,8 @@ export default {
         end: 12,
         name: 'BBa_B0034',
         type: 'BioBrick',
+        tags: {},
+        notes: {},
       },
       {
         isForward: true,
@@ -32,6 +34,8 @@ export default {
         end: 8,
         name: '',
         type: 'conserved',
+        tags: {},
+        notes: {},
       },
       {
         isForward: true,
@@ -39,6 +43,8 @@ export default {
         end: 1146,
         name: 'lacI-LVA',
         type: 'cds',
+        tags: {},
+        notes: {},
       },
       {
         isForward: true,
@@ -46,6 +52,8 @@ export default {
         end: 1146,
         name: 'BBa_C0012',
         type: 'BioBrick',
+        tags: {},
+        notes: {},
       },
       {
         isForward: true,
@@ -53,6 +61,8 @@ export default {
         end: 1146,
         name: 'LVA',
         type: 'tag',
+        tags: {},
+        notes: {},
       },
       {
         isForward: true,
@@ -60,6 +70,8 @@ export default {
         end: 1171,
         name: 'Help:Barcodes',
         type: 'barcode',
+        tags: {},
+        notes: {},
       },
       {
         isForward: true,
@@ -67,6 +79,8 @@ export default {
         end: 1259,
         name: 'BBa_B0010',
         type: 'BioBrick',
+        tags: {},
+        notes: {},
       },
       {
         isForward: false,
@@ -74,6 +88,8 @@ export default {
         end: 1308,
         name: 'BBa_B0015',
         type: 'BioBrick',
+        tags: {},
+        notes: {},
       },
       {
         isForward: true,
@@ -81,6 +97,8 @@ export default {
         end: 1234,
         name: '',
         type: 'stem_loop',
+        tags: {},
+        notes: {},
       },
       {
         isForward: true,
@@ -88,6 +106,8 @@ export default {
         end: 1308,
         name: 'BBa_B0012',
         type: 'BioBrick',
+        tags: {},
+        notes: {},
       },
       {
         isForward: true,
@@ -95,6 +115,8 @@ export default {
         end: 1294,
         name: 'T7 TE',
         type: 'stem_loop',
+        tags: {},
+        notes: {},
       },
       {
         isForward: true,
@@ -102,6 +124,8 @@ export default {
         end: 1308,
         name: '',
         type: 'polya',
+        tags: {},
+        notes: {},
       },
       {
         isForward: true,
@@ -109,6 +133,8 @@ export default {
         end: 1301,
         name: '',
         type: 'stop',
+        tags: {},
+        notes: {},
       },
       {
         isForward: true,
@@ -116,6 +142,8 @@ export default {
         end: 1370,
         name: 'BBa_R0011',
         type: 'BioBrick',
+        tags: {},
+        notes: {},
       },
       {
         isForward: true,
@@ -123,6 +151,8 @@ export default {
         end: 1335,
         name: 'lac O1',
         type: 'operator',
+        tags: {},
+        notes: {},
       },
       {
         isForward: true,
@@ -130,6 +160,8 @@ export default {
         end: 1341,
         name: '-35',
         type: 'promoter',
+        tags: {},
+        notes: {},
       },
       {
         isForward: true,
@@ -137,6 +169,8 @@ export default {
         end: 1358,
         name: 'lac O1',
         type: 'operator',
+        tags: {},
+        notes: {},
       },
       {
         isForward: true,
@@ -144,6 +178,8 @@ export default {
         end: 1364,
         name: '-10',
         type: 'promoter',
+        tags: {},
+        notes: {},
       },
     ],
   },

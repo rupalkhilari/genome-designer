@@ -33,7 +33,8 @@ ADD package.json /app/package.json
 RUN npm update -g npm && npm install
 
 ADD . /app
-RUN npm run install-extensions
+#install extensions, continue even if errors
+RUN npm run install-extensions || true
 
 RUN cd /app
 
