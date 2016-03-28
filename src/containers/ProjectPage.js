@@ -9,7 +9,6 @@ import Inventory from './Inventory';
 import Inspector from './Inspector';
 import { projectLoad } from '../actions/projects';
 import { uiShowMainMenu } from '../actions/ui';
-import { getItem, setItem } from '../middleware/localStorageCache';
 
 import '../styles/ProjectPage.css';
 import '../styles/SceneGraphPage.css';
@@ -27,7 +26,6 @@ class ProjectPage extends Component {
   constructor(props) {
     super(props);
     this.layoutAlgorithm = 'wrap';
-    this.saveProjectIdInLocalStorage(this.props && this.props.projectId);
   }
 
   onLayoutChanged = () => {
@@ -35,15 +33,6 @@ class ProjectPage extends Component {
     this.forceUpdate();
   };
 
-  componentWillReceiveProps(nextProps) {
-    this.saveProjectIdInLocalStorage(nextProps.projectId);
-  }
-
-  saveProjectIdInLocalStorage(id) {
-    if (id) {
-      setItem('mostRecentProject', id);
-    }
-  }
 
   render() {
     const { project, projectId, constructs } = this.props;

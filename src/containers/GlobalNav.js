@@ -7,6 +7,7 @@ import RibbonGrunt from '../components/ribbongrunt';
 import { projectCreate, projectAddConstruct, projectSave } from '../actions/projects';
 import { blockCreate } from '../actions/blocks';
 import { undo, redo } from '../store/undo/actions';
+import { setItem } from '../middleware/localStorageCache';
 
 import '../styles/GlobalNav.css';
 
@@ -38,6 +39,7 @@ class GlobalNav extends Component {
               text: 'Save Project',
               action: () => {
                 this.props.projectSave(this.props.currentProjectId);
+                setItem('mostRecentProject', this.props.currentProjectId);
               },
             },
             {},

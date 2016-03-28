@@ -308,14 +308,16 @@ export default class ConstructViewerUserInterface extends UserInterface {
         // proxy representing 1 ore more blocks
         const proxy = this.makeDragProxy();
         // remove the blocks, unless meta key pressed
-        if (!evt.altKey) {
+        let copying = evt.altKey;
+        if (!copying) {
           this.constructViewer.removePartsList(this.selectedElements);
-        }
+        } 
         // start the drag with the proxy and the removed block as the payload
         // and indicate that the source of the drag is another construct viewer
         DnD.startDrag(proxy, globalPoint, {
           item: this.selectedElements,
           source: 'construct-viewer',
+          copying: copying,
         });
       }
     }
