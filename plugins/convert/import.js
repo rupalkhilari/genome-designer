@@ -1,9 +1,9 @@
 import express from 'express';
-import fs from 'fs';
 import bodyParser from 'body-parser';
 import { getPlugin } from '../loadPlugin';
 import * as persistence from '../../server/data/persistence';
 import * as rollup from '../../server/data/rollup';
+import _ from 'lodash';
 
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
@@ -44,17 +44,6 @@ function importConstruct(id, data) {
   return callImportFunction('importConstruct', id, data);
 }
 
-//this function is just trying to avoid redundant code
-function importThenCatch(promise, resp) {
-  promise
-    .then(res => {
-      resp.json(res);
-    })
-    .catch(err => {
-      resp.status(500).send(err);
-    });
-}
-
 router.post('/project/:id', jsonParser, (req, resp) => {
   const { id } = req.params;
 
@@ -68,13 +57,12 @@ router.post('/project/:id', jsonParser, (req, resp) => {
 
   //received all the data
   req.on('end', () => {
-    const promise = importProject(id, buffer)
+    return importProject(id, buffer)
       .then((roll) => {
         rollup.writeProjectRollup(roll.project.id, roll, req.user.uuid)
           .then(() => persistence.projectSave(roll.project.id))
           .then(commit => resp.status(200).json({ProjectId: roll.project.id}))
           .catch(err => {
-            console.log(err);
             resp.status(400).send(err);
           });
       })
@@ -97,14 +85,14 @@ router.post('/construct/:id', jsonParser, (req, resp) => {
 
   //received all the data
   req.on('end', () => {
-    const promise = importConstruct(id, buffer)
+    return importConstruct(id, buffer)
       .then((roll) => {
         if (! _.isString(roll)) {
           resp.status(200).json({roots: roll.roots, blocks: roll.blocks});
         }
         else {
           resp.status(500).send(roll);
-        }
+        };
       })
       .catch(err => {
         resp.status(500).send(err);

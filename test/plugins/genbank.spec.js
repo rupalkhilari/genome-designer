@@ -166,7 +166,7 @@ describe('Plugins', () => {
       });
     });
 
-    it('should export simple project to Genbank', function exportGB(done) {
+    it.skip('should export simple project to Genbank', function exportGB(done) {
       fs.readFile(path.resolve(__dirname, '../res/simpleProject.json'), 'utf8', (err, sampleProjectJson) => {
         const sampleProject = JSON.parse(sampleProjectJson);
         exportProject('genbank', sampleProject)

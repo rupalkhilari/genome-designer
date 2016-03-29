@@ -36,18 +36,6 @@ const createBlockStructureAndSaveSequence = (block) => {
   //be sure to pass in empty project first, so you arent overwriting scaffold each time
   const outputBlock = merge({}, scaffold, toMerge);
 
-  //if you want to validate it afterwards (probably for debugging)
-  //This function will log errors about what fields failed validation
-  //you can pass in a second argument of true for this to throw if you want a stack trace
-  const isValid = BlockDefinition.validate(outputBlock);
-
-  //note that if you reject this promise, then Promise.all will reject as well. You probably dont want to do that.
-  //None of the blocks will be available on what is returned. Dont want you to run into that.
-  //Really, you probably just dont want this to happen ever...
-  if (!isValid) {
-    //return Promise.reject('block was not valid:', block);
-  }
-
   //promise, for writing sequence if we have one, or just immediately resolve if we dont
   const sequencePromise = sequenceMd5 ?
     persistence.sequenceWrite(sequenceMd5, block.sequence) :
@@ -58,7 +46,7 @@ const createBlockStructureAndSaveSequence = (block) => {
     block: outputBlock,
     id: outputBlock.id,
     oldId: block.id,
-    children: block.components
+    children: block.components,
   }));
 };
 
@@ -76,31 +64,30 @@ const createAllBlocks = (outputBlocks) => {
 };
 
 const getNewId = (blockStructureArray, oldId) => {
-  for (var i = 0, len = blockStructureArray.length; i < len; i++) {
+  for (let i = 0, len = blockStructureArray.length; i < len; i++) {
     if (blockStructureArray[i].oldId === oldId) {
       return blockStructureArray[i].id;
     }
   }
-  ;
 };
 
 const remapHierarchy = (blockArray) => {
   return blockArray.map(blockStructure => {
-    var newBlock = blockStructure.block;
+    const newBlock = blockStructure.block;
     blockStructure.children.map(oldChildId => {
-      var newid = getNewId(blockArray, oldChildId);
+      const newid = getNewId(blockArray, oldChildId);
       newBlock.components.push(newid);
     });
     return new Block(newBlock);
   });
 };
 
-const handleProject = (outputProject, root_block_ids) => {
+const handleProject = (outputProject, rootBlockIds) => {
   //just get fields we want using destructuring and use them to merge
   const { name, description } = outputProject;
 
   return new Project(merge({}, ProjectDefinition.scaffold(), {
-    components: root_block_ids,
+    components: rootBlockIds,
     metadata: {
       name,
       description,
@@ -121,7 +108,6 @@ const runCommand = (command, input, inputFile, outputFile) => {
       return new Promise((resolve, reject) => {
         exec(command, (err, stdout) => {
           if (err) {
-            console.log('Error executing command: ' + err);
             reject(err);
           }
           else resolve(stdout);
@@ -151,7 +137,7 @@ const loadSequences = (blocks) => {
   return Promise.all(
     Object.keys(blocks).map(key => {
       //promise, for writing sequence if we have one, or just immediately resolve if we dont
-      const sequencePromise = blocks[key].sequence.md5 ?
+      return blocks[key].sequence.md5 ?
         persistence.sequenceGet(blocks[key].sequence.md5) :
         Promise.resolve('');
     })
@@ -160,7 +146,7 @@ const loadSequences = (blocks) => {
 
 export const exportProject = (project, blocks) => {
   return loadSequences(blocks)
-    .then(blocks_with_sequences => {
+    .then(blockWithSequences => {
       return exportProjectStructure(project, blocks)
         .then(exportStr => {
           return Promise.resolve(exportStr);
@@ -193,18 +179,18 @@ const handleBlocks = (genbankInput) => {
         result.project.components && result.project.components.length > 0) {
         return createAllBlocks(result.blocks)
           .then(blocksWithOldIds => {
-            const remapped_blocks_array = remapHierarchy(blocksWithOldIds);
+            const remappedBlocksArray = remapHierarchy(blocksWithOldIds);
             const newRootBlocks = result.project.components.map((oldBlockId) => {
               return getNewId(blocksWithOldIds, oldBlockId);
             });
-            return {project: result.project, rootBlocks: newRootBlocks, blocks: remapped_blocks_array};
+            return {project: result.project, rootBlocks: newRootBlocks, blocks: remappedBlocksArray};
           });
       }
       else {
         return 'Invalid Genbank format.';
       }
     });
-}
+};
 
 export const importProject = (gbstr) => {
   return handleBlocks(gbstr)
@@ -219,7 +205,7 @@ export const importProject = (gbstr) => {
 
       return {project: resProject, blocks: result.blocks};
     });
-}
+};
 
 
 export const importConstruct = (genbankString) => {
@@ -231,3 +217,4 @@ export const importConstruct = (genbankString) => {
       return {roots: rawProjectRootsAndBlocks.rootBlocks, blocks: rawProjectRootsAndBlocks.blocks};
     });
 };
+
