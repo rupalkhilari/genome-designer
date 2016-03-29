@@ -9,7 +9,7 @@
     "postinstall": "npm run install-extensions && npm run selenium",
     "install-extensions": "cd server/extensions && rm -rf node_modules && npm install --only=prod --no-bin-link --no-optional",
     "check": "npm run lint && npm run test",
-    "lint": "eslint src server extensions; exit 0;",
+    "lint": "eslint src server plugins; exit 0;",
     "lint-jscs": "jscs src server",
     "test": "rm -rf ./storage/test && NODE_ENV=test mocha --recursive --compilers js:babel-register,css:test/css-null-compiler.js --require ./test/setup.js --timeout=10000",
     "test:watch": "npm test -- --watch",

@@ -17,8 +17,6 @@ exports.getPlugin = (plugin, func) => {
       pathSet(registry, `[${plugin}][${func}]`, script);
       resolve(script);
     } catch (err) {
-      console.log('couldnt require ' + plugin + ' ' + func);
-      console.error(err.stack);
       reject(err);
     }
   });

@@ -13,7 +13,7 @@ import { createExampleRollup } from '../../utils/rollup';
 
 describe('Server', () => {
   describe('Data', () => {
-    describe.only('Querying', () => {
+    describe('Querying', () => {
       const terminatorBlockName = 'el terminado';
 
       const createCustomRollup = () => {
