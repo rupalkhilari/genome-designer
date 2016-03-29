@@ -12,6 +12,16 @@ export const uiShowAuthenticationForm = (name) => {
   };
 };
 
+export const uiShowDNAImport= (bool) => {
+  return (dispatch, getState) => {
+    dispatch({
+      type: ActionTypes.UI_SHOW_DNAIMPORT,
+      showDNAImport: bool,
+    });
+    return name;
+  };
+};
+
 export const uiShowMainMenu = (showMainMenu) => {
   return (dispatch, getState) => {
     dispatch({

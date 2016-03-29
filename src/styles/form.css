@@ -1,0 +1,103 @@
+:root {
+--radius: 3px;
+--element-height: 3rem;
+--inputcolor: #E1E2E5;
+--textcolor: #747784;
+--primarycolor: #343A4D;
+--errorcolor: #FF6A5E;
+--fontsize: 1.25rem;
+}
+
+.gd-form {
+  padding-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 1.5rem;
+
+  * {
+    width: 80%;
+    margin-bottom: 0.5rem;
+    border-radius: var(--radius);
+  }
+
+  .title {
+    font-size: var(--element-height * 0.5);
+    color: var(--textcolor);
+    text-align:center;
+    margin-top: 1rem;
+    margin-bottom: 2rem !important;
+  }
+
+  input {
+    height: var(--element-height);
+    font-size: var(--fontsize);
+    border-radius: var(--radius);
+    border: 1px solid whitesmoke;
+    background-color: var(--inputcolor);
+    text-indent: 0.5rem;
+    outline: none;
+    color: var(--primarycolor);
+  }
+  input:focus {
+    border: 1px solid lightgray;
+  }
+
+  button {
+    height: var(--element-height);
+    font-size: var(--fontsize);
+    border-radius: 0;
+    cursor: pointer;
+  }
+  button[type="button"]  {
+    background-color: white;
+    border: none;
+    color: textcolor;
+  }
+  button[type="submit"] {
+    background-color: var(--primarycolor);
+    color: white;
+    border: none;
+  }
+  /* errors are hidden by default, add the .visible class to make them appear*/
+  .error {
+    color: transparent;
+    font-size: var(--fontsize);
+    text-align: center;
+  }
+  .visible {
+    color: var(--errorcolor);
+  }
+  label {
+    font-size: var(--fontsize);
+    color: var(--textcolor);
+  }
+  .checkbox {
+    display: flex;
+    align-items: center;
+  }
+  .checkbox span {
+    font-size: var(--fontsize);
+    white-space: nowrap;
+    margin: 3px 0 0 0.5rem;
+    color: var(--textcolor);
+  }
+  .checkbox input {
+    width: 1rem;
+    height: auto;
+    margin-bottom: 0;
+  }
+  .checkbox a {
+    color: dodgerblue;
+  }
+  a {
+    font-size: var(--fontsize);
+    color: var(--textcolor);
+    text-decoration: none;
+    cursor: pointer;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+
+}

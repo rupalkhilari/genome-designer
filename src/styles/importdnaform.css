@@ -1,0 +1,16 @@
+.importdnaform {
+  width: 500px;
+
+  textarea {
+    font-size: var(--fontsize);
+    border-radius: var(--radius);
+    border: 1px solid whitesmoke;
+    background-color: var(--inputcolor);
+    outline: none;
+    color: var(--primarycolor);
+  }
+
+  textarea:focus {
+    border: 1px solid lightgray;
+  }
+}

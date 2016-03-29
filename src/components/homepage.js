@@ -19,14 +19,17 @@ export default class HomePage extends Component {
   // this route can result from path like 'homepage/signin', 'homepage', 'homepage/register' etc.
   // If the final path is the name of an authorization form we will show it
   componentDidMount() {
-    if (this.props.user && this.props.user.userid) {
-      // revisit last project or test project if user is logged in
-      this.props.push(`/project/${getItem('mostRecentProject') || 'test'}`);
-      return;
-    }
+
     const authForm = window.location.pathname.split('/').pop();
     if (['signin', 'signup', 'account', 'reset', 'forgot'].indexOf(authForm) >= 0) {
       this.props.uiShowAuthenticationForm(authForm);
+    } else {
+      // if not showing an auth form goto most recent project or demo project
+      if (this.props.user && this.props.user.userid) {
+        // revisit last project or test project if user is logged in
+        this.props.push(`/project/${getItem('mostRecentProject') || 'test'}`);
+        return;
+      }
     }
   }
 

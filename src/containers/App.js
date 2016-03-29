@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import GlobalNav from './GlobalNav';
 import AuthenticationForms from './authentication/authenticationforms';
+import ImportDNAForm from '../components/importdna/importdnaform';
 
 import '../styles/App.css';
 
@@ -19,6 +20,7 @@ class App extends Component {
       <div className="App">
         <GlobalNav currentProjectId={this.props.currentProjectId}/>
         <AuthenticationForms />
+        <ImportDNAForm />
         <div className="App-pageContent">
           {this.props.children}
         </div>
