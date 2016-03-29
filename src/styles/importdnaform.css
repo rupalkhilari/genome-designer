@@ -2,12 +2,13 @@
   width: 500px;
 
   textarea {
-    font-size: var(--fontsize);
+    font-size: 1.25rem;
+    font-family:monospace;
     border-radius: var(--radius);
     border: 1px solid whitesmoke;
     background-color: var(--inputcolor);
     outline: none;
-    color: var(--primarycolor);
+    color: gray;
   }
 
   textarea:focus {

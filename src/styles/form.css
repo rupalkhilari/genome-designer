@@ -59,6 +59,11 @@
     color: white;
     border: none;
   }
+  button:disabled {
+    background-color: white;
+    border: 1px solid lightgray;
+    color: lightgray;
+  }
   /* errors are hidden by default, add the .visible class to make them appear*/
   .error {
     color: transparent;
