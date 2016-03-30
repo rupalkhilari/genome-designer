@@ -4,7 +4,7 @@ import { push } from 'react-router-redux';
 import { uiShowAuthenticationForm, uiSetGrunt } from '../../actions/ui';
 import invariant from 'invariant';
 import { userLogin } from '../../actions/user';
-
+import { getItem, setItem } from '../../middleware/localStorageCache';
 /**
  * default visibility and text for error labels
  * @type {Object}
@@ -42,7 +42,7 @@ class SignInForm extends Component {
         this.props.uiSetGrunt(`You are now signed in as ${user.firstName} ${user.lastName} ( ${user.email} )`);
         // close the form
         this.props.uiShowAuthenticationForm('none');
-        this.props.push('/project/test');
+        this.props.push(`/project/${getItem('mostRecentProject') || 'test'}`);
       })
       .catch((reason) => {
         const defaultMessage = 'Unexpected error, please check your connection';

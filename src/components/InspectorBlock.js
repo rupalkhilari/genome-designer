@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import { transact, commit, abort } from '../store/undo/actions';
 import { blockMerge, blockSetColor, blockSetSbol, blockRename } from '../actions/blocks';
 import InputSimple from './InputSimple';
 import ColorPicker from './ui/ColorPicker';
@@ -13,6 +14,9 @@ export class InspectorBlock extends Component {
     blockSetSbol: PropTypes.func.isRequired,
     blockMerge: PropTypes.func.isRequired,
     blockRename: PropTypes.func.isRequired,
+    transact: PropTypes.func.isRequired,
+    commit: PropTypes.func.isRequired,
+    abort: PropTypes.func.isRequired,
   };
 
   setBlockName = (name) => {
@@ -28,15 +32,31 @@ export class InspectorBlock extends Component {
   };
 
   selectColor = (color) => {
+    this.startTransaction();
     this.props.instances.forEach((block) => {
       this.props.blockSetColor(block.id, color);
     });
+    this.endTransaction();
   };
 
   selectSymbol = (symbol) => {
+    this.startTransaction();
     this.props.instances.forEach((block) => {
       this.props.blockSetSbol(block.id, symbol);
     });
+    this.endTransaction();
+  };
+
+  startTransaction = () => {
+    this.props.transact();
+  };
+
+  endTransaction = (shouldAbort = false) => {
+    if (shouldAbort === true) {
+      this.props.abort();
+      return;
+    }
+    this.props.commit();
   };
 
   /**
@@ -66,7 +86,7 @@ export class InspectorBlock extends Component {
     if (this.props.instances.length === 1) {
       return this.props.instances[0].metadata.name;
     }
-    return null;
+    return '';
   }
 
   /**
@@ -76,7 +96,7 @@ export class InspectorBlock extends Component {
     if (this.props.instances.length === 1) {
       return this.props.instances[0].metadata.description;
     }
-    return null;
+    return '';
   }
 
   currentSequenceLength() {
@@ -114,6 +134,9 @@ export class InspectorBlock extends Component {
         <InputSimple placeholder="Part Name"
                      readOnly={readOnly}
                      onChange={this.setBlockName}
+                     onFocus={this.startTransaction}
+                     onBlur={this.endTransaction}
+                     onEscape={() => this.endTransaction(true)}
                      value={this.currentName()}/>
 
         <h4 className="InspectorContent-heading">Description</h4>
@@ -121,6 +144,9 @@ export class InspectorBlock extends Component {
                      useTextarea
                      readOnly={readOnly}
                      onChange={this.setBlockDescription}
+                     onFocus={this.startTransaction}
+                     onBlur={this.endTransaction}
+                     onEscape={() => this.endTransaction(true)}
                      updateOnBlur
                      value={this.currentDescription()}/>
 
@@ -140,9 +166,10 @@ export class InspectorBlock extends Component {
 
         {!!annotations.length && (<h4 className="InspectorContent-heading">Contents</h4>)}
         {!!annotations.length && (<div className="InspectorContentBlock-Annotations">
-            {annotations.map(annotation => {
+            {annotations.map((annotation, idx) => {
               return (
-                <span className="InspectorContentBlock-Annotation">
+                <span className="InspectorContentBlock-Annotation"
+                      key={idx}>
                 {annotation.name || annotation.description || '?'}
               </span>
               );
@@ -159,4 +186,7 @@ export default connect(() => ({}), {
   blockSetSbol,
   blockRename,
   blockMerge,
+  transact,
+  commit,
+  abort,
 })(InspectorBlock);

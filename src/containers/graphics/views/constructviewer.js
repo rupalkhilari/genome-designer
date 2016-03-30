@@ -4,10 +4,10 @@ import SceneGraph2D from '../scenegraph2d/scenegraph2d';
 import Vector2D from '../geometry/vector2d';
 import Layout from './layout.js';
 import PopupMenu from '../../../components/Menu/PopupMenu';
-import ModalWindow from '../../../components/modal/modalwindow';
 import {connect } from 'react-redux';
 import {
   blockCreate,
+  blockDelete,
   blockAddComponent,
   blockClone,
   blockSetSbol,
@@ -25,13 +25,16 @@ import ConstructViewerMenu from './constructviewermenu';
 import UserInterface from './constructvieweruserinterface';
 import { inspectorToggleVisibility } from '../../../actions/inspector';
 import {
-   uiToggleCurrent,
-   uiSetCurrent,
-   uiAddCurrent,
-   uiSetCurrentConstruct,
-  } from '../../../actions/ui';
+  focusBlocks,
+  focusBlocksAdd,
+  focusBlocksToggle,
+  focusConstruct,
+} from '../../../actions/focus';
 import invariant from 'invariant';
 import { projectGetVersion } from '../../../selectors/projects';
+
+// static hash for matching viewers to constructs
+const idToViewer = {};
 
 export class ConstructViewer extends Component {
 
@@ -40,11 +43,11 @@ export class ConstructViewer extends Component {
     construct: PropTypes.object.isRequired,
     constructId: PropTypes.string.isRequired,
     layoutAlgorithm: PropTypes.string.isRequired,
-    uiAddCurrent: PropTypes.func.isRequired,
-    uiSetCurrent: PropTypes.func.isRequired,
-    uiSetCurrentConstruct: PropTypes.func.isRequired,
-    uiToggleCurrent: PropTypes.func.isRequired,
     inspectorToggleVisibility: PropTypes.func.isRequired,
+    focusBlocks: PropTypes.func.isRequired,
+    focusBlocksAdd: PropTypes.func.isRequired,
+    focusBlocksToggle: PropTypes.func.isRequired,
+    focusConstruct: PropTypes.func.isRequired,
     currentBlock: PropTypes.array,
     blockSetSbol: PropTypes.func,
     blockCreate: PropTypes.func,
@@ -55,17 +58,25 @@ export class ConstructViewer extends Component {
     blockGetParents: PropTypes.func,
     projectGetVersion: PropTypes.func,
     blocks: PropTypes.object,
-    ui: PropTypes.object,
+    focus: PropTypes.object,
   };
 
   constructor(props) {
     super(props);
+    idToViewer[this.props.constructId] = this;
     this.state = {
       blockPopupMenuOpen: false,    // context menu for blocks
       menuPosition: new Vector2D(), // position for any popup menu,
       modalOpen: false,             // controls visibility of test modal window
     };
     this.update = debounce(this._update.bind(this), 1);
+  }
+
+  /**
+   * given a construct ID return the current viewer if there is one
+   */
+  static getViewerForConstruct(id) {
+    return idToViewer[id];
   }
 
   /**
@@ -111,6 +122,7 @@ export class ConstructViewer extends Component {
    * ensure we don't get any resize events after dismounting
    */
   componentWillUnmount() {
+    delete idToViewer[this.props.constructId];
     this.resizeDebounced.cancel();
     window.removeEventListener('resize', this.resizeDebounced);
   }
@@ -166,32 +178,42 @@ export class ConstructViewer extends Component {
       index = parent.components.indexOf(insertionPoint.block) + (insertionPoint.edge === 'right' ? 1 : 0);
     }
     // just a HACK for now to allow new nested construct to be created.
-    if (insertionPoint && insertionPoint.block && event.metaKey) {
+    if (insertionPoint && insertionPoint.block && event && event.metaKey) {
       parent = this.props.blocks[insertionPoint.block];
       index = 0;
     }
 
     // add all blocks in the payload
     const blocks = Array.isArray(payload.item) ? payload.item : [payload.item];
-    const clones = [];
+    // return the list of newly added blocks so we can select them for example
+    const newBlocks = [];
     const projectVersion = this.props.projectGetVersion(this.props.projectId);
     blocks.forEach(block => {
-      const clone = this.props.blockClone(block, projectVersion);
-      this.props.blockAddComponent(parent.id, clone.id, index++);
-      clones.push(clone.id);
+      const newBlock = (payload.source === 'inventory' || payload.copying)
+        ? this.props.blockClone(block, projectVersion)
+        : this.props.blocks[block];
+      this.props.blockAddComponent(parent.id, newBlock.id, index++);
+      newBlocks.push(newBlock.id);
     });
     // return all the newly inserted blocks
-    return clones;
+    return newBlocks;
   }
   /**
    * remove the given block, which we assume if part of our construct and
    * return the scenegraph node that was representing it.
    */
   removePart(partId) {
-    const node = this.layout.removePart(partId);
     const parent = this.getBlockParent(partId);
     this.props.blockRemoveComponent(parent.id, partId);
-    return node;
+  }
+
+  /**
+   * remove all parts in the list
+   */
+  removePartsList(partList) {
+    partList.forEach(part => {
+      this.removePart(part);
+    });
   }
 
   /**
@@ -208,28 +230,28 @@ export class ConstructViewer extends Component {
    * select the given block
    */
   constructSelected(id) {
-    this.props.uiSetCurrentConstruct(id);
+    this.props.focusConstruct(id);
   }
 
   /**
    * select the given block
    */
   blockSelected(partIds) {
-    this.props.uiSetCurrent(partIds);
+    this.props.focusBlocks(partIds);
   }
 
   /**
    * select the given block
    */
   blockToggleSelected(partIds) {
-    this.props.uiToggleCurrent(partIds);
+    this.props.focusBlocksToggle(partIds);
   }
 
   /**
    * add the given part by ID to the selections
    */
   blockAddToSelections(partIds) {
-    this.props.uiAddCurrent(partIds);
+    this.props.focusBlocksAdd(partIds);
   }
   /**
    * Join the given block with any other selected block in the same
@@ -249,7 +271,7 @@ export class ConstructViewer extends Component {
       }
     });
     // now we can select the entire range
-    this.props.uiAddCurrent(levelBlocks.slice(min, max + 1));
+    this.props.focusBlocksAdd(levelBlocks.slice(min, max + 1));
   }
 
   /**
@@ -285,8 +307,8 @@ export class ConstructViewer extends Component {
       this.props.construct,
       this.props.layoutAlgorithm,
       this.props.blocks,
-      this.props.ui.currentBlocks,
-      this.props.ui.currentConstructId);
+      this.props.focus.blocks,
+      this.props.focus.construct);
     this.sg.update();
     this.sg.ui.update();
   }
@@ -342,15 +364,9 @@ export class ConstructViewer extends Component {
           },
           {
             text: 'Delete',
-          },
-          {},
-          {
-            text: 'Open Modal Window',
             action: () => {
-              this.setState({
-                modalOpen: true,
-              });
-            },
+              this.removePartsList(this.sg.ui.selectedElements);
+            }
           },
         ]
       }/>);
@@ -361,7 +377,7 @@ export class ConstructViewer extends Component {
   render() {
     // TODO, can be conditional when master is fixed and this is merged with construct select PR
     let menu = <ConstructViewerMenu
-      open={this.props.construct.id === this.props.ui.currentConstructId}
+      open={this.props.construct.id === this.props.focus.construct}
       constructId={this.props.constructId}
       layoutAlgorithm={this.props.layoutAlgorithm}
       />;
@@ -374,16 +390,6 @@ export class ConstructViewer extends Component {
           <div className="sceneGraph"/>
         </div>
         {this.blockContextMenu()}
-        <ModalWindow
-          open={this.state.modalOpen}
-          payload={<div/>}
-          closeOnClickOutside
-          closeModal={() => {
-            this.setState({
-              modalOpen: false,
-            });
-          }}
-          />
       </div>
     );
     return rendered;
@@ -392,7 +398,7 @@ export class ConstructViewer extends Component {
 
 function mapStateToProps(state, props) {
   return {
-    ui: state.ui,
+    focus: state.focus,
     construct: state.blocks[props.constructId],
     blocks: state.blocks,
   };
@@ -400,16 +406,17 @@ function mapStateToProps(state, props) {
 
 export default connect(mapStateToProps, {
   blockCreate,
+  blockDelete,
   blockClone,
   blockAddComponent,
   blockRemoveComponent,
   blockGetParents,
   blockSetSbol,
   blockRename,
+  focusBlocks,
+  focusBlocksAdd,
+  focusBlocksToggle,
+  focusConstruct,
   projectGetVersion,
-  uiAddCurrent,
-  uiSetCurrent,
-  uiSetCurrentConstruct,
-  uiToggleCurrent,
   inspectorToggleVisibility,
 })(ConstructViewer);

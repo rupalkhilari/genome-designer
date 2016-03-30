@@ -8,6 +8,7 @@ import { projectCreate, projectAddConstruct, projectSave } from '../actions/proj
 import { blockCreate } from '../actions/blocks';
 import { undo, redo } from '../store/undo/actions';
 import { uiShowGenBankImport } from '../actions/ui';
+import { setItem } from '../middleware/localStorageCache';
 
 import '../styles/GlobalNav.css';
 
@@ -39,6 +40,7 @@ class GlobalNav extends Component {
               text: 'Save Project',
               action: () => {
                 this.props.projectSave(this.props.currentProjectId);
+                setItem('mostRecentProject', this.props.currentProjectId);
               },
             },
             {},

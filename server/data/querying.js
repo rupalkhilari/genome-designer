@@ -1,8 +1,24 @@
+import * as fileSystem from '../utils/fileSystem';
 import * as filePaths from '../utils/filePaths';
 import * as persistence from './persistence';
 import invariant from 'invariant';
 import { exec } from 'child_process';
+import { flatten } from 'lodash';
 import { errorCouldntFindProjectId } from '../utils/errors';
+
+//note - expects the project to already exist.
+export const getAllBlockIdsInProject = (projectId) => {
+  const directory = filePaths.createBlockDirectoryPath(projectId);
+  return persistence.projectExists(projectId)
+    .then(() => fileSystem.directoryContents(directory));
+};
+
+export const getAllBlocksInProject = (projectId) => {
+  return getAllBlockIdsInProject(projectId)
+    .then(blockIds => {
+      return Promise.all(blockIds.map(blockId => persistence.blockGet(blockId, projectId)));
+    });
+};
 
 export const findProjectFromBlock = (blockId) => {
   if (!blockId) {
@@ -66,4 +82,27 @@ export const getAllProjectManifests = (userId) => {
       console.error('error getting project manifests', err);
       return [];
     });
+};
+
+export const getAllBlocks = (userId) => {
+  return listProjectsWithAccess(userId)
+    .then(projectIds => Promise.all(
+      projectIds.map(projectId => getAllBlocksInProject(projectId))
+    ))
+    .then(nested => flatten(nested));
+};
+
+export const getAllBlocksFiltered = (userId, blockFilter = () => true) => {
+  return getAllBlocks(userId)
+    .then(blocks => blocks.filter(blockFilter));
+};
+
+export const getAllBlocksWithName = (userId, name) => {
+  const filter = (block, index) => block.metadata.name === name;
+  return getAllBlocksFiltered(userId, filter);
+};
+
+export const getAllBlocksWithSbol = (userId, sbol) => {
+  const filter = (block, index) => block.rules.sbol === sbol;
+  return getAllBlocksFiltered(userId, filter);
 };

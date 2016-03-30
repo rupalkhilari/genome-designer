@@ -1,10 +1,16 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import { errorNoIdProvided, errorInvalidModel, errorInvalidRoute, errorDoesNotExist, errorCouldntFindProjectId } from './../utils/errors';
+import {
+  errorNoIdProvided,
+  errorInvalidModel,
+  errorInvalidRoute,
+  errorDoesNotExist,
+  errorCouldntFindProjectId
+} from './../utils/errors';
 import * as querying from './querying';
 import * as persistence from './persistence';
 import * as rollup from './rollup';
-import { permissionsMiddleware } from './permissions';
+import {permissionsMiddleware} from './permissions';
 
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({

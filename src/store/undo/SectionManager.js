@@ -24,9 +24,12 @@ export default class SectionManager {
   getPast = () => this.history.past;
   getFuture = () => this.history.future;
 
-  setTransactionState = (state) => {
+  setTransactionState = (state, resetDepth = false) => {
     this.transactionFailure = false;
     this.transactionState = state;
+    if (resetDepth === true) {
+      this.transactionDepth = 0;
+    }
     return this.transactionState;
   };
 
@@ -73,7 +76,7 @@ export default class SectionManager {
     }
 
     this.history.undo();
-    this.setTransactionState(null);
+    this.setTransactionState(null, true);
     return this.getCurrentState();
   };
 
@@ -83,7 +86,7 @@ export default class SectionManager {
     }
 
     this.history.redo();
-    this.setTransactionState(null);
+    this.setTransactionState(null, true);
     return this.getCurrentState();
   };
 
@@ -93,7 +96,7 @@ export default class SectionManager {
     }
 
     this.history.jump(number);
-    this.setTransactionState(null);
+    this.setTransactionState(null, true);
     return this.getCurrentState();
   };
 
@@ -115,7 +118,11 @@ export default class SectionManager {
   };
 
   commit = (action) => {
-    invariant(this.transactionDepth > 0, 'not in a transaction');
+    if (!this.transactionDepth > 0) {
+      console.warn('commit() called outside transaction');
+      return this.getCurrentState();
+    }
+
     this.transactionDepth--;
 
     if (this.debug) {
@@ -136,7 +143,10 @@ export default class SectionManager {
   };
 
   abort = (action) => {
-    invariant(this.transactionDepth > 0, 'not in a transaction');
+    if (!this.transactionDepth > 0) {
+      console.warn('abort() called outside transaction');
+      return this.getCurrentState();
+    }
 
     //todo - need to handle nested transactions... do we just go back to the start of all of them?
     if (this.transactionDepth > 1) {

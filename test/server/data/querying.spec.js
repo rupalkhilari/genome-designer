@@ -1,5 +1,7 @@
 import { assert, expect } from 'chai';
 import uuid from 'node-uuid';
+import Block from '../../../src/models/Block';
+import BlockDefinition from '../../../src/schemas/Block';
 import ProjectDefinition from '../../../src/schemas/Project';
 import * as fileSystem from '../../../server/utils/fileSystem';
 import * as filePaths from '../../../server/utils/filePaths';
@@ -12,12 +14,30 @@ import { createExampleRollup } from '../../utils/rollup';
 describe('Server', () => {
   describe('Data', () => {
     describe('Querying', () => {
+      const terminatorBlockName = 'el terminado';
+
+      const createCustomRollup = () => {
+        const rollup = createExampleRollup();
+        const promoter = Block.classless({
+          metadata: { name: 'promoter' },
+          rules: { sbol: 'promoter' },
+        });
+        const terminator = Block.classless({
+          metadata: { name: terminatorBlockName },
+          rules: { sbol: 'terminator' },
+        });
+        rollup.blocks.push(promoter, terminator);
+        rollup.project.components.push(promoter.id, terminator.id);
+        return rollup;
+      };
+      const numberBlocksInCustomRollup = createCustomRollup().blocks.length;
+
       const myUserId = uuid.v4();
-      const myRolls = [1, 2, 3, 4].map(createExampleRollup);
+      const myRolls = [1, 2, 3, 4].map(createCustomRollup);
       const myRollIds = myRolls.map(roll => roll.project.id);
 
       const otherUserId = uuid.v4();
-      const otherRolls = [1, 2, 3].map(createExampleRollup);
+      const otherRolls = [1, 2, 3].map(createCustomRollup);
       const otherRollIds = otherRolls.map(roll => roll.project.id);
 
       before(() => {
@@ -72,13 +92,37 @@ describe('Server', () => {
 
       it('getAllProjectManifests() returns project manifests user can access', () => {
         return querying.listProjectsWithAccess(myUserId)
-        .then(accessibleProjects => {
-          return querying.getAllProjectManifests(myUserId)
-            .then(manifests => {
-              expect(manifests.length).to.equal(accessibleProjects.length);
-              assert(manifests.every(manifest => ProjectDefinition.validate(manifest, true)), 'manifests not in valid format');
-            });
-        });
+          .then(accessibleProjects => {
+            return querying.getAllProjectManifests(myUserId)
+              .then(manifests => {
+                expect(manifests.length).to.equal(accessibleProjects.length);
+                assert(manifests.every(manifest => ProjectDefinition.validate(manifest, true)), 'manifests not in valid format');
+              });
+          });
+      });
+
+      it('getAllBlocks() get all blocks for a user ID', () => {
+        return querying.getAllBlocks(myUserId)
+          .then(blocks => {
+            expect(blocks.length).to.equal(myRolls.length * numberBlocksInCustomRollup);
+            assert(blocks.every(block => BlockDefinition.validate(block, true)), 'blocks not in valid format');
+          });
+      });
+
+      it('getAllBlocksByType() can get all blocks of type', () => {
+        return querying.getAllBlocksWithSbol(myUserId, 'promoter')
+          .then(blocks => {
+            expect(blocks.length).to.equal(myRolls.length);
+            assert(blocks.every(block => block.rules.sbol === 'promoter'), 'got block with wrong sbol type');
+          });
+      });
+
+      it('getAllBlocksByType() can get all blocks by name', () => {
+        return querying.getAllBlocksWithName(myUserId, terminatorBlockName)
+          .then(blocks => {
+            expect(blocks.length).to.equal(myRolls.length);
+            assert(blocks.every(block => block.metadata.name === terminatorBlockName), 'got block with wrong name');
+          });
       });
     });
   });

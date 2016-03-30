@@ -1,5 +1,6 @@
 import Instance from './Instance';
 import invariant from 'invariant';
+import cloneDeep from 'lodash.clonedeep';
 import BlockDefinition from '../schemas/Block';
 import { getSequence, writeSequence } from '../middleware/api';
 import AnnotationDefinition from '../schemas/Annotation';
@@ -8,7 +9,16 @@ import color from '../utils/generators/color';
 
 export default class Block extends Instance {
   constructor(input) {
-    super(input, BlockDefinition.scaffold(), {metadata: {color: color()}});
+    super(input, BlockDefinition.scaffold(), { metadata: { color: color() } });
+  }
+
+  //return an unfrozen JSON (
+  static classless(input) {
+    return cloneDeep(new Block(input));
+  }
+
+  static validate(input, throwOnError) {
+    return BlockDefinition.validate(input, throwOnError);
   }
 
   addComponent(componentId, index) {
@@ -91,7 +101,7 @@ export default class Block extends Instance {
           md5: sequenceMd5,
           length: sequenceLength,
         };
-        return this.merge({sequence: updatedSequence});
+        return this.merge({ sequence: updatedSequence });
       });
   }
 

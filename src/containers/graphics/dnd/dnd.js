@@ -49,8 +49,8 @@ class DnD {
     this.lastTarget = null;
 
     //set hooks
-    this.onDrop = options.onDrop || (() => {
-      });
+    this.onDrop = options.onDrop || (() => {});
+    this.onDragComplete = options.onDragComplete || (() => {});
 
     // save the payload for dropping
     this.payload = payload;
@@ -112,28 +112,28 @@ class DnD {
     const globalPosition = this.mouseToGlobal(evt);
     const target = this.findTargetAt(globalPosition);
 
-    if (target && target.options && target.options.drop) {
-      //target.options.drop.call(this, globalPosition, this.payload, evt);
-      //save for sync cleanup...
+    if (target && target.options) {
       const savedPayload = this.payload;
 
-      //call onDrop handler, which will immediately resolve to nothing if wasnt passed in
       Promise.resolve(this.onDrop(target, globalPosition))
         .then((result) => {
           const payload = (typeof result !== 'undefined') ?
-            Object.assign(savedPayload, {item: result}) :
+            Object.assign(savedPayload, { item: result }) :
             savedPayload;
-          target.options.drop.call(this, globalPosition, payload, evt);
-          // ensure lastTarget gets a dragLeave incase they rely on it for cleanup
-          if (target && target.options.dragLeave) {
+
+          //drop handler
+          if (target.options.drop) {
+            target.options.drop.call(this, globalPosition, payload, evt);
+          }
+
+          // ensure lastTarget gets a dragLeave in case they rely on it for cleanup
+          if (target.options.dragLeave) {
             target.options.dragLeave.call(this);
           }
+
+          //completion handler
+          this.onDragComplete(target, globalPosition, payload, evt);
         });
-    } else {
-      // ensure lastTarget gets a dragLeave incase they rely on it for cleanup
-      if (target && target.options.dragLeave) {
-        target.options.dragLeave.call(this);
-      }
     }
 
     this.cancelDrag();
@@ -171,9 +171,13 @@ class DnD {
    * given a mouse event, find the drop target if any at the given location
    */
   findTargetAt(globalPoint) {
-    return this.targets.find(options => {
+    // find all targets at the given point
+    const hits = this.targets.filter(options => {
       return this.getElementBounds(options.element).pointInBox(globalPoint);
     });
+    // sort by zorder and return the one with the highest values
+    hits.sort((a, b) => {return a.options.zorder - b.options.zorder});
+    return hits.pop();  // undefined on an empty array
   }
 
   /**
@@ -183,9 +187,16 @@ class DnD {
    * dragOver(globalPosition, payload) - when a drag moves over the target, dragEnter is always called first
    * dragLeave(globalPosition, payload) - when a drag leaves the target, if dragEnter was called before NOTE: dragLeave is called even after a successful drop
    * drop(globalPosition, payload) - when a drop occurs - alway follows a dragEnter, dragOver
+   *
+   * options should also include an arbitary z order for the target. Drop targets can be over laid
+   * and the chosen target will be the highest in the z order if there is overlap
+   *
+   * drop handler is not optional and should be included.
    */
   registerTarget(element, options) {
     invariant(element, 'expected an element to register');
+    invariant(options && options.drop, 'expected a drop handler');
+    invariant(options.zorder === +options.zorder, 'z order must be a number');
     this.targets.push({ element, options });
   }
 

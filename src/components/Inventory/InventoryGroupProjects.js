@@ -1,9 +1,10 @@
-import React, { Component, PropTypes } from 'react';
-import { connect } from 'react-redux';
-import { push } from 'react-router-redux';
-import { projectGet, projectListAllBlocks } from '../../selectors/projects';
-import { projectList, projectLoad } from '../../actions/projects';
-import { block as blockDragType } from '../../constants/DragTypes';
+import React, {Component, PropTypes} from 'react';
+import {connect} from 'react-redux';
+import {push} from 'react-router-redux';
+import {projectGet, projectListAllBlocks} from '../../selectors/projects';
+import {projectList, projectLoad} from '../../actions/projects';
+import {focusForceProject} from '../../actions/focus';
+import {block as blockDragType} from '../../constants/DragTypes';
 
 import InventoryListGroup from './InventoryListGroup';
 import InventoryList from './InventoryList';
@@ -22,6 +23,7 @@ export class InventoryGroupProjects extends Component {
     projectLoad: PropTypes.func.isRequired,
     projectGet: PropTypes.func.isRequired,
     projectListAllBlocks: PropTypes.func.isRequired,
+    focusForceProject: PropTypes.func.isRequired,
     push: PropTypes.func.isRequired,
   };
 
@@ -67,9 +69,13 @@ export class InventoryGroupProjects extends Component {
 
   handleToggleProject = (nextState, projectId) => {
     this.handleLoadProject(projectId)
-      .then(() => this.setState({
-        expandedProjects: Object.assign(this.state.expandedProjects, { [projectId]: nextState }),
-      }));
+      .then(() => {
+        const project = this.props.projectGet(projectId);
+        this.props.focusForceProject(project);
+        this.setState({
+          expandedProjects: Object.assign(this.state.expandedProjects, { [projectId]: nextState }),
+        });
+      });
   };
 
   handleOnToggle = (nextState, projectId) => {
@@ -137,5 +143,6 @@ export default connect(mapStateToProps, {
   projectLoad,
   projectGet,
   projectListAllBlocks,
+  focusForceProject,
   push,
 })(InventoryGroupProjects);

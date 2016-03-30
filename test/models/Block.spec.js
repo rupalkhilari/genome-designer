@@ -25,6 +25,17 @@ describe('Model', () => {
 
         expect(inst.metadata.name).to.equal('blah');
       });
+
+      it('Block.classless(input) creates unfrozen JSON object, no instance methods', () => {
+        const instance = Block.classless({
+          rules: { sbol: 'promoter'},
+        });
+        expect(instance.id).to.be.defined;
+        expect(instance.rules.sbol === 'promoter');
+        expect(instance.annotate).to.be.undefined;
+        expect(() => Object.assign(instance, {id: 'newId'})).to.not.throw();
+        expect(instance.id).to.equal('newId');
+      });
     });
 
     describe('Annotations', () => {
