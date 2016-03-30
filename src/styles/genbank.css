@@ -1,5 +1,6 @@
 @import './variables.css';
 
+
 .genbank-import-form {
   width: 700px;
   padding-bottom: 1rem;
@@ -22,8 +23,12 @@
     margin: 1rem 0 1rem 0;
     text-align: center;
     color: white;
+    cursor: pointer;
   }
   .dropzone-hot {
+    background-color: var(--modal-textcolor);
+  }
+  .dropzone:hover {
     background-color: var(--modal-textcolor);
   }
   .dropzone-text {
