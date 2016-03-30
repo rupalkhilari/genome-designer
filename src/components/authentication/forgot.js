@@ -71,7 +71,7 @@ class ForgotForm extends Component {
     return (
       <form
         id="forgot-form"
-        className="authentication-form"
+        className="gd-form authentication-form"
         onSubmit={this.onSubmit.bind(this)}>
         <div className="title">Forgot Password</div>
         <input

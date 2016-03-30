@@ -8,6 +8,7 @@ import ResetForm from '../../components/authentication/reset';
 import AccountForm from '../../components/authentication/account';
 import { uiShowAuthenticationForm } from '../../actions/ui';
 
+import '../../../src/styles/form.css';
 import '../../../src/styles/authenticationforms.css';
 
 class AuthenticationForms extends Component {

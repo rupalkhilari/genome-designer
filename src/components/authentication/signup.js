@@ -187,7 +187,7 @@ class RegisterForm extends Component {
     const privacy = 'http://www.autodesk.com/company/legal-notices-trademarks/privacy-statement';
 
     return (
-      <form id="auth-signup" className="authentication-form" onSubmit={this.onSubmit.bind(this)}>
+      <form id="auth-signup" className="gd-form authentication-form" onSubmit={this.onSubmit.bind(this)}>
         <div className="title">Sign Up</div>
 
         <input
