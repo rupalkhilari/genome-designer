@@ -44,7 +44,7 @@ module.exports = {
 
 
     var blockBounds = openNthBlockContextMenu(browser, '.sceneGraph', 0);
-    clickNthContextMenuItem(browser, 9);
+    clickNthContextMenuItem(browser, 3);
 
     // expect the block to be deleted
     browser.assert.countelements('.sbol-glyph', 0)

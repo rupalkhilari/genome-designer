@@ -15,6 +15,10 @@ import {
   blockRemoveComponent,
 } from '../../../actions/blocks';
 import {
+  uiShowDNAImport,
+  uiToggleDetailView,
+} from '../../../actions/ui';
+import {
   blockGetParents,
 } from '../../../selectors/blocks';
 
@@ -337,31 +341,18 @@ export class ConstructViewer extends Component {
         [
           {
             text: 'Inspect',
+            action: () => {
+              this.props.inspectorToggleVisibility(true);
+            },
           },
           {},
           {
-            text: 'Symbol',
-          },
-          {
-            text: 'Color',
-          },
-          {
-            text: 'Reverse',
+            text: 'Import DNA Sequence',
+            action: () => {
+              this.props.uiShowDNAImport(true);
+            }
           },
           {},
-          {
-            text: 'Add to my Inventory',
-          },
-          {
-            text: 'Export as PDF', //
-          },
-          {},
-          {
-            text: 'Rename',
-          },
-          {
-            text: 'Duplicate',
-          },
           {
             text: 'Delete',
             action: () => {
@@ -419,4 +410,6 @@ export default connect(mapStateToProps, {
   focusConstruct,
   projectGetVersion,
   inspectorToggleVisibility,
+  uiShowDNAImport,
+  uiToggleDetailView,
 })(ConstructViewer);

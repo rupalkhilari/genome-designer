@@ -97,7 +97,6 @@ class DNAImportForm extends Component {
             if (emptyIndex >= 0) {
               this.setSequenceAndClose(this.props.focusedBlocks[emptyIndex], this.state.sequence);
             } else {
-              debugger;
               const block = this.props.blockCreate();
               this.props.blockAddComponent(this.props.currentConstruct, block.id, 0);
               this.setSequenceAndClose(block.id, this.state.sequence);
