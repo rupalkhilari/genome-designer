@@ -1,9 +1,12 @@
 import React, { Component, PropTypes } from 'react';
 import {connect} from 'react-redux';
+import {push} from 'react-router-redux';
 import invariant from 'invariant';
 import ModalWindow from '../modal/modalwindow';
 import Dropzone from 'react-dropzone';
 import { uiShowGenBankImport } from '../../actions/ui';
+import {projectGet, projectListAllBlocks} from '../../selectors/projects';
+import {projectList, projectLoad} from '../../actions/projects';
 
 import '../../../src/styles/genbank.css';
 
@@ -58,8 +61,11 @@ class ImportGenBankModal extends Component {
       xhr.setRequestHeader("Content-type", null);
       xhr.onload = () => {
         if (xhr.status === 200) {
-          console.log(JSON.parse(xhr.response));
           this.props.uiShowGenBankImport(false);
+          const json = JSON.parse(xhr.response);
+          invariant(json && json.ProjectId, 'expect a project ID');
+          console.log('*** PROJECT ID ***', json.ProjectId);
+          this.props.push(`/project/${json.ProjectId}`);
         } else {
           this.setState({error: `Error uploading file(s): ${xhr.status}`});
         }
@@ -127,4 +133,9 @@ function mapStateToProps(state) {
 
 export default connect(mapStateToProps, {
   uiShowGenBankImport,
+  projectGet,
+  projectListAllBlocks,
+  projectList,
+  projectLoad,
+  push,
 })(ImportGenBankModal);
