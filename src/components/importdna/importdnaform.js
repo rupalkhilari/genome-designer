@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import {connect} from 'react-redux';
 import { uiShowDNAImport } from '../../actions/ui';
 import { blockGetSequence, blockSetSequence } from '../../actions/blocks';
+import { focusBlocks } from '../../actions/focus';
 import { uiSetGrunt } from '../../actions/ui';
 import invariant from 'invariant';
 import ModalWindow from '../modal/modalwindow';
@@ -25,17 +26,17 @@ class DNAImportForm extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (!this.props.open && nextProps.open) {
-      // reset on opening
-      this.setState({
-        inputValid: true,
-        validLenth: 0,
-        sequence: null,
-      });
-      if (this.refs && this.refs.sequenceTextArea) {
-        this.refs.sequenceTextArea.value = '';
-      }
-    }
+    // if (!this.props.open && nextProps.open) {
+    //   // reset on opening
+    //   this.setState({
+    //     inputValid: true,
+    //     validLength: 0,
+    //     sequence: null,
+    //   });
+    //   if (this.refs && this.refs.sequenceTextArea) {
+    //     this.refs.sequenceTextArea.value = '';
+    //   }
+    // }
   }
 
   onSequenceChanged(evt) {
@@ -65,9 +66,10 @@ class DNAImportForm extends Component {
   setSequenceAndClose(blockId, sequence) {
     this.props.blockSetSequence(blockId, sequence)
       .then(block => {
-        // close the dialog
+        // close the dialog, focus the block we inserted into and message the user.
         this.props.uiShowDNAImport(false);
-        this.props.uiSetGrunt(`Sequence was inserted into block ${block.id}`);
+        this.props.focusBlocks([blockId]);
+        this.props.uiSetGrunt(`Sequence was successfully inserted.`);
       })
       .catch(reason => {
         // show the error dialog
@@ -93,7 +95,7 @@ class DNAImportForm extends Component {
             // get index of first empty sequence
             const emptyIndex = sequences.findIndex(sequence => !sequence);
             if (emptyIndex >= 0) {
-              this.setSequenceAndClose(this.props.focusedBlocks[emptyIndex], name, this.state.sequence);
+              this.setSequenceAndClose(this.props.focusedBlocks[emptyIndex], this.state.sequence);
             } else {
               debugger;
               const block = this.props.blockCreate();
@@ -110,6 +112,51 @@ class DNAImportForm extends Component {
   }
 
   render() {
+
+    let payload = null;
+    if (this.props.currentConstruct && this.props.focusedBlocks.length) {
+      payload=(
+        <form className="gd-form importdnaform" onSubmit={this.onSubmit.bind(this)}>
+          <div className="title">Import DNA Sequence</div>
+          <label>{this.state.validLength
+              ? `Sequence Length: ${this.state.validLength}`
+              : "Paste your sequence into the box below."}
+            </label>
+          <textarea
+            rows="10"
+            autoComplete="off"
+            autoFocus
+            maxLength="10000000"
+            spellCheck="false"
+            ref="sequenceTextArea"
+            defaultValue={this.state.sequence}
+            onChange={this.onSequenceChanged.bind(this)}/>
+          <div className={`error ${!this.state.inputValid ? 'visible' : ''}`}>The sequence is not valid</div>
+          <br/>
+          <button type="submit" disabled={!(this.state.inputValid && this.state.validLength)}>Import</button>
+          <button
+            type="button"
+            onClick={() => {
+              this.props.uiShowDNAImport(false);
+            }}>Cancel</button>
+        </form>
+      )
+    } else {
+      payload = (
+        <form className="gd-form importdnaform" onSubmit={this.onSubmit.bind(this)}>
+          <div className="title">Import DNA Sequence</div>
+          <label>Please select at least one block first.</label>
+          <br/>
+          <button
+            type="submit"
+            onClick={(evt) => {
+              evt.preventDefault();
+              this.props.uiShowDNAImport(false);
+            }}>Close</button>
+        </form>
+      )
+    }
+
     return (
       <ModalWindow
         open={this.props.open}
@@ -118,31 +165,7 @@ class DNAImportForm extends Component {
         closeModal={(buttonText) => {
           this.props.uiShowDNAImport(false);
         }}
-        payload={
-          <form className="gd-form importdnaform" onSubmit={this.onSubmit.bind(this)}>
-            <div className="title">Import DNA Sequence</div>
-            <label>{this.state.validLength
-                ? `Sequence Length: ${this.state.validLength}`
-                : "Paste your sequence into the box below."}
-              </label>
-            <textarea
-              rows="10"
-              autoComplete="off"
-              autoFocus
-              maxLength="10000000"
-              spellCheck="false"
-              ref="sequenceTextArea"
-              onChange={this.onSequenceChanged.bind(this)}/>
-            <div className={`error ${!this.state.inputValid ? 'visible' : ''}`}>The sequence is not valid</div>
-            <br/>
-            <button type="submit" disabled={!(this.state.inputValid && this.state.validLength)}>Import</button>
-            <button
-              type="button"
-              onClick={() => {
-                this.props.uiShowDNAImport(false);
-              }}>Cancel</button>
-          </form>
-        }
+        payload={payload}
       />
     );
   }
@@ -164,4 +187,5 @@ export default connect(mapStateToProps, {
   uiSetGrunt,
   blockCreate,
   blockAddComponent,
+  focusBlocks,
 })(DNAImportForm);
