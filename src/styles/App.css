@@ -52,3 +52,9 @@
 .prevent-selection {
   user-select: none !important;
 }
+.fence-element {
+  position: absolute;
+  z-index: var(--zFence);
+  border: 1px solid white;
+  background-color: rgba(255, 255, 255, 0.2);
+}

@@ -2,7 +2,9 @@ import UserInterface from '../scenegraph2d/userinterface';
 import { sbol as sbolDragType } from '../../../constants/DragTypes';
 import DnD from '../dnd/dnd';
 import Vector2D from '../geometry/vector2d';
+import Box2D from '../geometry/box2d';
 import kT from './layoutconstants';
+
 
 // # of pixels of mouse movement before a drag is triggered.
 const dragThreshold = 8;
@@ -24,6 +26,21 @@ export default class ConstructViewerUserInterface extends UserInterface {
       drop: this.onDrop.bind(this),
       zorder: 0,
     });
+  }
+
+  /**
+   * select all blocks within the given rectangle
+   */
+  selectNodesByRectangle(box) {
+    const hits = this.sg.findNodesWithin(box);
+    const parts = [];
+    hits.forEach(node => {
+      const element = this.layout.elementFromNode(node);
+      if (element) {
+        parts.push(element);
+      }
+    });
+    this.constructViewer.blockSelected(parts);
   }
 
   /**
@@ -162,6 +179,18 @@ export default class ConstructViewerUserInterface extends UserInterface {
   mouseDown(evt, point) {
     this.mouseSelect(evt, point);
   }
+
+  /**
+   * Might signal the end of fence drag
+   */
+  mouseUp(evt, point) {
+    if (this.fence) {
+      // select blocks within the fence
+      this.selectNodesByRectangle(Box2D.boxFromPoints([this.fence.start, this.fence.end]));
+      this.fence = null;
+      this.updateFence();
+    }
+  }
   /**
    * mouse section can occur by click or when a drag is started so it gets
    * its own method.
@@ -291,7 +320,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * to the DND manager to handle
    */
   mouseDrag(evt, point, startPoint, distance) {
-    if (distance > dragThreshold) {
+    if (distance > dragThreshold && !this.fence) {
       // start a block drag if we have one
       const block = this.topBlockAt(startPoint);
       // must be dragging a selected block
@@ -316,6 +345,48 @@ export default class ConstructViewerUserInterface extends UserInterface {
           source: 'construct-viewer',
           copying: copying,
         });
+      }
+    } else {
+      if (this.fence) {
+        // continue with existing fence
+        this.fence.end = point.clone();
+        this.updateFence();
+      } else {
+        // check for fence operation starting
+        const block = this.topBlockAt(startPoint);
+        if (!block) {
+          this.fence = {
+            start: startPoint.clone(),
+          }
+        }
+      }
+    }
+  }
+  /**
+   * update fence rendering or remove
+   */
+  updateFence() {
+    if (this.fence) {
+      if (!this.fenceElement) {
+        // create fence element on demand
+        this.fenceElement = document.createElement('div');
+        this.fenceElement.className = 'fence-element';
+        this.el.appendChild(this.fenceElement);
+      }
+      // get a normalized rectangle from the start/end points
+      const box = Box2D.boxFromPoints([this.fence.start, this.fence.end]);
+      this.fenceElement.style.left = box.x + 'px';
+      this.fenceElement.style.top = box.y + 'px';
+      this.fenceElement.style.width = box.w + 'px';
+      this.fenceElement.style.height = box.h + 'px';
+      // intersect with our client bounds
+      const bounds = new Box2D(0, 0, 0, 0);
+
+    } else {
+      // remove the fence element if we have one
+      if (this.fenceElement) {
+        this.fenceElement.parentElement.removeChild(this.fenceElement);
+        this.fenceElement = null;
       }
     }
   }
