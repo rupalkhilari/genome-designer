@@ -25,20 +25,6 @@ class DNAImportForm extends Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    // if (!this.props.open && nextProps.open) {
-    //   // reset on opening
-    //   this.setState({
-    //     inputValid: true,
-    //     validLength: 0,
-    //     sequence: null,
-    //   });
-    //   if (this.refs && this.refs.sequenceTextArea) {
-    //     this.refs.sequenceTextArea.value = '';
-    //   }
-    // }
-  }
-
   onSequenceChanged(evt) {
     const source = evt.target.value;
     if (source) {
