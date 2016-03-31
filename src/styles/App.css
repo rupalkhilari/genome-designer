@@ -48,3 +48,7 @@
   background-color: transparent;
   border: none;
 }
+/*during drag operations we add this to body to prevent selection*/
+.prevent-selection {
+  user-select: none !important;
+}

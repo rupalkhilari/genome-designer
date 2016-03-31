@@ -54,6 +54,9 @@ class DnD {
 
     // save the payload for dropping
     this.payload = payload;
+
+    // block selection on anything while dragging
+    document.body.classList.add('prevent-selection');
   }
 
   /**
@@ -80,29 +83,28 @@ class DnD {
       target.options.dragOver.call(this, globalPosition, this.payload);
     }
 
-    // clear selection after all drag events
-    this.clearSelection();
   }
 
   /**
-   * clear all browser selections, becareful
+   * clear all browser selections, becareful.
+   * Deprecated but keeping around for reference for now.
    */
-  clearSelection() {
-    let selection = null;
-    if (window.getSelection) {
-      selection = window.getSelection();
-    } else if (document.selection) {
-      selection = document.selection;
-    }
-    if (selection) {
-      if (selection.empty) {
-        selection.empty();
-      }
-      if (selection.removeAllRanges) {
-        selection.removeAllRanges();
-      }
-    }
-  }
+  // clearSelection() {
+  //   let selection = null;
+  //   if (window.getSelection) {
+  //     selection = window.getSelection();
+  //   } else if (document.selection) {
+  //     selection = document.selection;
+  //   }
+  //   if (selection) {
+  //     if (selection.empty) {
+  //       selection.empty();
+  //     }
+  //     if (selection.removeAllRanges) {
+  //       selection.removeAllRanges();
+  //     }
+  //   }
+  // }
 
   /**
    * mouse up during drag
@@ -159,6 +161,7 @@ class DnD {
       this.proxy = null;
       this.payload = null;
       this.lastTarget = null;
+      document.body.classList.remove('prevent-selection');
     }
   }
 
