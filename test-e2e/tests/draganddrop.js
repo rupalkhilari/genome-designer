@@ -58,6 +58,7 @@ module.exports = {
     }
 
     browser
+      .pause(2000)
       .assert.countelements('.sbol-glyph', 18)
       .end();
   }

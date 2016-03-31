@@ -4,6 +4,7 @@ export const initialState = {
   detailViewVisible: false,
   showMainMenu: true,
   authenticationForm: 'none',
+  showDNAImport: false,
   gruntMessage: null,
   showGenBankImport: false,
 };
@@ -17,6 +18,10 @@ export default function inventory(state = initialState, action) {
   case ActionTypes.UI_SHOW_GENBANK_IMPORT: {
     const { showGenBankImport } = action;
     return Object.assign({}, state, {showGenBankImport});
+  }
+  case ActionTypes.UI_SHOW_DNAIMPORT: {
+    const { showDNAImport } = action;
+    return Object.assign({}, state, {showDNAImport});
   }
   case ActionTypes.UI_TOGGLE_DETAIL_VIEW : {
     const { nextState } = action;

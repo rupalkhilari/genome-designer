@@ -9,6 +9,7 @@ import { blockCreate } from '../actions/blocks';
 import { undo, redo } from '../store/undo/actions';
 import { uiShowGenBankImport } from '../actions/ui';
 import { setItem } from '../middleware/localStorageCache';
+import { uiShowDNAImport } from '../actions/ui';
 
 import '../styles/GlobalNav.css';
 
@@ -117,8 +118,10 @@ class GlobalNav extends Component {
               text: 'Delete',
               action: () => {},
             }, {}, {
-              text: 'Crop Sequence to Selection',
-              action: () => {},
+              text: 'Import DNA',
+              action: () => {
+                this.props.uiShowDNAImport(true);
+              },
             }, {}, {
               text: 'Convert to List',
               action: () => {},
@@ -241,6 +244,7 @@ export default connect(mapStateToProps, {
   projectCreate,
   projectSave,
   blockCreate,
+  uiShowDNAImport,
   undo,
   redo,
   push,

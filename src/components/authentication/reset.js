@@ -131,7 +131,7 @@ class RegisterForm extends Component {
     return (
       <form
         id="reset-form"
-        className="authentication-form"
+        className="gd-form authentication-form"
         onSubmit={this.onSubmit.bind(this)}>
         <div className="title">Reset Password</div>
 

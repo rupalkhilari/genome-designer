@@ -201,7 +201,7 @@ class AccountForm extends Component {
     return (
       <form
         id="account-form"
-        className="authentication-form"
+        className="gd-form authentication-form"
         onSubmit={this.onSubmit.bind(this)}>
         <div className="title">Update Account</div>
 

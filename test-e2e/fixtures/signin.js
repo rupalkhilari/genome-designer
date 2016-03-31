@@ -7,6 +7,7 @@ var signout = function(browser, credentials) {
     // try submitting with no credentials
     .submitForm('#auth-signin')
     // expect 1 error, missing credentials
+    .waitForElementPresent('.error.visible', 5000, 'expect error to become visible')
     .assert.countelements('.error.visible', 1)
     // try with bad credentials
     .clearValue('#auth-signin input:nth-of-type(1)')
@@ -15,6 +16,7 @@ var signout = function(browser, credentials) {
     .setValue('#auth-signin input:nth-of-type(2)', credentials.password)
     .submitForm('#auth-signin')
     // expect 1 error, bad credentials
+    .waitForElementPresent('.error.visible', 5000, 'expect error to appear')
     .assert.countelements('.error.visible', 1)
     // try correct credentials
     .clearValue('#auth-signin input:nth-of-type(1)')

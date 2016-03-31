@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import {push} from 'react-router-redux';
 import invariant from 'invariant';
 import ModalWindow from '../modal/modalwindow';
+import Balls from '../../components/balls/balls';
 import Dropzone from 'react-dropzone';
 import { uiShowGenBankImport } from '../../actions/ui';
 import {projectGet, projectListAllBlocks} from '../../selectors/projects';
@@ -21,6 +22,7 @@ class ImportGenBankModal extends Component {
     this.state = {
       files: [],
       error: null,
+      processing: false,
     };
   }
 
@@ -52,6 +54,7 @@ class ImportGenBankModal extends Component {
     });
 
     if (this.state.files.length) {
+      this.setState({processing: true});
       const formData = new FormData();
       this.state.files.forEach(file => {
         formData.append('genBankFiles', file, file.name);
@@ -64,11 +67,11 @@ class ImportGenBankModal extends Component {
           this.props.uiShowGenBankImport(false);
           const json = JSON.parse(xhr.response);
           invariant(json && json.ProjectId, 'expect a project ID');
-          console.log('*** PROJECT ID ***', json.ProjectId);
           this.props.push(`/project/${json.ProjectId}`);
         } else {
           this.setState({error: `Error uploading file(s): ${xhr.status}`});
         }
+        this.setState({processing: false});
       }
       xhr.send(formData);
     }
@@ -85,33 +88,37 @@ class ImportGenBankModal extends Component {
           title="Import GenBank File"
           payload={(
             <form
+              disabled={this.state.processing}
               onSubmit={this.onSubmit.bind(this)}
               id="genbank-import-form"
-              className="genbank-import-form">
+              className="gd-form genbank-import-form">
               <div className="title">Import</div>
               <div className="radio">
                 <div>Import data to:</div>
-                <input type="radio" name="destination"/>
+                <input type="radio" name="destination" disabled={this.state.processing}/>
                 <div>My Inventory</div>
               </div>
               <div className="radio">
                 <div/>
-                <input type="radio" name="destination"/>
+                <input type="radio" name="destination" disabled={this.state.processing}/>
                 <div>My Project</div>
               </div>
               <Dropzone onDrop={this.onDrop.bind(this)} className="dropzone" activeClassName="dropzone-hot">
                 <div className="dropzone-text">Drop Files Here</div>
               </Dropzone>
               {this.showFiles()}
-              {this.state.error ? <div className="error">{this.state.error}</div> : null}
-              <div className="form-buttons">
-                <button
-                  type="button"
-                  onClick={() => {
-                    this.props.uiShowGenBankImport(false);
-                  }}>Cancel</button>
-                <button type="submit">Upload</button>
-            </div>
+              {this.state.error ? <div className="error visible">{this.state.error}</div> : null}
+              <Balls running={this.state.processing} color={'lightgray'}/>
+              <button type="submit" disabled={this.state.processing}>Upload</button>
+              <button
+                type="button"
+                disabled={this.state.processing}
+                onClick={() => {
+                  this.props.uiShowGenBankImport(false);
+                }}>Cancel
+              </button>
+
+
             </form>
           )}
           closeOnClickOutside
