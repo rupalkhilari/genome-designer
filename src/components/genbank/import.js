@@ -11,6 +11,27 @@ import {projectList, projectLoad} from '../../actions/projects';
 
 import '../../../src/styles/genbank.css';
 
+// purely for testing
+const genbank_testing = `LOCUS       AC000263                 368 bp    mRNA    linear   PRI 05-FEB-1999
+DEFINITION  Homo sapiens mRNA for prepro cortistatin like peptide, complete
+            cds.
+ACCESSION   AB000263
+ORIGIN
+        1 acaagatgcc attgtccccc ggcctcctgc tgctgctgct ctccggggcc acggccaccg
+       61 ctgccctgcc cctggagggt ggccccaccg gccgagacag cgagcatatg caggaagcgg
+      121 caggaataag gaaaagcagc ctcctgactt tcctcgcttg gtggtttgag tggacctccc
+      181 aggccagtgc cgggcccctc ataggagagg aagctcggga ggtggccagg cggcaggaag
+      241 gcgcaccccc ccagcaatcc gcgcgccggg acagaatgcc ctgcaggaac ttcttctgga
+      301 agaccttctc ctcctgcaaa taaaacctca cccatgaatg ctcacgcaag tttaattaca
+      361 gacctgaa
+//
+`;
+
+/**
+ * Genbank import dialog.
+ * NOTE: For E2E Tests we check for a global __testGenbankImport. If present
+ * we send the genbank_testing string above.
+ */
 class ImportGenBankModal extends Component {
 
   static propTypes = {
@@ -53,7 +74,7 @@ class ImportGenBankModal extends Component {
       error: null
     });
 
-    if (this.state.files.length) {
+    if (this.state.files.length || window.__testGenbankImport) {
       this.setState({processing: true});
       const formData = new FormData();
       this.state.files.forEach(file => {
@@ -61,7 +82,6 @@ class ImportGenBankModal extends Component {
       });
       const xhr = new XMLHttpRequest();
       xhr.open('POST', '/import/project/genbank', true);
-      xhr.setRequestHeader("Content-type", null);
       xhr.onload = () => {
         if (xhr.status === 200) {
           this.props.uiShowGenBankImport(false);
@@ -73,7 +93,7 @@ class ImportGenBankModal extends Component {
         }
         this.setState({processing: false});
       }
-      xhr.send(formData);
+      xhr.send(window.__testGenbankImport ? genbank_testing : formData);
     }
   }
 
