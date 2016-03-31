@@ -87,7 +87,7 @@ export const focusBlocksToggle = (blocksToToggle) => {
   return (dispatch, getState) => {
     invariant(Array.isArray(blocksToToggle), 'must pass array to focus blocks');
 
-    const { currentBlocks } = getState().ui;
+    const currentBlocks = getState().focus.blocks
     const blockSet = new Set(currentBlocks);
 
     blocksToToggle.forEach(block => {
