@@ -7,6 +7,8 @@ import * as inspector from './inspector';
 import * as inventory from './inventory';
 import * as projects from './projects';
 import * as focus from './focus';
+import * as ui from './ui';
+import * as clipboard from './clipboard';
 
 const exposed = {
   blocks,
@@ -14,6 +16,8 @@ const exposed = {
   focus,
   inventory,
   projects,
+  ui,
+  clipboard,
 };
 
 export default exposed;

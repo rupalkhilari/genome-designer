@@ -15,6 +15,8 @@ import {
   focusBlocksToggle,
   focusConstruct,
 } from '../actions/focus';
+import { clipboardSetData } from '../actions/clipboard';
+import * as clipboardFormats from '../constants/clipboardFormats';
 import {
   blockCreate,
   blockClone,
@@ -51,6 +53,7 @@ class GlobalNav extends Component {
       const clones = this.props.focus.blocks.map(block => {
         return this.props.blockClone(block, this.props.currentProjectId);
       });
+      this.props.clipboardSetData([clipboardFormats.blocks], [[clones]]);
       console.log(clones);
     }
   }
@@ -262,6 +265,7 @@ function mapStateToProps(state) {
   return {
     showMainMenu: state.ui.showMainMenu,
     focus: state.focus,
+    clipboard: state.clipboard,
   };
 }
 
@@ -281,4 +285,5 @@ export default connect(mapStateToProps, {
   focusBlocksAdd,
   focusBlocksToggle,
   focusConstruct,
+  clipboardSetData,
 })(GlobalNav);

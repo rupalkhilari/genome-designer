@@ -10,6 +10,7 @@ import inspector from './inspector';
 import ui from './ui';
 import focus from './focus';
 import user from './user';
+import clipboard from './clipboard';
 
 const purgingEvents = [LOCATION_CHANGE, USER_SET_USER];
 
@@ -25,6 +26,7 @@ export const rootReducer = combineReducers({
   inventory,
   inspector,
   ui,
+  clipboard,
   focus,
   user,
   undo: undoReducer,
