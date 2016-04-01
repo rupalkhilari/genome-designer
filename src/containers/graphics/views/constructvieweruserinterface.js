@@ -357,6 +357,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
         if (!block) {
           this.fence = {
             start: startPoint.clone(),
+            end: startPoint.clone(),
           }
         }
       }
@@ -375,12 +376,16 @@ export default class ConstructViewerUserInterface extends UserInterface {
       }
       // get a normalized rectangle from the start/end points
       const box = Box2D.boxFromPoints([this.fence.start, this.fence.end]);
-      this.fenceElement.style.left = box.x + 'px';
-      this.fenceElement.style.top = box.y + 'px';
-      this.fenceElement.style.width = box.w + 'px';
-      this.fenceElement.style.height = box.h + 'px';
-      // intersect with our client bounds
-      const bounds = new Box2D(0, 0, 0, 0);
+      // clamp to element
+      const client = new Box2D(this.el.getBoundingClientRect());
+      client.x = client.y = 0;
+      const final = box.intersectWithBox(client);
+      if (final) {
+        this.fenceElement.style.left = final.x + 'px';
+        this.fenceElement.style.top = final.y + 'px';
+        this.fenceElement.style.width = final.w + 'px';
+        this.fenceElement.style.height = final.h + 'px';
+      }
 
     } else {
       // remove the fence element if we have one
