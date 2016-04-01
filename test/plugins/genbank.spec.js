@@ -16,7 +16,7 @@ const getBlock = (allBlocks, blockId) => {
 }
 
 describe('Plugins', () => {
-  describe('Genbank Plugin', () => {
+  describe.only('Genbank Plugin', () => {
     it('should import Genbank file with contiguous entries as a project', function importGB(done) {
         fs.readFile(path.resolve(__dirname, '../res/sampleGenbankContiguous.gb'), 'utf8', (err, sampleStr) => {
             importProject('genbank', sampleStr)
@@ -30,14 +30,13 @@ describe('Plugins', () => {
                     expect(parentBlock.components.length).to.equal(4);
                     expect(parentBlock.metadata.name).to.equal('EU912544');
                     expect(parentBlock.metadata.description).to.equal('Cloning vector pDM313, complete sequence.');
-                    expect(parentBlock.metadata.mol_type).to.equal('other DNA');
+                    expect(parentBlock.metadata.genbank.mol_type).to.equal('other DNA');
                     expect(parentBlock.metadata.start).to.equal(0);
                     expect(parentBlock.metadata.end).to.equal(119);
-                    expect(parentBlock.metadata.gi).to.equal('198078160');
-                    expect(parentBlock.metadata.note).to.equal('GFP-tag for C-terminal fusion');
-                    expect(parentBlock.metadata.data_file_division).to.equal('SYN');
-                    expect(parentBlock.metadata.type).to.equal('source');
-                    expect(parentBlock.metadata.date).to.equal('06-FEB-2009');
+                    expect(parentBlock.metadata.genbank.annotations.gi).to.equal('198078160');
+                    expect(parentBlock.metadata.genbank.note).to.equal('GFP-tag for C-terminal fusion');
+                    expect(parentBlock.metadata.genbank.annotations.data_file_division).to.equal('SYN');
+                    expect(parentBlock.metadata.genbank.annotations.date).to.equal('06-FEB-2009');
                     expect(getBlock(output.blocks, parentBlock.components[0]).metadata.type).to.equal('promoter');
                     expect(getBlock(output.blocks, parentBlock.components[0]).rules.sbol).to.equal('promoter');
                     expect(getBlock(output.blocks, parentBlock.components[1]).metadata.type).to.equal('CDS');
@@ -166,11 +165,12 @@ describe('Plugins', () => {
       });
     });
 
-    it.skip('should export simple project to Genbank', function exportGB(done) {
+    it('should export simple project to Genbank', function exportGB(done) {
       fs.readFile(path.resolve(__dirname, '../res/simpleProject.json'), 'utf8', (err, sampleProjectJson) => {
         const sampleProject = JSON.parse(sampleProjectJson);
         exportProject('genbank', sampleProject)
           .then(result => {
+            console.log('came back!');
             expect(result).to.contain('LOCUS');
             done();
           })

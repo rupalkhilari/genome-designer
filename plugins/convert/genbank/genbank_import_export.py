@@ -21,26 +21,27 @@ def get_sequence_and_features(block, allblocks):
         seq = ""
         for i in range(0, len(block["components"])):
             block_id = block["components"][i]
-            bl = allblocks[block_id]
+            bl = [b for b in allblocks if b["id"] == block_id][0]
             pos = len(seq)
             output = get_sequence_and_features(bl, allblocks)
             seq += output["sequence"]
 
-            features.append( {
-                "block_id": block_id,
-                "start" : pos,
-                "end" : len(seq),
-                "type" : "block",
-                "parent_block" : block["id"] + "," + str(i),
-            })
+            feature = {
+                "start": pos,
+                "end": len(seq),
+                "type": block["metadata"]["type"],
+            }
+
+            for f_key, f_value in bl["metadata"]["genbank"].iteritems():
+                feature[f_key] = f_value
+
+            features.append(feature)
 
             for feature in output["features"]:
                 features.append( {
-                    "block_id": feature["block_id"],
                     "start" : feature["start"] + pos,
                     "end" : feature["end"] + pos,
                     "type" : feature["type"],
-                    "parent_block" : feature.get("parent_block",None)
                 })
         return { "sequence": seq, "features": features }
 
@@ -48,22 +49,28 @@ def project_to_genbank(filename, project, allblocks):
     blocks = project["components"]
     seq_obj_lst = []
 
-    for bid in blocks:
-        block = allblocks.get(bid)
+    for block_id in blocks:
+        block = [b for b in allblocks if b["id"] == block_id][0]
         if not block:
             continue
 
         output = get_sequence_and_features(block, allblocks)
         seq = output["sequence"]
         features = output["features"]
+        try:
+            original_id = block["metadata"]["genbank"]["original_id"]
+        except KeyError:
+            original_id = block["metadata"]["name"]
 
-        seq_obj = SeqIO.SeqRecord(Seq.Seq(seq,Seq.Alphabet.DNAAlphabet()),block["metadata"]["original_id"])
+        seq_obj = SeqIO.SeqRecord(Seq.Seq(seq,Seq.Alphabet.DNAAlphabet()), original_id)
         for feature in features:
             sf = SeqFeature.SeqFeature()
             sf.type = feature["type"]
-            sf.location = SeqFeature.FeatureLocation(feature["start"],feature["end"])
-            #sf.qualifiers["block_id"] = feature.get("block_id","")
-            #sf.qualifiers["parent_block"] = feature.get("parent_block",None)
+            feature_strand = 1
+            if "strand" in feature:
+                feature_strand = feature["strand"]
+            sf.location = SeqFeature.FeatureLocation(feature["start"],feature["end"], strand=feature_strand)
+
             seq_obj.features.append(sf)
         seq_obj_lst.append(seq_obj)
 
@@ -72,7 +79,7 @@ def project_to_genbank(filename, project, allblocks):
 def create_block_json(id, sequence, features):
     return {
         "id": id,
-        "metadata" : {},
+        "metadata" : { "genbank" : {}},
         "rules": {},
         "components": [],
         "sequence" : {
@@ -125,15 +132,16 @@ def genbank_to_block_helper(gb, convert_features=False):
     root_block = create_block_json(root_id, sequence, [])
     root_block["metadata"]["description"] = gb.description
     root_block["metadata"]["name"] = gb.name
-    root_block["metadata"]["type"] = "source"
     root_block["metadata"]["start"] = 0
-    root_block["metadata"]["end"] = full_length-1
-    root_block["metadata"]["original_id"] = gb.id
+    root_block["metadata"]["end"] = full_length - 1
+    root_block["metadata"]["genbank"]["original_id"] = gb.id
     root_block["sequence"]["length"] = full_length
     for annot in gb.annotations:
+        if "annotations" not in root_block["metadata"]["genbank"]:
+            root_block["metadata"]["genbank"]["annotations"] = { }
         try:
             json.dumps(gb.annotations[annot])
-            root_block["metadata"][annot] = gb.annotations[annot]
+            root_block["metadata"]["genbank"]["annotations"][annot] = gb.annotations[annot]
         except:
             pass
 
@@ -150,7 +158,9 @@ def genbank_to_block_helper(gb, convert_features=False):
 
         if f.type == 'source':
             for key, value in qualifiers.iteritems():
-                root_block["metadata"][key] = value[0]
+                if "feature_annotations" not in root_block["metadata"]["genbank"]:
+                    root_block["metadata"]["genbank"]["feature_annotations"] = {}
+                root_block["metadata"]["genbank"][key] = value[0]
         else:
                 block_id = str(uuid.uuid4())
                 child_block = create_block_json(block_id, sequence[start:end], [])
@@ -160,7 +170,7 @@ def genbank_to_block_helper(gb, convert_features=False):
                     else:
                         try:
                             json.dumps(qualifiers[q][0])
-                            child_block["metadata"][q] = f.qualifiers[q][0]
+                            child_block["metadata"]["genbank"][q] = f.qualifiers[q][0]
                         except:
                             pass
                 child_block["metadata"]["start"] = start
@@ -262,6 +272,7 @@ def genbank_to_block_helper(gb, convert_features=False):
                 filler_block["metadata"]["name"] = filler_block["sequence"]["sequence"][:3] + '...'
                 filler_block["metadata"]["start"] = current_position
                 filler_block["metadata"]["end"] = child["metadata"]["start"]-1
+                filler_block["sequence"]["length"] = filler_block["metadata"]["end"] - filler_block["metadata"]["start"]
                 all_blocks[block_id] = filler_block
                 block["components"].insert(i, block_id)
             current_position = child["metadata"]["end"] + 1
@@ -272,6 +283,7 @@ def genbank_to_block_helper(gb, convert_features=False):
             filler_block["metadata"]["name"] = filler_block["sequence"]["sequence"][:3] + '...'
             filler_block["metadata"]["start"] = current_position
             filler_block["metadata"]["end"] = block["metadata"]["end"]
+            filler_block["sequence"]["length"] = filler_block["metadata"]["end"] - filler_block["metadata"]["start"]
             all_blocks[block_id] = filler_block
             block["components"].insert(i+1, block_id)
 
@@ -283,8 +295,7 @@ def genbank_to_project(filename, convert_features=False):
     blocks = {}
     generator = SeqIO.parse(open(filename,"r"),"genbank")
     for record in generator:
-        gb = record
-        results = genbank_to_block_helper(gb, convert_features)
+        results = genbank_to_block_helper(record, convert_features)
         project["components"].append(results["root"]["id"])
         project["name"] = results["root"]["metadata"]["name"]
         project["description"] = results["root"]["metadata"]["description"]
