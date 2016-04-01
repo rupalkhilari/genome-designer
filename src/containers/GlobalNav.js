@@ -87,10 +87,15 @@ class GlobalNav extends Component {
       // get current construct
       const construct = this.props.blocks[this.props.focus.construct];
       invariant(construct, 'expected a construct');
+      // we have to clone the blocks currently on the clipboard since they
+      // can't be pasted twice
+      const clones = blocks.map(block => {
+        return this.props.blockClone(block.id, this.props.currentProjectId);
+      });
       // insert at end of construct
       let insertIndex = construct.components.length;
       // add to construct
-      blocks.forEach(block => {
+      clones.forEach(block => {
         this.props.blockAddComponent(construct.id, block.id, insertIndex++);
       });
     }
