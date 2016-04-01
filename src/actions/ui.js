@@ -12,7 +12,17 @@ export const uiShowAuthenticationForm = (name) => {
   };
 };
 
-export const uiShowDNAImport= (bool) => {
+export const uiShowGenBankImport = (bool) => {
+  return (dispatch, getState) => {
+    dispatch({
+      type: ActionTypes.UI_SHOW_GENBANK_IMPORT,
+      showGenBankImport: bool,
+    });
+    return bool;
+  };
+};
+
+export const uiShowDNAImport = (bool) => {
   return (dispatch, getState) => {
     dispatch({
       type: ActionTypes.UI_SHOW_DNAIMPORT,

@@ -6,6 +6,7 @@ export const initialState = {
   authenticationForm: 'none',
   showDNAImport: false,
   gruntMessage: null,
+  showGenBankImport: false,
 };
 
 export default function inventory(state = initialState, action) {
@@ -13,6 +14,10 @@ export default function inventory(state = initialState, action) {
   case ActionTypes.UI_SHOW_AUTHENTICATION_FORM: {
     const { authenticationForm } = action;
     return Object.assign({}, state, {authenticationForm});
+  }
+  case ActionTypes.UI_SHOW_GENBANK_IMPORT: {
+    const { showGenBankImport } = action;
+    return Object.assign({}, state, {showGenBankImport});
   }
   case ActionTypes.UI_SHOW_DNAIMPORT: {
     const { showDNAImport } = action;
