@@ -1,5 +1,6 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
+import invariant from 'invariant';
 import { push } from 'react-router-redux';
 import MenuBar from '../components/Menu/MenuBar';
 import UserWidget from '../components/authentication/userwidget';
@@ -21,6 +22,7 @@ import {
   blockCreate,
   blockClone,
   blockRemoveComponent,
+  blockAddComponent,
  } from '../actions/blocks';
  import {
    blockGetParents,
@@ -53,12 +55,11 @@ class GlobalNav extends Component {
 
   // copy the focused blocks to the clipboard using a deep clone
   copyFocusedBlocksToClipboard() {
-    debugger;
     if (this.props.focus.blocks.length) {
       const clones = this.props.focus.blocks.map(block => {
         return this.props.blockClone(block, this.props.currentProjectId);
       });
-      this.props.clipboardSetData([clipboardFormats.blocks], [[clones]])
+      this.props.clipboardSetData([clipboardFormats.blocks], [clones])
     }
   }
 
@@ -74,7 +75,25 @@ class GlobalNav extends Component {
     this.props.focus.blocks.forEach(blockId => {
       this.props.blockRemoveComponent(this.getBlockParentId(blockId), blockId);
     });
-    this.props.clipboardSetData([clipboardFormats.blocks], [[blocks]])
+    this.props.clipboardSetData([clipboardFormats.blocks], [blocks])
+  }
+  // paste from clipboard to current construct
+  pasteBlocksToConstruct() {
+    // paste blocks into construct if format available
+    const index = this.props.clipboard.formats.indexOf(clipboardFormats.blocks);
+    if (index >= 0) {
+      const blocks = this.props.clipboard.data[index];
+      invariant(blocks && blocks.length && Array.isArray(blocks), 'expected array of blocks on clipboard for this format');
+      // get current construct
+      const construct = this.props.blocks[this.props.focus.construct];
+      invariant(construct, 'expected a construct');
+      // insert at end of construct
+      let insertIndex = construct.components.length;
+      // add to construct
+      blocks.forEach(block => {
+        this.props.blockAddComponent(construct.id, block.id, insertIndex++);
+      });
+    }
   }
 
   menuBar() {
@@ -154,7 +173,9 @@ class GlobalNav extends Component {
               },
             }, {
               text: 'Paste',
-              action: () => {},
+              action: () => {
+                this.pasteBlocksToConstruct();
+              },
             }, {}, {
               text: 'Rename',
               action: () => {},
@@ -284,6 +305,7 @@ function mapStateToProps(state) {
   return {
     showMainMenu: state.ui.showMainMenu,
     focus: state.focus,
+    blocks: state.blocks,
     clipboard: state.clipboard,
   };
 }
@@ -307,4 +329,5 @@ export default connect(mapStateToProps, {
   focusBlocksToggle,
   focusConstruct,
   clipboardSetData,
+  blockAddComponent,
 })(GlobalNav);
