@@ -4,8 +4,22 @@ import { push } from 'react-router-redux';
 import MenuBar from '../components/Menu/MenuBar';
 import UserWidget from '../components/authentication/userwidget';
 import RibbonGrunt from '../components/ribbongrunt';
-import { projectCreate, projectAddConstruct, projectSave } from '../actions/projects';
-import { blockCreate } from '../actions/blocks';
+import {
+  projectCreate,
+  projectAddConstruct,
+  projectSave
+} from '../actions/projects';
+import {
+  focusBlocks,
+  focusBlocksAdd,
+  focusBlocksToggle,
+  focusConstruct,
+} from '../actions/focus';
+import {
+  blockCreate,
+  blockClone,
+ } from '../actions/blocks';
+import { projectGetVersion } from '../selectors/projects';
 import { undo, redo } from '../store/undo/actions';
 import { uiShowGenBankImport } from '../actions/ui';
 import { setItem } from '../middleware/localStorageCache';
@@ -30,6 +44,16 @@ class GlobalNav extends Component {
     showAddProject: false,
     recentProjects: [],
   };
+
+  copyFocusedBlocksToClipboard() {
+    debugger;
+    if (this.props.focus.blocks.length) {
+      const clones = this.props.focus.blocks.map(block => {
+        return this.props.blockClone(block, this.props.currentProjectId);
+      });
+      console.log(clones);
+    }
+  }
 
   menuBar() {
     return (<MenuBar
@@ -98,13 +122,14 @@ class GlobalNav extends Component {
               },
             }, {}, {
               text: 'Cut',
-              action: () => {},
+              action: () => {
+                this.copyFocusedBlocksToClipboard();
+              },
             }, {
               text: 'Copy',
-              action: () => {},
-            }, {
-              text: 'Copy As...',
-              action: () => {},
+              action: () => {
+                this.copyFocusedBlocksToClipboard();
+              },
             }, {
               text: 'Paste',
               action: () => {},
@@ -236,6 +261,7 @@ class GlobalNav extends Component {
 function mapStateToProps(state) {
   return {
     showMainMenu: state.ui.showMainMenu,
+    focus: state.focus,
   };
 }
 
@@ -243,10 +269,16 @@ export default connect(mapStateToProps, {
   projectAddConstruct,
   projectCreate,
   projectSave,
+  projectGetVersion,
   blockCreate,
+  blockClone,
   uiShowDNAImport,
   undo,
   redo,
   push,
   uiShowGenBankImport,
+  focusBlocks,
+  focusBlocksAdd,
+  focusBlocksToggle,
+  focusConstruct,
 })(GlobalNav);

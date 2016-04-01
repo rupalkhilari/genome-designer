@@ -222,6 +222,10 @@ export default class ConstructViewerUserInterface extends UserInterface {
           blockPopupMenuOpen: true,
           menuPosition: globalPoint,
         });
+        // change replace to add if opening the menu
+        if (action === 'replace') {
+          action = 'add';
+        }
 
         break;
 
