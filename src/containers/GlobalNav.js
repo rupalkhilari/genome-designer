@@ -20,7 +20,11 @@ import * as clipboardFormats from '../constants/clipboardFormats';
 import {
   blockCreate,
   blockClone,
+  blockRemoveComponent,
  } from '../actions/blocks';
+ import {
+   blockGetParents,
+ } from '../selectors/blocks';
 import { projectGetVersion } from '../selectors/projects';
 import { undo, redo } from '../store/undo/actions';
 import { uiShowGenBankImport } from '../actions/ui';
@@ -47,15 +51,30 @@ class GlobalNav extends Component {
     recentProjects: [],
   };
 
+  // copy the focused blocks to the clipboard using a deep clone
   copyFocusedBlocksToClipboard() {
     debugger;
     if (this.props.focus.blocks.length) {
       const clones = this.props.focus.blocks.map(block => {
         return this.props.blockClone(block, this.props.currentProjectId);
       });
-      this.props.clipboardSetData([clipboardFormats.blocks], [[clones]]);
-      console.log(clones);
+      this.props.clipboardSetData([clipboardFormats.blocks], [[clones]])
     }
+  }
+
+  // get parent of block
+  getBlockParentId(blockId) {
+    return this.props.blockGetParents(blockId)[0];
+  }
+
+  // cut focused blocks to the clipboard, no clone required since we are removing them.
+  cutFocusedBlocksToClipboard() {
+    // copy the focused blocks before removing
+    const blocks = this.props.focus.blocks.slice();
+    this.props.focus.blocks.forEach(blockId => {
+      this.props.blockRemoveComponent(this.getBlockParentId(blockId), blockId);
+    });
+    this.props.clipboardSetData([clipboardFormats.blocks], [[blocks]])
   }
 
   menuBar() {
@@ -126,7 +145,7 @@ class GlobalNav extends Component {
             }, {}, {
               text: 'Cut',
               action: () => {
-                this.copyFocusedBlocksToClipboard();
+                this.cutFocusedBlocksToClipboard();
               },
             }, {
               text: 'Copy',
@@ -276,6 +295,8 @@ export default connect(mapStateToProps, {
   projectGetVersion,
   blockCreate,
   blockClone,
+  blockRemoveComponent,
+  blockGetParents,
   uiShowDNAImport,
   undo,
   redo,
