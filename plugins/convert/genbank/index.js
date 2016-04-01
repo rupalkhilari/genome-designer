@@ -18,13 +18,14 @@ const createBlockStructureAndSaveSequence = (block) => {
   const scaffold = BlockDefinition.scaffold();
 
   //get the sequence md5
-  const sequenceMd5 = block.sequence ? md5(block.sequence) : '';
+  const sequenceMd5 = block.sequence.sequence ? md5(block.sequence.sequence) : '';
 
   //reassign values
   const toMerge = {
     metadata: block.metadata,
     sequence: {
       md5: sequenceMd5,
+      length: block.sequence.length,
       annotations: block.annotations, //you will likely have to remap these...
     },
     source: {
@@ -38,7 +39,7 @@ const createBlockStructureAndSaveSequence = (block) => {
 
   //promise, for writing sequence if we have one, or just immediately resolve if we dont
   const sequencePromise = sequenceMd5 ?
-    persistence.sequenceWrite(sequenceMd5, block.sequence) :
+    persistence.sequenceWrite(sequenceMd5, block.sequence.sequence) :
     Promise.resolve();
 
   //return promise which will resolve with block once done
@@ -125,6 +126,9 @@ const exportProjectStructure = (project, blocks) => {
     blocks,
   };
 
+  const outputFile2 = filePaths.createStorageUrl('exported_to_genbank.json');
+  fileSystem.fileWrite(outputFile2, input);
+
   const cmd = `python ${path.resolve(__dirname, 'convert.py')} to_genbank ${inputFile} ${outputFile}`;
 
   return runCommand(cmd, JSON.stringify(input), inputFile, outputFile)
@@ -135,19 +139,23 @@ const exportProjectStructure = (project, blocks) => {
 
 const loadSequences = (blocks) => {
   return Promise.all(
-    Object.keys(blocks).map(key => {
-      //promise, for writing sequence if we have one, or just immediately resolve if we dont
-      return blocks[key].sequence.md5 ?
-        persistence.sequenceGet(blocks[key].sequence.md5) :
+    blocks.map(block => {
+      if (block.sequence.md5 && !block.sequence.sequence) {
+        return persistence.sequenceGet(block.sequence.md5)
+          .then(readSequence => {
+            return merge({}, block, {sequence: {sequence: readSequence}});
+          });
+      } else {
         Promise.resolve('');
+      }
     })
   );
 };
 
 export const exportProject = (project, blocks) => {
   return loadSequences(blocks)
-    .then(blockWithSequences => {
-      return exportProjectStructure(project, blocks)
+    .then(blocksWithSequences => {
+      return exportProjectStructure(project, blocksWithSequences)
         .then(exportStr => {
           return Promise.resolve(exportStr);
         });
@@ -202,7 +210,6 @@ export const importProject = (gbstr) => {
 
       const outputFile = filePaths.createStorageUrl('imported_from_genbank.json');
       fileSystem.fileWrite(outputFile, {project: resProject, blocks: result.blocks});
-
       return {project: resProject, blocks: result.blocks};
     });
 };

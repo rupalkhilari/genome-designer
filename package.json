@@ -11,7 +11,7 @@
     "check": "npm run lint && npm run test",
     "lint": "eslint src server plugins; exit 0;",
     "lint-jscs": "jscs src server",
-    "test": "rm -rf ./storage/test && NODE_ENV=test mocha --recursive --compilers js:babel-register,css:test/css-null-compiler.js --require ./test/setup.js --timeout=10000",
+    "test": "rm -rf ./storage/test && NODE_ENV=test mocha --recursive --compilers js:babel-register,css:test/css-null-compiler.js --require ./test/setup.js --timeout=15000",
     "test:watch": "npm test -- --watch",
     "nightwatch": "node ./node_modules/nightwatch/bin/nightwatch",
     "screenshots": "rm -f ./tests/screenshots/",
