@@ -176,3 +176,10 @@ export const blockIsValid = (model) => {
     return BlockDefinition.validate(model);
   };
 };
+
+export const blockHasSequence = blockId => {
+  return (dispatch, getState) => {
+    const block = getState().blocks[blockId];
+    return !!block && block.hasSequence();
+  };
+};

@@ -63,6 +63,10 @@ export default class Block extends Instance {
     return this.mutate('rules.sbol', sbol);
   }
 
+  hasSequence() {
+    return !!this.sequence.md5;
+  }
+
   /**
    * @description Retrieve the sequence of the block. Retrieves the sequence from the server, since it is stored in a file, returning a promise.
    * @param format {String} accepts 'raw', 'fasta', 'genbank'
