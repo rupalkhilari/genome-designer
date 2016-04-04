@@ -12,6 +12,37 @@ import * as persistence from '../../../server/data/persistence';
 
 import {chunk} from 'lodash';
 
+const exec = require('child_process').exec;
+const uuid = require('node-uuid');
+
+//////////////////////////////////////////////////////////////
+// COMMON
+//////////////////////////////////////////////////////////////
+const createRandomStorageFile = () => filePaths.createStorageUrl('temp-' + uuid.v4());
+
+// Run an external command and return the data in the specified output file
+const runCommand = (command, input, inputFile, outputFile) => {
+  return fileSystem.fileWrite(inputFile, input, false)
+    .then(() => {
+      return new Promise((resolve, reject) => {
+        exec(command, (err, stdout) => {
+          if (err) {
+            console.log('Error running command!');
+            console.log(err);
+            reject(err);
+          }
+          else resolve(stdout);
+        });
+      });
+    })
+    .then(() => fileSystem.fileRead(outputFile, false));
+};
+
+//////////////////////////////////////////////////////////////
+// IMPORT
+//////////////////////////////////////////////////////////////
+// Create a GD block given a structure coming from Python
+// Also saves the sequence and stores the MD5 in the block
 const createBlockStructureAndSaveSequence = (block) => {
   // generate a valid block scaffold. This is similar to calling new Block(),
   // but a bit more light weight and easier to work with (models are frozen so you cannot edit them)
@@ -26,7 +57,7 @@ const createBlockStructureAndSaveSequence = (block) => {
     sequence: {
       md5: sequenceMd5,
       length: block.sequence.length,
-      annotations: block.annotations, //you will likely have to remap these...
+      annotations: block.sequence.annotations, //you will likely have to remap these...
     },
     source: {
       id: 'genbank',
@@ -51,6 +82,8 @@ const createBlockStructureAndSaveSequence = (block) => {
   }));
 };
 
+// Creates a structure of GD blocks given the structure coming from Python
+// We chunk here because otherwise the OS complains of too many open files
 const createAllBlocks = (outputBlocks) => {
   const batches = chunk(Object.keys(outputBlocks), 200);
 
@@ -64,6 +97,7 @@ const createAllBlocks = (outputBlocks) => {
   }, Promise.resolve([]));
 };
 
+// Given an old ID, returns the new ID for a block
 const getNewId = (blockStructureArray, oldId) => {
   for (let i = 0, len = blockStructureArray.length; i < len; i++) {
     if (blockStructureArray[i].oldId === oldId) {
@@ -72,6 +106,8 @@ const getNewId = (blockStructureArray, oldId) => {
   }
 };
 
+// Takes a block structure and sets up the hierarchy through GD ids.
+// This is necessary because Python returns ids that are not produced by GD.
 const remapHierarchy = (blockArray) => {
   return blockArray.map(blockStructure => {
     const newBlock = blockStructure.block;
@@ -83,6 +119,7 @@ const remapHierarchy = (blockArray) => {
   });
 };
 
+// Converts an input project structure (from Python) into GD format
 const handleProject = (outputProject, rootBlockIds) => {
   //just get fields we want using destructuring and use them to merge
   const { name, description } = outputProject;
@@ -96,72 +133,8 @@ const handleProject = (outputProject, rootBlockIds) => {
   }));
 };
 
-const exec = require('child_process').exec;
-const uuid = require('node-uuid');
-
-//todo - should validate blocks coming in / going out
-
-const createRandomStorageFile = () => filePaths.createStorageUrl('temp-' + uuid.v4());
-
-const runCommand = (command, input, inputFile, outputFile) => {
-  return fileSystem.fileWrite(inputFile, input, false)
-    .then(() => {
-      return new Promise((resolve, reject) => {
-        exec(command, (err, stdout) => {
-          if (err) {
-            reject(err);
-          }
-          else resolve(stdout);
-        });
-      });
-    })
-    .then(() => fileSystem.fileRead(outputFile, false));
-};
-
-const exportProjectStructure = (project, blocks) => {
-  const inputFile = createRandomStorageFile();
-  const outputFile = createRandomStorageFile();
-  const input = {
-    project,
-    blocks,
-  };
-
-  const outputFile2 = filePaths.createStorageUrl('exported_to_genbank.json');
-  fileSystem.fileWrite(outputFile2, input);
-
-  const cmd = `python ${path.resolve(__dirname, 'convert.py')} to_genbank ${inputFile} ${outputFile}`;
-
-  return runCommand(cmd, JSON.stringify(input), inputFile, outputFile)
-    .then(resStr => {
-      return Promise.resolve(resStr);
-    });
-};
-
-const loadSequences = (blocks) => {
-  return Promise.all(
-    blocks.map(block => {
-      if (block.sequence.md5 && !block.sequence.sequence) {
-        return persistence.sequenceGet(block.sequence.md5)
-          .then(readSequence => {
-            return merge({}, block, {sequence: {sequence: readSequence}});
-          });
-      } else {
-        Promise.resolve('');
-      }
-    })
-  );
-};
-
-export const exportProject = (project, blocks) => {
-  return loadSequences(blocks)
-    .then(blocksWithSequences => {
-      return exportProjectStructure(project, blocksWithSequences)
-        .then(exportStr => {
-          return Promise.resolve(exportStr);
-        });
-    });
-};
-
+// Reads a genbank file and returns a project structure and all the blocks
+// These return structures are NOT in GD format.
 const readGenbankFile = (genbankString) => {
   const inputFile = createRandomStorageFile();
 
@@ -180,6 +153,7 @@ const readGenbankFile = (genbankString) => {
     });
 };
 
+// Creates a rough project structure (not in GD format yet!) and a list of blocks from a genbank file
 const handleBlocks = (genbankInput) => {
   return readGenbankFile(genbankInput)
     .then(result => {
@@ -200,6 +174,8 @@ const handleBlocks = (genbankInput) => {
     });
 };
 
+// Import project and construct/s from genbank
+// Returns a project structure and the list of all blocks
 export const importProject = (gbstr) => {
   return handleBlocks(gbstr)
     .then((result) => {
@@ -214,7 +190,8 @@ export const importProject = (gbstr) => {
     });
 };
 
-
+// Import only construct/s from genbank
+// Returns a list of block ids that represent the constructs, and the list of all blocks
 export const importConstruct = (genbankString) => {
   return handleBlocks(genbankString)
     .then((rawProjectRootsAndBlocks) => {
@@ -222,6 +199,56 @@ export const importConstruct = (genbankString) => {
         return rawProjectRootsAndBlocks;
       }
       return {roots: rawProjectRootsAndBlocks.rootBlocks, blocks: rawProjectRootsAndBlocks.blocks};
+    });
+};
+
+//////////////////////////////////////////////////////////////
+// EXPORT
+//////////////////////////////////////////////////////////////
+// Call Python to generate the genbank output for a project with a set of blocks
+const exportProjectStructure = (project, blocks) => {
+  const inputFile = createRandomStorageFile();
+  const outputFile = createRandomStorageFile();
+  const input = {
+    project,
+    blocks,
+  };
+
+  const outputFile2 = filePaths.createStorageUrl('exported_to_genbank.json');
+  fileSystem.fileWrite(outputFile2, input);
+
+  const cmd = `python ${path.resolve(__dirname, 'convert.py')} to_genbank ${inputFile} ${outputFile}`;
+  return runCommand(cmd, JSON.stringify(input), inputFile, outputFile)
+    .then(resStr => {
+      return Promise.resolve(resStr);
+    });
+};
+
+// Load sequences from their MD5 in a set of block structures
+const loadSequences = (blocks) => {
+  return Promise.all(
+    blocks.map(block => {
+      if (block.sequence.md5 && !block.sequence.sequence) {
+        return persistence.sequenceGet(block.sequence.md5)
+          .then(readSequence => {
+            return merge({}, block, {sequence: {sequence: readSequence}});
+          });
+      } else {
+        Promise.resolve('');
+      }
+    })
+  );
+};
+
+// This is the entry function for project export
+// Given a project and a set of blocks, generate the genbank format
+export const exportProject = (project, blocks) => {
+  return loadSequences(blocks)
+    .then(blocksWithSequences => {
+      return exportProjectStructure(project, blocksWithSequences)
+        .then(exportStr => {
+          return Promise.resolve(exportStr);
+        });
     });
 };
 
