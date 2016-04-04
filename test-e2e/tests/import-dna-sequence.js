@@ -72,7 +72,7 @@ module.exports = {
     newProject(browser);
 
     // double check there are no construct viewers present
-    browser.assert.countelements('.construct-viewer', 0);
+    browser.waitForElementNotPresent('.construct-viewer', 5000, 'expect no construct viewers')
 
     // open import DNA from main edit menu
     importDNAFromMainMenu(browser);

@@ -211,7 +211,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
       if (evt.shiftKey || (window.__gde2e && window.__gde2e.shiftKey)) {
         action = 'add';
       }
-      if (evt.metaKey || evt.altKey (window.__gde2e && window.__gde2e.metaKey)) {
+      if (evt.metaKey || evt.altKey || (window.__gde2e && window.__gde2e.metaKey)) {
         action = 'toggle';
       }
       // if they clicked the context menu area, open it
