@@ -1,5 +1,4 @@
 import React, { Component, PropTypes } from 'react';
-
 import MenuItem from './MenuItem';
 import MenuSeparator from './MenuSeparator';
 
@@ -37,7 +36,10 @@ export default class Menu extends Component {
               };
               return (
                 item.text ?
-                  (<MenuItem text={item.text} disabled={!!item.disabled} action={boundAction}/>) :
+                  (<MenuItem
+                    text={item.text}
+                    disabled={!!item.disabled}
+                    action={boundAction} />) :
                   (<MenuSeparator key={index} />)
                 );
             })}

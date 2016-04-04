@@ -9,6 +9,7 @@ import * as inspector from './inspector';
 import * as inventory from './inventory';
 import * as projects from './projects';
 import * as ui from './ui';
+import * as clipboard from './clipboard';
 import * as focus from './focus';
 
 const exposed = {
@@ -17,6 +18,7 @@ const exposed = {
   inventory,
   projects,
   ui,
+  clipboard,
   focus,
 };
 

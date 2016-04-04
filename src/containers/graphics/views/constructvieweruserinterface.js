@@ -2,7 +2,11 @@ import UserInterface from '../scenegraph2d/userinterface';
 import { sbol as sbolDragType } from '../../../constants/DragTypes';
 import DnD from '../dnd/dnd';
 import Vector2D from '../geometry/vector2d';
+import Box2D from '../geometry/box2d';
 import kT from './layoutconstants';
+import Fence from './fence';
+import invariant from 'invariant';
+
 
 // # of pixels of mouse movement before a drag is triggered.
 const dragThreshold = 8;
@@ -24,6 +28,22 @@ export default class ConstructViewerUserInterface extends UserInterface {
       drop: this.onDrop.bind(this),
       zorder: 0,
     });
+  }
+
+  /**
+   * select all blocks within the given rectangle
+   */
+  selectNodesByRectangle(box) {
+    const hits = this.sg.findNodesWithin(box);
+    const parts = [];
+    hits.forEach(node => {
+      const element = this.layout.elementFromNode(node);
+      if (element) {
+        parts.push(element);
+      }
+    });
+    // combine with existing selection
+    this.constructViewer.blockSelected(parts.concat(this.constructViewer.props.focus.blocks));
   }
 
   /**
@@ -159,8 +179,20 @@ export default class ConstructViewerUserInterface extends UserInterface {
   /**
    * mouse down handler
    */
-  mouseUp(evt, point) {
+  mouseDown(evt, point) {
     this.mouseSelect(evt, point);
+  }
+
+  /**
+   * Might signal the end of fence drag
+   */
+  mouseUp(evt, point) {
+    if (this.fence) {
+      // select blocks within the fence then dispose it
+      this.selectNodesByRectangle(this.fence.getBox());
+      this.fence.dispose();
+      this.fence = null;
+    }
   }
   /**
    * mouse section can occur by click or when a drag is started so it gets
@@ -176,10 +208,10 @@ export default class ConstructViewerUserInterface extends UserInterface {
       // the clicked block is just added to the selections, otherwise it replaces the selection.
       // Also, if the shift key is used the block is added and does not replace the selection
       let action = 'replace';
-      if (evt.shiftKey || window.__shifty ) {
+      if (evt.shiftKey || (window.__gde2e && window.__gde2e.shiftKey)) {
         action = 'add';
       }
-      if (evt.metaKey || evt.altKey) {
+      if (evt.metaKey || evt.altKey || (window.__gde2e && window.__gde2e.metaKey)) {
         action = 'toggle';
       }
       // if they clicked the context menu area, open it
@@ -197,6 +229,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
         if (action === 'replace') {
           action = 'add';
         }
+
         break;
 
         case 'triangle':
@@ -217,9 +250,14 @@ export default class ConstructViewerUserInterface extends UserInterface {
       }
 
     } else {
-      // select construct if no block clicked and deselect all blocks
-      this.constructViewer.blockSelected([]);
+      // start a fence
+      invariant(!this.fence, 'fence already exists');
       this.constructViewer.constructSelected(this.constructViewer.props.constructId);
+      // clear current selections unless shift pressed
+      if (!evt.shiftKey) {
+        this.constructViewer.blockSelected([]);
+      }
+      this.fence = new Fence(this, point);
     }
   }
 
@@ -294,7 +332,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * to the DND manager to handle
    */
   mouseDrag(evt, point, startPoint, distance) {
-    if (distance > dragThreshold) {
+    if (distance > dragThreshold && !this.fence) {
       // start a block drag if we have one
       const block = this.topBlockAt(startPoint);
       // must be dragging a selected block
@@ -311,7 +349,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
         let copying = evt.altKey;
         if (!copying) {
           this.constructViewer.removePartsList(this.selectedElements);
-        } 
+        }
         // start the drag with the proxy and the removed block as the payload
         // and indicate that the source of the drag is another construct viewer
         DnD.startDrag(proxy, globalPoint, {
@@ -320,8 +358,13 @@ export default class ConstructViewerUserInterface extends UserInterface {
           copying: copying,
         });
       }
+    } else {
+      if (this.fence) {
+        this.fence.update(point);
+      }
     }
   }
+
   /**
    * make a drag proxy by gathering all the selected blocks into a group ( up to
    * a limit )

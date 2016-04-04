@@ -57,7 +57,8 @@ export default class Box2D {
    */
   extend(from, props) {
     for (const key in props) {
-      if (from.hasOwnProperty(key)) {
+      // hasOwnProperty fails on ClientRect, plus this ensures its a number
+      if (from[key] === +from[key]) {
         this[props[key]] = from[key];
       }
     }

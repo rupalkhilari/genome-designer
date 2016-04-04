@@ -103,6 +103,19 @@ export default class SceneGraph2D {
   }
 
   /**
+   * find nodes that intersect the given box
+   */
+  findNodesWithin(box) {
+    const hits = [];
+    this.traverse( node => {
+      if (node.parent && node.getAABB().intersectWithBox(box)) {
+        hits.push(node);
+      }
+    }, this);
+    return hits;
+  }
+
+  /**
    * return the union of the AABB of all nodes in the scenegraph
    * except the root node
    * @return {Box2D}

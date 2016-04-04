@@ -58,7 +58,7 @@ export default class Layout {
       const aabb = this.sceneGraph.getAABB();
       if (aabb) {
         this.sceneGraph.width = Math.max(aabb.right, kT.minWidth);
-        this.sceneGraph.height = Math.max(aabb.bottom, kT.minHeight);
+        this.sceneGraph.height = Math.max(aabb.bottom, kT.minHeight) + kT.bottomPad;
         this.sceneGraph.updateSize();
       }
     }
