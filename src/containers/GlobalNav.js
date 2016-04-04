@@ -53,6 +53,95 @@ class GlobalNav extends Component {
     recentProjects: [],
   };
 
+  /**
+   * get the given blocks index in its parent
+   */
+  blockGetIndex(blockId) {
+    // get parent
+    const parentBlock = this.blockGetParent(blockId);
+    invariant(parentBlock, 'expected a parent');
+    const index = parentBlock.components.indexOf(blockId);
+    invariant(index >= 0, 'expect the block to be found in components of parent');
+    return index;
+  }
+  /**
+   * get parent block of block with given id
+   */
+  blockGetParent(blockId) {
+    const parentId = this.props.blockGetParents(blockId)[0];
+    const parentBlock = this.props.blocks[parentId];
+    return parentBlock;
+  }
+  /**
+   * truthy if the block has a parent
+   */
+  blockHasParent(blockId) {
+    return this.props.blockGetParents(blockId).length;
+  }
+
+  /**
+   * true index is string representation of length of the path of the given block back to root.
+   * e.g. if the block is the 4th child of a 2nd child of a 5th child its true index would be 4/1/3
+   * Positioning the oldest ancester closest to the start of the string facilitates comparison.
+   */
+  getBlockTrueIndex(blockId) {
+    let str = '';
+    let current = blockId;
+    while (this.blockHasParent(current)) {
+      str = `${this.blockGetIndex(current)}${str.length ? '/' : ''}${str}`;
+      current = this.blockGetParent(current).id;
+    }
+    return str;
+  }
+
+  /**
+   * compare two results from getBlockTrueIndex, return truthy is a >= b
+   */
+  compareTrueIndices(tia, tib) {
+    const tiav = tia.split('/').map(str => parseFloat(str));
+    const tibv = tib.split('/').map(str => parseFloat(str));
+    let i = 0;
+    while (true) {
+      if (tiav[i] === tibv[i] && i < tiav.length && i < tibv.length) {
+        i++;
+      } else {
+        break;
+      }
+    }
+    // this works because for each if the two paths are 2/3/2 and 2/3
+    // the final compare of 2 >= null will return true
+    // and also null >= null is true
+    return tiav[i] >= tibv[i];
+  }
+
+  /**
+   * return the block we are going to insert after
+   */
+  findInsertBlock() {
+    // get true indices of all the focused blocks
+    const trueIndices = this.props.focus.blocks.map(block => this.getBlockTrueIndex(block));
+    trueIndices.sort(this.compareTrueIndices);
+    // the highest index/path will be the last item
+    const highest = trueIndices.pop();
+    // now locate the block and returns its parent id
+    // and the index to start inserting at
+    let current = this.props.focus.construct;
+    let indices = highest.split('/').map(index => parseFloat(index));
+    let index = 0;
+    let blockIndex = -1;
+    let blockParent = null;
+    do {
+      blockIndex = indices[index];
+      blockParent = current;
+      current = this.props.blocks[current].components[blockIndex];
+    } while (++index < indices.length);
+    // return index + 1 to make the insert occur after this block
+    return {
+      parent: blockParent,
+      blockIndex: blockIndex + 1,
+    };
+  }
+
   // copy the focused blocks to the clipboard using a deep clone
   copyFocusedBlocksToClipboard() {
     if (this.props.focus.blocks.length) {
@@ -71,7 +160,7 @@ class GlobalNav extends Component {
   // cut focused blocks to the clipboard, no clone required since we are removing them.
   cutFocusedBlocksToClipboard() {
     // copy the focused blocks before removing
-    const blocks = this.props.focus.blocks.slice();
+    const blocks = this.props.focus.blocks.slice().map(blockId => this.props.blocks[blockId]);
     this.props.focus.blocks.forEach(blockId => {
       this.props.blockRemoveComponent(this.getBlockParentId(blockId), blockId);
     });
@@ -92,12 +181,20 @@ class GlobalNav extends Component {
       const clones = blocks.map(block => {
         return this.props.blockClone(block.id, this.props.currentProjectId);
       });
-      // insert at end of construct
+      // insert at end of construct if no blocks selected
       let insertIndex = construct.components.length;
+      let parentId = construct.id;
+      if (this.props.focus.blocks.length) {
+        const insertInfo = this.findInsertBlock();
+        insertIndex = insertInfo.blockIndex;
+        parentId = insertInfo.parent;
+      }
       // add to construct
       clones.forEach(block => {
-        this.props.blockAddComponent(construct.id, block.id, insertIndex++);
+        this.props.blockAddComponent(parentId, block.id, insertIndex++);
       });
+      // select the clones
+      this.props.focusBlocks(clones.map(block => block.id));
     }
   }
 
