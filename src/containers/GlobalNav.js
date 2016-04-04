@@ -126,6 +126,7 @@ class GlobalNav extends Component {
               action: () => {
                 const block = this.props.blockCreate();
                 this.props.projectAddConstruct(this.props.currentProjectId, block.id);
+                this.props.focusConstruct(block.id);
               },
             }, {
               text: 'New Construct from Clipboard',
