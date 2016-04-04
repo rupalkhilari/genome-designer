@@ -7,7 +7,8 @@ from Bio import SeqFeature
 import sys
 import uuid
 import sys
-from genbank_import_export import *
+from genbank_import import *
+from genbank_export import *
 
 to_genbank = sys.argv[1] == "to_genbank"
 
@@ -19,5 +20,5 @@ if to_genbank:
 else:
     genbank_file = sys.argv[2]
     project_file = sys.argv[3]
-    project = genbank_to_project(genbank_file, True)
+    project = genbank_to_project(genbank_file)
     json.dump(project, open(project_file,'w'))
