@@ -168,16 +168,19 @@ class GlobalNav extends Component {
               },
             }, {}, {
               text: 'Cut',
+              disabled: !this.props.focus.blocks.length,
               action: () => {
                 this.cutFocusedBlocksToClipboard();
               },
             }, {
               text: 'Copy',
+              disabled: !this.props.focus.blocks.length,
               action: () => {
                 this.copyFocusedBlocksToClipboard();
               },
             }, {
               text: 'Paste',
+              disabled: !this.props.clipboard.formats.includes(clipboardFormats.blocks),
               action: () => {
                 this.pasteBlocksToConstruct();
               },

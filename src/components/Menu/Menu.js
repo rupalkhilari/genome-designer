@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-
+import ReactTransitionGroup from 'react-addons-css-transition-group';
 import MenuItem from './MenuItem';
 import MenuSeparator from './MenuSeparator';
 
@@ -22,28 +22,33 @@ export default class Menu extends Component {
 
   render() {
     return (
-      <div className="menu-dropdown"
-          onMouseLeave={() => this.toggle(false)}>
-        <div className={this.props.isOpen ? 'menu-header menu-header-open' : 'menu-header'}
-             onClick={this.toggle}>
-          {this.props.title}
-        </div>
-        {this.props.isOpen && (
-          <div className="menu-dropdown-container">
-            {this.props.menuItems.map((item, index) => {
-              const boundAction = () => {
-                item.action();
-                this.toggle(false);
-              };
-              return (
-                item.text ?
-                  (<MenuItem text={item.text} disabled={!!item.disabled} action={boundAction}/>) :
-                  (<MenuSeparator key={index} />)
-                );
-            })}
+      <ReactTransitionGroup>
+        <div className="menu-dropdown"
+            onMouseLeave={() => this.toggle(false)}>
+          <div className={this.props.isOpen ? 'menu-header menu-header-open' : 'menu-header'}
+               onClick={this.toggle}>
+            {this.props.title}
           </div>
-        )}
-      </div>
+          {this.props.isOpen && (
+            <div className="menu-dropdown-container">
+              {this.props.menuItems.map((item, index) => {
+                const boundAction = () => {
+                  item.action();
+                  this.toggle(false);
+                };
+                return (
+                  item.text ?
+                    (<MenuItem
+                      text={item.text}
+                      disabled={!!item.disabled}
+                      action={boundAction} />) :
+                    (<MenuSeparator key={index} />)
+                  );
+              })}
+            </div>
+          )}
+        </div>
+      </ReactTransitionGroup>
     );
   }
 }
