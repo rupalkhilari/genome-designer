@@ -5,6 +5,7 @@ import Vector2D from '../geometry/vector2d';
 import Box2D from '../geometry/box2d';
 import kT from './layoutconstants';
 import Fence from './fence';
+import invariant from 'invariant';
 
 
 // # of pixels of mouse movement before a drag is triggered.
@@ -41,7 +42,8 @@ export default class ConstructViewerUserInterface extends UserInterface {
         parts.push(element);
       }
     });
-    this.constructViewer.blockSelected(parts);
+    // combine with existing selection
+    this.constructViewer.blockSelected(parts.concat(this.constructViewer.props.focus.blocks));
   }
 
   /**
@@ -248,9 +250,14 @@ export default class ConstructViewerUserInterface extends UserInterface {
       }
 
     } else {
-      // select construct if no block clicked and deselect all blocks
-      this.constructViewer.blockSelected([]);
+      // start a fence
+      invariant(!this.fence, 'fence already exists');
       this.constructViewer.constructSelected(this.constructViewer.props.constructId);
+      // clear current selections unless shift pressed
+      if (!evt.shiftKey) {
+        this.constructViewer.blockSelected([]);
+      }
+      this.fence = new Fence(this, point);
     }
   }
 
@@ -354,12 +361,6 @@ export default class ConstructViewerUserInterface extends UserInterface {
     } else {
       if (this.fence) {
         this.fence.update(point);
-      } else {
-        // check for fence operation starting
-        const block = this.topBlockAt(startPoint);
-        if (!block) {
-          this.fence = new Fence(this, startPoint);
-        }
       }
     }
   }
