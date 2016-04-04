@@ -62,7 +62,7 @@ def convert_block_to_feature(all_blocks, to_convert, parent, to_remove_list):
         parent["sequence"]["annotations"] = []
 
     parent["sequence"]["annotations"].append(feature)
-    to_remove_list.append(to_convert)
+    to_remove_list.append(to_convert["id"])
 
     # And also convert to features all the components of the removed block, recursively
     for to_convert_child_id in to_convert["components"]:
@@ -137,10 +137,10 @@ def create_child_block_from_feature(f, all_blocks, root_block, sequence):
         if "name" not in child_block:
             if "label" in f.qualifiers:
                 child_block["metadata"]["name"] = f.qualifiers["label"][0]
-            elif sbol_type == 'cds' and "gene" in f.qualifiers:
-                child_block["metadata"]["name"] = f.qualifiers["gene"][0]
             elif "product" in f.qualifiers:
                 child_block["metadata"]["name"] = f.qualifiers["product"][0]
+            elif sbol_type == 'cds' and "gene" in f.qualifiers:
+                child_block["metadata"]["name"] = f.qualifiers["gene"][0]
             else:
                 if sbol_type:
                     child_block["metadata"]["name"] = sbol_type
@@ -167,7 +167,7 @@ def build_block_hierarchy(all_blocks, root_block, sequence):
 
     for i in range(blocks_count):
         block = sorted_blocks[i]
-        if block == root_block:
+        if block == root_block or block["id"] in to_remove:
             continue
 
         inserted = False
@@ -203,9 +203,12 @@ def build_block_hierarchy(all_blocks, root_block, sequence):
                 inserted = True
                 break
             elif rel == "equal":
-                convert_block_to_feature(all_blocks, block, other_block, to_remove)
-                inserted = True
-                break
+                if len(block["components"]) <= len(other_block["components"]):
+                    convert_block_to_feature(all_blocks, block, other_block, to_remove)
+                    inserted = True
+                    break
+                else:
+                    convert_block_to_feature(all_blocks, other_block, block, to_remove)
 
         if not inserted:  # This should never happen because the block should be at least child of root!
             if block["sequence"]["length"] == root_block["sequence"]["length"]:
@@ -214,7 +217,7 @@ def build_block_hierarchy(all_blocks, root_block, sequence):
                 raise Exception('Error processing a block!')
 
     for removing in to_remove:
-        all_blocks.pop(removing["id"])
+        all_blocks.pop(removing)
 
 def create_filler_blocks_for_holes(all_blocks, sequence):
     # Plug the holes: For each block that has children, make sure all the sequence is accounted for
