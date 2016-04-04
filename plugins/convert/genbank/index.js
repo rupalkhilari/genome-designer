@@ -27,8 +27,6 @@ const runCommand = (command, input, inputFile, outputFile) => {
       return new Promise((resolve, reject) => {
         exec(command, (err, stdout) => {
           if (err) {
-            console.log('Error running command!');
-            console.log(err);
             reject(err);
           }
           else resolve(stdout);
