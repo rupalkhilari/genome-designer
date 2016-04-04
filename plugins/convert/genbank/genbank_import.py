@@ -9,7 +9,8 @@ sbol_type_table = {
     "regulatory": "promoter", #promoter is actually a subclass of regulatory
     "promoter": "promoter",
     "terminator": "terminator",
-    "gene": "cds"
+    "gene": "cds",
+    "mat_peptide": "cds"
 }
 
 def create_block_json(id, sequence, features):
@@ -46,7 +47,19 @@ def relationship(block1, block2, full_size):
 def convert_block_to_feature(all_blocks, to_convert, parent, to_remove_list):
     feature = { }
     for key, value in to_convert["metadata"].iteritems():
-        feature[key] = value
+        if key in ["name", "description", "start", "end", "tags"]:
+            feature[key] = value
+        elif key == "strand":
+            feature["isForward"] = (value == 1)
+        else:
+            if "notes" not in feature:
+                feature["notes"] = {}
+            feature["notes"]["key"] = value
+
+    feature["sequence"] = to_convert["sequence"]["sequence"]
+
+    if "annotations" not in parent["sequence"]:
+        parent["sequence"]["annotations"] = []
 
     parent["sequence"]["annotations"].append(feature)
     to_remove_list.append(to_convert)
