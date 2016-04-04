@@ -62,7 +62,7 @@ module.exports = {
 
     // shift click all 10 blocks and expect to see 10 selection blocks
     browser.execute(function() {
-      window.__shifty = true;
+      window.__gde2e = {shiftKey: true}
     }, [], function() {});
 
     for(var i = 0; i < 10; i += 1) {
@@ -70,7 +70,7 @@ module.exports = {
     }
 
     browser.execute(function() {
-      window.__shifty = false;
+      window.__gde2e = {shiftKey: false}
     }, [], function() {});
 
     // expect all 10 elements to be selected

@@ -208,10 +208,10 @@ export default class ConstructViewerUserInterface extends UserInterface {
       // the clicked block is just added to the selections, otherwise it replaces the selection.
       // Also, if the shift key is used the block is added and does not replace the selection
       let action = 'replace';
-      if (evt.shiftKey || window.__shifty ) {
+      if (evt.shiftKey || (window.__gde2e && window.__gde2e.shiftKey)) {
         action = 'add';
       }
-      if (evt.metaKey || evt.altKey) {
+      if (evt.metaKey || evt.altKey (window.__gde2e && window.__gde2e.metaKey)) {
         action = 'toggle';
       }
       // if they clicked the context menu area, open it
