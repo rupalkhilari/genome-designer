@@ -4,6 +4,7 @@ import DnD from '../dnd/dnd';
 import Vector2D from '../geometry/vector2d';
 import Box2D from '../geometry/box2d';
 import kT from './layoutconstants';
+import Fence from './fence';
 
 
 // # of pixels of mouse movement before a drag is triggered.
@@ -185,10 +186,10 @@ export default class ConstructViewerUserInterface extends UserInterface {
    */
   mouseUp(evt, point) {
     if (this.fence) {
-      // select blocks within the fence
-      this.selectNodesByRectangle(Box2D.boxFromPoints([this.fence.start, this.fence.end]));
+      // select blocks within the fence then dispose it
+      this.selectNodesByRectangle(this.fence.getBox());
+      this.fence.dispose();
       this.fence = null;
-      this.updateFence();
     }
   }
   /**
@@ -352,53 +353,17 @@ export default class ConstructViewerUserInterface extends UserInterface {
       }
     } else {
       if (this.fence) {
-        // continue with existing fence
-        this.fence.end = point.clone();
-        this.updateFence();
+        this.fence.update(point);
       } else {
         // check for fence operation starting
         const block = this.topBlockAt(startPoint);
         if (!block) {
-          this.fence = {
-            start: startPoint.clone(),
-            end: startPoint.clone(),
-          }
+          this.fence = new Fence(this, startPoint);
         }
       }
     }
   }
-  /**
-   * update fence rendering or remove
-   */
-  updateFence() {
-    if (this.fence) {
-      if (!this.fenceElement) {
-        // create fence element on demand
-        this.fenceElement = document.createElement('div');
-        this.fenceElement.className = 'fence-element';
-        this.el.appendChild(this.fenceElement);
-      }
-      // get a normalized rectangle from the start/end points
-      const box = Box2D.boxFromPoints([this.fence.start, this.fence.end]);
-      // clamp to element
-      const client = new Box2D(this.el.getBoundingClientRect());
-      client.x = client.y = 0;
-      const final = box.intersectWithBox(client);
-      if (final) {
-        this.fenceElement.style.left = final.x + 'px';
-        this.fenceElement.style.top = final.y + 'px';
-        this.fenceElement.style.width = final.w + 'px';
-        this.fenceElement.style.height = final.h + 'px';
-      }
 
-    } else {
-      // remove the fence element if we have one
-      if (this.fenceElement) {
-        this.fenceElement.parentElement.removeChild(this.fenceElement);
-        this.fenceElement = null;
-      }
-    }
-  }
   /**
    * make a drag proxy by gathering all the selected blocks into a group ( up to
    * a limit )
