@@ -2,23 +2,22 @@
  * complete sequence of actions to simulate a drag and drop from
  * one element to another.
  */
-module.exports = function (browser, srcSelector, srcX, srcY, dstSelector, dstX, dstY, steps) {
+module.exports = function (browser, srcSelector, srcX, srcY, dstX, dstY, steps) {
   // click on source element
   browser.moveToElement(srcSelector, srcX, srcY)
     .mouseButtonDown(0);
 
   // generate mouse move events on body from source to destination
-  browser.execute(function(srcSelector, srcX, srcY, dstSelector, dstX, dstY, steps) {
+  browser.execute(function(srcSelector, srcX, srcY, dstX, dstY, steps) {
     var body = document.body.getBoundingClientRect();
     var src = document.querySelector(srcSelector).getBoundingClientRect();
-    var dst = document.querySelector(dstSelector).getBoundingClientRect();
     var start = {
       x: src.left + body.left + srcX,
       y: src.top + body.top + srcY,
     };
     var end = {
-      x: dst.left + body.left + dstX,
-      y: dst.top + body.top + dstY,
+      x: src.left + body.left + srcX,
+      y: src.top + body.top + srcY,
     };
     var lenx = end.x - start.x;
     var leny = end.y - start.y;
@@ -30,15 +29,14 @@ module.exports = function (browser, srcSelector, srcX, srcY, dstSelector, dstX, 
       pts.push({x:xp, y: yp});
     }
     return pts;
-  }, [srcSelector, srcX, srcY, dstSelector, dstX, dstY, steps], function(result) {
+  }, [srcSelector, srcX, srcY, dstX, dstY, steps], function(result) {
     var pts = result.value;
     for(var i = 0; i < pts.length; i +=1 ) {
-      console.log("X:" + pts[i].x + "Y:" + pts[i].y);
-      browser.moveToElement('body', pts[i].x, pts[i].y);
+      browser.moveToElement(srcSelector, pts[i].x, pts[i].y);
     }
   });
 
   browser
-    .moveToElement(dstSelector, dstX, dstY)
+    .moveToElement(srcSelector, dstX, dstY)
     .mouseButtonUp(0);
 }

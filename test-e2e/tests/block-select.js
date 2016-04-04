@@ -2,12 +2,14 @@ var homepageRegister = require('../fixtures/homepage-register');
 var signout = require('../fixtures/signout');
 var signin = require('../fixtures/signin');
 var dragFromTo = require('../fixtures/dragfromto');
+var dragRegion = require('../fixtures/dragregion');
 var newProject = require('../fixtures/newproject');
 var newConstruct = require('../fixtures/newconstruct');
 var clickNthBlock = require('../fixtures/click-nth-block-bounds');
+var clickAt = require('../fixtures/clickAt');
 
 module.exports = {
-  'Test that you can multi-select blocks with the shift key' : function (browser) {
+  'Test that you can shift/meta/fence select blocks' : function (browser) {
 
     // maximize for graphical tests
     browser.windowSize('current', 1200, 900);
@@ -69,14 +71,38 @@ module.exports = {
       var blockBounds = clickNthBlock(browser, '.sceneGraph', i);
     }
 
-    browser.execute(function() {
-      window.__gde2e = {shiftKey: false}
-    }, [], function() {});
-
     // expect all 10 elements to be selected
     browser.assert.countelements(".scenegraph-userinterface-selection", 10);
 
-    // all done
-    browser.end();
+    // turn off shift key and test that meta key toggles a blocks selection state
+    browser.execute(function() {
+      window.__gde2e = {
+        shiftKey: false,
+        metaKey: true
+      }
+    }, [], function() {});
+
+    clickNthBlock(browser, '.sceneGraph', 5);
+    // expect only 9 elements to be selected
+    browser.assert.countelements(".scenegraph-userinterface-selection", 9);
+
+    // click outside the blocks to deselect them all
+    clickAt(browser, '.scenegraph-userinterface', 10, 10);
+    browser.assert.countelements(".scenegraph-userinterface-selection", 0);
+
+    // simulate a fence drag over the entire construct to reselect everything
+    browser.execute(function() {
+      window.__gde2e = {
+        shiftKey: false,
+        metaKey: false,
+      }
+    }, [], function() {});
+
+    dragRegion(browser, '.scenegraph-userinterface', 1, 1, 870, 160, 10);
+    browser
+      .waitForElementPresent('.scenegraph-userinterface-selection', 5000, 'expected selections')
+      // ensure we have all elements selected
+      .assert.countelements(".scenegraph-userinterface-selection", 10)
+      .end();
   }
 };
