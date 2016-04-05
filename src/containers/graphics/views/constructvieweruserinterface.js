@@ -227,12 +227,20 @@ export default class ConstructViewerUserInterface extends UserInterface {
           blockPopupMenuOpen: true,
           menuPosition: globalPoint,
         });
+        // change replace to add if opening the menu
+        if (action === 'replace') {
+          action = 'add';
+        }
         break;
 
         case 'triangle':
         const node = this.layout.nodeFromElement(block);
         node.showChildren = !node.showChildren;
         this.constructViewer.update();
+        // change replace to add if opening the menu
+        if (action === 'replace') {
+          action = 'add';
+        }
         break;
       }
       // perform the final selection action using block
