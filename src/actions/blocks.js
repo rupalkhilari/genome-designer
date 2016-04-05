@@ -4,6 +4,7 @@ import BlockDefinition from '../schemas/Block';
 import Block from '../models/Block';
 import { saveBlock, loadBlock } from '../middleware/api';
 import * as selectors from '../selectors/blocks';
+import * as undoActions from '../store/undo/actions';
 
 //Promise
 export const blockSave = (blockId, projectId) => {
@@ -91,14 +92,18 @@ export const blockClone = (blockInput, projectVersion, shallowOnly = false) => {
       return clone.mutate('components', newComponents);
     });
 
+    //start transaction
+    dispatch(undoActions.transact());
+
     //add clones to the store
-    //todo - transaction
     clones.forEach(block => {
       dispatch({
         type: ActionTypes.BLOCK_CLONE,
         block,
       });
     });
+
+    dispatch(undoActions.commit());
 
     //return the clone of root passed in
     const rootId = cloneIdMap[oldBlock.id];
@@ -121,15 +126,32 @@ export const blockMerge = (blockId, toMerge) => {
   };
 };
 
-//todo - remove from all constructs
-export const blockDelete = (blockId) => {
+//todo - verify if need to remove children first so store never in bad state
+export const blockDelete = (...blocks) => {
   return (dispatch, getState) => {
-    dispatch({
-      type: ActionTypes.BLOCK_DELETE,
-      undoable: true,
-      blockId,
+    //transact for all blocks
+    dispatch(undoActions.transact());
+
+    blocks.forEach(blockId => {
+      //find parent, remove component from parent
+      const parent = dispatch(selectors.blockGetParents(blockId)).shift();
+
+      //may not have parent (is construct) or parent was deleted
+      if (parent) {
+        dispatch(blockRemoveComponent(parent.id, blockId)); //eslint-disable-line no-use-before-define
+      }
+
+      dispatch({
+        type: ActionTypes.BLOCK_DELETE,
+        undoable: true,
+        blockId,
+      });
     });
-    return blockId;
+
+    //end transaction
+    dispatch(undoActions.commit());
+
+    return blocks;
   };
 };
 
@@ -180,21 +202,6 @@ export const blockSetSbol = (blockId, sbol) => {
  * Components
  ***************************************/
 
-export const blockAddComponent = (blockId, componentId, index) => {
-  return (dispatch, getState) => {
-    //todo - should remove from all other constructs
-
-    const oldBlock = getState().blocks[blockId];
-    const block = oldBlock.addComponent(componentId, index);
-    dispatch({
-      type: ActionTypes.BLOCK_COMPONENT_ADD,
-      undoable: true,
-      block,
-    });
-    return block;
-  };
-};
-
 export const blockRemoveComponent = (blockId, ...componentIds) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
@@ -211,6 +218,31 @@ export const blockRemoveComponent = (blockId, ...componentIds) => {
   };
 };
 
+export const blockAddComponent = (blockId, componentId, index) => {
+  return (dispatch, getState) => {
+    const oldParent = dispatch(selectors.blockGetParents(componentId)).shift();
+    const oldBlock = getState().blocks[blockId];
+    const block = oldBlock.addComponent(componentId, index);
+    const actionPayload = {
+      type: ActionTypes.BLOCK_COMPONENT_ADD,
+      undoable: true,
+      block,
+    };
+
+    if (oldParent) {
+      dispatch(undoActions.transact());
+      dispatch(blockRemoveComponent(oldParent.id, componentId));
+      dispatch(actionPayload);
+      dispatch(undoActions.commit());
+    } else {
+      dispatch(actionPayload);
+    }
+
+    return block;
+  };
+};
+
+//move within same parent, new index
 export const blockMoveComponent = (blockId, componentId, newIndex) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];

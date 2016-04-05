@@ -65,6 +65,8 @@ export const blockGet = (blockId) => {
   };
 };
 
+//first parent is direct parent, last parent is construct
+//returns blocks, not ids
 export const blockGetParents = (blockId) => {
   return (dispatch, getState) => {
     const store = getState();
@@ -106,7 +108,6 @@ export const blockGetSiblings = (blockId) => {
 
 //this could be optimized...
 const _getBoundingBlocks = (state, ...blockIds) => {
-  console.log(blockIds, state.blocks);
   const construct = _getParentFromStore(blockIds[0], state);
   const depthMap = _getAllChildrenByDepth(construct.id, state);
   const idsToDepth = blockIds.reduce((acc, id) => Object.assign(acc, { [id]: depthMap[id] }), {});
@@ -173,5 +174,12 @@ export const blockIsSpec = (blockId) => {
 export const blockIsValid = (model) => {
   return (dispatch, getState) => {
     return BlockDefinition.validate(model);
+  };
+};
+
+export const blockHasSequence = blockId => {
+  return (dispatch, getState) => {
+    const block = getState().blocks[blockId];
+    return !!block && block.hasSequence();
   };
 };
