@@ -80,15 +80,16 @@ def create_root_block_from_genbank(gb, sequence):
     root_block["metadata"]["end"] = full_length - 1
     root_block["metadata"]["genbank"]["original_id"] = gb.id
     root_block["sequence"]["length"] = full_length
-    for ref in gb.annotations["references"]:
-        if "references" not in root_block["metadata"]["genbank"]:
-            root_block["metadata"]["genbank"]["references"] = []
-        try:
-            reference = {'authors': ref.authors, 'comment': ref.comment, 'consrtm': ref.consrtm, 'journal': ref.journal,
-                         'medline_id': ref.medline_id, 'pubmed_id': ref.pubmed_id, 'title': ref.title}
-            root_block["metadata"]["genbank"]["references"].append(reference)
-        except:
-            pass
+    if "references" in gb.annotations:
+        for ref in gb.annotations["references"]:
+            if "references" not in root_block["metadata"]["genbank"]:
+                root_block["metadata"]["genbank"]["references"] = []
+            try:
+                reference = {'authors': ref.authors, 'comment': ref.comment, 'consrtm': ref.consrtm, 'journal': ref.journal,
+                             'medline_id': ref.medline_id, 'pubmed_id': ref.pubmed_id, 'title': ref.title}
+                root_block["metadata"]["genbank"]["references"].append(reference)
+            except:
+                pass
 
     for annot in gb.annotations:
         if "annotations" not in root_block["metadata"]["genbank"]:
