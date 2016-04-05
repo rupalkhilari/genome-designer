@@ -1,5 +1,8 @@
 import Box2D from '../geometry/box2d';
 import invariant from 'invariant';
+import {
+  clearSelection
+} from '../../uiapi';
 
 /**
  * an interactive fence / drag box for the construct viewer
@@ -15,6 +18,10 @@ export default class Fence {
     this.start = point.clone();
     this.createElement();
     this.update(this.start);
+
+    // block selection on anything while dragging out the fence
+    document.body.classList.add('prevent-selection');
+    clearSelection();
   }
 
   /**
@@ -55,6 +62,8 @@ export default class Fence {
   dispose() {
     invariant(!this.disposed, 'already disposed');
     this.disposed = true;
+    // reenable selection after fence dragging complete
+    document.body.classList.remove('prevent-selection');
     // remove the fence element if we have one
     if (this.fenceElement) {
       this.fenceElement.parentElement.removeChild(this.fenceElement);

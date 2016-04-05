@@ -32,6 +32,9 @@ import { undo, redo } from '../store/undo/actions';
 import { uiShowGenBankImport } from '../actions/ui';
 import { setItem } from '../middleware/localStorageCache';
 import { uiShowDNAImport } from '../actions/ui';
+import {
+  copyBlocksToClipboard
+} from './uiapi';
 
 import '../styles/GlobalNav.css';
 
@@ -80,38 +83,36 @@ class GlobalNav extends Component {
   }
 
   /**
-   * true index is string representation of length of the path of the given block back to root.
-   * e.g. if the block is the 4th child of a 2nd child of a 5th child its true index would be 4/1/3
-   * Positioning the oldest ancester closest to the start of the string facilitates comparison.
+   * path is a representation of length of the path of the given block back to root.
+   * e.g. if the block is the 4th child of a 2nd child of a 5th child its true index would be:
+   *  [ (index in construct) 4, (2nd child of a block in the construct) 1, (4th child of 2nd child of construct) 3]
+   *  [4,1,3]
    */
-  getBlockTrueIndex(blockId) {
-    let str = '';
+  getBlockPath(blockId) {
+    let path = [];
     let current = blockId;
     while (this.blockHasParent(current)) {
-      str = `${this.blockGetIndex(current)}${str.length ? '/' : ''}${str}`;
+      path.unshift(this.blockGetIndex(current));
       current = this.blockGetParent(current).id;
     }
-    return str;
+    return path;
   }
 
   /**
-   * compare two results from getBlockTrueIndex, return truthy is a >= b
+   * compare two results from getBlockPath, return truthy is a >= b
    */
-  compareTrueIndices(tia, tib) {
-    const tiav = tia.split('/').map(str => parseFloat(str));
-    const tibv = tib.split('/').map(str => parseFloat(str));
+  compareBlockPaths(tia, tib) {
     let i = 0;
     while (true) {
-      if (tiav[i] === tibv[i] && i < tiav.length && i < tibv.length) {
+      if (tia[i] === tib[i] && i < tia.length && i < tib.length) {
         i++;
       } else {
-        break;
+        // this works because for each if the two paths are 2/3/2 and 2/3
+        // the final compare of 2 >= null will return true
+        // and also null >= null is true
+        return tia[i] >= tib[i];
       }
     }
-    // this works because for each if the two paths are 2/3/2 and 2/3
-    // the final compare of 2 >= null will return true
-    // and also null >= null is true
-    return tiav[i] >= tibv[i];
   }
 
   /**
@@ -119,23 +120,21 @@ class GlobalNav extends Component {
    */
   findInsertBlock() {
     // get true indices of all the focused blocks
-    const trueIndices = this.props.focus.blocks.map(block => this.getBlockTrueIndex(block));
-    trueIndices.sort(this.compareTrueIndices);
+    const trueIndices = this.props.focus.blocks.map(block => this.getBlockPath(block));
+    trueIndices.sort(this.compareBlockPaths);
     // the highest index/path will be the last item
     const highest = trueIndices.pop();
-    // now locate the block and returns its parent id
-    // and the index to start inserting at
+    // now locate the block and returns its parent id and the index to start inserting at
     let current = this.props.focus.construct;
-    let indices = highest.split('/').map(index => parseFloat(index));
     let index = 0;
     let blockIndex = -1;
     let blockParent = null;
     do {
-      blockIndex = indices[index];
+      blockIndex = highest[index];
       blockParent = current;
       current = this.props.blocks[current].components[blockIndex];
-    } while (++index < indices.length);
-    // return index + 1 to make the insert occur after this block
+    } while (++index < highest.length);
+    // return index + 1 to make the insert occur after the highest selected block
     return {
       parent: blockParent,
       blockIndex: blockIndex + 1,
@@ -144,6 +143,8 @@ class GlobalNav extends Component {
 
   // copy the focused blocks to the clipboard using a deep clone
   copyFocusedBlocksToClipboard() {
+    // copyBlocksToClipboard(this.props.focus.blocks, this.props.currentProjectId);
+    // return;
     if (this.props.focus.blocks.length) {
       const clones = this.props.focus.blocks.map(block => {
         return this.props.blockClone(block, this.props.currentProjectId);
