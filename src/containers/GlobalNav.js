@@ -323,7 +323,9 @@ class GlobalNav extends Component {
               action: this.props.inspectorToggleVisibility,
             }, {
               text: 'Sequence Details',
-              action: () => {},
+              action: () => {
+                
+              },
               checked: false,
             }, {}, {
               text: 'Block Style',
