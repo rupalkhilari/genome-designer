@@ -26,12 +26,14 @@ import {
  } from '../actions/blocks';
  import {
    blockGetParents,
+   blockGetChildrenRecursive,
  } from '../selectors/blocks';
 import { projectGetVersion } from '../selectors/projects';
 import { undo, redo } from '../store/undo/actions';
 import {
   uiShowGenBankImport,
   uiToggleDetailView,
+  uiSetGrunt,
  } from '../actions/ui';
 import { inspectorToggleVisibility } from '..//actions/inspector';
 import { inventoryToggleVisibility } from '..//actions/inventory';
@@ -154,6 +156,19 @@ class GlobalNav extends Component {
         return this.props.blockClone(block, this.props.currentProjectId);
       });
       this.props.clipboardSetData([clipboardFormats.blocks], [clones])
+    }
+  }
+
+  /**
+   * select all the empty blocks in the current construct
+   */
+  selectEmptyBlocks() {
+    debugger;
+    const allChildren = this.props.blockGetChildrenRecursive(this.props.focus.construct);
+    const emptySet = allChildren.filter(block => !block.hasSequence()).map(block => block.id);
+    this.props.focusBlocks(emptySet);
+    if (!emptySet.length) {
+      this.props.uiSetGrunt('There are no empty blocks in the current construct');
     }
   }
 
@@ -297,16 +312,16 @@ class GlobalNav extends Component {
               text: 'Delete',
               action: () => {},
             }, {}, {
-              text: 'Import DNA',
+              text: 'Import DNA Sequence',
               action: () => {
                 this.props.uiShowDNAImport(true);
               },
             }, {}, {
-              text: 'Convert to List',
-              action: () => {},
-            }, {
-              text: 'Convert to Construct',
-              action: () => {},
+              text: 'Select Empty Blocks',
+              disabled: !this.props.focus.construct,
+              action: () => {
+                this.selectEmptyBlocks();
+              },
             },
           ],
         },
@@ -324,7 +339,7 @@ class GlobalNav extends Component {
             }, {
               text: 'Sequence Details',
               action: () => {
-                
+
               },
               checked: false,
             }, {}, {
@@ -339,6 +354,12 @@ class GlobalNav extends Component {
             }, {
               text: 'Labels + Symbols',
               checked: false,
+            }, {}, {
+              text: 'Select Empty Blocks',
+              disabled: !this.props.focus.construct,
+              action: () => {
+                this.selectEmptyBlocks();
+              },
             },
           ],
         },
@@ -412,12 +433,14 @@ export default connect(mapStateToProps, {
   inventoryToggleVisibility,
   blockRemoveComponent,
   blockGetParents,
+  blockGetChildrenRecursive,
   uiShowDNAImport,
   undo,
   redo,
   push,
   uiShowGenBankImport,
   uiToggleDetailView,
+  uiSetGrunt,
   focusBlocks,
   focusBlocksAdd,
   focusBlocksToggle,
