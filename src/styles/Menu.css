@@ -100,4 +100,15 @@
       background: inherit;
     }
   }
+  .menu-item-checked {
+    width: 2rem;
+    display: inline-block;
+  }
+  .menu-item-checked:before {
+    content: '✓';
+  }
+  .menu-item-unchecked {
+    width: 2rem;
+    display: inline-block;
+  }
 }

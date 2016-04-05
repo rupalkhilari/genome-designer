@@ -29,7 +29,12 @@ import {
  } from '../selectors/blocks';
 import { projectGetVersion } from '../selectors/projects';
 import { undo, redo } from '../store/undo/actions';
-import { uiShowGenBankImport } from '../actions/ui';
+import {
+  uiShowGenBankImport,
+  uiToggleDetailView,
+ } from '../actions/ui';
+import { inspectorToggleVisibility } from '..//actions/inspector';
+import { inventoryToggleVisibility } from '..//actions/inventory';
 import { setItem } from '../middleware/localStorageCache';
 import { uiShowDNAImport } from '../actions/ui';
 
@@ -310,52 +315,28 @@ class GlobalNav extends Component {
           items: [
             {
               text: 'Inventory',
-              action: () => {},
+              checked: this.props.inventory,
+              action: this.props.inventoryToggleVisibility
             }, {
               text: 'Inspector',
-              action: () => {},
+              checked: this.props.inspector,
+              action: this.props.inspectorToggleVisibility,
             }, {
-              text: 'Toolbar',
+              text: 'Sequence Details',
               action: () => {},
-            }, {
-              text: 'History',
-              action: () => {},
-            }, {
-              text: 'Sequence',
-              action: () => {},
+              checked: false,
             }, {}, {
-              text: 'Hide/Show Annotations',
-              action: () => {},
+              text: 'Block Style',
+              disabled: true,
             }, {
-              text: 'Hide/Show List Contents',
-              action: () => {},
-            }, {
-              text: 'Compare...',
-              action: () => {},
-            }, {}, {
               text: 'Labels Only',
-              action: () => {},
+              checked: false,
             }, {
               text: 'Symbols Only',
-              action: () => {},
+              checked: false,
             }, {
               text: 'Labels + Symbols',
-              action: () => {},
-            }, {
-              text: 'Custom',
-              action: () => {},
-            }, {}, {
-              text: 'Full Width',
-              action: () => {},
-            }, {
-              text: 'Compact',
-              action: () => {},
-            }, {
-              text: 'Wrap',
-              action: () => {},
-            }, {}, {
-              text: 'Preview Deletions',
-              action: () => {},
+              checked: false,
             },
           ],
         },
@@ -413,6 +394,8 @@ function mapStateToProps(state) {
     focus: state.focus,
     blocks: state.blocks,
     clipboard: state.clipboard,
+    inspector: state.inspector.isVisible,
+    inventory: state.inventory.isVisible,
   };
 }
 
@@ -423,6 +406,8 @@ export default connect(mapStateToProps, {
   projectGetVersion,
   blockCreate,
   blockClone,
+  inspectorToggleVisibility,
+  inventoryToggleVisibility,
   blockRemoveComponent,
   blockGetParents,
   uiShowDNAImport,
@@ -430,6 +415,7 @@ export default connect(mapStateToProps, {
   redo,
   push,
   uiShowGenBankImport,
+  uiToggleDetailView,
   focusBlocks,
   focusBlocksAdd,
   focusBlocksToggle,
