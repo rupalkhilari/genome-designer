@@ -163,7 +163,6 @@ class GlobalNav extends Component {
    * select all the empty blocks in the current construct
    */
   selectEmptyBlocks() {
-    debugger;
     const allChildren = this.props.blockGetChildrenRecursive(this.props.focus.construct);
     const emptySet = allChildren.filter(block => !block.hasSequence()).map(block => block.id);
     this.props.focusBlocks(emptySet);
