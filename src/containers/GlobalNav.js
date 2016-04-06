@@ -74,14 +74,38 @@ class GlobalNav extends Component {
     // keyboard shortcuts
 
     // undo / redo
-    KeyboardTrap.bind('mod+z', () => { this.props.undo(); });
-    KeyboardTrap.bind('mod+shift+z', () => { this.props.redo(); })
-    // cut/copy/paste
-    KeyboardTrap.bind('mod+x', this.cutFocusedBlocksToClipboard.bind(this));
-    KeyboardTrap.bind('mod+c', this.copyFocusedBlocksToClipboard.bind(this));
-    KeyboardTrap.bind('mod+v', this.pasteBlocksToConstruct.bind(this));
+    KeyboardTrap.bind('mod+z', (evt) => {
+      evt.preventDefault();
+      this.props.undo();
+    });
+    KeyboardTrap.bind('mod+shift+z', (evt) => {
+      evt.preventDefault();
+      this.props.redo();
+    })
+    // select all/cut/copy/paste
+    KeyboardTrap.bind('mod+a', (evt) => {
+      evt.preventDefault();
+      this.onSelectAll();
+    });
+    KeyboardTrap.bind('mod+x', (evt) => {
+      evt.preventDefault();
+      this.cutFocusedBlocksToClipboard();
+    });
+    KeyboardTrap.bind('mod+c', (evt) => {
+      evt.preventDefault();
+      this.copyFocusedBlocksToClipboard();
+    });
+    KeyboardTrap.bind('mod+v', (evt) => {
+      evt.preventDefault();
+      this.pasteBlocksToConstruct();
+    });
+  }
 
-
+  /**
+   * select all blocks of the current construct
+   */
+  onSelectAll() {
+    this.props.focusBlocks(this.props.blockGetChildrenRecursive(this.props.focus.construct).map(block => block.id));
   }
 
   /**
@@ -312,6 +336,13 @@ class GlobalNav extends Component {
                 this.props.redo();
               },
             }, {}, {
+              text: 'Select All',
+              shortcut: stringToShortcut('meta A'),
+              disabled: !this.props.focus.construct,
+              action: () => {
+                this.onSelectAll();
+              },
+            }, {
               text: 'Cut',
               shortcut: stringToShortcut('meta X'),
               disabled: !this.props.focus.blocks.length,
