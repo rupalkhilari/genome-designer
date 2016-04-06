@@ -40,6 +40,14 @@ import { inventoryToggleVisibility } from '..//actions/inventory';
 import { setItem } from '../middleware/localStorageCache';
 import { uiShowDNAImport } from '../actions/ui';
 
+import KeyboardTrap from 'mousetrap';
+import {
+  microsoft,
+  apple,
+  stringToShortcut,
+  translate,
+} from '../utils/ui/keyboard-translator';
+
 import '../styles/GlobalNav.css';
 
 class GlobalNav extends Component {
@@ -59,6 +67,21 @@ class GlobalNav extends Component {
     showAddProject: false,
     recentProjects: [],
   };
+
+  constructor(props) {
+    super(props);
+
+    // keyboard shortcuts
+    KeyboardTrap.bind('mod+x', this.cutFocusedBlocksToClipboard.bind(this));
+    KeyboardTrap.bind('mod+c', this.copyFocusedBlocksToClipboard.bind(this));
+    KeyboardTrap.bind('mod+v', this.pasteBlocksToConstruct.bind(this));
+
+    console.log(stringToShortcut('meta X'));
+    console.log(stringToShortcut('meta shift X'));
+    console.log(stringToShortcut('ctrl option meta X'));
+    console.log(stringToShortcut('meta X'));
+
+  }
 
   /**
    * get the given blocks index in its parent
@@ -178,12 +201,14 @@ class GlobalNav extends Component {
 
   // cut focused blocks to the clipboard, no clone required since we are removing them.
   cutFocusedBlocksToClipboard() {
-    // copy the focused blocks before removing
-    const blocks = this.props.focus.blocks.slice().map(blockId => this.props.blocks[blockId]);
-    this.props.focus.blocks.forEach(blockId => {
-      this.props.blockRemoveComponent(this.getBlockParentId(blockId), blockId);
-    });
-    this.props.clipboardSetData([clipboardFormats.blocks], [blocks])
+    if (this.props.focus.blocks.length) {
+      // copy the focused blocks before removing
+      const blocks = this.props.focus.blocks.slice().map(blockId => this.props.blocks[blockId]);
+      this.props.focus.blocks.forEach(blockId => {
+        this.props.blockRemoveComponent(this.getBlockParentId(blockId), blockId);
+      });
+      this.props.clipboardSetData([clipboardFormats.blocks], [blocks]);
+    }
   }
   // paste from clipboard to current construct
   pasteBlocksToConstruct() {
