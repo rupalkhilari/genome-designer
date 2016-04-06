@@ -29,7 +29,7 @@
         "path" : "./tests/screenshots"
       },
       "desiredCapabilities": {
-        "browserName": "chrome",
+        "browserName": "firefox",
         "javascriptEnabled": true,
         "acceptSslCerts": true
       }

@@ -1,9 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import express from 'express';
-import webpack from 'webpack';
 import morgan from 'morgan';
-import config from './../webpack.config.dev.js';
 
 import dataRouter from './data/index';
 import fileRouter from './file/index';
@@ -20,7 +18,6 @@ const hostname = '0.0.0.0';
 
 const ROOT = path.dirname(__dirname);
 const app = express();
-const compiler = webpack(config);
 
 //error logging middleware
 if (process.env.NODE_ENV !== 'production') {
@@ -38,20 +35,13 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 //HTTP logging middleware
-app.use(morgan('dev'));
+app.use(morgan('dev', {
+  skip: (req, res) => req.path.indexOf('browser-sync') >= 0,
+}));
 
 // view engine setup
 app.set('views', path.join(__dirname, '../src'));
 app.set('view engine', 'jade');
-
-// Register Hotloading Middleware
-// ----------------------------------------------------
-
-app.use(require('webpack-dev-middleware')(compiler, {
-  noInfo: true,
-  publicPath: config.output.publicPath,
-}));
-app.use(require('webpack-hot-middleware')(compiler));
 
 // Register API middleware
 // ----------------------------------------------------
@@ -94,6 +84,7 @@ app.use('/search', searchRouter);
 // ----------------------------------------------------
 
 //Static Files
+app.use(express.static(path.join(__dirname, '../build/public')));
 app.use('/images', express.static(path.join(__dirname, '../src/images')));
 
 app.get('/version', (req, res) => {
@@ -105,19 +96,24 @@ app.get('/version', (req, res) => {
   }
 });
 
+app.get('/bundle.js', (req, res) => {
+  res.sendFile(path.join(__dirname, '../build/bundle.js'));
+});
+
 //so that any routing is delegated to the client
 app.get('*', (req, res) => {
-  res.render('index.jade', req.user);
+  res.render('content/index.jade', req.user);
 });
 
 //start the server by default
 app.listen(port, hostname, (err) => {
   if (err) {
-    console.log(err);
+    console.log(err.stack);
     return;
   }
 
-  console.log('Building, will serve at http://' + hostname + ':' + port);
+  /* eslint-disable no-console */
+  console.log(`Building, will serve at http://${hostname}:${port}/`);
 });
 
 export default app;

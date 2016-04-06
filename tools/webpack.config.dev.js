@@ -1,6 +1,6 @@
 var path    = require('path');
 var webpack = require('webpack');
-var webpackBase = require('./webpack.config.base');
+var webpackBase = require('./webpack.config.base.js');
 
 module.exports = Object.assign({}, webpackBase, {
   devtool: 'inline-source-map',
@@ -39,10 +39,6 @@ module.exports = Object.assign({}, webpackBase, {
         test: /\.css$/,
         loader: 'style-loader!css-loader!postcss-loader'
       },
-      {
-        test: /\.(png|woff|woff2|eot|ttf|svg)$/,
-        loader: 'url-loader?limit=100000'
-      }
     ]
   }
 });

@@ -1,6 +1,6 @@
 var path    = require('path');
 var webpack = require('webpack');
-var webpackBase = require('./webpack.config.base');
+var webpackBase = require('./webpack.config.base.js');
 
 module.exports = Object.assign({}, webpackBase, {
   devtool: 'source-map',
@@ -28,9 +28,14 @@ module.exports = Object.assign({}, webpackBase, {
   module : {
     loaders: [
       {
+        test: /\.json$/,
+        loader: 'json-loader'
+      },
+      {
         test   : /\.js$/,
         loaders: ['babel'],
-        include: path.join(__dirname, 'src')
+        include: path.join(__dirname, 'src'),
+        exclude: /node_modules/
       },
       {
         test  : /\.css$/,
