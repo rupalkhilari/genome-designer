@@ -1,32 +1,36 @@
-import json
 from Bio import Seq
 from Bio import SeqIO
 from Bio import SeqFeature
-import uuid
 
 def add_features(block, allblocks, gb, start):
+    # Disregard fillers... don't create features for them
     if "type" in block["metadata"] and block["metadata"]["type"] == 'filler':
         return start + block["sequence"]["length"] + 1
 
     # Add Myself as a feature
     sf = SeqFeature.SeqFeature()
+    # Set the type based on the original type or the sbol type
     if "type" in block["metadata"] and block["metadata"]["type"] != 'filler':
         sf.type = block["metadata"]["type"]
     elif "rules" in block and "sbol" in block["rules"]:
         sf.type = block["rules"]["sbol"]
 
+    # Set up the location of the feature
     feature_strand = 1
     if "strand" in block["metadata"]:
         feature_strand = block["metadata"]["strand"]
     end = start + block["sequence"]["length"]
     sf.location = SeqFeature.FeatureLocation(start, end, strand=feature_strand)
 
+    # The name of the feature should go in the label
     if "name" in block["metadata"] and block["metadata"]["name"] != "":
         sf.qualifiers["label"] = block["metadata"]["name"]
 
+    # The description in the GD_Description qualifier
     if "description" in block["metadata"] and block["metadata"]["description"] != "":
         sf.qualifiers["GD_description"] = block["metadata"]["description"]
 
+    # And copy all the other qualifiers that came originally from genbank
     if "genbank" in block["metadata"]:
         for annot_key, annot_value in block["metadata"]["genbank"].iteritems():
             sf.qualifiers[annot_key] = annot_value
@@ -63,15 +67,19 @@ def add_features(block, allblocks, gb, start):
 
     return end
 
+# Take a project structure and a list of all the current blocks, convert this data to a genbank file and store it
+# in filename.
 def project_to_genbank(filename, project, allblocks):
     blocks = project["components"]
     seq_obj_lst = []
 
+    # For each of the construct in the project
     for block_id in blocks:
         block = [b for b in allblocks if b["id"] == block_id][0]
         if not block:
             continue
 
+        # Grab the original ID that came from genbank before if available, otherwise the GD Name as the name
         if "genbank" in block["metadata"] and "original_id" in block["metadata"]["genbank"]:
             genbank_id = block["metadata"]["genbank"]["original_id"]
         else:
@@ -80,9 +88,11 @@ def project_to_genbank(filename, project, allblocks):
         seq_obj = SeqIO.SeqRecord(Seq.Seq(block["sequence"]["sequence"],Seq.Alphabet.DNAAlphabet()), genbank_id)
 
         if "genbank" in block["metadata"]:
+            # Set up all the annotations in the genbank record. These came originally from genbank.
             if "annotations" in block["metadata"]["genbank"]:
                 for annot_key, annot_value in block["metadata"]["genbank"]["annotations"].iteritems():
                     seq_obj.annotations[annot_key] = annot_value
+            # Set up all the references in the genbank record. These came originally from genbank.
             if "references" in block["metadata"]["genbank"]:
                 for ref in block["metadata"]["genbank"]["references"]:
                     genbank_ref = SeqFeature.Reference()
@@ -96,6 +106,7 @@ def project_to_genbank(filename, project, allblocks):
                     if "references" not in seq_obj.annotations:
                         seq_obj.annotations["references"] = []
                     seq_obj.annotations["references"].append(genbank_ref)
+            # Create a 'source' feature with all the original features in the source annotation
             if "feature_annotations" in block["metadata"]["genbank"]:
                 sf = SeqFeature.SeqFeature()
                 sf.type = "source"
@@ -109,6 +120,7 @@ def project_to_genbank(filename, project, allblocks):
         if "name" in block["metadata"]:
             seq_obj.name = block["metadata"]["name"]
 
+        # Add a block for each of the features, recursively
         start = 0
         for child_id in block['components']:
             child_block = [b for b in allblocks if b["id"] == child_id][0]

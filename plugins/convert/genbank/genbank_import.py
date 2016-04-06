@@ -1,9 +1,9 @@
 import json
-from Bio import Seq
 from Bio import SeqIO
-from Bio import SeqFeature
 import uuid
 
+# This table converts annotation types in genbank to sbol_types in our tool
+# Ex: if genbank says "gene", turn it into an sbol_type of "cds" as we import
 sbol_type_table = {
     "CDS": "cds",
     "regulatory": "promoter", #promoter is actually a subclass of regulatory
@@ -13,6 +13,7 @@ sbol_type_table = {
     "mat_peptide": "cds"
 }
 
+# Creates a scaffold structure for a block
 def create_block_json(id, sequence, features):
     return {
         "id": id,
@@ -25,7 +26,14 @@ def create_block_json(id, sequence, features):
         }
       }
 
-# Determines the kind of relationship between 2 blocks, using only the start and end positions
+# Determines the kind of relationship between 2 blocks, using only the length, start and end positions
+# Output can be:
+#    "child": block1 is completely inside block2
+#    "equal": block1 and block2 overlap perfectly
+#    "parent": block2 is completely inside block1
+#    "partial": block1 and block2 have a partial overlap
+#    "before": block1 comes before than block2 in the sequence
+#    "after": block1 comes after block2 in the sequence
 def relationship(block1, block2, full_size):
     if block1["sequence"]["length"] < block2["sequence"]["length"] and block2["metadata"]["start"] <= block1["metadata"]["start"] and block2["metadata"]["end"] >= block1["metadata"]["end"]:
         return "child"
@@ -44,6 +52,11 @@ def relationship(block1, block2, full_size):
     return "disjoint"
 
 # Takes a block and makes it a feature of another block, instead of a full block on itself.
+# This function takes all the children of the block to embed in the parent and in turn makes THEM
+# also features of the parent.
+# Parameters: An array with all the blocks, the block to convert, the parent it should be a feature of,
+# and a list of IDs of blocks that need to be removed.
+# The function does NOT take the blocks from all_blocks
 def convert_block_to_feature(all_blocks, to_convert, parent, to_remove_list):
     feature = { }
     for key, value in to_convert["metadata"].iteritems():
@@ -69,6 +82,7 @@ def convert_block_to_feature(all_blocks, to_convert, parent, to_remove_list):
         to_convert_child = all_blocks[to_convert_child_id]
         convert_block_to_feature(all_blocks, to_convert_child, parent, to_remove_list)
 
+# Takes a genbank record and creates a root block
 def create_root_block_from_genbank(gb, sequence):
     full_length = len(sequence)
 
@@ -101,6 +115,7 @@ def create_root_block_from_genbank(gb, sequence):
             pass
     return root_block
 
+# Takes a BioPython SeqFeature and turns it into a block
 def create_child_block_from_feature(f, all_blocks, root_block, sequence):
     qualifiers = f.qualifiers
     start = f.location.start.position
@@ -109,11 +124,14 @@ def create_child_block_from_feature(f, all_blocks, root_block, sequence):
     sbol_type = sbol_type_table.get(f.type)
 
     if f.type == 'source':
+        # 'source' refers to the root block. So, the root block aggregates information
+        # from the header of the genbank file as well as the 'source' feature
         for key, value in qualifiers.iteritems():
             if "feature_annotations" not in root_block["metadata"]["genbank"]:
                 root_block["metadata"]["genbank"]["feature_annotations"] = {}
             root_block["metadata"]["genbank"]["feature_annotations"][key] = value[0]
     else:
+        # It's a regular annotation, create a block
         block_id = str(uuid.uuid4())
         child_block = create_block_json(block_id, sequence[start:end], [])
         for q in f.qualifiers:
@@ -135,6 +153,8 @@ def create_child_block_from_feature(f, all_blocks, root_block, sequence):
 
         child_block["metadata"]["type"] = f.type
 
+        # Note the rules for the name of the block
+        # The name is the string that appears on the UI when visualizing blocks.
         if "name" not in child_block:
             if "label" in f.qualifiers:
                 child_block["metadata"]["name"] = f.qualifiers["label"][0]
@@ -148,11 +168,14 @@ def create_child_block_from_feature(f, all_blocks, root_block, sequence):
                 elif f.type:
                     child_block["metadata"]["name"] = f.type
 
+        # If this is a file that was exported from GD before, bring in the description.
         if "GD_description" in f.qualifiers:
             child_block["metadata"]["description"] = f.qualifiers["GD_description"][0]
 
         all_blocks[block_id] = child_block
 
+# Traverse an array of blocks and build a hierarchy. The hierarchy embeds blocks into other blocks in order,
+# and create filler blocks where needed
 def build_block_hierarchy(all_blocks, root_block, sequence):
     full_length = len(sequence)
     # Going through the blocks from shorter to longer, so hopefully we will maximize
@@ -174,10 +197,10 @@ def build_block_hierarchy(all_blocks, root_block, sequence):
         inserted = False
 
         parents = []
+        # Look for all the possible parents of the current block
         for j in range(i + 1, blocks_count):
             # If it is a child of root, don't add it as child of any other block with the same size
-            if sorted_blocks[j]["sequence"]["length"] == root_block["sequence"]["length"] and sorted_blocks[
-                j] != root_block:
+            if sorted_blocks[j]["sequence"]["length"] == root_block["sequence"]["length"] and sorted_blocks[j] != root_block:
                 continue
 
             if sorted_blocks[j]["metadata"]["end"] >= block["metadata"]["end"] and sorted_blocks[j]["metadata"]["start"] <= \
@@ -189,21 +212,27 @@ def build_block_hierarchy(all_blocks, root_block, sequence):
             if rel == "child":
                 i = 0
                 is_partial_overlap = False
+                # Go through the siblins to see where to insert the current block
                 for sib_id in other_block["components"]:
                     sibling = all_blocks[sib_id]
                     relationship_to_sibling = relationship(block, sibling, full_length)
+                    # Keep moving forward until we get to one where we need to be "before"
                     if relationship_to_sibling == "after":
                         i += 1
-                    elif relationship_to_sibling != "before":  # Partial match! Just an annotation of the parent
+                    elif relationship_to_sibling != "before":  # Partial match!
                         is_partial_overlap = True
                         break
+                # Insert the block where it goes
                 if not is_partial_overlap:
                     other_block["components"].insert(i, block["id"])
                 else:
+                    # Partial match, make this block just an annotation of the parent
                     convert_block_to_feature(all_blocks, block, other_block, to_remove)
                 inserted = True
                 break
             elif rel == "equal":
+                # If the blocks overlap, make the one with less amount of children the feature of
+                # the other one
                 if len(block["components"]) <= len(other_block["components"]):
                     convert_block_to_feature(all_blocks, block, other_block, to_remove)
                     inserted = True
@@ -217,18 +246,25 @@ def build_block_hierarchy(all_blocks, root_block, sequence):
             else:
                 raise Exception('Error processing a block!')
 
+    # Delete all the blocks that were converted to features
     for removing in to_remove:
         all_blocks.pop(removing)
 
+# Create blocks that fill holes between siblings.
 def create_filler_blocks_for_holes(all_blocks, sequence):
     # Plug the holes: For each block that has children, make sure all the sequence is accounted for
     current_block_structures = [block for block in all_blocks.values()]
+    # Go through all the blocks
     for block in current_block_structures:
         current_position = block["metadata"]["start"]
         i = 0
+        # For each block go through all the children
         for i, child_id in enumerate(block["components"]):
             child = all_blocks[child_id]
+            # If the child starts AFTER where it should start
             if child["metadata"]["start"] > current_position:
+                # Create a filler block before the current block, encompassing the sequence between where the child should
+                # start and where it actually starts. Add the filler block to the parent.
                 block_id = str(uuid.uuid4())
                 filler_block = create_block_json(block_id, sequence[current_position:child["metadata"]["start"]], [])
                 filler_block["metadata"]["type"] = "filler"
@@ -239,6 +275,7 @@ def create_filler_blocks_for_holes(all_blocks, sequence):
                 all_blocks[block_id] = filler_block
                 block["components"].insert(i, block_id)
             current_position = child["metadata"]["end"] + 1
+        # If the last block doesn't end at the end of the parent, create a filler too!
         if i > 0 and current_position < block["metadata"]["end"]:
             block_id = str(uuid.uuid4())
             filler_block = create_block_json(block_id, sequence[current_position:block["metadata"]["end"] + 1], [])
@@ -271,6 +308,7 @@ def convert_genbank_record_to_blocks(gb):
     return { "root": all_blocks[root_block["id"]], "blocks": all_blocks }
 
 
+# Given a file, create project and blocks structures to import into GD
 def genbank_to_project(filename):
     project = { "components": []}
     blocks = {}
