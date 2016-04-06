@@ -43,6 +43,7 @@
   },
   "dependencies": {
     "ansi-to-html-umd": "^0.4.2",
+    "babel-plugin-transform-runtime": "^6.6.0",
     "bootstrap": "^3.3.6",
     "cookie-parser": "^1.4.1",
     "d3": "^3.5.12",
@@ -109,6 +110,7 @@
     "chai": "^3.4.1",
     "combokeys": "^2.4.4",
     "css-loader": "^0.23.0",
+    "del": "^2.2.0",
     "eslint": "^1.9.0",
     "eslint-config-airbnb": "^0.1.0",
     "eslint-plugin-react": "^3.7.1",

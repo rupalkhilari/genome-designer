@@ -1,4 +1,5 @@
 import path from 'path';
+import fs from 'fs';
 import merge from 'lodash.merge';
 import webpack from 'webpack';
 
@@ -20,12 +21,18 @@ const GLOBALS = {
 };
 
 const sourcePath = path.resolve(__dirname, '../src');
+const serverSourcePath = path.resolve(__dirname, '../server');
+const pluginsSourcePath = path.resolve(__dirname, '../plugins');
 const buildPath = path.resolve(__dirname, '../build');
 
 //common configuration
 
 const config = {
   context: sourcePath,
+
+  output: {
+    path: buildPath,
+  },
 
   module: {
     loaders: [
@@ -36,12 +43,20 @@ const config = {
       {
         test: /\.jsx?$/,
         loader: 'babel-loader',
-        include: sourcePath,
+        include: [
+          sourcePath,
+          serverSourcePath,
+          pluginsSourcePath,
+        ],
         exclude: /node_modules/,
       },
       {
         test: /\.css$/,
         loader: 'style-loader!css-loader!postcss-loader',
+      },
+      {
+        test: /\.jade$/,
+        loader: 'jade-loader',
       },
     ],
   },
@@ -76,16 +91,19 @@ const config = {
   },
 };
 
-const clientConfig = merge({}, config, {
+export const clientConfig = merge({}, config, {
   // Choose a developer tool to enhance debugging
   // http://webpack.github.io/docs/configuration.html#devtool
   devtool: DEBUG ? 'inline-source-map' : false,
 
-  entry: './index.js',
+  entry: [
+    './index.js',
+  ],
 
   output: {
-    path: buildPath,
     filename: 'client.js',
+    //filename: DEBUG ? '[name].js?[chunkhash]' : '[name].[chunkhash].js',
+    //chunkFilename: DEBUG ? '[name].[id].js?[chunkhash]' : '[name].[id].[chunkhash].js',
     publicPath: '/static/',
   },
 
@@ -129,16 +147,40 @@ const clientConfig = merge({}, config, {
   ],
 });
 
-//server config (STUB - NOT VALIDATED)
-const serverConfig = merge({}, config, {
-  entry: './server.js', //todo
+//get list of node modules for webpack to avoid bundling
+const nodeModules = fs.readdirSync('node_modules')
+  .filter((x) => ['.bin'].indexOf(x) === -1)
+  .reduce(
+    (acc, mod) => Object.assign(acc, { [mod]: true }),
+    {}
+  );
+
+export const serverConfig = merge({}, config, {
+  context: serverSourcePath,
+  entry: './server.js',
+
+  resolve: {
+    root: serverSourcePath,
+  },
+
+  output: {
+    filename: 'server.js',
+    libraryTarget: 'commonjs',
+  },
 
   target: 'node',
 
   plugins: [
+    new webpack.optimize.OccurenceOrderPlugin(true),
+
     // Define free variables
     // https://webpack.github.io/docs/list-of-plugins.html#defineplugin
-    new webpack.DefinePlugin({ ...GLOBALS, 'process.env.BROWSER': false }),
+    new webpack.DefinePlugin({
+      ...GLOBALS,
+      'process.env.BROWSER': false,
+    }),
+
+    new webpack.NoErrorsPlugin(),
 
     // Adds a banner to the top of each generated chunk
     // https://webpack.github.io/docs/list-of-plugins.html#bannerplugin
@@ -154,6 +196,8 @@ const serverConfig = merge({}, config, {
     __filename: false,
     __dirname: false,
   },
+
+  externals: nodeModules,
 
   devtool: 'source-map',
 });

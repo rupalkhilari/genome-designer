@@ -1,13 +1,13 @@
 import path from 'path';
 import cp from 'child_process';
-import webpackConfig from './webpack.config';
+import { serverConfig } from './webpack.config';
 
 // Should match the text string used in `src/server.js/server.listen(...)`
 const RUNNING_REGEXP = /Building, will serve at http:\/\/(.*?)\//;
 
 let server;
-const { output } = webpackConfig;
-const serverPath = path.join(__dirname, '../server/devServer.js');
+const { output } = serverConfig;
+const serverPath = path.join(output.path, output.filename);
 
 // Launch or restart the Node.js server
 function runServer(cb) {
@@ -28,12 +28,13 @@ function runServer(cb) {
   }
 
   if (server) {
+    console.log('server exists, killing');
     server.kill('SIGTERM');
   }
 
   //todo - build the server, not serve with babel-node
 
-  server = cp.spawn('babel-node', [serverPath], {
+  server = cp.spawn('node', [serverPath], {
     env: Object.assign({ NODE_ENV: 'dev' }, process.env),
     silent: false,
   });
@@ -44,6 +45,7 @@ function runServer(cb) {
 
 process.on('exit', () => {
   if (server) {
+    console.log('killing server');
     server.kill('SIGTERM');
   }
 });

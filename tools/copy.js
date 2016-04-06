@@ -9,8 +9,14 @@ async function copy() {
   const ncp = Promise.promisify(require('ncp'));
 
   await Promise.all([
+    //public assets
     ncp('src/public', 'build/public'),
+
+    //static page content
     ncp('src/content', 'build/content'),
+
+    //copy installed extensions
+    ncp('server/extensions/node_modules', 'build/node_modules'),
   ]);
 
   await writeFile('./build/package.json', JSON.stringify({
