@@ -64,10 +64,11 @@ async function start() {
       /* eslint-enable no-param-reassign */
     });
 
+    //todo - do we need to build webpack here? or just let browsersync do it...
     const compiler = webpack(webpackConfig);
 
     let handleServerBundleComplete = () => {
-      console.log('ahndling complete');
+      console.log('webpack built, starting ebpack middleware');
 
       runServer((err, host) => {
         if (!err) {

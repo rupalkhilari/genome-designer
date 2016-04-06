@@ -85,7 +85,7 @@ const clientConfig = merge({}, config, {
 
   output: {
     path: buildPath,
-    filename: 'bundle.js',
+    filename: 'client.js',
     publicPath: '/static/',
   },
 

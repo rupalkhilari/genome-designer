@@ -96,8 +96,8 @@ app.get('/version', (req, res) => {
   }
 });
 
-app.get('/bundle.js', (req, res) => {
-  res.sendFile(path.join(__dirname, '../build/bundle.js'));
+app.get('/client.js', (req, res) => {
+  res.sendFile(path.join(__dirname, '../build/client.js'));
 });
 
 //so that any routing is delegated to the client
