@@ -72,14 +72,15 @@ class GlobalNav extends Component {
     super(props);
 
     // keyboard shortcuts
+
+    // undo / redo
+    KeyboardTrap.bind('mod+z', () => { this.props.undo(); });
+    KeyboardTrap.bind('mod+shift+z', () => { this.props.redo(); })
+    // cut/copy/paste
     KeyboardTrap.bind('mod+x', this.cutFocusedBlocksToClipboard.bind(this));
     KeyboardTrap.bind('mod+c', this.copyFocusedBlocksToClipboard.bind(this));
     KeyboardTrap.bind('mod+v', this.pasteBlocksToConstruct.bind(this));
 
-    console.log(stringToShortcut('meta X'));
-    console.log(stringToShortcut('meta shift X'));
-    console.log(stringToShortcut('ctrl option meta X'));
-    console.log(stringToShortcut('meta X'));
 
   }
 
@@ -300,28 +301,33 @@ class GlobalNav extends Component {
           items: [
             {
               text: 'Undo',
+              shortcut: stringToShortcut('meta z'),
               action: () => {
                 this.props.undo();
               },
             }, {
               text: 'Redo',
+              shortcut: stringToShortcut('shift meta z'),
               action: () => {
                 this.props.redo();
               },
             }, {}, {
               text: 'Cut',
+              shortcut: stringToShortcut('meta X'),
               disabled: !this.props.focus.blocks.length,
               action: () => {
                 this.cutFocusedBlocksToClipboard();
               },
             }, {
               text: 'Copy',
+              shortcut: stringToShortcut('meta C'),
               disabled: !this.props.focus.blocks.length,
               action: () => {
                 this.copyFocusedBlocksToClipboard();
               },
             }, {
               text: 'Paste',
+              shortcut: stringToShortcut('meta V'),
               disabled: !this.props.clipboard.formats.includes(clipboardFormats.blocks),
               action: () => {
                 this.pasteBlocksToConstruct();

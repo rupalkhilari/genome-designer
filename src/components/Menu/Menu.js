@@ -22,7 +22,7 @@ export default class Menu extends Component {
   render() {
     return (
       <div className="menu-dropdown"
-          onMouseLeave={() => this.toggle(true)}>
+          onMouseLeave={() => this.toggle(false)}>
         <div className={this.props.isOpen ? 'menu-header menu-header-open' : 'menu-header'}
              onClick={this.toggle}>
           {this.props.title}
@@ -38,6 +38,7 @@ export default class Menu extends Component {
                 item.text ?
                   (<MenuItem
                     text={item.text}
+                    shortcut={item.shortcut}
                     checked={item.checked}
                     disabled={!!item.disabled}
                     action={boundAction} />) :
