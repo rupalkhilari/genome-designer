@@ -72,8 +72,21 @@ class GlobalNav extends Component {
     super(props);
 
     // keyboard shortcuts
-
-    // undo / redo
+    //
+    // ************ FILE MENU ***********
+    KeyboardTrap.bind('mod+s', (evt) => {
+      evt.preventDefault();
+      this.saveProject();
+    });
+    KeyboardTrap.bind('ctrl+n', (evt) => {
+      evt.preventDefault();
+      this.newProject();
+    });
+    KeyboardTrap.bind('shift+ctrl+n', (evt) => {
+      evt.preventDefault();
+      this.newConstruct();
+    });
+    // ************ EDIT MENU ***********
     KeyboardTrap.bind('mod+z', (evt) => {
       evt.preventDefault();
       this.props.undo();
@@ -106,6 +119,31 @@ class GlobalNav extends Component {
    */
   onSelectAll() {
     this.props.focusBlocks(this.props.blockGetChildrenRecursive(this.props.focus.construct).map(block => block.id));
+  }
+
+  /**
+   * save current project and signal this as the most recent project to reopen
+   */
+  saveProject() {
+    this.props.projectSave(this.props.currentProjectId);
+    setItem('mostRecentProject', this.props.currentProjectId);
+  }
+
+  /**
+   * new project and navigate to new project
+   */
+  newProject() {
+    const project = this.props.projectCreate();
+    this.props.push(`/project/${project.id}`);
+  }
+
+  /**
+   * add a new construct to the current project
+   */
+  newConstruct() {
+    const block = this.props.blockCreate();
+    this.props.projectAddConstruct(this.props.currentProjectId, block.id);
+    this.props.focusConstruct(block.id);
   }
 
   /**
@@ -275,47 +313,34 @@ class GlobalNav extends Component {
           items: [
             {
               text: 'Save Project',
+              shortcut: stringToShortcut('meta S'),
               action: () => {
-                this.props.projectSave(this.props.currentProjectId);
-                setItem('mostRecentProject', this.props.currentProjectId);
+                this.saveProject();
               },
             },
             {},
             {
               text: 'New Project',
+              shortcut: stringToShortcut('ctrl N'),
               action: () => {
-                const project = this.props.projectCreate();
-                this.props.push(`/project/${project.id}`);
+                this.newProject();
               },
             }, {
               text: 'New Construct',
+              shortcut: stringToShortcut('shift ctrl N'),
               action: () => {
-                const block = this.props.blockCreate();
-                this.props.projectAddConstruct(this.props.currentProjectId, block.id);
-                this.props.focusConstruct(block.id);
+                this.newConstruct();
               },
             }, {
-              text: 'New Construct from Clipboard',
-              action: () => {},
-            }, {
-              text: 'New Instance',
+              text: 'New Block',
               action: () => {},
             }, {}, {
-              text: 'Invite Collaborators',
-              action: () => {},
-            }, {
               text: 'Upload Genbank File',
               action: () => {
                 this.props.uiShowGenBankImport(true);
               },
             }, {
               text: 'Download Genbank File',
-              action: () => {},
-            }, {
-              text: 'Export PDF',
-              action: () => {},
-            }, {}, {
-              text: 'Publish to Gallery',
               action: () => {},
             },
           ],
