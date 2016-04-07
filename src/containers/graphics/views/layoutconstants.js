@@ -87,7 +87,6 @@ export default {
   partAppearance: {
     color: 'black',
     glyph: 'rectangle',
-    fontWeight: 'bold',
     strokeWidth: 1,
     stroke: background,
     fontSize: blockFontSize,
