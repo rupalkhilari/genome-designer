@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import ReactDOM from 'react-dom';
 import DnD from '../../containers/graphics/dnd/dnd';
 import MouseTrap from '../../containers/graphics/mousetrap';
+import SvgSbol from '../../components/svgsbol';
 
 import { inspectorToggleVisibility } from '../../actions/inspector';
 import { focusForceBlocks } from '../../actions/focus';
@@ -80,11 +81,11 @@ export class InventoryItem extends Component {
     proxy.className = 'InventoryItemProxy';
     proxy.innerHTML = this.props.item.metadata.name;
     const dom = ReactDOM.findDOMNode(this);
-    const img = dom.querySelector('img');
-    if (img) {
-      const imgClone = img.cloneNode();
-      imgClone.removeAttribute('data-reactid');
-      proxy.appendChild(imgClone);
+    const svg = dom.querySelector('svg');
+    if (svg) {
+      const svgClone = svg.cloneNode(true);
+      svgClone.removeAttribute('data-reactid');
+      proxy.appendChild(svgClone);
     }
     return proxy;
   }
@@ -94,16 +95,13 @@ export class InventoryItem extends Component {
     const imagePath = item.metadata.image;
     const isSelected = this.props.forceBlocks.indexOf(item) >= 0;
 
-    if (imagePath) {
-      debugger;
-    }
     return (
       <div className={'InventoryItem' +
         (!!imagePath ? ' hasImage' : '') +
         (!!isSelected ? ' selected' : '')}>
         <a className="InventoryItem-item"
            onClick={this.handleClick}>
-          {!!imagePath && <img className="InventoryItem-image" src={imagePath}/> }
+          {item.metadata.isSBOL ? <SvgSbol symbolName={item.id} color="white"/> : null}
           <span className="InventoryItem-text">
             {item.metadata.name || 'Unnamed'}
           </span>

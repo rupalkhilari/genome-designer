@@ -14,24 +14,31 @@ export default class SvgSbol extends Component {
       const templateId = `sbol-svg-${this.props.symbolName}`;
       const svg = document.getElementById(templateId).cloneNode(true);
       // ensure svg is stroked in black
-      setAttribute(svg, 'stroke', this.props.color, true);
+      setAttribute(svg, 'stroke', this.props.color || 'white', true);
       // remove the ID attribute from the clone to avoid duplicates
       svg.removeAttribute('id');
       // set width on top level SVG element
-      svg.setAttribute('width', this.props.width);
-      svg.setAttribute('height', this.props.height);
+      if (this.props.width) {
+        svg.setAttribute('width', this.props.width);
+      }
+      if (this.props.height) {
+        svg.setAttribute('height', this.props.height);
+      }
       // if the owner wants to modify the stroke width apply
       if (this.props.stroke) {
         setAttribute(svg, 'stroke-width', this.props.stroke, true);
       }
-
       this.markup = serializer.serializeToString(svg);
     }
 
     const style={
-      width: this.props.width + 'px',
-      height: this.props.height + 'px',
       display: 'inline-block',
+    };
+    if (this.props.width) {
+      style.width = this.props.width + 'px';
+    }
+    if (this.props.height) {
+      style.height = this.props.height + 'px';
     }
 
     return <div style={style} dangerouslySetInnerHTML={{__html: this.markup}}/>
