@@ -16,6 +16,16 @@ const DEFAULT_PORT = 3000;
 const port = parseInt(process.argv[2], 10) || process.env.PORT || DEFAULT_PORT;
 const hostname = '0.0.0.0';
 
+//file paths depending on if building or not
+//note that currently, you basically need to use npm run start in order to serve the client bundle + webpack middleware
+const createBuildPath = (isBuild, notBuild) => {
+  return path.join(__dirname, (process.env.BUILD ? isBuild : notBuild));
+};
+const pathContent = createBuildPath('content', '../src/content');
+const pathImages = createBuildPath('images', '../src/images');
+const pathPublic = createBuildPath('public', '../src/public');
+const pathClientBundle = createBuildPath('client.js', '../src/index.js');
+
 const app = express();
 
 //error logging middleware
@@ -39,7 +49,7 @@ app.use(morgan('dev', {
 }));
 
 // view engine setup
-app.set('views', path.join(__dirname, 'content'));
+app.set('views', pathContent);
 app.set('view engine', 'jade');
 
 // Register API middleware
@@ -83,11 +93,12 @@ app.use('/search', searchRouter);
 // ----------------------------------------------------
 
 //Static Files
-app.use(express.static(path.join(__dirname, 'public')));
-app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use(express.static(pathPublic));
+app.use('/images', express.static(pathImages));
 
 app.get('/version', (req, res) => {
   try {
+    //this is only relevant when the server builds, so can assume always at same path relative to __dirname
     const version = fs.readFileSync(path.join(__dirname, '../VERSION'));
     res.send(version);
   } catch (ignored) {
@@ -97,10 +108,10 @@ app.get('/version', (req, res) => {
 
 app.get('*', (req, res) => {
   if (req.url.indexOf('client.js') >= 0) {
-    res.sendFile(path.join(__dirname, 'client.js'));
+    res.sendFile(pathClientBundle);
   } else {
     //so that any routing is delegated to the client
-    res.render(path.join(__dirname, 'content/index.jade'), req.user);
+    res.render(path.join(pathContent + '/index.jade'), req.user);
   }
 });
 
