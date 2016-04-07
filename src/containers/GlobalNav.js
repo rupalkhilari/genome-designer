@@ -32,9 +32,6 @@ import { undo, redo } from '../store/undo/actions';
 import { uiShowGenBankImport } from '../actions/ui';
 import { setItem } from '../middleware/localStorageCache';
 import { uiShowDNAImport } from '../actions/ui';
-import {
-  copyBlocksToClipboard
-} from './uiapi';
 
 import '../styles/GlobalNav.css';
 
@@ -143,8 +140,6 @@ class GlobalNav extends Component {
 
   // copy the focused blocks to the clipboard using a deep clone
   copyFocusedBlocksToClipboard() {
-    // copyBlocksToClipboard(this.props.focus.blocks, this.props.currentProjectId);
-    // return;
     if (this.props.focus.blocks.length) {
       const clones = this.props.focus.blocks.map(block => {
         return this.props.blockClone(block, this.props.currentProjectId);
