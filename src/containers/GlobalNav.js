@@ -35,8 +35,8 @@ import {
   uiToggleDetailView,
   uiSetGrunt,
  } from '../actions/ui';
-import { inspectorToggleVisibility } from '..//actions/inspector';
-import { inventoryToggleVisibility } from '..//actions/inventory';
+import { inspectorToggleVisibility } from '../actions/inspector';
+import { inventoryToggleVisibility } from '../actions/inventory';
 import { setItem } from '../middleware/localStorageCache';
 import { uiShowDNAImport } from '../actions/ui';
 
@@ -329,11 +329,11 @@ class GlobalNav extends Component {
           items: [
             {
               text: 'Inventory',
-              checked: this.props.inventory,
+              checked: this.props.inventoryVisible,
               action: this.props.inventoryToggleVisibility
             }, {
               text: 'Inspector',
-              checked: this.props.inspector,
+              checked: this.props.inspectorVisible,
               action: this.props.inspectorToggleVisibility,
             }, {
               text: 'Sequence Details',
@@ -416,8 +416,8 @@ function mapStateToProps(state) {
     focus: state.focus,
     blocks: state.blocks,
     clipboard: state.clipboard,
-    inspector: state.inspector.isVisible,
-    inventory: state.inventory.isVisible,
+    inspectorVisible: state.inspector.isVisible,
+    inventoryVisible: state.inventory.isVisible,
   };
 }
 
