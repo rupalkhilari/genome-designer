@@ -112,6 +112,15 @@ class GlobalNav extends Component {
       evt.preventDefault();
       this.pasteBlocksToConstruct();
     });
+    // **************** VIEW ******************
+    KeyboardTrap.bind('option+mod+i', (evt) => {
+      evt.preventDefault();
+      this.props.inventoryToggleVisibility();
+    });
+    KeyboardTrap.bind('mod+i', (evt) => {
+      evt.preventDefault();
+      this.props.inspectorToggleVisibility();
+    });
   }
 
   /**
@@ -417,11 +426,13 @@ class GlobalNav extends Component {
             {
               text: 'Inventory',
               checked: this.props.inventory,
-              action: this.props.inventoryToggleVisibility
+              action: this.props.inventoryToggleVisibility,
+              shortcut: stringToShortcut('meta option i'),
             }, {
               text: 'Inspector',
               checked: this.props.inspector,
               action: this.props.inspectorToggleVisibility,
+              shortcut: stringToShortcut('meta i'),
             }, {
               text: 'Sequence Details',
               action: () => {
