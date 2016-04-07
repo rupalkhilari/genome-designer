@@ -45,6 +45,8 @@ module.exports = {
       // expect two construct views with one block each
       .assert.countelements('.construct-viewer', 2)
       .assert.countelements('.sbol-glyph', 2)
+      // expect SVG elements for each sbol symbol
+      .assert.countelements('.construct-viewer svg', 2)
       .end();
   }
 };
