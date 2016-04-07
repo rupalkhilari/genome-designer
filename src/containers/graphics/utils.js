@@ -56,3 +56,31 @@ export const isZero = (val) => {
 export const nearly = (v1, v2) => {
   return Math.abs(v1 - v2) < 1e-6;
 };
+
+
+/**
+ * set the attribute on the given element AND all children.
+ * Optionally uses the setAttributeNS method. The attribute is only
+ * applied to element that already have the attribute.
+ * Primary usage is changing the fill / stroke of SVG elements e.g
+ *
+ * setAttribute(someSVG, 'fill', 'dodgerblue', true);
+ *
+ */
+export const setAttribute = (element, attributeName, attributeValue, useNS = false) => {
+
+  // get child elements with this attribute as an array
+  const matches = Array.prototype.slice.call(element.querySelectorAll(`[${attributeName}]`));
+  // add the element itself if necessary
+  if (useNS ? element.hasAttributeNS(null, attributeName) : element.hasAttribute(attributeName)) {
+    matches.push(element);
+  }
+  matches.forEach(el => {
+    if (useNS) {
+      el.setAttributeNS(null, attributeName, attributeValue);
+    } else {
+      el.setAttribute(attributeName, attributeValue);
+    }
+  });
+
+};

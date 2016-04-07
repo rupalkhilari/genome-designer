@@ -94,6 +94,9 @@ export class InventoryItem extends Component {
     const imagePath = item.metadata.image;
     const isSelected = this.props.forceBlocks.indexOf(item) >= 0;
 
+    if (imagePath) {
+      debugger;
+    }
     return (
       <div className={'InventoryItem' +
         (!!imagePath ? ' hasImage' : '') +
