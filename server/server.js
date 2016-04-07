@@ -18,13 +18,13 @@ const hostname = '0.0.0.0';
 
 //file paths depending on if building or not
 //note that currently, you basically need to use npm run start in order to serve the client bundle + webpack middleware
-const createBuildPath = (isBuild, notBuild) => {
+const createBuildPath = (isBuild, notBuild = isBuild) => {
   return path.join(__dirname, (process.env.BUILD ? isBuild : notBuild));
 };
 const pathContent = createBuildPath('content', '../src/content');
 const pathImages = createBuildPath('images', '../src/images');
 const pathPublic = createBuildPath('public', '../src/public');
-const pathClientBundle = createBuildPath('client.js', '../src/index.js');
+const pathClientBundle = createBuildPath('client.js');
 
 const app = express();
 
@@ -118,7 +118,7 @@ app.get('*', (req, res) => {
 //start the server by default
 app.listen(port, hostname, (err) => {
   if (err) {
-    console.log(err.stack);
+    console.log('error listening!', err.stack);
     return;
   }
 

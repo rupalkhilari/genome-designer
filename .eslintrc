@@ -7,9 +7,6 @@
     "browser": true,
     "node": true
   },
-  "globals": {
-    "$builddir": false
-  },
   "parser": "babel-eslint",
   "extends": "airbnb",
   "plugins": [
