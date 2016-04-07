@@ -5,8 +5,10 @@
   },
   "env": {
     "browser": true,
-    "node": true,
-    "mocha": true //todo - specify this only for test folder
+    "node": true
+  },
+  "globals": {
+    "$builddir": false
   },
   "parser": "babel-eslint",
   "extends": "airbnb",

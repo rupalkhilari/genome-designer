@@ -13,6 +13,7 @@ async function copy() {
     ncp('src/public', 'build/public'),
 
     //static page content
+    ncp('src/images', 'build/images'),
     ncp('src/content', 'build/content'),
 
     //copy installed extensions

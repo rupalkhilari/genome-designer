@@ -6,10 +6,9 @@
 * Copies static files to the output folder (`copy.js`)
 * Launches [Webpack](https://webpack.github.io/) compiler in a watch mode 
 * Launches Node.js server from the compiled output folder (`runServer.js`)
+* Includes BrowserSync as a proxy to dynamically add in hot module loading, and reload when static assets update
 * Includes [HMR](https://webpack.github.io/docs/hot-module-replacement), and
   [React Transform](https://github.com/gaearon/babel-plugin-react-transform)
-  
-In future, may want to add BrowserSync
 
 ##### `npm run build` (`build.js`)
 

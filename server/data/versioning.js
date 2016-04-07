@@ -4,7 +4,7 @@ import path from 'path';
 import { errorVersioningSystem, errorDoesNotExist } from '../utils/errors';
 
 const makePath = (fsPath) => {
-  return path.resolve(__dirname, fsPath);
+  return path.resolve($builddir, fsPath);
 };
 
 export const initialize = (path) => {

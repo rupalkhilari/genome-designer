@@ -35,11 +35,11 @@ export const findProjectFromBlock = (blockId) => {
       const lines = output.split('\n');
       lines.pop(); //get rid of the last empty line
       if (lines.length === 1) {
-        const [ /* idBlock */,
+        const [/* idBlock */,
           /* blocks/ */,
           /* data/ */,
           idProject,
-          ] = lines[0].split('/').reverse();
+        ] = lines[0].split('/').reverse();
         resolve(idProject);
       } else {
         reject(errorCouldntFindProjectId);
@@ -60,10 +60,10 @@ export const listProjectsWithAccess = (userId) => {
       const lines = output.split('\n');
       lines.pop(); //get rid of the last empty line
       const projectIds = lines.map(line => {
-        const [/*dot*/,
+        const [/*permissions.json*/,
           projectId,
-          /*permission.json*/
-          ] = line.split('/');
+          /* path/to/dir */
+        ] = line.split('/').reverse();
         return projectId;
       });
       return resolve(projectIds);

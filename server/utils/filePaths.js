@@ -1,10 +1,8 @@
 import path from 'path';
 import invariant from 'invariant';
 
-const relativeStoragePath = '../../storage/';
-
 const makePath = (...paths) => {
-  return path.resolve(__dirname, relativeStoragePath, ...paths);
+  return path.resolve($builddir, '../storage/', ...paths);
 };
 
 export const filePath = 'file';

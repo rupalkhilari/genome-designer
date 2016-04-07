@@ -15,21 +15,29 @@ const AUTOPREFIXER_BROWSERS = [
   'Opera >= 12',
   'Safari >= 7.1',
 ];
-const GLOBALS = {
-  'process.env.NODE_ENV': DEBUG ? '"dev"' : '"production"',
-  __DEV__: DEBUG,
-};
 
+//folder paths
 const sourcePath = path.resolve(__dirname, '../src');
 const serverSourcePath = path.resolve(__dirname, '../server');
 const pluginsSourcePath = path.resolve(__dirname, '../plugins');
 const buildPath = path.resolve(__dirname, '../build');
 
+const GLOBALS = {
+  'process.env.NODE_ENV': DEBUG ? '"dev"' : '"production"',
+  __DEV__: DEBUG,
+  $builddir: `__dirname`,
+};
+
+//get list of node modules for webpack to avoid bundling on server
+const nodeModules = fs.readdirSync('node_modules')
+  .filter((x) => ['.bin'].indexOf(x) === -1)
+  .reduce(
+    (acc, mod) => Object.assign(acc, { [mod]: true }),
+    {}
+  );
+
 //common configuration
-
 const config = {
-  context: sourcePath,
-
   output: {
     path: buildPath,
   },
@@ -92,9 +100,7 @@ const config = {
 };
 
 export const clientConfig = merge({}, config, {
-  // Choose a developer tool to enhance debugging
-  // http://webpack.github.io/docs/configuration.html#devtool
-  devtool: DEBUG ? 'inline-source-map' : false,
+  context: sourcePath,
 
   entry: [
     './index.js',
@@ -145,15 +151,11 @@ export const clientConfig = merge({}, config, {
       new webpack.optimize.AggressiveMergingPlugin(),
     ]),
   ],
-});
 
-//get list of node modules for webpack to avoid bundling
-const nodeModules = fs.readdirSync('node_modules')
-  .filter((x) => ['.bin'].indexOf(x) === -1)
-  .reduce(
-    (acc, mod) => Object.assign(acc, { [mod]: true }),
-    {}
-  );
+  // Choose a developer tool to enhance debugging
+  // http://webpack.github.io/docs/configuration.html#devtool
+  devtool: DEBUG ? 'inline-source-map' : false,
+});
 
 export const serverConfig = merge({}, config, {
   context: serverSourcePath,

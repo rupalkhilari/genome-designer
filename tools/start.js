@@ -79,11 +79,11 @@ async function start() {
           const bs = BrowserSync.create();
 
           bs.init({
-            // no need to watch '*.js' here, webpack will take care of it for us,
+            // no need to watch *.js, webpack will take care of it for us
+            //no need to watch *.css, since imported so webpack will handle
             // including full page reloads if HMR won't work
             files: [
               'app/content/**/*.*',
-              'app/styles/*.css',
             ],
 
             ...(DEBUG ? {} : { notify: false, ui: false }),

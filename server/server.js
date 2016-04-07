@@ -16,7 +16,6 @@ const DEFAULT_PORT = 3000;
 const port = parseInt(process.argv[2], 10) || process.env.PORT || DEFAULT_PORT;
 const hostname = '0.0.0.0';
 
-const ROOT = path.dirname(__dirname);
 const app = express();
 
 //error logging middleware
@@ -40,7 +39,7 @@ app.use(morgan('dev', {
 }));
 
 // view engine setup
-app.set('views', path.join(__dirname, '../src'));
+app.set('views', path.join($builddir, 'content'));
 app.set('view engine', 'jade');
 
 // Register API middleware
@@ -84,12 +83,13 @@ app.use('/search', searchRouter);
 // ----------------------------------------------------
 
 //Static Files
-app.use(express.static(path.join(__dirname, '../build/public')));
-app.use('/images', express.static(path.join(__dirname, '../src/images')));
+//todo - relative to build directory using $builddir
+app.use(express.static(path.join($builddir, 'public')));
+app.use('/images', express.static(path.join($builddir, '/images')));
 
 app.get('/version', (req, res) => {
   try {
-    const version = fs.readFileSync(path.join(ROOT, 'VERSION'));
+    const version = fs.readFileSync(path.join($builddir, '../VERSION'));
     res.send(version);
   } catch (ignored) {
     res.send('Missing VERSION file');
@@ -97,12 +97,12 @@ app.get('/version', (req, res) => {
 });
 
 app.get('/client.js', (req, res) => {
-  res.sendFile(path.join(__dirname, '../build/client.js'));
+  res.sendFile(path.join($builddir, '/client.js'));
 });
 
 //so that any routing is delegated to the client
 app.get('*', (req, res) => {
-  res.render('content/index.jade', req.user);
+  res.render(path.join($builddir, 'content/index.jade'), req.user);
 });
 
 //start the server by default

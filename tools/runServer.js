@@ -32,8 +32,6 @@ function runServer(cb) {
     server.kill('SIGTERM');
   }
 
-  //todo - build the server, not serve with babel-node
-
   server = cp.spawn('node', [serverPath], {
     env: Object.assign({ NODE_ENV: 'dev' }, process.env),
     silent: false,

@@ -14,7 +14,7 @@ const registry = Object.keys(dependencies).reduce((acc, dep) => {
       [dep]: depManifest,
     });
   } catch (err) {
-    console.warn('error loading extension ' + dep);
+    console.warn('error loading extension: ' + dep);
     console.error(err);
   }
 
