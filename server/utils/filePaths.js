@@ -2,7 +2,10 @@ import path from 'path';
 import invariant from 'invariant';
 
 const makePath = (...paths) => {
-  return path.resolve($builddir, '../storage/', ...paths);
+  if (process.env.BUILD) {
+    return path.resolve(__dirname, '../storage/', ...paths);
+  }
+  return path.resolve(__dirname, '../../storage/', ...paths);
 };
 
 export const filePath = 'file';

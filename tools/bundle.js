@@ -2,7 +2,7 @@ import webpack from 'webpack';
 import { clientConfig } from './webpack.config';
 
 //Creates application bundles from the source files.
-function bundleServerbundle() {
+function bundle() {
   return new Promise((resolve, reject) => {
     webpack(clientConfig).run((err, stats) => {
       if (err) {

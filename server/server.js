@@ -39,7 +39,7 @@ app.use(morgan('dev', {
 }));
 
 // view engine setup
-app.set('views', path.join($builddir, 'content'));
+app.set('views', path.join(__dirname, 'content'));
 app.set('view engine', 'jade');
 
 // Register API middleware
@@ -83,26 +83,25 @@ app.use('/search', searchRouter);
 // ----------------------------------------------------
 
 //Static Files
-//todo - relative to build directory using $builddir
-app.use(express.static(path.join($builddir, 'public')));
-app.use('/images', express.static(path.join($builddir, '/images')));
+app.use(express.static(path.join(__dirname, 'public')));
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
 app.get('/version', (req, res) => {
   try {
-    const version = fs.readFileSync(path.join($builddir, '../VERSION'));
+    const version = fs.readFileSync(path.join(__dirname, '../VERSION'));
     res.send(version);
   } catch (ignored) {
     res.send('Missing VERSION file');
   }
 });
 
-app.get('/client.js', (req, res) => {
-  res.sendFile(path.join($builddir, '/client.js'));
-});
-
-//so that any routing is delegated to the client
 app.get('*', (req, res) => {
-  res.render(path.join($builddir, 'content/index.jade'), req.user);
+  if (req.url.indexOf('client.js') >= 0) {
+    res.sendFile(path.join(__dirname, 'client.js'));
+  } else {
+    //so that any routing is delegated to the client
+    res.render(path.join(__dirname, 'content/index.jade'), req.user);
+  }
 });
 
 //start the server by default

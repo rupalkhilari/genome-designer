@@ -25,6 +25,7 @@ const buildPath = path.resolve(__dirname, '../build');
 const GLOBALS = {
   'process.env.NODE_ENV': DEBUG ? '"dev"' : '"production"',
   __DEV__: DEBUG,
+  'process.env.BUILD': true,
   $builddir: `__dirname`,
 };
 
@@ -103,7 +104,7 @@ export const clientConfig = merge({}, config, {
   context: sourcePath,
 
   entry: [
-    './index.js',
+    'index.js',
   ],
 
   output: {
@@ -159,7 +160,7 @@ export const clientConfig = merge({}, config, {
 
 export const serverConfig = merge({}, config, {
   context: serverSourcePath,
-  entry: './server.js',
+  entry: 'server.js',
 
   resolve: {
     root: serverSourcePath,
