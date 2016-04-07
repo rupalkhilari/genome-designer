@@ -1,4 +1,5 @@
 import * as ActionTypes from '../constants/ActionTypes';
+import { LOCATION_CHANGE } from 'react-router-redux';
 
 export const initialState = {
   detailViewVisible: false,
@@ -34,6 +35,9 @@ export default function inventory(state = initialState, action) {
   case ActionTypes.UI_SET_GRUNT : {
     const { gruntMessage } = action;
     return Object.assign({}, state, {gruntMessage});
+  }
+  case LOCATION_CHANGE : {
+    return Object.assign({}, initialState);
   }
   default : {
     return state;
