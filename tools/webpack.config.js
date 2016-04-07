@@ -26,7 +26,6 @@ const GLOBALS = {
   'process.env.NODE_ENV': DEBUG ? '"dev"' : '"production"',
   __DEV__: DEBUG,
   'process.env.BUILD': true,
-  $builddir: `__dirname`,
 };
 
 //get list of node modules for webpack to avoid bundling on server
@@ -41,6 +40,7 @@ const nodeModules = fs.readdirSync('node_modules')
 const config = {
   output: {
     path: buildPath,
+    publicPath: '/static/',
   },
 
   module: {
@@ -58,6 +58,13 @@ const config = {
           pluginsSourcePath,
         ],
         exclude: /node_modules/,
+        query: {
+          // https://github.com/babel/babel-loader#options
+          cacheDirectory: DEBUG,
+
+          presets: ['stage-0', 'react', 'es2015'],
+          plugins: ['transform-class-properties', 'transform-decorators-legacy', 'add-module-exports', 'transform-runtime'],
+        },
       },
       {
         test: /\.css$/,
@@ -104,14 +111,13 @@ export const clientConfig = merge({}, config, {
   context: sourcePath,
 
   entry: [
-    'index.js',
+    './index.js',
   ],
 
   output: {
     filename: 'client.js',
     //filename: DEBUG ? '[name].js?[chunkhash]' : '[name].[chunkhash].js',
     //chunkFilename: DEBUG ? '[name].[id].js?[chunkhash]' : '[name].[id].[chunkhash].js',
-    publicPath: '/static/',
   },
 
   target: 'web',
@@ -160,7 +166,7 @@ export const clientConfig = merge({}, config, {
 
 export const serverConfig = merge({}, config, {
   context: serverSourcePath,
-  entry: 'server.js',
+  entry: './server.js',
 
   resolve: {
     root: serverSourcePath,
@@ -168,7 +174,7 @@ export const serverConfig = merge({}, config, {
 
   output: {
     filename: 'server.js',
-    libraryTarget: 'commonjs',
+    libraryTarget: 'commonjs2',
   },
 
   target: 'node',
@@ -205,4 +211,4 @@ export const serverConfig = merge({}, config, {
   devtool: 'source-map',
 });
 
-export default clientConfig;
+export default [clientConfig, serverConfig];
