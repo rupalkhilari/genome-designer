@@ -1,27 +1,34 @@
 import { assert, expect } from 'chai';
 
 import request from 'supertest';
-import devServer from '../../server/devServer';
+const devServer = require('../../server/devServer');
 
 describe('Extensions', () => {
   describe('REST', () => {
+/*
     let server;
 
-    beforeEach('server setup', () => {
-      server = devServer.listen();
+
+    before('server setup', () => {
+      server = devServer.listen(3000, 'localhost', function (err) {
+        if (err) {
+          console.log("server failure", err);
+          return done(err);
+        }
+      });
     });
-    afterEach(() => {
+    after(() => {
       server.close();
     });
-
+*/
     it('should list the extensions, manifests keyed by name', (done) => {
       const url = '/extensions/list';
-      request(server)
+      request(devServer)
         .get(url)
         .expect(200)
         .end((err, result) => {
           if (err) {
-            done(err);
+            return done(err);
           }
 
           expect(result.body).to.be.an.object;
@@ -37,12 +44,12 @@ describe('Extensions', () => {
 
     it('/manifest/ to get manifest', (done) => {
       const url = '/extensions/manifest/simple';
-      request(server)
+      request(devServer)
         .get(url)
         .expect(200)
         .end((err, result) => {
           if (err) {
-            done(err);
+            return done(err);
           }
           expect(result.body).to.be.an.object;
           assert(result.body.name === 'simple');
@@ -53,12 +60,12 @@ describe('Extensions', () => {
 
     it('/load/ to get the index.js script', (done) => {
       const url = '/extensions/load/simple';
-      request(server)
+      request(devServer)
         .get(url)
         .expect(200)
         .end((err, result) => {
           if (err) {
-            done(err);
+            return done(err);
           }
 
           assert(result.text.indexOf('render'), 'should return script with a render() function');

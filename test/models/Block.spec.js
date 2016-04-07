@@ -3,6 +3,7 @@ import { writeFile } from '../../src/middleware/api';
 import Block from '../../src/models/Block';
 import AnnotationDefinition from '../../src/schemas/Annotation';
 import md5 from 'md5';
+import merge from 'lodash.merge';
 
 import * as fileSystem from '../../server/utils/fileSystem';
 import * as filePaths from '../../server/utils/filePaths';
@@ -39,11 +40,11 @@ describe('Model', () => {
     });
 
     describe('Annotations', () => {
-      const annotation = AnnotationDefinition.scaffold();
+      const annotation = merge({},AnnotationDefinition.scaffold(), {'name': 'annotationName'});
 
       it('annotate() should validate invalid annotations', () => {
         const clone = Object.assign({}, annotation);
-        delete clone.id;
+        delete clone.name;
         expect(block.annotate.bind(block, clone)).to.throw();
       });
 
@@ -52,9 +53,9 @@ describe('Model', () => {
         expect(annotated.sequence.annotations.length).to.equal(1);
       });
 
-      it('removeAnnotation() should find by ID', () => {
+      it('removeAnnotation() should find by Name', () => {
         const annotated = block.annotate(annotation);
-        const unannotated = annotated.removeAnnotation(annotation.id);
+        const unannotated = annotated.removeAnnotation(annotation.name);
         expect(unannotated.sequence.annotations.length).to.equal(0);
       });
     });

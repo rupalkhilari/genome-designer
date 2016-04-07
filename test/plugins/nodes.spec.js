@@ -4,7 +4,8 @@ const fs = require('fs');
 import path from 'path';
 
 describe('Plugins', () => {
-  describe('Nodes Plugin', () => {
+  // ADD BACK THIS TEST ONCE WE HAVE A BETTER PLUGIN STRATEGY
+  describe.skip('Nodes Plugin', () => {
     const dnaFile = path.resolve(__dirname, './temp.txt');
     const input = {DNA: dnaFile};
     it('should successfully run the Biopython example', function translateDNA(done) {

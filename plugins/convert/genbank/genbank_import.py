@@ -58,16 +58,14 @@ def relationship(block1, block2, full_size):
 # and a list of IDs of blocks that need to be removed.
 # The function does NOT take the blocks from all_blocks
 def convert_block_to_feature(all_blocks, to_convert, parent, to_remove_list):
-    feature = { }
+    feature = { "name": "", "notes": {} }
     for key, value in to_convert["metadata"].iteritems():
         if key in ["name", "description", "start", "end", "tags"]:
             feature[key] = value
         elif key == "strand":
             feature["isForward"] = (value == 1)
         else:
-            if "notes" not in feature:
-                feature["notes"] = {}
-            feature["notes"]["key"] = value
+            feature["notes"][key] = value
 
     feature["sequence"] = to_convert["sequence"]["sequence"]
 
