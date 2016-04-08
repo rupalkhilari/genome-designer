@@ -51,6 +51,8 @@ export default class SBOLGlyph2D extends Glyph2D {
           this.svgContainer.removeChild(this.svgContainer.firstChild);
         }
 
+        this.svgContainer.style.display = 'none';
+
         // style / size the container
         this.svgContainer.style.left = (this.node.width - kT.sbolIcon - 2 - kT.contextDotsW) + 'px';
         this.svgContainer.style.top = (this.node.height / 2 - kT.sbolIcon / 2) + 'px';
@@ -58,18 +60,22 @@ export default class SBOLGlyph2D extends Glyph2D {
 
         // clone the appropriate template
         const templateId = `sbol-svg-${this.sbolName}`;
-        const svg = document.getElementById(templateId).cloneNode(true);
-        // ensure svg is stroked in black
-        setAttribute(svg, 'stroke', 'black', true);
-        // remove the ID attribute from the clone to avoid duplicates
-        svg.removeAttribute('id');
-        // add to the container
-        this.svgContainer.appendChild(svg);
-
-        // display the svg
-        this.svgContainer.style.display = 'block';
+        const template = document.getElementById(templateId);
+        if (template) {
+          const svg = template.cloneNode(true);
+          // ensure svg is stroked in black
+          setAttribute(svg, 'stroke', 'black', true);
+          // remove the ID attribute from the clone to avoid duplicates
+          svg.removeAttribute('id');
+          // add to the container
+          this.svgContainer.appendChild(svg);
+          // display the svg
+          this.svgContainer.style.display = 'block';
+        } else {
+          // unrecognised sbol symbol
+          this.svgContainer.style.display = 'none';
+        }
       }
-
     } else {
       this.svgContainer.style.display = 'none';
     }
