@@ -14,7 +14,7 @@ const DEBUG = !process.argv.includes('--release');
 async function start() {
   await run(clean);
   await run(copy.bind(undefined, { watch: true }));
-  await run(bundleServer);
+  //await run(bundleServer);
   await new Promise(resolve => {
     // Patch the client-side bundle configurations
     // to enable Hot Module Replacement (HMR) and React Transform
@@ -66,7 +66,7 @@ async function start() {
       /* eslint-enable no-param-reassign */
     });
 
-    const clientCompiler = webpack(clientConfig);
+    const clientCompiler = webpack([clientConfig, serverConfig]);
     const clientDevMiddleware = () => webpackDevMiddleware(clientCompiler, {
       publicPath: clientConfig.output.publicPath,
       stats: clientConfig.stats.colors,

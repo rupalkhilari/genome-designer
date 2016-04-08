@@ -3,13 +3,17 @@ import manifest from './package.json';
 
 const { dependencies } = manifest;
 
-export const extensionsFolder = './node_modules/';
-
 const registry = Object.keys(dependencies).reduce((acc, dep) => {
-  const filePath = path.resolve(__dirname, extensionsFolder + dep + '/package.json');
-
   try {
-    const depManifest = require(filePath);
+    let depManifest;
+    //building in webpack requires static paths, dynamic requires are really tricky
+    if (process.env.BUILD) {
+      depManifest = require(`${__dirname}/node_modules/${dep}/package.json`);
+    } else {
+      const filePath = path.resolve(__dirname, './node_modules', dep + '/package.json');
+      depManifest = require(filePath);
+    }
+
     Object.assign(acc, {
       [dep]: depManifest,
     });
