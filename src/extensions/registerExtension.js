@@ -1,4 +1,4 @@
-import registry, { validRegion } from './clientRegistry';
+import registry, { register, validRegion } from './clientRegistry';
 import merge from 'lodash.merge';
 import invariant from 'invariant';
 
@@ -10,9 +10,7 @@ const registerExtension = (manifest, render) => {
 
   if (validRegion(region)) {
     const merged = merge({}, registry[name], manifest, {render});
-    Object.assign(registry, {
-      [name]: merged,
-    });
+    register(merged);
     return merged;
   } else {
     throw new Error(`extension region ${region} unrecognized`);

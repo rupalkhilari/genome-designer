@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { uiToggleDetailView } from '../actions/ui';
-import { extensionsByRegion, registry } from '../extensions/clientRegistry';
+import { extensionsByRegion, onRegister } from '../extensions/clientRegistry';
 
 import '../styles/ProjectDetail.css';
 
@@ -19,17 +19,24 @@ export class ProjectDetail extends Component {
     currentExtension: lastExtension,
   };
 
+  extensions = [];
+
   componentWillMount() {
     //e.g. if change project and component completely re-renders
     if (this.props.isVisible) {
-      this.setState({currentExtension: lastExtension});
+      this.setState({ currentExtension: lastExtension });
     }
   }
+
   componentDidMount() {
-    //to update when extensions register... todo - need a pubsub method
-    setTimeout(() => {
+    this.extensionsListener = onRegister(() => {
+      Object.assign(this, { extensions: extensionsByRegion('sequenceDetail').filter(manifest => manifest.name !== 'simple') });
       this.forceUpdate();
-    }, 500);
+    });
+  }
+
+  componentWillUnmount() {
+    this.extensionsListener();
   }
 
   toggle = (forceVal) => {
@@ -41,6 +48,10 @@ export class ProjectDetail extends Component {
 
   //todo - need to provide a way to unregister event handlers (e.g. an un-render() callback)
   loadExtension = (manifest) => {
+    if (!manifest) {
+      return;
+    }
+
     try {
       this.toggle(true);
       this.setState({ currentExtension: manifest });
@@ -48,7 +59,7 @@ export class ProjectDetail extends Component {
 
       setTimeout(() => {
         const boundingBox = this.refs.extensionContainer.getBoundingClientRect();
-        manifest.render(this.refs.extensionView, {boundingBox});
+        manifest.render(this.refs.extensionView, { boundingBox });
       });
     } catch (err) {
       console.error('error loading / rendering extension!', manifest);
@@ -57,13 +68,11 @@ export class ProjectDetail extends Component {
   };
 
   render() {
-    //todo - trigger more intelligently, dont want to recompute all the time
-    const extensions = extensionsByRegion('sequenceDetail').filter(manifest => manifest.name !== 'simple');
-
     const header = (this.props.isVisible) ?
       (
         <div className="ProjectDetail-heading">
-          <a className="ProjectDetail-heading-extension visible">{this.state.currentExtension.readable || this.state.currentExtension.name}</a>
+          <a
+            className="ProjectDetail-heading-extension visible">{this.state.currentExtension.readable || this.state.currentExtension.name}</a>
           <a ref="close"
              className="ProjectDetail-heading-close"
              onClick={() => this.toggle(false)}/>
@@ -73,9 +82,9 @@ export class ProjectDetail extends Component {
         <div className="ProjectDetail-heading">
           <a ref="open"
              className="ProjectDetail-heading-toggle"
-             onClick={() => { this.toggle(); this.loadExtension(extensions[0]);} }/>
+             onClick={() => { this.toggle(); this.loadExtension(this.extensions[0]);} }/>
           <div className="ProjectDetail-heading-extensionList">
-            {extensions.map(manifest => {
+            {this.extensions.map(manifest => {
               return (
                 <a key={manifest.name}
                    className="ProjectDetail-heading-extension"
