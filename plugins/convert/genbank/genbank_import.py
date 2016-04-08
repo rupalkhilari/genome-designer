@@ -121,7 +121,7 @@ def create_child_block_from_feature(f, all_blocks, root_block, sequence):
     strand = f.location.strand
     sbol_type = sbol_type_table.get(f.type)
 
-    if f.type == 'source':
+    if f.type.strip() == 'source':
         # 'source' refers to the root block. So, the root block aggregates information
         # from the header of the genbank file as well as the 'source' feature
         for key, value in qualifiers.iteritems():
@@ -242,7 +242,7 @@ def build_block_hierarchy(all_blocks, root_block, sequence):
             if block["sequence"]["length"] == root_block["sequence"]["length"]:
                 convert_block_to_feature(all_blocks, block, root_block, to_remove)
             else:
-                raise Exception('Error processing a block!')
+                print('Error processing block ' + block["metadata"]["name"] + "[" + str(block["metadata"]["start"]) + ":" + str(block["metadata"]["end"]) + "]")
 
     # Delete all the blocks that were converted to features
     for removing in to_remove:
