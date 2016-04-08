@@ -267,6 +267,7 @@ def create_filler_blocks_for_holes(all_blocks, sequence):
                 filler_block = create_block_json(block_id, sequence[current_position:child["metadata"]["start"]], [])
                 filler_block["metadata"]["type"] = "filler"
                 filler_block["metadata"]["name"] = filler_block["sequence"]["sequence"][:3] + '...'
+                filler_block["metadata"]["color"] = "#4B505E"
                 filler_block["metadata"]["start"] = current_position
                 filler_block["metadata"]["end"] = child["metadata"]["start"] - 1
                 filler_block["sequence"]["length"] = filler_block["metadata"]["end"] - filler_block["metadata"]["start"]
@@ -279,6 +280,7 @@ def create_filler_blocks_for_holes(all_blocks, sequence):
             filler_block = create_block_json(block_id, sequence[current_position:block["metadata"]["end"] + 1], [])
             filler_block["metadata"]["type"] = "filler"
             filler_block["metadata"]["name"] = filler_block["sequence"]["sequence"][:3] + '...'
+            filler_block["metadata"]["color"] = "#4B505E"
             filler_block["metadata"]["start"] = current_position
             filler_block["metadata"]["end"] = block["metadata"]["end"]
             filler_block["sequence"]["length"] = filler_block["metadata"]["end"] - filler_block["metadata"]["start"]
