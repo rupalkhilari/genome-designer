@@ -8,7 +8,7 @@
     height: 2.5em;
     padding: 0.5em 1em;
     margin: 0 -var(--SidePanel-width-padding-content);
-    font-size: 1.25em;
+    font-size: var(--font-size-sectionLabel);
     font-weight: 200;
     background-color: rgba(255,255,255,0.25);
     flex-shrink: 0;
