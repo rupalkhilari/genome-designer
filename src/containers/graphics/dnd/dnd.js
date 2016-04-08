@@ -82,29 +82,7 @@ class DnD {
     if (target && target.options && target.options.dragOver) {
       target.options.dragOver.call(this, globalPosition, this.payload);
     }
-
   }
-
-  /**
-   * clear all browser selections, becareful.
-   * Deprecated but keeping around for reference for now.
-   */
-  // clearSelection() {
-  //   let selection = null;
-  //   if (window.getSelection) {
-  //     selection = window.getSelection();
-  //   } else if (document.selection) {
-  //     selection = document.selection;
-  //   }
-  //   if (selection) {
-  //     if (selection.empty) {
-  //       selection.empty();
-  //     }
-  //     if (selection.removeAllRanges) {
-  //       selection.removeAllRanges();
-  //     }
-  //   }
-  // }
 
   /**
    * mouse up during drag

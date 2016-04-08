@@ -6,7 +6,7 @@
   align-content: center;
   min-height: 30px;
   flex-basis: 0;
-  background-color: var(--colors-bluegreyLight);
+  background-color: var(--colors-blueGreyMed);
 
   &.visible {
     background-color: var(--colors-white);
@@ -43,17 +43,20 @@
 
     &-extension {
       padding: 0px 20px;
-      border-right: 1px solid var(--colors-greyMedLight);
+      border-right: 1px solid var(--colors-grey);
       color: #e6e6e6;
+      cursor: pointer;
 
       .visible & {
         color: #4c505f;
         padding: 0px;
         border: 0;
+        cursor: default;
       }
 
       &.disabled {
         color: #757884;
+        cursor: not-allowed;
       }
 
       &:last-child {
