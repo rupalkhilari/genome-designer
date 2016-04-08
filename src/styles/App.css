@@ -5,7 +5,7 @@
 .App {
   display: flex;
   flex-direction: column;
-  background-color: var(--colors-bluegrey);
+  background-color: var(--colors-blueGreyDark);
   height: 100vh;
   overflow: hidden;
 }
@@ -30,14 +30,14 @@
   padding: 0.25rem 2rem 0.25rem 2rem;
 }
 .button-primary {
-  background-color: var(--colors-bluegreyDark);
-  border: 1px solid var(--colors-bluegreyDark);
+  background-color: var(--colors-blueBlack);
+  border: 1px solid var(--colors-blueBlack);
   color: white;
 }
 .button-normal {
   background-color: white;
-  border: 1px solid var(--colors-bluegreyDark);
-  color: var(--colors-bluegreyDark);
+  border: 1px solid var(--colors-blueBlack);
+  color: var(--colors-blueBlack);
 }
 .button-nostyle {
   background-color: transparent;
