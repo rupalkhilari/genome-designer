@@ -35,10 +35,17 @@ import {
   uiToggleDetailView,
   uiSetGrunt,
  } from '../actions/ui';
-import { inspectorToggleVisibility } from '../actions/inspector';
-import { inventoryToggleVisibility } from '../actions/inventory';
-import { setItem } from '../middleware/localStorageCache';
+import { inspectorToggleVisibility } from '..//actions/inspector';
+import { inventoryToggleVisibility } from '..//actions/inventory';
 import { uiShowDNAImport } from '../actions/ui';
+
+import KeyboardTrap from 'mousetrap';
+import {
+  microsoft,
+  apple,
+  stringToShortcut,
+  translate,
+} from '../utils/ui/keyboard-translator';
 
 import '../styles/GlobalNav.css';
 
@@ -59,6 +66,92 @@ class GlobalNav extends Component {
     showAddProject: false,
     recentProjects: [],
   };
+
+  constructor(props) {
+    super(props);
+
+    // keyboard shortcuts
+    //
+    // ************ FILE MENU ***********
+    KeyboardTrap.bind('mod+s', (evt) => {
+      evt.preventDefault();
+      this.saveProject();
+    });
+    KeyboardTrap.bind('ctrl+n', (evt) => {
+      evt.preventDefault();
+      this.newProject();
+    });
+    KeyboardTrap.bind('shift+ctrl+n', (evt) => {
+      evt.preventDefault();
+      this.newConstruct();
+    });
+    // ************ EDIT MENU ***********
+    KeyboardTrap.bind('mod+z', (evt) => {
+      evt.preventDefault();
+      this.props.undo();
+    });
+    KeyboardTrap.bind('mod+shift+z', (evt) => {
+      evt.preventDefault();
+      this.props.redo();
+    })
+    // select all/cut/copy/paste
+    KeyboardTrap.bind('mod+a', (evt) => {
+      evt.preventDefault();
+      this.onSelectAll();
+    });
+    KeyboardTrap.bind('mod+x', (evt) => {
+      evt.preventDefault();
+      this.cutFocusedBlocksToClipboard();
+    });
+    KeyboardTrap.bind('mod+c', (evt) => {
+      evt.preventDefault();
+      this.copyFocusedBlocksToClipboard();
+    });
+    KeyboardTrap.bind('mod+v', (evt) => {
+      evt.preventDefault();
+      this.pasteBlocksToConstruct();
+    });
+    // **************** VIEW ******************
+    KeyboardTrap.bind('option+mod+i', (evt) => {
+      evt.preventDefault();
+      this.props.inventoryToggleVisibility();
+    });
+    KeyboardTrap.bind('mod+i', (evt) => {
+      evt.preventDefault();
+      this.props.inspectorToggleVisibility();
+    });
+  }
+
+  /**
+   * select all blocks of the current construct
+   */
+  onSelectAll() {
+    this.props.focusBlocks(this.props.blockGetChildrenRecursive(this.props.focus.construct).map(block => block.id));
+  }
+
+  /**
+   * save current project and signal this as the most recent project to reopen
+   */
+  saveProject() {
+    this.props.projectSave(this.props.currentProjectId);
+  }
+
+  /**
+   * new project and navigate to new project
+   */
+  newProject() {
+    const project = this.props.projectCreate();
+    this.props.push(`/project/${project.id}`);
+  }
+
+  /**
+   * add a new construct to the current project
+   */
+  newConstruct() {
+    const block = this.props.blockCreate();
+    this.props.projectAddConstruct(this.props.currentProjectId, block.id);
+    this.props.focusConstruct(block.id);
+  }
 
   /**
    * get the given blocks index in its parent
@@ -174,12 +267,14 @@ class GlobalNav extends Component {
 
   // cut focused blocks to the clipboard, no clone required since we are removing them.
   cutFocusedBlocksToClipboard() {
-    // copy the focused blocks before removing
-    const blocks = this.props.focus.blocks.slice().map(blockId => this.props.blocks[blockId]);
-    this.props.focus.blocks.forEach(blockId => {
-      this.props.blockRemoveComponent(this.getBlockParentId(blockId), blockId);
-    });
-    this.props.clipboardSetData([clipboardFormats.blocks], [blocks])
+    if (this.props.focus.blocks.length) {
+      // copy the focused blocks before removing
+      const blocks = this.props.focus.blocks.slice().map(blockId => this.props.blocks[blockId]);
+      this.props.focus.blocks.forEach(blockId => {
+        this.props.blockRemoveComponent(this.getBlockParentId(blockId), blockId);
+      });
+      this.props.clipboardSetData([clipboardFormats.blocks], [blocks]);
+    }
   }
   // paste from clipboard to current construct
   pasteBlocksToConstruct() {
@@ -221,47 +316,34 @@ class GlobalNav extends Component {
           items: [
             {
               text: 'Save Project',
+              shortcut: stringToShortcut('meta S'),
               action: () => {
-                this.props.projectSave(this.props.currentProjectId);
-                setItem('mostRecentProject', this.props.currentProjectId);
+                this.saveProject();
               },
             },
             {},
             {
               text: 'New Project',
+              shortcut: stringToShortcut('ctrl N'),
               action: () => {
-                const project = this.props.projectCreate();
-                this.props.push(`/project/${project.id}`);
+                this.newProject();
               },
             }, {
               text: 'New Construct',
+              shortcut: stringToShortcut('shift ctrl N'),
               action: () => {
-                const block = this.props.blockCreate();
-                this.props.projectAddConstruct(this.props.currentProjectId, block.id);
-                this.props.focusConstruct(block.id);
+                this.newConstruct();
               },
             }, {
-              text: 'New Construct from Clipboard',
-              action: () => {},
-            }, {
-              text: 'New Instance',
+              text: 'New Block',
               action: () => {},
             }, {}, {
-              text: 'Invite Collaborators',
-              action: () => {},
-            }, {
               text: 'Upload Genbank File',
               action: () => {
                 this.props.uiShowGenBankImport(true);
               },
             }, {
               text: 'Download Genbank File',
-              action: () => {},
-            }, {
-              text: 'Export PDF',
-              action: () => {},
-            }, {}, {
-              text: 'Publish to Gallery',
               action: () => {},
             },
           ],
@@ -271,28 +353,40 @@ class GlobalNav extends Component {
           items: [
             {
               text: 'Undo',
+              shortcut: stringToShortcut('meta z'),
               action: () => {
                 this.props.undo();
               },
             }, {
               text: 'Redo',
+              shortcut: stringToShortcut('shift meta z'),
               action: () => {
                 this.props.redo();
               },
             }, {}, {
+              text: 'Select All',
+              shortcut: stringToShortcut('meta A'),
+              disabled: !this.props.focus.construct,
+              action: () => {
+                this.onSelectAll();
+              },
+            }, {
               text: 'Cut',
+              shortcut: stringToShortcut('meta X'),
               disabled: !this.props.focus.blocks.length,
               action: () => {
                 this.cutFocusedBlocksToClipboard();
               },
             }, {
               text: 'Copy',
+              shortcut: stringToShortcut('meta C'),
               disabled: !this.props.focus.blocks.length,
               action: () => {
                 this.copyFocusedBlocksToClipboard();
               },
             }, {
               text: 'Paste',
+              shortcut: stringToShortcut('meta V'),
               disabled: !this.props.clipboard.formats.includes(clipboardFormats.blocks),
               action: () => {
                 this.pasteBlocksToConstruct();
@@ -325,12 +419,13 @@ class GlobalNav extends Component {
           items: [
             {
               text: 'Inventory',
-              checked: this.props.inventoryVisible,
+              checked: this.props.inventory,
               action: this.props.inventoryToggleVisibility
             }, {
               text: 'Inspector',
               checked: this.props.inspectorVisible,
               action: this.props.inspectorToggleVisibility,
+              shortcut: stringToShortcut('meta i'),
             }, {
               text: 'Sequence Details',
               action: () => {

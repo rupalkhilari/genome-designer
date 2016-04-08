@@ -26,7 +26,7 @@ module.exports = {
     browser.assert.countelements('.construct-viewer', 0);
 
     // click the file menu -> Upload Genbank File
-    clickMainMenu(browser, 1, 7);
+    clickMainMenu(browser, 1, 5);
 
     // set hacky global to indicate we are testing the form
     browser.execute(function() {

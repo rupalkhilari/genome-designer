@@ -29,6 +29,7 @@ export default class MenuItem extends Component {
            onClick={() => !this.props.disabled && this.props.action()}>
         {check}
         {this.props.text}
+        <div className="menu-item-shortcut" disabled="this.props.disabled">{this.props.shortcut}</div>
       </div>
     );
   }
