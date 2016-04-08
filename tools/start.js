@@ -107,6 +107,7 @@ async function start() {
             },
           }, resolve);
 
+          //reassign so that we arent creating multiple browsersync entities
           handleServerBundleComplete = runServer;
         }
       });

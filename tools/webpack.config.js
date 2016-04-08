@@ -137,9 +137,7 @@ export const clientConfig = merge({}, config, {
       ...GLOBALS,
       'process.env.BROWSER': true,
     }),
-    ...(DEBUG ? [
-      new webpack.HotModuleReplacementPlugin(),
-    ] : [
+    ...(DEBUG ? [] : [
       // Search for equal or similar files and deduplicate them in the output
       // https://webpack.github.io/docs/list-of-plugins.html#dedupeplugin
       new webpack.optimize.DedupePlugin(),

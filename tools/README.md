@@ -1,11 +1,15 @@
-## Build + Runs
+## Setup Overview
 
-The client is always bundled using webpack + babel and sent from the server. 
+Two webpack configurations, both in webpack.config.js. One for server, one for client.
+
+The client is always bundled using webpack + babel and sent from the server, using webpack-dev-middleware and webpack-hot-middleware, so it is made quickly and served from memory.
  
 Server is written so you can:
- - run in development directly in babel-node (WIP)
+ - run in development directly in babel-node (e.g. for testing)
  - serve using Browser Sync, to include hotloading middleware etc. (dev)
  - or build and run using node (production or dev)
+ 
+Server launches in its own process, and new process is started every time the server rebuilds, and is proxied using BrowserSync. The proxy also dynamically adds in hot module loading, and reload when static assets update, and React Hot Module loading and React Transform.
 
 ## Build Automation Tools
 
@@ -13,11 +17,7 @@ Server is written so you can:
 
 * Cleans up the output `/build` directory (`clean.js`)
 * Copies static files to the output folder (`copy.js`)
-* Launches [Webpack](https://webpack.github.io/) compiler in a watch mode 
-* Launches Node.js server from the compiled output folder, in its own process (`runServer.js`)
-* Includes BrowserSync as a proxy to dynamically add in hot module loading, and reload when static assets update
-* Includes [HMR](https://webpack.github.io/docs/hot-module-replacement), and
-  [React Transform](https://github.com/gaearon/babel-plugin-react-transform)
+* Launches [Webpack](https://webpack.github.io/) compiler in a watch mode, and runs the server in a Browser Sync Proxy
 
 ##### `npm run build` (`build.js`)
 
