@@ -83,6 +83,11 @@ class UserWidget extends Component {
   }
 
   render() {
+
+    if (!this.props.userWidgetVisible) {
+      return null;
+    }
+
     if (this.props.user.userid) {
       // signed in user
       return (
@@ -105,6 +110,7 @@ class UserWidget extends Component {
 function mapStateToProps(state) {
   return {
     user: state.user,
+    userWidgetVisible: state.ui.userWidgetVisible,
   };
 }
 

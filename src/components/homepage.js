@@ -1,7 +1,11 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import { push } from 'react-router-redux';
-import { uiShowAuthenticationForm, uiSetGrunt } from '../actions/ui';
+import {
+  uiShowAuthenticationForm,
+  uiSetGrunt,
+  uiShowUserWidget,
+ } from '../actions/ui';
 import '../styles/homepage.css';
 import { getItem, setItem } from '../middleware/localStorageCache';
 
@@ -31,6 +35,17 @@ export default class HomePage extends Component {
         return;
       }
     }
+
+    // user widget is hidden on homepage
+    this.props.uiShowUserWidget(false);
+  }
+
+  /**
+   * the homepage is the only page that doesn't show the user widget, so we can
+   * display whenever we leave
+   */
+  componentWillUnmount() {
+    this.props.uiShowUserWidget(true);    
   }
 
   signIn(evt) {
@@ -75,6 +90,7 @@ function mapStateToProps(state) {
 
 export default connect(mapStateToProps, {
   uiShowAuthenticationForm,
+  uiShowUserWidget,
   uiSetGrunt,
   push,
 })(HomePage);
