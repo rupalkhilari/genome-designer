@@ -20,7 +20,7 @@
 
   &-breadcrumb {
     text-decoration: none;
-    color: var(--colors-greyMedLight);
+    color: var(--colors-grey);
   }
 
   &-lead {
@@ -38,7 +38,7 @@
   }
 
   &-description {
-    color: var(--colors-greyMedLight);
+    color: var(--colors-grey);
   }
 
   /* right side */

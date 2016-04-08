@@ -6,16 +6,21 @@
   &-input {
     cursor: pointer;
     background: transparent;
-    padding: 0;
+    padding: 5px;
+    margin: -2px -5px;
     outline: 0;
     border: 0;
+    border-radius: 2px;
     width: 100%;
-    color: inherit;
+    color: var(--colors-blueGreyLighter);
+    background-color: var(--colors-blueGreyDark);
+    transition: background-color linear 0.05s, color linear 0.05s;
 
     &:focus {
       cursor: text;
       background: white;
-      color: black;
+      color: var(--colors-blueGreyDark);
+      background-color: var(--colors-blueGreyLighter);
     }
   }
 
