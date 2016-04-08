@@ -59,6 +59,7 @@ export default class HomePage extends Component {
         <img className="homepage-background" src="/images/homepage/background.png"/>
         <img className="homepage-title" src="/images/homepage/genomedesigner.png"/>
         <img className="homepage-autodesk" src="/images/homepage/autodesk-logo.png"/>
+        <div className="homepage-egf">Edinburgh Genome Foundry</div>
         <div className="homepage-getstarted" onClick={this.signIn.bind(this)}>Get started</div>
         <div className="homepage-footer">
           <div className="homepage-footer-title">New in version 0.1:</div>
