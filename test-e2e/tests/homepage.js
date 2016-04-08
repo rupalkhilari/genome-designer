@@ -10,6 +10,7 @@ module.exports = {
       .waitForElementPresent('.homepage-footer', 5000, 'Expected homepage footer to be present')
       .waitForElementPresent('.homepage-footer-list', 5000, 'Expected homepage footer list to be present')
       .waitForElementPresent('.homepage-autodesk', 5000, 'Expected homepage autodesk logo to be present')
+      .waitForElementNotPresent('.userwidget', 5000, 'The User Widget should not be visible on the homepage')
       .end();
   }
 };
