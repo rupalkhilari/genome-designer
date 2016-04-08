@@ -4,7 +4,7 @@ import webpackDevMiddleware from 'webpack-dev-middleware';
 import webpackHotMiddleware from 'webpack-hot-middleware';
 import run from './run';
 import runServer from './runServer';
-import { clientConfig } from './webpack.config';
+import { serverConfig, clientConfig } from './webpack.config';
 import clean from './clean';
 import copy from './copy';
 import bundleServer from './bundleServer';
@@ -66,7 +66,12 @@ async function start() {
       /* eslint-enable no-param-reassign */
     });
 
-    const compiler = webpack(clientConfig);
+    const clientCompiler = webpack(clientConfig);
+    const clientDevMiddleware = () => webpackDevMiddleware(clientCompiler, {
+      publicPath: clientConfig.output.publicPath,
+      stats: clientConfig.stats.colors,
+    });
+    const hotMiddleware = () => webpackHotMiddleware(clientCompiler);
 
     //need to essentially build twice so that browsersync starts with a valid bundle
     //use browsersync and its proxy so that we dont need to explicitly include it in server code, only when debugging...
@@ -91,18 +96,8 @@ async function start() {
             proxy: {
               target: host,
               middleware: [
-                webpackDevMiddleware(compiler, {
-                  // IMPORTANT: dev middleware can't access config, so we should
-                  // provide publicPath by ourselves
-                  publicPath: clientConfig.output.publicPath,
-
-                  // pretty colored output
-                  stats: clientConfig.stats.colors,
-
-                  // for other settings see
-                  // http://webpack.github.io/docs/webpack-dev-middleware.html
-                }),
-                webpackHotMiddleware(compiler),
+                clientDevMiddleware(),
+                hotMiddleware(),
               ],
             },
           }, resolve);
@@ -113,11 +108,11 @@ async function start() {
       });
     };
 
-    compiler.plugin('failed', (err) => console.warn(err));
-    compiler.plugin('done', () => handleServerBundleComplete());
+    clientCompiler.plugin('failed', (err) => console.warn(err));
+    clientCompiler.plugin('done', () => handleServerBundleComplete());
 
     console.info('beginning webpack build');
-    compiler.run((err) => {
+    clientCompiler.run((err) => {
       if (err) throw err;
     });
   });
