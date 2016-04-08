@@ -37,7 +37,6 @@ import {
  } from '../actions/ui';
 import { inspectorToggleVisibility } from '..//actions/inspector';
 import { inventoryToggleVisibility } from '..//actions/inventory';
-import { setItem } from '../middleware/localStorageCache';
 import { uiShowDNAImport } from '../actions/ui';
 
 import KeyboardTrap from 'mousetrap';
@@ -135,7 +134,6 @@ class GlobalNav extends Component {
    */
   saveProject() {
     this.props.projectSave(this.props.currentProjectId);
-    setItem('mostRecentProject', this.props.currentProjectId);
   }
 
   /**
