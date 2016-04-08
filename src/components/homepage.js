@@ -45,7 +45,7 @@ export default class HomePage extends Component {
    * display whenever we leave
    */
   componentWillUnmount() {
-    this.props.uiShowUserWidget(true);    
+    this.props.uiShowUserWidget(true);
   }
 
   signIn(evt) {
@@ -61,13 +61,16 @@ export default class HomePage extends Component {
         <img className="homepage-autodesk" src="/images/homepage/autodesk-logo.png"/>
         <div className="homepage-getstarted" onClick={this.signIn.bind(this)}>Get started</div>
         <div className="homepage-footer">
-          <div className="homepage-footer-list">New in version 0.1:
+          <div className="homepage-footer-title">New in version 0.1:</div>
+          <div className="homepage-footer-list">
             <ul>
               <li><span>&bull;</span>Search and import parts directly from the IGEM and NCBI databases.</li>
               <li><span>&bull;</span>Specify parts from the Edinburgh Genome Foundry inventory.</li>
               <li><span>&bull;</span>Import and export GenBank and FASTA files.</li>
               <li><span>&bull;</span>Create an inventory of your own projects, constructs and parts to reuse.</li>
               <li><span>&bull;</span>Drag and drop editing.</li>
+            </ul>
+            <ul>
               <li><span>&bull;</span>Inspect sequence detail.</li>
               <li><span>&bull;</span>Create nested constructs to manage complexity.</li>
               <li><span>&bull;</span>Assign SBOL visual symbols and colors.</li>
