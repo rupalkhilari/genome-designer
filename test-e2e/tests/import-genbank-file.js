@@ -7,7 +7,7 @@ var newConstruct = require('../fixtures/newconstruct');
 var clickMainMenu = require('../fixtures/click-main-menu');
 
 module.exports = {
-  'Import a DNA sequence into a sketch block' : function (browser) {
+  'Import a genbank file as a project' : function (browser) {
 
     // register via fixture
     var credentials = homepageRegister(browser);

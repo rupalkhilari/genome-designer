@@ -2,6 +2,7 @@ import Glyph2D from '../glyph2d';
 
 import kT from '../../../views/layoutconstants';
 import symbols from '../../../../../inventory/sbol';
+import { setAttribute } from '../../../utils';
 
 export default class SBOLGlyph2D extends Glyph2D {
 
@@ -14,23 +15,17 @@ export default class SBOLGlyph2D extends Glyph2D {
     // basic div block
     this.el = document.createElement('div');
     this.el.className = 'sbol-glyph';
-    // possible sbol symbol
-    this.img = document.createElement('img');
-    this.img.className = 'sbol-icon';
-    this.img.onerror = this.onImageError.bind(this);
-    this.el.appendChild(this.img);
+    // possible sbol symbol, the div is a container for a SVG which we will clone
+    // and style from an in document template
+    this.svgContainer = document.createElement('div');
+    this.svgContainer.className = 'sbol-icon';
+    this.el.appendChild(this.svgContainer);
     // possible child indicator
     this.triangle = document.createElement('div');
     this.triangle.className = 'nw-triangle';
     this.el.appendChild(this.triangle);
     // add our outer container to the node element
     this.node.el.appendChild(this.el);
-  }
-
-  onImageError() {
-    this.wasImageError = true;
-    // hide the image until the uri is changed
-    this.img.style.display = 'none';
   }
 
   /**
@@ -46,22 +41,37 @@ export default class SBOLGlyph2D extends Glyph2D {
     this.el.style.backgroundColor = this.node.fill;
     this.el.style.border = sw ? `${sw}px solid ${this.node.stroke}` : 'none';
     if (this.node.sbolName) {
-      const symbol = symbols.find(symbol => symbol.id === this.node.sbolName);
-      if (symbol) {
-        // the icon img tag
-        this.img.style.left = (this.node.width - kT.sbolIcon - 2 - kT.contextDotsW) + 'px';
-        this.img.style.maxWidth = kT.sbolIcon + 'px';
-        this.img.style.top = (this.node.height / 2 - kT.sbolIcon / 2) + 'px';
 
-        const svgPath = symbol.images.thickDark;
-        if (this.img.getAttribute('src') !== svgPath) {
-          this.wasImageError = false;
-          this.img.setAttribute('src', svgPath);
+      if (this.sbolName !== this.node.sbolName) {
+
+        this.sbolName = this.node.sbolName;
+
+        // remove existing svg
+        while (this.svgContainer.firstChild) {
+          this.svgContainer.removeChild(this.svgContainer.firstChild);
         }
-        this.img.style.display = 'block';
+
+        // style / size the container
+        this.svgContainer.style.left = (this.node.width - kT.sbolIcon - 2 - kT.contextDotsW) + 'px';
+        this.svgContainer.style.top = (this.node.height / 2 - kT.sbolIcon / 2) + 'px';
+        this.svgContainer.style.width = kT.sbolIcon + 'px';
+
+        // clone the appropriate template
+        const templateId = `sbol-svg-${this.sbolName}`;
+        const svg = document.getElementById(templateId).cloneNode(true);
+        // ensure svg is stroked in black
+        setAttribute(svg, 'stroke', 'black', true);
+        // remove the ID attribute from the clone to avoid duplicates
+        svg.removeAttribute('id');
+        // add to the container
+        this.svgContainer.appendChild(svg);
+
+        // display the svg
+        this.svgContainer.style.display = 'block';
       }
+
     } else {
-      this.img.style.display = 'none';
+      this.svgContainer.style.display = 'none';
     }
     this.triangle.style.display = this.node.hasChildren ? 'block' : 'none';
   }

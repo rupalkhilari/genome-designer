@@ -20,9 +20,8 @@ const symbols = Object.keys(symbolMap).map(key => ({
   id: key,
   name: symbolMap[key],
   images: {
-    thick: makeImagePath(key, 'thickLight'), //inventory
-    thickDark: makeImagePath(key, 'thickDark'),
     thin: makeImagePath(key, 'thin'),
+    templates: makeImagePath(key, 'templates'),
   },
 }));
 
