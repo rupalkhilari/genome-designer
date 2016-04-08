@@ -38,10 +38,10 @@ export const projectCreate = (initialModel) => {
 
 //Promise
 export const projectSave = (projectId) => {
-  setItem('mostRecentProject', projectId);
   return (dispatch, getState) => {
     const project = getState().projects[projectId];
     const roll = dispatch(projectSelectors.projectCreateRollup(projectId));
+    setItem('mostRecentProject', projectId);
     return saveProject(projectId, roll)
       .then(json => {
         dispatch({
