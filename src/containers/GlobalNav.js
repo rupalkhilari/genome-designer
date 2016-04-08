@@ -419,7 +419,8 @@ class GlobalNav extends Component {
           items: [
             {
               text: 'Inventory',
-              checked: this.props.inventory,
+              shortcut: stringToShortcut('option i'),
+              checked: this.props.inventoryVisible,
               action: this.props.inventoryToggleVisibility
             }, {
               text: 'Inspector',
@@ -429,7 +430,6 @@ class GlobalNav extends Component {
             }, {
               text: 'Sequence Details',
               action: () => {
-
               },
               checked: false,
             }, {}, {

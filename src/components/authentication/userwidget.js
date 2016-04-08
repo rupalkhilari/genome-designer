@@ -49,8 +49,6 @@ class UserWidget extends Component {
   signOut() {
     this.props.userLogout()
     .then(() => {
-      // show a grunt
-      this.props.uiSetGrunt('Your are now signed out');
       this.props.push('/homepage');
     })
     .catch((reason) => {

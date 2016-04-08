@@ -1,8 +1,10 @@
 import React, { Component, PropTypes } from 'react';
 import {connect} from 'react-redux';
 import { uiShowAuthenticationForm, uiSetGrunt } from '../../actions/ui';
+import { push } from 'react-router-redux';
 import { userRegister } from '../../actions/user';
 import invariant from 'invariant';
+import { getItem, setItem } from '../../middleware/localStorageCache';
 
 /**
  * default visibility and text for error labels
@@ -65,10 +67,9 @@ class RegisterForm extends Component {
       lastName: this.lastName,
     })
     .then((json) => {
-      // set grunt message with signup information
-      this.props.uiSetGrunt(`You are now registered and signed in as ${json.firstName} ${json.lastName} ( ${json.email} )`);
       // close the form
       this.props.uiShowAuthenticationForm('none');
+      this.props.push(`/project/${getItem('mostRecentProject') || 'test'}`);
     })
     .catch((reason) => {
       const defaultMessage = 'Unexpected error, please check your connection';
@@ -257,4 +258,5 @@ export default connect(mapStateToProps, {
   uiShowAuthenticationForm,
   uiSetGrunt,
   userRegister,
+  push,
 })(RegisterForm);
