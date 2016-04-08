@@ -56,11 +56,13 @@ export default class HomePage extends Component {
   render() {
     return (
       <div className="homepage">
-        <img className="homepage-background" src="/images/homepage/background.png"/>
-        <img className="homepage-title" src="/images/homepage/genomedesigner.png"/>
+        <div className="homepage-image-area">
+          <img className="homepage-background" src="/images/homepage/background.png"/>
+          <div className="homepage-getstarted" onClick={this.signIn.bind(this)}>Get started</div>
+          <img className="homepage-title" src="/images/homepage/genomedesigner.png"/>
+        </div>
         <img className="homepage-autodesk" src="/images/homepage/autodesk-logo.png"/>
         <div className="homepage-egf">Edinburgh Genome Foundry</div>
-        <div className="homepage-getstarted" onClick={this.signIn.bind(this)}>Get started</div>
         <div className="homepage-footer">
           <div className="homepage-footer-title">New in version 0.1:</div>
           <div className="homepage-footer-list">
