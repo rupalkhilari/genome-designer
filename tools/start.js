@@ -67,6 +67,7 @@ async function start() {
     });
 
     const clientCompiler = webpack([clientConfig, serverConfig]);
+    //todo - reloading for server
     const clientDevMiddleware = () => webpackDevMiddleware(clientCompiler, {
       publicPath: clientConfig.output.publicPath,
       stats: clientConfig.stats.colors,

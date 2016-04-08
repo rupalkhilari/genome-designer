@@ -8,7 +8,7 @@ const registry = Object.keys(dependencies).reduce((acc, dep) => {
     let depManifest;
     //building in webpack requires static paths, dynamic requires are really tricky
     if (process.env.BUILD) {
-      depManifest = require(`${__dirname}/node_modules/${dep}/package.json`);
+      depManifest = require(`gd_extensions/${dep}/package.json`);
     } else {
       const filePath = path.resolve(__dirname, './node_modules', dep + '/package.json');
       depManifest = require(filePath);

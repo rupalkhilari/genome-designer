@@ -13,7 +13,7 @@ exports.getPlugin = (plugin, func) => {
     }
 
     try {
-      const script = require(path.resolve(__dirname, plugin, func));
+      const script = require('gd_plugins/' + plugin + '/' + func);
       pathSet(registry, `[${plugin}][${func}]`, script);
       resolve(script);
     } catch (err) {

@@ -168,6 +168,10 @@ export const serverConfig = merge({}, config, {
 
   resolve: {
     root: serverSourcePath,
+    alias: {
+      gd_plugins: buildPath + '/plugins',
+      gd_extensions: buildPath + '/node_modules',
+    },
   },
 
   output: {
