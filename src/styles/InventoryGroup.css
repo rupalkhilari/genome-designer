@@ -9,8 +9,8 @@
     padding: 0.5em 1em;
     margin: 0 -var(--SidePanel-width-padding-content);
     font-size: var(--font-size-sectionLabel);
-    font-weight: 200;
-    background-color: rgba(255,255,255,0.25);
+    font-weight: 100;
+    background-color: var(--colors-blueGreyMed);
     flex-shrink: 0;
   }
 
