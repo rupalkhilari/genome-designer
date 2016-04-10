@@ -6,7 +6,7 @@ import * as selectors from '../../src/actions/_expose';
 
 describe('Store', () => {
   describe('Orchestrator', () => {
-    const sections = ['blocks', 'projects', 'ui', 'inventory', 'inspector'];
+    const sections = ['blocks', 'clipboard', 'projects', 'ui', 'inventory', 'inspector'];
 
     it('should have sections corresponding to store', () => {
       const storeKeys = Object.keys(store.getState());

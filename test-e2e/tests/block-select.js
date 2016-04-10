@@ -83,6 +83,7 @@ module.exports = {
     }, [], function() {});
 
     clickNthBlock(browser, '.sceneGraph', 5);
+    browser.pause(1000);
     // expect only 9 elements to be selected
     browser.assert.countelements(".scenegraph-userinterface-selection", 9);
 
@@ -98,7 +99,7 @@ module.exports = {
       }
     }, [], function() {});
 
-    dragRegion(browser, '.scenegraph-userinterface', 1, 1, 870, 160, 10);
+    dragRegion(browser, '.scenegraph-userinterface', 10, 10, 870, 160, 100);
     browser
       .waitForElementPresent('.scenegraph-userinterface-selection', 5000, 'expected selections')
       // ensure we have all elements selected

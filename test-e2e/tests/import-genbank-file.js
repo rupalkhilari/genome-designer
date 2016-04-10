@@ -7,7 +7,7 @@ var newConstruct = require('../fixtures/newconstruct');
 var clickMainMenu = require('../fixtures/click-main-menu');
 
 module.exports = {
-  'Import a DNA sequence into a sketch block' : function (browser) {
+  'Import a genbank file as a project' : function (browser) {
 
     // register via fixture
     var credentials = homepageRegister(browser);
@@ -26,7 +26,7 @@ module.exports = {
     browser.assert.countelements('.construct-viewer', 0);
 
     // click the file menu -> Upload Genbank File
-    clickMainMenu(browser, 1, 7);
+    clickMainMenu(browser, 1, 5);
 
     // set hacky global to indicate we are testing the form
     browser.execute(function() {

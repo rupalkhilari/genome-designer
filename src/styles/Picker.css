@@ -41,6 +41,14 @@
       cursor: default;
       border-color: white;
     }
+
+    svg {
+      opacity: 0.5;
+    }
+
+    &.active svg {
+      opacity: 1;
+    }
   }
 
   &.readOnly {
