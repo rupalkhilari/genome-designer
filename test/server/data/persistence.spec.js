@@ -338,7 +338,6 @@ describe('Server', () => {
                   return persistence.blockDelete(blockId, projectId)
                     .then(() => versioning.log(projectRepoDataPath))
                     .then((secondResults) => {
-                      console.log(firstResults, secondResults);
                       expect(secondResults.length).to.equal(firstResults.length);
                     });
                 });

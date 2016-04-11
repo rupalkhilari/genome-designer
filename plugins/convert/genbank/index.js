@@ -148,6 +148,10 @@ const readGenbankFile = (genbankString) => {
       } catch (err) {
         return Promise.reject(err);
       }
+    })
+    .catch(err => {
+      console.log('ERROR IN PYTHON');
+      console.log(err);
     });
 };
 
@@ -219,6 +223,10 @@ const exportProjectStructure = (project, blocks) => {
   return runCommand(cmd, JSON.stringify(input), inputFile, outputFile)
     .then(resStr => {
       return Promise.resolve(resStr);
+    })
+    .catch(err => {
+      console.log('ERROR IN PYTHON');
+      console.log(err);
     });
 };
 

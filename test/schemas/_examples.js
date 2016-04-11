@@ -37,11 +37,14 @@ export const Project = {
 };
 
 export const Annotation = {
-  id: uuid.v4(),
+  name: 'annotation name',
   description: 'example annotation',
   tags: {},
-  optimizability: 'none',
+  start: 25,
+  end: 50,
+  isForward: true,
   sequence: 'acgtagc',
+  notes: { 'applicability': 'always'},
 };
 
 export const makeParent = () => ({
