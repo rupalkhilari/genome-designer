@@ -27,11 +27,14 @@ class ProjectPage extends Component {
 
   constructor(props) {
     super(props);
+    this.lastProjectId = null;
     this.layoutAlgorithm = 'wrap';
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.projectId !== this.props.projectId) {
+    //set state.focus.project -- might be a better way to do this, but hard otuside components with react-router
+    if (!this.lastProjectId || nextProps.projectId !== this.props.projectId) {
+      this.lastProjectId = nextProps.projectId;
       this.props.focusProject(nextProps.projectId);
     }
   }

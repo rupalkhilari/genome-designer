@@ -12,6 +12,7 @@ export default function autosavingCreator(config) {
   const options = Object.assign({
     time: 30 * 1000, //throttle autosave requests, 30 sec
     wait: 5 * 1000, //debounce wait time, 5 sec
+    filter: () => true,
     onSave: () => {},
     forceSaveActionType: FORCE_SAVE,
   }, config);
@@ -34,8 +35,8 @@ export default function autosavingCreator(config) {
     trailing: true,
   });
 
-  const checkSave = (nextState, lastState) => {
-    if (lastState !== nextState) {
+  const checkSave = (action, nextState, lastState) => {
+    if (lastState !== nextState && options.filter(action, nextState, lastState)) {
       dirty = true;
     }
     return dirty;
@@ -62,7 +63,7 @@ export default function autosavingCreator(config) {
       const nextState = reducer(state, action);
 
       //function call so easy to transition to debounced version
-      if (checkSave(nextState, lastState) && lastState !== null) {
+      if (checkSave(action, nextState, lastState) && lastState !== null) {
         throttledSave(nextState);
       }
       lastState = nextState;
