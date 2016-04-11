@@ -37,6 +37,7 @@ export const projectCreate = (initialModel) => {
 };
 
 //Promise
+//this is a background save (e.g. autosave)
 export const projectSave = (inputProjectId) => {
   return (dispatch, getState) => {
     //if dont pass project id, get the currently viewed one
@@ -57,6 +58,7 @@ export const projectSave = (inputProjectId) => {
 };
 
 //Promise
+//explicit save e.g. an important point
 export const projectSnapshot = (projectId, message) => {
   return (dispatch, getState) => {
     const roll = dispatch(projectSelectors.projectCreateRollup(projectId));

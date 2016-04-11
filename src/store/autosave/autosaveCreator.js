@@ -4,8 +4,6 @@ import { FORCE_SAVE } from './ActionTypes';
 
 //todo - avoid triggering change if initiated by onSave
 
-//todo - this needs to update the project in the store with new version... or pass in the action to run?
-
 export default function autosavingCreator(config) {
   invariant(typeof config.onSave === 'function', 'must pass onSave to autosaving middleware');
 
