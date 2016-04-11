@@ -4,7 +4,7 @@
 --radius: 3px;
 --element-height: 3rem;
 --inputcolor: #E1E2E5;
---textcolor: #747784;
+--textcolor: #888899;
 --primarycolor: #343A4D;
 --errorcolor: #FF6A5E;
 --fontsize: 1.25rem;
@@ -76,6 +76,10 @@
     color: var(--errorcolor);
   }
   label {
+    font-size: var(--fontsize);
+    color: var(--textcolor);
+  }
+  .left-label {
     font-size: var(--fontsize);
     color: var(--textcolor);
   }
