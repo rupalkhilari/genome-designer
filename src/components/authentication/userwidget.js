@@ -64,7 +64,9 @@ class UserWidget extends Component {
       menuItems={
         [
           {
-            text: <b>{`${this.props.user.firstName} ${this.props.user.lastName}`}</b>,
+            text: `${this.props.user.firstName} ${this.props.user.lastName}`,
+            disabled: true,
+            classes: 'blue-menu-items',
           },
           {
             text: 'My Account',
