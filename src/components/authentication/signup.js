@@ -47,7 +47,7 @@ class RegisterForm extends Component {
 
   constructor() {
     super();
-    this.state = Object.assign({}, errors);
+    this.state = Object.assign({}, errors, {canSubmit: false});
   }
 
   // on form submission, first perform client side validation then submit
@@ -78,11 +78,6 @@ class RegisterForm extends Component {
         message,
       });
     });
-  }
-
-  onSignIn(evt) {
-    evt.preventDefault();
-    this.props.uiShowAuthenticationForm('signin');
   }
 
   // syntactic suger for fetcing values from inputs
@@ -183,42 +178,71 @@ class RegisterForm extends Component {
     });
   }
 
+  onSignIn(evt) {
+    evt.preventDefault();
+    this.props.uiShowAuthenticationForm('signin');
+  }
+
+  onTextChanged() {
+    this.setState({
+      canSubmit: this.firstName &&
+      this.lastName &&
+      this.emailAddress &&
+      this.emailConfirm &&
+      this.password &&
+      this.passwordConfirm,
+    });
+  }
+
   render() {
     const tos = 'http://www.autodesk.com/company/legal-notices-trademarks/terms-of-service-autodesk360-web-services';
     const privacy = 'http://www.autodesk.com/company/legal-notices-trademarks/privacy-statement';
 
+    const registerStyle = {
+      textAlign: 'center',
+      margin: '1rem 0 2rem 0',
+    };
+
     return (
       <form id="auth-signup" className="gd-form authentication-form" onSubmit={this.onSubmit.bind(this)}>
         <div className="title">Sign Up</div>
-
+        <span style={registerStyle}>{"Already have an account? "}
+          <a className="blue-link" href="/" onClick={this.onSignIn.bind(this)}>Sign In&nbsp;</a>
+        </span>
         <input
           ref="firstName"
           className="input"
+          onChange={this.onTextChanged.bind(this)}
           placeholder="First Name"/>
         <input
           ref="lastName"
           className="input"
+          onChange={this.onTextChanged.bind(this)}
           placeholder="Last Name"/>
         <div className={`error ${this.state.nameError.visible ? 'visible' : ''}`}>{`${this.state.nameError.text}`}</div>
         <div className={`error ${this.state.email1Error.visible ? 'visible' : ''}`}>{`${this.state.email1Error.text}`}</div>
         <input
           ref="emailAddress"
+          onChange={this.onTextChanged.bind(this)}
           className="input"
           placeholder="Email Address"/>
         <input
           ref="emailConfirm"
+          onChange={this.onTextChanged.bind(this)}
           className="input"
           placeholder="Confirm Email Address"/>
         <div className={`error ${this.state.email2Error.visible ? 'visible' : ''}`}>{`${this.state.email2Error.text}`}</div>
         <div className={`error ${this.state.password1Error.visible ? 'visible' : ''}`}>{`${this.state.password1Error.text}`}</div>
          <input
            ref="password"
+           onChange={this.onTextChanged.bind(this)}
            maxLength={32}
            type="password"
            className="input"
            placeholder="Password"/>
         <input
           ref="passwordConfirm"
+          onChange={this.onTextChanged.bind(this)}
           maxLength={32}
           type="password"
           className="input"
@@ -228,7 +252,7 @@ class RegisterForm extends Component {
           <input
             ref="tos"
             type="checkbox"/>
-          <span>Please agree to the
+          <span>I agree to the
             <a
               target="_blank"
               href={tos}> Terms of Service</a>
@@ -239,15 +263,15 @@ class RegisterForm extends Component {
           </span>
         </div>
         <div className={`error ${this.state.tosError.visible ? 'visible' : ''}`}>{`${this.state.tosError.text}`}</div>
-        <button type="submit">Sign Up</button>
+        <button
+          type="submit"
+          disabled={!this.state.canSubmit}
+          >Sign Up</button>
         <button
           type="button"
           onClick={() => {
             this.props.uiShowAuthenticationForm('none');
           }}>Cancel</button>
-        <a
-          href="/"
-          onClick={this.onSignIn.bind(this)}>Existing Users Sign In Here</a>
       </form>
     );
   }

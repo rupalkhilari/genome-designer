@@ -27,7 +27,7 @@ class SignInForm extends Component {
 
   constructor() {
     super();
-    this.state = Object.assign({}, errors);
+    this.state = Object.assign({}, errors, {canSubmit: false});
   }
 
   onForgot(evt) {
@@ -82,6 +82,12 @@ class SignInForm extends Component {
     });
   }
 
+  onTextChanged() {
+    this.setState({
+      canSubmit: this.emailAddress && this.password,
+    });
+  }
+
   render() {
 
     const registerStyle = {
@@ -102,19 +108,25 @@ class SignInForm extends Component {
         <input
           ref="emailAddress"
           className="input"
-          placeholder="Email Address"/>
+          placeholder="Email Address"
+          onChange={this.onTextChanged.bind(this)}
+          />
         <input
           type="password"
           ref="password"
           maxLength={32}
           className="input"
+          onChange={this.onTextChanged.bind(this)}
           placeholder="Password"/>
         <div className="forgot-box">
           <a className="blue-link forgot-link" href="/" onClick={this.onForgot.bind(this)}>Forgot?</a>
         </div>
         <div
           className={`error ${this.state.signinError.visible ? 'visible' : ''}`}>{`${this.state.signinError.text}`}</div>
-        <button type="submit">Sign In</button>
+        <button
+          type="submit"
+          disabled={!this.state.canSubmit}
+          >Sign In</button>
         <button
           type="button"
           onClick={() => {
