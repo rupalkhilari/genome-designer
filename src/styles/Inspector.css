@@ -14,7 +14,7 @@
 
   &-heading {
     font-size: var(--font-size-heading);
-    color: var(--colors-blueGreyMed);
+    color: var(--colors-grey);
     font-weight: 500;
     margin: 1.25em 0 0.4em;
   }

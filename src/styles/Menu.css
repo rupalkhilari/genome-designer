@@ -69,6 +69,8 @@
   margin-top: 4px;
   padding: 0.75em;
   cursor: pointer;
+  color: var(--colors-grey);
+  font-size: var(--font-size-heading);
   &-open {
     border-bottom: 4px solid dodgerblue;
   }
