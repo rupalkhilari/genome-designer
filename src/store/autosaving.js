@@ -1,14 +1,65 @@
-let dirty = false;
-let lastSaved = +Date.now();
+import invariant from 'invariant';
+import { debounce, throttle } from 'lodash';
 
-export const getLastSaved = () => {
-  return lastSaved;
-};
+//todo - this needs to update the project in the store with new version... or pass in the action to run?
 
+export default function autosavingCreator(config) {
+  invariant(typeof config.onSave === 'function', 'must pass onSave to autosaving middleware');
 
-//todo - save last state and compare, if different then trigger a debounced autosaving function
-export default function autosavingMiddleware({dispatch, getState}) {
-  return next => action => {
-    const nextState = next(action);
+  const options = Object.assign({
+    time: 3 * 60 * 1000, //throttle autosave requests
+    wait: 5 * 1000, //debounce wait time
+    onSave: () => {},
+    FORCE_SAVE: 'FORCE_SAVE', // todo - expose constant
+  }, config);
+
+  let lastSaved = +Date.now();
+  let lastState = null;
+  let dirty = false;
+
+  const getLastSaved = () => lastSaved;
+  const isDirty = () => dirty;
+
+  const handleSave = (nextState) => {
+    console.log('saving', nextState);
+    lastSaved = +Date.now();
+    lastState = nextState;
+    options.onSave(nextState);
+    dirty = false;
+  };
+
+  //todo - verify passing state
+  const throttledSave = throttle(handleSave, options.time, { leading: true });
+
+  const checkSave = (nextState) => {
+    if (lastState === nextState) return;
+    dirty = true;
+    throttledSave(nextState);
+  };
+
+  //if we want to debounce checking whether to save
+  const checkSaveDebounced = debounce(checkSave, options.wait, {
+    leading: false,
+    maxWait: 15 * 1000,
+  });
+
+  const autosaveReducerEnhancer = reducer => {
+    lastState = reducer(undefined, {});
+
+    return (state, action) => {
+      if (action.type === options.FORCE_SAVE) {
+        return handleSave(lastState);
+      }
+
+      const nextState = reducer(state, action);
+      checkSave(nextState);
+      return nextState;
+    };
+  };
+
+  return {
+    autosaveReducerEnhancer,
+    getLastSaved,
+    isDirty,
   };
 }
