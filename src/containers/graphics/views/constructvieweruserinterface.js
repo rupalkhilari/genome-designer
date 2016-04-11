@@ -28,6 +28,8 @@ export default class ConstructViewerUserInterface extends UserInterface {
       drop: this.onDrop.bind(this),
       zorder: 0,
     });
+
+    this.osType = this.checkOS();
   }
 
   /**
@@ -200,6 +202,21 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * mouse section can occur by click or when a drag is started so it gets
    * its own method.
    */
+
+  checkOS() {
+    let osType = 'unknown';
+    if (navigator.userAgent.indexOf('Windows', 0) >= 0) osType = 'win';
+    else if (navigator.userAgent.indexOf('Mac', 0) >= 0) osType = 'mac';
+    else if (navigator.userAgent.indexOf('Linux', 0) >= 0) osType = 'linux';
+    else if (navigator.userAgent.indexOf('X11', 0) >= 0) osType = 'unix';
+
+    return osType;
+  }
+
+  metaKey(evt) {
+    return this.osType === 'mac' ? evt.metaKey : evt.ctrlKey;
+  }
+  
   mouseSelect(evt, point) {
     evt.preventDefault();
     const block = this.topBlockAt(point);
@@ -209,11 +226,12 @@ export default class ConstructViewerUserInterface extends UserInterface {
       // if the user clicks a sub component ( ... menu accessor or expand / collapse for example )
       // the clicked block is just added to the selections, otherwise it replaces the selection.
       // Also, if the shift key is used the block is added and does not replace the selection
+      console.log(evt);
       let action = 'replace';
       if (evt.shiftKey || (window.__gde2e && window.__gde2e.shiftKey)) {
         action = 'add';
       }
-      if (evt.metaKey || evt.altKey || (window.__gde2e && window.__gde2e.metaKey)) {
+      if (this.metaKey(evt) || evt.altKey || (window.__gde2e && window.__gde2e.metaKey)) {
         action = 'toggle';
       }
       // if they clicked the context menu area, open it
