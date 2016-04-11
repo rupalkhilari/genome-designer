@@ -1,18 +1,19 @@
 import invariant from 'invariant';
 import { debounce, throttle } from 'lodash';
+import { FORCE_SAVE } from './ActionTypes';
+
+//todo - avoid triggering change if initiated by onSave
 
 //todo - this needs to update the project in the store with new version... or pass in the action to run?
-
-export const forceSaveActionType = 'FORCE_SAVE';
 
 export default function autosavingCreator(config) {
   invariant(typeof config.onSave === 'function', 'must pass onSave to autosaving middleware');
 
   const options = Object.assign({
-    time: 3 * 60 * 1000, //throttle autosave requests
-    wait: 5 * 1000, //debounce wait time
+    time: 30 * 1000, //throttle autosave requests, 30 sec
+    wait: 5 * 1000, //debounce wait time, 5 sec
     onSave: () => {},
-    forceSaveActionType,
+    forceSaveActionType: FORCE_SAVE,
   }, config);
 
   let lastSaved = 0;
@@ -22,7 +23,6 @@ export default function autosavingCreator(config) {
   const isDirty = () => dirty;
 
   const handleSave = (nextState) => {
-    console.log('saving', Date.now(), nextState);
     lastSaved = +Date.now();
     options.onSave(nextState);
     dirty = false;
@@ -60,8 +60,6 @@ export default function autosavingCreator(config) {
       }
 
       const nextState = reducer(state, action);
-
-      console.log('got', action, lastState, nextState, lastState === nextState);
 
       //function call so easy to transition to debounced version
       if (checkSave(nextState, lastState) && lastState !== null) {

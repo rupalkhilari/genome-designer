@@ -37,8 +37,11 @@ export const projectCreate = (initialModel) => {
 };
 
 //Promise
-export const projectSave = (projectId) => {
+export const projectSave = (inputProjectId) => {
   return (dispatch, getState) => {
+    //if dont pass project id, get the currently viewed one
+    const projectId = !!inputProjectId ? inputProjectId : getState().focus.project;
+
     const project = getState().projects[projectId];
     const roll = dispatch(projectSelectors.projectCreateRollup(projectId));
     setItem('mostRecentProject', projectId);

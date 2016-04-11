@@ -9,6 +9,7 @@ import Inventory from './Inventory';
 import Inspector from './Inspector';
 import { projectLoad } from '../actions/projects';
 import { uiShowMainMenu } from '../actions/ui';
+import { focusProject } from '../actions/focus';
 
 import '../styles/ProjectPage.css';
 import '../styles/SceneGraphPage.css';
@@ -21,6 +22,7 @@ class ProjectPage extends Component {
     projectLoad: PropTypes.func.isRequired,
     push: PropTypes.func.isRequired,
     uiShowMainMenu: PropTypes.func.isRequired,
+    focusProject: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -28,11 +30,16 @@ class ProjectPage extends Component {
     this.layoutAlgorithm = 'wrap';
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.projectId !== this.props.projectId) {
+      this.props.focusProject(nextProps.projectId);
+    }
+  }
+
   onLayoutChanged = () => {
     this.layoutAlgorithm = this.refs.layoutSelector.value;
     this.forceUpdate();
   };
-
 
   render() {
     const { project, projectId, constructs } = this.props;
@@ -54,7 +61,7 @@ class ProjectPage extends Component {
 
     return (
       <div className="ProjectPage">
-        <Inventory projectId={projectId} />
+        <Inventory projectId={projectId}/>
 
         <div className="ProjectPage-content">
 
@@ -68,7 +75,7 @@ class ProjectPage extends Component {
           <ProjectDetail project={project}/>
         </div>
 
-        <Inspector projectId={projectId} />
+        <Inspector projectId={projectId}/>
       </div>
     );
   }
@@ -96,4 +103,5 @@ export default connect(mapStateToProps, {
   projectLoad,
   push,
   uiShowMainMenu,
+  focusProject,
 })(ProjectPage);

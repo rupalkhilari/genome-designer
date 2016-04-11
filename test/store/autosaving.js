@@ -1,9 +1,9 @@
 import { assert, expect } from 'chai';
 import sinon from 'sinon';
-import autosavingCreator from '../../src/store/autosaving';
+import autosaveCreator from '../../src/store/autosave/autosaveCreator';
 
 describe('Store', () => {
-  describe.only('Autosaving', () => {
+  describe('Autosaving', () => {
     //simple reducer + actions
     const initialState = { counter: 0 };
     const increment = (number = 1) => ({ type: 'increment', number });
@@ -23,7 +23,7 @@ describe('Store', () => {
     const throttleTime = 1000;
     const waitTime = 500;
     const forceSaveActionType = 'FORCE_SAVE';
-    const autosaving = autosavingCreator({
+    const autosaving = autosaveCreator({
       time: throttleTime,
       wait: waitTime,
       onSave: saveSpy,
@@ -41,10 +41,10 @@ describe('Store', () => {
 
     it('accepts a configuration, requiring onSave, returns object', () => {
       const validConfig = { onSave: () => {} };
-      expect(typeof autosavingCreator).to.equal('function');
-      expect(autosavingCreator.bind(null, { config: 'stuff' })).to.throw();
-      expect(autosavingCreator.bind(null, validConfig)).to.not.throw();
-      const autosavingObject = autosavingCreator(validConfig);
+      expect(typeof autosaveCreator).to.equal('function');
+      expect(autosaveCreator.bind(null, { config: 'stuff' })).to.throw();
+      expect(autosaveCreator.bind(null, validConfig)).to.not.throw();
+      const autosavingObject = autosaveCreator(validConfig);
       expect(typeof autosavingObject).to.equal('object');
       expect(typeof autosavingObject.autosaveReducerEnhancer).to.equal('function');
     });
@@ -121,7 +121,7 @@ describe('Store', () => {
     it('coordinates across multiple reducers', (done) => {
       const coordinatingSpy = sinon.spy();
       const savingTime = 500;
-      const autosave = autosavingCreator({
+      const autosave = autosaveCreator({
         onSave: coordinatingSpy,
         time: savingTime,
       });
