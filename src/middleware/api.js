@@ -65,16 +65,7 @@ const headersDelete = (overrides) => merge({}, defaultOptions, {
  Authentication API
  *************************/
 
-const authFetch = (...args) => {
-  return rejectingFetch(...args)
-    .then(resp => resp.json())
-    .then(json => {
-      if (json.message) {
-        return Promise.reject(json);
-      }
-      return json;
-    });
-};
+const authFetch = rejectingFetch;
 
 // login with email and password and set the sessionKey (cookie) for later use
 export const login = (user, password) => {

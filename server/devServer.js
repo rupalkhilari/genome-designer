@@ -68,6 +68,7 @@ if (process.env.BIO_NANO_AUTH) {
     logoutLanding: false,
     loginLanding: false,
     loginFailure: false,
+    resetForm: "/homepage/reset",
     apiEndPoint: process.env.API_END_POINT || "http://localhost:8080/api",
   };
   app.use(initAuthMiddleware(authConfig));
