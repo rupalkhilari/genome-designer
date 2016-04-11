@@ -216,7 +216,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
   metaKey(evt) {
     return this.osType === 'mac' ? evt.metaKey : evt.ctrlKey;
   }
-  
+
   mouseSelect(evt, point) {
     evt.preventDefault();
     const block = this.topBlockAt(point);
@@ -226,7 +226,6 @@ export default class ConstructViewerUserInterface extends UserInterface {
       // if the user clicks a sub component ( ... menu accessor or expand / collapse for example )
       // the clicked block is just added to the selections, otherwise it replaces the selection.
       // Also, if the shift key is used the block is added and does not replace the selection
-      console.log(evt);
       let action = 'replace';
       if (evt.shiftKey || (window.__gde2e && window.__gde2e.shiftKey)) {
         action = 'add';
