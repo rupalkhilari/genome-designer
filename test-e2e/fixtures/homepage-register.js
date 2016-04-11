@@ -6,6 +6,8 @@ var registerViaHomepage = function(browser) {
     .waitForElementPresent('.homepage', 5000, 'Expected homepage element to be present')
     // open sign in dialog
     .click('.homepage-getstarted')
+    // allow transition to complete
+    .pause(1000)
     // wait for it to be present
     .waitForElementPresent('#auth-signin', 5000, 'Expected form to become visible')
     // ensure it is the sign in dialog

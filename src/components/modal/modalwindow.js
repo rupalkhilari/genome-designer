@@ -38,19 +38,6 @@ export default class ModalWindow extends Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (this.props.open && !nextProps.open) {
-      debugger;
-      // transitioning to open
-      setTimeout(() => {
-        debugger;
-        const dom = react.findDOMNode(this.refs.window);
-        dom.style.transform = `translate(-50%, 0px)`;
-      }, 10);
-    }
-  }
-
-
   /*
    * render modal dialog with owner supplied payload and optional buttons.
    */
