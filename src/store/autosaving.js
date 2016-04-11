@@ -16,7 +16,6 @@ export default function autosavingCreator(config) {
   }, config);
 
   let lastSaved = 0;
-  let lastState = null;
   let dirty = false;
 
   const getLastSaved = () => lastSaved;
@@ -35,11 +34,11 @@ export default function autosavingCreator(config) {
     trailing: true,
   });
 
-  const checkSave = (nextState) => {
-    if (lastState === nextState) return;
-    dirty = true;
-    throttledSave(nextState);
-    lastState = nextState;
+  const checkSave = (nextState, lastState) => {
+    if (lastState !== nextState) {
+      dirty = true;
+    }
+    return dirty;
   };
 
   //if we want to debounce checking whether to save
@@ -49,16 +48,27 @@ export default function autosavingCreator(config) {
   });
 
   const autosaveReducerEnhancer = reducer => {
-    lastState = reducer(undefined, {});
+    //per-reducer state saving
+    //set to null instead of reducer initial state because if the reducer e.g. use default prop of an object, reference will be different between initial state we compute here and when the reducer computes initial state as normal, triggering save on store initialization
+    let lastState = null;
 
     return (state, action) => {
       if (action.type === options.forceSaveActionType) {
         throttledSave.cancel();
-        return handleSave(lastState);
+        handleSave(lastState);
+        return lastState;
       }
 
       const nextState = reducer(state, action);
-      checkSave(nextState);
+
+      console.log('got', action, lastState, nextState, lastState === nextState);
+
+      //function call so easy to transition to debounced version
+      if (checkSave(nextState, lastState) && lastState !== null) {
+        throttledSave(nextState);
+      }
+      lastState = nextState;
+
       return nextState;
     };
   };

@@ -102,12 +102,77 @@ describe('Store', () => {
       assert(isDirty(), 'shuold be dirty while in throttle');
       expect(saveSpy.callCount).to.equal(callCount + 1);
 
-      //todo - timeout, should call again soon
       setTimeout(() => {
         assert(!isDirty(), 'not dirty after throttle over');
         expect(saveSpy.callCount).to.equal(callCount + 2);
         done();
       }, throttleTime);
+    });
+
+    it('doesnt block state changes for saves', () => {
+      state = savingCounter(initialState, increment(1));
+      state = savingCounter(state, increment(1));
+      state = savingCounter(state, increment(1));
+      state = savingCounter(state, increment(1));
+      state = savingCounter(state, increment(1));
+      expect(state.counter).to.equal(5);
+    });
+
+    it('coordinates across multiple reducers', (done) => {
+      const coordinatingSpy = sinon.spy();
+      const savingTime = 500;
+      const autosave = autosavingCreator({
+        onSave: coordinatingSpy,
+        time: savingTime,
+      });
+      const counterOne = (state = { one: 0 }, action) => {
+        switch (action.type) {
+        case 'increment':
+          return { one: state.one + action.number };
+        case 'decrement':
+          return { one: state.one - action.number };
+        default:
+          return state;
+        }
+      };
+      const counterTwo = (state = { two: 0 }, action) => {
+        switch (action.type) {
+        case 'increment':
+          return { two: state.two + action.number };
+        case 'decrement':
+          return { two: state.two - action.number };
+        default:
+          return state;
+        }
+      };
+
+      const savingOne = autosave.autosaveReducerEnhancer(counterOne);
+      const savingTwo = autosave.autosaveReducerEnhancer(counterTwo);
+
+      let stateOne = savingOne(undefined, {});
+      let stateTwo = savingTwo(undefined, {});
+
+      expect(coordinatingSpy.callCount).to.equal(0);
+
+      stateOne = savingOne(stateOne, increment(1));
+      expect(coordinatingSpy.callCount).to.equal(1);
+      assert(!autosave.isDirty(), 'not dirty on first save');
+
+      stateOne = savingOne(stateOne, increment(1));
+      assert(autosave.isDirty(), 'dirty while waiting');
+      expect(coordinatingSpy.callCount).to.equal(1);
+      expect(stateOne.one).to.equal(2);
+
+      stateTwo = savingTwo(stateTwo, increment(1));
+      assert(autosave.isDirty(), 'dirty while waiting');
+      expect(coordinatingSpy.callCount).to.equal(1);
+      expect(stateTwo.two).to.equal(1);
+
+      setTimeout(() => {
+        assert(!autosave.isDirty(), 'not dirty after throttle');
+        expect(coordinatingSpy.callCount).to.equal(2);
+        done();
+      }, savingTime);
     });
   });
 });
