@@ -2,7 +2,9 @@ import React, { Component, PropTypes } from 'react';
 import symbols from '../inventory/sbol';
 import { setAttribute } from '../containers/graphics/utils';
 
-const serializer = new XMLSerializer();
+const serializer = navigator.userAgent.indexOf('Node.js') < 0 ? new XMLSerializer() : {
+  serializeToString: function serializeToString() {return '<SVG/>';},
+};
 
 export default class SvgSbol extends Component {
 

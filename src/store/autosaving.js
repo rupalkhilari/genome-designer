@@ -3,6 +3,8 @@ import { debounce, throttle } from 'lodash';
 
 //todo - this needs to update the project in the store with new version... or pass in the action to run?
 
+export const forceSaveActionType = 'FORCE_SAVE';
+
 export default function autosavingCreator(config) {
   invariant(typeof config.onSave === 'function', 'must pass onSave to autosaving middleware');
 
@@ -10,10 +12,10 @@ export default function autosavingCreator(config) {
     time: 3 * 60 * 1000, //throttle autosave requests
     wait: 5 * 1000, //debounce wait time
     onSave: () => {},
-    FORCE_SAVE: 'FORCE_SAVE', // todo - expose constant
+    forceSaveActionType,
   }, config);
 
-  let lastSaved = +Date.now();
+  let lastSaved = 0;
   let lastState = null;
   let dirty = false;
 
@@ -21,20 +23,23 @@ export default function autosavingCreator(config) {
   const isDirty = () => dirty;
 
   const handleSave = (nextState) => {
-    console.log('saving', nextState);
+    console.log('saving', Date.now(), nextState);
     lastSaved = +Date.now();
-    lastState = nextState;
     options.onSave(nextState);
     dirty = false;
   };
 
-  //todo - verify passing state
-  const throttledSave = throttle(handleSave, options.time, { leading: true });
+  //trigger at start, and end if more were batched
+  const throttledSave = throttle(handleSave, options.time, {
+    leading: true,
+    trailing: true,
+  });
 
   const checkSave = (nextState) => {
     if (lastState === nextState) return;
     dirty = true;
     throttledSave(nextState);
+    lastState = nextState;
   };
 
   //if we want to debounce checking whether to save
@@ -47,7 +52,8 @@ export default function autosavingCreator(config) {
     lastState = reducer(undefined, {});
 
     return (state, action) => {
-      if (action.type === options.FORCE_SAVE) {
+      if (action.type === options.forceSaveActionType) {
+        throttledSave.cancel();
         return handleSave(lastState);
       }
 
