@@ -30,6 +30,11 @@ class SignInForm extends Component {
     this.state = Object.assign({}, errors);
   }
 
+  onForgot(evt) {
+    evt.preventDefault();
+    this.props.uiShowAuthenticationForm('forgot');
+  }
+
   // on form submission, first perform client side validation then submit
   // to the server if that goes well.
   onSubmit(evt) {
@@ -80,12 +85,22 @@ class SignInForm extends Component {
   }
 
   render() {
+
+    const registerStyle = {
+      textAlign: 'center',
+      margin: '1rem 0 2rem 0',
+    };
+
     return (
       <form
         id="auth-signin"
         className="gd-form authentication-form"
         onSubmit={this.onSubmit.bind(this)}>
         <div className="title">Sign In</div>
+          <span style={registerStyle}>{"Don't have an account? "}
+            <a className="blue-link" href="/" onClick={this.onRegister.bind(this)}>Sign Up&nbsp;</a>
+            <span>{"- it's free"}</span>
+          </span>
         <input
           ref="emailAddress"
           className="input"
@@ -95,6 +110,9 @@ class SignInForm extends Component {
           ref="password"
           className="input"
           placeholder="Password"/>
+        <div className="forgot-box">
+          <a className="blue-link forgot-link" href="/" onClick={this.onForgot.bind(this)}>Forgot?</a>
+        </div>
         <div
           className={`error ${this.state.signinError.visible ? 'visible' : ''}`}>{`${this.state.signinError.text}`}</div>
         <button type="submit">Sign In</button>
@@ -103,9 +121,6 @@ class SignInForm extends Component {
           onClick={() => {
             this.props.uiShowAuthenticationForm('none');
           }}>Cancel</button>
-        <a
-          href="/"
-          onClick={this.onRegister.bind(this)}>New Users Register Here</a>
       </form>
     );
   }

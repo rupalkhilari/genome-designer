@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
+import ReactTransitionGroup from 'react-addons-css-transition-group';
 
 import '../../../src/styles/Modal.css';
 
@@ -19,11 +20,33 @@ export default class ModalWindow extends Component {
     payload: PropTypes.object.isRequired,
   };
 
+  constructor() {
+    super();
+    setTimeout(() => {
+      const dom = React.findDOMNode(this.refs.window);
+      if (dom) {
+        dom.style.transform = `translate(-50%, 0px)`;
+      }
+    }, 10);
+  }
+
   // mouse down on the blocker closes the modal, if props.closeOnClickOutside is true
   onMouseDown(evt) {
     const blockEl = ReactDOM.findDOMNode(this.refs.blocker);
     if (evt.target === blockEl && this.props.closeOnClickOutside) {
       this.props.closeModal();
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.props.open && !nextProps.open) {
+      debugger;
+      // transitioning to open
+      setTimeout(() => {
+        debugger;
+        const dom = react.findDOMNode(this.refs.window);
+        dom.style.transform = `translate(-50%, 0px)`;
+      }, 10);
     }
   }
 
@@ -34,7 +57,7 @@ export default class ModalWindow extends Component {
   render() {
     // only render contents if open
     const contents = this.props.open
-    ? (<div className="modal-window">
+    ? (<div ref="window" className="modal-window">
         {this.props.payload}
       </div>)
     : null;

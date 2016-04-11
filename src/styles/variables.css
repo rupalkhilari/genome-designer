@@ -14,6 +14,7 @@
   --colors-selected: #3F82FF;
 
   --colors-text: var(--colors-blueBlack);
+  --color-bluetext: var(--colors-selected);
 
   --font-size-text: 12px;
   --font-size-heading: 11px;
