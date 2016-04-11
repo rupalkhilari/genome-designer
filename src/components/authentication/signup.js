@@ -136,6 +136,16 @@ class RegisterForm extends Component {
       return;
     }
 
+    if (json.message === 'email must be unique') {
+      this.setState({
+        email1Error: {
+          visible: true,
+          text: 'This email address is already registered.',
+        },
+      });
+      return;
+    }
+
     // any unrecognized errors are displayed below the tos
     this.setState({
       tosError: {
@@ -156,16 +166,16 @@ class RegisterForm extends Component {
       newState.nameError = { visible: true, text: 'Please enter a first and last name'};
     }
     if (!this.emailAddress) {
-      newState.email1Error = { visible: true, text: 'Please enter an email address'};
+      newState.email1Error = { visible: true, text: 'Please enter a valid email address.'};
     }
     if (!this.emailConfirm || this.emailAddress !== this.emailConfirm) {
-      newState.email2Error = { visible: true, text: 'Email addresses do not match'};
+      newState.email2Error = { visible: true, text: 'The email addresses entered don\’t match.'};
     }
     if (!this.password) {
       newState.password1Error = { visible: true, text: 'Please enter a password'};
     }
     if (!this.passwordConfirm || this.password !== this.passwordConfirm) {
-      newState.password2Error = { visible: true, text: 'Passwords do not match'};
+      newState.password2Error = { visible: true, text: 'The passwords entered don\’t match.'};
     }
     if (!this.tos) {
       newState.tosError = { visible: true, text: 'Please agree to our terms of service'};
