@@ -43,14 +43,12 @@ class SignInForm extends Component {
 
     this.props.userLogin(this.emailAddress, this.password)
       .then(user => {
-        // set grunt message with login information
-        this.props.uiSetGrunt(`You are now signed in as ${user.firstName} ${user.lastName} ( ${user.email} )`);
         // close the form
         this.props.uiShowAuthenticationForm('none');
         this.props.push(`/project/${getItem('mostRecentProject') || 'test'}`);
       })
       .catch((reason) => {
-        const defaultMessage = 'Unexpected error, please check your connection';
+        const defaultMessage = 'Email address or password are not recognized.';
         const { message = defaultMessage } = reason;
         this.showServerErrors({
           message,
@@ -108,6 +106,7 @@ class SignInForm extends Component {
         <input
           type="password"
           ref="password"
+          maxLength={32}
           className="input"
           placeholder="Password"/>
         <div className="forgot-box">

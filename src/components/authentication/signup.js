@@ -213,11 +213,13 @@ class RegisterForm extends Component {
         <div className={`error ${this.state.password1Error.visible ? 'visible' : ''}`}>{`${this.state.password1Error.text}`}</div>
          <input
            ref="password"
+           maxLength={32}
            type="password"
            className="input"
            placeholder="Password"/>
         <input
           ref="passwordConfirm"
+          maxLength={32}
           type="password"
           className="input"
           placeholder="Confirm Password"/>
