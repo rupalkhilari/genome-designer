@@ -13,6 +13,8 @@ import { projectGetVersion } from '../../../selectors/projects';
 import DnD from '../dnd/dnd';
 import ConstructViewer from './constructviewer';
 
+import '../../../styles/constructviewercanvas.css';
+
 export class ConstructViewerCanvas extends Component {
 
   static propTypes = {
