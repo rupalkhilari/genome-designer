@@ -66,8 +66,10 @@ async function start() {
       /* eslint-enable no-param-reassign */
     });
 
-    const clientCompiler = webpack([clientConfig, serverConfig]);
     //todo - reloading for server
+    //const clientCompiler = webpack([clientConfig, serverConfig]);
+
+    const clientCompiler = webpack(clientConfig);
     const clientDevMiddleware = () => webpackDevMiddleware(clientCompiler, {
       publicPath: clientConfig.output.publicPath,
       stats: clientConfig.stats.colors,
@@ -86,8 +88,7 @@ async function start() {
 
           bs.init({
             // no need to watch *.js, webpack will take care of it for us
-            //no need to watch *.css, since imported so webpack will handle
-            // including full page reloads if HMR won't work
+            // no need to watch *.css, since imported so webpack will handle
             files: [
               'app/content/**/*.*',
             ],
