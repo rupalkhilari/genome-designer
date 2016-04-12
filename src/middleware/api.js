@@ -307,11 +307,11 @@ export const exportProject = (id, inputs) => {
     .then(resp => resp.json());
 };
 
-export const importConstruct = (id, input) => {
+export const importConstruct = (id, input, projectId) => {
   const header = {   headers: {
     'Content-Type': 'text/plain',
   }};
-  return rejectingFetch(importPath(`construct/${id}`), headersPost(input, header))
+  return rejectingFetch(importPath(`${id}/${projectId}`), headersPost(input, header))
     .then(resp => resp.json());
 };
 
@@ -319,7 +319,7 @@ export const importProject = (id, input) => {
   const header = {   headers: {
     'Content-Type': 'text/plain',
   }};
-  return rejectingFetch(importPath(`project/${id}`), headersPost(input, header))
+  return rejectingFetch(importPath(`${id}`), headersPost(input, header))
     .then(resp => resp.json());
 };
 

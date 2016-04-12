@@ -1,15 +1,13 @@
-import React, { Component, PropTypes } from 'react';
-import symbols from '../inventory/sbol';
+import React, { Component } from 'react';
 import { setAttribute } from '../containers/graphics/utils';
 
-const serializer = new XMLSerializer();
+const serializer = navigator.userAgent.indexOf('Node.js') < 0 ? new XMLSerializer() : {
+  serializeToString: function() {return '<SVG/>';}
+};
 
 export default class SvgSbol extends Component {
-
   render() {
-
     if (!this.markup) {
-
       // clone the template
       const templateId = `sbol-svg-${this.props.symbolName}`;
       const svg = document.getElementById(templateId).cloneNode(true);
@@ -31,8 +29,8 @@ export default class SvgSbol extends Component {
       this.markup = serializer.serializeToString(svg);
     }
 
-    const style={
-      display: 'inline-block',
+    const style = {
+      display: 'inline-block'
     };
     if (this.props.width) {
       style.width = this.props.width + 'px';
@@ -41,7 +39,6 @@ export default class SvgSbol extends Component {
       style.height = this.props.height + 'px';
     }
 
-    return <div style={style} dangerouslySetInnerHTML={{__html: this.markup}}/>
-
+    return <div style={style} dangerouslySetInnerHTML={{__html: this.markup}}/>;
   }
 }
