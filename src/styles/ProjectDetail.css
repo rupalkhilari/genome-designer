@@ -10,8 +10,23 @@
 
   &.visible {
     background-color: var(--colors-white);
-    flex-grow: 1;
     min-height: 400px;
+  }
+
+  &-resizeHandle {
+    cursor: ns-resize;
+    height: 5px;
+    flex-shrink: 0;
+    width: 100%;
+    background-color: var(--colors-white);
+
+    &:hover {
+      background-color: var(--colors-blueGreyLighter);
+    }
+
+    &.dragging {
+      background-color: var(--colors-selected);
+    }
   }
 
   &-heading {

@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { uiToggleDetailView } from '../actions/ui';
 import { extensionsByRegion, registry } from '../extensions/clientRegistry';
+import { throttle } from 'lodash';
 
 import '../styles/ProjectDetail.css';
 
@@ -17,20 +18,54 @@ export class ProjectDetail extends Component {
 
   state = {
     currentExtension: lastExtension,
+    openHeight: 400,
   };
 
   componentWillMount() {
     //e.g. if change project and component completely re-renders
     if (this.props.isVisible) {
-      this.setState({currentExtension: lastExtension});
+      this.setState({ currentExtension: lastExtension });
     }
   }
+
   componentDidMount() {
     //to update when extensions register... todo - need a pubsub method
     setTimeout(() => {
       this.forceUpdate();
     }, 500);
   }
+
+  throttledDispatchResize = throttle(() => window.dispatchEvent(new Event('resize')), 50);
+
+  handleResizableMouseDown = evt => {
+    evt.preventDefault();
+    this.refs.resizeHandle.classList.add('dragging');
+    document.addEventListener('mousemove', this.handleResizeMouseMove);
+    document.addEventListener('mouseup', this.handleResizeMouseUp);
+    this.dragStart = evt.pageY;
+    //cringe-worthy query selector voodoo
+    this.dragMax = document.querySelector('.ProjectPage-content').getBoundingClientRect().height - 150;
+    this.openStart = this.state.openHeight;
+  };
+
+  handleResizeMouseMove = evt => {
+    evt.preventDefault();
+    const delta = this.dragStart - evt.pageY;
+    const minHeight = 30;
+    const nextHeight = Math.min(this.dragMax, Math.max(minHeight, this.openStart + delta));
+    this.setState({ openHeight: nextHeight });
+    this.throttledDispatchResize();
+  };
+
+  handleResizeMouseUp = evt => {
+    evt.preventDefault();
+    this.refs.resizeHandle.classList.remove('dragging');
+    this.dragStart = null;
+    this.openStart = null;
+    document.removeEventListener('mousemove', this.handleResizeMouseMove);
+    document.removeEventListener('mouseup', this.handleResizeMouseUp);
+    window.dispatchEvent(new Event('resize'));
+  };
 
   toggle = (forceVal) => {
     this.props.uiToggleDetailView(forceVal);
@@ -48,7 +83,7 @@ export class ProjectDetail extends Component {
 
       setTimeout(() => {
         const boundingBox = this.refs.extensionContainer.getBoundingClientRect();
-        manifest.render(this.refs.extensionView, {boundingBox});
+        manifest.render(this.refs.extensionView, { boundingBox });
       });
     } catch (err) {
       console.error('error loading / rendering extension!', manifest);
@@ -63,7 +98,8 @@ export class ProjectDetail extends Component {
     const header = (this.props.isVisible) ?
       (
         <div className="ProjectDetail-heading">
-          <a className="ProjectDetail-heading-extension visible">{this.state.currentExtension.readable || this.state.currentExtension.name}</a>
+          <a
+            className="ProjectDetail-heading-extension visible">{this.state.currentExtension.readable || this.state.currentExtension.name}</a>
           <a ref="close"
              className="ProjectDetail-heading-close"
              onClick={() => this.toggle(false)}/>
@@ -87,7 +123,11 @@ export class ProjectDetail extends Component {
       );
 
     return (
-      <div className={'ProjectDetail' + (this.props.isVisible ? ' visible' : '')}>
+      <div className={'ProjectDetail' + (this.props.isVisible ? ' visible' : '')}
+           style={{minHeight: (this.props.isVisible ? `${this.state.openHeight}px` : null)}}>
+        {(this.props.isVisible) && (<div ref="resizeHandle"
+                                         className="ProjectDetail-resizeHandle"
+                                         onMouseDown={this.handleResizableMouseDown}></div>)}
         {header}
         <div className="ProjectDetail-chrome"
              ref="extensionContainer">
