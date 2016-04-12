@@ -16,7 +16,7 @@ export const SymbolPicker = ({current, readOnly, onSelect}) => {
                      title={symbolObj.name}
                      key={symbol}
                      onClick={() => !readOnly && onSelect(symbol)}>
-                     <SvgSbol stroke={1} width="100%" height="100%" color="white" symbolName={symbol} key={symbol}/>
+                     <SvgSbol stroke={0.5} width="100%" height="100%" color="white" symbolName={symbol} key={symbol}/>
                    </a>
                  );
         })}

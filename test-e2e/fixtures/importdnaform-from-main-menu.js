@@ -6,6 +6,8 @@ var importdna = function(browser) {
     // click import DNA
     .click('.menu-dropdown:nth-of-type(2) .menu-item:nth-of-type(10)')
     .waitForElementNotPresent('.menu-header-open', 5000, 'expected a closed menu')
+    // forms have a transition, wait for it to complete
+    .pause(1000)
 };
 
 module.exports = importdna;

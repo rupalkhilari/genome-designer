@@ -1,8 +1,10 @@
+@import './variables.css';
+
 :root {
 --radius: 3px;
 --element-height: 3rem;
 --inputcolor: #E1E2E5;
---textcolor: #747784;
+--textcolor: #888899;
 --primarycolor: #343A4D;
 --errorcolor: #FF6A5E;
 --fontsize: 1.25rem;
@@ -77,20 +79,23 @@
     font-size: var(--fontsize);
     color: var(--textcolor);
   }
+  .left-label {
+    font-size: var(--fontsize);
+    color: var(--textcolor);
+  }
   .checkbox {
     display: flex;
-    align-items: center;
+    align-items: top;
   }
   .checkbox span {
     font-size: var(--fontsize);
     white-space: nowrap;
-    margin: 3px 0 0 0.5rem;
     color: var(--textcolor);
   }
   .checkbox input {
     width: 1rem;
     height: auto;
-    margin-bottom: 0;
+    margin: 3px 0.5rem 0 0;
   }
   .checkbox a {
     color: dodgerblue;
@@ -104,5 +109,21 @@
   a:hover {
     text-decoration: underline;
   }
-
+  span {
+    font-size: var(--fontsize);
+    color: var(--textcolor);
+  }
+  a.blue-link {
+    color: var(--color-bluetext);
+  }
+  /* classes for positioning forgot link inside the password box*/
+  .forgot-box {
+    position: relative;
+    .forgot-link {
+      position: absolute;
+      width: auto;
+      left: 326px;
+      top: -33px;
+    }
+  }
 }

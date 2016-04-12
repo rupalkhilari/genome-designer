@@ -98,6 +98,11 @@ class DNAImportForm extends Component {
 
   render() {
 
+    // no render when not open
+    if (!this.props.open) {
+      return null;
+    }
+
     let payload = null;
     if (this.props.currentConstruct && this.props.focusedBlocks.length) {
       payload=(

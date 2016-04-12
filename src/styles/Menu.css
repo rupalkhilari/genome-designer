@@ -77,7 +77,7 @@
 }
 
 .menu-item {
-  color: black;
+  color: var(--colors-blueGreyDark);
   font-size: 1em;
   line-height: 1.25em;
   cursor: pointer;
@@ -102,6 +102,7 @@
       background: inherit;
     }
   }
+
   .menu-item-checked {
     width: 2rem;
     display: inline-block;
@@ -123,5 +124,8 @@
       color: #999999;
     }
   }
+}
 
+.blue-menu-items {
+  color: var(--color-bluetext) !important;
 }
