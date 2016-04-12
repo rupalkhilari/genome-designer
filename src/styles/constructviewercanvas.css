@@ -1,4 +1,21 @@
-.ProjectPage-constructs {
-  overflow-x: hidden;
-  overflow-y: scroll;
+@import 'variables.css';
+
+.cvc-drop-target {
+  padding: 2rem 0 2rem 0;
+  margin: 0 12px 0 12px;
+  font-size: var(--font-size-sectionLabel);
+  font-family: var(--font-family-base);
+  border: 1px solid var(--colors-blueGreyMed);
+  color: var(--colors-blueGreyMed);
+  text-align: center;
+  transition: color var(--timing-fast) ease-in-out, border-color var(--timing-fast) ease-in-out;
+  cursor: pointer;
+}
+.cvc-drop-target:hover, .cvc-hovered {
+  border: 1px solid var(--colors-blueGreyLighter);
+  color: var(--colors-blueGreyLighter);
+}
+.cvc-drop-target:active {
+  border: 1px solid white;
+  color: white;
 }
