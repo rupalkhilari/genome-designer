@@ -5,8 +5,15 @@ export default function rejectingFetch(...args) {
   return fetch(...args)
     .then(resp => {
       if (resp.status >= 400) {
-        return Promise.reject(resp);
+        return resp.json()
+          .then(json => {
+            return Promise.reject(json);
+          });
       }
+      return resp;
+    })
+    .then(resp => resp.json())
+    .then(resp => {
       return resp;
     });
 }

@@ -85,3 +85,4 @@ repository. So, if you haven't saved credentials for `git.autodesk.com` into you
 `npm run auth` or `npm run auth-test` will fail when it tries to pull the authentication package from `git.autodesk.com`.
 The easiest way to save git credentials is to clone a repository. Instructions for setting up credential caching
 can be found [here](https://help.github.com/articles/caching-your-github-password-in-git/).
+FYI: After installing you will still need to set your credentials...try something like: 'git clone https://git.autodesk.com/bionano/bio-user-platform.git temp' to force git prompt you for them
