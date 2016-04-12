@@ -40,7 +40,6 @@ class ProjectPage extends Component {
     if (!project || !project.metadata) {
       this.props.projectLoad(projectId)
         .catch(err => {
-          debugger;
           this.props.push('/?noredirect=true');
         });
       return (<p>loading project...</p>);
