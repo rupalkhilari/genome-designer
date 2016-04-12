@@ -1,6 +1,7 @@
 import chai from 'chai';
 import fs from 'fs';
 import * as api from '../../src/middleware/api';
+import listProjectsWithAccess from '../../server/data/querying.js';
 
 const { assert, expect } = chai;
 
@@ -15,25 +16,6 @@ const getBlock = (allBlocks, blockId) => {
 describe('Middleware', () => {
   describe('Plugins', () => {
     it('computeWorkflow() should work'); //todo
-
-    it('importConstruct() should be able convert Genbank features to Block', function testFunc(done) {
-      fs.readFile('./test/res/sampleGenbank.gb', 'utf8', (err, sampleStr) => {
-        api.importConstruct('genbank', sampleStr)
-          .then(data => {
-            // This just tests that the api works as expected. The tests about the particular
-            // Genbank conversions to and from blocks are in the genbank.spec.js file
-            expect(data.roots !== undefined).to.equal(true);
-            expect(data.roots.length).to.equal(1);
-            expect(data.blocks !== undefined).to.equal(true);
-            let construct = getBlock(data.blocks, data.roots[0]);
-            expect(construct.metadata.name).to.equal('EU912544');
-            done();
-          })
-          .catch(err => {
-            done(err);
-          });
-      });
-    });
 
     it.skip('exportBlock() should be able convert Block to Genbank', function testFunc(done) {
       fs.readFile('./test/res/sampleBlocks.json', 'utf8', (err, sampleBlocksJson) => {
@@ -50,7 +32,7 @@ describe('Middleware', () => {
       });
     });
 
-    it('importProject() should be able convert a genbank file to a project', function testFunc(done) {
+    it('importProject() should be able convert a genbank file to a project and add a construct to it', function testFunc(done) {
       fs.readFile('./test/res/sampleGenbank.gb', 'utf8', (err, sampleGenbank) => {
         api.importProject('genbank', sampleGenbank)
           .then(result => {
@@ -60,11 +42,29 @@ describe('Middleware', () => {
                 expect(gotRoll.project.metadata.name).to.equal('EU912544');
                 expect(gotRoll.project.components.length).to.equal(1);
                 expect(gotRoll.blocks.length).to.equal(8); // There are 8 blocks in that file
-                done();
+                // Now add a construct to it...
+                fs.readFile('./test/res/sampleGenbankContiguous.gb', 'utf8', (err, sampleStrConstruct) => {
+                  api.importConstruct('genbank', sampleStrConstruct, result.ProjectId)
+                    .then(data => {
+                      // This just tests that the api works as expected. The tests about the particular
+                      // Genbank conversions to and from blocks are in the genbank.spec.js file
+                      return api.loadProject(result.ProjectId)
+                        .then(secondRoll => {
+                          expect(secondRoll.project.metadata.name).to.equal('EU912544');
+                          expect(secondRoll.project.components.length).to.equal(2);
+                          done();
+                        });
+                    })
+                    .catch(err => {
+                      console.log('ERROR!!!');
+                      console.log(err);
+                      done(err);
+                    });
+                });
+              })
+              .catch(err => {
+                done(err);
               });
-          })
-          .catch(err => {
-            done(err);
           });
       });
     });
