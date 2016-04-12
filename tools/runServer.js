@@ -7,7 +7,8 @@ const RUNNING_REGEXP = /Building, will serve at http:\/\/(.*?)\//;
 
 let server;
 const { output } = serverConfig;
-const serverPath = path.join(output.path, output.filename);
+const serverPath = './server/server.js'; //for running with babel-node (unbunbled)
+//const serverPath = path.join(output.path, output.filename); //todo - run bundled server
 
 // Launch or restart the Node.js server
 function runServer(cb) {
@@ -32,7 +33,8 @@ function runServer(cb) {
     server.kill('SIGTERM');
   }
 
-  server = cp.spawn('node', [serverPath], {
+  //todo - use node on bundled version
+  server = cp.spawn('babel-node', [serverPath], {
     env: Object.assign({ NODE_ENV: 'dev' }, process.env),
     silent: false,
   });

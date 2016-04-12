@@ -24,7 +24,7 @@ const createBuildPath = (isBuild, notBuild = isBuild) => {
 const pathContent = createBuildPath('content', '../src/content');
 const pathImages = createBuildPath('images', '../src/images');
 const pathPublic = createBuildPath('public', '../src/public');
-const pathClientBundle = createBuildPath('client.js');
+const pathClientBundle = createBuildPath('client.js', '../build/client.js');
 
 const app = express();
 
