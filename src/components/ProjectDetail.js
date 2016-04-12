@@ -44,14 +44,14 @@ export class ProjectDetail extends Component {
     document.addEventListener('mouseup', this.handleResizeMouseUp);
     this.dragStart = evt.pageY;
     //cringe-worthy query selector voodoo
-    this.dragMax = document.querySelector('.ProjectPage-content').getBoundingClientRect().height - 150;
+    this.dragMax = document.querySelector('.ProjectPage-content').getBoundingClientRect().height - 200;
     this.openStart = this.state.openHeight;
   };
 
   handleResizeMouseMove = evt => {
     evt.preventDefault();
     const delta = this.dragStart - evt.pageY;
-    const minHeight = 30;
+    const minHeight = 300;
     const nextHeight = Math.min(this.dragMax, Math.max(minHeight, this.openStart + delta));
     this.setState({ openHeight: nextHeight });
     this.throttledDispatchResize();
