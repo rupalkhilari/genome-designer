@@ -298,15 +298,19 @@ export const exportProject = (id, inputs) => {
     .then(resp => resp.json());
 };
 
-export const importBlock = (id, input) => {
-  const stringified = JSON.stringify({ text: input });
-  return rejectingFetch(importPath(`block/${id}`), headersPost(stringified))
+export const importConstruct = (id, input) => {
+  const header = {   headers: {
+    'Content-Type': 'text/plain',
+  }};
+  return rejectingFetch(importPath(`construct/${id}`), headersPost(input, header))
     .then(resp => resp.json());
 };
 
 export const importProject = (id, input) => {
-  const stringified = JSON.stringify({ text: input });
-  return rejectingFetch(importPath(`project/${id}`), headersPost(stringified))
+  const header = {   headers: {
+    'Content-Type': 'text/plain',
+  }};
+  return rejectingFetch(importPath(`project/${id}`), headersPost(input, header))
     .then(resp => resp.json());
 };
 

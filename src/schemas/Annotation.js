@@ -19,7 +19,7 @@ const AnnotationDefinition = new SchemaDefinition({
     'Dictionary of tags defining annotation',
   ],
   name: [
-    fields.string(),
+    fields.string().required,
     'Name of annotation',
   ],
   description: [

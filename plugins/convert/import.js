@@ -44,8 +44,8 @@ function importConstruct(id, data) {
   return callImportFunction('importConstruct', id, data);
 }
 
-router.post('/project/:id', jsonParser, (req, resp) => {
-  const { id } = req.params;
+router.post('/project/:id/:projectId?', jsonParser, (req, resp) => {
+  const { id, projectId } = req.params;
 
   //assuming contents to be string
   let buffer = '';
@@ -59,12 +59,29 @@ router.post('/project/:id', jsonParser, (req, resp) => {
   req.on('end', () => {
     return importProject(id, buffer)
       .then((roll) => {
-        rollup.writeProjectRollup(roll.project.id, roll, req.user.uuid)
-          .then(() => persistence.projectSave(roll.project.id))
-          .then(commit => resp.status(200).json({ProjectId: roll.project.id}))
-          .catch(err => {
-            resp.status(400).send(err);
-          });
+        if (!projectId) {
+          rollup.writeProjectRollup(roll.project.id, roll, req.user.uuid)
+            .then(() => persistence.projectSave(roll.project.id))
+            .then(commit => resp.status(200).json({ProjectId: roll.project.id}))
+            .catch(err => {
+              resp.status(400).send(err);
+            });
+        } else {
+          rollup.getProjectRollup(projectId)
+            .then((existingRoll) => {
+              existingRoll.project.components = existingRoll.project.components.concat(roll.project.components);
+              existingRoll.blocks = existingRoll.blocks.concat(roll.blocks);
+              rollup.writeProjectRollup(existingRoll.project.id, existingRoll, req.user.uuid)
+                .then(() => persistence.projectSave(existingRoll.project.id))
+                .then(commit => resp.status(200).json({ProjectId: existingRoll.project.id}))
+                .catch(err => {
+                  resp.status(400).send(err);
+                });
+            })
+            .catch(err => {
+              resp.status(400).send(err);
+            });
+        }
       })
       .catch(err => {
         resp.status(500).send(err);
@@ -89,10 +106,9 @@ router.post('/construct/:id', jsonParser, (req, resp) => {
       .then((roll) => {
         if (! _.isString(roll)) {
           resp.status(200).json({roots: roll.roots, blocks: roll.blocks});
-        }
-        else {
+        } else {
           resp.status(500).send(roll);
-        };
+        }
       })
       .catch(err => {
         resp.status(500).send(err);

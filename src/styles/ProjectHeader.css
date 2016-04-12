@@ -6,6 +6,7 @@
   margin: 10px;
   flex-direction: row;
   justify-content: space-between;
+  color: var(--colors-blueGreyLighter);
 
   /* left side */
   &-info {
@@ -20,7 +21,6 @@
 
   &-breadcrumb {
     text-decoration: none;
-    color: var(--colors-grey);
   }
 
   &-lead {
@@ -30,7 +30,6 @@
   &-breadcrumb-separator {
     margin: 0 0.5em;
     font-weight: 100;
-    color: var(--colors-grey);
   }
 
   &-title {
@@ -38,7 +37,6 @@
   }
 
   &-description {
-    color: var(--colors-grey);
   }
 
   /* right side */

@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import symbols from '../inventory/sbol';
 import { setAttribute } from '../containers/graphics/utils';
+import invariant from 'invariant';
 
 const serializer = new XMLSerializer();
 
@@ -12,7 +13,9 @@ export default class SvgSbol extends Component {
 
       // clone the template
       const templateId = `sbol-svg-${this.props.symbolName}`;
-      const svg = document.getElementById(templateId).cloneNode(true);
+      const template = document.getElementById(templateId);
+      invariant(template, 'missing SVG template for sbol symbol:' + this.props.symbolName);
+      const svg = template.cloneNode(true);
       // ensure svg is stroked in black
       setAttribute(svg, 'stroke', this.props.color || 'white', true);
       // remove the ID attribute from the clone to avoid duplicates

@@ -16,11 +16,12 @@
   --colors-text: var(--colors-blueBlack);
   --color-bluetext: var(--colors-selected);
 
-  --font-size-text: 12px;
-  --font-size-heading: 11px;
 
   /* Typography
   ==================== */
+  --font-size-text: 12px;
+  --font-size-heading: 11px;
+  --font-size-sectionLabel: 16px;
 
   --font-family-base: Helvetica, sans-serif;
 
