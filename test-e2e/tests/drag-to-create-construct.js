@@ -39,7 +39,7 @@ module.exports = {
     browser.click('.InventoryGroup:nth-of-type(4) .InventoryGroup-heading');
 
     // and again
-    dragFromTo(browser, '.InventoryItem:nth-of-type(1)', 10, 10, '.cvc-drop-target', 100, 40);
+    dragFromTo(browser, '.InventoryItem:nth-of-type(1)', 10, 10, '.cvc-drop-target', 10, 10);
 
     browser
       // expect two construct views with one block each
