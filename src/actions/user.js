@@ -37,11 +37,6 @@ export const userLogout = () => {
         const setUserPayload = _userSetUser({});
         dispatch(setUserPayload);
         return true;
-      })
-      .catch(() => {
-        const setUserPayload = _userSetUser({});
-        dispatch(setUserPayload);
-        return true;      
       });
   };
 };
