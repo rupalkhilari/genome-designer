@@ -4,7 +4,7 @@ var importdna = function(browser) {
     .click('.menu-dropdown:nth-of-type(2)')
     .waitForElementPresent('.menu-header-open', 5000, 'expected an open menu')
     // click import DNA
-    .click('.menu-dropdown:nth-of-type(2) .menu-item:nth-of-type(9)')
+    .click('.menu-dropdown:nth-of-type(2) .menu-item:nth-of-type(10)')
     .waitForElementNotPresent('.menu-header-open', 5000, 'expected a closed menu')
 };
 

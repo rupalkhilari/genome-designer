@@ -14,7 +14,7 @@ export default class InventoryGroupSbol extends Component {
       id: symbol.id,
       metadata: {
         name: symbol.name,
-        image: symbol.images.thick,
+        isSBOL: true,
       },
     }));
   }

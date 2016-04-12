@@ -41,6 +41,19 @@
       cursor: default;
       border-color: white;
     }
+
+    svg {
+      transition: opacity var(--timing-fast) ease-out;
+      opacity: 0.5;
+    }
+
+    &.active svg {
+      opacity: 1;
+    }
+    
+    &:hover svg {
+      opacity: 0.7;
+    }
   }
 
   &.readOnly {

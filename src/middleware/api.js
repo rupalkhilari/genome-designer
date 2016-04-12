@@ -68,12 +68,7 @@ const headersDelete = (overrides) => merge({}, defaultOptions, {
 const authFetch = (...args) => {
   return rejectingFetch(...args)
     .then(resp => resp.json())
-    .then(json => {
-      if (json.message) {
-        return Promise.reject(json);
-      }
-      return json;
-    });
+    .catch(resp => Promise.reject(resp.json()));
 };
 
 // login with email and password and set the sessionKey (cookie) for later use
@@ -307,15 +302,19 @@ export const exportProject = (id, inputs) => {
     .then(resp => resp.json());
 };
 
-export const importBlock = (id, input) => {
-  const stringified = JSON.stringify({ text: input });
-  return rejectingFetch(importPath(`block/${id}`), headersPost(stringified))
+export const importConstruct = (id, input) => {
+  const header = {   headers: {
+    'Content-Type': 'text/plain',
+  }};
+  return rejectingFetch(importPath(`construct/${id}`), headersPost(input, header))
     .then(resp => resp.json());
 };
 
 export const importProject = (id, input) => {
-  const stringified = JSON.stringify({ text: input });
-  return rejectingFetch(importPath(`project/${id}`), headersPost(stringified))
+  const header = {   headers: {
+    'Content-Type': 'text/plain',
+  }};
+  return rejectingFetch(importPath(`project/${id}`), headersPost(input, header))
     .then(resp => resp.json());
 };
 

@@ -10,7 +10,7 @@
   overflow-x: hidden;
   top: 0;
   bottom: 0;
-  background: var(--colors-bluegreyDark);
+  background: var(--colors-blueBlack);
   color: var(--colors-greyLight);
   transition-property: width, opacity;
   transition-duration: var(--timing-fast);
@@ -61,7 +61,7 @@
     }
 
     &-title {
-      font-size: var(--font-size-heading);
+      font-size: var(--font-size-text);
       text-transform: uppercase;
       font-weight: 200;
       display: inline-block; /* hack ish - ensure height */

@@ -2,9 +2,11 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { uiToggleDetailView } from '../actions/ui';
 import { extensionsByRegion, registry } from '../extensions/clientRegistry';
-import mapValues from '../utils/object/mapValues';
 
 import '../styles/ProjectDetail.css';
+
+//save across instances in case tossed + reused
+let lastExtension = null;
 
 export class ProjectDetail extends Component {
   static propTypes = {
@@ -13,6 +15,16 @@ export class ProjectDetail extends Component {
     project: PropTypes.object.isRequired,
   };
 
+  state = {
+    currentExtension: lastExtension,
+  };
+
+  componentWillMount() {
+    //e.g. if change project and component completely re-renders
+    if (this.props.isVisible) {
+      this.setState({currentExtension: lastExtension});
+    }
+  }
   componentDidMount() {
     //to update when extensions register... todo - need a pubsub method
     setTimeout(() => {
@@ -32,6 +44,7 @@ export class ProjectDetail extends Component {
     try {
       this.toggle(true);
       this.setState({ currentExtension: manifest });
+      lastExtension = manifest;
 
       setTimeout(() => {
         const boundingBox = this.refs.extensionContainer.getBoundingClientRect();
@@ -45,7 +58,7 @@ export class ProjectDetail extends Component {
 
   render() {
     //todo - trigger more intelligently, dont want to recompute all the time
-    const extensions = extensionsByRegion('sequenceDetail');
+    const extensions = extensionsByRegion('sequenceDetail').filter(manifest => manifest.name !== 'simple');
 
     const header = (this.props.isVisible) ?
       (

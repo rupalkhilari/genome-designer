@@ -14,7 +14,7 @@
 
   &-heading {
     font-size: var(--font-size-heading);
-    color: var(--colors-greyMedLight);
+    color: var(--colors-grey);
     font-weight: 500;
     margin: 1.25em 0 0.4em;
   }
@@ -30,7 +30,7 @@
       padding: 2px 4px;
       margin: 2px;
       border-radius: 2px;
-      color: var(--colors-greyDark);
+      color: var(--colors-grey);
       background-color: var(--colors-white);
 
       &:hover {

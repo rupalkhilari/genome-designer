@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react';
 import symbols from '../../inventory/sbol';
+import SvgSbol from '../svgsbol';
 
 import '../../styles/Picker.css';
 import '../../styles/SymbolPicker.css';
@@ -14,8 +15,10 @@ export const SymbolPicker = ({current, readOnly, onSelect}) => {
                      alt={symbolObj.name}
                      title={symbolObj.name}
                      key={symbol}
-                     onClick={() => !readOnly && onSelect(symbol)}
-                     style={{backgroundImage: `url(${symbolObj.images.thin})`}}/>);
+                     onClick={() => !readOnly && onSelect(symbol)}>
+                     <SvgSbol stroke={1} width="100%" height="100%" color="white" symbolName={symbol} key={symbol}/>
+                   </a>
+                 );
         })}
         <a className={'Picker-item' + (!current ? ' active' : '')}
            style={{backgroundImage: `url(/images/sbolSymbols/thin/no_symbol.svg)`}}

@@ -28,6 +28,8 @@ export default class ConstructViewerUserInterface extends UserInterface {
       drop: this.onDrop.bind(this),
       zorder: 0,
     });
+
+    this.osType = this.checkOS();
   }
 
   /**
@@ -180,11 +182,11 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * mouse down handler
    */
   mouseDown(evt, point) {
-    this.mouseSelect(evt, point);
+    //this.mouseSelect(evt, point);
   }
 
   /**
-   * Might signal the end of fence drag
+   * Might signal the end of fence drag or just a normal click
    */
   mouseUp(evt, point) {
     if (this.fence) {
@@ -192,12 +194,29 @@ export default class ConstructViewerUserInterface extends UserInterface {
       this.selectNodesByRectangle(this.fence.getBox());
       this.fence.dispose();
       this.fence = null;
+    } else {
+      this.mouseSelect(evt, point);
     }
   }
   /**
    * mouse section can occur by click or when a drag is started so it gets
    * its own method.
    */
+
+  checkOS() {
+    let osType = 'unknown';
+    if (navigator.userAgent.indexOf('Windows', 0) >= 0) osType = 'win';
+    else if (navigator.userAgent.indexOf('Mac', 0) >= 0) osType = 'mac';
+    else if (navigator.userAgent.indexOf('Linux', 0) >= 0) osType = 'linux';
+    else if (navigator.userAgent.indexOf('X11', 0) >= 0) osType = 'unix';
+
+    return osType;
+  }
+
+  metaKey(evt) {
+    return this.osType === 'mac' ? evt.metaKey : evt.ctrlKey;
+  }
+
   mouseSelect(evt, point) {
     evt.preventDefault();
     const block = this.topBlockAt(point);
@@ -211,7 +230,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
       if (evt.shiftKey || (window.__gde2e && window.__gde2e.shiftKey)) {
         action = 'add';
       }
-      if (evt.metaKey || evt.altKey || (window.__gde2e && window.__gde2e.metaKey)) {
+      if (this.metaKey(evt) || evt.altKey || (window.__gde2e && window.__gde2e.metaKey)) {
         action = 'toggle';
       }
       // if they clicked the context menu area, open it
@@ -229,7 +248,6 @@ export default class ConstructViewerUserInterface extends UserInterface {
         if (action === 'replace') {
           action = 'add';
         }
-
         break;
 
         case 'triangle':
@@ -248,16 +266,9 @@ export default class ConstructViewerUserInterface extends UserInterface {
         case 'add': this.constructViewer.blockAddToSelectionsRange(block, this.selectedElements); break;
         default: this.constructViewer.blockSelected([block]); break;
       }
-
     } else {
-      // start a fence
-      invariant(!this.fence, 'fence already exists');
-      this.constructViewer.constructSelected(this.constructViewer.props.constructId);
-      // clear current selections unless shift pressed
-      if (!evt.shiftKey) {
-        this.constructViewer.blockSelected([]);
-      }
-      this.fence = new Fence(this, point);
+      // clear selections when clicking in the open
+      this.constructViewer.blockSelected([]);
     }
   }
 
@@ -332,6 +343,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * to the DND manager to handle
    */
   mouseDrag(evt, point, startPoint, distance) {
+    // ignore drags until they reach a certain vector threshold
     if (distance > dragThreshold && !this.fence) {
       // start a block drag if we have one
       const block = this.topBlockAt(startPoint);
@@ -357,6 +369,16 @@ export default class ConstructViewerUserInterface extends UserInterface {
           source: 'construct-viewer',
           copying: copying,
         });
+      } else {
+        // start a fence drag if not over a part
+        if (!this.fence) {
+          this.constructViewer.constructSelected(this.constructViewer.props.constructId);
+          // clear current selections unless shift pressed
+          if (!evt.shiftKey) {
+            this.constructViewer.blockSelected([]);
+          }
+          this.fence = new Fence(this, point);
+        }
       }
     } else {
       if (this.fence) {

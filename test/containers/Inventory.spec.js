@@ -36,7 +36,7 @@ function setup(propOverrides = {}) {
 }
 
 describe('containers', () => {
-  describe('Inventory', () => {
+  describe.skip('Inventory', () => {
     it('clicking close button', () => {
       const toggleSpy = sinon.spy();
       const {component, props} = setup({

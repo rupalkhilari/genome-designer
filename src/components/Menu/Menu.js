@@ -38,6 +38,8 @@ export default class Menu extends Component {
                 item.text ?
                   (<MenuItem
                     text={item.text}
+                    shortcut={item.shortcut}
+                    checked={item.checked}
                     disabled={!!item.disabled}
                     action={boundAction} />) :
                   (<MenuSeparator key={index} />)

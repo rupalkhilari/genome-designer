@@ -11,5 +11,20 @@ html
             lastName        : "#{lastName}",
         };
   body
+
     #root
+    //- any html/svg templates you want included verbatim
+    div(style="display: none;visibility: hidden;margin-left: -10000px;")
+      include ./images/sbolSymbols/templates/cds.svg
+      include ./images/sbolSymbols/templates/insulator.svg
+      include ./images/sbolSymbols/templates/operator.svg
+      include ./images/sbolSymbols/templates/originReplication.svg
+      include ./images/sbolSymbols/templates/promoter.svg
+      include ./images/sbolSymbols/templates/protease.svg
+      include ./images/sbolSymbols/templates/proteinStability.svg
+      include ./images/sbolSymbols/templates/rbs.svg
+      include ./images/sbolSymbols/templates/ribonuclease.svg
+      include ./images/sbolSymbols/templates/rnaStability.svg
+      include ./images/sbolSymbols/templates/terminator.svg
+
     script(src='/client.js')

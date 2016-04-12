@@ -5,6 +5,8 @@ import * as projectSelectors from '../selectors/projects';
 import Block from '../models/Block';
 import Project from '../models/Project';
 
+import { setItem } from '../middleware/localStorageCache';
+
 //Promise
 export const projectList = () => {
   return (dispatch, getState) => {
@@ -39,6 +41,7 @@ export const projectSave = (projectId) => {
   return (dispatch, getState) => {
     const project = getState().projects[projectId];
     const roll = dispatch(projectSelectors.projectCreateRollup(projectId));
+    setItem('mostRecentProject', projectId);
     return saveProject(projectId, roll)
       .then(json => {
         dispatch({
