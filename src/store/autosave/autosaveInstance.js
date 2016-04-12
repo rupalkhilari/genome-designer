@@ -1,4 +1,12 @@
 import autosaveCreator from './autosaveCreator';
+import * as ActionTypes from '../../constants/ActionTypes';
+import { LOCATION_CHANGE } from 'react-router-redux';
+
+const purgeEvents =[
+  ActionTypes.PROJECT_SAVE,
+  ActionTypes.PROJECT_SNAPSHOT,
+  LOCATION_CHANGE,
+];
 
 const autosave = autosaveCreator({
   //filter to undoable actions, which basically are the ones that are state changes (undoable reducer relies on these)
@@ -8,6 +16,8 @@ const autosave = autosaveCreator({
   onSave: () => {
     global.gd.api.project.projectSave();
   },
+
+  purgeOn: ({ type }, nextState, lastState) => purgeEvents.some(eventType => eventType === type),
 });
 
 export default autosave;

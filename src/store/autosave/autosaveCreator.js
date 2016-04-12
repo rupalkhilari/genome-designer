@@ -10,7 +10,8 @@ export default function autosavingCreator(config) {
   const options = Object.assign({
     time: 30 * 1000, //throttle autosave requests, 30 sec
     wait: 5 * 1000, //debounce wait time, 5 sec
-    filter: () => true,
+    filter: () => true, //in addition to state change, pass a filter for triggering autosave events
+    purgeOn: () => false, //will cancel throttled calls if pass function
     onSave: () => {},
     forceSaveActionType: FORCE_SAVE,
   }, config);
@@ -47,24 +48,28 @@ export default function autosavingCreator(config) {
   });
 
   const autosaveReducerEnhancer = reducer => {
-    //per-reducer state saving
-    //set to null instead of reducer initial state because if the reducer e.g. use default prop of an object, reference will be different between initial state we compute here and when the reducer computes initial state as normal, triggering save on store initialization
-    let lastState = null;
+    //track for reducer initial state because if the reducer e.g. use default prop of an object, reference will be different between initial state we compute here and when the reducer computes initial state as normal, triggering save on store initialization
+    let initialized = false;
 
     return (state, action) => {
       if (action.type === options.forceSaveActionType) {
         throttledSave.cancel();
-        handleSave(lastState);
-        return lastState;
+        handleSave(state);
+        return state;
       }
 
       const nextState = reducer(state, action);
 
+      if (options.purgeOn(action, nextState, state)) {
+        throttledSave.cancel();
+      }
+
       //function call so easy to transition to debounced version
-      if (checkSave(action, nextState, lastState) && lastState !== null) {
+      if (checkSave(action, nextState, state) && !!initialized) {
         throttledSave(nextState);
       }
-      lastState = nextState;
+
+      initialized = true;
 
       return nextState;
     };
