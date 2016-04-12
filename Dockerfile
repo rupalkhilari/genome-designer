@@ -39,4 +39,4 @@ RUN npm run install-extensions || true
 RUN cd /app
 
 # Redis now launch via docker-compose and is referenced via link
-CMD  ["npm" ,"start"]
+CMD  ["npm" , "run", "start-instance"]
