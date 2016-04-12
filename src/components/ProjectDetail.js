@@ -82,13 +82,16 @@ export class ProjectDetail extends Component {
         <div className="ProjectDetail-heading">
           <a ref="open"
              className="ProjectDetail-heading-toggle"
-             onClick={() => { this.toggle(); this.loadExtension(this.extensions[0]);} }/>
+             onClick={() => {
+               this.toggle();
+               this.loadExtension(this.extensions[0]);
+             }}/>
           <div className="ProjectDetail-heading-extensionList">
             {this.extensions.map(manifest => {
               return (
                 <a key={manifest.name}
                    className="ProjectDetail-heading-extension"
-                   onClick={this.loadExtension.bind(null, manifest)}>{manifest.readable || manifest.name}</a>
+                   onClick={() => this.loadExtension(manifest)}>{manifest.readable || manifest.name}</a>
               );
             })}
           </div>
