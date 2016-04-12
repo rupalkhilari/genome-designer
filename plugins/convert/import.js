@@ -40,11 +40,7 @@ function importProject(id, data) {
   return callImportFunction('importProject', id, data);
 }
 
-function importConstruct(id, data) {
-  return callImportFunction('importConstruct', id, data);
-}
-
-router.post('/project/:id/:projectId?', jsonParser, (req, resp) => {
+router.post('/:id/:projectId?', jsonParser, (req, resp) => {
   const { id, projectId } = req.params;
 
   //assuming contents to be string
@@ -89,35 +85,7 @@ router.post('/project/:id/:projectId?', jsonParser, (req, resp) => {
   });
 });
 
-router.post('/construct/:id', jsonParser, (req, resp) => {
-  const { id } = req.params;
-
-  //assuming contents to be string
-  let buffer = '';
-
-  //get data in parts
-  req.on('data', data => {
-    buffer += data;
-  });
-
-  //received all the data
-  req.on('end', () => {
-    return importConstruct(id, buffer)
-      .then((roll) => {
-        if (! _.isString(roll)) {
-          resp.status(200).json({roots: roll.roots, blocks: roll.blocks});
-        } else {
-          resp.status(500).send(roll);
-        }
-      })
-      .catch(err => {
-        resp.status(500).send(err);
-      });
-  });
-});
-
 //export these functions for testing purpose
 router.importProject = importProject;
-router.importConstruct = importConstruct;
 
 module.exports = router;
