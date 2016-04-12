@@ -29,7 +29,8 @@ export default class HomePage extends Component {
       this.props.uiShowAuthenticationForm(authForm);
     } else {
       // if not showing an auth form goto most recent project or demo project
-      if (this.props.user && this.props.user.userid) {
+      // NOTE: the nodirect query string prevents redirection
+      if (this.props.user && this.props.user.userid && window.location.href.indexOf('noredirect=true') < 0) {
         // revisit last project or test project if user is logged in
         this.props.push(`/project/${getItem('mostRecentProject') || 'test'}`);
         return;
