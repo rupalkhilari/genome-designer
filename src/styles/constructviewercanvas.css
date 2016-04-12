@@ -2,7 +2,7 @@
 
 .cvc-drop-target {
   padding: 2rem 0 2rem 0;
-  margin: 0 12px 0 12px;
+  margin: 0 12px 5rem 12px;
   font-size: var(--font-size-sectionLabel);
   font-family: var(--font-family-base);
   border: 1px solid var(--colors-blueGreyMed);
