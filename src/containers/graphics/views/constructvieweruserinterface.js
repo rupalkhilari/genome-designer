@@ -267,8 +267,9 @@ export default class ConstructViewerUserInterface extends UserInterface {
         default: this.constructViewer.blockSelected([block]); break;
       }
     } else {
-      // clear selections when clicking in the open
-      this.constructViewer.blockSelected([]);
+      // clear block selections and select construct block to make it appear
+      // in the inspector
+      this.constructViewer.blockSelected([this.constructViewer.props.construct.id]);
     }
   }
 
