@@ -12,7 +12,7 @@
     border: 0;
     border-radius: 2px;
     width: 100%;
-    color: var(--colors-blueGreyLighter);
+    color: var(--colors-white);
     background-color: var(--colors-blueGreyDark);
     transition: background-color linear 0.05s, color linear 0.05s;
 
