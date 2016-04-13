@@ -144,7 +144,7 @@ export class ConstructViewer extends Component {
   getBlockParent(blockId) {
     const parents = this.props.blockGetParents(blockId);
     invariant(parents && parents.length, 'blocks are expected to have parents');
-    return this.props.blocks[parents[0]];
+    return parents[0];
   }
 
   /**
@@ -268,7 +268,7 @@ export class ConstructViewer extends Component {
    */
   blockAddToSelectionsRange(partId, currentSelections) {
     // get all the blocks at the same level as this one
-    const levelBlocks = this.props.blocks[this.props.blockGetParents(partId)[0]].components;
+    const levelBlocks = (this.props.blockGetParents(partId)[0]).components;
     // find min/max index of these blocks if they are in the currentSelections
     let min = levelBlocks.indexOf(partId);
     let max = min;

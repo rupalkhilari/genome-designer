@@ -61,6 +61,7 @@ class GlobalNav extends Component {
     currentProjectId: PropTypes.string,
     blockCreate: PropTypes.func.isRequired,
     showMainMenu: PropTypes.bool.isRequired,
+    blockGetParents: PropTypes.func.isRequired,
   };
 
   state = {
@@ -175,9 +176,7 @@ class GlobalNav extends Component {
    * get parent block of block with given id
    */
   blockGetParent(blockId) {
-    const parentId = this.props.blockGetParents(blockId)[0];
-    const parentBlock = this.props.blocks[parentId];
-    return parentBlock;
+    return this.props.blockGetParents(blockId)[0];
   }
   /**
    * truthy if the block has a parent
@@ -269,7 +268,7 @@ class GlobalNav extends Component {
 
   // get parent of block
   getBlockParentId(blockId) {
-    return this.props.blockGetParents(blockId)[0];
+    return this.props.blockGetParents(blockId)[0].id;
   }
 
   // cut focused blocks to the clipboard, no clone required since we are removing them.
