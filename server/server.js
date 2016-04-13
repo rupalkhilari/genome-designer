@@ -12,7 +12,7 @@ import importRouter from '../plugins/convert/import';
 import exportRouter from '../plugins/convert/export';
 import searchRouter from '../plugins/search/search';
 
-const DEFAULT_PORT = 3000;
+const DEFAULT_PORT = 2999;
 const port = parseInt(process.argv[2], 10) || process.env.PORT || DEFAULT_PORT;
 const hostname = '0.0.0.0';
 
