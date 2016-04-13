@@ -118,7 +118,7 @@ async function start() {
     // if we do, might call handleServerBundleComplete twice (because two calls before browsersync set up)
 
     clientCompiler.plugin('failed', (err) => console.warn(err));
-    clientCompiler.plugin('done', handleServerBundleComplete);
+    clientCompiler.plugin('done', () => handleServerBundleComplete());
 
     /*
      console.info('beginning webpack build');

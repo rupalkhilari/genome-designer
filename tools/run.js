@@ -22,7 +22,6 @@ if (process.mainModule.children.length === 0 && process.argv.length > 2) {
   delete require.cache[__filename];
   const askdjfhakjsdf = require(`./${process.argv[2]}.js`);
   //todo - for some reason module.default is not always defined...
-  console.log('to run', askdjfhakjsdf);
   run(askdjfhakjsdf).catch(err => console.error(err.stack));
 }
 
