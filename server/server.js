@@ -12,7 +12,7 @@ import importRouter from '../plugins/convert/import';
 import exportRouter from '../plugins/convert/export';
 import searchRouter from '../plugins/search/search';
 
-const DEFAULT_PORT = 2999;
+const DEFAULT_PORT = 3000;
 const port = parseInt(process.argv[2], 10) || process.env.PORT || DEFAULT_PORT;
 const hostname = '0.0.0.0';
 
@@ -109,6 +109,7 @@ app.get('/version', (req, res) => {
 
 app.get('*', (req, res) => {
   if (req.url.indexOf('client.js') >= 0) {
+    //should only hit this when proxy is not set up (i.e. not in development)
     res.sendFile(pathClientBundle);
   } else {
     //so that any routing is delegated to the client
