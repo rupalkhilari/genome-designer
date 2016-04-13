@@ -3,7 +3,7 @@ import uuid from 'node-uuid';
 import request from 'supertest';
 import Project from '../../../../src/models/Project';
 import * as persistence from '../../../../server/data/persistence';
-import devServer from '../../../../server/devServer';
+import devServer from '../../../../server/server';
 
 describe('REST', () => {
   describe('Data', () => {

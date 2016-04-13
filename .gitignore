@@ -14,3 +14,4 @@ temp.*
 plugins/*/*/inputs
 plugins/*/*/outputs
 storage/
+build/
