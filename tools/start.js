@@ -98,7 +98,7 @@ async function start() {
             ],
 
             ...(DEBUG ? {} : { notify: false, ui: false }),
-            port: 3000,
+
             proxy: {
               target: host,
               middleware: [
