@@ -20,9 +20,12 @@ import { clipboardSetData } from '../actions/clipboard';
 import * as clipboardFormats from '../constants/clipboardFormats';
 import {
   blockCreate,
+  blockDelete,
+  blockDetach,
   blockClone,
   blockRemoveComponent,
   blockAddComponent,
+  blockAddComponents,
   blockRename,
  } from '../actions/blocks';
  import {
@@ -275,12 +278,9 @@ class GlobalNav extends Component {
   // cut focused blocks to the clipboard, no clone required since we are removing them.
   cutFocusedBlocksToClipboard() {
     if (this.props.focus.blocks.length) {
-      // copy the focused blocks before removing
-      const blocks = this.props.focus.blocks.slice().map(blockId => this.props.blocks[blockId]);
-      this.props.focus.blocks.forEach(blockId => {
-        this.props.blockRemoveComponent(this.getBlockParentId(blockId), blockId);
-      });
-      this.props.clipboardSetData([clipboardFormats.blocks], [blocks]);
+      const blockIds = this.props.blockDetach(...this.props.focus.blocks);
+      this.props.clipboardSetData([clipboardFormats.blocks], [blockIds.map(blockId => this.props.blocks[blockId])]);
+      this.props.focusBlocks([]);
     }
   }
   // paste from clipboard to current construct
@@ -307,11 +307,10 @@ class GlobalNav extends Component {
         parentId = insertInfo.parent;
       }
       // add to construct
-      clones.forEach(block => {
-        this.props.blockAddComponent(parentId, block.id, insertIndex++);
-      });
+      this.props.blockAddComponents(parentId, clones.map(clone => clone.id), insertIndex);
+
       // select the clones
-      this.props.focusBlocks(clones.map(block => block.id));
+      this.props.focusBlocks(clones.map(clone => clone.id));
     }
   }
 
@@ -526,6 +525,8 @@ export default connect(mapStateToProps, {
   projectGetVersion,
   blockCreate,
   blockClone,
+  blockDelete,
+  blockDetach,
   blockRename,
   inspectorToggleVisibility,
   inventoryToggleVisibility,
@@ -545,4 +546,5 @@ export default connect(mapStateToProps, {
   focusConstruct,
   clipboardSetData,
   blockAddComponent,
+  blockAddComponents,
 })(GlobalNav);

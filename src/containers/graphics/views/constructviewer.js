@@ -8,6 +8,7 @@ import {connect } from 'react-redux';
 import {
   blockCreate,
   blockDelete,
+  blockDetach,
   blockAddComponent,
   blockClone,
   blockSetSbol,
@@ -36,6 +37,7 @@ import {
 } from '../../../actions/focus';
 import invariant from 'invariant';
 import { projectGetVersion } from '../../../selectors/projects';
+import * as undoActions from '../../../store/undo/actions';
 
 // static hash for matching viewers to constructs
 const idToViewer = {};
@@ -144,6 +146,7 @@ export class ConstructViewer extends Component {
   getBlockParent(blockId) {
     const parents = this.props.blockGetParents(blockId);
     invariant(parents && parents.length, 'blocks are expected to have parents');
+    debugger;
     return this.props.blocks[parents[0]];
   }
 
@@ -212,17 +215,17 @@ export class ConstructViewer extends Component {
    * return the scenegraph node that was representing it.
    */
   removePart(partId) {
-    const parent = this.getBlockParent(partId);
-    this.props.blockRemoveComponent(parent.id, partId);
+    this.props.blockDetach(partId);
+
+    // const parent = this.getBlockParent(partId);
+    // this.props.blockRemoveComponent(parent.id, partId);
   }
 
   /**
    * remove all parts in the list
    */
   removePartsList(partList) {
-    partList.forEach(part => {
-      this.removePart(part);
-    });
+    this.props.blockDetach(...partList)
   }
 
   /**
@@ -403,6 +406,7 @@ function mapStateToProps(state, props) {
 export default connect(mapStateToProps, {
   blockCreate,
   blockDelete,
+  blockDetach,
   blockClone,
   blockAddComponent,
   blockRemoveComponent,
