@@ -36,7 +36,7 @@ module.exports = {
     browser.assert.countelements('.construct-viewer', 0);
 
     // create a new construct with a single sketch block
-    dragFromTo(browser, '.InventoryItem:nth-of-type(1)', 10, 10, '.ProjectPage-constructs', 100, 100);
+    dragFromTo(browser, '.InventoryItem:nth-of-type(1)', 10, 10, '.cvc-drop-target', 10, 10);
 
     browser
       // expect one construct view and one block

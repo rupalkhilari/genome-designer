@@ -24,12 +24,17 @@ export default class MenuItem extends Component {
       check = <div className={this.props.checked ? 'menu-item-checked' : 'menu-item-unchecked'}></div>;
     }
 
+    let classes = 'menu-item' + (this.props.disabled ? ' disabled' : '');
+    if (this.props.classes) {
+      classes += ` ${this.props.classes}`
+    };
+
     return (
-      <div className={'menu-item' + (this.props.disabled ? ' disabled' : '')}
+      <div className={classes}
            onClick={() => !this.props.disabled && this.props.action()}>
         {check}
         {this.props.text}
-        <div className="menu-item-shortcut" disabled="this.props.disabled">{this.props.shortcut}</div>
+        <div className="menu-item-shortcut" disabled={this.props.disabled}>{this.props.shortcut}</div>
       </div>
     );
   }

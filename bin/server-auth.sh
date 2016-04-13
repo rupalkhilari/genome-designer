@@ -2,7 +2,7 @@
 set -e
 
 VERSION_FILE="./node_modules/bio-user-platform/package.json"
-VERSION="0.5.0"
+VERSION=$(cat ./auth-version.txt)
 
 MODULETMPDIR="/tmp/bio-user-platform/npm"
 

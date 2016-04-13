@@ -1,5 +1,4 @@
 import React, { Component, PropTypes } from 'react';
-import ReactDOM from 'react-dom';
 import invariant from 'invariant';
 import { connect } from 'react-redux';
 import { projectAddConstruct } from '../../../actions/projects';
@@ -12,6 +11,8 @@ import { focusConstruct, focusBlocks } from '../../../actions/focus';
 import { projectGetVersion } from '../../../selectors/projects';
 import DnD from '../dnd/dnd';
 import ConstructViewer from './constructviewer';
+
+import '../../../styles/constructviewercanvas.css';
 
 export class ConstructViewerCanvas extends Component {
 
@@ -41,8 +42,14 @@ export class ConstructViewerCanvas extends Component {
    * higher values ( constructviewers ) will get dropped on first
    */
   componentDidMount() {
-    DnD.registerTarget(ReactDOM.findDOMNode(this), {
+    DnD.registerTarget(React.findDOMNode(this.refs.dropTarget), {
       drop: this.onDrop.bind(this),
+      dragEnter: () => {
+        React.findDOMNode(this.refs.dropTarget).classList.add('cvc-hovered');
+      },
+      dragLeave: () => {
+        React.findDOMNode(this.refs.dropTarget).classList.remove('cvc-hovered');
+      },
       zorder: -1,
     });
   }
@@ -51,7 +58,7 @@ export class ConstructViewerCanvas extends Component {
    * clicking on canvas unselects all blocks
    */
   onClick = (evt) => {
-    if (evt.target === ReactDOM.findDOMNode(this)) {
+    if (evt.target === React.findDOMNode(this)) {
       evt.preventDefault();
       evt.stopPropagation();
       this.props.focusBlocks([]);
@@ -62,9 +69,11 @@ export class ConstructViewerCanvas extends Component {
    * render the component, the scene graph will render later when componentDidUpdate is called
    */
   render() {
+
     // map construct viewers so we can propagate projectId and any recently dropped blocks
     return (<div className="ProjectPage-constructs" onClick={this.onClick}>
       {this.props.children}
+      <div className="cvc-drop-target" ref="dropTarget">Drop blocks here to create a new construct.</div>
     </div>);
   }
 }

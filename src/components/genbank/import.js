@@ -81,7 +81,7 @@ class ImportGenBankModal extends Component {
         formData.append('genBankFiles', file, file.name);
       });
       const xhr = new XMLHttpRequest();
-      xhr.open('POST', '/import/project/genbank', true);
+      xhr.open('POST', '/import/genbank', true);
       xhr.onload = () => {
         if (xhr.status === 200) {
           this.props.uiShowGenBankImport(false);

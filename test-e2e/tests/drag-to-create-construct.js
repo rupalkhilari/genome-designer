@@ -33,13 +33,13 @@ module.exports = {
     browser.assert.countelements('.construct-viewer', 0);
 
     // create a new construct with a single block
-    dragFromTo(browser, '.InventoryItem:nth-of-type(1)', 10, 10, '.ProjectPage-constructs', 100, 100);
+    dragFromTo(browser, '.InventoryItem:nth-of-type(1)', 10, 10, '.cvc-drop-target', 10, 10);
 
     // open the sbol symbols and drag from there to make a new construct
     browser.click('.InventoryGroup:nth-of-type(4) .InventoryGroup-heading');
 
     // and again
-    dragFromTo(browser, '.InventoryItem:nth-of-type(1)', 10, 10, '.ProjectPage-constructs', 100, 400);
+    dragFromTo(browser, '.InventoryItem:nth-of-type(1)', 10, 10, '.cvc-drop-target', 10, 10);
 
     browser
       // expect two construct views with one block each

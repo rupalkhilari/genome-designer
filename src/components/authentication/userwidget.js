@@ -49,8 +49,6 @@ class UserWidget extends Component {
   signOut() {
     this.props.userLogout()
     .then(() => {
-      // show a grunt
-      this.props.uiSetGrunt('Your are now signed out');
       this.props.push('/homepage');
     })
     .catch((reason) => {
@@ -66,7 +64,9 @@ class UserWidget extends Component {
       menuItems={
         [
           {
-            text: <b>{`${this.props.user.firstName} ${this.props.user.lastName}`}</b>,
+            text: `${this.props.user.firstName} ${this.props.user.lastName}`,
+            disabled: true,
+            classes: 'blue-menu-items',
           },
           {
             text: 'My Account',
@@ -83,6 +83,11 @@ class UserWidget extends Component {
   }
 
   render() {
+
+    if (!this.props.userWidgetVisible) {
+      return null;
+    }
+
     if (this.props.user.userid) {
       // signed in user
       return (
@@ -105,6 +110,7 @@ class UserWidget extends Component {
 function mapStateToProps(state) {
   return {
     user: state.user,
+    userWidgetVisible: state.ui.userWidgetVisible,
   };
 }
 
