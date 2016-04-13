@@ -20,10 +20,10 @@ function run(fn, options) {
 //e.g. babel-node tools/run script
 if (process.mainModule.children.length === 0 && process.argv.length > 2) {
   delete require.cache[__filename];
-  const module = require(`./${process.argv[2]}.js`);
+  const askdjfhakjsdf = require(`./${process.argv[2]}.js`);
   //todo - for some reason module.default is not always defined...
-  console.log(module);
-  run(module).catch(err => console.error(err.stack));
+  console.log('to run', askdjfhakjsdf);
+  run(askdjfhakjsdf).catch(err => console.error(err.stack));
 }
 
 export default run;
