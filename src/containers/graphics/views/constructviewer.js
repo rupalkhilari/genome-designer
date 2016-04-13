@@ -10,6 +10,7 @@ import {
   blockDelete,
   blockDetach,
   blockAddComponent,
+  blockAddComponents,
   blockClone,
   blockSetSbol,
   blockRename,
@@ -204,11 +205,10 @@ export class ConstructViewer extends Component {
       const newBlock = (payload.source === 'inventory' || payload.copying)
         ? this.props.blockClone(block, projectVersion)
         : this.props.blocks[block];
-      this.props.blockAddComponent(parent.id, newBlock.id, index++);
       newBlocks.push(newBlock.id);
     });
-    // return all the newly inserted blocks
-    return newBlocks;
+    // now insert the blocks in one go
+    return this.props.blockAddComponents(parent.id, newBlocks, index);
   }
   /**
    * remove the given block, which we assume if part of our construct and
@@ -409,6 +409,7 @@ export default connect(mapStateToProps, {
   blockDetach,
   blockClone,
   blockAddComponent,
+  blockAddComponents,
   blockRemoveComponent,
   blockGetParents,
   blockSetSbol,

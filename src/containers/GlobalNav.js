@@ -33,7 +33,7 @@ import {
    blockGetChildrenRecursive,
  } from '../selectors/blocks';
 import { projectGetVersion } from '../selectors/projects';
-import { undo, redo } from '../store/undo/actions';
+import { undo, redo, transact, commit } from '../store/undo/actions';
 import {
   uiShowGenBankImport,
   uiToggleDetailView,
@@ -157,9 +157,11 @@ class GlobalNav extends Component {
    * add a new construct to the current project
    */
   newConstruct() {
+    this.props.transact();
     const block = this.props.blockCreate();
     this.props.blockRename(block.id, "New Construct");
     this.props.projectAddConstruct(this.props.currentProjectId, block.id);
+    this.props.commit();
     this.props.focusConstruct(block.id);
   }
 
@@ -536,6 +538,8 @@ export default connect(mapStateToProps, {
   uiShowDNAImport,
   undo,
   redo,
+  transact,
+  commit,
   push,
   uiShowGenBankImport,
   uiToggleDetailView,

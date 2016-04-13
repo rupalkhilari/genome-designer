@@ -55,7 +55,7 @@ export const focusBlocks = (blocks) => {
       //invariant(blocks.every(block => siblings.indexOf(block) >= 0), 'must pass siblings, cannot select blocks from multiple levels');
 
       const constructId = dispatch(BlockSelector.blockGetParentRoot(firstBlockId));
-      if (constructId !== getState().focus.construct) {
+      if (constructId !== getState().focus.construct && constructId !== firstBlockId) {
         dispatch({
           type: ActionTypes.FOCUS_CONSTRUCT,
           constructId,
