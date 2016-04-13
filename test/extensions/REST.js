@@ -1,7 +1,7 @@
 import { assert, expect } from 'chai';
 
 import request from 'supertest';
-const devServer = require('../../server/devServer');
+import devServer from '../../server/server';
 
 describe('Extensions', () => {
   describe('REST', () => {

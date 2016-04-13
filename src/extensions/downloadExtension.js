@@ -1,5 +1,4 @@
 import loadScript from 'load-script';
-import merge from 'lodash.merge';
 
 const cached = {};
 
