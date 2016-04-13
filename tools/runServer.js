@@ -12,10 +12,12 @@ const serverPath = './server/server.js'; //for running with babel-node (unbunble
 
 // Launch or restart the Node.js server
 function runServer(cb) {
+  console.log('runServer called');
   function onStdOut(data) {
     const time = new Date().toTimeString();
     const match = data.toString('utf8').match(RUNNING_REGEXP);
 
+    process.stderr.write(`${server.pid}`);
     process.stdout.write(time.replace(/.*(\d{2}:\d{2}:\d{2}).*/, '[$1] '));
     process.stdout.write(data);
 
@@ -34,13 +36,21 @@ function runServer(cb) {
   }
 
   //todo - use node on bundled version
+  console.log('spawning server instance in runServer.js');
   server = cp.spawn('babel-node', [serverPath], {
     env: Object.assign({ NODE_ENV: 'dev' }, process.env),
     silent: false,
   });
 
+  console.log(server.pid);
+
   server.stdout.on('data', onStdOut);
-  server.stderr.on('data', x => process.stderr.write(x));
+  server.stderr.on('data', x => {
+    const time = new Date().toTimeString();
+    process.stderr.write(`${server.pid}`);
+    process.stderr.write(time.replace(/.*(\d{2}:\d{2}:\d{2}).*/, '[$1] '));
+    process.stderr.write(x);
+  });
 }
 
 process.on('exit', () => {
