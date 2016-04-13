@@ -147,7 +147,6 @@ export class ConstructViewer extends Component {
   getBlockParent(blockId) {
     const parents = this.props.blockGetParents(blockId);
     invariant(parents && parents.length, 'blocks are expected to have parents');
-    debugger;
     return this.props.blocks[parents[0]];
   }
 
