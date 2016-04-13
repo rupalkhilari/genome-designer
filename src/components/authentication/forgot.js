@@ -49,7 +49,7 @@ class ForgotForm extends Component {
           return;
         }
         // show grunt
-        this.props.uiSetGrunt(`A link to reset your password has been sent to ${this.emailAddress}`);
+        this.props.uiSetGrunt(`Check Email: A link to reset your password has been sent to ${this.emailAddress}`);
         // close the form
         this.props.uiShowAuthenticationForm('none');
       })
@@ -79,7 +79,7 @@ class ForgotForm extends Component {
           className="input"
           placeholder="Registered Email Address"/>
         <div className={`error ${this.state.emailError.visible ? 'visible' : ''}`}>{`${this.state.emailError.text}`}</div>
-        <button type="submit">Submit Request</button>
+        <button type="submit">Send Request</button>
           <button
             type="button"
             onClick={() => {

@@ -65,16 +65,11 @@ const headersDelete = (overrides) => merge({}, defaultOptions, {
  Authentication API
  *************************/
 
-const authFetch = (...args) => {
-  return rejectingFetch(...args)
-    .then(resp => resp.json())
-    .then(json => {
-      if (json.message) {
-        return Promise.reject(json);
-      }
-      return json;
-    });
-};
+ const authFetch = (...args) => {
+   return rejectingFetch(...args)
+     .then(resp => resp.json())
+     .catch(resp => Promise.reject(resp.json()));
+ };
 
 // login with email and password and set the sessionKey (cookie) for later use
 export const login = (user, password) => {
@@ -307,11 +302,11 @@ export const exportProject = (id, inputs) => {
     .then(resp => resp.json());
 };
 
-export const importConstruct = (id, input) => {
+export const importConstruct = (id, input, projectId) => {
   const header = {   headers: {
     'Content-Type': 'text/plain',
   }};
-  return rejectingFetch(importPath(`construct/${id}`), headersPost(input, header))
+  return rejectingFetch(importPath(`${id}/${projectId}`), headersPost(input, header))
     .then(resp => resp.json());
 };
 
@@ -319,7 +314,7 @@ export const importProject = (id, input) => {
   const header = {   headers: {
     'Content-Type': 'text/plain',
   }};
-  return rejectingFetch(importPath(`project/${id}`), headersPost(input, header))
+  return rejectingFetch(importPath(`${id}`), headersPost(input, header))
     .then(resp => resp.json());
 };
 

@@ -15,9 +15,8 @@ export const SymbolPicker = ({current, readOnly, onSelect}) => {
                      alt={symbolObj.name}
                      title={symbolObj.name}
                      key={symbol}
-                     onClick={() => !readOnly && onSelect(symbol)}
-                     style={{backgroundImage: `url(${symbolObj.images.templates})`}}>
-                     <SvgSbol stroke={0.75} width="100%" height="100%" color="white" symbolName={symbol} key={symbol}/>
+                     onClick={() => !readOnly && onSelect(symbol)}>
+                     <SvgSbol stroke={0.5} width="100%" height="100%" color="white" symbolName={symbol} key={symbol}/>
                    </a>
                  );
         })}

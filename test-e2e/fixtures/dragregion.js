@@ -30,7 +30,6 @@ module.exports = function (browser, srcSelector, srcX, srcY, dstX, dstY, steps) 
   }, [srcSelector, srcX, srcY, dstX, dstY, steps], function(result) {
     var pts = result.value;
     for(var i = 0; i < pts.length; i +=1 ) {
-      console.log(pts[i].x,' ', pts[i].y);
       browser.moveToElement(srcSelector, pts[i].x, pts[i].y);
     }
   });

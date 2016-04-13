@@ -29,21 +29,21 @@ module.exports = {
     // start with a fresh project
     newProject(browser);
 
-    // double check there are no construct viewers present
-    browser.assert.countelements('.construct-viewer', 0);
+    // expect one construct
+    browser.assert.countelements('.construct-viewer', 1);
 
     // create a new construct with a single block
-    dragFromTo(browser, '.InventoryItem:nth-of-type(1)', 10, 10, '.ProjectPage-constructs', 100, 100);
+    dragFromTo(browser, '.InventoryItem:nth-of-type(1)', 10, 10, '.cvc-drop-target', 10, 10);
 
     // open the sbol symbols and drag from there to make a new construct
     browser.click('.InventoryGroup:nth-of-type(4) .InventoryGroup-heading');
 
     // and again
-    dragFromTo(browser, '.InventoryItem:nth-of-type(1)', 10, 10, '.ProjectPage-constructs', 100, 400);
+    dragFromTo(browser, '.InventoryItem:nth-of-type(1)', 10, 10, '.cvc-drop-target', 10, 10);
 
     browser
-      // expect two construct views with one block each
-      .assert.countelements('.construct-viewer', 2)
+      // expect three construct views, two with one block each
+      .assert.countelements('.construct-viewer', 3)
       .assert.countelements('.sbol-glyph', 2)
       // expect SVG elements for each sbol symbol
       .assert.countelements('.construct-viewer svg', 2)

@@ -47,13 +47,22 @@ class RegisterForm extends Component {
           this.showServerErrors(json);
           return;
         }
-        this.props.uiSetGrunt(`Your password for ${this.getParameter('e')} has been set. You may now sign in.`);
-        // success so open the login form
-        this.props.uiShowAuthenticationForm('signin');
+        this.props.uiSetGrunt(`Your password has been reset`);
+        // we can sign in the user since we have their password and email
+        this.props.userLogin(this.getParameter('e'), this.password)
+          .then(user => {
+            // close the form
+            this.props.uiShowAuthenticationForm('none');
+            this.props.push(`/project/${getItem('mostRecentProject') || 'test'}`);
+          })
+          .catch((reason) => {
+            // if the sign in failed just redirect to sign in
+            this.props.uiShowAuthenticationForm('signin');
+          });
       })
       .catch((reason) => {
         this.showServerErrors({
-          message: 'Unexpected error, please check your connection',
+          message: reason.message || 'Unexpected error, please check your connection',
         });
       });
   }
@@ -140,12 +149,12 @@ class RegisterForm extends Component {
            ref="password"
            type="password"
            className="input"
-           placeholder="Password"/>
+           placeholder="New password"/>
         <input
           ref="passwordConfirm"
           type="password"
           className="input"
-          placeholder="Confirm Password"/>
+          placeholder="Confirm new password"/>
         <div className={`error ${this.state.password2Error.visible ? 'visible' : ''}`}>{`${this.state.password2Error.text}`}</div>
 
         <button type="submit">Reset Password</button>

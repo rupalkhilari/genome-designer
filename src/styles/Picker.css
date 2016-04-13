@@ -43,12 +43,17 @@
     }
 
     svg {
+      transition: opacity var(--timing-fast) ease-out;
       opacity: 0.5;
+    }
+
+    &:hover svg {
+      opacity: 0.7;
     }
 
     &.active svg {
       opacity: 1;
-    }
+    }    
   }
 
   &.readOnly {

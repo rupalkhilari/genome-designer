@@ -7,7 +7,7 @@ var newConstruct = require('../fixtures/newconstruct');
 var clickMainMenu = require('../fixtures/click-main-menu');
 
 module.exports = {
-  'Test that we can select empty blocks from the edit menu' : function (browser) {
+  'Test menu shortcuts' : function (browser) {
 
     // maximize for graphical tests
     browser.windowSize('current', 1200, 900);
@@ -37,13 +37,20 @@ module.exports = {
     dragFromTo(browser, '.InventoryItem:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 300, 30);
     dragFromTo(browser, '.InventoryItem:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 300, 30);
 
-    // click select empty blocks in main menu
-    clickMainMenu(browser, 2, 11);
+    // now send some keyboard shortcuts to select all and cut the blocks.
+
+    // now paste the blocks
 
     browser
-      .pause(1000)
+      .keys([browser.Keys.COMMAND, 'a'])
       // ensure we have all 3 blocks elements selected
       .assert.countelements(".scenegraph-userinterface-selection", 3)
+      // cut all selected blocks
+      .keys([browser.Keys.NULL, browser.Keys.COMMAND, 'x'])
+      .pause(1000)
+      // expect all selections and blocks to be removed
+      .assert.countelements(".scenegraph-userinterface-selection", 0)
+      .assert.countelements(".sbol-glyph", 0)
       .end();
   }
 };
