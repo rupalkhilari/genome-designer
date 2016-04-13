@@ -6,6 +6,7 @@ import {
   blockCreate,
   blockAddComponent,
   blockClone,
+  blockRename,
 } from '../../../actions/blocks';
 import { focusConstruct, focusBlocks } from '../../../actions/focus';
 import { projectGetVersion } from '../../../selectors/projects';
@@ -30,6 +31,7 @@ export class ConstructViewerCanvas extends Component {
   onDrop(globalPosition, payload, event) {
     // make new construct
     const construct = this.props.blockCreate();
+    this.props.blockRename(construct.id, 'New Construct');
     this.props.projectAddConstruct(this.props.currentProjectId, construct.id);
     const constructViewer = ConstructViewer.getViewerForConstruct(construct.id);
     invariant(constructViewer, 'expect to find a viewer for the new construct');
@@ -89,6 +91,7 @@ export default connect(mapStateToProps, {
   focusBlocks,
   projectAddConstruct,
   blockCreate,
+  blockRename,
   blockAddComponent,
   projectGetVersion,
   blockCreate,

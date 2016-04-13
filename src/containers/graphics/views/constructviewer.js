@@ -114,6 +114,11 @@ export class ConstructViewer extends Component {
     // handle window resize to reflow the layout
     this.resizeDebounced = debounce(this.windowResized.bind(this), 5);
     window.addEventListener('resize', this.resizeDebounced);
+
+    // if there is no focused construct, then we should focus our construct
+    if (!this.props.focus.construct) {
+      this.props.focusConstruct(this.props.constructId);
+    }
   }
   /**
    * update scene graph after the react component updates
