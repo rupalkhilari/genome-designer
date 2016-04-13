@@ -64,7 +64,7 @@ export default class SBOLGlyph2D extends Glyph2D {
         if (template) {
           const svg = template.cloneNode(true);
           // ensure svg is stroked in black
-          setAttribute(svg, 'stroke', 'black', true);
+          setAttribute(svg, 'stroke', '#1D222D', true);
           // remove the ID attribute from the clone to avoid duplicates
           svg.removeAttribute('id');
           // add to the container

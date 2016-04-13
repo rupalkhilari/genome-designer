@@ -2,7 +2,8 @@
 set -e
 
 VERSION_FILE="./node_modules/bio-user-platform/package.json"
-VERSION="0.4.0"
+VERSION=$(cat ./auth-version.txt)
+LOCALHOST="http://localhost:3000"
 
 correct_cwd () {
     if [ ! -f "package.json" ]
@@ -40,4 +41,4 @@ then
 fi
 
 echo "executing $TARGET with authentication enabled..."
-BIO_NANO_AUTH=1 ${TARGET}
+BIO_NANO_AUTH=1 HOST_URL=${LOCALHOST} ${TARGET}

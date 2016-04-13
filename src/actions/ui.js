@@ -42,6 +42,16 @@ export const uiShowMainMenu = (showMainMenu) => {
   };
 };
 
+export const uiShowUserWidget = (userWidgetVisible) => {
+  return (dispatch, getState) => {
+    dispatch({
+      type: ActionTypes.UI_SHOW_USER_WIDGET,
+      userWidgetVisible,
+    });
+    return userWidgetVisible;
+  };
+};
+
 export const uiSetGrunt = (gruntMessage) => {
   return (dispatch, getState) => {
     dispatch({

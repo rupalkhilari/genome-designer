@@ -6,6 +6,8 @@ var registerViaHomepage = function(browser) {
     .waitForElementPresent('.homepage', 5000, 'Expected homepage element to be present')
     // open sign in dialog
     .click('.homepage-getstarted')
+    // allow transition to complete
+    .pause(1000)
     // wait for it to be present
     .waitForElementPresent('#auth-signin', 5000, 'Expected form to become visible')
     // ensure it is the sign in dialog
@@ -18,6 +20,7 @@ var registerViaHomepage = function(browser) {
     .waitForElementPresent('#auth-signup', 5000, 'Expected form to become visible')
     // submit with no values to ensure errors appear
     .submitForm('#auth-signup')
+    .pause(1000)
     // expect 6 errors to appear ( name error, two email errors, two password erros TOS error )
     .assert.countelements('.error.visible', 6);
     // create fields with viable values including a random email
@@ -42,7 +45,8 @@ var registerViaHomepage = function(browser) {
     .setValue('#auth-signup input:nth-of-type(6)', password)
     .click('.checkbox input')
     .submitForm('#auth-signup')
-    .waitForElementPresent('div.signed-in', 5000, 'expected to be signed in');
+    .waitForElementNotPresent('#auth-signup', 5000, 'expected form to be dimmissed')
+    .waitForElementPresent('.userwidget', 5000, 'expected to land on page with the user widget visible')
 
   return {email, password, firstName, lastName};
 

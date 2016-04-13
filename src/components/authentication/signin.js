@@ -27,7 +27,12 @@ class SignInForm extends Component {
 
   constructor() {
     super();
-    this.state = Object.assign({}, errors);
+    this.state = Object.assign({}, errors, {canSubmit: false});
+  }
+
+  onForgot(evt) {
+    evt.preventDefault();
+    this.props.uiShowAuthenticationForm('forgot');
   }
 
   // on form submission, first perform client side validation then submit
@@ -38,14 +43,12 @@ class SignInForm extends Component {
 
     this.props.userLogin(this.emailAddress, this.password)
       .then(user => {
-        // set grunt message with login information
-        this.props.uiSetGrunt(`You are now signed in as ${user.firstName} ${user.lastName} ( ${user.email} )`);
         // close the form
         this.props.uiShowAuthenticationForm('none');
         this.props.push(`/project/${getItem('mostRecentProject') || 'test'}`);
       })
       .catch((reason) => {
-        const defaultMessage = 'Unexpected error, please check your connection';
+        const defaultMessage = 'Email address or password are not recognized.';
         const { message = defaultMessage } = reason;
         this.showServerErrors({
           message,
@@ -79,33 +82,56 @@ class SignInForm extends Component {
     });
   }
 
+  onTextChanged() {
+    this.setState({
+      canSubmit: this.emailAddress && this.password,
+    });
+  }
+
   render() {
+
+    const registerStyle = {
+      textAlign: 'center',
+      margin: '1rem 0 2rem 0',
+    };
+
     return (
       <form
         id="auth-signin"
         className="gd-form authentication-form"
         onSubmit={this.onSubmit.bind(this)}>
         <div className="title">Sign In</div>
+          <span style={registerStyle}>{"Don't have an account? "}
+            <a className="blue-link" href="/" onClick={this.onRegister.bind(this)}>Sign Up&nbsp;</a>
+            <span>{"- it's free"}</span>
+          </span>
         <input
           ref="emailAddress"
           className="input"
-          placeholder="Email Address"/>
+          placeholder="Email Address"
+          onChange={this.onTextChanged.bind(this)}
+          />
         <input
           type="password"
           ref="password"
+          maxLength={32}
           className="input"
+          onChange={this.onTextChanged.bind(this)}
           placeholder="Password"/>
+        <div className="forgot-box">
+          <a className="blue-link forgot-link" href="/" onClick={this.onForgot.bind(this)}>Forgot?</a>
+        </div>
         <div
           className={`error ${this.state.signinError.visible ? 'visible' : ''}`}>{`${this.state.signinError.text}`}</div>
-        <button type="submit">Sign In</button>
+        <button
+          type="submit"
+          disabled={!this.state.canSubmit}
+          >Sign In</button>
         <button
           type="button"
           onClick={() => {
             this.props.uiShowAuthenticationForm('none');
           }}>Cancel</button>
-        <a
-          href="/"
-          onClick={this.onRegister.bind(this)}>New Users Register Here</a>
       </form>
     );
   }

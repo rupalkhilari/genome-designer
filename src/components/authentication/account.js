@@ -58,6 +58,19 @@ class AccountForm extends Component {
   onSubmit(evt) {
     // submission occurs via REST not form submission
     evt.preventDefault();
+
+    // if user hasn't changed name, email or added a new password
+    // then just close the dialog
+    if (this.firstName === this.props.user.firstName &&
+        this.lastName === this.props.user.lastName &&
+        !this.emailAddress &&
+        !this.emailConfirm &&
+        !this.password &&
+        !this.passwordConfirm) {
+          this.props.uiShowAuthenticationForm('none');
+          return;
+        }
+
     // client side validation first
     if (this.clientValidation()) {
       return;
@@ -104,15 +117,15 @@ class AccountForm extends Component {
 
     // parse individual problems and report
     if (!this.currentPassword) {
-      newState.currentPasswordError = { visible: true, text: 'Please enter your current password'};
+      newState.currentPasswordError = { visible: true, text: 'Current password not recognized as entered.'};
     }
 
     if (this.emailAddress && this.emailAddress !== this.emailConfirm) {
-      newState.email2Error = { visible: true, text: 'Email addresses do not match'};
+      newState.email2Error = { visible: true, text: 'The email addresses entered don\’t match.'};
     }
 
     if (this.password && this.password !== this.passwordConfirm) {
-      newState.password2Error = { visible: true, text: 'Passwords do not match'};
+      newState.password2Error = { visible: true, text: 'The passwords entered don\’t match'};
     }
 
     // display appropriate errors
@@ -141,7 +154,7 @@ class AccountForm extends Component {
       this.setState({
         currentPasswordError: {
           visible: true,
-          text: 'Incorrect password',
+          text: 'Current password not recognized as entered',
         },
       });
       return;
@@ -203,15 +216,16 @@ class AccountForm extends Component {
         id="account-form"
         className="gd-form authentication-form"
         onSubmit={this.onSubmit.bind(this)}>
-        <div className="title">Update Account</div>
+        <div className="title">Account Settings</div>
 
         <input
           ref="currentPassword"
           type="password"
           className="input"
-          placeholder="Current Password"/>
+          placeholder="Enter your current password"/>
         <div className={`error ${this.state.currentPasswordError.visible ? 'visible' : ''}`}>{`${this.state.currentPasswordError.text}`}</div>
 
+        <span className="left-label">Name</span>
         <input
           ref="firstName"
           className="input"
@@ -225,29 +239,29 @@ class AccountForm extends Component {
         <div className={`error ${this.state.nameError.visible ? 'visible' : ''}`}>{`${this.state.nameError.text}`}</div>
 
         <div className={`error ${this.state.email1Error.visible ? 'visible' : ''}`}>{`${this.state.email1Error.text}`}</div>
+        <span className="left-label">Email address</span>
         <input
           ref="emailAddress"
           className="input"
-          placeholder="Email Address"
-          defaultValue={this.props.user.email}/>
+          placeholder="New email address"/>
         <input
           ref="emailConfirm"
           className="input"
-          placeholder="Confirm Email Address"
-          defaultValue={this.props.user.email}/>
+          placeholder="Confirm new email address"/>
         <div className={`error ${this.state.email2Error.visible ? 'visible' : ''}`}>{`${this.state.email2Error.text}`}</div>
 
         <div className={`error ${this.state.password1Error.visible ? 'visible' : ''}`}>{`${this.state.password1Error.text}`}</div>
+        <span className="left-label">Change Password</span>
         <input
           ref="password"
           type="password"
           className="input"
-          placeholder="Password"/>
+          placeholder="New password"/>
         <input
           ref="passwordConfirm"
           type="password"
           className="input"
-          placeholder="Confirm Password"/>
+          placeholder="Confirm new password"/>
         <div className={`error ${this.state.password2Error.visible ? 'visible' : ''}`}>{`${this.state.password2Error.text}`}</div>
 
         <button type="submit">Update Account</button>

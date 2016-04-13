@@ -22,9 +22,6 @@ module.exports = {
     // start with a new project to ensure no construct viewers are visible
     newProject(browser);
 
-    // double check there are no construct viewers present
-    browser.assert.countelements('.construct-viewer', 0);
-
     // click the file menu -> Upload Genbank File
     clickMainMenu(browser, 1, 5);
 

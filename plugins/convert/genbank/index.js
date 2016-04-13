@@ -10,7 +10,7 @@ import ProjectDefinition from '../../../src/schemas/Project';
 import md5 from 'md5';
 import * as persistence from '../../../server/data/persistence';
 
-import {chunk} from 'lodash';
+import {chunk, cloneDeep} from 'lodash';
 
 const exec = require('child_process').exec;
 const uuid = require('node-uuid');
@@ -227,6 +227,7 @@ const exportProjectStructure = (project, blocks) => {
     .catch(err => {
       console.log('ERROR IN PYTHON');
       console.log(err);
+      return Promise.reject(err);
     });
 };
 
@@ -248,13 +249,22 @@ const loadSequences = (blocks) => {
 
 // This is the entry function for project export
 // Given a project and a set of blocks, generate the genbank format
-export const exportProject = (project, blocks) => {
-  return loadSequences(blocks)
-    .then(blocksWithSequences => {
-      return exportProjectStructure(project, blocksWithSequences)
-        .then(exportStr => {
-          return Promise.resolve(exportStr);
-        });
+export const exportProject = (roll) => {
+  return loadSequences(roll.blocks)
+    .then(blockWithSequences => exportProjectStructure(roll.project, blockWithSequences))
+    .then(exportStr => Promise.resolve(exportStr));
+};
+
+// This is the entry function for construct export
+// Given a project and a set of blocks, generate the genbank format for a particular construct within that project
+export const exportConstruct = (input) => {
+  return loadSequences(input.roll.blocks)
+    .then(blockWithSequences => {
+      const theRoll = merge(cloneDeep(input), {project: {components: [ input.constructId ]}});
+      // Rewrite the components so that it's only the requested construct!
+      return exportProjectStructure(theRoll.project, blockWithSequences)
+        .then(exportStr => Promise.resolve(exportStr))
+        .catch(err => Promise.reject(err));
     });
 };
 

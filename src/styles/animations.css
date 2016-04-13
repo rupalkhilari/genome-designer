@@ -3,6 +3,11 @@
   to {transform:rotate(360deg);}
 }
 
+@keyframes scrollingBackground {
+  from { background-position: 0 0; }
+  to { background-position: 200% 0; }
+}
+
 .loader {
   font-size: 20px;
   text-indent: -9999em;

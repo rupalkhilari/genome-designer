@@ -31,19 +31,16 @@ module.exports = {
     // start with a fresh project
     newProject(browser);
 
-    // double check there are no construct viewers present
-    browser.assert.countelements('.construct-viewer', 0);
-
     // create a new construct with a single block
-    dragFromTo(browser, '.InventoryItem:nth-of-type(1)', 10, 10, '.ProjectPage-constructs', 100, 100);
+    dragFromTo(browser, '.InventoryItem:nth-of-type(1)', 10, 10, '.cvc-drop-target', 10, 10);
 
     browser
-      // expect two construct views with one block each
-      .assert.countelements('.construct-viewer', 1)
+      // expect two construct views with one block
+      .assert.countelements('.construct-viewer', 2)
       .assert.countelements('.sbol-glyph', 1);
 
-
-    var blockBounds = openNthBlockContextMenu(browser, '.sceneGraph', 0);
+    // delete block from second construct viewer
+    var blockBounds = openNthBlockContextMenu(browser, '.construct-viewer:nth-of-type(2) .sceneGraph', 0);
     clickNthContextMenuItem(browser, 3);
 
     // expect the block to be deleted

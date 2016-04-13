@@ -111,7 +111,6 @@ export class InventoryGroupSearch extends Component {
   };
 
   render() {
-    console.log('rendering');
     const { searchTerm } = this.props;
     const { searching, sourceList, searchResults, sourcesVisible, groupBy } = this.state;
 
@@ -178,6 +177,7 @@ export class InventoryGroupSearch extends Component {
     return (
       <div className={'InventoryGroup-content InventoryGroupSearch'}>
         <InventorySearch searchTerm={searchTerm}
+                         isSearching={searching}
                          onSearchChange={this.handleSearchChange}/>
         <InventorySources registry={registry}
                           sourceList={sourceList}
@@ -189,8 +189,6 @@ export class InventoryGroupSearch extends Component {
         <div className="InventoryGroupSearch-groups">
           {groupsContent}
         </div>
-
-        {searching && <div className="loader"/>}
       </div>
     );
   }
