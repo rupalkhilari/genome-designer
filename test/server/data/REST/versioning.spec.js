@@ -6,7 +6,7 @@ import Block from '../../../../src/models/Block';
 import * as filePaths from '../../../../server/utils/filePaths';
 import * as versioning from '../../../../server/data/versioning';
 import * as persistence from '../../../../server/data/persistence';
-import devServer from '../../../../server/devServer';
+import devServer from '../../../../server/server';
 
 describe('REST', () => {
   describe('Data', () => {

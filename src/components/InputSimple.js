@@ -75,6 +75,7 @@ export default class InputSimple extends Component {
         {(this.props.useTextarea) &&
         <textarea
           ref="input"
+          rows="5"
           className="InputSimple-input"
           placeholder={this.props.placeholder}
           defaultValue={this.props.value || this.props.default}

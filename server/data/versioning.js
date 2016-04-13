@@ -3,8 +3,9 @@ import invariant from 'invariant';
 import path from 'path';
 import { errorVersioningSystem, errorDoesNotExist } from '../utils/errors';
 
+//this should receieve an absolute path. want to avoid using __dirname or $builddir for build consistency. use module filePaths.
 const makePath = (fsPath) => {
-  return path.resolve(__dirname, fsPath);
+  return path.resolve(fsPath);
 };
 
 export const initialize = (path) => {
