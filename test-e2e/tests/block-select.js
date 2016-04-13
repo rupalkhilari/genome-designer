@@ -32,15 +32,14 @@ module.exports = {
     // start with a fresh project
     newProject(browser);
 
-    // double check there are no construct viewers present
-    browser.assert.countelements('.construct-viewer', 0);
+    // expect one construct
+    browser.assert.countelements('.construct-viewer', 1);
 
-    // create a new construct with a single block
-    dragFromTo(browser, '.InventoryItem:nth-of-type(1)', 10, 10, '.cvc-drop-target', 10, 10);
+    // add a single block
+    dragFromTo(browser, '.InventoryItem:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 30, 30);
 
     browser
-      // expect two construct views with one block each
-      .assert.countelements('.construct-viewer', 1)
+      // expect one block
       .assert.countelements('.sbol-glyph', 1);
 
     // drag some other blocks into the construct

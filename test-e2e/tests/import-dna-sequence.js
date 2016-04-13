@@ -33,10 +33,10 @@ module.exports = {
     newProject(browser);
 
     // double check there are no construct viewers present
-    browser.assert.countelements('.construct-viewer', 0);
+    browser.assert.countelements('.construct-viewer', 1);
 
-    // create a new construct with a single sketch block
-    dragFromTo(browser, '.InventoryItem:nth-of-type(1)', 10, 10, '.cvc-drop-target', 10, 10);
+    // add block to construct
+    dragFromTo(browser, '.InventoryItem:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 30, 30);
 
     browser
       // expect one construct view and one block
@@ -70,9 +70,6 @@ module.exports = {
     // now start a new project and ensure the dialog is no operational with no block selected
     // start with a fresh project
     newProject(browser);
-
-    // double check there are no construct viewers present
-    browser.waitForElementNotPresent('.construct-viewer', 5000, 'expect no construct viewers')
 
     // open import DNA from main edit menu
     importDNAFromMainMenu(browser);
