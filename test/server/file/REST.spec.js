@@ -3,7 +3,7 @@ import request from 'supertest';
 import fs from 'fs';
 import { createFilePath } from '../../../server/utils/filePaths';
 
-const devServer = require('../../../server/devServer');
+const devServer = require('../../../server/server');
 
 describe('Server', () => {
   describe('Files', () => {
