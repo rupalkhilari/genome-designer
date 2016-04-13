@@ -70,11 +70,11 @@ async function start() {
     //const clientCompiler = webpack([clientConfig, serverConfig]);
 
     const clientCompiler = webpack(clientConfig);
-    const clientDevMiddleware = () => webpackDevMiddleware(clientCompiler, {
+    const clientDevMiddleware = webpackDevMiddleware(clientCompiler, {
       publicPath: clientConfig.output.publicPath,
       stats: clientConfig.stats.colors,
     });
-    const hotMiddleware = () => webpackHotMiddleware(clientCompiler);
+    const hotMiddleware = webpackHotMiddleware(clientCompiler);
 
     //need to essentially build twice so that browsersync starts with a valid bundle
     //use browsersync and its proxy so that we dont need to explicitly include it in server code, only when debugging...
@@ -91,6 +91,10 @@ async function start() {
             // no need to watch *.css, since imported so webpack will handle
             files: [
               'app/content/**/*.*',
+              //todo - webpack server, not watch
+              //while we are not bundling the server, we can set up a watch to recompile on changes
+              'server/**/*',
+              'plugins/**/*',
             ],
 
             ...(DEBUG ? {} : { notify: false, ui: false }),
@@ -98,8 +102,8 @@ async function start() {
             proxy: {
               target: host,
               middleware: [
-                clientDevMiddleware(),
-                hotMiddleware(),
+                clientDevMiddleware,
+                hotMiddleware,
               ],
             },
           }, resolve);
@@ -110,13 +114,18 @@ async function start() {
       });
     };
 
-    clientCompiler.plugin('failed', (err) => console.warn(err));
-    clientCompiler.plugin('done', () => handleServerBundleComplete());
+    // middleware will initiate the build for us, we dont need to explicit run()
+    // if we do, might call handleServerBundleComplete twice (because two calls before browsersync set up)
 
-    console.info('beginning webpack build');
-    clientCompiler.run((err) => {
+    clientCompiler.plugin('failed', (err) => console.warn(err));
+    clientCompiler.plugin('done', handleServerBundleComplete);
+
+    /*
+     console.info('beginning webpack build');
+     clientCompiler.run((err) => {
       if (err) throw err;
-    });
+     });
+     */
   });
 }
 

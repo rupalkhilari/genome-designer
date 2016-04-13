@@ -4,7 +4,7 @@ import { serverConfig } from './webpack.config';
 //Creates application bundles from the source files.
 function bundleServer() {
   return new Promise((resolve, reject) => {
-    webpack(serverConfig).watch({}, (err, stats) => {
+    webpack(serverConfig).run((err, stats) => {
       if (err) {
         return reject(err);
       }

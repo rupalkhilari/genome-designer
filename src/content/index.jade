@@ -27,4 +27,5 @@ html
       include ../images/sbolSymbols/templates/rnaStability.svg
       include ../images/sbolSymbols/templates/terminator.svg
 
-    script(src='/client.js')
+    //served by webpack proxy in dev, built in bundle
+    script(src='/static/client.js')

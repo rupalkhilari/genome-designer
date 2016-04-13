@@ -116,15 +116,11 @@ app.get('*', (req, res) => {
   }
 });
 
-console.log('about to start listening!');
-console.log(new Error().stack);
-
 //i have no idea why, but sometimes the server tries to build when the port is already in use, so lets just check if port is in use and if it is, then dont try to listen on it.
 const isPortFree = (port, cb) => {
   const net = require('net');
   const tester = net.createServer()
     .once('error', (err) => {
-      console.log('port was not free', port);
       if (err.code !== 'EADDRINUSE') {
         return cb(err, false);
       }
@@ -132,12 +128,15 @@ const isPortFree = (port, cb) => {
     })
     .once('listening', () => {
       tester.once('close', () => {
-        console.log('port was free', port);
         cb(null, true);
       })
       .close();
     })
-    .listen(port);
+    .listen({
+      port,
+      host: 'localhost',
+      exclusive: true,
+    });
 };
 
 const startServer = () => app.listen(port, hostname, (err) => {

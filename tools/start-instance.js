@@ -14,9 +14,10 @@ async function start() {
     const clientCompiler = webpack(clientConfig);
 
     console.info('beginning webpack build');
+    //explicitly compile since we arent using any middleware
     clientCompiler.run(err => {
       console.log('starting server');
-      runServer();
+      runServer(() => resolve);
     });
   });
 }
