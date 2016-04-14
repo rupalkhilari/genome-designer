@@ -19,10 +19,10 @@ export class InventoryItem extends Component {
         image: PropTypes.string,
       }).isRequired,
     }).isRequired,
-    onDrop: PropTypes.func,
-    onDragStart: PropTypes.func,
-    onDragComplete: PropTypes.func,
-    onSelect: PropTypes.func,
+    onDrop: PropTypes.func, //can return promise (e.g. update store), value is used for onDrop in DnD registered drop target
+    onDragStart: PropTypes.func, //transact
+    onDragComplete: PropTypes.func, //commit
+    onSelect: PropTypes.func, //e.g. when clicked
     forceBlocks: PropTypes.array.isRequired,
     inspectorToggleVisibility: PropTypes.func.isRequired,
     focusForceBlocks: PropTypes.func.isRequired,
@@ -57,7 +57,9 @@ export class InventoryItem extends Component {
         }
       },
       onDragComplete: (target, position, payload) => {
-        this.props.onDragComplete && this.props.onDragComplete(payload.item, target, position);
+        if (this.props.onDragComplete) {
+          this.props.onDragComplete(payload.item, target, position);
+        }
       },
     });
   }

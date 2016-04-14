@@ -33,7 +33,11 @@
   }
 
   &.expanded {
-    flex-shrink: 1;
+    flex-shrink: 0;
+
+    .InventoryListGroup-title {
+      font-weight: bold;
+    }
 
     .InventoryListGroup-toggle {
       transform: rotate(90deg);
@@ -42,6 +46,7 @@
 
   &.active {
     .InventoryListGroup-title {
+      font-weight: bold;
       color: var(--colors-selected);
     }
   }
