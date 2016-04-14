@@ -13,7 +13,6 @@ async function start() {
   await new Promise(resolve => {
     const clientCompiler = webpack(clientConfig);
 
-    console.info('beginning webpack build');
     //explicitly compile since we arent using any middleware
     clientCompiler.run(err => {
       console.log('starting server');
