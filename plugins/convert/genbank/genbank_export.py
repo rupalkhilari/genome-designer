@@ -12,8 +12,10 @@ def add_features(block, allblocks, gb, start):
     # Set the type based on the original type or the sbol type
     if "type" in block["metadata"] and block["metadata"]["type"] != 'filler':
         sf.type = block["metadata"]["type"]
-    elif "rules" in block and "sbol" in block["rules"]:
+    elif "rules" in block and "sbol" in block["rules"] and block["rules"]["sbol"] is not None:
         sf.type = block["rules"]["sbol"]
+    else:
+        sf.type = "unknown"
 
     # Set up the location of the feature
     feature_strand = 1
@@ -67,6 +69,19 @@ def add_features(block, allblocks, gb, start):
 
     return end
 
+# Return the full sequence from a block,
+# building it from the sequence of children
+def build_sequence(block, allblocks):
+    seq = ""
+    if len(block["components"]) > 0:
+        for component in block["components"]:
+            block = [b for b in allblocks if b["id"] == component][0]
+            seq = seq + build_sequence(block, allblocks)
+    else:
+        if block["sequence"]["sequence"]:
+            seq = block["sequence"]["sequence"]
+    return seq
+
 # Take a project structure and a list of all the current blocks, convert this data to a genbank file and store it
 # in filename.
 def project_to_genbank(filename, project, allblocks):
@@ -85,7 +100,8 @@ def project_to_genbank(filename, project, allblocks):
         else:
             genbank_id = block["metadata"]["name"]
 
-        seq_obj = SeqIO.SeqRecord(Seq.Seq(block["sequence"]["sequence"],Seq.Alphabet.DNAAlphabet()), genbank_id)
+        sequence = build_sequence(block, allblocks)
+        seq_obj = SeqIO.SeqRecord(Seq.Seq(sequence,Seq.Alphabet.DNAAlphabet()), genbank_id)
 
         if "genbank" in block["metadata"]:
             # Set up all the annotations in the genbank record. These came originally from genbank.
