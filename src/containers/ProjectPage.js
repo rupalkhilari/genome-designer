@@ -36,6 +36,7 @@ class ProjectPage extends Component {
     if (!this.lastProjectId || nextProps.projectId !== this.props.projectId) {
       this.lastProjectId = nextProps.projectId;
       this.props.focusProject(nextProps.projectId);
+      console.log('setting focus project', nextProps.projectId);
     }
   }
 
