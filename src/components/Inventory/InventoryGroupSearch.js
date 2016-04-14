@@ -186,7 +186,7 @@ export class InventoryGroupSearch extends Component {
                                              activeTabKey={groupBy}
                                              onTabSelect={(tab) => this.handleTabSelect(tab.key)}/>)}
 
-        <div className="InventoryGroupSearch-groups">
+        <div className="InventoryGroup-contentInner">
           {groupsContent}
         </div>
       </div>
