@@ -12,8 +12,8 @@ export class InventoryList extends Component {
     items: PropTypes.arrayOf(PropTypes.shape({
       id: PropTypes.string,
     })).isRequired,
-    onDrop: PropTypes.func,
-    onSelect: PropTypes.func,
+    onDrop: PropTypes.func, //passed to items
+    onSelect: PropTypes.func, //passed to items
     transact: PropTypes.func,
     commit: PropTypes.func,
   };

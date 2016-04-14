@@ -1,13 +1,14 @@
-import React, {Component, PropTypes} from 'react';
-import {connect} from 'react-redux';
-import {push} from 'react-router-redux';
-import {projectGet, projectListAllBlocks} from '../../selectors/projects';
-import {projectList, projectLoad} from '../../actions/projects';
-import {focusForceProject} from '../../actions/focus';
-import {block as blockDragType} from '../../constants/DragTypes';
+import React, { Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
+import { push } from 'react-router-redux';
+import { projectGet, projectListAllBlocks } from '../../selectors/projects';
+import { projectList, projectLoad } from '../../actions/projects';
+import { focusForceProject } from '../../actions/focus';
+import { block as blockDragType } from '../../constants/DragTypes';
 
 import InventoryListGroup from './InventoryListGroup';
 import InventoryList from './InventoryList';
+import InventoryTabs from './InventoryTabs';
 
 //temp - non-empty to handle test project
 const loadedProjects = {
@@ -30,6 +31,11 @@ export class InventoryGroupProjects extends Component {
   constructor() {
     super();
     this.clicks = 0;
+
+    this.inventoryTabs = [
+      { key: 'source', name: 'By Project' },
+      { key: 'type', name: 'By Type' },
+    ];
   }
 
   state = {
@@ -48,6 +54,8 @@ export class InventoryGroupProjects extends Component {
     }
 
     //todo - dont load blocks into store until the project is loaded (update selector)
+    //we just want to load when the project is actually loaded. Dont add to store if we're going to just push it on with forceBlocks
+    //however, need to make sure that blockClone will work. Perhaps we can add them to the store before the drag starts
     //todo - caching should be at API level, not in this component
 
     return !!loadedProjects[projectId]
@@ -94,9 +102,13 @@ export class InventoryGroupProjects extends Component {
     }
   };
 
+  handleTabSelect = (key) => {
+    this.setState({ groupBy: key });
+  };
+
   render() {
     const { projects, currentProject } = this.props;
-    const { expandedProjects } = this.state;
+    const { expandedProjects, groupBy } = this.state;
 
     const projectList =
       (!Object.keys(projects).length)
@@ -119,9 +131,14 @@ export class InventoryGroupProjects extends Component {
             </InventoryListGroup>
           );
         });
+    
+    const byTypeList = (this.loaded)
 
     return (
       <div className="InventoryGroup-content InventoryGroupProjects">
+        <InventoryTabs tabs={this.inventoryTabs}
+                       activeTabKey={groupBy}
+                       onTabSelect={(tab) => this.handleTabSelect(tab.key)}/>
         {projectList}
       </div>
     );
