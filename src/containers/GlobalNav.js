@@ -171,7 +171,12 @@ class GlobalNav extends Component {
    * @return {[type]} [description]
    */
   downloadProjectGenbank() {
-    
+    // for now use an iframe otherwise any errors will corrupt the page
+    const url = `${window.location.protocol}//${window.location.host}/export/genbank/${this.props.currentProjectId}`;
+    var iframe = document.createElement("iframe");
+    iframe.style.display = "none";
+    iframe.src = url;
+    document.body.appendChild(iframe);
   }
 
   /**
