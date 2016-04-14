@@ -167,6 +167,14 @@ class GlobalNav extends Component {
   }
 
   /**
+   * download the current file as a genbank file
+   * @return {[type]} [description]
+   */
+  downloadProjectGenbank() {
+    
+  }
+
+  /**
    * get the given blocks index in its parent
    */
   blockGetIndex(blockId) {
@@ -351,7 +359,9 @@ class GlobalNav extends Component {
               },
             }, {
               text: 'Download Genbank File',
-              action: () => {},
+              action: () => {
+                this.downloadProjectGenbank();
+              },
             },
           ],
         },
