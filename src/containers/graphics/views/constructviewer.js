@@ -8,7 +8,9 @@ import {connect } from 'react-redux';
 import {
   blockCreate,
   blockDelete,
+  blockDetach,
   blockAddComponent,
+  blockAddComponents,
   blockClone,
   blockSetSbol,
   blockRename,
@@ -36,6 +38,7 @@ import {
 } from '../../../actions/focus';
 import invariant from 'invariant';
 import { projectGetVersion } from '../../../selectors/projects';
+import * as undoActions from '../../../store/undo/actions';
 
 // static hash for matching viewers to constructs
 const idToViewer = {};
@@ -201,28 +204,27 @@ export class ConstructViewer extends Component {
       const newBlock = (payload.source === 'inventory' || payload.copying)
         ? this.props.blockClone(block, projectVersion)
         : this.props.blocks[block];
-      this.props.blockAddComponent(parent.id, newBlock.id, index++);
       newBlocks.push(newBlock.id);
     });
-    // return all the newly inserted blocks
-    return newBlocks;
+    // now insert the blocks in one go
+    return this.props.blockAddComponents(parent.id, newBlocks, index);
   }
   /**
    * remove the given block, which we assume if part of our construct and
    * return the scenegraph node that was representing it.
    */
   removePart(partId) {
-    const parent = this.getBlockParent(partId);
-    this.props.blockRemoveComponent(parent.id, partId);
+    this.props.blockDetach(partId);
+
+    // const parent = this.getBlockParent(partId);
+    // this.props.blockRemoveComponent(parent.id, partId);
   }
 
   /**
    * remove all parts in the list
    */
   removePartsList(partList) {
-    partList.forEach(part => {
-      this.removePart(part);
-    });
+    this.props.blockDetach(...partList)
   }
 
   /**
@@ -403,8 +405,10 @@ function mapStateToProps(state, props) {
 export default connect(mapStateToProps, {
   blockCreate,
   blockDelete,
+  blockDetach,
   blockClone,
   blockAddComponent,
+  blockAddComponents,
   blockRemoveComponent,
   blockGetParents,
   blockSetSbol,

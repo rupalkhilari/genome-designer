@@ -12,6 +12,7 @@ export default class UndoManager {
     this.lastAction = null;
 
     this.transactionDepth = 0;
+    this.transactionAtStart = false; //when start a transaction, need to save history item for the first change made, then just update keys list on subsequent
   }
 
   register(key, transactionManager) {
@@ -39,8 +40,24 @@ export default class UndoManager {
   };
 
   addHistoryItem(key, action) {
+    //todo - if we are in a transaction, want to aggregate keys of things that need to undo
+    if (this.inTransaction()) {
+      //if at start, just continue and make payloa as normal
+      if (this.transactionAtStart === true) {
+        this.transactionAtStart = false;
+      }
+      //if not at start, add key if its different
+      else {
+        const lastItem = this.past.pop();
+        const newKeys = [...new Set(lastItem.keys.concat(key))];
+        Object.assign(lastItem, {keys: newKeys});
+        this.past.push(lastItem);
+        return;
+      }
+    }
+
     const payload = {
-      key,
+      keys: [key],
       action,
       time: +(new Date()),
     };
@@ -81,7 +98,7 @@ export default class UndoManager {
   undo = (action) => this.doOnce(action, () => {
     const lastItem = this.getLastHistoryItem();
     if (lastItem) {
-      this.slaves[lastItem.key].undo();
+      lastItem.keys.forEach(key => this.slaves[key].undo());
       this.future.unshift(this.past.pop());
     }
   });
@@ -89,7 +106,7 @@ export default class UndoManager {
   redo = (action) => this.doOnce(action, () => {
     const nextItem = this.getFirstFutureItem();
     if (nextItem) {
-      this.slaves[nextItem.key].redo();
+      nextItem.keys.forEach(key => this.slaves[key].redo());
       this.past.push(this.future.shift());
     }
   });
@@ -101,14 +118,20 @@ export default class UndoManager {
   //transactions are just delegated to section reducers to handle
 
   transact = (action) => this.doOnce(action, () => {
+    this.transactionDepth++;
+    this.transactionAtStart = true;
     Object.keys(this.slaves).forEach(key => this.slaves[key].transact(action));
   });
 
   commit = (action) => this.doOnce(action, () => {
+    this.transactionDepth--;
     Object.keys(this.slaves).forEach(key => this.slaves[key].commit(action));
   });
 
   abort = (action) => this.doOnce(action, () => {
+    this.transactionDepth--;
     Object.keys(this.slaves).forEach(key => this.slaves[key].abort(action));
   });
+
+  inTransaction = () => (this.transactionDepth > 0);
 }

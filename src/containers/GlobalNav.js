@@ -20,9 +20,12 @@ import { clipboardSetData } from '../actions/clipboard';
 import * as clipboardFormats from '../constants/clipboardFormats';
 import {
   blockCreate,
+  blockDelete,
+  blockDetach,
   blockClone,
   blockRemoveComponent,
   blockAddComponent,
+  blockAddComponents,
   blockRename,
  } from '../actions/blocks';
  import {
@@ -30,7 +33,7 @@ import {
    blockGetChildrenRecursive,
  } from '../selectors/blocks';
 import { projectGetVersion } from '../selectors/projects';
-import { undo, redo } from '../store/undo/actions';
+import { undo, redo, transact, commit } from '../store/undo/actions';
 import {
   uiShowGenBankImport,
   uiToggleDetailView,
@@ -155,10 +158,25 @@ class GlobalNav extends Component {
    * add a new construct to the current project
    */
   newConstruct() {
+    this.props.transact();
     const block = this.props.blockCreate();
     this.props.blockRename(block.id, "New Construct");
     this.props.projectAddConstruct(this.props.currentProjectId, block.id);
+    this.props.commit();
     this.props.focusConstruct(block.id);
+  }
+
+  /**
+   * download the current file as a genbank file
+   * @return {[type]} [description]
+   */
+  downloadProjectGenbank() {
+    // for now use an iframe otherwise any errors will corrupt the page
+    const url = `${window.location.protocol}//${window.location.host}/export/genbank/${this.props.currentProjectId}`;
+    var iframe = document.createElement("iframe");
+    iframe.style.display = "none";
+    iframe.src = url;
+    document.body.appendChild(iframe);
   }
 
   /**
@@ -274,12 +292,9 @@ class GlobalNav extends Component {
   // cut focused blocks to the clipboard, no clone required since we are removing them.
   cutFocusedBlocksToClipboard() {
     if (this.props.focus.blocks.length) {
-      // copy the focused blocks before removing
-      const blocks = this.props.focus.blocks.slice().map(blockId => this.props.blocks[blockId]);
-      this.props.focus.blocks.forEach(blockId => {
-        this.props.blockRemoveComponent(this.getBlockParentId(blockId), blockId);
-      });
-      this.props.clipboardSetData([clipboardFormats.blocks], [blocks]);
+      const blockIds = this.props.blockDetach(...this.props.focus.blocks);
+      this.props.clipboardSetData([clipboardFormats.blocks], [blockIds.map(blockId => this.props.blocks[blockId])]);
+      this.props.focusBlocks([]);
     }
   }
   // paste from clipboard to current construct
@@ -306,11 +321,10 @@ class GlobalNav extends Component {
         parentId = insertInfo.parent;
       }
       // add to construct
-      clones.forEach(block => {
-        this.props.blockAddComponent(parentId, block.id, insertIndex++);
-      });
+      this.props.blockAddComponents(parentId, clones.map(clone => clone.id), insertIndex);
+
       // select the clones
-      this.props.focusBlocks(clones.map(block => block.id));
+      this.props.focusBlocks(clones.map(clone => clone.id));
     }
   }
 
@@ -350,7 +364,9 @@ class GlobalNav extends Component {
               },
             }, {
               text: 'Download Genbank File',
-              action: () => {},
+              action: () => {
+                this.downloadProjectGenbank();
+              },
             },
           ],
         },
@@ -525,6 +541,8 @@ export default connect(mapStateToProps, {
   projectGetVersion,
   blockCreate,
   blockClone,
+  blockDelete,
+  blockDetach,
   blockRename,
   inspectorToggleVisibility,
   inventoryToggleVisibility,
@@ -534,6 +552,8 @@ export default connect(mapStateToProps, {
   uiShowDNAImport,
   undo,
   redo,
+  transact,
+  commit,
   push,
   uiShowGenBankImport,
   uiToggleDetailView,
@@ -544,4 +564,5 @@ export default connect(mapStateToProps, {
   focusConstruct,
   clipboardSetData,
   blockAddComponent,
+  blockAddComponents,
 })(GlobalNav);

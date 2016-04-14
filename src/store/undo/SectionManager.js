@@ -112,7 +112,8 @@ export default class SectionManager {
       console.group && console.group(`SectionManager: Beginning Transaction (depth = ${this.transactionDepth})`);
     }
 
-    this.setTransactionState(this.getPresent());
+    //use current state (opposed to present) in case in a Transaction
+    this.setTransactionState(this.getCurrentState());
 
     return this.getCurrentState();
   };

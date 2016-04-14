@@ -480,8 +480,8 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * to our actual constructViewer which has all the necessary props
    */
   onDrop(globalPosition, payload, event) {
-    const blocks = this.constructViewer.addItemAtInsertionPoint(payload, this.insertion, event);
-    this.constructViewer.blockSelected(blocks);
+    const blockids = this.constructViewer.addItemAtInsertionPoint(payload, this.insertion, event);
+    this.constructViewer.blockSelected(blockids);
     this.constructViewer.constructSelected(this.constructViewer.props.constructId);
   }
   /**
