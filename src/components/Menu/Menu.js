@@ -41,6 +41,7 @@ export default class Menu extends Component {
                     shortcut={item.shortcut}
                     checked={item.checked}
                     disabled={!!item.disabled}
+                    classes={item.classes}
                     action={boundAction} />) :
                   (<MenuSeparator key={index} />)
                 );

@@ -2,8 +2,8 @@
 
 .InventorySources {
   position: relative;
-  opacity: 0.6;
-  transition: opacity var(--timing-fast) ease-out;
+  color: var(--colors-grey);
+  transition: color var(--timing-fast) ease-out;
   padding-bottom: 1em;
   flex-shrink: 0;
 
@@ -17,9 +17,11 @@
     height: 1em;
     display: inline-block;
     margin-right: 0.5em;
+    opacity: 0.5;
     background-image: url('/images/ui/gear.svg');
     background-repeat: no-repeat;
     background-size: contain;
+    transition: opacity var(--timing-fast) ease-out;
   }
 
   &-sources {
@@ -35,6 +37,10 @@
   }
 
   &.expanded {
-    opacity: 1;
+    color: var(--colors-blueGreyLighter);
+
+    .InventorySources-cog {
+      opacity: 0.9;
+    }
   }
 }

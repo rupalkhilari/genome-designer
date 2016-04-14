@@ -39,7 +39,9 @@ class ProjectPage extends Component {
 
     if (!project || !project.metadata) {
       this.props.projectLoad(projectId)
-        .catch(err => this.props.push('/'));
+        .catch(err => {
+          this.props.push('/?noredirect=true');
+        });
       return (<p>loading project...</p>);
     }
     // build a list of construct viewers

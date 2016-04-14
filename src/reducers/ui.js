@@ -8,6 +8,7 @@ export const initialState = {
   showDNAImport: false,
   gruntMessage: null,
   showGenBankImport: false,
+  userWidgetVisible: true,
 };
 
 export default function inventory(state = initialState, action) {
@@ -31,6 +32,10 @@ export default function inventory(state = initialState, action) {
   case ActionTypes.UI_SHOW_MAIN_MENU : {
     const { showMainMenu } = action;
     return Object.assign({}, state, {showMainMenu});
+  }
+  case ActionTypes.UI_SHOW_USER_WIDGET : {
+    const { userWidgetVisible } = action;
+    return Object.assign({}, state, {userWidgetVisible});
   }
   case ActionTypes.UI_SET_GRUNT : {
     const { gruntMessage } = action;

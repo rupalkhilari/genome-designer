@@ -504,8 +504,8 @@ export default class Layout {
       this.nodeFromElement(part).set({
         bounds: new Box2D(xp, yp, td.x, kT.blockH),
         text: this.partName(part),
-        //text: part,
         fill: this.partMeta(part, 'color') || 'lightgray',
+        color: this.partMeta(part, 'fontColor') || '#1D222D',
       });
 
       // render children ( nested constructs )

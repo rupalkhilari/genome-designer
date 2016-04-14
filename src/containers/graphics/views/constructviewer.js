@@ -114,6 +114,11 @@ export class ConstructViewer extends Component {
     // handle window resize to reflow the layout
     this.resizeDebounced = debounce(this.windowResized.bind(this), 5);
     window.addEventListener('resize', this.resizeDebounced);
+
+    // if there is no focused construct, then we should focus our construct
+    if (!this.props.focus.construct) {
+      this.props.focusConstruct(this.props.constructId);
+    }
   }
   /**
    * update scene graph after the react component updates
@@ -139,7 +144,7 @@ export class ConstructViewer extends Component {
   getBlockParent(blockId) {
     const parents = this.props.blockGetParents(blockId);
     invariant(parents && parents.length, 'blocks are expected to have parents');
-    return this.props.blocks[parents[0]];
+    return parents[0];
   }
 
   /**
@@ -263,7 +268,7 @@ export class ConstructViewer extends Component {
    */
   blockAddToSelectionsRange(partId, currentSelections) {
     // get all the blocks at the same level as this one
-    const levelBlocks = this.props.blocks[this.props.blockGetParents(partId)[0]].components;
+    const levelBlocks = (this.props.blockGetParents(partId)[0]).components;
     // find min/max index of these blocks if they are in the currentSelections
     let min = levelBlocks.indexOf(partId);
     let max = min;

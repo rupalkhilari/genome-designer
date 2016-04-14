@@ -1,8 +1,8 @@
-var signout = function(browser, credentials) {
+var signin = function(browser, credentials) {
   browser
     // sign back in with previous credentials
-    .waitForElementPresent('a.signed-out', 5000, 'expected a sign out button')
-    .click('a.signed-out')
+    .waitForElementPresent('.homepage', 5000, 'sign in can occur on the homepage only')
+    .click('.homepage-getstarted')
     .waitForElementPresent('#auth-signin', 5000, 'Expected sign in dialog to become visible')
     // try submitting with no credentials
     .submitForm('#auth-signin')
@@ -22,7 +22,7 @@ var signout = function(browser, credentials) {
     .clearValue('#auth-signin input:nth-of-type(1)')
     .setValue('#auth-signin input:nth-of-type(1)', credentials.email)
     .submitForm('#auth-signin')
-    .waitForElementPresent('div.signed-in', 5000, 'expected to be signed in');
+    .waitForElementNotPresent('#auth-signin', 5000, 'form should be dismissed on successful login');
 };
 
-module.exports = signout;
+module.exports = signin;

@@ -58,16 +58,14 @@ def relationship(block1, block2, full_size):
 # and a list of IDs of blocks that need to be removed.
 # The function does NOT take the blocks from all_blocks
 def convert_block_to_feature(all_blocks, to_convert, parent, to_remove_list):
-    feature = { }
+    feature = { "name": "", "notes": {} }
     for key, value in to_convert["metadata"].iteritems():
         if key in ["name", "description", "start", "end", "tags"]:
             feature[key] = value
         elif key == "strand":
             feature["isForward"] = (value == 1)
         else:
-            if "notes" not in feature:
-                feature["notes"] = {}
-            feature["notes"]["key"] = value
+            feature["notes"][key] = value
 
     feature["sequence"] = to_convert["sequence"]["sequence"]
 
@@ -123,7 +121,7 @@ def create_child_block_from_feature(f, all_blocks, root_block, sequence):
     strand = f.location.strand
     sbol_type = sbol_type_table.get(f.type)
 
-    if f.type == 'source':
+    if f.type.strip() == 'source':
         # 'source' refers to the root block. So, the root block aggregates information
         # from the header of the genbank file as well as the 'source' feature
         for key, value in qualifiers.iteritems():
@@ -244,7 +242,7 @@ def build_block_hierarchy(all_blocks, root_block, sequence):
             if block["sequence"]["length"] == root_block["sequence"]["length"]:
                 convert_block_to_feature(all_blocks, block, root_block, to_remove)
             else:
-                raise Exception('Error processing a block!')
+                print('Error processing block ' + block["metadata"]["name"] + "[" + str(block["metadata"]["start"]) + ":" + str(block["metadata"]["end"]) + "]")
 
     # Delete all the blocks that were converted to features
     for removing in to_remove:
@@ -269,6 +267,8 @@ def create_filler_blocks_for_holes(all_blocks, sequence):
                 filler_block = create_block_json(block_id, sequence[current_position:child["metadata"]["start"]], [])
                 filler_block["metadata"]["type"] = "filler"
                 filler_block["metadata"]["name"] = filler_block["sequence"]["sequence"][:3] + '...'
+                filler_block["metadata"]["color"] = "#4B505E"
+                filler_block["metadata"]["fontColor"] = "#6B6F7C"
                 filler_block["metadata"]["start"] = current_position
                 filler_block["metadata"]["end"] = child["metadata"]["start"] - 1
                 filler_block["sequence"]["length"] = filler_block["metadata"]["end"] - filler_block["metadata"]["start"]
@@ -281,6 +281,8 @@ def create_filler_blocks_for_holes(all_blocks, sequence):
             filler_block = create_block_json(block_id, sequence[current_position:block["metadata"]["end"] + 1], [])
             filler_block["metadata"]["type"] = "filler"
             filler_block["metadata"]["name"] = filler_block["sequence"]["sequence"][:3] + '...'
+            filler_block["metadata"]["color"] = "#4B505E"
+            filler_block["metadata"]["fontColor"] = "#6B6F7C"
             filler_block["metadata"]["start"] = current_position
             filler_block["metadata"]["end"] = block["metadata"]["end"]
             filler_block["sequence"]["length"] = filler_block["metadata"]["end"] - filler_block["metadata"]["start"]

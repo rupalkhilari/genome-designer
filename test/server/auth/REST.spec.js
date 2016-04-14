@@ -2,7 +2,7 @@ import { assert, expect } from 'chai';
 import request from 'supertest';
 import { login, getUser } from '../../../src/middleware/api';
 
-const devServer = require('../../../server/devServer');
+const devServer = require('../../../server/server');
 
 describe('Server', () => {
   describe('auth', () => {

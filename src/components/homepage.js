@@ -1,7 +1,11 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import { push } from 'react-router-redux';
-import { uiShowAuthenticationForm, uiSetGrunt } from '../actions/ui';
+import {
+  uiShowAuthenticationForm,
+  uiSetGrunt,
+  uiShowUserWidget,
+ } from '../actions/ui';
 import '../styles/homepage.css';
 import { getItem, setItem } from '../middleware/localStorageCache';
 
@@ -25,12 +29,24 @@ export default class HomePage extends Component {
       this.props.uiShowAuthenticationForm(authForm);
     } else {
       // if not showing an auth form goto most recent project or demo project
-      if (this.props.user && this.props.user.userid) {
+      // NOTE: the nodirect query string prevents redirection
+      if (this.props.user && this.props.user.userid && window.location.href.indexOf('noredirect=true') < 0) {
         // revisit last project or test project if user is logged in
         this.props.push(`/project/${getItem('mostRecentProject') || 'test'}`);
         return;
       }
     }
+
+    // user widget is hidden on homepage
+    this.props.uiShowUserWidget(false);
+  }
+
+  /**
+   * the homepage is the only page that doesn't show the user widget, so we can
+   * display whenever we leave
+   */
+  componentWillUnmount() {
+    this.props.uiShowUserWidget(true);
   }
 
   signIn(evt) {
@@ -41,18 +57,24 @@ export default class HomePage extends Component {
   render() {
     return (
       <div className="homepage">
-        <img className="homepage-background" src="/images/homepage/background.png"/>
-        <img className="homepage-title" src="/images/homepage/genomedesigner.png"/>
+        <div className="homepage-image-area">
+          <img className="homepage-background" src="/images/homepage/background.png"/>
+          <div className="homepage-getstarted" onClick={this.signIn.bind(this)}>Get started</div>
+          <img className="homepage-title" src="/images/homepage/genomedesigner.png"/>
+        </div>
         <img className="homepage-autodesk" src="/images/homepage/autodesk-logo.png"/>
-        <div className="homepage-getstarted" onClick={this.signIn.bind(this)}>Get started</div>
+        <div className="homepage-egf">Edinburgh Genome Foundry</div>
         <div className="homepage-footer">
-          <div className="homepage-footer-list">New in version 0.1:
+          <div className="homepage-footer-title">New in version 0.1:</div>
+          <div className="homepage-footer-list">
             <ul>
               <li><span>&bull;</span>Search and import parts directly from the IGEM and NCBI databases.</li>
               <li><span>&bull;</span>Specify parts from the Edinburgh Genome Foundry inventory.</li>
               <li><span>&bull;</span>Import and export GenBank and FASTA files.</li>
               <li><span>&bull;</span>Create an inventory of your own projects, constructs and parts to reuse.</li>
               <li><span>&bull;</span>Drag and drop editing.</li>
+            </ul>
+            <ul>
               <li><span>&bull;</span>Inspect sequence detail.</li>
               <li><span>&bull;</span>Create nested constructs to manage complexity.</li>
               <li><span>&bull;</span>Assign SBOL visual symbols and colors.</li>
@@ -75,6 +97,7 @@ function mapStateToProps(state) {
 
 export default connect(mapStateToProps, {
   uiShowAuthenticationForm,
+  uiShowUserWidget,
   uiSetGrunt,
   push,
 })(HomePage);

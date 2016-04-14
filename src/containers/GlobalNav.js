@@ -23,6 +23,7 @@ import {
   blockClone,
   blockRemoveComponent,
   blockAddComponent,
+  blockRename,
  } from '../actions/blocks';
  import {
    blockGetParents,
@@ -60,6 +61,7 @@ class GlobalNav extends Component {
     currentProjectId: PropTypes.string,
     blockCreate: PropTypes.func.isRequired,
     showMainMenu: PropTypes.bool.isRequired,
+    blockGetParents: PropTypes.func.isRequired,
   };
 
   state = {
@@ -112,7 +114,7 @@ class GlobalNav extends Component {
       this.pasteBlocksToConstruct();
     });
     // **************** VIEW ******************
-    KeyboardTrap.bind('option+mod+i', (evt) => {
+    KeyboardTrap.bind('shift+mod+i', (evt) => {
       evt.preventDefault();
       this.props.inventoryToggleVisibility();
     });
@@ -140,15 +142,21 @@ class GlobalNav extends Component {
    * new project and navigate to new project
    */
   newProject() {
+    // create project and add a default construct
     const project = this.props.projectCreate();
+    // add a construct to the new project
+    const block = this.props.blockCreate();
+    this.props.blockRename(block.id, "New Construct");
+    this.props.projectAddConstruct(project.id, block.id);
+    this.props.focusConstruct(block.id);
     this.props.push(`/project/${project.id}`);
   }
-
   /**
    * add a new construct to the current project
    */
   newConstruct() {
     const block = this.props.blockCreate();
+    this.props.blockRename(block.id, "New Construct");
     this.props.projectAddConstruct(this.props.currentProjectId, block.id);
     this.props.focusConstruct(block.id);
   }
@@ -168,9 +176,7 @@ class GlobalNav extends Component {
    * get parent block of block with given id
    */
   blockGetParent(blockId) {
-    const parentId = this.props.blockGetParents(blockId)[0];
-    const parentBlock = this.props.blocks[parentId];
-    return parentBlock;
+    return this.props.blockGetParents(blockId)[0];
   }
   /**
    * truthy if the block has a parent
@@ -262,7 +268,7 @@ class GlobalNav extends Component {
 
   // get parent of block
   getBlockParentId(blockId) {
-    return this.props.blockGetParents(blockId)[0];
+    return this.props.blockGetParents(blockId)[0].id;
   }
 
   // cut focused blocks to the clipboard, no clone required since we are removing them.
@@ -420,7 +426,8 @@ class GlobalNav extends Component {
             {
               text: 'Inventory',
               checked: this.props.inventory,
-              action: this.props.inventoryToggleVisibility
+              action: this.props.inventoryToggleVisibility,
+              shortcut: stringToShortcut('shift meta i'),
             }, {
               text: 'Inspector',
               checked: this.props.inspectorVisible,
@@ -429,7 +436,6 @@ class GlobalNav extends Component {
             }, {
               text: 'Sequence Details',
               action: () => {
-
               },
               checked: false,
             }, {}, {
@@ -519,6 +525,7 @@ export default connect(mapStateToProps, {
   projectGetVersion,
   blockCreate,
   blockClone,
+  blockRename,
   inspectorToggleVisibility,
   inventoryToggleVisibility,
   blockRemoveComponent,

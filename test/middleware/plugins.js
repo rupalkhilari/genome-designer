@@ -1,36 +1,21 @@
 import chai from 'chai';
 import fs from 'fs';
 import * as api from '../../src/middleware/api';
+import listProjectsWithAccess from '../../server/data/querying.js';
+
 const { assert, expect } = chai;
+
+const getBlock = (allBlocks, blockId) => {
+  for (let i = 0; i < allBlocks.length; i++) {
+    if (allBlocks[i].id === blockId) {
+      return allBlocks[i];
+    }
+  }
+};
 
 describe('Middleware', () => {
   describe('Plugins', () => {
     it('computeWorkflow() should work'); //todo
-
-    it('importBlock() should be able convert Genbank features to Block', function testFunc(done) {
-      fs.readFile('./test/res/sampleGenbank.gb', 'utf8', (err, sampleStr) => {
-        api.importBlock('genbank', sampleStr)
-          .then(data => {
-            expect(data.block !== undefined).to.equal(true);
-            expect(data.blocks !== undefined).to.equal(true);
-            expect(data.block.components.length === 2).to.equal(true);
-
-            //check that CDS types were converted to Blocks
-            expect(data.blocks[data.block.components[0]] !== undefined).to.equal(true);
-            expect(data.blocks[data.block.components[1]] !== undefined).to.equal(true);
-            expect(data.blocks[data.block.components[0]].metadata.tags.sbol === 'cds').to.equal(true);
-            expect(data.blocks[data.block.components[1]].metadata.tags.sbol === 'cds').to.equal(true);
-
-            //check that other features were imported as features for the main block
-            expect(data.block.sequence.features.length === 2).to.equal(true);
-            expect(data.block.sequence.features[1].type === 'rep_origin').to.equal(true);
-            done();
-          })
-          .catch(err => {
-            done(err);
-          });
-      });
-    });
 
     it.skip('exportBlock() should be able convert Block to Genbank', function testFunc(done) {
       fs.readFile('./test/res/sampleBlocks.json', 'utf8', (err, sampleBlocksJson) => {
@@ -47,7 +32,44 @@ describe('Middleware', () => {
       });
     });
 
-    it('importProject() should be able convert feature file to Blocks', function testFunc(done) {
+    it('importProject() should be able convert a genbank file to a project and add a construct to it', function testFunc(done) {
+      fs.readFile('./test/res/sampleGenbank.gb', 'utf8', (err, sampleGenbank) => {
+        api.importProject('genbank', sampleGenbank)
+          .then(result => {
+            expect(result.ProjectId === undefined).to.equal(false);
+            return api.loadProject(result.ProjectId)
+              .then(gotRoll => {
+                expect(gotRoll.project.metadata.name).to.equal('EU912544');
+                expect(gotRoll.project.components.length).to.equal(1);
+                expect(gotRoll.blocks.length).to.equal(8); // There are 8 blocks in that file
+                // Now add a construct to it...
+                fs.readFile('./test/res/sampleGenbankContiguous.gb', 'utf8', (err, sampleStrConstruct) => {
+                  api.importConstruct('genbank', sampleStrConstruct, result.ProjectId)
+                    .then(data => {
+                      // This just tests that the api works as expected. The tests about the particular
+                      // Genbank conversions to and from blocks are in the genbank.spec.js file
+                      return api.loadProject(result.ProjectId)
+                        .then(secondRoll => {
+                          expect(secondRoll.project.metadata.name).to.equal('EU912544');
+                          expect(secondRoll.project.components.length).to.equal(2);
+                          done();
+                        });
+                    })
+                    .catch(err => {
+                      console.log('ERROR!!!');
+                      console.log(err);
+                      done(err);
+                    });
+                });
+              })
+              .catch(err => {
+                done(err);
+              });
+          });
+      });
+    });
+
+    it.skip('importProject() should be able convert feature file -.tab- to Blocks', function testFunc(done) {
       fs.readFile('./test/res/sampleFeatureFile.tab', 'utf8', (err, sampleFeatures) => {
         api.importProject('features', sampleFeatures)
           .then(result => {

@@ -4,5 +4,5 @@
   "requireCamelCaseOrUpperCaseIdentifiers": null,
   "requirePaddingNewLinesBeforeLineComments" : null,
   "requirePaddingNewLinesAfterBlocks": null,
-  "validateQuoteMarks" : null //pending JSX support, e.g. https://github.com/jscs-dev/node-jscs/pull/1962
+  "validateQuoteMarks" : null
 }

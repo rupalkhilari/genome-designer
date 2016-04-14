@@ -115,11 +115,11 @@ export default class Block extends Instance {
   }
 
   removeAnnotation(annotation) {
-    const annotationId = typeof annotation === 'object' ? annotation.id : annotation;
-    invariant(typeof annotationId === 'string', `Must pass object with ID or annotation ID directly, got ${annotation}`);
+    const annotationName = typeof annotation === 'object' ? annotation.name : annotation;
+    invariant(typeof annotationName === 'string', `Must pass object with Name or annotation Name directly, got ${annotation}`);
 
     const annotations = this.sequence.annotations.slice();
-    const toSplice = annotations.findIndex((ann) => ann.id === annotationId);
+    const toSplice = annotations.findIndex((ann) => ann.name === annotationName);
 
     if (toSplice < 0) {
       console.warn('annotation not found'); // eslint-disable-line

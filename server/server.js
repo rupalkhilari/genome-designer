@@ -1,9 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import express from 'express';
-import webpack from 'webpack';
 import morgan from 'morgan';
-import config from './../webpack.config.dev.js';
 
 import dataRouter from './data/index';
 import fileRouter from './file/index';
@@ -18,9 +16,17 @@ const DEFAULT_PORT = 3000;
 const port = parseInt(process.argv[2], 10) || process.env.PORT || DEFAULT_PORT;
 const hostname = '0.0.0.0';
 
-const ROOT = path.dirname(__dirname);
+//file paths depending on if building or not
+//note that currently, you basically need to use npm run start in order to serve the client bundle + webpack middleware
+const createBuildPath = (isBuild, notBuild = isBuild) => {
+  return path.join(__dirname, (process.env.BUILD ? isBuild : notBuild));
+};
+const pathContent = createBuildPath('content', '../src/content');
+const pathImages = createBuildPath('images', '../src/images');
+const pathPublic = createBuildPath('public', '../src/public');
+const pathClientBundle = createBuildPath('client.js', '../build/client.js');
+
 const app = express();
-const compiler = webpack(config);
 
 //error logging middleware
 if (process.env.NODE_ENV !== 'production') {
@@ -38,20 +44,13 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 //HTTP logging middleware
-app.use(morgan('dev'));
+app.use(morgan('dev', {
+  skip: (req, res) => req.path.indexOf('browser-sync') >= 0,
+}));
 
 // view engine setup
-app.set('views', path.join(__dirname, '../src'));
+app.set('views', pathContent);
 app.set('view engine', 'jade');
-
-// Register Hotloading Middleware
-// ----------------------------------------------------
-
-app.use(require('webpack-dev-middleware')(compiler, {
-  noInfo: true,
-  publicPath: config.output.publicPath,
-}));
-app.use(require('webpack-hot-middleware')(compiler));
 
 // Register API middleware
 // ----------------------------------------------------
@@ -68,6 +67,7 @@ if (process.env.BIO_NANO_AUTH) {
     logoutLanding: false,
     loginLanding: false,
     loginFailure: false,
+    resetForm: "/homepage/reset",
     apiEndPoint: process.env.API_END_POINT || "http://localhost:8080/api",
   };
   app.use(initAuthMiddleware(authConfig));
@@ -94,30 +94,63 @@ app.use('/search', searchRouter);
 // ----------------------------------------------------
 
 //Static Files
-app.use('/images', express.static(path.join(__dirname, '../src/images')));
+app.use(express.static(pathPublic));
+app.use('/images', express.static(pathImages));
 
 app.get('/version', (req, res) => {
   try {
-    const version = fs.readFileSync(path.join(ROOT, 'VERSION'));
+    //this is only relevant when the server builds, so can assume always at same path relative to __dirname
+    const version = fs.readFileSync(path.join(__dirname, '../VERSION'));
     res.send(version);
   } catch (ignored) {
     res.send('Missing VERSION file');
   }
 });
 
-//so that any routing is delegated to the client
 app.get('*', (req, res) => {
-  res.render('index.jade', req.user);
+  if (req.url.indexOf('client.js') >= 0) {
+    //should only hit this when proxy is not set up (i.e. not in development)
+    res.sendFile(pathClientBundle);
+  } else {
+    //so that any routing is delegated to the client
+    res.render(path.join(pathContent + '/index.jade'), req.user);
+  }
 });
 
-//start the server by default
-app.listen(port, hostname, (err) => {
+//i have no idea why, but sometimes the server tries to build when the port is already in use, so lets just check if port is in use and if it is, then dont try to listen on it.
+const isPortFree = (port, cb) => {
+  const net = require('net');
+  const tester = net.createServer()
+    .once('error', (err) => {
+      if (err.code !== 'EADDRINUSE') {
+        return cb(err, false);
+      }
+      cb(null, false);
+    })
+    .once('listening', () => {
+      tester.once('close', () => {
+        cb(null, true);
+      })
+      .close();
+    })
+    .listen({
+      port,
+      host: 'localhost',
+      exclusive: true,
+    });
+};
+
+const startServer = () => app.listen(port, hostname, (err) => {
   if (err) {
-    console.log(err);
+    console.log('error listening!', err.stack);
     return;
   }
 
-  console.log('Building, will serve at http://' + hostname + ':' + port);
+  /* eslint-disable no-console */
+  console.log(`Building, will serve at http://${hostname}:${port}/`);
 });
+
+//start the server by default, if port is not taken
+isPortFree(port, (err, free) => free && startServer());
 
 export default app;

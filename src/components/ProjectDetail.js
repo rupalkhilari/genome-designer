@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { uiToggleDetailView } from '../actions/ui';
 import { extensionsByRegion, onRegister } from '../extensions/clientRegistry';
+import { throttle } from 'lodash';
 
 import '../styles/ProjectDetail.css';
 
@@ -17,6 +18,7 @@ export class ProjectDetail extends Component {
 
   state = {
     currentExtension: lastExtension,
+    openHeight: 400,
   };
 
   extensions = [];
@@ -38,6 +40,38 @@ export class ProjectDetail extends Component {
   componentWillUnmount() {
     this.extensionsListener();
   }
+
+  throttledDispatchResize = throttle(() => window.dispatchEvent(new Event('resize')), 50);
+
+  handleResizableMouseDown = evt => {
+    evt.preventDefault();
+    this.refs.resizeHandle.classList.add('dragging');
+    document.addEventListener('mousemove', this.handleResizeMouseMove);
+    document.addEventListener('mouseup', this.handleResizeMouseUp);
+    this.dragStart = evt.pageY;
+    //cringe-worthy query selector voodoo
+    this.dragMax = document.querySelector('.ProjectPage-content').getBoundingClientRect().height - 200;
+    this.openStart = this.state.openHeight;
+  };
+
+  handleResizeMouseMove = evt => {
+    evt.preventDefault();
+    const delta = this.dragStart - evt.pageY;
+    const minHeight = 300;
+    const nextHeight = Math.min(this.dragMax, Math.max(minHeight, this.openStart + delta));
+    this.setState({ openHeight: nextHeight });
+    this.throttledDispatchResize();
+  };
+
+  handleResizeMouseUp = evt => {
+    evt.preventDefault();
+    this.refs.resizeHandle.classList.remove('dragging');
+    this.dragStart = null;
+    this.openStart = null;
+    document.removeEventListener('mousemove', this.handleResizeMouseMove);
+    document.removeEventListener('mouseup', this.handleResizeMouseUp);
+    window.dispatchEvent(new Event('resize'));
+  };
 
   toggle = (forceVal) => {
     this.props.uiToggleDetailView(forceVal);
@@ -99,7 +133,11 @@ export class ProjectDetail extends Component {
       );
 
     return (
-      <div className={'ProjectDetail' + (this.props.isVisible ? ' visible' : '')}>
+      <div className={'ProjectDetail' + (this.props.isVisible ? ' visible' : '')}
+           style={{minHeight: (this.props.isVisible ? `${this.state.openHeight}px` : null)}}>
+        {(this.props.isVisible) && (<div ref="resizeHandle"
+                                         className="ProjectDetail-resizeHandle"
+                                         onMouseDown={this.handleResizableMouseDown}></div>)}
         {header}
         <div className="ProjectDetail-chrome"
              ref="extensionContainer">

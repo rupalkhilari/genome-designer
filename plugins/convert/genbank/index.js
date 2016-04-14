@@ -10,7 +10,7 @@ import ProjectDefinition from '../../../src/schemas/Project';
 import md5 from 'md5';
 import * as persistence from '../../../server/data/persistence';
 
-import {chunk} from 'lodash';
+import {chunk, cloneDeep} from 'lodash';
 
 const exec = require('child_process').exec;
 const uuid = require('node-uuid');
@@ -148,6 +148,10 @@ const readGenbankFile = (genbankString) => {
       } catch (err) {
         return Promise.reject(err);
       }
+    })
+    .catch(err => {
+      console.log('ERROR IN PYTHON');
+      console.log(err);
     });
 };
 
@@ -219,6 +223,14 @@ const exportProjectStructure = (project, blocks) => {
   return runCommand(cmd, JSON.stringify(input), inputFile, outputFile)
     .then(resStr => {
       return Promise.resolve(resStr);
+    })
+    .catch(err => {
+      console.log('ERROR IN PYTHON');
+      console.log('Command');
+      console.log(cmd);
+      console.log('Error')
+      console.log(err);
+      return Promise.reject(err);
     });
 };
 
@@ -226,27 +238,35 @@ const exportProjectStructure = (project, blocks) => {
 const loadSequences = (blocks) => {
   return Promise.all(
     blocks.map(block => {
-      if (block.sequence.md5 && !block.sequence.sequence) {
-        return persistence.sequenceGet(block.sequence.md5)
-          .then(readSequence => {
-            return merge({}, block, {sequence: {sequence: readSequence}});
-          });
-      } else {
-        Promise.resolve('');
-      }
-    })
-  );
+      const sequencePromise = (block.sequence.md5 && !block.sequence.sequence) ?
+        persistence.sequenceGet(block.sequence.md5) :
+        Promise.resolve();
+
+      return sequencePromise
+        .then((seq) => {
+          return merge({}, block, {sequence: {sequence: seq}});
+        });
+    }));
 };
 
 // This is the entry function for project export
 // Given a project and a set of blocks, generate the genbank format
-export const exportProject = (project, blocks) => {
-  return loadSequences(blocks)
-    .then(blocksWithSequences => {
-      return exportProjectStructure(project, blocksWithSequences)
-        .then(exportStr => {
-          return Promise.resolve(exportStr);
-        });
+export const exportProject = (roll) => {
+  return loadSequences(roll.blocks)
+    .then(blockWithSequences => exportProjectStructure(roll.project, blockWithSequences))
+    .then(exportStr => Promise.resolve(exportStr));
+};
+
+// This is the entry function for construct export
+// Given a project and a set of blocks, generate the genbank format for a particular construct within that project
+export const exportConstruct = (input) => {
+  return loadSequences(input.roll.blocks)
+    .then(blockWithSequences => {
+      const theRoll = merge(cloneDeep(input), {project: {components: [ input.constructId ]}});
+      // Rewrite the components so that it's only the requested construct!
+      return exportProjectStructure(theRoll.project, blockWithSequences)
+        .then(exportStr => Promise.resolve(exportStr))
+        .catch(err => Promise.reject(err));
     });
 };
 

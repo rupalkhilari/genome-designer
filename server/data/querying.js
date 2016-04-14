@@ -35,11 +35,11 @@ export const findProjectFromBlock = (blockId) => {
       const lines = output.split('\n');
       lines.pop(); //get rid of the last empty line
       if (lines.length === 1) {
-        const [ /* idBlock */,
+        const [/* idBlock */,
           /* blocks/ */,
           /* data/ */,
           idProject,
-          ] = lines[0].split('/').reverse();
+        ] = lines[0].split('/').reverse();
         resolve(idProject);
       } else {
         reject(errorCouldntFindProjectId);
@@ -52,7 +52,7 @@ export const findProjectFromBlock = (blockId) => {
 export const listProjectsWithAccess = (userId) => {
   const directory = filePaths.createProjectsDirectoryPath();
   return new Promise((resolve, reject) => {
-    exec(`cd ${directory} && grep -e "${userId}" --include=permissions.json -Rl .`, (err, output) => {
+    exec(`cd ${directory} && grep -e '"${userId}"' --include=permissions.json -Rl .`, (err, output) => {
       if (err) {
         return reject(err);
       }
@@ -60,10 +60,10 @@ export const listProjectsWithAccess = (userId) => {
       const lines = output.split('\n');
       lines.pop(); //get rid of the last empty line
       const projectIds = lines.map(line => {
-        const [/*dot*/,
+        const [/*permissions.json*/,
           projectId,
-          /*permission.json*/
-          ] = line.split('/');
+          /* path/to/dir */
+        ] = line.split('/').reverse();
         return projectId;
       });
       return resolve(projectIds);

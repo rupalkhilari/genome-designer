@@ -61,7 +61,7 @@
     }
 
     &-title {
-      font-size: var(--font-size-heading);
+      font-size: var(--font-size-text);
       text-transform: uppercase;
       font-weight: 200;
       display: inline-block; /* hack ish - ensure height */
