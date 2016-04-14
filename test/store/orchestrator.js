@@ -54,7 +54,7 @@ describe('Store', () => {
 
       const foundParents = blockSelector(child.id);
       expect(typeof foundParents).to.not.equal('function');
-      expect(foundParents[0]).to.equal(parent.id);
+      expect(foundParents[0].id).to.equal(parent.id);
     });
 
     it('should be exposed as `api` on the window');
