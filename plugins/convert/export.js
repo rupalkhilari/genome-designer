@@ -44,22 +44,20 @@ function exportConstruct(id, roll, constructId) {
 }
 
 //this function is just trying to avoid redundant code
-function exportThenCatch(promise, resp) {
+function exportThenCatch(promise, resp, roll) {
   promise
   .then(res => {
-    if (res.mimeType && res.data) {
-      resp.contentType(res.mimeType);
-      resp.write(res.data);
-    } else {
-      resp.json(res);
-    }
+    const name = (roll.project.metadata.name ? roll.project.metadata.name : roll.project.id) + '.gb';
+    resp.attachment(name);
+    if (roll.project)
+    resp.status(200).send(res);
   })
   .catch(err => {
     resp.status(500).send(err);
   });
 }
 
-router.post('/project/:id/:projectId/:constructId?', jsonParser, (req, resp) => {
+router.get('/:id/:projectId/:constructId?', jsonParser, (req, resp) => {
   const { id, projectId, constructId } = req.params;
   //const input = req.body;
 //  const promise = exportProject(id, input);
@@ -69,11 +67,11 @@ router.post('/project/:id/:projectId/:constructId?', jsonParser, (req, resp) => 
     })
     .then(roll => {
       if (constructId) {
-        const promise = exportProject(id, roll);
-        exportThenCatch( promise, resp );
-      } else {
         const promise = exportConstruct(id, roll, constructId);
-        exportThenCatch( promise, resp );
+        exportThenCatch( promise, resp, roll );
+      } else {
+        const promise = exportProject(id, roll);
+        exportThenCatch( promise, resp, roll );
       }
     });
 });
