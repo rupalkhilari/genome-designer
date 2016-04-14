@@ -100,6 +100,7 @@ export const undoReducerEnhancerCreator = (config, undoManager = manager) => {
         undoManager.insert(key, nextState, action);
       } else {
         //if not tracked as undoable, update present state
+        console.log('patching on ' + key, action)
         undoManager.patch(key, nextState, action);
       }
 

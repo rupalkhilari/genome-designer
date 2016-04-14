@@ -166,7 +166,7 @@ export const blockDetach = (...blockIds) => {
       const parent = dispatch(selectors.blockGetParents(blockId)).shift();
       //may not have parent (is construct) or parent was deleted
       if (parent) {
-        dispatch(blockRemoveComponent(parent, blockId)); //eslint-disable-line no-use-before-define
+        dispatch(blockRemoveComponent(parent.id, blockId)); //eslint-disable-line no-use-before-define
       }
     });
 
@@ -272,15 +272,14 @@ export const blockAddComponents = (blockId, componentIds, index) => {
     //transact for all blocks
     dispatch(undoActions.transact());
 
-    const blocks = [];
     componentIds.forEach((componentId, subIndex) => {
-      blocks.push(dispatch(blockAddComponent(blockId, componentId, index + subIndex)));
+      dispatch(blockAddComponent(blockId, componentId, index + subIndex));
     });
 
     //end transaction
     dispatch(undoActions.commit());
 
-    return blocks;
+    return componentIds;
   };
 };
 
