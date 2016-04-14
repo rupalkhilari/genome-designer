@@ -146,6 +146,11 @@ router.route('/projects/:projectId')
     const { projectId, user } = req;
     const roll = req.body;
 
+    //todo - remove once get rid of test project
+    if (projectId === 'test') {
+      return res.status(200).send({});
+    }
+
     rollup.writeProjectRollup(projectId, roll, user.uuid)
       .then(() => persistence.projectSave(projectId))
       .then(commit => res.status(200).json(commit))
