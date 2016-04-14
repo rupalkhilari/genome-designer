@@ -6,6 +6,8 @@ import Box2D from '../geometry/box2d';
 import kT from './layoutconstants';
 import Fence from './fence';
 import invariant from 'invariant';
+import { transact, commit, abort } from '../../../store/undo/actions';
+import { dispatch } from '../../../store/index';
 
 
 // # of pixels of mouse movement before a drag is triggered.
@@ -352,6 +354,8 @@ export default class ConstructViewerUserInterface extends UserInterface {
       if (block) {
         // cancel our own mouse operations for now
         this.mouseTrap.cancelDrag();
+        // open an undo/redo transaction
+        dispatch(transact());
         // ensure the block being dragged is selected
         this.constructViewer.blockAddToSelections([block]);
         // get global point as starting point for drag
@@ -369,6 +373,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
           item: this.selectedElements,
           source: 'construct-viewer',
           copying: copying,
+          undoRedoTransaction: true,
         });
       } else {
         // start a fence drag if not over a part

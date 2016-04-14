@@ -74,10 +74,11 @@ export const blockGetParents = (blockId) => {
   };
 };
 
-//i.e. get construct
+//i.e. get construct, or null if it is the construct (or detached)
 export const blockGetParentRoot = (blockId) => {
   return (dispatch, getState) => {
-    return _getParents(blockId, getState()).pop();
+    const parents = _getParents(blockId, getState());
+    return parents.length ? parents.pop() : null;
   };
 };
 
