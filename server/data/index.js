@@ -10,7 +10,7 @@ import {
 import * as querying from './querying';
 import * as persistence from './persistence';
 import * as rollup from './rollup';
-import {permissionsMiddleware} from './permissions';
+import { permissionsMiddleware } from './permissions';
 
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
@@ -108,6 +108,29 @@ router.route('/sequence/:md5/:blockId?')
     res.status(403).send('Not allowed to delete sequence');
   });
 
+router.route('/projects/info/:type/:detail?')
+  .all(jsonParser)
+  .get((req, res) => {
+    const { user } = req;
+    const { type, detail } = req.params;
+
+    switch (type) {
+    case 'sbol' :
+      if (detail) {
+        querying.getAllBlocksWithSbol(user.uuid, detail)
+          .then(info => res.status(200).json(info))
+          .catch(err => res.status(500).send(err));
+      } else {
+        querying.getAllBlockSbols(user.uuid)
+          .then(info => res.status(200).json(info))
+          .catch(err => res.status(500).send(err));
+      }
+      break;
+    default :
+      res.status(400).send(`must specify a valid info type in url, got ${type} (${detail})`);
+    }
+  });
+
 // routes for non-atomic operations
 // response/request with data in format {project: {}, blocks: [], ...}
 // e.g. used in autosave, loading / saving whole project
@@ -122,6 +145,11 @@ router.route('/projects/:projectId')
   .post((req, res) => {
     const { projectId, user } = req;
     const roll = req.body;
+
+    //todo - remove once get rid of test project
+    if (projectId === 'test') {
+      return res.status(200).send({});
+    }
 
     rollup.writeProjectRollup(projectId, roll, user.uuid)
       .then(() => persistence.projectSave(projectId))
@@ -168,7 +196,7 @@ router.route('/:projectId/commit/:sha?')
 
     persistence.projectSnapshot(projectId, message)
       .then(commit => res.status(200).json(commit))
-      //todo - error handling
+      //may want better error handling here
       .catch(err => res.status(500).send(err));
   });
 

@@ -222,6 +222,12 @@ export const snapshot = (projectId, rollup, message = 'Project Snapshot') => {
     .then(resp => resp.json());
 };
 
+export const getProjectsInfo = (type, detail) => {
+  const url = dataApiPath(`projects/info/${type}${detail ? `/${detail}` : ''}`);
+  return rejectingFetch(url, headersGet())
+    .then(resp => resp.json());
+};
+
 /*************************
  Sequence API
  *************************/
