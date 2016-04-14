@@ -1,3 +1,4 @@
+import fs from 'fs';
 import BrowserSync from 'browser-sync';
 import webpack from 'webpack';
 import webpackDevMiddleware from 'webpack-dev-middleware';
@@ -90,11 +91,8 @@ async function start() {
             // no need to watch *.js, webpack will take care of it for us
             // no need to watch *.css, since imported so webpack will handle
             files: [
-              'app/content/**/*.*',
-              //todo - webpack server, not watch
-              //while we are not bundling the server, we can set up a watch to recompile on changes
-              'server/**/*',
-              'plugins/**/*',
+              'src/content/**/*.*',
+              //todo - webpack server, let webpack handle watching
             ],
 
             ...(DEBUG ? {} : { notify: false, ui: false }),
@@ -107,6 +105,9 @@ async function start() {
               ],
             },
           }, resolve);
+
+          //while we are not bundling the server, we can set up a watch to recompile on changes
+          bs.watch('server/**/*').on('change', runServer);
 
           //reassign so that we arent creating multiple browsersync entities
           handleServerBundleComplete = runServer;
