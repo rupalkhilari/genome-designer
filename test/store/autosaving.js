@@ -3,7 +3,7 @@ import sinon from 'sinon';
 import autosaveCreator from '../../src/store/autosave/autosaveCreator';
 
 describe('Store', () => {
-  describe('Autosaving', () => {
+  describe.only('Autosaving', () => {
     //simple reducer + actions
     const initialState = { counter: 0 };
     const increment = (number = 1) => ({ type: 'increment', number });
@@ -20,8 +20,8 @@ describe('Store', () => {
     };
 
     const saveSpy = sinon.spy();
-    const throttleTime = 1000;
-    const waitTime = 500;
+    const throttleTime = 500;
+    const waitTime = 250;
     const forceSaveActionType = 'FORCE_SAVE';
     const autosaving = autosaveCreator({
       time: throttleTime,
@@ -65,7 +65,7 @@ describe('Store', () => {
 
     it('returns last saved time', () => {
       expect(typeof getLastSaved).to.equal('function');
-      assert(getLastSaved() > Date.now() - 5000);
+      assert(getLastSaved() > Date.now() - 2000);
     });
 
     it('only saves when state changes', (done) => {
@@ -77,10 +77,13 @@ describe('Store', () => {
       expect(saveSpy.callCount).to.equal(callCount);
 
       state = savingCounter(state, increment(1));
-      assert(startSaved < getLastSaved(), 'wrong saved time');
-      expect(saveSpy.callCount).to.equal(callCount + 1);
 
-      setTimeout(done, throttleTime); //make sure throttle ends
+      setTimeout(() => {
+        assert(startSaved < getLastSaved(), 'wrong saved time');
+        expect(saveSpy.callCount).to.equal(callCount + 1);
+
+        setTimeout(done, throttleTime); //make sure throttle ends
+      }, waitTime);
     });
 
     it('marks dirty when in between throttles', (done) => {
@@ -94,19 +97,24 @@ describe('Store', () => {
 
       //triggers first save
       state = savingCounter(state, increment(1));
-      assert(!isDirty(), 'should only be dirty when in middle of throttle');
-      expect(saveSpy.callCount).to.equal(callCount + 1);
+      assert(isDirty(), 'mark dirty until debounced save starts');
 
-      //marks dirty, waits to call until throttle done
-      state = savingCounter(state, increment(1));
-      assert(isDirty(), 'shuold be dirty while in throttle');
-      expect(saveSpy.callCount).to.equal(callCount + 1);
-
+      //timeout for debounce, wait for first save
       setTimeout(() => {
-        assert(!isDirty(), 'not dirty after throttle over');
-        expect(saveSpy.callCount).to.equal(callCount + 2);
-        done();
-      }, throttleTime);
+        assert(!isDirty(), 'not dirty after first save');
+        expect(saveSpy.callCount).to.equal(callCount + 1);
+
+        //marks dirty, waits to call until throttle done
+        state = savingCounter(state, increment(1));
+        assert(isDirty(), 'shuold be dirty while in throttle');
+        expect(saveSpy.callCount).to.equal(callCount + 1);
+
+        setTimeout(() => {
+          assert(!isDirty(), 'not dirty after throttle over');
+          expect(saveSpy.callCount).to.equal(callCount + 2);
+          done();
+        }, throttleTime);
+      }, waitTime);
     });
 
     it('doesnt block state changes for saves', () => {
@@ -121,9 +129,11 @@ describe('Store', () => {
     it('coordinates across multiple reducers', (done) => {
       const coordinatingSpy = sinon.spy();
       const savingTime = 500;
+      const waitingTime = 200;
       const autosave = autosaveCreator({
         onSave: coordinatingSpy,
         time: savingTime,
+        wait: waitingTime,
       });
       const counterOne = (state = { one: 0 }, action) => {
         switch (action.type) {
@@ -155,24 +165,28 @@ describe('Store', () => {
       expect(coordinatingSpy.callCount).to.equal(0);
 
       stateOne = savingOne(stateOne, increment(1));
-      expect(coordinatingSpy.callCount).to.equal(1);
-      assert(!autosave.isDirty(), 'not dirty on first save');
-
-      stateOne = savingOne(stateOne, increment(1));
-      assert(autosave.isDirty(), 'dirty while waiting');
-      expect(coordinatingSpy.callCount).to.equal(1);
-      expect(stateOne.one).to.equal(2);
-
-      stateTwo = savingTwo(stateTwo, increment(1));
-      assert(autosave.isDirty(), 'dirty while waiting');
-      expect(coordinatingSpy.callCount).to.equal(1);
-      expect(stateTwo.two).to.equal(1);
+      assert(autosave.isDirty(), 'dirty prior to debounced save initiated');
 
       setTimeout(() => {
-        assert(!autosave.isDirty(), 'not dirty after throttle');
-        expect(coordinatingSpy.callCount).to.equal(2);
-        done();
-      }, savingTime);
+        expect(coordinatingSpy.callCount).to.equal(1);
+        assert(!autosave.isDirty(), 'not after first save');
+
+        stateOne = savingOne(stateOne, increment(1));
+        assert(autosave.isDirty(), 'dirty while waiting');
+        expect(coordinatingSpy.callCount).to.equal(1);
+        expect(stateOne.one).to.equal(2);
+
+        stateTwo = savingTwo(stateTwo, increment(1));
+        assert(autosave.isDirty(), 'dirty while waiting');
+        expect(coordinatingSpy.callCount).to.equal(1);
+        expect(stateTwo.two).to.equal(1);
+
+        setTimeout(() => {
+          assert(!autosave.isDirty(), 'not dirty after throttle');
+          expect(coordinatingSpy.callCount).to.equal(2);
+          done();
+        }, savingTime + 1);
+      }, waitingTime);
     });
   });
 });
