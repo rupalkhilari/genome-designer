@@ -22,7 +22,6 @@ export default function autosavingCreator(config) {
   const isDirty = () => dirty;
 
   const handleSave = (nextState) => {
-    console.log('saving');
     lastSaved = +Date.now();
     options.onSave(nextState);
     dirty = false;
