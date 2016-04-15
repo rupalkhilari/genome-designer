@@ -5,7 +5,7 @@ import { projectGet, projectListAllBlocks } from '../../selectors/projects';
 import { projectList, projectLoad } from '../../actions/projects';
 import { focusForceProject } from '../../actions/focus';
 import { block as blockDragType } from '../../constants/DragTypes';
-import { getProjectsInfo } from '../../middleware/api';
+import { infoQuery } from '../../middleware/api';
 import { symbolMap } from '../../inventory/sbol';
 
 import InventoryListGroup from './InventoryListGroup';
@@ -56,7 +56,7 @@ export class InventoryGroupProjects extends Component {
     this.setState({ groupBy: key });
 
     if (key === 'type') {
-      getProjectsInfo('sbol').then(typeMap => this.setState({ typeMap }));
+      infoQuery('sbol').then(typeMap => this.setState({ typeMap }));
     }
   };
 
@@ -80,7 +80,7 @@ export class InventoryGroupProjects extends Component {
     if (!nextState) return;
     //no caching for now...
 
-    getProjectsInfo('sbol', type).then(blocks => this.setState({
+    infoQuery('sbol', type).then(blocks => this.setState({
       loadedTypes: Object.assign(this.state.loadedTypes, { [type]: blocks }),
     }));
   };

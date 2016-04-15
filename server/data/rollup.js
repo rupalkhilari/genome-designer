@@ -3,7 +3,7 @@ import { errorDoesNotExist } from '../utils/errors';
 import * as persistence from './persistence';
 import * as filePaths from '../utils/filePaths';
 import * as fileSystem from '../utils/fileSystem';
-import { getAllBlockIdsInProject, getAllBlocksInProject } from './querying';
+import { findProjectFromBlock, getAllBlockIdsInProject, getAllBlocksInProject } from './querying';
 
 export const createRollup = (project, ...blocks) => ({
   project,
@@ -54,13 +54,23 @@ export const writeProjectRollup = (projectId, rollup, userId) => {
     .then(() => rollup);
 };
 
+//given a rollup and rootId, recursively gets components of root block
+const getComponentsRecursivelyInProject = (rootId, projectRollup, acc) => {
+  //todo
+};
+
 /**
- * @description Recursively get children
- * @param projectId {ID} Id of project
- * @param parentId {ID=} internal use mostly, unless only want children of a specific block
- * @param acc {object=} internal use
+ * @description Recursively get children of a block
+ * todo - handle projectId as input, not just block
+ * @param rootId {ID} root to get components of
+ * @param forceProjectId {ID=} Id of project, internal use (or force one)
  */
-export const getComponentsRecursively = (projectId, parentId, acc) => {
-  const parent = parentId || projectId;
-  //todo - do we need this? Usually can just use the flat list... Use if want a certain depth
+export const getComponentsRecursively = (rootId, forceProjectId) => {
+  const projectIdPromise = forceProjectId ?
+    Promise.resolve(forceProjectId) :
+    findProjectFromBlock(rootId);
+
+  return projectIdPromise
+    .then(projectId => getProjectRollup(projectId))
+    .then(rollup => getComponentsRecursivelyInProject(rootId, rollup));
 };

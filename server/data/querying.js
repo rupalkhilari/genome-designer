@@ -20,6 +20,7 @@ export const getAllBlocksInProject = (projectId) => {
     });
 };
 
+//returns project ID
 export const findProjectFromBlock = (blockId) => {
   if (!blockId) {
     return Promise.reject(errorCouldntFindProjectId);
