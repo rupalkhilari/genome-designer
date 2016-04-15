@@ -4,7 +4,7 @@ import { push } from 'react-router-redux';
 import { projectGet, projectListAllBlocks } from '../../selectors/projects';
 import { projectList, projectLoad } from '../../actions/projects';
 import { focusForceProject } from '../../actions/focus';
-import { blockStash } from '../../actions/blocks';
+import { blockCreate, blockStash } from '../../actions/blocks';
 import { block as blockDragType } from '../../constants/DragTypes';
 import { infoQuery } from '../../middleware/api';
 import { symbolMap } from '../../inventory/sbol';
@@ -95,7 +95,10 @@ export class InventoryGroupProjects extends Component {
 
     //get components if its a construct and add blocks to the store
     return infoQuery('components', item.id)
-      .then(components => this.props.blockStash(...components))
+      .then(componentsObj => {
+        const components = Object.keys(componentsObj).map(key => componentsObj[key]);
+        return this.props.blockStash(...components);
+      })
       .then(() => item);
   };
 

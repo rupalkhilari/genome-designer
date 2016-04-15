@@ -48,9 +48,9 @@ export const blockCreate = (initialModel) => {
 };
 
 //if you have block models you want in the store this will add them directly
-export const blockStash = (...blocks) => {
+export const blockStash = (...inputBlocks) => {
   return (dispatch, getState) => {
-    invariant(blocks.every(block => block instanceof Block));
+    const blocks = inputBlocks.map(blockObj => new Block(blockObj));
     dispatch({
       type: ActionTypes.BLOCK_STASH,
       blocks,
