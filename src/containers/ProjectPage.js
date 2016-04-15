@@ -16,9 +16,9 @@ import '../styles/SceneGraphPage.css';
 
 class ProjectPage extends Component {
   static propTypes = {
-    project: PropTypes.object.isRequired,
     projectId: PropTypes.string.isRequired,
-    constructs: PropTypes.array.isRequired,
+    project: PropTypes.object, //if have a project (not fetching)
+    constructs: PropTypes.array, //if have a project (not fetching)
     projectLoad: PropTypes.func.isRequired,
     push: PropTypes.func.isRequired,
     uiShowMainMenu: PropTypes.func.isRequired,
