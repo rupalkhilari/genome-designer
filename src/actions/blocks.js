@@ -47,6 +47,18 @@ export const blockCreate = (initialModel) => {
   };
 };
 
+//if you have block models you want in the store this will add them directly
+export const blockStash = (...blocks) => {
+  return (dispatch, getState) => {
+    invariant(blocks.every(block => block instanceof Block));
+    dispatch({
+      type: ActionTypes.BLOCK_STASH,
+      blocks,
+    });
+    return blocks;
+  };
+};
+
 /**
  * @description
  * Clones a block (and its children by default)

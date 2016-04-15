@@ -19,7 +19,7 @@ export class InventoryItem extends Component {
         image: PropTypes.string,
       }).isRequired,
     }).isRequired,
-    onDrop: PropTypes.func, //can return promise (e.g. update store), value is used for onDrop in DnD registered drop target
+    onDrop: PropTypes.func, //can return promise (e.g. update store), value is used for onDrop in DnD registered drop target. Can pass value from promise to use for drop as payload, or undefined
     onDragStart: PropTypes.func, //transact
     onDragComplete: PropTypes.func, //commit
     onSelect: PropTypes.func, //e.g. when clicked

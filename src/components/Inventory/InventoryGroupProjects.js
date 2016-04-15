@@ -4,6 +4,7 @@ import { push } from 'react-router-redux';
 import { projectGet, projectListAllBlocks } from '../../selectors/projects';
 import { projectList, projectLoad } from '../../actions/projects';
 import { focusForceProject } from '../../actions/focus';
+import { blockStash } from '../../actions/blocks';
 import { block as blockDragType } from '../../constants/DragTypes';
 import { infoQuery } from '../../middleware/api';
 import { symbolMap } from '../../inventory/sbol';
@@ -22,6 +23,7 @@ export class InventoryGroupProjects extends Component {
     projects: PropTypes.object.isRequired,
     projectId: PropTypes.string.isRequired,
     currentProject: PropTypes.string.isRequired,
+    blockStash: PropTypes.func.isRequired,
     projectList: PropTypes.func.isRequired,
     projectLoad: PropTypes.func.isRequired,
     projectGet: PropTypes.func.isRequired,
@@ -83,6 +85,18 @@ export class InventoryGroupProjects extends Component {
     infoQuery('sbol', type).then(blocks => this.setState({
       loadedTypes: Object.assign(this.state.loadedTypes, { [type]: blocks }),
     }));
+  };
+
+  onBlockDrop = (item, target) => {
+    //if no components, dont need to worry about fetching them
+    if (!item.components.length) {
+      return Promise.resolve(item);
+    }
+
+    //get components if its a construct and add blocks to the store
+    return infoQuery('components', item.id)
+      .then(components => this.props.blockStash(...components))
+      .then(() => item);
   };
 
   handleLoadProject = (projectId) => {
@@ -159,6 +173,7 @@ export class InventoryGroupProjects extends Component {
                             title={name + ` (${count})`}
                             onToggle={(nextState) => this.onToggleType(nextState, type)}>
           <InventoryList inventoryType={blockDragType}
+                         onDrop={this.onBlockDrop}
                          items={items}/>
         </InventoryListGroup>
       );
@@ -192,6 +207,7 @@ function mapStateToProps(state, props) {
 }
 
 export default connect(mapStateToProps, {
+  blockStash,
   projectList,
   projectLoad,
   projectGet,
