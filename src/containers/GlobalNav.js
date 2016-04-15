@@ -50,6 +50,7 @@ import {
   stringToShortcut,
   translate,
 } from '../utils/ui/keyboard-translator';
+import { sortBlocksByIndexAndDepth } from '../utils/ui/uiapi';
 
 import '../styles/GlobalNav.css';
 
@@ -167,71 +168,21 @@ class GlobalNav extends Component {
   }
 
   /**
-   * get the given blocks index in its parent
-   */
-  blockGetIndex(blockId) {
-    // get parent
-    const parentBlock = this.blockGetParent(blockId);
-    invariant(parentBlock, 'expected a parent');
-    const index = parentBlock.components.indexOf(blockId);
-    invariant(index >= 0, 'expect the block to be found in components of parent');
-    return index;
-  }
-  /**
    * get parent block of block with given id
    */
   blockGetParent(blockId) {
     return this.props.blockGetParents(blockId)[0];
-  }
-  /**
-   * truthy if the block has a parent
-   */
-  blockHasParent(blockId) {
-    return this.props.blockGetParents(blockId).length;
-  }
-
-  /**
-   * path is a representation of length of the path of the given block back to root.
-   * e.g. if the block is the 4th child of a 2nd child of a 5th child its true index would be:
-   *  [ (index in construct) 4, (2nd child of a block in the construct) 1, (4th child of 2nd child of construct) 3]
-   *  [4,1,3]
-   */
-  getBlockPath(blockId) {
-    let path = [];
-    let current = blockId;
-    while (this.blockHasParent(current)) {
-      path.unshift(this.blockGetIndex(current));
-      current = this.blockGetParent(current).id;
-    }
-    return path;
-  }
-
-  /**
-   * compare two results from getBlockPath, return truthy is a >= b
-   */
-  compareBlockPaths(tia, tib) {
-    let i = 0;
-    while (true) {
-      if (tia[i] === tib[i] && i < tia.length && i < tib.length) {
-        i++;
-      } else {
-        // this works because for each if the two paths are 2/3/2 and 2/3
-        // the final compare of 2 >= null will return true
-        // and also null >= null is true
-        return tia[i] >= tib[i];
-      }
-    }
   }
 
   /**
    * return the block we are going to insert after
    */
   findInsertBlock() {
-    // get true indices of all the focused blocks
-    const trueIndices = this.props.focus.blocks.map(block => this.getBlockPath(block));
-    trueIndices.sort(this.compareBlockPaths);
-    // the highest index/path will be the last item
-    const highest = trueIndices.pop();
+    // sort blocks according to 'natural order'
+    const sorted = sortBlocksByIndexAndDepth(this.props.focus.blocks);
+    // the right most, top most block is the insertion point
+    const highest = sorted.pop();
+
     // now locate the block and returns its parent id and the index to start inserting at
     let current = this.props.focus.construct;
     let index = 0;
