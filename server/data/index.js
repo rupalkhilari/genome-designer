@@ -134,7 +134,7 @@ router.route('/info/:type/:detail?')
         .catch(err => res.status(500).send(err));
       break;
     default :
-      res.status(400).send(`must specify a valid info type in url, got ${type} (param: ${detail})`);
+      res.status(404).send(`must specify a valid info type in url, got ${type} (param: ${detail})`);
     }
   });
 

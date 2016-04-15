@@ -34,7 +34,7 @@ export const writeProjectRollup = (projectId, rollup, userId) => {
     .catch(err => {
       //if the project doesn't exist, let's make it
       if (err === errorDoesNotExist) {
-        invariant(userId, 'userID is necessary to create a project from rollup');
+        invariant(typeof userId !== 'undefined', 'userID is necessary to create a project from rollup');
 
         return persistence.projectCreate(projectId, project, userId);
       }
@@ -69,10 +69,11 @@ const getComponentsRecursivelyGivenRollup = (rootId, projectRollup, acc = {}) =>
 };
 
 /**
- * @description Recursively get children of a block
+ * @description Recursively get children of a block (and returns block itself)
  * todo - handle projectId as input, not just block
  * @param rootId {ID} root to get components of
  * @param forceProjectId {ID=} Id of project, internal use (or force one)
+ * @returns {object} with keys of blocks
  */
 export const getComponentsRecursively = (rootId, forceProjectId) => {
   const projectIdPromise = forceProjectId ?
