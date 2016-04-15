@@ -10,14 +10,14 @@ import { dispatch } from '../../store/index';
  * always considered lower than blocks in the parent hierarchy.
  * e.g. given this arrangement of blocks, with selected ones
  * denoted by letters....
- * [ - ][ A ][ - ][ C ][ - ]
+ * [ F ][ A ][ - ][ C ][ - ]
  *        |
  *      [ B ][ - ][ D ]
  *             |
  *           [ E ]
  *
  * After sorting the block [A..E] the order would be:
- * [E, B, D, A, C]
+ * [F, E, B, D, A, C]
  */
 export function sortBlocksByIndexAndDepth(blockIds) {
 
@@ -79,6 +79,25 @@ export function sortBlocksByIndexAndDepth(blockIds) {
   // ( trueIndices is an array of arrays, where the last block is the actual block
   //   and the preceeding blocks are its parents )
   return trueIndices.map(ary => ary.pop());
+};
+
+/**
+ * similar to sortBlocksByIndexAndDepth except that if any of a blocks
+ * parents are in in the list the child is is excluded.
+ */
+export function sortBlocksByIndexAndDepthExclude(blockIds) {
+  // get unfiltered list
+  const list = sortBlocksByIndexAndDepth(blockIds);
+  return list.filter(info => {
+    const parents = dispatch(blockGetParents(info.blockId));
+    let found = false;
+    parents.forEach(parent => {
+      if (list.find(info => info.blockId === parent.id)) {
+        found = true;
+      }
+    });
+    return !found;
+  });
 };
 
 /**

@@ -50,7 +50,10 @@ import {
   stringToShortcut,
   translate,
 } from '../utils/ui/keyboard-translator';
-import { sortBlocksByIndexAndDepth } from '../utils/ui/uiapi';
+import {
+  sortBlocksByIndexAndDepth,
+  sortBlocksByIndexAndDepthExclude
+} from '../utils/ui/uiapi';
 
 import '../styles/GlobalNav.css';
 
@@ -209,8 +212,10 @@ class GlobalNav extends Component {
   copyFocusedBlocksToClipboard() {
     if (this.props.focus.blocks.length) {
       // sort selected blocks so they are pasted in the same order as they exist now.
-      const sorted = sortBlocksByIndexAndDepth(this.props.focus.blocks);
-      debugger;
+      // NOTE: we don't copy the children of any selected parents since they will
+      // be cloned along with their parent
+      //const sorted = sortBlocksByIndexAndDepth(this.props.focus.blocks);
+      const sorted = sortBlocksByIndexAndDepthExclude(this.props.focus.blocks);
       // sorted is an array of array, flatten while retaining order
       const clones = sorted.map(info => {
         return this.props.blockClone(info.blockId, this.props.currentProjectId);
@@ -250,7 +255,6 @@ class GlobalNav extends Component {
     // paste blocks into construct if format available
     const index = this.props.clipboard.formats.indexOf(clipboardFormats.blocks);
     if (index >= 0) {
-      debugger;
       const blocks = this.props.clipboard.data[index];
       invariant(blocks && blocks.length && Array.isArray(blocks), 'expected array of blocks on clipboard for this format');
       // get current construct
