@@ -56,6 +56,9 @@ class DnD {
     // save the payload for dropping
     this.payload = payload;
 
+    // save so we know if an undo commit is required
+    this.undoCommit = options.undoRedoTransaction;
+
     // block selection on anything while dragging
     document.body.classList.add('prevent-selection');
 
@@ -117,13 +120,13 @@ class DnD {
           this.onDragComplete(target, globalPosition, payload, evt);
 
           // close / commit the undo/redo transaction if one is required
-          if (target.options.undoRedoTransaction) {
+          if (this.undoCommit) {
             dispatch(commit());
           }
         });
     } else {
       // abort the undo/redo transaction since nothing is going to change
-      if (target.options.undoRedoTransaction) {
+      if (this.undoCommit) {
         dispatch(abort());
       }
     }

@@ -171,6 +171,19 @@ class GlobalNav extends Component {
   }
 
   /**
+   * download the current file as a genbank file
+   * @return {[type]} [description]
+   */
+  downloadProjectGenbank() {
+    // for now use an iframe otherwise any errors will corrupt the page
+    const url = `${window.location.protocol}//${window.location.host}/export/genbank/${this.props.currentProjectId}`;
+    var iframe = document.createElement("iframe");
+    iframe.style.display = "none";
+    iframe.src = url;
+    document.body.appendChild(iframe);
+  }
+  
+  /**
    * get parent block of block with given id
    */
   blockGetParent(blockId) {
@@ -317,7 +330,9 @@ class GlobalNav extends Component {
               },
             }, {
               text: 'Download Genbank File',
-              action: () => {},
+              action: () => {
+                this.downloadProjectGenbank();
+              },
             },
           ],
         },

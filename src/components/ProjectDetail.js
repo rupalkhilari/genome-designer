@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { uiToggleDetailView } from '../actions/ui';
-import { extensionsByRegion, registry } from '../extensions/clientRegistry';
+import { extensionsByRegion, onRegister } from '../extensions/clientRegistry';
 import { throttle } from 'lodash';
 
 import '../styles/ProjectDetail.css';
@@ -21,6 +21,8 @@ export class ProjectDetail extends Component {
     openHeight: 400,
   };
 
+  extensions = [];
+
   componentWillMount() {
     //e.g. if change project and component completely re-renders
     if (this.props.isVisible) {
@@ -29,10 +31,14 @@ export class ProjectDetail extends Component {
   }
 
   componentDidMount() {
-    //to update when extensions register... todo - need a pubsub method
-    setTimeout(() => {
+    this.extensionsListener = onRegister(() => {
+      Object.assign(this, { extensions: extensionsByRegion('sequenceDetail').filter(manifest => manifest.name !== 'simple') });
       this.forceUpdate();
-    }, 500);
+    });
+  }
+
+  componentWillUnmount() {
+    this.extensionsListener();
   }
 
   throttledDispatchResize = throttle(() => window.dispatchEvent(new Event('resize')), 50);
@@ -76,6 +82,10 @@ export class ProjectDetail extends Component {
 
   //todo - need to provide a way to unregister event handlers (e.g. an un-render() callback)
   loadExtension = (manifest) => {
+    if (!manifest) {
+      return;
+    }
+
     try {
       this.toggle(true);
       this.setState({ currentExtension: manifest });
@@ -92,9 +102,6 @@ export class ProjectDetail extends Component {
   };
 
   render() {
-    //todo - trigger more intelligently, dont want to recompute all the time
-    const extensions = extensionsByRegion('sequenceDetail').filter(manifest => manifest.name !== 'simple');
-
     const header = (this.props.isVisible) ?
       (
         <div className="ProjectDetail-heading">
@@ -109,13 +116,16 @@ export class ProjectDetail extends Component {
         <div className="ProjectDetail-heading">
           <a ref="open"
              className="ProjectDetail-heading-toggle"
-             onClick={() => { this.toggle(); this.loadExtension(extensions[0]);} }/>
+             onClick={() => {
+               this.toggle();
+               this.loadExtension(this.extensions[0]);
+             }}/>
           <div className="ProjectDetail-heading-extensionList">
-            {extensions.map(manifest => {
+            {this.extensions.map(manifest => {
               return (
                 <a key={manifest.name}
                    className="ProjectDetail-heading-extension"
-                   onClick={this.loadExtension.bind(null, manifest)}>{manifest.readable || manifest.name}</a>
+                   onClick={() => this.loadExtension(manifest)}>{manifest.readable || manifest.name}</a>
               );
             })}
           </div>

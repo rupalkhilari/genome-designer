@@ -106,3 +106,20 @@ export const getAllBlocksWithSbol = (userId, sbol) => {
   const filter = (block, index) => block.rules.sbol === sbol;
   return getAllBlocksFiltered(userId, filter);
 };
+
+export const getAllBlockSbols = (userId) => {
+  return getAllBlocks(userId)
+    .then(blocks => {
+      const obj = blocks.reduce((acc, block) => {
+        const rule = block.rules.sbol;
+        if (!rule) return acc;
+        if (acc[rule]) {
+          acc[rule]++;
+        } else {
+          acc[rule] = 1;
+        }
+        return acc;
+      }, {});
+      return obj;
+    });
+};

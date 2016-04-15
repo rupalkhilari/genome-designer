@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { inventorySearch } from '../../actions/inventory';
 import { block as blockDragType } from '../../constants/DragTypes';
-import _, { debounce, escapeRegExp } from 'lodash';
+import { chain, debounce, escapeRegExp } from 'lodash';
 
 import { registry, getSources } from '../../inventory/registry';
 import * as searchApi from '../../middleware/search';
@@ -151,7 +151,7 @@ export class InventoryGroupSearch extends Component {
           );
         })
         :
-        _(searchResults)
+        chain(searchResults)
           .map((sourceResults, sourceKey) => sourceResults.map(block => block.merge({ source: sourceKey })))
           .values()
           .flatten()
@@ -186,7 +186,7 @@ export class InventoryGroupSearch extends Component {
                                              activeTabKey={groupBy}
                                              onTabSelect={(tab) => this.handleTabSelect(tab.key)}/>)}
 
-        <div className="InventoryGroupSearch-groups">
+        <div className="InventoryGroup-contentInner">
           {groupsContent}
         </div>
       </div>

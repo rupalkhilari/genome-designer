@@ -379,7 +379,8 @@ export default class ConstructViewerUserInterface extends UserInterface {
         DnD.startDrag(proxy, globalPoint, {
           item: blockIds,
           source: 'construct-viewer',
-          copying: copying,
+          copying: copying
+        }, {
           undoRedoTransaction: true,
         });
       } else {
