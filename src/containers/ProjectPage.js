@@ -45,7 +45,7 @@ class ProjectPage extends Component {
       return (<p>loading project...</p>);
     }
     // build a list of construct viewers
-    const constructViewers = constructs.map(construct => {
+    const constructViewers = constructs.filter(construct => construct).map(construct => {
       return (
         <ConstructViewer key={construct.id}
                          projectId={projectId}

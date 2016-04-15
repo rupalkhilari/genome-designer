@@ -20,9 +20,12 @@ import { clipboardSetData } from '../actions/clipboard';
 import * as clipboardFormats from '../constants/clipboardFormats';
 import {
   blockCreate,
+  blockDelete,
+  blockDetach,
   blockClone,
   blockRemoveComponent,
   blockAddComponent,
+  blockAddComponents,
   blockRename,
  } from '../actions/blocks';
  import {
@@ -30,7 +33,7 @@ import {
    blockGetChildrenRecursive,
  } from '../selectors/blocks';
 import { projectGetVersion } from '../selectors/projects';
-import { undo, redo } from '../store/undo/actions';
+import { undo, redo, transact, commit } from '../store/undo/actions';
 import {
   uiShowGenBankImport,
   uiToggleDetailView,
@@ -47,6 +50,10 @@ import {
   stringToShortcut,
   translate,
 } from '../utils/ui/keyboard-translator';
+import {
+  sortBlocksByIndexAndDepth,
+  sortBlocksByIndexAndDepthExclude
+} from '../utils/ui/uiapi';
 
 import '../styles/GlobalNav.css';
 
@@ -155,85 +162,55 @@ class GlobalNav extends Component {
    * add a new construct to the current project
    */
   newConstruct() {
+    this.props.transact();
     const block = this.props.blockCreate();
     this.props.blockRename(block.id, "New Construct");
     this.props.projectAddConstruct(this.props.currentProjectId, block.id);
+    this.props.commit();
     this.props.focusConstruct(block.id);
   }
 
   /**
-   * get the given blocks index in its parent
+   * download the current file as a genbank file
+   * @return {[type]} [description]
    */
-  blockGetIndex(blockId) {
-    // get parent
-    const parentBlock = this.blockGetParent(blockId);
-    invariant(parentBlock, 'expected a parent');
-    const index = parentBlock.components.indexOf(blockId);
-    invariant(index >= 0, 'expect the block to be found in components of parent');
-    return index;
+  downloadProjectGenbank() {
+    // for now use an iframe otherwise any errors will corrupt the page
+    const url = `${window.location.protocol}//${window.location.host}/export/genbank/${this.props.currentProjectId}`;
+    var iframe = document.createElement("iframe");
+    iframe.style.display = "none";
+    iframe.src = url;
+    document.body.appendChild(iframe);
   }
+  
   /**
    * get parent block of block with given id
    */
   blockGetParent(blockId) {
     return this.props.blockGetParents(blockId)[0];
   }
-  /**
-   * truthy if the block has a parent
-   */
-  blockHasParent(blockId) {
-    return this.props.blockGetParents(blockId).length;
-  }
-
-  /**
-   * path is a representation of length of the path of the given block back to root.
-   * e.g. if the block is the 4th child of a 2nd child of a 5th child its true index would be:
-   *  [ (index in construct) 4, (2nd child of a block in the construct) 1, (4th child of 2nd child of construct) 3]
-   *  [4,1,3]
-   */
-  getBlockPath(blockId) {
-    let path = [];
-    let current = blockId;
-    while (this.blockHasParent(current)) {
-      path.unshift(this.blockGetIndex(current));
-      current = this.blockGetParent(current).id;
-    }
-    return path;
-  }
-
-  /**
-   * compare two results from getBlockPath, return truthy is a >= b
-   */
-  compareBlockPaths(tia, tib) {
-    let i = 0;
-    while (true) {
-      if (tia[i] === tib[i] && i < tia.length && i < tib.length) {
-        i++;
-      } else {
-        // this works because for each if the two paths are 2/3/2 and 2/3
-        // the final compare of 2 >= null will return true
-        // and also null >= null is true
-        return tia[i] >= tib[i];
-      }
-    }
-  }
 
   /**
    * return the block we are going to insert after
    */
   findInsertBlock() {
-    // get true indices of all the focused blocks
-    const trueIndices = this.props.focus.blocks.map(block => this.getBlockPath(block));
-    trueIndices.sort(this.compareBlockPaths);
-    // the highest index/path will be the last item
-    const highest = trueIndices.pop();
+    // sort blocks according to 'natural order'
+    const sorted = sortBlocksByIndexAndDepth(this.props.focus.blocks);
+    // the right most, top most block is the insertion point
+    const highest = sorted.pop();
+    // return parent of highest block and index + 1 so that the block is inserted after the highest block
+    return {
+      parent: this.blockGetParent(this.props.blocks[highest.blockId].id).id,
+      index: highest.index + 1,
+    };
+
     // now locate the block and returns its parent id and the index to start inserting at
     let current = this.props.focus.construct;
     let index = 0;
     let blockIndex = -1;
     let blockParent = null;
     do {
-      blockIndex = highest[index];
+      blockIndex = highest[index].index;
       blockParent = current;
       current = this.props.blocks[current].components[blockIndex];
     } while (++index < highest.length);
@@ -247,9 +224,16 @@ class GlobalNav extends Component {
   // copy the focused blocks to the clipboard using a deep clone
   copyFocusedBlocksToClipboard() {
     if (this.props.focus.blocks.length) {
-      const clones = this.props.focus.blocks.map(block => {
-        return this.props.blockClone(block, this.props.currentProjectId);
+      // sort selected blocks so they are pasted in the same order as they exist now.
+      // NOTE: we don't copy the children of any selected parents since they will
+      // be cloned along with their parent
+      //const sorted = sortBlocksByIndexAndDepth(this.props.focus.blocks);
+      const sorted = sortBlocksByIndexAndDepthExclude(this.props.focus.blocks);
+      // sorted is an array of array, flatten while retaining order
+      const clones = sorted.map(info => {
+        return this.props.blockClone(info.blockId, this.props.currentProjectId);
       });
+      // put clones on the clipboard
       this.props.clipboardSetData([clipboardFormats.blocks], [clones])
     }
   }
@@ -274,12 +258,9 @@ class GlobalNav extends Component {
   // cut focused blocks to the clipboard, no clone required since we are removing them.
   cutFocusedBlocksToClipboard() {
     if (this.props.focus.blocks.length) {
-      // copy the focused blocks before removing
-      const blocks = this.props.focus.blocks.slice().map(blockId => this.props.blocks[blockId]);
-      this.props.focus.blocks.forEach(blockId => {
-        this.props.blockRemoveComponent(this.getBlockParentId(blockId), blockId);
-      });
-      this.props.clipboardSetData([clipboardFormats.blocks], [blocks]);
+      const blockIds = this.props.blockDetach(...this.props.focus.blocks);
+      this.props.clipboardSetData([clipboardFormats.blocks], [blockIds.map(blockId => this.props.blocks[blockId])]);
+      this.props.focusBlocks([]);
     }
   }
   // paste from clipboard to current construct
@@ -302,15 +283,14 @@ class GlobalNav extends Component {
       let parentId = construct.id;
       if (this.props.focus.blocks.length) {
         const insertInfo = this.findInsertBlock();
-        insertIndex = insertInfo.blockIndex;
+        insertIndex = insertInfo.index;
         parentId = insertInfo.parent;
       }
       // add to construct
-      clones.forEach(block => {
-        this.props.blockAddComponent(parentId, block.id, insertIndex++);
-      });
+      this.props.blockAddComponents(parentId, clones.map(clone => clone.id), insertIndex);
+
       // select the clones
-      this.props.focusBlocks(clones.map(block => block.id));
+      this.props.focusBlocks(clones.map(clone => clone.id));
     }
   }
 
@@ -350,7 +330,9 @@ class GlobalNav extends Component {
               },
             }, {
               text: 'Download Genbank File',
-              action: () => {},
+              action: () => {
+                this.downloadProjectGenbank();
+              },
             },
           ],
         },
@@ -525,6 +507,8 @@ export default connect(mapStateToProps, {
   projectGetVersion,
   blockCreate,
   blockClone,
+  blockDelete,
+  blockDetach,
   blockRename,
   inspectorToggleVisibility,
   inventoryToggleVisibility,
@@ -534,6 +518,8 @@ export default connect(mapStateToProps, {
   uiShowDNAImport,
   undo,
   redo,
+  transact,
+  commit,
   push,
   uiShowGenBankImport,
   uiToggleDetailView,
@@ -544,4 +530,5 @@ export default connect(mapStateToProps, {
   focusConstruct,
   clipboardSetData,
   blockAddComponent,
+  blockAddComponents,
 })(GlobalNav);

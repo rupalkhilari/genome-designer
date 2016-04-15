@@ -5,9 +5,10 @@ var dragFromTo = require('../fixtures/dragfromto');
 var newProject = require('../fixtures/newproject');
 var newConstruct = require('../fixtures/newconstruct');
 var clickMainMenu = require('../fixtures/click-main-menu');
+var http = require("http");
 
 module.exports = {
-  'Import a genbank file as a project' : function (browser) {
+  'Import a genbank file as a project then export project as a genbank file' : function (browser) {
 
     // register via fixture
     var credentials = homepageRegister(browser);
@@ -36,6 +37,20 @@ module.exports = {
       .submitForm('.genbank-import-form')
       // wait for a construct viewer to become visible
       .waitForElementPresent('.construct-viewer', 5000, 'expected a construct viewer to appear')
-      .end();
+      .pause(5000);
+
+    // we can't actually download the file but we can ensure the correct header is present at the expected url
+    browser.url(function (response) {
+      // save original project url
+      var projectURL = response.value;
+      var projectId = response.value.split('/').pop();
+      var uri = 'http://localhost:3001/export/genbank/' + projectId;
+      browser
+        .url(uri)
+        .pause(5000)
+        .assert.urlContains(projectURL)
+        .end();
+
+    });
   }
 };

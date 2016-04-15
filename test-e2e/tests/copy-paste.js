@@ -7,7 +7,7 @@ var newConstruct = require('../fixtures/newconstruct');
 var clickMainMenu = require('../fixtures/click-main-menu');
 
 module.exports = {
-  'Test that when creating a new project we get a new focused construct' : function (browser) {
+  'Test copy and paste via keyboard for nested test project' : function (browser) {
 
     // maximize for graphical tests
     browser.windowSize('current', 1200, 900);
@@ -21,16 +21,22 @@ module.exports = {
       // wait for inventory and inspector to be present
       .waitForElementPresent('.SidePanel.Inventory', 5000, 'Expected Inventory Groups')
       .waitForElementPresent('.SidePanel.Inspector', 5000, 'Expected Inspector')
-
-    // start with a fresh project
-    newProject(browser);
-
-    browser
+      // expect to start with 8 blocks
+      .assert.countelements('.sbol-glyph', 8)
+      // send select all
+      .keys([browser.Keys.COMMAND, 'a'])
       .pause(1000)
-      // expect one focused construct viewer
-      .assert.countelements(".construct-viewer", 1)
-      // the dark style is only present for unfocused constructs so don't expect it
-      .waitForElementNotPresent('.sceneGraph-dark', 5000, 'expected construct to be focused')
+      // send copy
+      .keys([browser.Keys.NULL, browser.Keys.COMMAND, 'c'])
+      .pause(1000)
+      // send new construct
+      .keys([browser.Keys.NULL, browser.Keys.SHIFT, browser.Keys.CONTROL, 'n'])
+      .pause(1000)
+      // paste
+      .keys([browser.Keys.NULL, browser.Keys.COMMAND, 'v'])
+      .pause(1000)
+      // should now have 16 blocks
+      .assert.countelements(".sbol-glyph", 16)
       .end();
   }
 };

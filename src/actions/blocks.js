@@ -138,7 +138,6 @@ export const blockMerge = (blockId, toMerge) => {
   };
 };
 
-//todo - verify if need to remove children first so store never in bad state
 export const blockDelete = (...blocks) => {
   return (dispatch, getState) => {
     //transact for all blocks
@@ -146,11 +145,12 @@ export const blockDelete = (...blocks) => {
 
     blocks.forEach(blockId => {
       //find parent, remove component from parent
+
       const parent = dispatch(selectors.blockGetParents(blockId)).shift();
 
       //may not have parent (is construct) or parent was deleted
       if (parent) {
-        dispatch(blockRemoveComponent(parent.id, blockId)); //eslint-disable-line no-use-before-define
+        dispatch(blockRemoveComponent(parent, blockId)); //eslint-disable-line no-use-before-define
       }
 
       dispatch({
@@ -164,6 +164,28 @@ export const blockDelete = (...blocks) => {
     dispatch(undoActions.commit());
 
     return blocks;
+  };
+};
+
+//todo - verify if need to remove children first so store never in bad state
+export const blockDetach = (...blockIds) => {
+  return (dispatch, getState) => {
+    //transact for all blocks
+    dispatch(undoActions.transact());
+
+    blockIds.forEach(blockId => {
+      //find parent, remove component from parent
+      const parent = dispatch(selectors.blockGetParents(blockId)).shift();
+      //may not have parent (is construct) or parent was deleted
+      if (parent) {
+        dispatch(blockRemoveComponent(parent.id, blockId)); //eslint-disable-line no-use-before-define
+      }
+    });
+
+    //end transaction
+    dispatch(undoActions.commit());
+
+    return blockIds;
   };
 };
 
@@ -251,6 +273,25 @@ export const blockAddComponent = (blockId, componentId, index) => {
     }
 
     return block;
+  };
+};
+
+/**
+ * add the array of componentIds into the given part at the given starting index.
+ */
+export const blockAddComponents = (blockId, componentIds, index) => {
+  return (dispatch, getState) => {
+    //transact for all blocks
+    dispatch(undoActions.transact());
+
+    componentIds.forEach((componentId, subIndex) => {
+      dispatch(blockAddComponent(blockId, componentId, index + subIndex));
+    });
+
+    //end transaction
+    dispatch(undoActions.commit());
+
+    return componentIds;
   };
 };
 

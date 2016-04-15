@@ -51,11 +51,10 @@ export const focusBlocks = (blocks) => {
 
     if (blocks.length) {
       const firstBlockId = blocks[0];
-      //const siblings = dispatch(BlockSelector.blockGetSiblings(firstBlockId));
-      //invariant(blocks.every(block => siblings.indexOf(block) >= 0), 'must pass siblings, cannot select blocks from multiple levels');
-
-      const constructId = dispatch(BlockSelector.blockGetParentRoot(firstBlockId));
-      if (constructId !== getState().focus.construct) {
+      const construct = dispatch(BlockSelector.blockGetParentRoot(firstBlockId));
+      // null => no parent => construct (or detached)... undefined could be soething else
+      const constructId = !!construct ? construct.id : (construct !== null ? firstBlockId : undefined);
+      if (constructId !== getState().focus.construct || constructId === firstBlockId) {
         dispatch({
           type: ActionTypes.FOCUS_CONSTRUCT,
           constructId,
