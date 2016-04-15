@@ -54,9 +54,18 @@ export const writeProjectRollup = (projectId, rollup, userId) => {
     .then(() => rollup);
 };
 
+//helper for getComponentsRecursively
+const getBlockInRollById = (id, roll) => roll.blocks.find(block => block.id === id);
+
 //given a rollup and rootId, recursively gets components of root block
-const getComponentsRecursivelyInProject = (rootId, projectRollup, acc) => {
-  //todo
+const getComponentsRecursivelyGivenRollup = (rootId, projectRollup, acc = {}) => {
+  const root = getBlockInRollById(rootId, projectRollup);
+  acc[rootId] = root;
+
+  //recurse
+  root.components.forEach(compId => getComponentsRecursivelyGivenRollup(compId, projectRollup, acc));
+
+  return acc;
 };
 
 /**
@@ -72,5 +81,5 @@ export const getComponentsRecursively = (rootId, forceProjectId) => {
 
   return projectIdPromise
     .then(projectId => getProjectRollup(projectId))
-    .then(rollup => getComponentsRecursivelyInProject(rootId, rollup));
+    .then(rollup => getComponentsRecursivelyGivenRollup(rootId, rollup));
 };
