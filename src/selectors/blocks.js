@@ -48,7 +48,7 @@ const _getParents = (blockId, state) => {
   const parents = [];
   let parent = _getParentFromStore(blockId, state);
   while (parent) {
-    parents.push(parent.id);
+    parents.push(parent);
     parent = _getParentFromStore(parent.id, state);
   }
   return parents;

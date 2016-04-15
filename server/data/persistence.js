@@ -173,7 +173,7 @@ export const blockGet = (blockId, projectId, sha) => {
 //CREATE
 
 export const projectCreate = (projectId, project, userId) => {
-  invariant(userId, 'user id is required');
+  invariant(typeof userId !== 'undefined', 'user id is required');
 
   return projectAssertNew(projectId)
     .then(() => _projectSetup(projectId, userId))

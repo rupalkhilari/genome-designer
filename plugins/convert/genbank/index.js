@@ -226,6 +226,9 @@ const exportProjectStructure = (project, blocks) => {
     })
     .catch(err => {
       console.log('ERROR IN PYTHON');
+      console.log('Command');
+      console.log(cmd);
+      console.log('Error')
       console.log(err);
       return Promise.reject(err);
     });
@@ -235,16 +238,15 @@ const exportProjectStructure = (project, blocks) => {
 const loadSequences = (blocks) => {
   return Promise.all(
     blocks.map(block => {
-      if (block.sequence.md5 && !block.sequence.sequence) {
-        return persistence.sequenceGet(block.sequence.md5)
-          .then(readSequence => {
-            return merge({}, block, {sequence: {sequence: readSequence}});
-          });
-      } else {
-        Promise.resolve('');
-      }
-    })
-  );
+      const sequencePromise = (block.sequence.md5 && !block.sequence.sequence) ?
+        persistence.sequenceGet(block.sequence.md5) :
+        Promise.resolve();
+
+      return sequencePromise
+        .then((seq) => {
+          return merge({}, block, {sequence: {sequence: seq}});
+        });
+    }));
 };
 
 // This is the entry function for project export

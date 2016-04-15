@@ -37,10 +37,17 @@ describe('Selectors', () => {
         }, root);
       });
 
-      it('blockGetParents()', () => {
+      it('blockGetParents() works + returns blocks', () => {
         const parents = blockStore.dispatch(selectors.blockGetParents(leaf));
 
         expect(parents.length).to.equal(depth);
+        expect(parents.map(parent => parent.id).reverse().concat(leaf)).to.eql(lineage);
+      });
+
+      it('blockGetParentRoot() gets root block', () => {
+        const parent = blockStore.dispatch(selectors.blockGetParentRoot(leaf));
+
+        expect(parent.id).to.equal(root);
       });
 
       it('blockGetSiblings()', () => {
@@ -48,8 +55,7 @@ describe('Selectors', () => {
         expect(sibs.length).to.equal(siblings);
 
         const parents = blockStore.dispatch(selectors.blockGetParents(leaf));
-        const parentId = parents[0];
-        const parent = blockStore.getState().blocks[parentId];
+        const parent = parents[0];
         expect(parent.components).to.eql(sibs.map(sib => sib.id));
       });
 
@@ -58,8 +64,7 @@ describe('Selectors', () => {
         expect(index).to.equal(0);
 
         const parents = blockStore.dispatch(selectors.blockGetParents(leaf));
-        const parentId = parents[0];
-        const parent = blockStore.getState().blocks[parentId];
+        const parent = parents[0];
         expect(parent.components[0]).to.eql(leaf);
       });
 

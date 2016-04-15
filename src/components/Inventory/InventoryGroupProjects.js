@@ -1,13 +1,17 @@
-import React, {Component, PropTypes} from 'react';
-import {connect} from 'react-redux';
-import {push} from 'react-router-redux';
-import {projectGet, projectListAllBlocks} from '../../selectors/projects';
-import {projectList, projectLoad} from '../../actions/projects';
-import {focusForceProject} from '../../actions/focus';
-import {block as blockDragType} from '../../constants/DragTypes';
+import React, { Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
+import { push } from 'react-router-redux';
+import { projectGet, projectListAllBlocks } from '../../selectors/projects';
+import { projectList, projectLoad } from '../../actions/projects';
+import { focusForceProject } from '../../actions/focus';
+import { blockCreate, blockStash } from '../../actions/blocks';
+import { block as blockDragType } from '../../constants/DragTypes';
+import { infoQuery } from '../../middleware/api';
+import { symbolMap } from '../../inventory/sbol';
 
 import InventoryListGroup from './InventoryListGroup';
 import InventoryList from './InventoryList';
+import InventoryTabs from './InventoryTabs';
 
 //temp - non-empty to handle test project
 const loadedProjects = {
@@ -19,6 +23,7 @@ export class InventoryGroupProjects extends Component {
     projects: PropTypes.object.isRequired,
     projectId: PropTypes.string.isRequired,
     currentProject: PropTypes.string.isRequired,
+    blockStash: PropTypes.func.isRequired,
     projectList: PropTypes.func.isRequired,
     projectLoad: PropTypes.func.isRequired,
     projectGet: PropTypes.func.isRequired,
@@ -30,16 +35,72 @@ export class InventoryGroupProjects extends Component {
   constructor() {
     super();
     this.clicks = 0;
+
+    this.inventoryTabs = [
+      { key: 'project', name: 'By Project' },
+      { key: 'type', name: 'By Kind' },
+    ];
   }
 
   state = {
     expandedProjects: {},
+    loadedTypes: {},
+    groupBy: 'project',
+    typeMap: {},
   };
 
   componentDidMount() {
     //retrigger on each load?
     this.props.projectList();
   }
+
+  onTabSelect = (key) => {
+    this.setState({ groupBy: key });
+
+    if (key === 'type') {
+      infoQuery('sbol').then(typeMap => this.setState({ typeMap }));
+    }
+  };
+
+  //handle double-click to open
+  onToggleProject = (nextState, projectId) => {
+    this.clicks++;
+    if (this.clicks === 1) {
+      const promise = this.handleLoadProject(projectId);
+      window.setTimeout(() => {
+        if (this.clicks === 1) {
+          promise.then(() => this.handleToggleProject(nextState, projectId));
+        } else {
+          promise.then(() => this.handleOpenProject(nextState, projectId));
+        }
+        this.clicks = 0;
+      }, 300);
+    }
+  };
+
+  onToggleType = (nextState, type) => {
+    if (!nextState) return;
+    //no caching for now...
+
+    infoQuery('sbol', type).then(blocks => this.setState({
+      loadedTypes: Object.assign(this.state.loadedTypes, { [type]: blocks }),
+    }));
+  };
+
+  onBlockDrop = (item, target) => {
+    //if no components, dont need to worry about fetching them
+    if (!item.components.length) {
+      return Promise.resolve(item);
+    }
+
+    //get components if its a construct and add blocks to the store
+    return infoQuery('components', item.id)
+      .then(componentsObj => {
+        const components = Object.keys(componentsObj).map(key => componentsObj[key]);
+        return this.props.blockStash(...components);
+      })
+      .then(() => item);
+  };
 
   handleLoadProject = (projectId) => {
     //temporary - handle test project scenario
@@ -48,6 +109,8 @@ export class InventoryGroupProjects extends Component {
     }
 
     //todo - dont load blocks into store until the project is loaded (update selector)
+    //we just want to load when the project is actually loaded. Dont add to store if we're going to just push it on with forceBlocks
+    //however, need to make sure that blockClone will work. Perhaps we can add them to the store before the drag starts
     //todo - caching should be at API level, not in this component
 
     return !!loadedProjects[projectId]
@@ -78,25 +141,9 @@ export class InventoryGroupProjects extends Component {
       });
   };
 
-  handleOnToggle = (nextState, projectId) => {
-    //handle double-click to open
-    this.clicks++;
-    if (this.clicks === 1) {
-      const promise = this.handleLoadProject(projectId);
-      window.setTimeout(() => {
-        if (this.clicks === 1) {
-          promise.then(() => this.handleToggleProject(nextState, projectId));
-        } else {
-          promise.then(() => this.handleOpenProject(nextState, projectId));
-        }
-        this.clicks = 0;
-      }, 300);
-    }
-  };
-
   render() {
     const { projects, currentProject } = this.props;
-    const { expandedProjects } = this.state;
+    const { expandedProjects, loadedTypes, groupBy, typeMap } = this.state;
 
     const projectList =
       (!Object.keys(projects).length)
@@ -112,7 +159,7 @@ export class InventoryGroupProjects extends Component {
                                 title={project.metadata.name || 'Untitled Project'}
                                 manual
                                 isExpanded={isExpanded}
-                                onToggle={(nextState) => this.handleOnToggle(nextState, projectId)}
+                                onToggle={(nextState) => this.onToggleProject(nextState, projectId)}
                                 isActive={isActive}>
               <InventoryList inventoryType={blockDragType}
                              items={loadedProjects[projectId]}/>
@@ -120,9 +167,33 @@ export class InventoryGroupProjects extends Component {
           );
         });
 
+    const byKindList = Object.keys(typeMap).map(type => {
+      const count = typeMap[type];
+      const name = symbolMap[type] || type;
+      const items = loadedTypes[type] || [];
+      return (
+        <InventoryListGroup key={type}
+                            title={name + ` (${count})`}
+                            onToggle={(nextState) => this.onToggleType(nextState, type)}>
+          <InventoryList inventoryType={blockDragType}
+                         onDrop={this.onBlockDrop}
+                         items={items}/>
+        </InventoryListGroup>
+      );
+    });
+
+    const currentList = groupBy === 'type' ?
+      byKindList :
+      projectList;
+
     return (
       <div className="InventoryGroup-content InventoryGroupProjects">
-        {projectList}
+        <InventoryTabs tabs={this.inventoryTabs}
+                       activeTabKey={groupBy}
+                       onTabSelect={(tab) => this.onTabSelect(tab.key)}/>
+        <div className="InventoryGroup-contentInner">
+          {currentList}
+        </div>
       </div>
     );
   }
@@ -139,6 +210,7 @@ function mapStateToProps(state, props) {
 }
 
 export default connect(mapStateToProps, {
+  blockStash,
   projectList,
   projectLoad,
   projectGet,

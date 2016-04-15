@@ -20,18 +20,20 @@ export default function blocks(state = initialState, action) {
   case ActionTypes.BLOCK_SET_SEQUENCE :
   case ActionTypes.BLOCK_COMPONENT_ADD :
   case ActionTypes.BLOCK_COMPONENT_MOVE :
-  case ActionTypes.BLOCK_COMPONENT_REMOVE : {
+  case ActionTypes.BLOCK_COMPONENT_REMOVE :
     const { block } = action;
     return Object.assign({}, state, { [block.id]: block });
-  }
-  case ActionTypes.BLOCK_DELETE : {
+  case ActionTypes.BLOCK_STASH :
+    const { blocks } = action;
+    const toMerge = blocks.reduce((acc, block) => Object.assign(acc, { [block.id]: block }), {});
+    return Object.assign({}, state, toMerge);
+  case ActionTypes.BLOCK_DELETE :
     const { blockId } = action;
     const nextState = Object.assign({}, state);
     delete nextState[blockId];
     return nextState;
-  }
-  default : {
+
+  default :
     return state;
-  }
   }
 }

@@ -1,12 +1,6 @@
 import { assert, expect } from 'chai';
-import path from 'path';
 import uuid from 'node-uuid';
-import { errorInvalidModel, errorAlreadyExists, errorDoesNotExist } from '../../../server/utils/errors';
-import { fileExists, fileRead, fileWrite, fileDelete, directoryExists, directoryMake, directoryDelete } from '../../../server/utils/fileSystem';
-
 import Block from '../../../src/models/Block';
-
-import * as filePaths from '../../../server/utils/filePaths';
 import * as rollup from '../../../server/data/rollup';
 import * as persistence from '../../../server/data/persistence';
 import * as querying from '../../../server/data/querying';

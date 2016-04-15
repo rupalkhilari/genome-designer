@@ -20,6 +20,7 @@ export const getAllBlocksInProject = (projectId) => {
     });
 };
 
+//returns project ID
 export const findProjectFromBlock = (blockId) => {
   if (!blockId) {
     return Promise.reject(errorCouldntFindProjectId);
@@ -52,8 +53,9 @@ export const findProjectFromBlock = (blockId) => {
 export const listProjectsWithAccess = (userId) => {
   const directory = filePaths.createProjectsDirectoryPath();
   return new Promise((resolve, reject) => {
-    exec(`cd ${directory} && grep -e '"${userId}"' --include=permissions.json -Rl .`, (err, output) => {
+    exec(`cd ${directory} && grep -e "\"${userId}\"" --include=permissions.json -Rl .`, (err, output) => {
       if (err) {
+        console.log(err);
         return reject(err);
       }
 
@@ -105,4 +107,21 @@ export const getAllBlocksWithName = (userId, name) => {
 export const getAllBlocksWithSbol = (userId, sbol) => {
   const filter = (block, index) => block.rules.sbol === sbol;
   return getAllBlocksFiltered(userId, filter);
+};
+
+export const getAllBlockSbols = (userId) => {
+  return getAllBlocks(userId)
+    .then(blocks => {
+      const obj = blocks.reduce((acc, block) => {
+        const rule = block.rules.sbol;
+        if (!rule) return acc;
+        if (acc[rule]) {
+          acc[rule]++;
+        } else {
+          acc[rule] = 1;
+        }
+        return acc;
+      }, {});
+      return obj;
+    });
 };
