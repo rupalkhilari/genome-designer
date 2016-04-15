@@ -8,6 +8,9 @@ import Fence from './fence';
 import invariant from 'invariant';
 import { transact, commit, abort } from '../../../store/undo/actions';
 import { dispatch } from '../../../store/index';
+import {
+  sortBlocksByIndexAndDepthExclude
+} from '../../../utils/ui/uiapi';
 
 
 // # of pixels of mouse movement before a drag is triggered.
@@ -357,20 +360,24 @@ export default class ConstructViewerUserInterface extends UserInterface {
         // open an undo/redo transaction
         dispatch(transact());
         // ensure the block being dragged is selected
-        this.constructViewer.blockAddToSelections([block]);
+        // TODO: THIS NEED WORKS, fix later
+        //this.constructViewer.blockAddToSelections([block]);
         // get global point as starting point for drag
         const globalPoint = this.mouseTrap.mouseToGlobal(evt);
         // proxy representing 1 ore more blocks
         const proxy = this.makeDragProxy();
         // remove the blocks, unless meta key pressed
         let copying = evt.altKey;
+        // filter our selected elements so they are in natural order
+        // and with children of selected parents excluded.
+        const blockIds = sortBlocksByIndexAndDepthExclude(this.selectedElements).map(info => info.blockId);
         if (!copying) {
-          this.constructViewer.removePartsList(this.selectedElements);
+          this.constructViewer.removePartsList(blockIds);
         }
         // start the drag with the proxy and the removed block as the payload
         // and indicate that the source of the drag is another construct viewer
         DnD.startDrag(proxy, globalPoint, {
-          item: this.selectedElements,
+          item: blockIds,
           source: 'construct-viewer',
           copying: copying,
           undoRedoTransaction: true,
