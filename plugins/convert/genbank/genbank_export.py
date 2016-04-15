@@ -42,22 +42,26 @@ def add_features(block, allblocks, gb, start):
     # Add My annotations as features
     for annotation in block["sequence"]["annotations"]:
         gb_annot = SeqFeature.SeqFeature()
+        annotation_type = ""
         for key, value in annotation.iteritems():
             if key not in ["start", "end", "notes", "strand"]:
                 gb_annot.qualifiers[key] = value
             elif key == "notes":
                 for notes_key, notes_value in annotation["notes"].iteritems():
                     if notes_key == "genbank":
-                        for gb_key, gb_value in notes_value:
+                        for gb_key, gb_value in notes_value.iteritems():
                             gb_annot.qualifiers[gb_key] = gb_value
+                    if notes_key == "type":
+                        annotation_type = notes_value
 
         if "start" in annotation:
-            if "strand" in annotation:
-                if annotation["strand"]:
-                    strand = 1
-                else:
-                    strand = -1
+            strand = 1
+            if "strand" in annotation and annotation["strand"] == -1:
+                strand = -1
             gb_annot.location = SeqFeature.FeatureLocation(annotation["start"], annotation["end"], strand)
+
+        gb_annot.type = annotation_type
+
         gb.features.append(gb_annot)
 
     # Add my children as features
