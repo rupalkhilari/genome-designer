@@ -1,0 +1,1 @@
+export const FORCE_SAVE = 'AUTOSAVE:FORCE_SAVE';

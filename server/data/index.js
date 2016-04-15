@@ -108,7 +108,7 @@ router.route('/sequence/:md5/:blockId?')
     res.status(403).send('Not allowed to delete sequence');
   });
 
-router.route('/projects/info/:type/:detail?')
+router.route('/info/:type/:detail?')
   .all(jsonParser)
   .get((req, res) => {
     const { user } = req;
@@ -126,8 +126,15 @@ router.route('/projects/info/:type/:detail?')
           .catch(err => res.status(500).send(err));
       }
       break;
+    case 'components' :
+      //todo - support a project, but for now expect this to be a block (and not validating)
+      //todo - permissions check
+      rollup.getComponentsRecursively(detail)
+        .then(info => res.status(200).json(info))
+        .catch(err => res.status(500).send(err));
+      break;
     default :
-      res.status(400).send(`must specify a valid info type in url, got ${type} (${detail})`);
+      res.status(404).send(`must specify a valid info type in url, got ${type} (param: ${detail})`);
     }
   });
 

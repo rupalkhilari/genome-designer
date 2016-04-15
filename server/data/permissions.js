@@ -1,7 +1,7 @@
 import { exec } from 'child_process';
 import * as filePaths from '../utils/filePaths';
 import * as fileSystem from '../utils/fileSystem';
-import { errorDoesNotExist } from '../utils/errors';
+import { errorNoPermission, errorDoesNotExist } from '../utils/errors';
 
 export const createProjectPermissions = (projectId, userId) => {
   const projectPermissionsPath = filePaths.createProjectPermissionsPath(projectId);
@@ -13,7 +13,12 @@ export const createProjectPermissions = (projectId, userId) => {
 export const checkProjectAccess = (projectId, userId, projectMustExist = false) => {
   const projectPermissionsPath = filePaths.createProjectPermissionsPath(projectId);
   return fileSystem.fileRead(projectPermissionsPath)
-    .then(contents => contents.indexOf(userId) >= 0)
+    .then(contents => {
+      if (contents.indexOf(userId) < 0) {
+        return Promise.reject(errorNoPermission);
+      }
+      return true;
+    })
     .catch(err => {
       if (err === errorDoesNotExist && !projectMustExist) {
         return Promise.resolve(true);
@@ -28,6 +33,7 @@ export const permissionsMiddleware = (req, res, next) => {
   if (!user) {
     console.error('no user attached by auth middleware!');
     next('user not attached to request by middleware');
+    //todo - reject this request?
     return;
   }
 
@@ -37,7 +43,10 @@ export const permissionsMiddleware = (req, res, next) => {
   checkProjectAccess(projectId, user.uuid)
     .then(() => next())
     .catch((err) => {
-      console.log('error checking project access', err);
-      res.status(403).send(`User ${user.email} does not have access to project ${projectId}`);
+      if (err === errorNoPermission) {
+        return res.status(403).send(`User ${user.email} does not have access to project ${projectId}`);
+      }
+      console.log(err);
+      res.status(500).send('error checking project access');
     });
 };

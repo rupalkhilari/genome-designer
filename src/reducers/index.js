@@ -2,6 +2,9 @@ import { routerReducer as router, LOCATION_CHANGE } from 'react-router-redux';
 import { USER_SET_USER } from '../constants/ActionTypes';
 import { combineReducers } from 'redux';
 import { undoReducer, undoReducerEnhancerCreator } from '../store/undo/reducerEnhancer';
+import { autosaveReducerEnhancer } from '../store/autosave/autosaveInstance';
+
+//all the reducers
 
 import blocks from './blocks';
 import projects from './projects';
@@ -12,6 +15,8 @@ import focus from './focus';
 import user from './user';
 import clipboard from './clipboard';
 
+//undo
+
 const purgingEvents = [LOCATION_CHANGE, USER_SET_USER];
 
 const undoReducerEnhancer = undoReducerEnhancerCreator({
@@ -20,8 +25,8 @@ const undoReducerEnhancer = undoReducerEnhancerCreator({
 });
 
 export const rootReducer = combineReducers({
-  blocks: undoReducerEnhancer(blocks, 'blocks'),
-  projects: undoReducerEnhancer(projects, 'projects'),
+  blocks: autosaveReducerEnhancer(undoReducerEnhancer(blocks, 'blocks')),
+  projects: autosaveReducerEnhancer(undoReducerEnhancer(projects, 'projects')),
   router,
   inventory,
   inspector,

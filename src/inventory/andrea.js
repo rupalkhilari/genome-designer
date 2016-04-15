@@ -1,7 +1,6 @@
 import merge from 'lodash.merge';
 import uuid from 'node-uuid';
 import BlockSchema from '../schemas/Block';
-
 /* eslint-disable quotes */
 
 const parts = [

@@ -1,3 +1,4 @@
+export const errorNoPermission = 'PERMISSION_DENIED';
 export const errorDoesNotExist = 'DOES_NOT_EXIST';
 export const errorAlreadyExists = 'ALREADY_EXISTS';
 export const errorNoIdProvided = 'ID_NOT_PROVIDED';

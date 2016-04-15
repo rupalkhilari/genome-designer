@@ -47,6 +47,18 @@ export const blockCreate = (initialModel) => {
   };
 };
 
+//if you have block models you want in the store this will add them directly
+export const blockStash = (...inputBlocks) => {
+  return (dispatch, getState) => {
+    const blocks = inputBlocks.map(blockObj => new Block(blockObj));
+    dispatch({
+      type: ActionTypes.BLOCK_STASH,
+      blocks,
+    });
+    return blocks;
+  };
+};
+
 /**
  * @description
  * Clones a block (and its children by default)
@@ -184,6 +196,11 @@ export const blockDetach = (...blockIds) => {
 export const blockRename = (blockId, name) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
+
+    if (oldBlock.metadata.name === name) {
+      return oldBlock;
+    }
+
     const block = oldBlock.mutate('metadata.name', name);
     dispatch({
       type: ActionTypes.BLOCK_RENAME,
@@ -197,6 +214,11 @@ export const blockRename = (blockId, name) => {
 export const blockSetColor = (blockId, color) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
+
+    if (oldBlock.metadata.color === color) {
+      return oldBlock;
+    }
+
     const block = oldBlock.mutate('metadata.color', color);
     dispatch({
       type: ActionTypes.BLOCK_SET_COLOR,
@@ -210,6 +232,11 @@ export const blockSetColor = (blockId, color) => {
 export const blockSetSbol = (blockId, sbol) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
+
+    if (oldBlock.rules.sbol === sbol) {
+      return oldBlock;
+    }
+
     const block = oldBlock.setSbol(sbol);
     dispatch({
       type: ActionTypes.BLOCK_SET_SBOL,

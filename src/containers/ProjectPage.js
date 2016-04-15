@@ -9,30 +9,40 @@ import Inventory from './Inventory';
 import Inspector from './Inspector';
 import { projectLoad } from '../actions/projects';
 import { uiShowMainMenu } from '../actions/ui';
+import { focusProject } from '../actions/focus';
 
 import '../styles/ProjectPage.css';
 import '../styles/SceneGraphPage.css';
 
 class ProjectPage extends Component {
   static propTypes = {
-    project: PropTypes.object.isRequired,
     projectId: PropTypes.string.isRequired,
-    constructs: PropTypes.array.isRequired,
+    project: PropTypes.object, //if have a project (not fetching)
+    constructs: PropTypes.array, //if have a project (not fetching)
     projectLoad: PropTypes.func.isRequired,
     push: PropTypes.func.isRequired,
     uiShowMainMenu: PropTypes.func.isRequired,
+    focusProject: PropTypes.func.isRequired,
   };
 
   constructor(props) {
     super(props);
+    this.lastProjectId = null;
     this.layoutAlgorithm = 'wrap';
+  }
+
+  componentWillReceiveProps(nextProps) {
+    //set state.focus.project -- might be a better way to do this, but hard otuside components with react-router
+    if (!this.lastProjectId || nextProps.projectId !== this.props.projectId) {
+      this.lastProjectId = nextProps.projectId;
+      this.props.focusProject(nextProps.projectId);
+    }
   }
 
   onLayoutChanged = () => {
     this.layoutAlgorithm = this.refs.layoutSelector.value;
     this.forceUpdate();
   };
-
 
   render() {
     const { project, projectId, constructs } = this.props;
@@ -56,7 +66,7 @@ class ProjectPage extends Component {
 
     return (
       <div className="ProjectPage">
-        <Inventory projectId={projectId} />
+        <Inventory projectId={projectId}/>
 
         <div className="ProjectPage-content">
 
@@ -70,7 +80,7 @@ class ProjectPage extends Component {
           <ProjectDetail project={project}/>
         </div>
 
-        <Inspector projectId={projectId} />
+        <Inspector projectId={projectId}/>
       </div>
     );
   }
@@ -98,4 +108,5 @@ export default connect(mapStateToProps, {
   projectLoad,
   push,
   uiShowMainMenu,
+  focusProject,
 })(ProjectPage);

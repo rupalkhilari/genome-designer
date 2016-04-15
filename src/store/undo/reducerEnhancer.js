@@ -34,6 +34,7 @@ export const undoReducerEnhancerCreator = (config, undoManager = manager) => {
   }, config);
 
   return (reducer, key = reducer.name) => {
+    //todo - why is a key required?
     invariant(key, 'key is required, key in e.g. combineReducers');
     const initialState = reducer(undefined, {});
 
