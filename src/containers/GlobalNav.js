@@ -50,6 +50,10 @@ import {
   stringToShortcut,
   translate,
 } from '../utils/ui/keyboard-translator';
+import {
+  sortBlocksByIndexAndDepth,
+  sortBlocksByIndexAndDepthExclude
+} from '../utils/ui/uiapi';
 
 import '../styles/GlobalNav.css';
 
@@ -178,80 +182,35 @@ class GlobalNav extends Component {
     iframe.src = url;
     document.body.appendChild(iframe);
   }
-
-  /**
-   * get the given blocks index in its parent
-   */
-  blockGetIndex(blockId) {
-    // get parent
-    const parentBlock = this.blockGetParent(blockId);
-    invariant(parentBlock, 'expected a parent');
-    const index = parentBlock.components.indexOf(blockId);
-    invariant(index >= 0, 'expect the block to be found in components of parent');
-    return index;
-  }
+  
   /**
    * get parent block of block with given id
    */
   blockGetParent(blockId) {
     return this.props.blockGetParents(blockId)[0];
   }
-  /**
-   * truthy if the block has a parent
-   */
-  blockHasParent(blockId) {
-    return this.props.blockGetParents(blockId).length;
-  }
-
-  /**
-   * path is a representation of length of the path of the given block back to root.
-   * e.g. if the block is the 4th child of a 2nd child of a 5th child its true index would be:
-   *  [ (index in construct) 4, (2nd child of a block in the construct) 1, (4th child of 2nd child of construct) 3]
-   *  [4,1,3]
-   */
-  getBlockPath(blockId) {
-    let path = [];
-    let current = blockId;
-    while (this.blockHasParent(current)) {
-      path.unshift(this.blockGetIndex(current));
-      current = this.blockGetParent(current).id;
-    }
-    return path;
-  }
-
-  /**
-   * compare two results from getBlockPath, return truthy is a >= b
-   */
-  compareBlockPaths(tia, tib) {
-    let i = 0;
-    while (true) {
-      if (tia[i] === tib[i] && i < tia.length && i < tib.length) {
-        i++;
-      } else {
-        // this works because for each if the two paths are 2/3/2 and 2/3
-        // the final compare of 2 >= null will return true
-        // and also null >= null is true
-        return tia[i] >= tib[i];
-      }
-    }
-  }
 
   /**
    * return the block we are going to insert after
    */
   findInsertBlock() {
-    // get true indices of all the focused blocks
-    const trueIndices = this.props.focus.blocks.map(block => this.getBlockPath(block));
-    trueIndices.sort(this.compareBlockPaths);
-    // the highest index/path will be the last item
-    const highest = trueIndices.pop();
+    // sort blocks according to 'natural order'
+    const sorted = sortBlocksByIndexAndDepth(this.props.focus.blocks);
+    // the right most, top most block is the insertion point
+    const highest = sorted.pop();
+    // return parent of highest block and index + 1 so that the block is inserted after the highest block
+    return {
+      parent: this.blockGetParent(this.props.blocks[highest.blockId].id).id,
+      index: highest.index + 1,
+    };
+
     // now locate the block and returns its parent id and the index to start inserting at
     let current = this.props.focus.construct;
     let index = 0;
     let blockIndex = -1;
     let blockParent = null;
     do {
-      blockIndex = highest[index];
+      blockIndex = highest[index].index;
       blockParent = current;
       current = this.props.blocks[current].components[blockIndex];
     } while (++index < highest.length);
@@ -265,9 +224,16 @@ class GlobalNav extends Component {
   // copy the focused blocks to the clipboard using a deep clone
   copyFocusedBlocksToClipboard() {
     if (this.props.focus.blocks.length) {
-      const clones = this.props.focus.blocks.map(block => {
-        return this.props.blockClone(block, this.props.currentProjectId);
+      // sort selected blocks so they are pasted in the same order as they exist now.
+      // NOTE: we don't copy the children of any selected parents since they will
+      // be cloned along with their parent
+      //const sorted = sortBlocksByIndexAndDepth(this.props.focus.blocks);
+      const sorted = sortBlocksByIndexAndDepthExclude(this.props.focus.blocks);
+      // sorted is an array of array, flatten while retaining order
+      const clones = sorted.map(info => {
+        return this.props.blockClone(info.blockId, this.props.currentProjectId);
       });
+      // put clones on the clipboard
       this.props.clipboardSetData([clipboardFormats.blocks], [clones])
     }
   }
@@ -317,7 +283,7 @@ class GlobalNav extends Component {
       let parentId = construct.id;
       if (this.props.focus.blocks.length) {
         const insertInfo = this.findInsertBlock();
-        insertIndex = insertInfo.blockIndex;
+        insertIndex = insertInfo.index;
         parentId = insertInfo.parent;
       }
       // add to construct

@@ -2,6 +2,7 @@ import Vector2D from '../geometry/vector2d';
 import Box2D from '../geometry/box2d';
 import invariant from 'invariant';
 import { transact, commit, abort } from '../../../store/undo/actions';
+import { dispatch } from '../../../store/index';
 
 /**
  * actual Drag and Drop manager.
@@ -55,11 +56,12 @@ class DnD {
     // save the payload for dropping
     this.payload = payload;
 
+    // save so we know if an undo commit is required
+    this.undoCommit = options.undoRedoTransaction;
+
     // block selection on anything while dragging
     document.body.classList.add('prevent-selection');
 
-    // open an undo/redo transaction
-    transact();
   }
 
   /**
@@ -117,14 +119,17 @@ class DnD {
           //completion handler
           this.onDragComplete(target, globalPosition, payload, evt);
 
-          // close / commit the undo/redo transaction
-          commit();
+          // close / commit the undo/redo transaction if one is required
+          if (this.undoCommit) {
+            dispatch(commit());
+          }
         });
     } else {
       // abort the undo/redo transaction since nothing is going to change
-      abort();
+      if (this.undoCommit) {
+        dispatch(abort());
+      }
     }
-
     this.cancelDrag();
   }
 
