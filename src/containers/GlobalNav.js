@@ -182,6 +182,11 @@ class GlobalNav extends Component {
     const sorted = sortBlocksByIndexAndDepth(this.props.focus.blocks);
     // the right most, top most block is the insertion point
     const highest = sorted.pop();
+    // return parent of highest block and index + 1 so that the block is inserted after the highest block
+    return {
+      parent: this.blockGetParent(this.props.blocks[highest.blockId].id).id,
+      index: highest.index + 1,
+    };
 
     // now locate the block and returns its parent id and the index to start inserting at
     let current = this.props.focus.construct;
@@ -189,7 +194,7 @@ class GlobalNav extends Component {
     let blockIndex = -1;
     let blockParent = null;
     do {
-      blockIndex = highest[index];
+      blockIndex = highest[index].index;
       blockParent = current;
       current = this.props.blocks[current].components[blockIndex];
     } while (++index < highest.length);
@@ -203,9 +208,14 @@ class GlobalNav extends Component {
   // copy the focused blocks to the clipboard using a deep clone
   copyFocusedBlocksToClipboard() {
     if (this.props.focus.blocks.length) {
-      const clones = this.props.focus.blocks.map(block => {
-        return this.props.blockClone(block, this.props.currentProjectId);
+      // sort selected blocks so they are pasted in the same order as they exist now.
+      const sorted = sortBlocksByIndexAndDepth(this.props.focus.blocks);
+      debugger;
+      // sorted is an array of array, flatten while retaining order
+      const clones = sorted.map(info => {
+        return this.props.blockClone(info.blockId, this.props.currentProjectId);
       });
+      // put clones on the clipboard
       this.props.clipboardSetData([clipboardFormats.blocks], [clones])
     }
   }
@@ -240,6 +250,7 @@ class GlobalNav extends Component {
     // paste blocks into construct if format available
     const index = this.props.clipboard.formats.indexOf(clipboardFormats.blocks);
     if (index >= 0) {
+      debugger;
       const blocks = this.props.clipboard.data[index];
       invariant(blocks && blocks.length && Array.isArray(blocks), 'expected array of blocks on clipboard for this format');
       // get current construct
@@ -255,7 +266,7 @@ class GlobalNav extends Component {
       let parentId = construct.id;
       if (this.props.focus.blocks.length) {
         const insertInfo = this.findInsertBlock();
-        insertIndex = insertInfo.blockIndex;
+        insertIndex = insertInfo.index;
         parentId = insertInfo.parent;
       }
       // add to construct

@@ -51,7 +51,7 @@ export function sortBlocksByIndexAndDepth(blockIds) {
     let path = [];
     let current = blockId;
     while (hasParent(current)) {
-      path.unshift(getIndex(current));
+      path.unshift({blockId: current, index: getIndex(current)});
       current = getParent(current).id;
     }
     return path;
@@ -60,24 +60,25 @@ export function sortBlocksByIndexAndDepth(blockIds) {
   /**
    * compare two results from getBlockPath, return truthy is a >= b
    */
-  const compareBlockPaths = (tia, tib) => {
+  const compareBlockPaths = (infoA, infoB) => {
     let i = 0;
     while (true) {
-      if (tia[i] === tib[i] && i < tia.length && i < tib.length) {
+      if (i < infoA.length && i < infoB.length && infoA[i].index === infoB[i].index) {
         i++;
       } else {
-        // this works because for each if the two paths are 2/3/2 and 2/3
-        // the final compare of 2 >= null will return true
-        // and also null >= null is true
-        return tia[i] >= tib[i];
+        return (i < infoA.length ? infoA[i].index : -1) >= (i < infoB.length ? infoB[i].index : -1);
       }
     }
   };
 
-  // get true indices of all the focused blocks
+
+  // get true indices of all the focused blocks and sort
   const trueIndices = blockIds.map(blockId => getPath(blockId));
   trueIndices.sort(compareBlockPaths);
-  return trueIndices;
+  // return a flattened array of objects with a blockId and its index.
+  // ( trueIndices is an array of arrays, where the last block is the actual block
+  //   and the preceeding blocks are its parents )
+  return trueIndices.map(ary => ary.pop());
 };
 
 /**

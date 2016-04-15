@@ -241,6 +241,7 @@ export default class Layout {
    * If the part is an SBOL symbol then use the symbol name preferentially
    */
   partName(part) {
+    return this.blocks[part].id;
     return this.partMeta(part, 'name') || this.partRule(part, 'sbol') || 'block';
   }
   /**
