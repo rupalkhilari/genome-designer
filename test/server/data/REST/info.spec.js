@@ -10,7 +10,7 @@ import { range } from 'lodash';
 
 describe('REST', () => {
   describe('Data', () => {
-    describe.only('Info', () => {
+    describe('Info', () => {
       let server;
       const userId = 0; //testing
 
