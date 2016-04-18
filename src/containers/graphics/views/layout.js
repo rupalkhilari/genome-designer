@@ -55,12 +55,17 @@ export default class Layout {
    */
   autoSizeSceneGraph() {
     if (this.rootLayout) {
-      const aabb = this.sceneGraph.getAABB();
-      if (aabb) {
-        this.sceneGraph.width = Math.max(aabb.right, kT.minWidth);
-        this.sceneGraph.height = Math.max(aabb.bottom, kT.minHeight) + kT.bottomPad;
-        this.sceneGraph.updateSize();
-      }
+      // start with a box at 0,0, to ensure we capture the top left of the view
+      // and ensure we at least use the available width
+      let aabb = new Box2D(0, 0, this.sceneGraph.availableWidth, 0);
+      // we should only autosize the nodes representing parts
+      Object.keys(this.parts2nodes).forEach(part => {
+        const node = this.parts2nodes[part];
+        aabb = aabb.union(node.getAABB());
+      });
+      this.sceneGraph.width = Math.max(aabb.right, kT.minWidth);
+      this.sceneGraph.height = Math.max(aabb.bottom, kT.minHeight) + kT.bottomPad;
+      this.sceneGraph.updateSize();
     }
   }
   /**
@@ -103,26 +108,6 @@ export default class Layout {
     });
   }
 
-  /**
-   * remove the part, node and unmap. Return the node ( its isn't disposed )
-   * so that is can be reused.
-   */
-  // removePart(part) {
-  //   // if we have the part, remove it and return the node
-  //   const node = this.parts2nodes[part];
-  //   if (node) {
-  //     delete this.nodes2parts[node.uuid];
-  //     delete this.parts2nodes[part];
-  //     delete this.partTypes[part];
-  //     node.parent.removeChild(node);
-  //   } else {
-  //     // if here part might be in nested construct
-  //     const keys = Object.keys(this.nestedLayouts);
-  //     for (let i = 0; i < keys.length; i += 1) {
-  //       this.nestedLayouts[keys[i]].removePart(part);
-  //     }
-  //   }
-  // }
   /**
    * return the element from the data represented by the given node uuid.
    * This searches this construct and any nested construct to find the part
@@ -402,7 +387,7 @@ export default class Layout {
    */
   layoutWrap() {
     return this.layout({
-      xlimit: this.sceneGraph.availableWidth - this.insetX,
+      xlimit: this.sceneGraph.availableWidth - this.insetX - kT.rightPad,
       condensed: false,
     });
   }
