@@ -5,6 +5,7 @@ import Node2D from '../scenegraph2d/node2d';
 import SBOL2D from '../scenegraph2d/sbol2d';
 import LineNode2D from '../scenegraph2d/line2d';
 import kT from './layoutconstants';
+import objectValues from '../../../utils/object/values';
 import invariant from 'invariant';
 
 // just for internal tracking of what type of block a node represents.
@@ -54,20 +55,34 @@ export default class Layout {
    * @return {[type]} [description]
    */
   autoSizeSceneGraph() {
+
     if (this.rootLayout) {
       // start with a box at 0,0, to ensure we capture the top left of the view
       // and ensure we at least use the available width
-      let aabb = new Box2D(0, 0, this.sceneGraph.availableWidth, 0);
-      // we should only autosize the nodes representing parts
-      Object.keys(this.parts2nodes).forEach(part => {
-        const node = this.parts2nodes[part];
-        aabb = aabb.union(node.getAABB());
-      });
+      let aabb = this.getBlocksAABB();
       this.sceneGraph.width = Math.max(aabb.right, kT.minWidth);
       this.sceneGraph.height = Math.max(aabb.bottom, kT.minHeight) + kT.bottomPad;
       this.sceneGraph.updateSize();
     }
   }
+  /**
+   * return the AABB for our block nodes only, including any nested layouts
+   */
+  getBlocksAABB() {
+    // always include top left and available width to anchor the bounds
+    let aabb = new Box2D(0, 0, this.sceneGraph.availableWidth, 0);
+    // we should only autosize the nodes representing parts
+    objectValues(this.parts2nodes).forEach(node => {
+      aabb = aabb.union(node.getAABB());
+    });
+    // add any nested constructs
+    objectValues(this.nestedLayouts).forEach(layout => {
+      aabb = layout.getBlocksAABB().union(aabb);
+    });
+    return aabb;
+
+  }
+
   /**
    * setup the bi drectional mapping between nodes / elements
    * @param  {[type]} part    [description]
