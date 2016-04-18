@@ -33,7 +33,7 @@ export default class ColorPicker extends Component {
       this.setState({ showContent: false });
       document.removeEventListener('click', handleDocumentClick);
     };
-    if (this.state.showContent) return; //dont register more than once
+    if (this.state.showContent || this.props.readOnly) return; //dont register more than once
 
     document.addEventListener('click', handleDocumentClick);
     this.setState({ showContent: true });

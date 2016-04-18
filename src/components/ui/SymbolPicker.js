@@ -27,7 +27,7 @@ export default class SymbolPicker extends Component {
       this.setState({showContent: false});
       document.removeEventListener('click', handleDocumentClick);
     };
-    if (this.state.showContent) return; //dont register more than once
+    if (this.state.showContent || this.props.readOnly) return; //dont register more than once
 
     document.addEventListener('click', handleDocumentClick);
     this.setState({showContent: true});
@@ -44,9 +44,10 @@ export default class SymbolPicker extends Component {
 
   render() {
     const { current, readOnly, onSelect } = this.props;
-    //todo - handle no symbol in Picker-current
     const noSymbol = 'noSymbol';
     const hoverTextDefault = 'No Symbol';
+
+    //hack hack hack - just positioning picker using pixels, not very smart about figuring out where it is, assuming this is always a second picker
 
     return (
       <div className={'Picker SymbolPicker' + (!!readOnly ? ' readOnly' : '')}>
