@@ -3,6 +3,7 @@ import Box2D from '../geometry/box2d';
 import invariant from 'invariant';
 import { transact, commit, abort } from '../../../store/undo/actions';
 import { dispatch } from '../../../store/index';
+import { union, difference, intersection } from '../../../utils/set/set';
 
 /**
  * actual Drag and Drop manager.
@@ -11,6 +12,7 @@ class DnD {
 
   constructor() {
     this.targets = [];
+    this.monitors = new Set();
     this.mouseMove = this.onMouseMove.bind(this);
     this.mouseUp = this.onMouseUp.bind(this);
   }
@@ -48,6 +50,9 @@ class DnD {
 
     // set initial target we are over, necessary for dragEnter, dragLeave callbacks
     this.lastTarget = null;
+
+    // monitors are set since there can be more than one target at a time
+    this.lastMonitors = new Set();
 
     //set hooks
     this.onDrop = options.onDrop || (() => {});
@@ -87,6 +92,21 @@ class DnD {
     if (target && target.options && target.options.dragOver) {
       target.options.dragOver.call(this, globalPosition, this.payload);
     }
+
+    // update monitors
+    const monitors = this.findMonitorsAt(globalPosition);
+    // any prior monitors not in the current set, we need to call monitorLeave
+    difference(this.lastMonitors, monitors).forEach(monitor => {
+      monitor.options.monitorLeave.call(this, globalPosition, this.payload);
+    });
+    // call monitorEnter for any new ones
+    difference(monitors, this.lastMonitors).forEach(monitor => {
+      monitor.options.monitorEnter.call(this, globalPosition, this.payload);
+    });
+    this.lastMonitors = monitors;
+    this.lastMonitors.forEach(monitor => {
+      monitor.options.monitorOver.call(this, globalPosition, this.payload);
+    });
   }
 
   /**
@@ -153,6 +173,7 @@ class DnD {
       this.proxy = null;
       this.payload = null;
       this.lastTarget = null;
+      this.lastMonitor = new Set();
       document.body.classList.remove('prevent-selection');
     }
   }
@@ -173,6 +194,16 @@ class DnD {
     // sort by zorder and return the one with the highest values
     hits.sort((a, b) => {return a.options.zorder - b.options.zorder});
     return hits.pop();  // undefined on an empty array
+  }
+
+  /**
+   * return all monitors at the given global position as a Set
+   */
+  findMonitorsAt(globalPoint) {
+    const monitors = [...this.monitors].filter(options => {
+      return this.getElementBounds(options.element).pointInBox(globalPoint);
+    });
+    return new Set(monitors);
   }
 
   /**
@@ -202,6 +233,27 @@ class DnD {
     const targetIndex = this.targets.find(obj => obj.element);
     invariant(targetIndex >= 0, 'element is not registered');
     this.targets.splice(targetIndex, 1);
+  }
+
+  /**
+   * a monitor element will get called regardless of it zorder relative to
+   * other drop target and monitors. It is primary use is to allow things
+   * like autoscrolling to function on container controls. As such it will
+   * NEVER get a drop event, only monitorEnter, monitorLeave, monitorDrag
+   */
+  registerMonitor(element, options) {
+    invariant(element, 'expected an element to register');
+    invariant(options.monitorEnter && options.monitorLeave && options.monitorOver, 'expected enter/leave/over handlers');
+    this.monitors.add({ element, options });
+  }
+
+  /**
+   * unregister a drop target via the registered element
+   */
+  unregisterMonitor(element) {
+    const monitor = [...this.monitors].find(obj => obj.element);
+    invariant(monitor, 'element is not registered');
+    this.monitors.delete(monitor);
   }
 
   /**
