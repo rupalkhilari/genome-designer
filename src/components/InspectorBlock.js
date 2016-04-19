@@ -153,15 +153,16 @@ export class InspectorBlock extends Component {
         <h4 className="InspectorContent-heading">Sequence Length</h4>
         <p><strong>{this.currentSequenceLength()}</strong></p>
 
-        <h4 className="InspectorContent-heading">Color</h4>
-        <ColorPicker current={this.currentColor()}
-                     readOnly={readOnly}
-                     onSelect={this.selectColor}/>
+        <h4 className="InspectorContent-heading">Color & Symbol</h4>
+        <div className="InspectorContent-pickerWrap">
+          <ColorPicker current={this.currentColor()}
+                       readOnly={readOnly}
+                       onSelect={this.selectColor}/>
 
-        <h4 className="InspectorContent-heading">Symbol</h4>
-        <SymbolPicker current={this.currentSbolSymbol()}
-                      readOnly={readOnly}
-                      onSelect={this.selectSymbol}/>
+          <SymbolPicker current={this.currentSbolSymbol()}
+                        readOnly={readOnly}
+                        onSelect={this.selectSymbol}/>
+        </div>
 
 
         {!!annotations.length && (<h4 className="InspectorContent-heading">Contents</h4>)}
