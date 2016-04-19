@@ -34,8 +34,9 @@ const sbolIcon = 27;
 // min size of layout
 const minWidth = blockH * 4;
 const minHeight = blockH;
-// padding at bottom of scenegraph to make selection easier
-const bottomPad = 20;
+// padding at right / bottom of scenegraph to make selection easier
+const bottomPad = 50;
+const rightPad = 30;
 
 export default {
   // layout algorithms
@@ -63,6 +64,7 @@ export default {
   minWidth: minWidth,
   minHeight: minHeight,
   bottomPad: bottomPad,
+  rightPad: rightPad,
 
   // display properties for various elements
   titleAppearance: {

@@ -274,7 +274,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
     } else {
       // clear block selections and select construct block to make it appear
       // in the inspector
-      this.constructViewer.blockSelected([this.constructViewer.props.construct.id]);
+      this.constructViewer.blockSelected([]);
     }
   }
 
@@ -359,18 +359,22 @@ export default class ConstructViewerUserInterface extends UserInterface {
         this.mouseTrap.cancelDrag();
         // open an undo/redo transaction
         dispatch(transact());
-        // ensure the block being dragged is selected
-        // TODO: THIS NEED WORKS, fix later
+        // if the block being dragging is one of the selections then single select it
+        let draggables = this.selectedElements;
+        if (!this.constructViewer.props.focus.blocks.includes(block)) {
+          draggables = [block];
+          this.constructViewer.blockSelected(draggables);
+        }
         //this.constructViewer.blockAddToSelections([block]);
         // get global point as starting point for drag
         const globalPoint = this.mouseTrap.mouseToGlobal(evt);
         // proxy representing 1 ore more blocks
-        const proxy = this.makeDragProxy();
+        const proxy = this.makeDragProxy(draggables);
         // remove the blocks, unless meta key pressed
         let copying = evt.altKey;
         // filter our selected elements so they are in natural order
         // and with children of selected parents excluded.
-        const blockIds = sortBlocksByIndexAndDepthExclude(this.selectedElements).map(info => info.blockId);
+        const blockIds = sortBlocksByIndexAndDepthExclude(draggables).map(info => info.blockId);
         if (!copying) {
           this.constructViewer.removePartsList(blockIds);
         }
@@ -405,12 +409,12 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * make a drag proxy by gathering all the selected blocks into a group ( up to
    * a limit )
    */
-  makeDragProxy() {
+  makeDragProxy(draggables) {
     // create a div to hold the first five blocks at most
     const div = document.createElement('div');
     div.style.display = 'inline-block';
     div.style.position = 'relative';
-    const nodes = this.selectedElements.map(elem => this.layout.nodeFromElement(elem));
+    const nodes = draggables.map(elem => this.layout.nodeFromElement(elem));
     const limit = Math.min(5, nodes.length);
     let x = 0;
     let width = 0;

@@ -123,12 +123,6 @@ export class ConstructViewer extends Component {
       this.props.focusConstruct(this.props.constructId);
     }
   }
-  /**
-   * update scene graph after the react component updates
-   */
-  componentDidUpdate() {
-    this.update();
-  }
 
   /**
    * ensure we don't get any resize events after dismounting
@@ -369,21 +363,38 @@ export class ConstructViewer extends Component {
         ]
       }/>);
   }
+
+  /**
+   * scroll into view if needed and update scenegraph
+   * @param  {[type]} prevProps [description]
+   * @return {[type]}           [description]
+   */
+  componentDidUpdate(prevProps) {
+    // if we are newly focused then scroll ourselves into view
+    // const oldFocus = prevProps.construct.id === prevProps.focus.construct;
+    // const newFocus = this.props.construct.id === this.props.focus.construct;
+    // if (!oldFocus && newFocus) {
+    //   const dom = ReactDOM.findDOMNode(this);
+    //   dom.scrollIntoView();
+    // }
+    this.update();
+  }
+
   /**
    * render the component, the scene graph will render later when componentDidUpdate is called
    */
   render() {
     // TODO, can be conditional when master is fixed and this is merged with construct select PR
-    let menu = <ConstructViewerMenu
-      open={this.props.construct.id === this.props.focus.construct}
-      constructId={this.props.constructId}
-      layoutAlgorithm={this.props.layoutAlgorithm}
-      />;
+    // let menu = <ConstructViewerMenu
+    //   open={this.props.construct.id === this.props.focus.construct}
+    //   constructId={this.props.constructId}
+    //   layoutAlgorithm={this.props.layoutAlgorithm}
+    //   />;
 
 
     const rendered = (
       <div className="construct-viewer" key={this.props.construct.id}>
-        {menu}
+        {/*menu*/}
         <div className="sceneGraphContainer">
           <div className="sceneGraph"/>
         </div>

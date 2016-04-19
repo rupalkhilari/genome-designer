@@ -5,6 +5,7 @@ import Node2D from '../scenegraph2d/node2d';
 import SBOL2D from '../scenegraph2d/sbol2d';
 import LineNode2D from '../scenegraph2d/line2d';
 import kT from './layoutconstants';
+import objectValues from '../../../utils/object/values';
 import invariant from 'invariant';
 
 // just for internal tracking of what type of block a node represents.
@@ -54,15 +55,34 @@ export default class Layout {
    * @return {[type]} [description]
    */
   autoSizeSceneGraph() {
+
     if (this.rootLayout) {
-      const aabb = this.sceneGraph.getAABB();
-      if (aabb) {
-        this.sceneGraph.width = Math.max(aabb.right, kT.minWidth);
-        this.sceneGraph.height = Math.max(aabb.bottom, kT.minHeight) + kT.bottomPad;
-        this.sceneGraph.updateSize();
-      }
+      // start with a box at 0,0, to ensure we capture the top left of the view
+      // and ensure we at least use the available width
+      let aabb = this.getBlocksAABB();
+      this.sceneGraph.width = Math.max(aabb.right, kT.minWidth);
+      this.sceneGraph.height = Math.max(aabb.bottom, kT.minHeight) + kT.bottomPad;
+      this.sceneGraph.updateSize();
     }
   }
+  /**
+   * return the AABB for our block nodes only, including any nested layouts
+   */
+  getBlocksAABB() {
+    // always include top left and available width to anchor the bounds
+    let aabb = new Box2D(0, 0, this.sceneGraph.availableWidth, 0);
+    // we should only autosize the nodes representing parts
+    objectValues(this.parts2nodes).forEach(node => {
+      aabb = aabb.union(node.getAABB());
+    });
+    // add any nested constructs
+    objectValues(this.nestedLayouts).forEach(layout => {
+      aabb = layout.getBlocksAABB().union(aabb);
+    });
+    return aabb;
+
+  }
+
   /**
    * setup the bi drectional mapping between nodes / elements
    * @param  {[type]} part    [description]
@@ -103,26 +123,6 @@ export default class Layout {
     });
   }
 
-  /**
-   * remove the part, node and unmap. Return the node ( its isn't disposed )
-   * so that is can be reused.
-   */
-  // removePart(part) {
-  //   // if we have the part, remove it and return the node
-  //   const node = this.parts2nodes[part];
-  //   if (node) {
-  //     delete this.nodes2parts[node.uuid];
-  //     delete this.parts2nodes[part];
-  //     delete this.partTypes[part];
-  //     node.parent.removeChild(node);
-  //   } else {
-  //     // if here part might be in nested construct
-  //     const keys = Object.keys(this.nestedLayouts);
-  //     for (let i = 0; i < keys.length; i += 1) {
-  //       this.nestedLayouts[keys[i]].removePart(part);
-  //     }
-  //   }
-  // }
   /**
    * return the element from the data represented by the given node uuid.
    * This searches this construct and any nested construct to find the part
@@ -402,7 +402,7 @@ export default class Layout {
    */
   layoutWrap() {
     return this.layout({
-      xlimit: this.sceneGraph.availableWidth - this.insetX,
+      xlimit: this.sceneGraph.availableWidth - this.insetX - kT.rightPad,
       condensed: false,
     });
   }
