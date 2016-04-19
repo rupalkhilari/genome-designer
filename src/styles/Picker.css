@@ -2,29 +2,85 @@
 
 .Picker {
   line-height: 0;
-  display: flex;
+  display: inline-block;
+  margin-right: 5px;
+
+  &-current {
+    display: inline-block;
+
+    .Picker-item {
+      background-color: rgba(255,255,255,0.15);
+    }
+  }
+
+  /* hack hack hack - just positioning picker using pixels, not very smart about figuring out where it is */
+
+  &:nth-child(2) {
+    .Picker-content {
+      margin-left: -63px;
+
+      &:before,
+      &:after {
+        left: 91px;
+      }
+    }
+  }
 
   &-content {
-    display: inline-block;
-    margin: 0 auto;
+    position: absolute;
+    display: block;
+    width: 270px; /* todo - var */
+    background-color: var(--colors-blueGreyMed);
+    border: 1px solid var(--colors-blueGreyLighter);
+    border-radius: 5px;
+    padding: 15px;
+    margin-top: 5px;
 
-    //clearfix
-    &:after {
-      content: "";
-      display: table;
-      clear: both;
+    &:after,
+    &:before {
+      bottom: 100%;
+      left: 28px;
+      border: solid transparent;
+      content: " ";
+      height: 0;
+      width: 0;
+      position: absolute;
+      pointer-events: none;
     }
+
+    &:after {
+      border-color: rgba(136, 183, 213, 0);
+      border-bottom-color: var(--colors-blueGreyMed);
+      border-width: 12px;
+      margin-left: -12px;
+    }
+    &:before {
+      border-color: rgba(194, 225, 245, 0);
+      border-bottom-color: var(--colors-blueGreyLighter);
+      border-width: 13px;
+      margin-left: -13px;
+    }
+  }
+
+  &-currentHovered {
+    display: block;
+    text-align: center;
+    height: 1em;
+  }
+
+  &-options {
+
   }
 
   &-item {
     float: left;
     width: 54px;
     height: 54px;
-    margin: 1px;
+    margin: 2px;
     border: 2px solid transparent;
     border-radius: 100%;
     cursor: pointer;
-    background-color: rgba(255,255,255,0.2);
+    background-color: rgba(0,0,0,0.15);
     background-size: contain;
     text-align:center;
     transition: border-color var(--timing-fast) ease-out;
