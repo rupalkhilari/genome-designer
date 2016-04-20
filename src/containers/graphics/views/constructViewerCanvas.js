@@ -95,7 +95,7 @@ export class ConstructViewerCanvas extends Component {
    */
   componentWillUnmount() {
     DnD.unregisterTarget(ReactDOM.findDOMNode(this.refs.dropTarget));
-    Dnd.unregisterMonitor(ReactDOM.findDOMNode(this));
+    DnD.unregisterMonitor(ReactDOM.findDOMNode(this));
     this.mouseTrap.dispose();
     this.mouseTrap = null;
   }
@@ -152,7 +152,7 @@ export class ConstructViewerCanvas extends Component {
     // map construct viewers so we can propagate projectId and any recently dropped blocks
     return (<div className="ProjectPage-constructs" onClick={this.onClick}>
       {this.props.children}
-      <div className="cvc-drop-target" ref="dropTarget">Drop blocks here to create a new construct.</div>
+      <div className="cvc-drop-target" ref="dropTarget" key="dropTarget">Drop blocks here to create a new construct.</div>
     </div>);
   }
 }

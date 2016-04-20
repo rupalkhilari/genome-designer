@@ -240,7 +240,7 @@ class DnD {
    * unregister a drop target via the registered element
    */
   unregisterTarget(element) {
-    const targetIndex = this.targets.find(obj => obj.element);
+    const targetIndex = this.targets.findIndex(obj => obj.element);
     invariant(targetIndex >= 0, 'element is not registered');
     this.targets.splice(targetIndex, 1);
   }
@@ -261,6 +261,7 @@ class DnD {
    * unregister a drop target via the registered element
    */
   unregisterMonitor(element) {
+    debugger;
     const monitor = [...this.monitors].find(obj => obj.element);
     invariant(monitor, 'element is not registered');
     this.monitors.delete(monitor);
