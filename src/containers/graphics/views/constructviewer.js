@@ -118,9 +118,12 @@ export class ConstructViewer extends Component {
     this.resizeDebounced = debounce(this.windowResized.bind(this), 5);
     window.addEventListener('resize', this.resizeDebounced);
 
-    // if there is no focused construct, then we should focus our construct
+    // if there is no focused construct then we should grab it
     if (!this.props.focus.construct) {
       this.props.focusConstruct(this.props.constructId);
+      ReactDOM.findDOMNode(this).scrollIntoView();
+    } else {
+      ReactDOM.findDOMNode(this).scrollIntoView();
     }
   }
 
@@ -308,6 +311,7 @@ export class ConstructViewer extends Component {
    * update the layout and then the scene graph
    */
   _update() {
+    //console.time(`UPDATE START: ${this.props.construct.id}`);
     this.layout.update(
       this.props.construct,
       this.props.layoutAlgorithm,
@@ -316,6 +320,7 @@ export class ConstructViewer extends Component {
       this.props.focus.construct);
     this.sg.update();
     this.sg.ui.update();
+    //console.timeEnd(`UPDATE START: ${this.props.construct.id}`);
   }
 
   /**

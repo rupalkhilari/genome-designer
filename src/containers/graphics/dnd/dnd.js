@@ -261,7 +261,6 @@ class DnD {
    * unregister a drop target via the registered element
    */
   unregisterMonitor(element) {
-    debugger;
     const monitor = [...this.monitors].find(obj => obj.element);
     invariant(monitor, 'element is not registered');
     this.monitors.delete(monitor);

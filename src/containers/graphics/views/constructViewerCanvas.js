@@ -110,7 +110,7 @@ export class ConstructViewerCanvas extends Component {
     // we need a bound version of this.autoScrollUpdate to use for animation callback to avoid
     // creating a closure at 60fps
     if (!this.autoScrollBound) {
-      this.autoScrollBound = this.autoScrollUpdate.bind(this)
+      this.autoScrollBound = this.autoScrollUpdate.bind(this);
     }
     // cancel animation if direction is zero
     if (this.autoScrollDirection === 0) {
