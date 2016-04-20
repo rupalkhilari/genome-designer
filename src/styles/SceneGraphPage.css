@@ -98,7 +98,7 @@
   }
 
   .sceneGraphContainer {
-    overflow: scroll;
+    overflow: hidden;
     position: relative;
     min-height: 10rem;
   }

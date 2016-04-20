@@ -53,7 +53,7 @@ export default class InventoryListGroup extends Component {
             <span>{title}</span>
           </a>
         </div>
-        {expanded && <div className="InventoryListGroup-contents">
+        {expanded && <div className="InventoryListGroup-contents no-vertical-scroll">
           {Children.only(children)}
         </div>}
       </div>

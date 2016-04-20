@@ -385,6 +385,12 @@ export class ConstructViewer extends Component {
     this.update();
   }
 
+  shouldComponentUpdate(props, nextProps) {
+    // console.log(`CT:${this.props.construct.id}, ${props.construct !== nextProps.construct}`);
+    // return props.construct !== nextProps.construct;
+    return true;
+  }
+
   /**
    * render the component, the scene graph will render later when componentDidUpdate is called
    */

@@ -150,7 +150,7 @@ export class ConstructViewerCanvas extends Component {
   render() {
 
     // map construct viewers so we can propagate projectId and any recently dropped blocks
-    return (<div className="ProjectPage-constructs" onClick={this.onClick}>
+    return (<div className="ProjectPage-constructs no-vertical-scroll" onClick={this.onClick}>
       {this.props.children}
       <div className="cvc-drop-target" ref="dropTarget" key="dropTarget">Drop blocks here to create a new construct.</div>
     </div>);

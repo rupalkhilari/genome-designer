@@ -16,6 +16,19 @@
 }
 
 /**
+ * hide vertical scroll bars if possible
+ */
+.no-vertical-scroll {
+  /* IE 10+*/
+  -ms-overflow-style: none;
+  /* Firefox, probably not on newer versions */
+  overflow: -moz-scrollbars-none;
+}
+.no-vertical-scroll::-webkit-scrollbar {
+  width: 0 !important;
+}
+
+/**
  * HACK, hide some crud at bottom of page, this needs
  * to be removed once problems are resolved.
  */

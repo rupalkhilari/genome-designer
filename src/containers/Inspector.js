@@ -28,7 +28,7 @@ export class Inspector extends Component {
     const { isVisible, instances, project, readOnly } = this.props;
 
     return (
-      <div className={'SidePanel Inspector' +
+      <div className={'SidePanel Inspector no-vertical-scroll' +
       (isVisible ? ' visible' : '') +
       (readOnly ? ' readOnly' : '')}>
 
