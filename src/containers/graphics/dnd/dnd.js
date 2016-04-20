@@ -114,7 +114,16 @@ class DnD {
    */
   onMouseUp(evt) {
     invariant(this.proxy, 'not expecting mouse events when not dragging');
+
+    // global position of drop operation
     const globalPosition = this.mouseToGlobal(evt);
+
+    // send monitor leave to all monitors
+    this.monitors.forEach(monitor => {
+      monitor.options.monitorLeave.call(this, globalPosition, this.payload);
+    });
+
+    // find drop target if any
     const target = this.findTargetAt(globalPosition);
 
     if (target && target.options) {
@@ -149,6 +158,7 @@ class DnD {
       if (this.undoCommit) {
         dispatch(abort());
       }
+
     }
     this.cancelDrag();
   }

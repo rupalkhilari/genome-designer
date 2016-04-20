@@ -91,6 +91,16 @@ export class ConstructViewerCanvas extends Component {
   }
 
   /**
+   * unregister DND handlers
+   */
+  componentWillUnmount() {
+    DnD.unregisterTarget(ReactDOM.findDOMNode(this.refs.dropTarget));
+    Dnd.unregisterMonitor(ReactDOM.findDOMNode(this));
+    this.mouseTrap.dispose();
+    this.mouseTrap = null;
+  }
+
+  /**
    * auto scroll in the given direction -1, towards top, 0 stop, 1 downwards.
    */
   autoScroll(direction) {
