@@ -131,7 +131,7 @@ export class InspectorBlock extends Component {
     return (
       <div className="InspectorContent InspectorContentBlock">
         <h4 className="InspectorContent-heading">Name</h4>
-        <InputSimple placeholder="Part Name"
+        <InputSimple placeholder="Enter a name"
                      readOnly={readOnly}
                      onChange={this.setBlockName}
                      onFocus={this.startTransaction}
@@ -140,7 +140,7 @@ export class InspectorBlock extends Component {
                      value={this.currentName()}/>
 
         <h4 className="InspectorContent-heading">Description</h4>
-        <InputSimple placeholder="Part Description"
+        <InputSimple placeholder="Enter a description"
                      useTextarea
                      readOnly={readOnly}
                      onChange={this.setBlockDescription}

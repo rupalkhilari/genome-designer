@@ -1,7 +1,10 @@
 import React, { Component, PropTypes } from 'react';
+import {connect } from 'react-redux';
+import { inspectorToggleVisibility } from '../actions/inspector';
+import { focusConstruct, focusBlocks } from '../actions/focus';
 import '../styles/ProjectHeader.css';
 
-export default class ProjectHeader extends Component {
+class ProjectHeader extends Component {
   static propTypes = {
     project: PropTypes.object.isRequired,
   };
@@ -17,11 +20,17 @@ export default class ProjectHeader extends Component {
     });
   };
 
+  onClick = () => {
+    this.props.inspectorToggleVisibility(true);
+    this.props.focusConstruct();
+    this.props.focusBlocks([]);
+  };
+
   render() {
     const { project } = this.props;
 
     return (
-      <div className="ProjectHeader">
+      <div className="ProjectHeader" onClick={this.onClick}>
         <div className="ProjectHeader-info">
           <div className="ProjectHeader-breadcrumbs">
             <span className="ProjectHeader-breadcrumb ProjectHeader-lead">Projects</span>
@@ -36,3 +45,14 @@ export default class ProjectHeader extends Component {
     );
   }
 }
+
+function mapStateToProps(state, props) {
+  return {
+  };
+}
+
+export default connect(mapStateToProps, {
+  inspectorToggleVisibility,
+  focusConstruct,
+  focusBlocks,
+})(ProjectHeader);

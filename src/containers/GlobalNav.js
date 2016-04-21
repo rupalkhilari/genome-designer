@@ -39,8 +39,8 @@ import {
   uiToggleDetailView,
   uiSetGrunt,
  } from '../actions/ui';
-import { inspectorToggleVisibility } from '..//actions/inspector';
-import { inventoryToggleVisibility } from '..//actions/inventory';
+import { inspectorToggleVisibility } from '../actions/inspector';
+import { inventoryToggleVisibility } from '../actions/inventory';
 import { uiShowDNAImport } from '../actions/ui';
 
 import KeyboardTrap from 'mousetrap';
@@ -182,7 +182,7 @@ class GlobalNav extends Component {
     iframe.src = url;
     document.body.appendChild(iframe);
   }
-  
+
   /**
    * get parent block of block with given id
    */
