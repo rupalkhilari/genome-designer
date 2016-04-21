@@ -124,7 +124,7 @@ describe('Store', () => {
         expect(sectionManagerB.getFuture()).to.eql([]);
       });
 
-      describe.only('Transactions', () => {
+      describe('Transactions', () => {
         it('transact() sets all sectionManagers to transacting', () => {
           //init check
           expect(sectionManagerA.inTransaction()).to.equal(false);
@@ -174,7 +174,8 @@ describe('Store', () => {
           expect(sectionManagerB.getPresent()).to.eql(stateB4);
           expect(sectionManagerB.getCurrentState()).to.eql(stateB4);
           expect(sectionManagerB.getFuture()).to.eql([]);
-          expect(manager.getLastHistoryItem()).to.eql(null);
+          expect(manager.getLastHistoryItem().keys).to.eql([keyB]);
+
         });
 
         it('abort() aborts all sections', () => {
