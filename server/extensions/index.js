@@ -3,28 +3,28 @@ import bodyParser from 'body-parser';
 import { errorDoesNotExist } from '../utils/errors';
 import listExtensions from './registry';
 import loadExtension, { getExtensionInternalPath} from './loadExtension';
+import errorHandlingMiddleware from '../utils/errorHandlingMiddleware';
 
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json();
 
 router.use(jsonParser);
+router.use(errorHandlingMiddleware);
 
 router.get('/list', (req, res) => {
   res.json(listExtensions);
 });
 
-router.get('/manifest/:extension', (req, res) => {
+router.get('/manifest/:extension', (req, res, next) => {
   const { extension } = req.params;
 
   loadExtension(extension)
-    .then(manifest => {
-      res.json(manifest);
-    })
+    .then(manifest => res.json(manifest))
     .catch(err => {
       if (err === errorDoesNotExist) {
-        res.status(400).send(errorDoesNotExist);
+        return res.status(400).send(errorDoesNotExist);
       }
-      res.status(500).err(err);
+      next(err);
     });
 });
 
@@ -44,7 +44,7 @@ if (process.env.NODE_ENV !== 'production') {
 } else {
   //only index.js files are available
 
-  router.get('/load/:extension/:filePath?', (req, res) => {
+  router.get('/load/:extension/:filePath?', (req, res, next) => {
     const { extension } = req.params;
 
     loadExtension(extension)
@@ -54,14 +54,14 @@ if (process.env.NODE_ENV !== 'production') {
           if (err) {
             res.status(err.status).end();
           }
-          //sent successfully
+          //otherwise, sent successfully
         });
       })
       .catch(err => {
         if (err === errorDoesNotExist) {
-          res.status(400).send(errorDoesNotExist);
+          return res.status(400).send(errorDoesNotExist);
         }
-        res.status(500).err(err);
+        next(err);
       });
   });
 }

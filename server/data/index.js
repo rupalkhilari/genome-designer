@@ -12,6 +12,7 @@ import * as querying from './querying';
 import * as persistence from './persistence';
 import * as rollup from './rollup';
 import { permissionsMiddleware } from './permissions';
+import errorHandlingMiddleware from '../utils/errorHandlingMiddleware';
 
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
@@ -24,11 +25,7 @@ const jsonParser = bodyParser.json({
 
 router.use(jsonParser);
 
-//general error handler
-router.use(function generalErrorHandler(err, req, res, next) {
-  console.error(err.stack);
-  res.status(500).send('Uh oh!');
-});
+router.use(errorHandlingMiddleware);
 
 // allow the route /block/<blockId> and find the projectId
 // not recommended e.g. for POST
