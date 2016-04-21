@@ -1,9 +1,12 @@
 import express from 'express';
 import { fileRead, fileWrite, directoryMake, fileDelete} from '../utils/fileSystem';
+import errorHandlingMiddleware from '../utils/errorHandlingMiddleware';
 
 import { createFilePath } from './../utils/filePaths';
 
 const router = express.Router(); //eslint-disable-line new-cap
+
+router.use(errorHandlingMiddleware);
 
 router.route('/*')
   .all((req, res, next) => {
@@ -17,17 +20,17 @@ router.route('/*')
     });
     next();
   })
-  .get((req, res) => {
+  .get((req, res, next) => {
     const { filePath } = req;
 
     fileRead(filePath, false)
       .then(data => res.send(data))
       .catch(err => {
-        console.log('get err', err);
-        res.status(500).err(err);
+        console.log('file get err', err.stack);
+        next(err);
       });
   })
-  .post((req, res) => {
+  .post((req, res, next) => {
     const { filePath, folderPath } = req;
 
     //assuming contents to be string
@@ -45,15 +48,15 @@ router.route('/*')
       directoryMake(folderPath)
         .then(() => fileWrite(filePath, buffer, false))
         .then(() => res.send(req.originalUrl))
-        .catch((err) => res.status(500).err(err));
+        .catch((err) => next(err));
     });
   })
-  .delete((req, res) => {
+  .delete((req, res, next) => {
     const { filePath } = req;
 
     fileDelete(filePath)
       .then(() => res.status(200).send())
-      .catch(err => res.status(500).err(err));
+      .catch(err => next(err));
   });
 
 export default router;

@@ -11,15 +11,17 @@ export const createRollup = (project, ...blocks) => ({
 });
 
 export const getProjectRollup = (projectId) => {
-  return Promise
-    .all([
-      persistence.projectGet(projectId),
-      getAllBlocksInProject(projectId),
-    ])
-    .then(([project, blocks]) => ({
-      project,
-      blocks,
-    }));
+  //dont use Promise.all so we can handle errors of project not existing better
+  return persistence.projectGet(projectId)
+    .then(project => {
+      return getAllBlocksInProject(projectId)
+        .then(blocks => {
+          return {
+            project,
+            blocks,
+          };
+        });
+    });
 };
 
 export const writeProjectRollup = (projectId, rollup, userId) => {

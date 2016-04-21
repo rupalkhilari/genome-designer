@@ -3,7 +3,7 @@ import sinon from 'sinon';
 import autosaveCreator from '../../src/store/autosave/autosaveCreator';
 
 describe('Store', () => {
-  describe.only('Autosaving', () => {
+  describe('Autosaving', () => {
     //simple reducer + actions
     const initialState = { counter: 0 };
     const increment = (number = 1) => ({ type: 'increment', number });
