@@ -90,9 +90,6 @@ export class ConstructViewer extends Component {
    * setup the scene graph and layout component.
    */
   componentDidMount() {
-    // select a base color based on our index in the parent
-    const nindex = nodeIndex(this.dom);
-    const baseColors = ['rgb(225, 163, 116)', 'rgb(199, 109, 107)', 'rgb(83, 155, 163)'];
 
     // create the scene graph we are going to use to display the construct
     this.sg = new SceneGraph2D({
@@ -103,10 +100,10 @@ export class ConstructViewer extends Component {
       parent: this.sceneGraphEl,
       userInterfaceConstructor: UserInterface,
     });
+    debugger;
     // create the layout object
     this.layout = new Layout(this, this.sg, {
       layoutAlgorithm: this.props.layoutAlgorithm,
-      baseColor: baseColors[nindex % baseColors.length],
     });
     // the user interface will also need access to the layout component
     this.sg.ui.layout = this.layout;

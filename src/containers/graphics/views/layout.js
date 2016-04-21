@@ -371,6 +371,7 @@ export default class Layout {
     this.layoutAlgorithm = layoutAlgorithm;
     this.blocks = blocks;
     this.currentBlocks = currentBlocks;
+    this.baseColor = this.construct.metadata.color;
 
     // regardless of layout algorithm we return the height
     // used to render the construct / nested construct
