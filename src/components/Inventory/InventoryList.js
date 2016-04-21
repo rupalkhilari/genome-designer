@@ -22,7 +22,7 @@ export class InventoryList extends Component {
     const { items, inventoryType, onDrop, onSelect, transact, commit } = this.props;
 
     return (
-      <div className="InventoryList">
+      <div className="InventoryList no-vertical-scroll">
         {items.map(item => {
           return (
             <InventoryItem key={item.id}

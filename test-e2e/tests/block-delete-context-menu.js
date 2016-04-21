@@ -26,25 +26,18 @@ module.exports = {
       .click('.Inventory-trigger')
       .waitForElementPresent('.SidePanel.Inventory.visible', 5000, 'Expected inventory to be visible')
       // click the second inventory group 'EGF Parts' to open it
-      .click('.InventoryGroup:nth-of-type(2) .InventoryGroup-heading');
+      .click('.InventoryGroup:nth-of-type(2) .InventoryGroup-heading')
+      // verify starting blocks
+      .assert.countelements('.sbol-glyph', 8)
+      .pause(1000)
 
-    // start with a fresh project
-    newProject(browser);
-
-    // create a new construct with a single block
-    dragFromTo(browser, '.InventoryItem:nth-of-type(1)', 10, 10, '.cvc-drop-target', 10, 10);
-
-    browser
-      // expect two construct views with one block
-      .assert.countelements('.construct-viewer', 2)
-      .assert.countelements('.sbol-glyph', 1);
 
     // delete block from second construct viewer
-    var blockBounds = openNthBlockContextMenu(browser, '.construct-viewer:nth-of-type(2) .sceneGraph', 0);
+    var blockBounds = openNthBlockContextMenu(browser, '.construct-viewer:nth-of-type(1) .sceneGraph', 0);
     clickNthContextMenuItem(browser, 3);
 
     // expect the block to be deleted
-    browser.assert.countelements('.sbol-glyph', 0)
+    browser.assert.countelements('.sbol-glyph', 7)
 
     // all done
     browser.end();
