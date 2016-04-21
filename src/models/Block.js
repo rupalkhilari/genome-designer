@@ -21,6 +21,34 @@ export default class Block extends Instance {
     return BlockDefinition.validate(input, throwOnError);
   }
 
+  /* checks */
+
+  isFiller() {
+    return !this.metadata.name && this.hasSequence() && !this.metadata.color;
+  }
+
+  /* metadata things */
+
+  setSbol(sbol) {
+    return this.mutate('rules.sbol', sbol);
+  }
+
+  setName(newName) {
+    const filler = this.isFiller();
+    const renamed = this.mutate('metadata.name', newName);
+
+    if (filler) {
+      return this.setColor();
+    }
+    return renamed;
+  }
+
+  setColor(newColor = color()) {
+    return this.mutate('metadata.color', newColor);
+  }
+
+  /* components */
+
   addComponent(componentId, index) {
     const spliceIndex = Number.isInteger(index) ? index : this.components.length;
     const newComponents = this.components.slice();
@@ -59,9 +87,7 @@ export default class Block extends Instance {
     return this.mutate('components', newComponents);
   }
 
-  setSbol(sbol) {
-    return this.mutate('rules.sbol', sbol);
-  }
+  /* sequence */
 
   hasSequence() {
     return !!this.sequence.md5;
@@ -108,6 +134,8 @@ export default class Block extends Instance {
         return this.merge({ sequence: updatedSequence });
       });
   }
+
+  /* annotations */
 
   annotate(annotation) {
     invariant(AnnotationDefinition.validate(annotation), `'annotation is not valid: ${annotation}`);

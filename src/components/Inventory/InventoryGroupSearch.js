@@ -110,12 +110,20 @@ export class InventoryGroupSearch extends Component {
     return this.getFullItem(registryKey, item);
   };
 
+  //want to filter down results while next query running
+  filterListItems = list => {
+    const { searchTerm } = this.props;
+    const { searching } = this.state;
+
+    if (!searching) return list;
+
+    const searchRegex = new RegExp(escapeRegExp(searchTerm), 'gi');
+    return list.filter(item => searchRegex.test(item.metadata.name) || searchRegex.test(item.rules.sbol));
+  };
+
   render() {
     const { searchTerm } = this.props;
     const { searching, sourceList, searchResults, sourcesVisible, groupBy } = this.state;
-
-    //want to filter down results while next query running
-    const searchRegex = new RegExp(escapeRegExp(searchTerm), 'gi');
 
     //doesnt account for filtering...
     const noSearchResults = Object.keys(searchResults).reduce((acc, key) => acc + searchResults[key].length, 0) === 0;
@@ -133,8 +141,7 @@ export class InventoryGroupSearch extends Component {
           }
 
           const name = registry[key].name;
-          const group = searchResults[key];
-          const listingItems = group.filter(item => searchRegex.test(item.metadata.name) || searchRegex.test(item.rules.sbol));
+          const listingItems = searchResults[key];
 
           return (
             <InventoryListGroup title={`${name} (${listingItems.length})`}
@@ -157,7 +164,7 @@ export class InventoryGroupSearch extends Component {
           .flatten()
           .groupBy('rules.sbol')
           .map((items, group) => {
-            const listingItems = items.filter(item => searchRegex.test(item.metadata.name) || searchRegex.test(item.rules.sbol));
+            const listingItems = items;
             return (
               <InventoryListGroup title={`${group} (${listingItems.length})`}
                                   disabled={!listingItems.length}

@@ -1,5 +1,6 @@
 import invariant from 'invariant';
 import Block from '../../models/Block';
+import Annotation from '../../models/Annotation';
 import merge from 'lodash.merge';
 
 function normalizePartType(inputType) {
@@ -45,7 +46,7 @@ export function parseFullResult(result) {
       created: result.metadata.part_entered,
     },
     sequence: {
-      annotations: result.metadata.features.feature.map(feature => ({
+      annotations: result.metadata.features.feature.map(feature => new Annotation({
         isForward: feature.direction === 'forward',
         start: parseInt(feature.startpos, 10),
         end: parseInt(feature.endpos, 10),

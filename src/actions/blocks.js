@@ -201,7 +201,7 @@ export const blockRename = (blockId, name) => {
       return oldBlock;
     }
 
-    const block = oldBlock.mutate('metadata.name', name);
+    const block = oldBlock.setName(name);
     dispatch({
       type: ActionTypes.BLOCK_RENAME,
       undoable: true,
@@ -219,7 +219,7 @@ export const blockSetColor = (blockId, color) => {
       return oldBlock;
     }
 
-    const block = oldBlock.mutate('metadata.color', color);
+    const block = oldBlock.setColor(color);
     dispatch({
       type: ActionTypes.BLOCK_SET_COLOR,
       undoable: true,
