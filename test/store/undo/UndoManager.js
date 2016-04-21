@@ -41,7 +41,7 @@ describe('Store', () => {
         expect(sectionManagerB.getPast()).to.eql([stateB1]);
         expect(sectionManagerA.getCurrentState()).to.eql(stateA2);
         const lastItem = manager.getLastHistoryItem();
-        expect(lastItem.key).to.equal(keyB);
+        expect(lastItem.keys[0]).to.equal(keyB);
         expect(lastItem.action).to.equal(action);
       });
 
@@ -56,7 +56,7 @@ describe('Store', () => {
         expect(sectionManagerB.getPast()).to.eql([stateB1, stateB2]);
         expect(sectionManagerB.getCurrentState()).to.eql(stateB3);
 
-        expect(manager.past.map(item => item.key)).to.eql([keyB, keyA, keyB]);
+        expect(manager.past.map(item => item.keys[0])).to.eql([keyB, keyA, keyB]);
       });
 
       it('undo() goes in order by key', () => {
