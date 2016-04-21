@@ -5,8 +5,9 @@ import queryString from 'query-string';
 export const url = 'http://ec2-52-30-192-126.eu-west-1.compute.amazonaws.com:8001/collections';
 
 export const name = 'Edinburgh Genome Foundry';
+const collection = 'yeastfab';
 
-export const search = (term, options) => {
+export const search = (term, options = {}) => {
   const opts = Object.assign(
     {
       start: 0,
@@ -14,7 +15,7 @@ export const search = (term, options) => {
     },
     options,
     {
-      collection: 'yeastfab',
+      collection,
     }
   );
 
@@ -28,7 +29,7 @@ export const search = (term, options) => {
 };
 
 export const get = (id) => {
-  return fetch(`${url}/yeastfab/parts/${id}`)
+  return fetch(`${url}/${collection}/parts/${id}`)
     .then(resp => resp.json())
     .then(result => parseFullResult(result));
 };
