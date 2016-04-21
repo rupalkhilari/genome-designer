@@ -124,7 +124,7 @@ describe('Store', () => {
         expect(sectionManagerB.getFuture()).to.eql([]);
       });
 
-      describe('Transactions', () => {
+      describe.only('Transactions', () => {
         it('transact() sets all sectionManagers to transacting', () => {
           //init check
           expect(sectionManagerA.inTransaction()).to.equal(false);
@@ -148,7 +148,12 @@ describe('Store', () => {
           const futureB = sectionManagerB.getFuture();
 
           manager.patch(keyA, stateA4, makeDummyAction());
+          //dont insert anything on patch
+          expect(manager.getLastHistoryItem()).to.eql(null);
+
           manager.insert(keyB, stateB4, makeDummyAction());
+          //add this key to the undo keys for the last transaction
+          expect(manager.getLastHistoryItem().keys).to.eql([keyB]);
 
           expect(sectionManagerA.getPast()).to.eql(pastA);
           expect(sectionManagerA.getPresent()).to.eql(presentA);
@@ -169,6 +174,7 @@ describe('Store', () => {
           expect(sectionManagerB.getPresent()).to.eql(stateB4);
           expect(sectionManagerB.getCurrentState()).to.eql(stateB4);
           expect(sectionManagerB.getFuture()).to.eql([]);
+          expect(manager.getLastHistoryItem()).to.eql(null);
         });
 
         it('abort() aborts all sections', () => {
