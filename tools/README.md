@@ -7,9 +7,11 @@ The client is always bundled using webpack + babel and sent from the server, usi
 Server is written so you can:
  - run in development directly in babel-node (e.g. for testing)
  - serve using Browser Sync, to include hotloading middleware etc. (dev)
- - or build and run using node (production or dev)
+ - or build and run using node (production or dev - **forthcoming**)
  
 Server launches in its own process, and new process is started every time the server rebuilds, and is proxied using BrowserSync. The proxy also dynamically adds in hot module loading, and reload when static assets update, and React Hot Module loading and React Transform.
+
+TODO: Build the server. Not building because of relative path issues.
 
 ## Build Automation Tools
 
@@ -23,7 +25,7 @@ Server launches in its own process, and new process is started every time the se
 
 * Cleans up the output `/build` folder (`clean.js`)
 * Copies static files to the output folder (`copy.js`)
-* Creates application bundles with Webpack (`bundle.js`, `bundleServer.js`, `webpack.config.js`)
+* Creates application bundles with Webpack (`bundle.js`, `webpack.config.js`)
 
 ##### `npm run deploy` (`deploy.js`)
 
@@ -47,6 +49,8 @@ or
 ```sh
 $ npm start -- --release                 # Launch dev server in production mode
 ```
+
+The additional `--` before flags is necessary to pass the arguments from babel-node to the actual process spawned.
 
 #### Misc
 
