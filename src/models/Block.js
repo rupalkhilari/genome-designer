@@ -21,6 +21,12 @@ export default class Block extends Instance {
     return BlockDefinition.validate(input, throwOnError);
   }
 
+  /* checks */
+
+  isFiller() {
+    return !this.metadata.name && this.hasSequence() && !this.metadata.color;
+  }
+
   /* metadata things */
 
   setSbol(sbol) {
