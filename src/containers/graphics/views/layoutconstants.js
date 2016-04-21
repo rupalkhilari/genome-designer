@@ -33,7 +33,7 @@ const background = 'rgb(52, 57, 77)';
 const sbolIcon = 27;
 // min size of layout
 const minWidth = blockH * 4;
-const minHeight = blockH;
+const minHeight = blockH + rowBarH + titleH;
 // padding at right / bottom of scenegraph to make selection easier
 const bottomPad = 50;
 const rightPad = 30;

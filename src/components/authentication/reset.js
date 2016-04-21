@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import {connect} from 'react-redux';
 import { uiShowAuthenticationForm, uiSetGrunt } from '../../actions/ui';
+import { userLogin } from '../../actions/user';
 import { reset } from '../../middleware/api';
 import invariant from 'invariant';
 
@@ -174,4 +175,5 @@ function mapStateToProps(state) {
 export default connect(mapStateToProps, {
   uiShowAuthenticationForm,
   uiSetGrunt,
+  userLogin,
 })(RegisterForm);

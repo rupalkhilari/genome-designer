@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import ReactDOM from 'react-dom';
 import invariant from 'invariant';
 import { connect } from 'react-redux';
 import { projectAddConstruct } from '../../../actions/projects';
@@ -12,6 +13,7 @@ import { focusConstruct, focusBlocks } from '../../../actions/focus';
 import { projectGetVersion } from '../../../selectors/projects';
 import DnD from '../dnd/dnd';
 import ConstructViewer from './constructviewer';
+import MouseTrap from '../mousetrap';
 
 import '../../../styles/constructviewercanvas.css';
 
@@ -44,7 +46,34 @@ export class ConstructViewerCanvas extends Component {
    * higher values ( constructviewers ) will get dropped on first
    */
   componentDidMount() {
-    DnD.registerTarget(React.findDOMNode(this.refs.dropTarget), {
+    // edge threshold for autoscrolling
+    const edge = 150;
+    // monitor drag overs to autoscroll the canvas when the mouse is near top or bottom
+    DnD.registerMonitor(ReactDOM.findDOMNode(this), {
+      monitorOver: (globalPosition) => {
+        const local = this.mouseTrap.globalToLocal(globalPosition, ReactDOM.findDOMNode(this));
+        const box = this.mouseTrap.element.getBoundingClientRect();
+        if (local.y < edge) {
+          this.autoScroll(-1);
+        } else {
+          if (local.y > box.height - edge) {
+            this.autoScroll(1);
+          } else {
+            // cancel the autoscroll
+            this.autoScroll(0);
+          }
+        }
+      },
+      monitorEnter: () => {},
+      monitorLeave: () => {
+        this.autoScroll(0);
+      },
+
+    });
+
+
+    // drop target drag and drop handlers
+    DnD.registerTarget(ReactDOM.findDOMNode(this.refs.dropTarget), {
       drop: this.onDrop.bind(this),
       dragEnter: () => {
         React.findDOMNode(this.refs.dropTarget).classList.add('cvc-hovered');
@@ -54,6 +83,54 @@ export class ConstructViewerCanvas extends Component {
       },
       zorder: -1,
     });
+
+    // mouse trap is used for coordinate transformation
+    this.mouseTrap = new MouseTrap({
+      element: ReactDOM.findDOMNode(this),
+    });
+  }
+
+  /**
+   * unregister DND handlers
+   */
+  componentWillUnmount() {
+    DnD.unregisterTarget(ReactDOM.findDOMNode(this.refs.dropTarget));
+    DnD.unregisterMonitor(ReactDOM.findDOMNode(this));
+    this.mouseTrap.dispose();
+    this.mouseTrap = null;
+  }
+
+  /**
+   * auto scroll in the given direction -1, towards top, 0 stop, 1 downwards.
+   */
+  autoScroll(direction) {
+    invariant(direction >= -1 && direction <= 1, 'bad direction -1 ... +1');
+    this.autoScrollDirection = direction;
+
+    // we need a bound version of this.autoScrollUpdate to use for animation callback to avoid
+    // creating a closure at 60fps
+    if (!this.autoScrollBound) {
+      this.autoScrollBound = this.autoScrollUpdate.bind(this);
+    }
+    // cancel animation if direction is zero
+    if (this.autoScrollDirection === 0) {
+      if (this.autoScrollRequest) {
+        window.cancelAnimationFrame(this.autoScrollRequest);
+        this.autoScrollRequest = 0;
+      }
+    } else {
+      // setup animation callback as required
+      if (!this.autoScrollRequest) {
+        this.autoScrollRequest = window.requestAnimationFrame(this.autoScrollBound);
+      }
+    }
+  }
+  autoScrollUpdate() {
+    invariant(this.autoScrollDirection === -1 || this.autoScrollDirection === 1, 'bad direction for autoscroll');
+    const el = ReactDOM.findDOMNode(this)
+    el.scrollTop += this.autoScrollDirection * 20;
+    // start a new request unless the direction has changed to zero
+    this.autoScrollRequest = this.autoScrollDirection ? window.requestAnimationFrame(this.autoScrollBound) : 0;
   }
 
   /**
@@ -75,7 +152,7 @@ export class ConstructViewerCanvas extends Component {
     // map construct viewers so we can propagate projectId and any recently dropped blocks
     return (<div className="ProjectPage-constructs" onClick={this.onClick}>
       {this.props.children}
-      <div className="cvc-drop-target" ref="dropTarget">Drop blocks here to create a new construct.</div>
+      <div className="cvc-drop-target" ref="dropTarget" key="dropTarget">Drop blocks here to create a new construct.</div>
     </div>);
   }
 }
