@@ -100,7 +100,6 @@ export class ConstructViewer extends Component {
       parent: this.sceneGraphEl,
       userInterfaceConstructor: UserInterface,
     });
-    debugger;
     // create the layout object
     this.layout = new Layout(this, this.sg, {
       layoutAlgorithm: this.props.layoutAlgorithm,

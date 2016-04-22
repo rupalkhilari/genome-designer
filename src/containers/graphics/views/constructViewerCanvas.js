@@ -76,10 +76,10 @@ export class ConstructViewerCanvas extends Component {
     DnD.registerTarget(ReactDOM.findDOMNode(this.refs.dropTarget), {
       drop: this.onDrop.bind(this),
       dragEnter: () => {
-        React.findDOMNode(this.refs.dropTarget).classList.add('cvc-hovered');
+        ReactDOM.findDOMNode(this.refs.dropTarget).classList.add('cvc-hovered');
       },
       dragLeave: () => {
-        React.findDOMNode(this.refs.dropTarget).classList.remove('cvc-hovered');
+        ReactDOM.findDOMNode(this.refs.dropTarget).classList.remove('cvc-hovered');
       },
       zorder: -1,
     });
@@ -137,7 +137,7 @@ export class ConstructViewerCanvas extends Component {
    * clicking on canvas unselects all blocks
    */
   onClick = (evt) => {
-    if (evt.target === React.findDOMNode(this)) {
+    if (evt.target === ReactDOM.findDOMNode(this)) {
       evt.preventDefault();
       evt.stopPropagation();
       this.props.focusBlocks([]);
