@@ -6,6 +6,7 @@
 
 .GlobalNav {
   display: flex;
+  flex-direction: row;
   flex-shrink: 0;
   background-color: white;
 
@@ -28,5 +29,9 @@
       cursor: pointer;
       background-color: var(--colors-selected);
     }
+  }
+
+  &-spacer {
+    flex-grow: 1;
   }
 }

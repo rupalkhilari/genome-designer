@@ -15,13 +15,16 @@ export default function autosavingCreator(config) {
     forceSaveActionType: FORCE_SAVE,
   }, config);
 
-  let lastSaved = 0;
+  let timeStartOfChanges = 0; //0 means no unsaved changes, otherwise time of start of changes
+  let lastSaved = +Date.now();
   let dirty = false;
 
+  const getTimeUnsaved = () => { return timeStartOfChanges > 0 ? +Date.now() - timeStartOfChanges : 0 };
   const getLastSaved = () => lastSaved;
   const isDirty = () => dirty;
 
   const handleSave = (nextState) => {
+    timeStartOfChanges = 0;
     lastSaved = +Date.now();
     options.onSave(nextState);
     dirty = false;
@@ -43,6 +46,9 @@ export default function autosavingCreator(config) {
 
   const checkSave = (action, nextState, lastState) => {
     if (options.filter(action, dirty, nextState, lastState) === true) {
+      if (!dirty) {
+        timeStartOfChanges = +Date.now();
+      }
       dirty = true;
     }
     return dirty;
@@ -89,6 +95,7 @@ export default function autosavingCreator(config) {
 
   return {
     autosaveReducerEnhancer,
+    getTimeUnsaved,
     getLastSaved,
     isDirty,
   };
