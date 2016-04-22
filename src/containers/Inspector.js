@@ -30,7 +30,7 @@ export class Inspector extends Component {
     // inspect instances, or construct if no instance or project if no construct or instances
     let inspect = instances && instances.length
     ? <InspectorBlock instances={instances} readOnly={readOnly}/>
-  : this.props.constructId ? <InspectorBlock instances={[this.props.blocks[this.props.constructId]]} readOnly={readOnly} />: <InspectorProject instance={project} readOnly={readOnly}/>;
+    : <InspectorProject instance={project} readOnly={readOnly}/>;
 
     return (
       <div className={'SidePanel Inspector no-vertical-scroll' +
@@ -66,7 +66,10 @@ function mapStateToProps(state, props) {
       blocks.map(blockId => state.blocks[blockId]) :
       [];
   //ensure that blocks removed from store dont error / don't pass empty instances
-  const instances = unfilteredInstances.filter(el => !!el);
+  let instances = unfilteredInstances.filter(el => !!el);
+  if (!instances.length && !!construct) {
+    instances = [ state.blocks[construct] ];
+  }
 
   const { projectId } = props; //from routing
   const project = !!forceProject ?
@@ -82,9 +85,7 @@ function mapStateToProps(state, props) {
     isVisible,
     readOnly,
     instances,
-    constructId : construct ,
     project,
-    blocks: state.blocks,
   };
 }
 
