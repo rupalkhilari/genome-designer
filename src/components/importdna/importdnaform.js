@@ -28,11 +28,15 @@ class DNAImportForm extends Component {
   onSequenceChanged(evt) {
     const source = evt.target.value;
     if (source) {
-      // strips various flavors of line break and white space
-      const cleanRegex = /(\r|\r\n|\n|\s+)/gmi;
+      // strip anything except atgc and whitespace
+      const cleanRegex = /[^atgc]/gmi;
       // while cleaning convert to lowercase
       const clean = source.replace(cleanRegex, '').toLowerCase();
+      if (clean !== source) {
+        evt.target.value = clean;
+      }
       // check for valid sequence
+      // ( you should not be able to enter an invalid sequence but just in case )
       const dnaRegex = /^([atgc]+)$/;
       const isValid = dnaRegex.test(clean);
       this.setState({
@@ -103,62 +107,42 @@ class DNAImportForm extends Component {
       return null;
     }
 
-    let payload = null;
-    if (this.props.currentConstruct && this.props.focusedBlocks.length) {
-      payload=(
-        <form className="gd-form importdnaform" onSubmit={this.onSubmit.bind(this)}>
-          <div className="title">Import DNA Sequence</div>
-          <label>{this.state.validLength
-              ? `Sequence Length: ${this.state.validLength}`
-              : "Paste your sequence into the box below."}
-            </label>
-          <textarea
-            rows="10"
-            autoComplete="off"
-            autoFocus
-            maxLength="10000000"
-            spellCheck="false"
-            ref="sequenceTextArea"
-            defaultValue={this.state.sequence}
-            onChange={this.onSequenceChanged.bind(this)}/>
-          <div className={`error ${!this.state.inputValid ? 'visible' : ''}`}>The sequence is not valid</div>
-          <br/>
-          <button type="submit" disabled={!(this.state.inputValid && this.state.validLength)}>Import</button>
-          <button
-            type="button"
-            onClick={() => {
-              this.props.uiShowDNAImport(false);
-            }}>Cancel</button>
-        </form>
-      )
-    } else {
-      payload = (
-        <form className="gd-form importdnaform" onSubmit={this.onSubmit.bind(this)}>
-          <div className="title">Import DNA Sequence</div>
-          <label>Please select at least one block first.</label>
-          <br/>
-          <button
-            type="submit"
-            onClick={(evt) => {
-              evt.preventDefault();
-              this.props.uiShowDNAImport(false);
-            }}>Close</button>
-        </form>
-      )
-    }
-
-    return (
-      <ModalWindow
+    return (<ModalWindow
         open={this.props.open}
-        title="Import DNA Sequence"
+        title="Add Sequence"
         closeOnClickOutside
         closeModal={(buttonText) => {
           this.props.uiShowDNAImport(false);
         }}
-        payload={payload}
-      />
-    );
-  }
+        payload={
+          <form className="gd-form importdnaform" onSubmit={this.onSubmit.bind(this)}>
+            <div className="title">Add Sequence</div>
+            <textarea
+              style={{textTransform: 'uppercase'}}
+              placeholder="Type or paste DNA sequence data here."
+              rows="10"
+              autoComplete="off"
+              autoFocus
+              maxLength="10000000"
+              spellCheck="false"
+              ref="sequenceTextArea"
+              defaultValue={this.state.sequence}
+              onChange={this.onSequenceChanged.bind(this)}/>
+            <label style={{textAlign: 'right'}}>{`Length: ${this.state.validLength}`}</label>
+            <div className={`error ${!this.state.inputValid ? 'visible' : ''}`}>The sequence is not valid</div>
+            <div style={{width: '75%', textAlign: 'center'}}>
+              <button type="submit" disabled={!(this.state.inputValid && this.state.validLength)}>Add</button>
+              <button
+                type="button"
+                onClick={() => {
+                  this.props.uiShowDNAImport(false);
+                }}>Cancel
+              </button>
+            </div>
+          </form>}
+
+      />)
+    }
 }
 
 function mapStateToProps(state) {
