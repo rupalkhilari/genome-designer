@@ -25,7 +25,7 @@ export default class autosaveTracking extends Component {
     const timeUnsaved = autosaveInstance.getTimeUnsaved();
     const dirty = autosaveInstance.isDirty();
 
-    const finalText = dirty ?
+    const finalText = dirty || saveDelta < 30000 ?
       '' :
       (saveDelta > 3000 ? 'Project Saved' : 'Saving...');
 
