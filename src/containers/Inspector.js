@@ -27,6 +27,11 @@ export class Inspector extends Component {
   render() {
     const { isVisible, instances, project, readOnly } = this.props;
 
+    // inspect instances, or construct if no instance or project if no construct or instances
+    let inspect = instances && instances.length
+    ? <InspectorBlock instances={instances} readOnly={readOnly}/>
+    : <InspectorProject instance={project} readOnly={readOnly}/>;
+
     return (
       <div className={'SidePanel Inspector no-vertical-scroll' +
       (isVisible ? ' visible' : '') +
@@ -43,11 +48,7 @@ export class Inspector extends Component {
         </div>
 
         <div className="SidePanel-content">
-          {(instances && instances.length) ?
-            (<InspectorBlock instances={instances}
-                             readOnly={readOnly}/>) :
-            (<InspectorProject instance={project}
-                               readOnly={readOnly}/>) }
+          {inspect}
         </div>
       </div>
     );
@@ -56,7 +57,7 @@ export class Inspector extends Component {
 
 function mapStateToProps(state, props) {
   const { isVisible } = state.inspector;
-  const { forceBlocks, blocks, forceProject } = state.focus;
+  const { forceBlocks, blocks, forceProject, construct } = state.focus;
 
   //use forceBlock if available, otherwise use selected blocks
   const unfilteredInstances = forceBlocks.length ?
@@ -65,7 +66,10 @@ function mapStateToProps(state, props) {
       blocks.map(blockId => state.blocks[blockId]) :
       [];
   //ensure that blocks removed from store dont error / don't pass empty instances
-  const instances = unfilteredInstances.filter(el => !!el);
+  let instances = unfilteredInstances.filter(el => !!el);
+  if (!instances.length && !!construct) {
+    instances = [ state.blocks[construct] ];
+  }
 
   const { projectId } = props; //from routing
   const project = !!forceProject ?
@@ -84,6 +88,7 @@ function mapStateToProps(state, props) {
     project,
   };
 }
+
 
 export default connect(mapStateToProps, {
   inspectorToggleVisibility,

@@ -38,7 +38,7 @@ import {
   uiShowGenBankImport,
   uiToggleDetailView,
   uiSetGrunt,
-} from '../actions/ui';
+ } from '../actions/ui';
 import { inspectorToggleVisibility } from '../actions/inspector';
 import { inventoryToggleVisibility } from '../actions/inventory';
 import { uiShowDNAImport } from '../actions/ui';
@@ -392,11 +392,15 @@ class GlobalNav extends Component {
               text: 'Delete',
               action: () => {},
             }, {}, {
-              text: 'Import DNA Sequence',
+              text: 'Add Sequence',
               action: () => {
-                this.props.uiShowDNAImport(true);
+                if (!this.props.focus.blocks.length) {
+                  this.props.uiSetGrunt('Sequence data must be added to or before a selected block. Please select a block and try again.');
+                } else {
+                  this.props.uiShowDNAImport(true);
+                }
               },
-            }, {}, {
+            }, {
               text: 'Select Empty Blocks',
               disabled: !this.props.focus.construct,
               action: () => {

@@ -163,6 +163,7 @@ export default class Layout {
     let node = this.nodeFromElement(part);
     if (!node) {
       const props = Object.assign({}, {
+        dataAttribute: {name: 'nodetype', value: 'block'},
         sg: this.sceneGraph,
       }, appearance);
       props.sbolName = this.isSBOL(part) ? this.blocks[part].rules.sbol : null;
@@ -268,6 +269,7 @@ export default class Layout {
     if (this.showHeader) {
       if (!this.titleNode) {
         this.titleNode = new Node2D(Object.assign({
+          dataAttribute: {name: 'nodetype', value: 'construct-title'},
           sg: this.sceneGraph,
           bounds: new Box2D(this.insetX, this.insetY + kT.bannerHeight, this.sceneGraph.availableWidth - this.insetX, kT.titleH),
         }, kT.titleAppearance));
@@ -276,7 +278,7 @@ export default class Layout {
 
       // update title to current position and text
       this.titleNode.set({
-        text: this.construct.metadata.name || this.construct.id,
+        text: this.construct.metadata.name || 'Construct',
         color: this.baseColor,
       });
     }
@@ -369,6 +371,7 @@ export default class Layout {
     this.layoutAlgorithm = layoutAlgorithm;
     this.blocks = blocks;
     this.currentBlocks = currentBlocks;
+    this.baseColor = this.construct.metadata.color;
 
     // regardless of layout algorithm we return the height
     // used to render the construct / nested construct

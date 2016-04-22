@@ -80,6 +80,13 @@ export default class ConstructViewerUserInterface extends UserInterface {
     const top = this.topNodeAt(point);
     return top ? this.layout.elementFromNode(top) : null;
   }
+
+  /**
+   * true if the node is the title node for the construct
+   */
+  isConstructTitleNode(node) {
+    return node && this.layout.titleNode === node;
+  }
   /**
    * return the top most block at the given location and whether the point
    * is closer to the left or right edges
@@ -272,9 +279,12 @@ export default class ConstructViewerUserInterface extends UserInterface {
         default: this.constructViewer.blockSelected([block]); break;
       }
     } else {
-      // clear block selections and select construct block to make it appear
-      // in the inspector
+      // clear block selections
       this.constructViewer.blockSelected([]);
+      // if they clicked the title node then select the construct
+      if (this.isConstructTitleNode(this.topNodeAt(point))) {
+        this.selectConstruct();
+      }
     }
   }
 
