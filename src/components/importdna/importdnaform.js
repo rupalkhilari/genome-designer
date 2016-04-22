@@ -7,6 +7,7 @@ import { uiSetGrunt } from '../../actions/ui';
 import invariant from 'invariant';
 import ModalWindow from '../modal/modalwindow';
 import { blockCreate, blockAddComponent } from '../../actions/blocks';
+import { dnaLoose } from '../../utils/dna/dna';
 
 import '../../../src/styles/form.css';
 import '../../../src/styles/importdnaform.css';
@@ -29,7 +30,7 @@ class DNAImportForm extends Component {
     const source = evt.target.value;
     if (source) {
       // strip anything except atgc and whitespace
-      const cleanRegex = /[^atgc]/gmi;
+      const cleanRegex = new RegExp(`[^${dnaLoose}]`, 'gmi');
       // while cleaning convert to lowercase
       const clean = source.replace(cleanRegex, '').toLowerCase();
       if (clean !== source) {
@@ -37,12 +38,12 @@ class DNAImportForm extends Component {
       }
       // check for valid sequence
       // ( you should not be able to enter an invalid sequence but just in case )
-      const dnaRegex = /^([atgc]+)$/;
+      const dnaRegex = new RegExp(`^([${dnaLoose}]*)$`, 'gi');
       const isValid = dnaRegex.test(clean);
       this.setState({
         inputValid: isValid,
         validLength: clean.length,
-        sequence: clean,
+        sequence: clean.toUpperCase(),
       });
     } else {
       this.setState({

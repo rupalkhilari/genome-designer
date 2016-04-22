@@ -6,6 +6,7 @@ import { getSequence, writeSequence } from '../middleware/api';
 import AnnotationDefinition from '../schemas/Annotation';
 import md5 from 'md5';
 import color from '../utils/generators/color';
+import { dnaStrict, dnaLoose } from '../utils/dna/dna';
 
 export default class Block extends Instance {
   constructor(input) {
@@ -90,8 +91,10 @@ export default class Block extends Instance {
     const sequenceLength = sequence.length;
     const sequenceMd5 = md5(sequence);
 
-    const validatorStrict = /^[acgtu]*$/gi;
-    const validatorLoose = /^[acgturyswkmbdhvn\.\-]*$/gi;
+    const validatorStrict = new RegExp(`^[${dnaStrict}]*$`, 'gi');
+    const validatorLoose = new RegExp(`^[${dnaLoose}]*$`, 'gi');
+    // const validatorStrict = /^[acgtu]*$/gi;
+    // const validatorLoose = /^[acgturyswkmbdhvn\.\-]*$/gi;
 
     const validator = !!useStrict ? validatorStrict : validatorLoose;
 

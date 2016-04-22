@@ -54,13 +54,13 @@ module.exports = {
       .waitForElementPresent('.importdnaform textarea', 5000, 'expected a text area')
       // enter a BAD sequence
       .setValue('.importdnaform textarea', 'XXXX')
-      // expect to get an error message
-      .waitForElementPresent('.importdnaform .error.visible', 5000, 'expected an error message')
+      // expect to get a zero length sequence
+      .assert.containsText('.importdnaform label:nth-of-type(1)', 'Length: 0')
       // set a valid sequence with white space and newlines
       .clearValue('.importdnaform textarea')
-      .setValue('.importdnaform textarea', 'atgc atgc\n atgc')
-      // expect a message about a valid 12 character sequence
-      .assert.containsText('.importdnaform label:nth-of-type(1)', 'Length: 12')
+      .setValue('.importdnaform textarea', 'acgtu\n ryswk mbdhv n.-')
+      // expect a message about a valid 18 character sequence ( with white space etc removed )
+      .assert.containsText('.importdnaform label:nth-of-type(1)', 'Length: 18')
       // submit the form with the valid sequence
       .submitForm('.importdnaform')
       // wait for the grunt ribbon to confirm,
