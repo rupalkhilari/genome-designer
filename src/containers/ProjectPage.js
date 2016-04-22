@@ -10,6 +10,7 @@ import Inspector from './Inspector';
 import { projectLoad } from '../actions/projects';
 import { uiShowMainMenu } from '../actions/ui';
 import { focusProject } from '../actions/focus';
+import autosaveInstance from '../store/autosave/autosaveInstance';
 
 import '../styles/ProjectPage.css';
 import '../styles/SceneGraphPage.css';
@@ -36,6 +37,20 @@ class ProjectPage extends Component {
     if (!this.lastProjectId || nextProps.projectId !== this.props.projectId) {
       this.lastProjectId = nextProps.projectId;
       this.props.focusProject(nextProps.projectId);
+    }
+  }
+
+  componentDidMount() {
+    window.onbeforeunload = window.onunload = this.onWindowUnload;
+  }
+
+  componentWillUnmount() {
+    window.onbeforeunload = window.onunload = () => {};
+  }
+
+  onWindowUnload(evt) {
+    if (autosaveInstance.isDirty() && process.env.NODE_ENV === 'production') {
+      return 'Project has unsaved work! Please save before leaving this page';
     }
   }
 
