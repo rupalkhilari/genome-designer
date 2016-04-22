@@ -1,5 +1,5 @@
-import React, {Component, PropTypes} from 'react';
-import {connect} from 'react-redux';
+import React, { Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
 import invariant from 'invariant';
 import { push } from 'react-router-redux';
 import MenuBar from '../components/Menu/MenuBar';
@@ -8,7 +8,7 @@ import RibbonGrunt from '../components/ribbongrunt';
 import {
   projectCreate,
   projectAddConstruct,
-  projectSave
+  projectSave,
 } from '../actions/projects';
 import {
   focusBlocks,
@@ -27,11 +27,11 @@ import {
   blockAddComponent,
   blockAddComponents,
   blockRename,
- } from '../actions/blocks';
- import {
-   blockGetParents,
-   blockGetChildrenRecursive,
- } from '../selectors/blocks';
+} from '../actions/blocks';
+import {
+  blockGetParents,
+  blockGetChildrenRecursive,
+} from '../selectors/blocks';
 import { projectGetVersion } from '../selectors/projects';
 import { undo, redo, transact, commit } from '../store/undo/actions';
 import {
@@ -52,8 +52,9 @@ import {
 } from '../utils/ui/keyboard-translator';
 import {
   sortBlocksByIndexAndDepth,
-  sortBlocksByIndexAndDepthExclude
+  sortBlocksByIndexAndDepthExclude,
 } from '../utils/ui/uiapi';
+import AutosaveTracking from '../components/GlobalNav/AutosaveTracking';
 
 import '../styles/GlobalNav.css';
 
@@ -69,11 +70,6 @@ class GlobalNav extends Component {
     blockCreate: PropTypes.func.isRequired,
     showMainMenu: PropTypes.bool.isRequired,
     blockGetParents: PropTypes.func.isRequired,
-  };
-
-  state = {
-    showAddProject: false,
-    recentProjects: [],
   };
 
   constructor(props) {
@@ -131,6 +127,11 @@ class GlobalNav extends Component {
     });
   }
 
+  state = {
+    showAddProject: false,
+    recentProjects: [],
+  };
+
   /**
    * select all blocks of the current construct
    */
@@ -158,6 +159,7 @@ class GlobalNav extends Component {
     this.props.focusConstruct(block.id);
     this.props.push(`/project/${project.id}`);
   }
+
   /**
    * add a new construct to the current project
    */
@@ -263,6 +265,7 @@ class GlobalNav extends Component {
       this.props.focusBlocks([]);
     }
   }
+
   // paste from clipboard to current construct
   pasteBlocksToConstruct() {
     // paste blocks into construct if format available
@@ -487,6 +490,8 @@ class GlobalNav extends Component {
         <RibbonGrunt />
         <span className="GlobalNav-title">GD</span>
         {this.props.showMainMenu ? this.menuBar() : null}
+        <span className="GlobalNav-spacer" />
+        <AutosaveTracking />
         <UserWidget/>
       </div>
     );

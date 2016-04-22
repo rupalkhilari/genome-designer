@@ -1,17 +1,14 @@
 @import 'variables.css';
 
-:root {
-  /* component variable declarations */
-}
-
 .GlobalNav {
   display: flex;
+  flex-direction: row;
   flex-shrink: 0;
   background-color: white;
 
   &-title {
     color: white;
-    background-color: rgb(189, 130, 113);
+    background-color: var(--colors-logo);
     text-align: center;
     height: var(--GlobalNav-width-chrome);
     width: var(--GlobalNav-width-chrome);
@@ -28,5 +25,9 @@
       cursor: pointer;
       background-color: var(--colors-selected);
     }
+  }
+
+  &-spacer {
+    flex-grow: 1;
   }
 }

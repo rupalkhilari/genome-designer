@@ -114,7 +114,7 @@
     color: var(--textcolor);
   }
   a.blue-link {
-    color: var(--color-bluetext);
+    color: var(--colors-bluetext);
   }
   /* classes for positioning forgot link inside the password box*/
   .forgot-box {
