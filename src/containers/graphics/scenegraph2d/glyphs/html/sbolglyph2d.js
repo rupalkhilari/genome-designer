@@ -43,21 +43,12 @@ export default class SBOLGlyph2D extends Glyph2D {
     if (this.node.sbolName) {
 
       if (this.sbolName !== this.node.sbolName) {
-
         this.sbolName = this.node.sbolName;
-
         // remove existing svg
         while (this.svgContainer.firstChild) {
           this.svgContainer.removeChild(this.svgContainer.firstChild);
         }
-
         this.svgContainer.style.display = 'none';
-
-        // style / size the container
-        this.svgContainer.style.left = (this.node.width - kT.sbolIcon - 2 - kT.contextDotsW) + 'px';
-        this.svgContainer.style.top = (this.node.height / 2 - kT.sbolIcon / 2) + 'px';
-        this.svgContainer.style.width = kT.sbolIcon + 'px';
-
         // clone the appropriate template
         const templateId = `sbol-svg-${this.sbolName}`;
         const template = document.getElementById(templateId);
@@ -76,6 +67,10 @@ export default class SBOLGlyph2D extends Glyph2D {
           this.svgContainer.style.display = 'none';
         }
       }
+      // update geometry of container
+      this.svgContainer.style.left = (this.node.width - kT.sbolIcon - 2 - kT.contextDotsW) + 'px';
+      this.svgContainer.style.top = (this.node.height / 2 - kT.sbolIcon / 2) + 'px';
+      this.svgContainer.style.width = kT.sbolIcon + 'px';
     } else {
       this.svgContainer.style.display = 'none';
     }
