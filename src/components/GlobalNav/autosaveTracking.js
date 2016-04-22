@@ -21,12 +21,13 @@ export default class autosaveTracking extends Component {
 
   render() {
     const lastSaved = autosaveInstance.getLastSaved();
+    const saveDelta = +Date.now() - lastSaved;
     const timeUnsaved = autosaveInstance.getTimeUnsaved();
     const dirty = autosaveInstance.isDirty();
-    const seconds = Math.floor(timeUnsaved / 1000);
-    const lastSavedText = `Project Saved ${seconds} seconds ago`;
-    const dirtyText = dirty ? ', unsaved changes' : ', no unsaved changes';
-    const finalText = dirty ? lastSavedText : 'Project Saved';
+
+    const finalText = dirty ?
+      '' :
+      (saveDelta > 3000 ? 'Project Saved' : 'Saving...');
 
     return (<span className="AutosaveTracking">{finalText}</span>);
   }

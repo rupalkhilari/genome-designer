@@ -8,14 +8,15 @@
   --colors-blueGreyDark: #292D40; /*canvas*/
   --colors-blueGreyMed: #4B505E;
   --colors-grey: #6B6F7C;
+  --colors-greyMedLight: #C2C5D2;
   --colors-blueGreyLighter: #DFE2EC;
   --colors-greyLight: #EEEFF3;
   --colors-white: #ffffff;
   --colors-selected: #3F82FF;
 
+  --colors-logo: rgb(189, 130, 113);
   --colors-text: var(--colors-blueBlack);
-  --color-bluetext: var(--colors-selected);
-
+  --colors-bluetext: var(--colors-selected);
 
   /* Typography
   ==================== */

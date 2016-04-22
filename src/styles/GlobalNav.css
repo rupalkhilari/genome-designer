@@ -1,9 +1,5 @@
 @import 'variables.css';
 
-:root {
-  /* component variable declarations */
-}
-
 .GlobalNav {
   display: flex;
   flex-direction: row;
@@ -12,7 +8,7 @@
 
   &-title {
     color: white;
-    background-color: rgb(189, 130, 113);
+    background-color: var(--colors-logo);
     text-align: center;
     height: var(--GlobalNav-width-chrome);
     width: var(--GlobalNav-width-chrome);
