@@ -6,6 +6,9 @@ import { exec } from 'child_process';
 import { flatten } from 'lodash';
 import { errorCouldntFindProjectId } from '../utils/errors';
 
+// key for no sbol rule
+const untypedKey = 'none';
+
 //note - expects the project to already exist.
 export const getAllBlockIdsInProject = (projectId) => {
   const directory = filePaths.createBlockDirectoryPath(projectId);
@@ -105,7 +108,11 @@ export const getAllBlocksWithName = (userId, name) => {
 };
 
 export const getAllBlocksWithSbol = (userId, sbol) => {
-  const filter = (block, index) => block.rules.sbol === sbol;
+  const filter = (block, index) => {
+    return (sbol === untypedKey) ?
+      !block.rules.sbol :
+      block.rules.sbol === sbol;
+  };
   return getAllBlocksFiltered(userId, filter);
 };
 
@@ -114,14 +121,18 @@ export const getAllBlockSbols = (userId) => {
     .then(blocks => {
       const obj = blocks.reduce((acc, block) => {
         const rule = block.rules.sbol;
-        if (!rule) return acc;
+        if (!rule) {
+          acc[untypedKey] += 1;
+          return acc;
+        }
+
         if (acc[rule]) {
           acc[rule]++;
         } else {
           acc[rule] = 1;
         }
         return acc;
-      }, {});
+      }, { [untypedKey]: 0 });
       return obj;
     });
 };
