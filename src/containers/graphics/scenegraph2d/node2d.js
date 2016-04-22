@@ -117,6 +117,13 @@ export default class Node2D {
         this.glyph = value;
         break;
 
+      // apply a data-??? attribute with the given value to our element
+      // value should be {name:'xyz', value:'123'} which would appear in
+      // the dom as data-xyz="123"
+      case 'dataAttribute':
+      this.el.setAttribute(`data-${value.name}`, value.value);
+      break;
+
         // default behaviour is to just set the property
       default: this[key] = props[key];
       }

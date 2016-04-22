@@ -30,7 +30,6 @@ export default class SBOL2D extends Node2D {
     return `SBOL = glyph:${this.glyph || 'NONE'} text:${this.text || ''}`;
   }
 
-
   /**
    * get the preferred width / height of this block as condensed or fully expanded
    * @return {[type]} [description]
@@ -57,8 +56,6 @@ export default class SBOL2D extends Node2D {
         kT.contextDotsH),
       visible: this.hover,
     });
-    // add our uuid as data-testblock for easier testing
-    el.setAttribute('data-testsbol', this.uuid);
     // return as per base class
     return el;
   }

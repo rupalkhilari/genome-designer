@@ -7,6 +7,7 @@
   flex-direction: row;
   justify-content: space-between;
   color: var(--colors-blueGreyLighter);
+  cursor: default;
 
   /* left side */
   &-info {
