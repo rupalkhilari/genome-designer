@@ -5,7 +5,7 @@ import sha1 from 'sha1';
 const { assert, expect } = chai;
 
 describe('Model', () => {
-  describe('Instance', () => {
+  describe.only('Instance', () => {
     describe('Constructor', () => {
       it('should exist, be callable with new', () => {
         const inst = new Instance();
@@ -83,14 +83,24 @@ describe('Model', () => {
 
       const clone = inst.clone();
       expect(clone.parents.length).to.equal(1);
-      expect(clone.parents[0]).to.eql({id: inst.id, sha: parentSha});
+      expect(clone.parents[0]).to.eql({ id: inst.id, sha: parentSha });
 
       const second = clone.clone();
       expect(second.parents.length).to.equal(2);
       expect(second.parents).to.eql([
-        {id: clone.id, sha: parentSha},
-        {id: inst.id, sha: parentSha},
+        { id: clone.id, sha: parentSha },
+        { id: inst.id, sha: parentSha },
       ]);
+    });
+
+    it('clone() validates a version is passed in', () => {
+      const badVersion = 'bad!';
+      const goodVersion = sha1('bleepboop');
+
+      const inst = new Instance();
+
+      expect(inst.clone.bind(inst, badVersion)).to.throw();
+      expect(inst.clone.bind(inst, goodVersion)).to.not.throw();
     });
   });
 });
