@@ -4,6 +4,10 @@ import merge from 'lodash.merge';
 import cloneDeep from 'lodash.clonedeep';
 import invariant from 'invariant';
 import InstanceDefinition from '../schemas/Instance';
+import safeValidate from '../schemas/fields/safeValidate';
+import { version } from '../schemas/fields/validators';
+
+const versionValidator = (ver) => safeValidate(version(), true, ver);
 
 /**
  * @description
@@ -55,6 +59,7 @@ export default class Instance {
   //clone by default just uses the ID, however,
   clone(parentSha) {
     const self = cloneDeep(this);
+    invariant(!parentSha || versionValidator(parentSha), 'must pass a valid SHA, got ' + parentSha);
     invariant(!!parentSha || !!self.version, 'Version (e.g. of project) is required to clone');
 
     const versionOfParent = (!!parentSha ? parentSha : self.version);
