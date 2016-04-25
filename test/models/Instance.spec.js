@@ -5,7 +5,7 @@ import sha1 from 'sha1';
 const { assert, expect } = chai;
 
 describe('Model', () => {
-  describe.only('Instance', () => {
+  describe('Instance', () => {
     describe('Constructor', () => {
       it('should exist, be callable with new', () => {
         const inst = new Instance();
