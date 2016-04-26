@@ -11,6 +11,7 @@ export default function autosavingCreator(config) {
     onSave: (nextState) => { throw new Error('onSave is required'); },
     filter: (action, alreadyDirty, nextState, lastState) => nextState !== lastState, //filter for triggering autosave events
     purgeOn: (action, alreadyDirty, nextState, lastState) => false, //will cancel throttled calls if pass function
+    simulateOn: (action, alreadyDirty, nextState, lastState) => false, //simulate that we've saved on these events
     forceOn: (action, alreadyDirty) => false, //force save on certain actions (so not debounced)
     forceSaveActionType: FORCE_SAVE,
   }, config);
@@ -19,13 +20,18 @@ export default function autosavingCreator(config) {
   let lastSaved = +Date.now();
   let dirty = false;
 
-  const getTimeUnsaved = () => { return timeStartOfChanges > 0 ? +Date.now() - timeStartOfChanges : 0 };
+  const getTimeUnsaved = () => { return timeStartOfChanges > 0 ? +Date.now() - timeStartOfChanges : 0; };
   const getLastSaved = () => lastSaved;
   const isDirty = () => dirty;
 
-  const handleSave = (nextState) => {
+  //we've saved, update internal state
+  const noteSave = () => {
     timeStartOfChanges = 0;
     lastSaved = +Date.now();
+  };
+
+  const handleSave = (nextState) => {
+    noteSave();
     options.onSave(nextState);
     dirty = false;
   };
@@ -80,6 +86,10 @@ export default function autosavingCreator(config) {
 
       if (options.purgeOn(action, dirty, nextState, state) === true) {
         purgeDebounced();
+      }
+
+      if (options.simulateOn(action, dirty, nextState, state) === true) {
+        noteSave();
       }
 
       //function call so easy to transition to debounced version
