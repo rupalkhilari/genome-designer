@@ -108,6 +108,7 @@ async function start() {
 
           //while we are not bundling the server, we can set up a watch to recompile on changes
           bs.watch('server/**/*').on('change', () => runServer());
+          bs.watch('plugins/**/*').on('change', () => runServer());
 
           //reassign so that we arent creating multiple browsersync entities, or rebuilding over and over
           handleServerBundleComplete = () => {};
