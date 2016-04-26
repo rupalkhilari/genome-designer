@@ -67,8 +67,10 @@ const headersDelete = (overrides) => merge({}, defaultOptions, {
 
 const authFetch = (...args) => {
   return rejectingFetch(...args)
-    .then(resp => resp.json())
-    .catch(resp => Promise.reject(resp.json()));
+    .then(resp => {
+      return resp.json();
+    })
+    .catch(resp => resp.json().then(err => Promise.reject(err)));
 };
 
 // login with email and password and set the sessionKey (cookie) for later use
