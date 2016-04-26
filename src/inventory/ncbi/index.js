@@ -9,16 +9,24 @@ export const name = 'NCBI';
 
 //todo - handle RNA
 
+//convert genbank file to bunch of blocks
+//assume there is always one root construct
+//returns array in form [construct, ...blocks]
 const genbankToBlock = (gb) => {
   return convertGenbank(gb)
-    .then(result => result.blocks);
+    .then(result => {
+      const { blocks, roots } = result;
+      const constructIndex = blocks.findIndex(block => block.id === roots[0]);
+      const construct = blocks.splice(constructIndex, 1);
+      return [...construct, ...blocks];
+    });
 };
 
-const wrapBlock = (block) => {
+const wrapBlock = (block, id) => {
   return new Block(merge({}, block, {
     source: {
       source: 'ncbi',
-      id: block.id,
+      id: id,
     },
   }));
 };
@@ -55,25 +63,24 @@ export const getSummary = (...ids) => {
 
 // http://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.EFetch
 //note that these may be very very large, use getSummary unless you need the whole thing
-export const get = (...ids) => {
+export const get = (id) => {
   const parametersMapped = {
     format: 'gb',
   };
 
   const { format } = parametersMapped;
-  const idList = ids.join(',');
 
-  const url = `http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id=${idList}&rettype=${format}&retmode=text`;
+  const url = `http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id=${id}&rettype=${format}&retmode=text`;
 
   //todo - handle multiple, verify this does that
   //do we do this at all in the other search APIs?
   return rejectingFetch(url)
     .then(resp => resp.text())
     .then(genbankToBlock)
-    .then(blocks => blocks.map((block, ind) => wrapBlock(block)))
-    .then(blocks => blocks[0]); //hack - not handling multiple yet
+    .then(blocks => blocks.map(block => wrapBlock(block, id)));
 };
 
+//todo - deboucne
 // http://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.ESearch
 export const search = (query, options = {}) => {
   //parameters we support, in this format
