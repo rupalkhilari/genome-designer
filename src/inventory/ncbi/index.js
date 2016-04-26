@@ -36,6 +36,10 @@ const parseSummary = (summary) => {
     metadata: {
       name: summary.caption,
       description: summary.title,
+      organism: summary.organism,
+    },
+    sequence: {
+      length: summary.slen,
     },
     source: {
       source: 'ncbi',
@@ -72,8 +76,6 @@ export const get = (id) => {
 
   const url = `http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id=${id}&rettype=${format}&retmode=text`;
 
-  //todo - handle multiple, verify this does that
-  //do we do this at all in the other search APIs?
   return rejectingFetch(url)
     .then(resp => resp.text())
     .then(genbankToBlock)

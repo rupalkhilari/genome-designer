@@ -7,7 +7,7 @@ import { uiSetGrunt } from '../../actions/ui';
 import invariant from 'invariant';
 import ModalWindow from '../modal/modalwindow';
 import { blockCreate, blockAddComponent } from '../../actions/blocks';
-import { dnaLoose } from '../../utils/dna/dna';
+import { dnaLoose, dnaLooseRegexp } from '../../utils/dna/dna';
 
 import '../../../src/styles/form.css';
 import '../../../src/styles/importdnaform.css';
@@ -38,7 +38,7 @@ class DNAImportForm extends Component {
       }
       // check for valid sequence
       // ( you should not be able to enter an invalid sequence but just in case )
-      const dnaRegex = new RegExp(`^([${dnaLoose}]*)$`, 'gi');
+      const dnaRegex = dnaLooseRegexp;
       const isValid = dnaRegex.test(clean);
       this.setState({
         inputValid: isValid,
