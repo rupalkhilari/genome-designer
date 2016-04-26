@@ -78,12 +78,29 @@ export default class UserInterface {
    * @return {[type]} [description]
    */
   updateSelections() {
+
+    // bucket any items are don't need anymore, we will try to reuse them
+    // before removing them from the DOM
+    const bucket = [];
+    Object.keys(this.selectionMap).forEach(nodeUUID => {
+      if (!this.selections.find(node => nodeUUID === node.uuid)) {
+        const element = this.selectionMap[nodeUUID];
+        delete this.selectionMap[nodeUUID];
+        bucket.push(element);
+      }
+    });
+
     this.selections.forEach(node => {
       // create an element if we need one
       let sel = this.selectionMap[node.uuid];
       if (!sel) {
-        sel = this.selectionMap[node.uuid] = this.createSelectionElement(node);
-        this.el.appendChild(sel);
+        if (bucket.length) {
+          sel = bucket.pop();
+        } else {
+          sel = this.createSelectionElement(node);
+          this.el.appendChild(sel);
+        }
+        this.selectionMap[node.uuid] = sel;
       }
       // update to current node bounds
       const bounds = node.getAABB();
@@ -93,13 +110,9 @@ export default class UserInterface {
       sel.style.height = bounds.height + 'px';
     });
 
-    // remove any elements no longer required.
-    Object.keys(this.selectionMap).forEach(nodeUUID => {
-      if (!this.selections.find(node => nodeUUID === node.uuid)) {
-        const element = this.selectionMap[nodeUUID];
-        delete this.selectionMap[nodeUUID];
-        this.el.removeChild(element);
-      }
+    // now we have to say goodbye to items left in the bucket
+    bucket.forEach(element => {
+      this.el.removeChild(element);
     });
   }
 

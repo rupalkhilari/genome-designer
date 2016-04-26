@@ -516,6 +516,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * show the insertion point at the top left of an empty construct.
    */
   showDefaultInsertPoint() {
+
     // insertion point may alternate so ensure we remove the block cursor
     this.hideBlockInsertionPoint();
     const point = this.layout.getInitialLayoutPoint();
@@ -526,6 +527,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * used when dropping a new block(s) into the construct
    */
   showInsertionPointForEdge(block, edge) {
+
     // insertion point may alternate so ensure we remove the block cursor
     this.hideBlockInsertionPoint();
 
@@ -542,12 +544,14 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * create and show insertion point for edge at the given position
    */
   showInsertionPointForEdgeAt(x, y) {
+
     // create insertion point as necessary
     if (!this.insertionEdgeEl) {
       this.insertionEdgeEl = document.createElement('div');
       this.insertionEdgeEl.className = 'edge-insertion-point';
       this.el.appendChild(this.insertionEdgeEl);
     }
+    this.insertionEdgeEl.style.display = 'block';
     this.insertionEdgeEl.style.left = x + 'px';
     this.insertionEdgeEl.style.top = y + 'px';
   }
@@ -564,6 +568,8 @@ export default class ConstructViewerUserInterface extends UserInterface {
       this.insertionBlockEl.className = 'block-insertion-point';
       this.el.appendChild(this.insertionBlockEl);
     }
+    this.insertionBlockEl.style.display = 'block';
+
     // get node representing this part and its AABB
     const node = this.layout.nodeFromElement(block);
     const AABB = node.getAABB();
@@ -587,16 +593,20 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * hide / deletion insertion point element
    */
   hideBlockInsertionPoint() {
+
     if (this.insertionBlockEl) {
-      this.el.removeChild(this.insertionBlockEl);
-      this.insertionBlockEl = null;
+      // this.el.removeChild(this.insertionBlockEl);
+      // this.insertionBlockEl = null;
+      this.insertionBlockEl.style.display = 'none';
     }
     this.insertion = null;
   }
   hideEdgeInsertionPoint() {
+
     if (this.insertionEdgeEl) {
-      this.el.removeChild(this.insertionEdgeEl);
-      this.insertionEdgeEl = null;
+      // this.el.removeChild(this.insertionEdgeEl);
+      // this.insertionEdgeEl = null;
+      this.insertionEdgeEl.style.display = 'none';
     }
     this.insertion = null;
   }
