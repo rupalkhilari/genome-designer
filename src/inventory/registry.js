@@ -1,10 +1,12 @@
 import invariant from 'invariant';
 import * as egf from './egf/index';
 import * as igem from './igem/index';
+import * as ncbi from './ncbi/index';
 
 export const registry = {
   egf,
   igem,
+  ncbi,
 };
 
 export const register = (source) => {
