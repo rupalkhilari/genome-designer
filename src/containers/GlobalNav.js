@@ -329,9 +329,6 @@ class GlobalNav extends Component {
               action: () => {
                 this.newConstruct();
               },
-            }, {
-              text: 'New Block',
-              action: () => {},
             }, {}, {
               text: 'Upload Genbank File',
               action: () => {
@@ -388,15 +385,6 @@ class GlobalNav extends Component {
               action: () => {
                 this.pasteBlocksToConstruct();
               },
-            }, {}, {
-              text: 'Rename',
-              action: () => {},
-            }, {
-              text: 'Duplicate',
-              action: () => {},
-            }, {
-              text: 'Delete',
-              action: () => {},
             }, {}, {
               text: 'Add Sequence',
               action: () => {
