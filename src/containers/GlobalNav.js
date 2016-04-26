@@ -126,6 +126,10 @@ class GlobalNav extends Component {
       evt.preventDefault();
       this.props.inspectorToggleVisibility();
     });
+    KeyboardTrap.bind('mod+u', (evt) => {
+      evt.preventDefault();
+      this.props.uiToggleDetailView();
+    });
   }
 
   state = {
@@ -416,7 +420,7 @@ class GlobalNav extends Component {
           items: [
             {
               text: 'Inventory',
-              checked: this.props.inventory,
+              checked: this.props.inventoryVisible,
               action: this.props.inventoryToggleVisibility,
               shortcut: stringToShortcut('shift meta i'),
             }, {
@@ -427,20 +431,10 @@ class GlobalNav extends Component {
             }, {
               text: 'Sequence Details',
               action: () => {
+                this.props.uiToggleDetailView();
               },
-              checked: false,
-            }, {}, {
-              text: 'Block Style',
-              disabled: true,
-            }, {
-              text: 'Labels Only',
-              checked: false,
-            }, {
-              text: 'Symbols Only',
-              checked: false,
-            }, {
-              text: 'Labels + Symbols',
-              checked: false,
+              checked: this.props.detailViewVisible,
+              shortcut: stringToShortcut('meta u'),
             }, {}, {
               text: 'Select Empty Blocks',
               disabled: !this.props.focus.construct,
@@ -486,6 +480,7 @@ function mapStateToProps(state) {
     clipboard: state.clipboard,
     inspectorVisible: state.inspector.isVisible,
     inventoryVisible: state.inventory.isVisible,
+    detailViewVisible: state.ui.detailViewVisible,
   };
 }
 
