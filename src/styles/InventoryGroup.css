@@ -12,7 +12,13 @@
     font-weight: 100;
     background-color: var(--colors-blueGreyMed);
     flex-shrink: 0;
+    cursor: pointer;
+
+    &:hover {
+      background-color: var(--colors-blueGreyDark);
+    }
   }
+
 
   &.active {
     flex-grow: 1;
