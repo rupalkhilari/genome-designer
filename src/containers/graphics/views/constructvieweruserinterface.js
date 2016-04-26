@@ -93,8 +93,11 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * return the nearest block to the given location and an indication if the point is nearest the left, right or body of block.
    */
   nearestBlockAndOptionalVerticalEdgeAt(point, proxySize) {
-    // get bounds of dragged object
-    const pbox = new Box2D(point.x - proxySize.x / 2, point.y - proxySize.y / 2, proxySize.x, proxySize.y);
+    // get bounds of dragged object, clamp the proxy size since dragging two many blocks will create a very large hit area
+    const maxProxyWidth = 100;
+    const pwidth = Math.min(proxySize.x, maxProxyWidth);
+    const pheight = Math.min(proxySize.y, maxProxyWidth);
+    const pbox = new Box2D(point.x - pwidth / 2, point.y - pheight / 2, pwidth, pheight);
     // initial test is an intersection test between draggable and blocks...
     let bestItem = null;
     const allNodesAndBlocks = this.layout.allNodesAndBlocks();
@@ -502,6 +505,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
         this.showDefaultInsertPoint();
       }
     }
+    console.log(`DOM Size: ${document.querySelectorAll('*').length}`);
   }
   /**
    * user dropped the payload on us at the given position. Defer the insertion

@@ -308,6 +308,7 @@ export class ConstructViewer extends Component {
    */
   _update() {
     //console.time(`UPDATE START: ${this.props.construct.id}`);
+    //console.log(`DOM size before update: ${document.querySelectorAll('*').length}`);
     this.layout.update(
       this.props.construct,
       this.props.layoutAlgorithm,
@@ -316,6 +317,7 @@ export class ConstructViewer extends Component {
       this.props.focus.construct);
     this.sg.update();
     this.sg.ui.update();
+    //console.log(`DOM size after update: ${document.querySelectorAll('*').length}`);
     //console.timeEnd(`UPDATE START: ${this.props.construct.id}`);
   }
 
