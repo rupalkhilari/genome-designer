@@ -204,10 +204,9 @@ export const importConstruct = (genbankString) => {
     });
 };
 
-//given a genbank string, converts it (in memory, nothing written), returning an array of rollups
-//todo - this needs to handle sequences
+//given a genbank string, converts it (in memory, nothing written), returning an object with the form {roots: <ids>, blocks: <blocks>}
+//this handles saving sequences
 export const convert = (genbankString) => {
-  console.log('todo! handle sequences');
   return importConstruct(genbankString);
 };
 
