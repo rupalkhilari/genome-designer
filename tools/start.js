@@ -1,4 +1,3 @@
-import fs from 'fs';
 import BrowserSync from 'browser-sync';
 import webpack from 'webpack';
 import webpackDevMiddleware from 'webpack-dev-middleware';
