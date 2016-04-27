@@ -358,6 +358,13 @@ export class ConstructViewer extends Component {
     this.setState(state);
   }
   /**
+   * open the inspector
+   * @return {[type]} [description]
+   */
+  openInspector() {
+    this.props.inspectorToggleVisibility(true);
+  }
+  /**
    * return JSX for block construct menu
    */
   blockContextMenu() {
@@ -370,7 +377,7 @@ export class ConstructViewer extends Component {
           {
             text: 'Inspect',
             action: () => {
-              this.props.inspectorToggleVisibility(true);
+              this.openInspector();
             },
           },
           {},

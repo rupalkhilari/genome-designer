@@ -189,16 +189,25 @@ export default class ConstructViewerUserInterface extends UserInterface {
   }
 
   /**
+   * double click handler
+   */
+  doubleClick(evt, point) {
+    const block = this.topBlockAt(point);
+    if (block) {
+      this.constructViewer.openInspector();
+    }
+  }
+  /**
    * mouse move handler ( note, not the same as drag which is with a button held down )
    */
   mouseMove(evt, point) {
     this.setHover(this.topBlockAt(point));
   }
   /**
-   * mouse down handler
+   * mouse down handler, selection occurs on up since we have to wait to
+   * see if a drag occurs first.
    */
   mouseDown(evt, point) {
-    //this.mouseSelect(evt, point);
   }
 
   /**
