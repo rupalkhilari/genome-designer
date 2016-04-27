@@ -1,9 +1,10 @@
 import * as ActionTypes from '../constants/ActionTypes';
-import { blocks as testBlocks } from './testProject';
+//import { blocks as testBlocks } from './testProject';
 
-const initialState = testBlocks.reduce((acc, block) => Object.assign(acc,
+/*const initialState = testBlocks.reduce((acc, block) => Object.assign(acc,
   { [block.id]: block }
-), {});
+), {});*/
+const initialState = {};
 
 export default function blocks(state = initialState, action) {
   switch (action.type) {

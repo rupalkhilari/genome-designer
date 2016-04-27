@@ -1,9 +1,10 @@
 import * as ActionTypes from '../constants/ActionTypes';
-import { project as testProject } from './testProject';
+//import { project as testProject } from './testProject';
 
-const initialState = {
+/*const initialState = {
   test: testProject,
-};
+};*/
+const initialState = {};
 
 export default function projects(state = initialState, action) {
   switch (action.type) {
