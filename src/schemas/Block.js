@@ -28,6 +28,7 @@ const BlockDefinition = InstanceDefinition.extend({
   projectId: [
     fields.id({prefix: 'project'}),
     'Project UUID',
+    {avoidScaffold: true},
   ],
 
   sequence: [
