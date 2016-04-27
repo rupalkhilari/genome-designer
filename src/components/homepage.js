@@ -13,7 +13,12 @@ export default class HomePage extends Component {
 
   static propTypes = {
     uiShowAuthenticationForm: PropTypes.func.isRequired,
+    uiShowUserWidget: PropTypes.func.isRequired,
     uiSetGrunt: PropTypes.func.isRequired,
+    push: PropTypes.func.isRequired,
+    location: PropTypes.object.isRequired,
+    params: PropTypes.object.isRequired,
+    user: PropTypes.object,
   };
 
   constructor() {
@@ -24,15 +29,15 @@ export default class HomePage extends Component {
   // If the final path is the name of an authorization form we will show it
   componentDidMount() {
 
-    const authForm = window.location.pathname.split('/').pop();
+    const authForm = this.props.params.comp;
     if (['signin', 'signup', 'account', 'reset', 'forgot'].indexOf(authForm) >= 0) {
       this.props.uiShowAuthenticationForm(authForm);
     } else {
       // if not showing an auth form goto most recent project or demo project
       // NOTE: the nodirect query string prevents redirection
-      if (this.props.user && this.props.user.userid && window.location.href.indexOf('noredirect=true') < 0) {
+      if (this.props.user && this.props.user.userid && !this.props.location.query.noredirect) {
         // revisit last project or test project if user is logged in
-        this.props.push(`/project/${getItem('mostRecentProject') || 'test'}`);
+        this.props.push(`/project/${getItem('mostRecentProject')}`);
         return;
       }
     }
@@ -55,6 +60,8 @@ export default class HomePage extends Component {
   }
 
   render() {
+    console.log(this.props.location, this.props.params, this.props.location.query);
+    
     return (
       <div className="homepage">
         <div className="homepage-image-area">
@@ -87,7 +94,6 @@ export default class HomePage extends Component {
     );
   }
 }
-
 
 function mapStateToProps(state) {
   return {
