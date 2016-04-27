@@ -179,11 +179,33 @@ export class ConstructViewer extends Component {
       }
     }
 
+    // this will become the new blocks we are going to insert, declare here first
+    // in case we do a push down
+    const newBlocks = [];
+
     // if no edge specified then the parent becomes the target block and index is simply
     // the length of components to add them at the end of the current children
     if (insertionPoint && !insertionPoint.edge) {
+      const oldParent = parent;
       parent = this.props.blocks[insertionPoint.block];
       index = parent.components.length;
+      // if the block we are targeting already has a sequence then we will replace it with a new empty
+      // block, then insert the old block at the start of the payload so it is added as a child to the new block
+      if (parent.hasSequence()) {
+        // create new block and replace current parent
+        const block = this.props.blockCreate();
+        console.log(block.id);
+        const replaceIndex = oldParent.components.indexOf(parent.id);
+        invariant(replaceIndex >= 0, 'expect to get an index here');
+        this.props.blockRemoveComponent(oldParent.id, parent.id);
+        this.props.blockAddComponent(oldParent.id, block.id, replaceIndex);
+        // seed new blocks with the old target block
+        newBlocks.push(parent.id);
+        // bump the index
+        index += 1;
+        // now make parent equal to the new block so blocks get added to it.
+        parent = block;
+      }
     } else {
       index = parent.components.length;
       if (insertionPoint) {
@@ -194,7 +216,6 @@ export class ConstructViewer extends Component {
     // add all blocks in the payload
     const blocks = Array.isArray(payload.item) ? payload.item : [payload.item];
     // return the list of newly added blocks so we can select them for example
-    const newBlocks = [];
     const projectVersion = this.props.projectGetVersion(this.props.projectId);
     blocks.forEach(block => {
       const newBlock = (payload.source === 'inventory' || payload.copying)
