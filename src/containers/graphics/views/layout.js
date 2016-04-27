@@ -265,12 +265,16 @@ export default class Layout {
     if (this.showHeader && !this.banner) {
       this.banner = new Node2D({
         sg: this.sceneGraph,
-        fill: this.baseColor,
-        stroke: this.baseColor,
         glyph: 'construct-banner',
         bounds: new Box2D(this.insetX, this.insetY, this.sceneGraph.availableWidth - this.insetX, kT.bannerHeight),
       });
       this.sceneGraph.root.appendChild(this.banner);
+    }
+    if (this.banner) {
+      this.banner.set({
+        fill: this.baseColor,
+        stroke: this.baseColor,
+      });
     }
   }
   /**
