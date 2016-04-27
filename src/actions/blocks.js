@@ -1,16 +1,19 @@
 import invariant from 'invariant';
+import { merge } from 'lodash';
 import * as ActionTypes from '../constants/ActionTypes';
 import BlockDefinition from '../schemas/Block';
 import Block from '../models/Block';
 import { saveBlock, loadBlock } from '../middleware/api';
 import * as selectors from '../selectors/blocks';
+import * as projectSelectors from '../selectors/projects';
 import * as undoActions from '../store/undo/actions';
 
 //Promise
-export const blockSave = (blockId, projectId) => {
-  invariant(projectId, 'project ID required to save block'); //todo - assume from router?
+export const blockSave = (blockId, forceProjectId) => {
   return (dispatch, getState) => {
     const block = getState().blocks[blockId];
+    const projectId = block.getProjectId() || forceProjectId; //todo - assume from router?
+    invariant(projectId, 'project ID required to save block');
     return saveBlock(block, projectId)
       .then(block => {
         dispatch({
@@ -36,9 +39,10 @@ export const blockLoad = (blockId) => {
   };
 };
 
-export const blockCreate = (initialModel) => {
+export const blockCreate = (initialModel, projectId) => {
   return (dispatch, getState) => {
-    const block = new Block(initialModel);
+    const toMerge = projectId ? { projectId } : {};
+    const block = new Block(merge(initialModel, toMerge));
     dispatch({
       type: ActionTypes.BLOCK_CREATE,
       block,
@@ -64,14 +68,12 @@ export const blockStash = (...inputBlocks) => {
  * Clones a block (and its children by default)
  *
  * @param blockInput {ID|Object} JSON of block directly, or ID. Accept both since inventory items may not be in the store, so we need to pass the block directly. Prefer to use ID.
- * @param projectVersion {String(SHA)} version of the project
+ * @param parentObjectInput {Object} information about parent, defaults to generated
  * @param shallowOnly {Boolean} Does a deep clone by default, adds all child blocks to store
  * @returns {Object} clone block (root node if has children)
  */
-export const blockClone = (blockInput, projectVersion, shallowOnly = false) => {
+export const blockClone = (blockInput, parentObjectInput = {}, shallowOnly = false) => {
   return (dispatch, getState) => {
-    invariant(projectVersion, 'project version is required to clone blocks, so their ancestry is correclty pinned. There is a selector to retrieve the project version.');
-
     let oldBlock;
     if (typeof blockInput === 'string') {
       oldBlock = getState().blocks[blockInput];
@@ -81,8 +83,20 @@ export const blockClone = (blockInput, projectVersion, shallowOnly = false) => {
       throw new Error('invalid input to blockClone', blockInput);
     }
 
+    //get the project ID to use for parent, knowing the block may be detached from a project (e.g. inventory block)
+    const parentProjectId = oldBlock.getProjectId() || null;
+    const parentProjectVersion = !!parentProjectId ?
+      dispatch(projectSelectors.projectGetVersion(parentProjectId)) :
+      null;
+
+    //partial object about project, block ID handled in block.clone()
+    const parentObject = Object.assign({
+      projectId: parentProjectId,
+      version: parentProjectVersion,
+    }, parentObjectInput);
+
     if (!!shallowOnly || !oldBlock.components.length) {
-      const block = oldBlock.clone(projectVersion);
+      const block = oldBlock.clone(parentObject);
       dispatch({
         type: ActionTypes.BLOCK_CLONE,
         block,
@@ -92,7 +106,8 @@ export const blockClone = (blockInput, projectVersion, shallowOnly = false) => {
 
     const allChildren = dispatch(selectors.blockGetChildrenRecursive(oldBlock.id));
     const allToClone = [oldBlock, ...allChildren];
-    const unmappedClones = allToClone.map(block => block.clone(projectVersion));
+    //all blocks must be from same project, and all were from given version
+    const unmappedClones = allToClone.map(block => block.clone(parentObject));
 
     //update IDs in components
     const cloneIdMap = allToClone.reduce((acc, next, index) => {
@@ -138,6 +153,7 @@ export const blockMerge = (blockId, toMerge) => {
   };
 };
 
+//deletes blocks from store
 export const blockDelete = (...blocks) => {
   return (dispatch, getState) => {
     //transact for all blocks
@@ -167,6 +183,7 @@ export const blockDelete = (...blocks) => {
   };
 };
 
+//remove blocks from constructs / projects, but leave in the store
 //todo - verify if need to remove children first so store never in bad state
 export const blockDetach = (...blockIds) => {
   return (dispatch, getState) => {
@@ -341,10 +358,11 @@ export const blockAnnotate = (blockId, annotation) => {
   };
 };
 
-export const blockRemoveAnnotation = (blockId, annotationId) => {
+//can pass annotation or annotation name
+export const blockRemoveAnnotation = (blockId, annotation) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
-    const block = oldBlock.removeAnnotation(annotationId);
+    const block = oldBlock.removeAnnotation(annotation);
     dispatch({
       type: ActionTypes.BLOCK_REMOVE_ANNOTATION,
       undoable: true,

@@ -1,6 +1,9 @@
 import * as blockSelectors from './blocks';
 
 const _getProjectFromStore = (projectId, store) => {
+  if (!projectId) {
+    return null;
+  }
   return store.projects[projectId];
 };
 
@@ -13,7 +16,7 @@ export const projectGet = (projectId) => {
 export const projectGetVersion = (projectId) => {
   return (dispatch, getState) => {
     const project = _getProjectFromStore(projectId, getState());
-    return project.version;
+    return !!project ? project.version : null;
   };
 };
 
