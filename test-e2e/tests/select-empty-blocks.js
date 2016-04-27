@@ -38,7 +38,7 @@ module.exports = {
     dragFromTo(browser, '.InventoryItem:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 300, 30);
 
     // click select empty blocks in main menu
-    clickMainMenu(browser, 2, 11);
+    clickMainMenu(browser, 2, 8);
 
     browser
       .pause(1000)

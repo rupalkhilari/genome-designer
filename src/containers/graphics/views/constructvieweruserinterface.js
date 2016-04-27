@@ -505,7 +505,6 @@ export default class ConstructViewerUserInterface extends UserInterface {
         this.showDefaultInsertPoint();
       }
     }
-    console.log(`DOM Size: ${document.querySelectorAll('*').length}`);
   }
   /**
    * user dropped the payload on us at the given position. Defer the insertion

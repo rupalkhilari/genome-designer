@@ -24,7 +24,7 @@ module.exports = {
     newProject(browser);
 
     // click the file menu -> Upload Genbank File
-    clickMainMenu(browser, 1, 5);
+    clickMainMenu(browser, 1, 4);
 
     // set hacky global to indicate we are testing the form
     browser.execute(function() {
