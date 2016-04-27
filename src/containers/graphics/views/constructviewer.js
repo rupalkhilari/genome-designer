@@ -13,6 +13,7 @@ import {
   blockAddComponents,
   blockClone,
   blockSetSbol,
+  blockAddSbol,
   blockRename,
   blockRemoveComponent,
 } from '../../../actions/blocks';
@@ -166,8 +167,8 @@ export class ConstructViewer extends Component {
           return [block.id];
         }
         // drop on existing block
-        this.props.blockSetSbol(insertionPoint.block, item.id);
-        return [insertionPoint.block];
+        const newBlock = this.props.blockAddSbol(insertionPoint.block, item.id);
+        return [newBlock.id];
       } else {
         // create new block
         const block = this.props.blockCreate({rules: {sbol: item.id}});
@@ -432,6 +433,7 @@ export default connect(mapStateToProps, {
   blockRemoveComponent,
   blockGetParents,
   blockSetSbol,
+  blockAddSbol,
   blockRename,
   focusBlocks,
   focusBlocksAdd,
