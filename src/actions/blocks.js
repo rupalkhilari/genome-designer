@@ -39,10 +39,14 @@ export const blockLoad = (blockId) => {
   };
 };
 
-export const blockCreate = (initialModel, projectId) => {
+//useDefaults e.g. to set the projectId automatically
+export const blockCreate = (initialModel, useDefaults = true) => {
   return (dispatch, getState) => {
-    const toMerge = projectId ? { projectId } : {};
-    const block = new Block(merge(initialModel, toMerge));
+    const toMerge = (useDefaults === true) ?
+    { projectId: dispatch(projectSelectors.projectGetCurrentId()) } :
+    {};
+
+    const block = new Block(merge(toMerge, initialModel));
     dispatch({
       type: ActionTypes.BLOCK_CREATE,
       block,
@@ -83,11 +87,10 @@ export const blockClone = (blockInput, parentObjectInput = {}, shallowOnly = fal
       throw new Error('invalid input to blockClone', blockInput);
     }
 
-    //get the project ID to use for parent, knowing the block may be detached from a project (e.g. inventory block)
+    //get the project ID to use for parent, considering the block may be detached from a project (e.g. inventory block)
+    const currentProjectId = getState().focus.project;
     const parentProjectId = oldBlock.getProjectId() || null;
-    const parentProjectVersion = !!parentProjectId ?
-      dispatch(projectSelectors.projectGetVersion(parentProjectId)) :
-      null;
+    const parentProjectVersion = dispatch(projectSelectors.projectGetVersion(parentProjectId));
 
     //partial object about project, block ID handled in block.clone()
     const parentObject = Object.assign({
