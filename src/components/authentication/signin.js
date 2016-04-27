@@ -103,7 +103,7 @@ class SignInForm extends Component {
         <div className="title">Sign In</div>
           <span style={registerStyle}>{"Don't have an account? "}
             <a className="blue-link" href="/" onClick={this.onRegister.bind(this)}>Sign Up&nbsp;</a>
-            <span>{"- it's free"}</span>
+            <span>{"- it's free!"}</span>
           </span>
         <input
           ref="emailAddress"

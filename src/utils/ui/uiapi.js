@@ -120,3 +120,47 @@ export function clearSelection() {
     }
   }
 }
+
+/**
+ * calculate the total number of each tag type in the DOM and the classes assigned.
+ * List them all sorted to show which are most common. Very useful if you are
+ * investigating a DOM leak.
+ */
+export function domSummary() {
+  let tags = {};
+  let classes = {};
+  [...document.querySelectorAll('*')].forEach(element => {
+    const tagName = element.tagName;
+    if (tags[tagName]) {
+      tags[tagName].count += 1;
+    } else {
+      tags[tagName] = {tagName, count: 1};
+    }
+    element.classList.forEach(className => {
+      if (className) {
+        if (classes[className]) {
+          classes[className].count += 1;
+        } else {
+          classes[className] = {className, count: 1};
+        }
+      }
+    });
+  });
+  // turn into arrays
+  tags = Object.keys(tags).map(tagName => tags[tagName]);
+  classes = Object.keys(classes).map(className => classes[className]);
+
+  // sort highest first
+  tags.sort((a, b) => { return b.count - a.count; });
+  classes.sort((a, b) => { return b.count - a.count; });
+
+  console.log('DOM Summary: ==============');
+  console.log('Tags: ---------------------')
+  tags.forEach(tagInfo => {
+    console.log(`${tagInfo.tagName} / Count: ${tagInfo.count}`);
+  });
+  console.log('Classes: ------------------')
+  classes.forEach(classInfo => {
+    console.log(`${classInfo.className} / Count: ${classInfo.count}`);
+  });
+}

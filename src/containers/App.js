@@ -14,8 +14,29 @@ class App extends Component {
     currentProjectId: PropTypes.string,
   };
 
+  /**
+   * attempt to eat backspace keys ( to prevent navigation ) unless an interactive
+   * element is the target
+   */
+  componentDidMount() {
+    document.addEventListener('keydown', this.rejectBackspace);
+    document.addEventListener('keypress', this.rejectBackspace);
+  }
+
+  rejectBackspace(evt) {
+    const rx = /INPUT|SELECT|TEXTAREA/i;
+    if (evt.which == 8) { // 8 == backspace
+      if (evt.target.hasAttribute('contenteditable')) {
+        return;
+      }
+      if (!rx.test(evt.target.tagName) || evt.target.disabled || evt.target.readOnly) {
+        evt.preventDefault();
+      }
+    }
+  }
+
   render() {
-    const DevTools = (process.env.NODE_ENV !== 'production') ? require('./DevTools') : 'div';
+    const DevTools = (!!process.env.DEBUGMODE) ? require('./DevTools') : 'div';
 
     return (
       <div className="App">

@@ -53,6 +53,7 @@ import {
 import {
   sortBlocksByIndexAndDepth,
   sortBlocksByIndexAndDepthExclude,
+  domSummary,
 } from '../utils/ui/uiapi';
 import AutosaveTracking from '../components/GlobalNav/AutosaveTracking';
 
@@ -124,6 +125,10 @@ class GlobalNav extends Component {
     KeyboardTrap.bind('mod+i', (evt) => {
       evt.preventDefault();
       this.props.inspectorToggleVisibility();
+    });
+    KeyboardTrap.bind('mod+u', (evt) => {
+      evt.preventDefault();
+      this.props.uiToggleDetailView();
     });
   }
 
@@ -233,7 +238,7 @@ class GlobalNav extends Component {
       const sorted = sortBlocksByIndexAndDepthExclude(this.props.focus.blocks);
       // sorted is an array of array, flatten while retaining order
       const clones = sorted.map(info => {
-        return this.props.blockClone(info.blockId, this.props.currentProjectId);
+        return this.props.blockClone(info.blockId, this.props.projectGetVersion(this.props.currentProjectId));
       });
       // put clones on the clipboard
       this.props.clipboardSetData([clipboardFormats.blocks], [clones])
@@ -279,7 +284,8 @@ class GlobalNav extends Component {
       // we have to clone the blocks currently on the clipboard since they
       // can't be pasted twice
       const clones = blocks.map(block => {
-        return this.props.blockClone(block.id, this.props.currentProjectId);
+        const version = this.props.projectGetVersion(this.props.currentProjectId);
+        return this.props.blockClone(block.id, version);
       });
       // insert at end of construct if no blocks selected
       let insertIndex = construct.components.length;
@@ -323,9 +329,6 @@ class GlobalNav extends Component {
               action: () => {
                 this.newConstruct();
               },
-            }, {
-              text: 'New Block',
-              action: () => {},
             }, {}, {
               text: 'Upload Genbank File',
               action: () => {
@@ -383,15 +386,6 @@ class GlobalNav extends Component {
                 this.pasteBlocksToConstruct();
               },
             }, {}, {
-              text: 'Rename',
-              action: () => {},
-            }, {
-              text: 'Duplicate',
-              action: () => {},
-            }, {
-              text: 'Delete',
-              action: () => {},
-            }, {}, {
               text: 'Add Sequence',
               action: () => {
                 if (!this.props.focus.blocks.length) {
@@ -414,7 +408,7 @@ class GlobalNav extends Component {
           items: [
             {
               text: 'Inventory',
-              checked: this.props.inventory,
+              checked: this.props.inventoryVisible,
               action: this.props.inventoryToggleVisibility,
               shortcut: stringToShortcut('shift meta i'),
             }, {
@@ -425,20 +419,10 @@ class GlobalNav extends Component {
             }, {
               text: 'Sequence Details',
               action: () => {
+                this.props.uiToggleDetailView();
               },
-              checked: false,
-            }, {}, {
-              text: 'Block Style',
-              disabled: true,
-            }, {
-              text: 'Labels Only',
-              checked: false,
-            }, {
-              text: 'Symbols Only',
-              checked: false,
-            }, {
-              text: 'Labels + Symbols',
-              checked: false,
+              checked: this.props.detailViewVisible,
+              shortcut: stringToShortcut('meta u'),
             }, {}, {
               text: 'Select Empty Blocks',
               disabled: !this.props.focus.construct,
@@ -479,6 +463,10 @@ class GlobalNav extends Component {
               text: 'Privacy Policy',
               action: () => {},
             },
+            {
+              text: 'DOM Summary',
+              action: () => domSummary(),
+            },
           ],
         },
       ]}/>);
@@ -506,6 +494,7 @@ function mapStateToProps(state) {
     clipboard: state.clipboard,
     inspectorVisible: state.inspector.isVisible,
     inventoryVisible: state.inventory.isVisible,
+    detailViewVisible: state.ui.detailViewVisible,
   };
 }
 

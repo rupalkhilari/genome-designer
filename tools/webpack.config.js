@@ -5,6 +5,7 @@ import webpack from 'webpack';
 
 const DEBUG = !process.argv.includes('--release');
 const VERBOSE = process.argv.includes('--verbose');
+const DEBUGMODE = process.argv.includes('--debugmode'); //hook for devtools etc.
 const AUTOPREFIXER_BROWSERS = [
   'Android 2.3',
   'Android >= 4',
@@ -26,6 +27,7 @@ const GLOBALS = {
   'process.env.NODE_ENV': DEBUG ? '"dev"' : '"production"',
   __DEV__: DEBUG,
   'process.env.BUILD': true,
+  'process.env.DEBUGMODE': !!DEBUGMODE,
 };
 
 //get list of node modules for webpack to avoid bundling on server

@@ -345,6 +345,17 @@ export default class Box2D {
   }
 
   /**
+   * shortest orthogonal distance between the x/y extents of the boxes.
+   * Basically compares left/right edges and top/bottom edges to find the closest.
+   */
+  proximityX(other) {
+    return Math.abs(this.center.x - other.center.x);
+  }
+  proximityY(other) {
+    return Math.abs(this.center.y - other.center.y);
+  }
+
+  /**
    * return true if we are completely inside the other box
    * @param other
    */

@@ -40,6 +40,8 @@ class DnD {
     this.proxy.style.cursor = 'pointer';
 
     document.body.appendChild(this.proxy);
+    // save proxy dimensions
+    this.proxySize = new Vector2D(this.proxy.offsetWidth, this.proxy.offsetHeight);
 
     // track mouse move until user releases
     document.body.addEventListener('mousemove', this.mouseMove);
@@ -90,7 +92,7 @@ class DnD {
 
     // given current target a drag over is necessary
     if (target && target.options && target.options.dragOver) {
-      target.options.dragOver.call(this, globalPosition, this.payload);
+      target.options.dragOver.call(this, globalPosition, this.payload, this.proxySize);
     }
 
     // update monitors
@@ -135,9 +137,9 @@ class DnD {
             Object.assign(savedPayload, { item: result }) :
             savedPayload;
 
-          //drop handler
+          // drop handler
           if (target.options.drop) {
-            target.options.drop.call(this, globalPosition, payload, evt);
+            target.options.drop.call(this, globalPosition, payload, evt, this.proxySize);
           }
 
           // ensure lastTarget gets a dragLeave in case they rely on it for cleanup

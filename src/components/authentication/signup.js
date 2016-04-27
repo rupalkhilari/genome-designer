@@ -177,6 +177,9 @@ class RegisterForm extends Component {
     if (!this.passwordConfirm || this.password !== this.passwordConfirm) {
       newState.password2Error = { visible: true, text: 'The passwords entered don\’t match.'};
     }
+    if (this.password.length < 6) {
+      newState.password1Error = { visible: true, text: 'Passwords must be at least six characters long'};
+    }
     if (!this.tos) {
       newState.tosError = { visible: true, text: 'Please agree to our terms of service'};
     }
