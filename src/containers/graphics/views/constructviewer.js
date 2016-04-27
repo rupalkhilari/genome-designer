@@ -150,6 +150,7 @@ export class ConstructViewer extends Component {
    */
   addItemAtInsertionPoint(payload, insertionPoint, event) {
     const { item, type } = payload;
+    let index;
     // get the immediate parent ( which might not be the top level block if this is a nested construct )
     let parent = insertionPoint ? this.getBlockParent(insertionPoint.block) : this.props.construct;
     if (type === sbolDragType) {
@@ -160,7 +161,7 @@ export class ConstructViewer extends Component {
           // create new block
           const block = this.props.blockCreate({rules: {sbol: item.id}});
           // get index of insertion allowing for the edge closest to the drop if provided
-          const index = parent.components.indexOf(insertionPoint.block) + (insertionPoint.edge === 'right' ? 1 : 0);
+          index = parent.components.indexOf(insertionPoint.block) + (insertionPoint.edge === 'right' ? 1 : 0);
           // add
           this.props.blockAddComponent(parent.id, block.id, index);
           // return the newly created block or the block dropped on
@@ -178,15 +179,16 @@ export class ConstructViewer extends Component {
       }
     }
 
-    // get index of insertion allowing for the edge closest to the drop
-    let index = parent.components.length;
-    if (insertionPoint) {
-      index = parent.components.indexOf(insertionPoint.block) + (insertionPoint.edge === 'right' ? 1 : 0);
-    }
-    // just a HACK for now to allow new nested construct to be created.
-    if (insertionPoint && insertionPoint.block && event && event.metaKey) {
+    // if no edge specified then the parent becomes the target block and index is simply
+    // the length of components to add them at the end of the current children
+    if (insertionPoint && !insertionPoint.edge) {
       parent = this.props.blocks[insertionPoint.block];
-      index = 0;
+      index = parent.components.length;
+    } else {
+      index = parent.components.length;
+      if (insertionPoint) {
+        index = parent.components.indexOf(insertionPoint.block) + (insertionPoint.edge === 'right' ? 1 : 0);
+      }
     }
 
     // add all blocks in the payload
