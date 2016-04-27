@@ -1,7 +1,7 @@
 # Inherit from ubuntu docker image
 FROM ubuntu:14.04
 
-
+RUN apt-get update -y
 RUN apt-get install -y software-properties-common
 RUN add-apt-repository ppa:ubuntu-toolchain-r/test
 
