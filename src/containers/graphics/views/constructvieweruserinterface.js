@@ -482,28 +482,16 @@ export default class ConstructViewerUserInterface extends UserInterface {
     this.selectConstruct();
     // convert global point to local space via our mousetrap
     const localPosition = this.mouseTrap.globalToLocal(globalPosition, this.el);
-    // there is a different highlight / UX experience depending on what is being dragged
-    const { type } = payload;
-    if (type === sbolDragType) {
-      // sbol symbol so we highlight the targeted block
-      const hit = this.nearestBlockAndOptionalVerticalEdgeAt(localPosition, proxySize);
-      if (hit) {
-        if (hit.edge) {
-          this.showInsertionPointForEdge(hit.block, hit.edge);
-        } else {
-          this.showInsertionPointForBlock(hit.block);
-        }
-      } else {
-        this.showDefaultInsertPoint();
-      }
-    } else {
-      // block, so we highlight the insertion point
-      const hit = this.nearestBlockAndOptionalVerticalEdgeAt(localPosition, proxySize);
-      if (hit) {
+    // user might be targeting the edge or center of block, or no block at all
+    const hit = this.nearestBlockAndOptionalVerticalEdgeAt(localPosition, proxySize);
+    if (hit) {
+      if (hit.edge) {
         this.showInsertionPointForEdge(hit.block, hit.edge);
       } else {
-        this.showDefaultInsertPoint();
+        this.showInsertionPointForBlock(hit.block);
       }
+    } else {
+      this.showDefaultInsertPoint();
     }
   }
   /**
