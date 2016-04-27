@@ -151,6 +151,19 @@ export default class Layout {
     }
     return node;
   }
+  /**
+   * return an array of {block, node} objects for this layout
+   * and all nested layouts.
+   */
+  allNodesAndBlocks() {
+    let list = Object.keys(this.parts2nodes).map(block => {
+      return {block, node: this.parts2nodes[block]};
+    });
+    Object.keys(this.nestedLayouts).forEach(key => {
+      list = list.concat(this.nestedLayouts[key].allNodesAndBlocks());
+    });
+    return list;
+  }
 
   /**
    * create a node, if not already created for the given piece.

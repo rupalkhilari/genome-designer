@@ -3,6 +3,7 @@ import { sbol as sbolDragType } from '../../../constants/DragTypes';
 import DnD from '../dnd/dnd';
 import Vector2D from '../geometry/vector2d';
 import Box2D from '../geometry/box2d';
+import Line2D from '../geometry/line2d';
 import kT from './layoutconstants';
 import Fence from './fence';
 import invariant from 'invariant';
@@ -87,63 +88,66 @@ export default class ConstructViewerUserInterface extends UserInterface {
   isConstructTitleNode(node) {
     return node && this.layout.titleNode === node;
   }
+
   /**
-   * return the top most block at the given location and whether the point
-   * is closer to the left or right edges
-   * @param  {Vector2D} point [description]
-   * @return {[type]}       [description]
+   * return the nearest block to the given location and an indication if the point is nearest the left, right or body of block.
    */
-  topBlockAndVerticalEdgeAt(point) {
-    const block = this.topBlockAt(point);
-    if (block) {
-      // get the AABB of the node representing the block
-      const node = this.layout.nodeFromElement(block);
-      const AABB = node.getAABB();
-      return {
-        block: block,
-        edge: point.x < AABB.cx ? 'left' : 'right',
-      };
+  nearestBlockAndOptionalVerticalEdgeAt(point, proxySize) {
+    // get bounds of dragged object, clamp the proxy size since dragging two many blocks will create a very large hit area
+    const maxProxyWidth = 100;
+    const pwidth = Math.min(proxySize.x, maxProxyWidth);
+    const pheight = Math.min(proxySize.y, maxProxyWidth);
+    const pbox = new Box2D(point.x - pwidth / 2, point.y - pheight / 2, pwidth, pheight);
+    // initial test is an intersection test between draggable and blocks...
+    let bestItem = null;
+    const allNodesAndBlocks = this.layout.allNodesAndBlocks();
+    allNodesAndBlocks.forEach(item => {
+      // bounds of node...
+      item.AABB = item.node.getAABB();
+      // intersection with dragged object
+      const intersection = item.AABB.intersectWithBox(pbox);
+      if (intersection) {
+        // area of intersection
+        const area =  intersection.width * intersection.height;
+        if (!bestItem || area > bestItem.area) {
+          // decorate item with distance/bounds for comparison with other items
+          item.area = area;
+          bestItem = item;
+        }
+      }
+    });
+    // if no intersections then try a proximity test
+    if (!bestItem) {
+      allNodesAndBlocks.forEach(item => {
+        // intersection with dragged object
+        item.proximityX = item.AABB.proximityX(pbox);
+        item.proximityY = item.AABB.proximityY(pbox);
+        if (!bestItem) {
+          bestItem = item;
+        } else {
+          // items that match in y are tested against x
+          if (item.proximityY <= bestItem.proximityY) {
+            if (item.proximityY === bestItem.proximityY && item.proximityX < bestItem.proximityX) {
+              bestItem = item;
+            } else {
+              bestItem = item;
+            }
+          }
+        }
+      });
     }
-    // if no edit then return the right edge of the last block
-    const count = this.construct.components.length;
-    if (count) {
-      return {
-        block: this.construct.components[count - 1],
-        edge: 'right',
-      };
-    }
-    // construct is empty, we should an insertion point but for now we don't.
-    return null;
-  }
-  /**
-   * return the top most block at the given location and whether the point
-   * is closer to the left or right edges ( if within a threshold, otherwise
-   * just the block is returned )
-   */
-  topBlockAndOptionalVerticalEdgeAt(point) {
-    const block = this.topBlockAt(point);
-    if (block) {
-      // get the AABB of the node representing the block
-      const node = this.layout.nodeFromElement(block);
-      const AABB = node.getAABB();
+
+    if (bestItem) {
       let edge = null;
-      if ((point.x - AABB.x) < edgeThreshold) {
+      if (point.x <= bestItem.AABB.x + edgeThreshold) {
         edge = 'left';
       }
-      if ((point.x - AABB.x) > AABB.width - edgeThreshold) {
+      if (point.x >= bestItem.AABB.right - edgeThreshold) {
         edge = 'right';
       }
-      return {block, edge};
+      return {block : bestItem.block, edge};
     }
-    // if no edit then return the right edge of the last block
-    const count = this.construct.components.length;
-    if (count) {
-      return {
-        block: this.construct.components[count - 1],
-        edge: 'right',
-      };
-    }
-    // construct is empty, we should an insertion point for the construct
+    // the construct must be empty
     return null;
   }
   /**
@@ -473,7 +477,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
   /**
    * drag over event
    */
-  onDragOver(globalPosition, payload) {
+  onDragOver(globalPosition, payload, proxySize) {
     // select construct on drag over
     this.selectConstruct();
     // convert global point to local space via our mousetrap
@@ -482,7 +486,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
     const { type } = payload;
     if (type === sbolDragType) {
       // sbol symbol so we highlight the targeted block
-      const hit = this.topBlockAndOptionalVerticalEdgeAt(localPosition);
+      const hit = this.nearestBlockAndOptionalVerticalEdgeAt(localPosition, proxySize);
       if (hit) {
         if (hit.edge) {
           this.showInsertionPointForEdge(hit.block, hit.edge);
@@ -494,13 +498,14 @@ export default class ConstructViewerUserInterface extends UserInterface {
       }
     } else {
       // block, so we highlight the insertion point
-      const hit = this.topBlockAndVerticalEdgeAt(localPosition);
+      const hit = this.nearestBlockAndOptionalVerticalEdgeAt(localPosition, proxySize);
       if (hit) {
         this.showInsertionPointForEdge(hit.block, hit.edge);
       } else {
         this.showDefaultInsertPoint();
       }
     }
+    console.log(`DOM Size: ${document.querySelectorAll('*').length}`);
   }
   /**
    * user dropped the payload on us at the given position. Defer the insertion
@@ -515,6 +520,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * show the insertion point at the top left of an empty construct.
    */
   showDefaultInsertPoint() {
+
     // insertion point may alternate so ensure we remove the block cursor
     this.hideBlockInsertionPoint();
     const point = this.layout.getInitialLayoutPoint();
@@ -525,6 +531,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * used when dropping a new block(s) into the construct
    */
   showInsertionPointForEdge(block, edge) {
+
     // insertion point may alternate so ensure we remove the block cursor
     this.hideBlockInsertionPoint();
 
@@ -541,12 +548,14 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * create and show insertion point for edge at the given position
    */
   showInsertionPointForEdgeAt(x, y) {
+
     // create insertion point as necessary
     if (!this.insertionEdgeEl) {
       this.insertionEdgeEl = document.createElement('div');
       this.insertionEdgeEl.className = 'edge-insertion-point';
       this.el.appendChild(this.insertionEdgeEl);
     }
+    this.insertionEdgeEl.style.display = 'block';
     this.insertionEdgeEl.style.left = x + 'px';
     this.insertionEdgeEl.style.top = y + 'px';
   }
@@ -563,6 +572,8 @@ export default class ConstructViewerUserInterface extends UserInterface {
       this.insertionBlockEl.className = 'block-insertion-point';
       this.el.appendChild(this.insertionBlockEl);
     }
+    this.insertionBlockEl.style.display = 'block';
+
     // get node representing this part and its AABB
     const node = this.layout.nodeFromElement(block);
     const AABB = node.getAABB();
@@ -586,16 +597,20 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * hide / deletion insertion point element
    */
   hideBlockInsertionPoint() {
+
     if (this.insertionBlockEl) {
-      this.el.removeChild(this.insertionBlockEl);
-      this.insertionBlockEl = null;
+      // this.el.removeChild(this.insertionBlockEl);
+      // this.insertionBlockEl = null;
+      this.insertionBlockEl.style.display = 'none';
     }
     this.insertion = null;
   }
   hideEdgeInsertionPoint() {
+
     if (this.insertionEdgeEl) {
-      this.el.removeChild(this.insertionEdgeEl);
-      this.insertionEdgeEl = null;
+      // this.el.removeChild(this.insertionEdgeEl);
+      // this.insertionEdgeEl = null;
+      this.insertionEdgeEl.style.display = 'none';
     }
     this.insertion = null;
   }

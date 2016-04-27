@@ -53,6 +53,7 @@ import {
 import {
   sortBlocksByIndexAndDepth,
   sortBlocksByIndexAndDepthExclude,
+  domSummary,
 } from '../utils/ui/uiapi';
 import AutosaveTracking from '../components/GlobalNav/AutosaveTracking';
 
@@ -233,7 +234,7 @@ class GlobalNav extends Component {
       const sorted = sortBlocksByIndexAndDepthExclude(this.props.focus.blocks);
       // sorted is an array of array, flatten while retaining order
       const clones = sorted.map(info => {
-        return this.props.blockClone(info.blockId, this.props.currentProjectId);
+        return this.props.blockClone(info.blockId, this.props.projectGetVersion(this.props.currentProjectId));
       });
       // put clones on the clipboard
       this.props.clipboardSetData([clipboardFormats.blocks], [clones])
@@ -279,7 +280,8 @@ class GlobalNav extends Component {
       // we have to clone the blocks currently on the clipboard since they
       // can't be pasted twice
       const clones = blocks.map(block => {
-        return this.props.blockClone(block.id, this.props.currentProjectId);
+        const version = this.props.projectGetVersion(this.props.currentProjectId);
+        return this.props.blockClone(block.id, version);
       });
       // insert at end of construct if no blocks selected
       let insertIndex = construct.components.length;
@@ -478,6 +480,10 @@ class GlobalNav extends Component {
             }, {
               text: 'Privacy Policy',
               action: () => {},
+            },
+            {
+              text: 'DOM Summary',
+              action: () => domSummary(),
             },
           ],
         },
