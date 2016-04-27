@@ -4,7 +4,7 @@ import { push } from 'react-router-redux';
 import { uiShowAuthenticationForm, uiSetGrunt } from '../../actions/ui';
 import invariant from 'invariant';
 import { userLogin } from '../../actions/user';
-import { getItem, setItem } from '../../middleware/localStorageCache';
+import { getItem } from '../../middleware/localStorageCache';
 /**
  * default visibility and text for error labels
  * @type {Object}
@@ -45,7 +45,7 @@ class SignInForm extends Component {
       .then(user => {
         // close the form
         this.props.uiShowAuthenticationForm('none');
-        this.props.push(`/project/${getItem('mostRecentProject') || 'test'}`);
+        this.props.push(`/project/${getItem('mostRecentProject')}`);
       })
       .catch((reason) => {
         const defaultMessage = 'Email address or password are not recognized.';

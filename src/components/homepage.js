@@ -7,7 +7,7 @@ import {
   uiShowUserWidget,
  } from '../actions/ui';
 import '../styles/homepage.css';
-import { getItem, setItem } from '../middleware/localStorageCache';
+import { getItem } from '../middleware/localStorageCache';
 
 export default class HomePage extends Component {
 
