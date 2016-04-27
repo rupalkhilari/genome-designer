@@ -237,11 +237,15 @@ class GlobalNav extends Component {
       //const sorted = sortBlocksByIndexAndDepth(this.props.focus.blocks);
       const sorted = sortBlocksByIndexAndDepthExclude(this.props.focus.blocks);
       // sorted is an array of array, flatten while retaining order
+      const currentProjectVersion = this.props.projectGetVersion(this.props.currentProjectId);
       const clones = sorted.map(info => {
-        return this.props.blockClone(info.blockId, this.props.projectGetVersion(this.props.currentProjectId));
+        return this.props.blockClone(info.blockId, {
+          projectId: this.props.currentProjectId,
+          version: currentProjectVersion,
+        });
       });
-      // put clones on the clipboard
-      this.props.clipboardSetData([clipboardFormats.blocks], [clones])
+      // put clones on the clipboardparentObjectInput
+      this.props.clipboardSetData([clipboardFormats.blocks], [clones]);
     }
   }
 
@@ -284,8 +288,7 @@ class GlobalNav extends Component {
       // we have to clone the blocks currently on the clipboard since they
       // can't be pasted twice
       const clones = blocks.map(block => {
-        const version = this.props.projectGetVersion(this.props.currentProjectId);
-        return this.props.blockClone(block.id, version);
+        return this.props.blockClone(block.id);
       });
       // insert at end of construct if no blocks selected
       let insertIndex = construct.components.length;

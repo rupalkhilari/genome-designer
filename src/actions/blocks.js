@@ -9,10 +9,13 @@ import * as projectSelectors from '../selectors/projects';
 import * as undoActions from '../store/undo/actions';
 
 //Promise
-export const blockSave = (blockId, forceProjectId) => {
+export const blockSave = (blockId, forceProjectId = false) => {
   return (dispatch, getState) => {
     const block = getState().blocks[blockId];
-    const projectId = block.getProjectId() || forceProjectId; //todo - assume from router?
+    const currentProjectId = dispatch(projectSelectors.projectGetCurrentId());
+    const projectId = block.getProjectId() || forceProjectId || currentProjectId;
+    //todo - should save projectId on the block if its different
+
     invariant(projectId, 'project ID required to save block');
     return saveBlock(block, projectId)
       .then(block => {
@@ -88,7 +91,6 @@ export const blockClone = (blockInput, parentObjectInput = {}, shallowOnly = fal
     }
 
     //get the project ID to use for parent, considering the block may be detached from a project (e.g. inventory block)
-    const currentProjectId = getState().focus.project;
     const parentProjectId = oldBlock.getProjectId() || null;
     const parentProjectVersion = dispatch(projectSelectors.projectGetVersion(parentProjectId));
 
