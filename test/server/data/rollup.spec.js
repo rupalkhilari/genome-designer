@@ -1,6 +1,7 @@
 import { assert, expect } from 'chai';
 import uuid from 'node-uuid';
 import Block from '../../../src/models/Block';
+import Project from '../../../src/models/Project';
 import * as rollup from '../../../server/data/rollup';
 import * as persistence from '../../../server/data/persistence';
 import * as querying from '../../../server/data/querying';
@@ -73,6 +74,28 @@ describe('Server', () => {
             .then(() => querying.getAllBlockIdsInProject(projectId))
             .then(ids => expect(ids.length).to.equal(6))
           );
+      });
+
+      it('writeProjectRollup rejects if a block is invalid', (done) => {
+        const badBlock = Object.assign(Block.classless(), { parents: { sha: 'invalidSha'} });
+        const badRoll = createExampleRollup();
+        badRoll.blocks.push(badBlock);
+
+        return rollup.writeProjectRollup(projectId, badRoll, userId)
+          .catch(err => {
+            done();
+          });
+      });
+
+      it('writeProjectRollup rejects if project is invalid', (done) => {
+        const badProject = Object.assign(Project.classless(), { parents: { sha: 'invalidSha'} });
+        const badRoll = createExampleRollup();
+        badRoll.project = badProject;
+
+        return rollup.writeProjectRollup(projectId, badRoll, userId)
+          .catch(err => {
+            done();
+          });
       });
     });
   });

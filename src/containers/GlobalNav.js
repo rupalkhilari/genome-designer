@@ -436,11 +436,37 @@ class GlobalNav extends Component {
           text: 'HELP',
           items: [
             {
+              text: 'User Guide',
+              action: () => {},
+            }, {
+              text: 'Show Tutorial',
+              action: () => {},
+            }, {
+              text: 'Keyboard Shortcuts',
+              action: () => {},
+            }, {
+              text: 'Community Forum',
+              action: () => {},
+            }, {
+              text: 'Get Support',
+              action: () => {},
+            }, {
+              text: 'Give Us Feedback',
+              action: () => {},
+            }, {}, {
+              text: 'About Genome Designer',
+              action: () => {},
+            }, {
+              text: 'Terms of Use',
+              action: () => {},
+            }, {
+              text: 'Privacy Policy',
+              action: () => {},
+            },
+            {
               text: 'DOM Summary',
-              action: () => {
-                domSummary();
-              },
-            }
+              action: () => domSummary(),
+            },
           ],
         },
       ]}/>);
