@@ -194,7 +194,6 @@ export class ConstructViewer extends Component {
       if (parent.hasSequence()) {
         // create new block and replace current parent
         const block = this.props.blockCreate();
-        console.log(block.id);
         const replaceIndex = oldParent.components.indexOf(parent.id);
         invariant(replaceIndex >= 0, 'expect to get an index here');
         this.props.blockRemoveComponent(oldParent.id, parent.id);
@@ -211,6 +210,12 @@ export class ConstructViewer extends Component {
       if (insertionPoint) {
         index = parent.components.indexOf(insertionPoint.block) + (insertionPoint.edge === 'right' ? 1 : 0);
       }
+    }
+
+    // if the source is the inventory and we are dragging a single block with components
+    // then we don't want to insert the parent, so replace the payload with just the children
+    if (!Array.isArray(payload.item) && payload.source === 'inventory' && payload.item.components.length ) {
+      payload.item = payload.item.components.slice();
     }
 
     // add all blocks in the payload
