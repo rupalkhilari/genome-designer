@@ -76,7 +76,8 @@ export class InspectorBlock extends Component {
     if (this.props.instances.length === 1) {
       return this.props.instances[0].rules.sbol;
     }
-    return null;
+    //false is specially handled in symbol picker as blank, and is different than null (no symbol)
+    return false;
   }
 
   /**
