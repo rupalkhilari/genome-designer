@@ -55,7 +55,7 @@ import {
   sortBlocksByIndexAndDepthExclude,
   domSummary,
 } from '../utils/ui/uiapi';
-import AutosaveTracking from '../components/GlobalNav/AutosaveTracking';
+import AutosaveTracking from '../components/GlobalNav/autosaveTracking';
 
 import '../styles/GlobalNav.css';
 
