@@ -1,10 +1,13 @@
 import * as ActionTypes from '../constants/ActionTypes';
-//import { blocks as testBlocks } from './testProject';
+import { blocks as testBlocks } from './testProject';
 
-/*const initialState = testBlocks.reduce((acc, block) => Object.assign(acc,
-  { [block.id]: block }
-), {});*/
 const initialState = {};
+
+if (process.env.NODE_ENV === 'test') {
+  testBlocks.forEach(block => Object.assign(initialState,
+    { [block.id]: block }
+  ));
+}
 
 export default function blocks(state = initialState, action) {
   switch (action.type) {
