@@ -292,37 +292,53 @@ export const writeFile = (fileName, contents) => {
  **************************/
 //todo - these should be in their own file...
 
-export const computeWorkflow = (id, inputs) => {
+export const computeWorkflow = (workflowId, inputs) => {
   const stringified = JSON.stringify(inputs);
-  return rejectingFetch(computePath(`${id}`), headersPost(stringified))
+  return rejectingFetch(computePath(`${workflowId}`), headersPost(stringified))
     .then(resp => resp.json());
 };
 
-export const exportBlock = (id, inputs) => {
+export const exportBlock = (pluginId, inputs) => {
   const stringified = JSON.stringify(inputs);
-  return rejectingFetch(exportPath(`block/${id}`), headersPost(stringified))
+  return rejectingFetch(exportPath(`block/${pluginId}`), headersPost(stringified))
     .then(resp => resp.json());
 };
 
-export const exportProject = (id, inputs) => {
+export const exportProject = (pluginId, inputs) => {
   const stringified = JSON.stringify(inputs);
-  return rejectingFetch(exportPath(`project/${id}`), headersPost(stringified))
+  return rejectingFetch(exportPath(`project/${pluginId}`), headersPost(stringified))
     .then(resp => resp.json());
 };
 
-export const importConstruct = (id, input, projectId) => {
-  const header = {   headers: {
-    'Content-Type': 'text/plain',
-  }};
-  return rejectingFetch(importPath(`${id}/${projectId}`), headersPost(input, header))
+export const importConstruct = (pluginId, input, projectId) => {
+  const header = {
+    headers: {
+      'Content-Type': 'text/plain',
+    },
+  };
+  return rejectingFetch(importPath(`${pluginId}/${projectId}`), headersPost(input, header))
     .then(resp => resp.json());
 };
 
-export const importProject = (id, input) => {
-  const header = {   headers: {
-    'Content-Type': 'text/plain',
-  }};
-  return rejectingFetch(importPath(`${id}`), headersPost(input, header))
+export const importProject = (pluginId, input) => {
+  const header = {
+    headers: {
+      'Content-Type': 'text/plain',
+    },
+  };
+
+  return rejectingFetch(importPath(`${pluginId}`), headersPost(input, header))
+    .then(resp => resp.json());
+};
+
+export const convertGenbank = (genbank) => {
+  const header = {
+    headers: {
+      'Content-Type': 'text/plain',
+    },
+  };
+
+  return rejectingFetch(importPath(`genbank/convert`), headersPost(genbank, header))
     .then(resp => resp.json());
 };
 

@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { inventorySearch } from '../../actions/inventory';
+import { blockStash } from '../../actions/blocks';
 import { block as blockDragType } from '../../constants/DragTypes';
 import { chain, debounce, escapeRegExp } from 'lodash';
 
@@ -28,6 +29,7 @@ export class InventoryGroupSearch extends Component {
   static propTypes = {
     searchTerm: PropTypes.string.isRequired,
     inventorySearch: PropTypes.func.isRequired,
+    blockStash: PropTypes.func.isRequired,
   };
 
   state = {
@@ -85,10 +87,27 @@ export class InventoryGroupSearch extends Component {
     this.setState({ sourceList: newSourceList });
   };
 
-  getFullItem = (registryKey, item) => {
+  getFullItem = (registryKey, item, shouldAddToStore) => {
     const { source, id } = item.source;
     if (source && id) {
-      return registry[source].get(id);
+      return registry[source].get(id)
+        .then(result => {
+          //if we have an array, first one is construct, and all other blocks should be added to the store
+          if (Array.isArray(result)) {
+            const [ construct, ...blocks ] = result;
+
+            //need to specially handle blocks which are constructs here, add them to the store (not important for showing in the inspector)
+            //todo - does this accomodate onion properly
+            //todo - performance -- this will effectively add everything twice, since will be cloned. Should not clone deep (there is an option for this in blockClone, need to pass to onDrop of construct viewer, somehow diffrentiate from dragging a construct from a project
+            if (shouldAddToStore) {
+              this.props.blockStash(construct, ...blocks);
+            }
+
+            return construct;
+          }
+          //otherwise, just one result
+          return result;
+        });
     }
     return Promise.resolve(item);
   };
@@ -103,11 +122,11 @@ export class InventoryGroupSearch extends Component {
   };
 
   handleListOnSelect = (registryKey, item) => {
-    return this.getFullItem(registryKey, item);
+    return this.getFullItem(registryKey, item, false);
   };
 
   handleListOnDrop = (registryKey, item, target, position) => {
-    return this.getFullItem(registryKey, item);
+    return this.getFullItem(registryKey, item, true);
   };
 
   //want to filter down results while next query running
@@ -211,4 +230,5 @@ function mapStateToProps(state, props) {
 
 export default connect(mapStateToProps, {
   inventorySearch,
+  blockStash,
 })(InventoryGroupSearch);

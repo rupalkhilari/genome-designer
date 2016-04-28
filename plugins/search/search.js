@@ -1,49 +1,30 @@
 import express from 'express';
-import bodyParser from 'body-parser';
-import { getPlugin } from '../loadPlugin';
+
+//static registry
+import registry from './registry';
+
 const router = express.Router(); //eslint-disable-line new-cap
-const jsonParser = bodyParser.json({
-  strict: false, //allow values other than arrays and objects
+
+/**
+ * :id - plugin to use (e.g. ncbi)
+ * :method - what to do (e.g. search, get)
+ * :queryText - query or ID depending on method
+ */
+router.get('/:id/:method/:queryText', (req, res, next) => {
+  const { id, method, queryText } = req.params;
+  const queryParams = req.query;
+
+  const plugin = registry[id];
+
+  //checks to make sure plugin + method present
+  if (!plugin) { next('PLUGIN_NOT_PRESENT'); }
+  if (!method) {next('METHOD_NOT_PROVIDED'); }
+  if (!plugin[method]) { next('PLUGIN_METHOD_NOT_SUPPORTED'); }
+  if (typeof plugin[method] !== 'function') { next('PLUGIN_METHOD_INVALID'); }
+
+  Promise.resolve(plugin[method](queryText, queryParams))
+    .then(result => res.status(200).json(result))
+    .catch(err => res.status(400).send(err));
 });
 
-const namespace = 'search';
-
-function searchString(id, str, max) {
-  return getPlugin(namespace, id)
-    .then(mod => {
-      return new Promise((resolve, reject) => {
-        if (mod && mod.search) {
-          try {
-            mod.search(str, max)
-              .then(res => {
-                resolve(res);
-              })
-              .catch(err => {
-                reject(err);
-              });
-          } catch (err) {
-            reject(err);
-          }
-        } else {
-          reject('No search option named ' + id);
-        }
-      });
-    });
-}
-
-router.post('/:id', jsonParser, (req, resp) => {
-  const { id } = req.params;
-  const data = req.body;
-  searchString(id, data.query, data.max)
-    .then(res => {
-      resp.json(res);
-    })
-    .catch(err => {
-      resp.status(500).send(err);
-    });
-});
-
-//export these functions for testing purpose
-router.searchString = searchString;
-
-module.exports = router;
+export default router;

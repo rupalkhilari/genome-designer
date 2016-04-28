@@ -27,7 +27,7 @@ const AnnotationDefinition = new SchemaDefinition({
     'Description of annotation',
   ],
   sequence: [
-    fields.sequence(),
+    fields.sequence({loose: true}),
     'IUPAC sequence of the annotation',
   ],
   start: [
