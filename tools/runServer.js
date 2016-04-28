@@ -1,4 +1,3 @@
-import path from 'path';
 import cp from 'child_process';
 import { serverConfig } from './webpack.config';
 
@@ -34,7 +33,6 @@ function runServer(cb) {
     server.kill('SIGTERM');
   }
 
-  //todo - use node on bundled version
   server = cp.spawn('node', [serverPath], {
     env: Object.assign({ NODE_ENV: 'dev' }, process.env),
     silent: false,

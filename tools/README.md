@@ -33,10 +33,11 @@ TODO: Build the server. Not building because of relative path issues.
 
 ##### Options
 
-Flag        | Description
------------ | -------------------------------------------------- 
-`--release` | Minimizes and optimizes the compiled output
-`--verbose` | Prints detailed information to the console
+Flag          | Description
+------------- | -------------------------------------------------- 
+`--release`   | Minimizes and optimizes the compiled output
+`--verbose`   | Prints detailed information to the console
+`--debugmode` | Launches the App in Debugging mode
 
 For example:
 

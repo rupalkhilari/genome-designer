@@ -8,6 +8,11 @@ const purgeEvents = [
   //LOCATION_CHANGE, //forceOn will handle purging for us, do not needed here
 ];
 
+const simulateEvents = [
+  ActionTypes.PROJECT_SAVE,
+  ActionTypes.PROJECT_SNAPSHOT,
+];
+
 const autosave = autosaveCreator({
   //filter to undoable actions, which basically are the ones that are state changes (undoable reducer relies on these)
   filter: (action, alreadyDirty, nextState, lastState) => !!action.undoable,
@@ -27,6 +32,10 @@ const autosave = autosaveCreator({
 
   purgeOn: ({ type }, alreadyDirty, nextState, lastState) => {
     return purgeEvents.some(eventType => eventType === type);
+  },
+
+  simulateOn: ({ type }, alreadyDirty) => {
+    return simulateEvents.some(eventType => eventType === type);
   },
 });
 

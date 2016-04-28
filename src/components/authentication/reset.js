@@ -1,9 +1,11 @@
 import React, { Component, PropTypes } from 'react';
 import {connect} from 'react-redux';
+import { push } from 'react-router-redux';
 import { uiShowAuthenticationForm, uiSetGrunt } from '../../actions/ui';
 import { userLogin } from '../../actions/user';
 import { reset } from '../../middleware/api';
 import invariant from 'invariant';
+import { getItem } from '../../middleware/localStorageCache';
 
 /**
  * default visibility and text for error labels
@@ -25,6 +27,7 @@ class RegisterForm extends Component {
   static propTypes = {
     uiShowAuthenticationForm: PropTypes.func.isRequired,
     uiSetGrunt: PropTypes.func.isRequired,
+    push: PropTypes.func.isRequired,
   };
 
   constructor() {
@@ -54,7 +57,7 @@ class RegisterForm extends Component {
           .then(user => {
             // close the form
             this.props.uiShowAuthenticationForm('none');
-            this.props.push(`/project/${getItem('mostRecentProject') || 'test'}`);
+            this.props.push(`/project/${getItem('mostRecentProject')}`);
           })
           .catch((reason) => {
             // if the sign in failed just redirect to sign in
@@ -176,4 +179,5 @@ export default connect(mapStateToProps, {
   uiShowAuthenticationForm,
   uiSetGrunt,
   userLogin,
+  push,
 })(RegisterForm);

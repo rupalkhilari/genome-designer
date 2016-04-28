@@ -36,7 +36,7 @@ class App extends Component {
   }
 
   render() {
-    //const DevTools = (process.env.NODE_ENV !== 'production') ? require('./DevTools') : 'div';
+    const DevTools = (!!process.env.DEBUGMODE) ? require('./DevTools') : 'div';
 
     return (
       <div className="App">
@@ -47,7 +47,7 @@ class App extends Component {
         <div className="App-pageContent">
           {this.props.children}
         </div>
-        {/*<DevTools />*/}
+        <DevTools />
       </div>
     );
   }

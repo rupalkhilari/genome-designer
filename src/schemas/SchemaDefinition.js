@@ -72,14 +72,27 @@ export default class SchemaDefinition {
     ));
   }
 
-  scaffold() {
+  scaffold(onlyRequiredFields = false) {
     const defaultScaffoldValue = null;
 
-    return mapValues(this.fields, field => (
-      typeof field.scaffold === 'function' ?
+    return Object.keys(this.fields).reduce((scaffold, fieldName) => {
+      const field = this.fields[fieldName];
+      const fieldRequired = (field instanceof SchemaDefinition) || field.isRequired;
+
+      if (onlyRequiredFields && !fieldRequired) {
+        return scaffold;
+      }
+
+      //can opt out of scaffolding a field if not required
+      if (!fieldRequired && field.avoidScaffold === true) {
+        return scaffold;
+      }
+
+      const fieldValue = (typeof field.scaffold === 'function') ?
         field.scaffold(field.params) :
-        defaultScaffoldValue
-    ));
+        defaultScaffoldValue;
+      return Object.assign(scaffold, { [fieldName]: fieldValue });
+    }, {});
   }
 }
 
@@ -89,7 +102,7 @@ function createFields(fieldDefinitions) {
       //note - assign to field to maintain prototype, i.e. validate() function if instanceof SchemaDefinition
       return Object.assign(
         createSchemaField(...fieldDefinition),
-        {name: fieldName}
+        { name: fieldName }
       );
     }
   );
@@ -110,7 +123,7 @@ function createSchemaField(inputField, description = '', additional) {
   delete field.required;
 
   return Object.assign(field,
-    {description},
+    { description },
     additional
   );
 }

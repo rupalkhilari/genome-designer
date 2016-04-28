@@ -7,12 +7,12 @@ const noop = () => {};
  * @param validator {Function} function which:
  * 1) returns an Error when there is an error
  * 2) throws an error for invalid, and returns anything but false otherwise
- * @param required {Boolean=} pass `true` if required, otherwise undefined will validate
+ * @param required {Boolean=} pass `true` if required, otherwise undefined / null will validate
  * @param input {*} The input value to validate
  * @return {Boolean} true if validation did not return an Error or false
  */
 export default function safeValidate(validator = noop, required = false, input) {
-  if (required === false && input === undefined) {
+  if (required === false && (input === undefined || input === null)) {
     return true;
   }
 
