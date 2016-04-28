@@ -2,6 +2,7 @@ import rejectingFetch from '../../middleware/rejectingFetch';
 import queryString from 'query-string';
 import Block from '../../models/Block';
 import merge from 'lodash.merge';
+import debounce from 'lodash.debounce';
 import { convertGenbank } from '../../middleware/api';
 
 // NCBI limits number of requests per user/ IP, so better to initate from the client and I support process on client...
@@ -32,7 +33,7 @@ const wrapBlock = (block, id) => {
 };
 
 const parseSummary = (summary) => {
-  return {
+  return new Block({
     metadata: {
       name: summary.caption,
       description: summary.title,
@@ -45,16 +46,16 @@ const parseSummary = (summary) => {
       source: 'ncbi',
       id: summary.uid,
     },
-  };
+  });
 };
 
 export const getSummary = (...ids) => {
   if (!ids.length) {
-    return Promise.reject([]);
+    return Promise.resolve([]);
   }
 
   const idList = ids.join(',');
-  
+
   const url = `http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=nuccore&id=${idList}&retmode=json`;
 
   return rejectingFetch(url)
@@ -86,7 +87,6 @@ export const get = (id) => {
     .then(blocks => blocks.map(block => wrapBlock(block, id)));
 };
 
-//todo - deboucne
 // http://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.ESearch
 export const search = (query, options = {}) => {
   //parameters we support, in this format
