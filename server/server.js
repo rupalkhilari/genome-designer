@@ -112,8 +112,12 @@ app.get('*', (req, res) => {
     //should only hit this when proxy is not set up (i.e. not in development)
     res.sendFile(pathClientBundle);
   } else {
+    // setup user properties and discourse base url to flash to client
+    const discourse = {
+      discourseDomain: `http://discourse${process.env.BNR_ENV_URL_SUFFIX || ''}.bionano.autodesk.com`,
+    };
     //so that any routing is delegated to the client
-    res.render(path.join(pathContent + '/index.jade'), req.user);
+    res.render(path.join(pathContent + '/index.jade'), Object.assign({}, req.user, discourse));
   }
 });
 
