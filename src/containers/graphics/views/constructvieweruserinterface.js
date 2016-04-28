@@ -535,7 +535,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
     const node = this.layout.nodeFromElement(block);
     const AABB = node.getAABB();
     const xposition = edge === 'left' ? AABB.x : AABB.right;
-    this.showInsertionPointForEdgeAt(xposition - 1, AABB.y + 1);
+    this.showInsertionPointForEdgeAt(xposition - 4, AABB.y + 1);
 
     // save the current insertion point
     this.insertion = {block, node, edge};
@@ -553,7 +553,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
     }
     this.insertionEdgeEl.style.display = 'block';
     this.insertionEdgeEl.style.left = x + 'px';
-    this.insertionEdgeEl.style.top = y + 'px';
+    this.insertionEdgeEl.style.top = y - 12 + 'px';
   }
  /**
   * show the insertion point over the given block, usually used when dropping
@@ -574,10 +574,10 @@ export default class ConstructViewerUserInterface extends UserInterface {
     const node = this.layout.nodeFromElement(block);
     const AABB = node.getAABB();
     // position insertion element at the appropriate edge
-    this.insertionBlockEl.style.left = AABB.x + 'px';
-    this.insertionBlockEl.style.top = AABB.y + 'px';
-    this.insertionBlockEl.style.width = AABB.w + 'px';
-    this.insertionBlockEl.style.height = AABB.h + 'px';
+    this.insertionBlockEl.style.left = AABB.x - 8 + 'px';
+    this.insertionBlockEl.style.top = AABB.y - 8 + 'px';
+    this.insertionBlockEl.style.width = AABB.w + 1 + 'px';
+    this.insertionBlockEl.style.height = AABB.h + 1 + 'px';
 
     // save the current insertion point
     this.insertion = {block, node};

@@ -70,8 +70,26 @@
     border: 2px solid white;
     background-color: transparent;
     pointer-events: none;
+    z-index: 0;
   }
 
+  /* edge insertion point for DND */
+  .edge-insertion-point {
+    position: absolute;
+    box-sizing: border-box;
+    height: 50px;
+    width: 8px;
+    background-color: var(--colors-selected);
+    z-index: 1;
+  }
+  /* block insertion point for DND */
+  .block-insertion-point {
+    position: absolute;
+    box-sizing: content-box;
+    border: 8px solid var(--colors-selected);
+    background-color: transparent;
+    z-index: 1;
+  }
 }
 
 .construct-viewer {
@@ -81,21 +99,6 @@
   background: transparent;
   position: relative;
 
-  /* edge insertion point for DND */
-  .edge-insertion-point {
-    position: absolute;
-    box-sizing: border-box;
-    height: 30px;
-    width: 4px;
-    background-color: dodgerblue;
-  }
-  /* block insertion point for DND */
-  .block-insertion-point {
-    position: absolute;
-    box-sizing: border-box;
-    border: 4px solid dodgerblue;
-    background-color: transparent;
-  }
 
   .sceneGraphContainer {
     overflow: hidden;
