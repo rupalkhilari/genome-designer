@@ -28,7 +28,7 @@ export class Inspector extends Component {
     const { isVisible, instances, project, readOnly } = this.props;
 
     // inspect instances, or construct if no instance or project if no construct or instances
-    let inspect = instances && instances.length
+    const inspect = instances && instances.length
       ? <InspectorBlock instances={instances} readOnly={readOnly}/>
       : <InspectorProject instance={project} readOnly={readOnly}/>;
 

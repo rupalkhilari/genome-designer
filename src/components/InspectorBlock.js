@@ -84,7 +84,7 @@ export class InspectorBlock extends Component {
    */
   currentName() {
     if (this.props.instances.length === 1) {
-      return this.props.instances[0].metadata.name;
+      return this.props.instances[0].metadata.name || this.props.instances[0].rules.sbol;
     }
     return '';
   }
