@@ -17,12 +17,15 @@ export const focusGetConstruct = () => {
   };
 };
 
-export const focusGetBlocks = () => {
+export const focusGetBlocks = (defaultToConstruct = true) => {
   return (dispatch, getState) => {
     const state = getState();
-    const { forceBlocks, blocks } = state.focus;
+    const { forceBlocks, blocks, construct } = state.focus;
     if (forceBlocks.length) {
       return forceBlocks;
+    }
+    if (!blocks.length && defaultToConstruct === true) {
+      return dispatch(state.blocks[construct]);
     }
     return blocks.map(blockId => state.blocks[blockId]);
   };
