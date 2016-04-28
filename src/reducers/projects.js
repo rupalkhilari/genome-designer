@@ -1,9 +1,13 @@
 import * as ActionTypes from '../constants/ActionTypes';
 import { project as testProject } from './testProject';
 
-const initialState = {
-  test: testProject,
-};
+const initialState = {};
+
+if (process.env.NODE_ENV === 'test') {
+  Object.assign(initialState, {
+    test: testProject,
+  });
+}
 
 export default function projects(state = initialState, action) {
   switch (action.type) {
