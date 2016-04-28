@@ -39,6 +39,14 @@ export function parseSearchResult(result) {
 export function parseFullResult(result) {
   const { sequence } = result;
   const basics = parseBasicFields(result);
+  const annotations = result.metadata.features ? result.metadata.features.feature.map(feature => new Annotation({
+    isForward: feature.direction === 'forward',
+    start: parseInt(feature.startpos, 10),
+    end: parseInt(feature.endpos, 10),
+    name: feature.title || '',
+    type: feature.type || '',
+  })) : [];
+  
   const additional = {
     metadata: {
       description: result.metadata.part_short_desc,
@@ -46,13 +54,7 @@ export function parseFullResult(result) {
       created: result.metadata.part_entered,
     },
     sequence: {
-      annotations: result.metadata.features.feature.map(feature => new Annotation({
-        isForward: feature.direction === 'forward',
-        start: parseInt(feature.startpos, 10),
-        end: parseInt(feature.endpos, 10),
-        name: feature.title || '',
-        type: feature.type || '',
-      })),
+      annotations,
     },
     source: {
       url: result.metadata.part_url,
