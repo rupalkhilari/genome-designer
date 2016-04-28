@@ -1,5 +1,6 @@
 import safeValidate from './safeValidate';
 import urlRegex from 'url-regex';
+import { dnaStrictRegexp, dnaLooseRegexp } from '../../utils/dna/dna';
 
 /**
  * note that everything exported in this file is tested - so only export real validators
@@ -82,13 +83,12 @@ export const undef = params => input => {
  string subtypes
  *******/
 
-//todo - should support all IUPAC with option to limit
-export const sequence = params => input => {
+export const sequence = (params = {}) => input => {
   if (!isString(input)) {
     return new Error(`${input} is not a string`);
   }
 
-  const sequenceRegex = /^[acgt]*$/ig;
+  const sequenceRegex = params.loose === true ? dnaLooseRegexp : dnaStrictRegexp;
 
   if (!sequenceRegex.test(input)) {
     return new Error(`${input} is not a valid sequence`);
@@ -127,7 +127,7 @@ export const url = params => input => {
     return new Error(`${input} is not a string`);
   }
 
-  if (!urlRegex({exact: true}).test(input)) {
+  if (!urlRegex({ exact: true }).test(input)) {
     return new Error(`${input} is not a valid url`);
   }
 };
@@ -155,7 +155,7 @@ export const equal = checker => input => {
   }
 };
 
-export const shape = (fields, {required = false} = {}) => input => {
+export const shape = (fields, { required = false } = {}) => input => {
   if (!isRealObject(fields)) {
     return new Error(`shape ${fields} is not an object`);
   }
@@ -180,7 +180,7 @@ export const oneOf = possible => input => {
 };
 
 //can pass either function to validate, or an object to check instanceof
-export const oneOfType = (types, {required = false} = {}) => input => {
+export const oneOfType = (types, { required = false } = {}) => input => {
   if (!Array.isArray(types)) {
     return new Error(`possible types ${types} for oneOfType not an array`);
   }
@@ -196,7 +196,7 @@ export const oneOfType = (types, {required = false} = {}) => input => {
   }
 };
 
-export const arrayOf = (validator, {required = false} = {}) => input => {
+export const arrayOf = (validator, { required = false } = {}) => input => {
   if (!isFunction(validator)) {
     return new Error(`validator ${validator} passed to arrayOf is not a function`);
   }

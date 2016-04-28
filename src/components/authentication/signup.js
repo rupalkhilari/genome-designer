@@ -43,6 +43,7 @@ class RegisterForm extends Component {
     uiShowAuthenticationForm: PropTypes.func.isRequired,
     uiSetGrunt: PropTypes.func.isRequired,
     userRegister: PropTypes.func.isRequired,
+    push: PropTypes.func.isRequired,
   };
 
   constructor() {
@@ -69,7 +70,7 @@ class RegisterForm extends Component {
     .then((json) => {
       // close the form
       this.props.uiShowAuthenticationForm('none');
-      this.props.push(`/project/${getItem('mostRecentProject') || 'test'}`);
+      this.props.push(`/project/${getItem('mostRecentProject')}`);
     })
     .catch((reason) => {
       const defaultMessage = 'Unexpected error, please check your connection';

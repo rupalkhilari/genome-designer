@@ -2,7 +2,7 @@ import React from 'react';
 import { Router, browserHistory } from 'react-router';
 import { syncHistoryWithStore } from 'react-router-redux';
 import store from '../store/index';
-import { Route, IndexRedirect } from 'react-router';
+import { Route, IndexRedirect, IndexRoute } from 'react-router';
 
 import App from '../containers/App';
 import ProjectPage from '../containers/ProjectPage';
@@ -19,18 +19,23 @@ export default (
   <Router history={history}>
     <Route path="/" component={App}>
 
+      {/* require authentication */}
+
       <Route component={AuthRouteWrapper}>
         <Route path="/homepage/account" component={HomePage}/>
         <Route path="/project/:projectId"
                component={ProjectPage}/>
       </Route>
+
+      {/* do not require authentication */}
+
       <Route path="/about" component={AboutPage}/>
       <Route path="/support" component={SupportPage}/>
-      <Route path="/homepage/signin" component={HomePage}/>
-      <Route path="/homepage/signup" component={HomePage}/>
-      <Route path="/homepage/reset" component={HomePage}/>
-      <Route path="/homepage/forgot" component={HomePage}/>
-      <Route path="/homepage" component={HomePage}/>
+
+      <Route path="/homepage">
+        <Route path=":comp" component={HomePage}/>
+        <IndexRoute component={HomePage}/>
+      </Route>
 
       <IndexRedirect to="/homepage"/>
 

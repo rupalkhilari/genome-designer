@@ -7,8 +7,8 @@ import ProjectDetail from '../components/ProjectDetail';
 import ProjectHeader from '../components/ProjectHeader';
 import Inventory from './Inventory';
 import Inspector from './Inspector';
-import { projectLoad } from '../actions/projects';
-import { uiShowMainMenu } from '../actions/ui';
+import { projectList, projectLoad, projectCreate } from '../actions/projects';
+import { uiShowMainMenu, uiSetGrunt } from '../actions/ui';
 import { focusProject } from '../actions/focus';
 import autosaveInstance from '../store/autosave/autosaveInstance';
 
@@ -20,9 +20,12 @@ class ProjectPage extends Component {
     projectId: PropTypes.string.isRequired,
     project: PropTypes.object, //if have a project (not fetching)
     constructs: PropTypes.array, //if have a project (not fetching)
+    projectCreate: PropTypes.func.isRequired,
+    projectList: PropTypes.func.isRequired,
     projectLoad: PropTypes.func.isRequired,
     push: PropTypes.func.isRequired,
     uiShowMainMenu: PropTypes.func.isRequired,
+    uiSetGrunt: PropTypes.func.isRequired,
     focusProject: PropTypes.func.isRequired,
   };
 
@@ -32,18 +35,18 @@ class ProjectPage extends Component {
     this.layoutAlgorithm = 'wrap';
   }
 
+  componentDidMount() {
+    // todo - use react router History to do this:
+    // https://github.com/mjackson/history/blob/master/docs/ConfirmingNavigation.md
+    window.onbeforeunload = window.onunload = this.onWindowUnload;
+  }
+
   componentWillReceiveProps(nextProps) {
     //set state.focus.project -- might be a better way to do this, but hard otuside components with react-router
     if (!this.lastProjectId || nextProps.projectId !== this.props.projectId) {
       this.lastProjectId = nextProps.projectId;
       this.props.focusProject(nextProps.projectId);
     }
-  }
-
-  componentDidMount() {
-    // todo - use react router History to do this:
-    // https://github.com/mjackson/history/blob/master/docs/ConfirmingNavigation.md
-    window.onbeforeunload = window.onunload = this.onWindowUnload;
   }
 
   componentWillUnmount() {
@@ -64,13 +67,31 @@ class ProjectPage extends Component {
   render() {
     const { project, projectId, constructs } = this.props;
 
+    //handle project not loaded
     if (!project || !project.metadata) {
       this.props.projectLoad(projectId)
         .catch(err => {
-          this.props.push('/?noredirect=true');
+          //if couldnt load project, load manifests and display the first one, or create a new project
+          this.props.uiSetGrunt(`Project with ID ${projectId} could not be loaded, loading another instead...`);
+
+          this.props.projectList().then(manifests => {
+            if (manifests.length) {
+              const nextId = manifests[0].id;
+              //need to fully load the project, as we just have the manifest right now...
+              //otherwise no blocks will show
+              //ideally, this would just get ids
+              this.props.projectLoad(nextId)
+                .then(() => this.props.push(`/project/${nextId}`));
+            } else {
+              //if no manifests, create a new project
+              const newProject = this.props.projectCreate();
+              this.props.push(`/project/${newProject.id}`);
+            }
+          });
         });
       return (<p>loading project...</p>);
     }
+
     // build a list of construct viewers
     const constructViewers = constructs.filter(construct => construct).map(construct => {
       return (
@@ -122,8 +143,11 @@ function mapStateToProps(state, ownProps) {
 }
 
 export default connect(mapStateToProps, {
+  projectList,
   projectLoad,
+  projectCreate,
   push,
   uiShowMainMenu,
+  uiSetGrunt,
   focusProject,
 })(ProjectPage);

@@ -13,10 +13,7 @@ import InventoryListGroup from './InventoryListGroup';
 import InventoryList from './InventoryList';
 import InventoryTabs from './InventoryTabs';
 
-//temp - non-empty to handle test project
-const loadedProjects = {
-  test: [],
-};
+const loadedProjects = {};
 
 export class InventoryGroupProjects extends Component {
   static propTypes = {
@@ -103,11 +100,6 @@ export class InventoryGroupProjects extends Component {
   };
 
   handleLoadProject = (projectId) => {
-    //temporary - handle test project scenario
-    if (projectId === 'test') {
-      return Promise.resolve();
-    }
-
     //todo - dont load blocks into store until the project is loaded (update selector)
     //we just want to load when the project is actually loaded. Dont add to store if we're going to just push it on with forceBlocks
     //however, need to make sure that blockClone will work. Perhaps we can add them to the store before the drag starts
