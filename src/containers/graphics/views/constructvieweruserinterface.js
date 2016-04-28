@@ -219,6 +219,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
       this.selectNodesByRectangle(this.fence.getBox());
       this.fence.dispose();
       this.fence = null;
+      this.constructViewer.props.endMouseScroll();
     } else {
       this.mouseSelect(evt, point);
     }
@@ -423,6 +424,9 @@ export default class ConstructViewerUserInterface extends UserInterface {
       }
     } else {
       if (this.fence) {
+        // mousetrap sends local mouse position but we want the global one for
+        // autoscrolling in the canvas
+        this.constructViewer.props.mouseScroll(this.mouseTrap.mouseToGlobal(evt));
         this.fence.update(point);
       }
     }
