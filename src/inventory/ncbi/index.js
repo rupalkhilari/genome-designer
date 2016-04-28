@@ -49,8 +49,12 @@ const parseSummary = (summary) => {
 };
 
 export const getSummary = (...ids) => {
-  const idList = ids.join(',');
+  if (!ids.length) {
+    return Promise.reject([]);
+  }
 
+  const idList = ids.join(',');
+  
   const url = `http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=nuccore&id=${idList}&retmode=json`;
 
   return rejectingFetch(url)

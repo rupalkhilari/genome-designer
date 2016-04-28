@@ -60,7 +60,7 @@ export class InventoryGroupSearch extends Component {
         });
     };
 
-    this.debouncedSearch = debounce(searchingFunction, 200);
+    this.debouncedSearch = debounce(searchingFunction, 400);
   }
 
   onListGroupToggle = (source) => {
