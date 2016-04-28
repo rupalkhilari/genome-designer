@@ -75,7 +75,11 @@ export const blockStash = (...inputBlocks) => {
  * Clones a block (and its children by default)
  *
  * @param blockInput {ID|Object} JSON of block directly, or ID. Accept both since inventory items may not be in the store, so we need to pass the block directly. Prefer to use ID.
- * @param parentObjectInput {Object} information about parent, defaults to generated
+ * @param parentObjectInput {Object} information about parent, defaults to generated:
+ *  {id: from block input
+ *   projectId - same as block being cloned, or block.projectId
+  *  version - that of project ID if in the store, or first parent if available and same project id
+  * }
  * @param shallowOnly {Boolean} Does a deep clone by default, adds all child blocks to store
  * @returns {Object} clone block (root node if has children)
  */

@@ -31,7 +31,7 @@ export default class Block extends Instance {
     const parentObject = Object.assign({
       id: this.id,
       projectId: this.projectId,
-      version: firstParent ? firstParent.version : null,
+      version: (firstParent && firstParent.projectId === this.projectId) ? firstParent.version : null,
     }, parentInfo);
     return super.clone(parentObject);
   }
