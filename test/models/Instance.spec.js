@@ -83,13 +83,13 @@ describe('Model', () => {
 
       const clone = inst.clone();
       expect(clone.parents.length).to.equal(1);
-      expect(clone.parents[0]).to.eql({ id: inst.id, sha: parentSha });
+      expect(clone.parents[0]).to.eql({ id: inst.id, version: parentSha });
 
       const second = clone.clone();
       expect(second.parents.length).to.equal(2);
       expect(second.parents).to.eql([
-        { id: clone.id, sha: parentSha },
-        { id: inst.id, sha: parentSha },
+        { id: clone.id, version: parentSha },
+        { id: inst.id, version: parentSha },
       ]);
     });
 

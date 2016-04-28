@@ -16,10 +16,10 @@ const ProjectDefinition = InstanceDefinition.extend({
   ],
 
   version: [
-    fields.version().required,
+    fields.version(),
     'SHA1 version of project',
+    {avoidScaffold: true},
   ],
-
   components: [
     fields.arrayOf(validators.id()).required,
     `Constructs associated with this project`,

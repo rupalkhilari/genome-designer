@@ -1,13 +1,11 @@
 import uuid from 'node-uuid';
-import pathSet from 'lodash.set';
-import merge from 'lodash.merge';
-import cloneDeep from 'lodash.clonedeep';
+import { set as pathSet, unset as pathUnset, cloneDeep, merge } from 'lodash';
 import invariant from 'invariant';
 import InstanceDefinition from '../schemas/Instance';
 import safeValidate from '../schemas/fields/safeValidate';
 import { version } from '../schemas/fields/validators';
 
-const versionValidator = (ver) => safeValidate(version(), true, ver);
+const versionValidator = (ver, required = false) => safeValidate(version(), required, ver);
 
 /**
  * @description
@@ -21,7 +19,7 @@ export default class Instance {
     if (!!input && typeof input === 'object') {
       parsedInput = input;
     } else if (typeof input === 'string') {
-      parsedInput = {id: input};
+      parsedInput = { id: input };
     } else {
       parsedInput = {};
     }
@@ -56,20 +54,23 @@ export default class Instance {
     return new this.constructor(base);
   }
 
-  //clone by default just uses the ID, however,
-  clone(parentSha) {
+  //clone can accept just an ID (e.g. project), but likely want to pass an object (e.g. block, which also has field projectId in parent)
+  clone(parentInfo = {}) {
     const self = cloneDeep(this);
-    invariant(!parentSha || versionValidator(parentSha), 'must pass a valid SHA, got ' + parentSha);
-    invariant(!!parentSha || !!self.version, 'Version (e.g. of project) is required to clone');
+    const inputObject = (typeof parentInfo === 'string') ?
+    { version: parentInfo } :
+      parentInfo;
 
-    const versionOfParent = (!!parentSha ? parentSha : self.version);
-    const latestParent = {
+    const parentObject = Object.assign({
       id: self.id,
-      sha: versionOfParent,
-    };
+      version: self.version,
+    }, inputObject);
+
+    invariant(versionValidator(parentObject.version), 'must pass a valid version (SHA), got ' + parentObject.version);
+
     const clone = Object.assign(self, {
       id: uuid.v4(),
-      parents: [latestParent].concat(self.parents),
+      parents: [parentObject].concat(self.parents),
     });
     return new this.constructor(clone);
   }

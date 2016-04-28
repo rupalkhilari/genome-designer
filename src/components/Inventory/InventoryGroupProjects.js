@@ -4,7 +4,7 @@ import { push } from 'react-router-redux';
 import { projectGet, projectListAllBlocks } from '../../selectors/projects';
 import { projectList, projectLoad } from '../../actions/projects';
 import { focusForceProject } from '../../actions/focus';
-import { blockCreate, blockStash } from '../../actions/blocks';
+import { blockStash } from '../../actions/blocks';
 import { block as blockDragType } from '../../constants/DragTypes';
 import { infoQuery } from '../../middleware/api';
 import { symbolMap } from '../../inventory/sbol';

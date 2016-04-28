@@ -6,8 +6,12 @@ const ParentDefinition = new SchemaDefinition({
     fields.id().required,
     'ID of parent instance',
   ],
-  sha: [
-    fields.version().required,
+  projectId: [
+    fields.id({prefix: 'project'}),
+    'ID of project of parent (if not a project)',
+  ],
+  version: [
+    fields.version(),
     'Version of project, git SHA',
   ],
 });

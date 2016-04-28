@@ -7,6 +7,10 @@ import AnnotationDefinition from '../schemas/Annotation';
 import md5 from 'md5';
 import color from '../utils/generators/color';
 import { dnaStrict, dnaLoose } from '../utils/dna/dna';
+import * as validators from '../schemas/fields/validators';
+import safeValidate from '../schemas/fields/safeValidate';
+
+const idValidator = (id) => safeValidate(validators.id(), true, id);
 
 export default class Block extends Instance {
   constructor(input) {
@@ -20,6 +24,27 @@ export default class Block extends Instance {
 
   static validate(input, throwOnError) {
     return BlockDefinition.validate(input, throwOnError);
+  }
+
+  clone(parentInfo) {
+    const [ firstParent ] = this.parents;
+    const parentObject = Object.assign({
+      id: this.id,
+      projectId: this.projectId,
+      version: (firstParent && firstParent.projectId === this.projectId) ? firstParent.version : null,
+    }, parentInfo);
+    return super.clone(parentObject);
+  }
+
+  /* project related */
+
+  getProjectId() {
+    return this.projectId;
+  }
+
+  setProjectId(projectId) {
+    invariant(idValidator(projectId) || projectId === null, 'project is required, or null to mark unassociated');
+    return this.mutate('projectId', projectId);
   }
 
   /* checks */
@@ -119,8 +144,6 @@ export default class Block extends Instance {
 
     const validatorStrict = new RegExp(`^[${dnaStrict}]*$`, 'gi');
     const validatorLoose = new RegExp(`^[${dnaLoose}]*$`, 'gi');
-    // const validatorStrict = /^[acgtu]*$/gi;
-    // const validatorLoose = /^[acgturyswkmbdhvn\.\-]*$/gi;
 
     const validator = !!useStrict ? validatorStrict : validatorLoose;
 

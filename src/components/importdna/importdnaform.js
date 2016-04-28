@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import { uiShowDNAImport } from '../../actions/ui';
 import { blockGetSequence, blockSetSequence } from '../../actions/blocks';
 import { focusBlocks } from '../../actions/focus';
@@ -16,6 +16,7 @@ class DNAImportForm extends Component {
 
   static propTypes = {
     uiShowDNAImport: PropTypes.func.isRequired,
+    open: PropTypes.bool.isRequired,
   };
 
   constructor() {
@@ -23,7 +24,7 @@ class DNAImportForm extends Component {
     this.state = {
       inputValid: true,
       validLength: 0,
-    }
+    };
   }
 
   onSequenceChanged(evt) {
@@ -77,45 +78,43 @@ class DNAImportForm extends Component {
       && this.state.sequence
       && this.state.validLength === this.state.sequence.length) {
 
-        // get the currently selected blocks from the store
-        let done = false;
-        Promise.all(this.props.focusedBlocks.map(blockId => {
+      // get the currently selected blocks from the store
+      Promise.all(this.props.focusedBlocks.map(blockId => {
           return this.props.blockGetSequence(blockId);
         }))
-          .then(sequences => {
-            // get index of first empty sequence
-            const emptyIndex = sequences.findIndex(sequence => !sequence);
-            if (emptyIndex >= 0) {
-              this.setSequenceAndClose(this.props.focusedBlocks[emptyIndex], this.state.sequence);
-            } else {
-              const block = this.props.blockCreate();
-              this.props.blockAddComponent(this.props.currentConstruct, block.id, 0);
-              this.setSequenceAndClose(block.id, this.state.sequence);
-            }
-          })
-          .catch(reason => {
-            // close the dialog
-            this.props.uiShowDNAImport(false);
-            this.props.uiSetGrunt(`There was a problem fetching the block sequences: ${reason.toString()}`);
-          });
+        .then(sequences => {
+          // get index of first empty sequence
+          const emptyIndex = sequences.findIndex(sequence => !sequence);
+          if (emptyIndex >= 0) {
+            this.setSequenceAndClose(this.props.focusedBlocks[emptyIndex], this.state.sequence);
+          } else {
+            const block = this.props.blockCreate();
+            this.props.blockAddComponent(this.props.currentConstruct, block.id, 0);
+            this.setSequenceAndClose(block.id, this.state.sequence);
+          }
+        })
+        .catch(reason => {
+          // close the dialog
+          this.props.uiShowDNAImport(false);
+          this.props.uiSetGrunt(`There was a problem fetching the block sequences: ${reason.toString()}`);
+        });
     }
   }
 
   render() {
-
     // no render when not open
     if (!this.props.open) {
       return null;
     }
 
     return (<ModalWindow
-        open={this.props.open}
-        title="Add Sequence"
-        closeOnClickOutside
-        closeModal={(buttonText) => {
+      open={this.props.open}
+      title="Add Sequence"
+      closeOnClickOutside
+      closeModal={(buttonText) => {
           this.props.uiShowDNAImport(false);
         }}
-        payload={
+      payload={
           <form className="gd-form importdnaform" onSubmit={this.onSubmit.bind(this)}>
             <div className="title">Add Sequence</div>
             <textarea
@@ -142,12 +141,11 @@ class DNAImportForm extends Component {
             </div>
           </form>}
 
-      />)
-    }
+    />);
+  };
 }
 
 function mapStateToProps(state) {
-
   return {
     open: state.ui.showDNAImport,
     focusedBlocks: state.focus.blocks,

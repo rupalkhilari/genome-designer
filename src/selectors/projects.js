@@ -1,6 +1,9 @@
 import * as blockSelectors from './blocks';
 
 const _getProjectFromStore = (projectId, store) => {
+  if (!projectId) {
+    return null;
+  }
   return store.projects[projectId];
 };
 
@@ -10,10 +13,18 @@ export const projectGet = (projectId) => {
   };
 };
 
+//bit of a hack - expects focus section of store, and projectPage to have set it
+export const projectGetCurrentId = () => {
+  return (dispatch, getState) => {
+    const { focus } = getState();
+    return !!focus ? focus.project : null;
+  };
+};
+
 export const projectGetVersion = (projectId) => {
   return (dispatch, getState) => {
     const project = _getProjectFromStore(projectId, getState());
-    return project.version;
+    return !!project ? project.version : null;
   };
 };
 
