@@ -138,6 +138,7 @@ export class InspectorBlock extends Component {
                      onFocus={this.startTransaction}
                      onBlur={this.endTransaction}
                      onEscape={() => this.endTransaction(true)}
+                     updateOnBlur
                      value={this.currentName()}/>
 
         <h4 className="InspectorContent-heading">Description</h4>
