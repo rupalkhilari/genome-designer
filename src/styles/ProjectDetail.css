@@ -37,7 +37,7 @@
     display: flex;
     position: relative;
     flex-shrink: 0;
-    padding: 8px 10px;
+    padding: 4px 10px 0px 10px;
 
     &-close,
     &-toggle {

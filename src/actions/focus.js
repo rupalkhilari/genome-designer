@@ -8,9 +8,7 @@ const idValidator = safeValidate.bind(null, idValidatorCreator(), true);
 
 export const focusProject = (inputProjectId) => {
   return (dispatch, getState) => {
-    // todo - re-enable once remove project test
-    // const projectId = idValidator(inputProjectId) ? inputProjectId : null;
-    const projectId = inputProjectId;
+    const projectId = idValidator(inputProjectId) ? inputProjectId : null;
 
     dispatch({
       type: ActionTypes.FOCUS_PROJECT,

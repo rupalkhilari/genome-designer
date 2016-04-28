@@ -1,5 +1,4 @@
 import fields from './fields/index';
-import * as validators from './fields/validators';
 import SchemaDefinition from './SchemaDefinition';
 
 import ParentDefinition from './Parent';

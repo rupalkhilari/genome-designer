@@ -1,8 +1,7 @@
 import invariant from 'invariant';
-import { errorDoesNotExist } from '../utils/errors';
+import { errorInvalidModel, errorDoesNotExist } from '../utils/errors';
 import * as persistence from './persistence';
-import * as filePaths from '../utils/filePaths';
-import * as fileSystem from '../utils/fileSystem';
+import { validateBlock, validateProject } from '../utils/validation';
 import { findProjectFromBlock, getAllBlockIdsInProject, getAllBlocksInProject } from './querying';
 
 export const createRollup = (project, ...blocks) => ({
@@ -48,6 +47,14 @@ export const writeProjectRollup = (projectId, rollup, userId) => {
       return Promise.all([
         ...differenceIds.map(blockId => persistence.blockDelete(blockId, projectId)),
       ]);
+    })
+    .then(() => {
+      //validate all the blocks and project before we save
+      const projectValid = validateProject(project);
+      const blocksValid = blocks.every(block => validateBlock(block));
+      if (!projectValid || !blocksValid) {
+        return Promise.reject(errorInvalidModel);
+      }
     })
     .then(() => Promise.all([
       persistence.projectWrite(projectId, project),
