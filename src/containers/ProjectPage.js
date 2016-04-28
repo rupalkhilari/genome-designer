@@ -36,6 +36,8 @@ class ProjectPage extends Component {
   }
 
   componentDidMount() {
+    // todo - use react router History to do this:
+    // https://github.com/mjackson/history/blob/master/docs/ConfirmingNavigation.md
     window.onbeforeunload = window.onunload = this.onWindowUnload;
   }
 

@@ -12,8 +12,8 @@ const jsonParser = bodyParser.json({
 
 const namespace = 'convert';
 
-function callImportFunction(funcName, id, data) {
-  return getPlugin(namespace, id)
+function callImportFunction(funcName, pluginId, data) {
+  return getPlugin(namespace, pluginId)
     .then(mod => {
       return new Promise((resolve, reject) => {
         if (mod && mod[funcName]) {
@@ -30,18 +30,19 @@ function callImportFunction(funcName, id, data) {
             reject(err);
           }
         } else {
-          reject('No import option named ' + id + ' for projects');
+          reject('No import option named ' + pluginId + ' for projects');
         }
       });
     });
 }
 
-function importProject(id, data) {
-  return callImportFunction('importProject', id, data);
+function importProject(pluginId, data) {
+  return callImportFunction('importProject', pluginId, data);
 }
 
-router.post('/:id/:projectId?', jsonParser, (req, resp) => {
-  const { id, projectId } = req.params;
+//can pass :projectId = 'convert' to just convert genbank file directly, and not write to memory
+router.post('/:pluginId/:projectId?', jsonParser, (req, resp, next) => {
+  const { pluginId, projectId } = req.params;
 
   //assuming contents to be string
   let buffer = '';
@@ -53,12 +54,18 @@ router.post('/:id/:projectId?', jsonParser, (req, resp) => {
 
   //received all the data
   req.on('end', () => {
-    return importProject(id, buffer)
+    if (projectId === 'convert') {
+      return callImportFunction('convert', pluginId, buffer)
+        .then(converted => resp.status(200).json(converted))
+        .catch(err => next(err));
+    }
+
+    return importProject(pluginId, buffer)
       .then((roll) => {
         if (!projectId) {
           rollup.writeProjectRollup(roll.project.id, roll, req.user.uuid)
             .then(() => persistence.projectSave(roll.project.id))
-            .then(commit => resp.status(200).json({ProjectId: roll.project.id}))
+            .then(commit => resp.status(200).json({ ProjectId: roll.project.id }))
             .catch(err => {
               resp.status(400).send(err);
             });
@@ -69,7 +76,7 @@ router.post('/:id/:projectId?', jsonParser, (req, resp) => {
               existingRoll.blocks = existingRoll.blocks.concat(roll.blocks);
               rollup.writeProjectRollup(existingRoll.project.id, existingRoll, req.user.uuid)
                 .then(() => persistence.projectSave(existingRoll.project.id))
-                .then(commit => resp.status(200).json({ProjectId: existingRoll.project.id}))
+                .then(commit => resp.status(200).json({ ProjectId: existingRoll.project.id }))
                 .catch(err => {
                   resp.status(400).send(err);
                 });

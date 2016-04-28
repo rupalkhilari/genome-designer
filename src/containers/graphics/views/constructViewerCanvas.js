@@ -186,6 +186,5 @@ export default connect(mapStateToProps, {
   blockRename,
   blockAddComponent,
   projectGetVersion,
-  blockCreate,
   blockClone,
 })(ConstructViewerCanvas);

@@ -25,15 +25,21 @@ const BlockDefinition = InstanceDefinition.extend({
     'Block UUID',
   ],
 
+  projectId: [
+    fields.id({prefix: 'project'}),
+    'Project UUID',
+    {avoidScaffold: true},
+  ],
+
   sequence: [
     SequenceDefinition,
-    `Associated Sequence (url, not the sequence itself), and Annotations etc. associated`,
+    `Associated Sequence (link, not the sequence itself), and Annotations etc. associated`,
   ],
 
   source: [
     fields.shape({
+      source: validators.string(),
       id: validators.string(),
-      remoteId: validators.string(),
     }).required,
     `Source (Inventory) ID of the Part`,
   ],
