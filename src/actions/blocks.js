@@ -255,6 +255,9 @@ export const blockSetColor = (blockId, color) => {
   };
 };
 
+/**
+ * change the sbol symbol of the block e.g. from the inspector
+ */
 export const blockSetSbol = (blockId, sbol) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
@@ -272,6 +275,24 @@ export const blockSetSbol = (blockId, sbol) => {
     return block;
   };
 };
+
+/**
+ * e.g. when the user drop an sbol symbol on an existing block.
+ * Create a new child block and set the given sbol symbol
+ */
+export const blockAddSbol = (blockId, sbol) => {
+  return (dispatch, getState) => {
+    dispatch(undoActions.transact());
+    const oldBlock = getState().blocks[blockId];
+    const newBlock = dispatch(blockCreate());
+    dispatch(blockSetSbol(newBlock.id, sbol))
+    dispatch(blockAddComponent(oldBlock.id, newBlock.id, oldBlock.components.length));
+    //end transaction
+    dispatch(undoActions.commit());
+    return newBlock;
+  };
+};
+
 
 /***************************************
  * Components
