@@ -38,9 +38,9 @@ module.exports = {
     dragFromTo(browser, '.InventoryItem:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(1)', 100, 70);
 
     browser
-      .pause(10000000)
       // expect one block
-      .assert.countelements('.sbol-glyph', 1);
+      .assert.countelements('.sbol-glyph', 1)
+      .pause(500);
 
     // drag some other blocks into the construct
     // drag an item from the inventory
@@ -50,6 +50,7 @@ module.exports = {
           browser,
           '.InventoryItem:nth-of-type(' + i + ')', 10, 10,
           '.construct-viewer:nth-of-type(1) .sceneGraph .sbol-glyph:nth-of-type(1)', 10, 10);
+      browser.pause(50);
     }
 
     // should have 10 blocks total
@@ -88,6 +89,7 @@ module.exports = {
 
     // click outside the blocks to deselect them all
     clickAt(browser, '.scenegraph-userinterface', 10, 10);
+    browser.pause(1000);
     browser.assert.countelements(".scenegraph-userinterface-selection", 0);
 
     // simulate a fence drag over the entire construct to reselect everything
