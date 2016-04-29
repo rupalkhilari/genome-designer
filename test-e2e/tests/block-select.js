@@ -19,7 +19,6 @@ module.exports = {
 
     // now we can go to the project page
     browser
-      .url('http://localhost:3001/project/test')
       // wait for inventory and inspector to be present
       .waitForElementPresent('.SidePanel.Inventory', 5000, 'Expected Inventory Groups')
       .waitForElementPresent('.SidePanel.Inspector', 5000, 'Expected Inspector')
@@ -29,16 +28,17 @@ module.exports = {
       // click the second inventory group 'EGF Parts' to open it
       .click('.InventoryGroup:nth-of-type(2) .InventoryGroup-heading');
 
-    // start with a fresh project
+    // start with a fresh project, single construct
     newProject(browser);
 
     // expect one construct
     browser.assert.countelements('.construct-viewer', 1);
 
     // add a single block
-    dragFromTo(browser, '.InventoryItem:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 30, 30);
+    dragFromTo(browser, '.InventoryItem:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(1)', 100, 70);
 
     browser
+      .pause(10000000)
       // expect one block
       .assert.countelements('.sbol-glyph', 1);
 
