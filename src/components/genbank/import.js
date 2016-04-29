@@ -77,11 +77,13 @@ class ImportGenBankModal extends Component {
     if (this.state.files.length || window.__testGenbankImport) {
       this.setState({processing: true});
       const formData = new FormData();
+      let isCSV = false;
       this.state.files.forEach(file => {
         formData.append('genBankFiles', file, file.name);
+        isCSV = file.name.toLowerCase().endsWith('.csv')
       });
       const xhr = new XMLHttpRequest();
-      xhr.open('POST', '/import/genbank', true);
+      xhr.open('POST', `/import/${isCSV ? 'csv' : 'genbank'}`, true);
       xhr.onload = () => {
         if (xhr.status === 200) {
           this.props.uiShowGenBankImport(false);
