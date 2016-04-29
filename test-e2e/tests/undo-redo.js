@@ -5,6 +5,7 @@ var dragFromTo = require('../fixtures/dragfromto');
 var newProject = require('../fixtures/newproject');
 var newConstruct = require('../fixtures/newconstruct');
 var clickMainMenu = require('../fixtures/click-main-menu');
+var testProject = require('../fixtures/testproject');
 
 module.exports = {
   'Test undo / redo after copying a construct' : function (browser) {
@@ -17,12 +18,16 @@ module.exports = {
 
     // now we can go to the project page
     browser
-      .url('http://localhost:3001/project/test')
+      .url('http://localhost:3001/')
       // wait for inventory and inspector to be present
       .waitForElementPresent('.SidePanel.Inventory', 5000, 'Expected Inventory Groups')
-      .waitForElementPresent('.SidePanel.Inspector', 5000, 'Expected Inspector')
-      // expect to start with 8 blocks
-      .assert.countelements('.sbol-glyph', 8)
+      .waitForElementPresent('.SidePanel.Inspector', 5000, 'Expected Inspector');
+
+    testProject(browser);
+
+      // expect to start with 6 blocks
+    browser
+      .assert.countelements('.sbol-glyph', 6)
       // send select all
       .keys([browser.Keys.COMMAND, 'a'])
       .pause(1000)
@@ -35,18 +40,18 @@ module.exports = {
       // paste
       .keys([browser.Keys.NULL, browser.Keys.COMMAND, 'v'])
       .pause(1000)
-      // should now have 16 blocks
-      .assert.countelements(".sbol-glyph", 16)
+      // should now have 12 blocks
+      .assert.countelements(".sbol-glyph", 12)
       // undo
       .keys([browser.Keys.NULL, browser.Keys.COMMAND, 'z'])
       .pause(1000)
-      // back to 8 blocks
-      .assert.countelements(".sbol-glyph", 8)
+      // back to 6 blocks
+      .assert.countelements(".sbol-glyph", 6)
       // redo
       .keys([browser.Keys.NULL, browser.Keys.SHIFT, browser.Keys.COMMAND, 'z'])
       .pause(1000)
-      // back to 16 blocks
-      .assert.countelements(".sbol-glyph", 16)
+      // back to 12 blocks
+      .assert.countelements(".sbol-glyph", 12)
 
       .end();
   }
