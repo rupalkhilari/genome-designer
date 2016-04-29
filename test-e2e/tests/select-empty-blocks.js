@@ -17,7 +17,6 @@ module.exports = {
 
     // now we can go to the project page
     browser
-      .url('http://localhost:3001/project/test')
       // wait for inventory and inspector to be present
       .waitForElementPresent('.SidePanel.Inventory', 5000, 'Expected Inventory Groups')
       .waitForElementPresent('.SidePanel.Inspector', 5000, 'Expected Inspector')
@@ -27,16 +26,19 @@ module.exports = {
       // click the second inventory group 'EGF Parts' to open it
       .click('.InventoryGroup:nth-of-type(2) .InventoryGroup-heading');
 
-    // start with a fresh project
-    newProject(browser);
+    newConstruct(browser);
 
     // open the sbol symbols and drag from there to make a new construct with three empty blocks
-    browser.click('.InventoryGroup:nth-of-type(4) .InventoryGroup-heading');
+    browser
+      .click('.InventoryGroup:nth-of-type(4) .InventoryGroup-heading')
+      .pause(1000);
 
     dragFromTo(browser, '.InventoryItem:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 300, 30);
+    browser.pause(1000);
     dragFromTo(browser, '.InventoryItem:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 300, 30);
+    browser.pause(1000);
     dragFromTo(browser, '.InventoryItem:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 300, 30);
-
+    browser.pause(1000);
     // click select empty blocks in main menu
     clickMainMenu(browser, 2, 8);
 
