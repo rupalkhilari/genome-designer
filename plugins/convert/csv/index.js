@@ -135,7 +135,6 @@ const handleProject = (outputProject, rootBlockIds) => {
 // These return structures are NOT in GD format.
 const readCvsFile = (cvsString) => {
   const inputFile = createRandomStorageFile();
-
   const outputFile = createRandomStorageFile();
 
   const cmd = `python ${path.resolve(__dirname, 'convert.py')} from_csv ${inputFile} ${outputFile}`;
@@ -156,7 +155,12 @@ const readCvsFile = (cvsString) => {
 
 // Creates a rough project structure (not in GD format yet!) and a list of blocks from a cvs file
 const handleBlocks = (cvsInput) => {
-  return readCvsFile(cvsInput)
+  // remove the form data at the start of the string
+  let withoutFormHeaders = cvsInput.substr(cvsInput.indexOf('Name,Description,SBOL Type,Background Color,Sequence'));
+  // remove form boundary data at end of string
+  withoutFormHeaders = withoutFormHeaders.substr(0, withoutFormHeaders.indexOf('------WebKitFormBoundary'));
+  console.log('PARSE CSV:', withoutFormHeaders);
+  return readCvsFile(withoutFormHeaders)
     .then(result => {
       if (result && result.project && result.blocks &&
         result.project.components && result.project.components.length > 0) {
@@ -170,6 +174,7 @@ const handleBlocks = (cvsInput) => {
           });
       }
       else {
+        console.log("INVALID CSV");
         return 'Invalid cvs format.';
       }
     });

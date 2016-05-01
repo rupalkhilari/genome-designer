@@ -79,7 +79,7 @@ class ImportGenBankModal extends Component {
       const formData = new FormData();
       let isCSV = false;
       this.state.files.forEach(file => {
-        formData.append('genBankFiles', file, file.name);
+        formData.append('data', file, file.name);
         isCSV = file.name.toLowerCase().endsWith('.csv')
       });
       const xhr = new XMLHttpRequest();
