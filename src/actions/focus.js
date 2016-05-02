@@ -4,7 +4,7 @@ import invariant from 'invariant';
 import safeValidate from '../schemas/fields/safeValidate';
 import {id as idValidatorCreator} from '../schemas/fields/validators';
 
-const idValidator = safeValidate.bind(null, idValidatorCreator(), true);
+const idValidator = (id) => safeValidate(idValidatorCreator(), true, id);
 
 export const focusProject = (inputProjectId) => {
   return (dispatch, getState) => {

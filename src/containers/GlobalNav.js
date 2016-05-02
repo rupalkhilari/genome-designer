@@ -318,6 +318,13 @@ class GlobalNav extends Component {
           text: 'FILE',
           items: [
             {
+              text: 'Open Project',
+              disabled: !this.props.focus.forceProject,
+              action: () => {
+                this.props.push(`/project/${this.props.focus.forceProject.id}`);
+              },
+            },
+            {
               text: 'Save Project',
               shortcut: stringToShortcut('meta S'),
               action: () => {

@@ -33,7 +33,7 @@ export default class InventorySources extends Component {
           return (
             <div key={key}
                  onClick={(evt) => {
-                 evt.stopPropagation();
+                   evt.stopPropagation();
                    onSourceToggle(key);
                  }}
                  className="InventorySources-source">

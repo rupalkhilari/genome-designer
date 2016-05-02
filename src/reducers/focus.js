@@ -31,17 +31,23 @@ export default function inventory(state = initialState, action) {
     const { projectId } = action;
     return Object.assign({}, state, {
       forceProject: null,
+      forceBlocks: [],
       projectId: projectId,
     });
   }
   case ActionTypes.FOCUS_CONSTRUCT: {
     const { constructId } = action;
-    return Object.assign({}, state, {constructId: constructId });
+    return Object.assign({}, state, {
+      forceProject: null,
+      forceBlocks: [],
+      constructId: constructId,
+    });
   }
   case ActionTypes.FOCUS_BLOCKS : {
     const { blockIds } = action;
     invariant(Array.isArray(blockIds), 'must pass array to FOCUS_BLOCKS');
     return Object.assign({}, state, {
+      forceProject: null,
       forceBlocks: [],
       blockIds: blockIds,
     });
