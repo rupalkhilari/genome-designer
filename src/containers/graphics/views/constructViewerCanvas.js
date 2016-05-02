@@ -46,31 +46,13 @@ export class ConstructViewerCanvas extends Component {
    * higher values ( constructviewers ) will get dropped on first
    */
   componentDidMount() {
-    // edge threshold for autoscrolling
-    const edge = 150;
+
     // monitor drag overs to autoscroll the canvas when the mouse is near top or bottom
-    DnD.registerMonitor(ReactDOM.findDOMNode(this), {
-      monitorOver: (globalPosition) => {
-        const local = this.mouseTrap.globalToLocal(globalPosition, ReactDOM.findDOMNode(this));
-        const box = this.mouseTrap.element.getBoundingClientRect();
-        if (local.y < edge) {
-          this.autoScroll(-1);
-        } else {
-          if (local.y > box.height - edge) {
-            this.autoScroll(1);
-          } else {
-            // cancel the autoscroll
-            this.autoScroll(0);
-          }
-        }
-      },
+    DnD.registerMonitor(ReactDOM.findDOMNode(this),  {
+      monitorOver: this.mouseScroll.bind(this),
       monitorEnter: () => {},
-      monitorLeave: () => {
-        this.autoScroll(0);
-      },
-
+      monitorLeave: this.endMouseScroll.bind(this),
     });
-
 
     // drop target drag and drop handlers
     DnD.registerTarget(ReactDOM.findDOMNode(this.refs.dropTarget), {
@@ -98,6 +80,32 @@ export class ConstructViewerCanvas extends Component {
     DnD.unregisterMonitor(ReactDOM.findDOMNode(this));
     this.mouseTrap.dispose();
     this.mouseTrap = null;
+  }
+
+  /**
+   * start, continue or stop autoscroll based on given global mouse position
+   */
+  mouseScroll(globalPosition) {
+    const local = this.mouseTrap.globalToLocal(globalPosition, ReactDOM.findDOMNode(this));
+    const box = this.mouseTrap.element.getBoundingClientRect();
+    const edge = 100;
+    if (local.y < edge) {
+      this.autoScroll(-1);
+    } else {
+      if (local.y > box.height - edge) {
+        this.autoScroll(1);
+      } else {
+        // cancel the autoscroll
+        this.autoScroll(0);
+      }
+    }
+  }
+
+  /**
+   * end mouse scrolling
+   */
+  endMouseScroll() {
+    this.autoScroll(0);
   }
 
   /**
@@ -148,10 +156,17 @@ export class ConstructViewerCanvas extends Component {
    * render the component, the scene graph will render later when componentDidUpdate is called
    */
   render() {
+    // map construct viewers so we can pass down mouseScroll and endMouseScroll as properties
+    const constructViewers = this.props.children.map(constructViewer => {
+      return React.cloneElement(constructViewer, {
+        mouseScroll: this.mouseScroll.bind(this),
+        endMouseScroll: this.endMouseScroll.bind(this),
+      });
+    });
 
     // map construct viewers so we can propagate projectId and any recently dropped blocks
     return (<div className="ProjectPage-constructs no-vertical-scroll" onClick={this.onClick}>
-      {this.props.children}
+      {constructViewers}
       <div className="cvc-drop-target" ref="dropTarget" key="dropTarget">Drop blocks here to create a new construct.</div>
     </div>);
   }
