@@ -38,6 +38,7 @@ import {
   uiShowGenBankImport,
   uiToggleDetailView,
   uiSetGrunt,
+  uiShowAbout,
  } from '../actions/ui';
 import { inspectorToggleVisibility } from '../actions/inspector';
 import { inventoryToggleVisibility } from '../actions/inventory';
@@ -53,7 +54,8 @@ import {
 import {
   sortBlocksByIndexAndDepth,
   sortBlocksByIndexAndDepthExclude,
-  domSummary,
+  tos,
+  privacy,
 } from '../utils/ui/uiapi';
 import AutosaveTracking from '../components/GlobalNav/autosaveTracking';
 
@@ -440,39 +442,46 @@ class GlobalNav extends Component {
           items: [
             {
               text: 'User Guide',
-              action: () => {},
+              action: this.disgorgeDiscourse.bind(this, '/c/genome-designer/user-guide'),
             }, {
-              text: 'Show Tutorial',
-              action: () => {},
+              text: 'Tutorials',
+              action: this.disgorgeDiscourse.bind(this, '/c/genome-designer/tutorials'),
+            }, {
+              text: 'Forums',
+              action: this.disgorgeDiscourse.bind(this, '/c/genome-designer'),
+            }, {
+              text: 'Get Support',
+              action: this.disgorgeDiscourse.bind(this, '/c/genome-designer/support'),
             }, {
               text: 'Keyboard Shortcuts',
               action: () => {},
             }, {
-              text: 'Community Forum',
-              action: () => {},
-            }, {
-              text: 'Get Support',
-              action: () => {},
-            }, {
               text: 'Give Us Feedback',
-              action: () => {},
+              action: this.disgorgeDiscourse.bind(this, '/c/genome-designer/feedback'),
             }, {}, {
               text: 'About Genome Designer',
-              action: () => {},
+              action: () => {
+                this.props.uiShowAbout(true);
+              },
             }, {
               text: 'Terms of Use',
-              action: () => {},
+              action: () => {
+                window.open(tos, '_blank');
+              },
             }, {
               text: 'Privacy Policy',
-              action: () => {},
-            },
-            {
-              text: 'DOM Summary',
-              action: () => domSummary(),
+              action: () => {
+                window.open(privacy, '_blank');
+              },
             },
           ],
         },
       ]}/>);
+  }
+
+  disgorgeDiscourse(path) {
+    const uri = window.discourseDomain + path;
+    window.open(uri, '_blank');
   }
 
   render() {
@@ -524,6 +533,7 @@ export default connect(mapStateToProps, {
   push,
   uiShowGenBankImport,
   uiToggleDetailView,
+  uiShowAbout,
   uiSetGrunt,
   focusBlocks,
   focusBlocksAdd,

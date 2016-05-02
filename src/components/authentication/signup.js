@@ -5,6 +5,7 @@ import { push } from 'react-router-redux';
 import { userRegister } from '../../actions/user';
 import invariant from 'invariant';
 import { getItem, setItem } from '../../middleware/localStorageCache';
+import { tos, privacy } from '../../utils/ui/uiapi';
 
 /**
  * default visibility and text for error labels
@@ -209,8 +210,6 @@ class RegisterForm extends Component {
   }
 
   render() {
-    const tos = 'http://www.autodesk.com/company/legal-notices-trademarks/terms-of-service-autodesk360-web-services';
-    const privacy = 'http://www.autodesk.com/company/legal-notices-trademarks/privacy-statement';
 
     const registerStyle = {
       textAlign: 'center',

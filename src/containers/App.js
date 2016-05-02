@@ -4,6 +4,7 @@ import GlobalNav from './GlobalNav';
 import AuthenticationForms from './authentication/authenticationforms';
 import ImportGenBankModal from '../components/genbank/import';
 import ImportDNAForm from '../components/importdna/importdnaform';
+import AboutForm from '../components/aboutform';
 
 import '../styles/App.css';
 
@@ -44,6 +45,7 @@ class App extends Component {
         <AuthenticationForms />
         <ImportGenBankModal />
         <ImportDNAForm />
+        <AboutForm />
         <div className="App-pageContent">
           {this.props.children}
         </div>

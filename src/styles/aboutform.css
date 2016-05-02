@@ -1,0 +1,9 @@
+@import './form.css';
+
+.aboutform {
+  width: 500px;
+
+  button {
+    width: 50%;
+  }
+}
