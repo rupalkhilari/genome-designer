@@ -1,7 +1,5 @@
 .InventoryList {
   flex-grow: 1;
-  overflow-y: scroll;
-  margin-left: -3px; /* hack just cuz its purty */
   padding-bottom: 0.5em;
 
   &:empty {
