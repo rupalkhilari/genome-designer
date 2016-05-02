@@ -139,6 +139,7 @@ export default class MouseTrap {
    * @return {[type]} [description]
    */
   cancelDrag() {
+    this.lastLeftClick = null;
     if (this.dragging) {
       document.body.removeEventListener('mousemove', this.mouseDrag);
       document.body.removeEventListener('mouseup', this.mouseUp);

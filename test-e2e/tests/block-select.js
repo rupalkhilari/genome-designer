@@ -19,7 +19,6 @@ module.exports = {
 
     // now we can go to the project page
     browser
-      .url('http://localhost:3001/project/test')
       // wait for inventory and inspector to be present
       .waitForElementPresent('.SidePanel.Inventory', 5000, 'Expected Inventory Groups')
       .waitForElementPresent('.SidePanel.Inspector', 5000, 'Expected Inspector')
@@ -29,18 +28,19 @@ module.exports = {
       // sketch blocks
       .click('.InventoryGroup:nth-of-type(4) .InventoryGroup-heading');
 
-    // start with a fresh project
+    // start with a fresh project, single construct
     newProject(browser);
 
     // expect one construct
     browser.assert.countelements('.construct-viewer', 1);
 
     // add a single block
-    dragFromTo(browser, '.InventoryItem:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 30, 30);
+    dragFromTo(browser, '.InventoryItem:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(1)', 100, 70);
 
     browser
       // expect one block
-      .assert.countelements('.sbol-glyph', 1);
+      .assert.countelements('.sbol-glyph', 1)
+      .pause(500);
 
     // drag some other blocks into the construct
     // drag an item from the inventory
@@ -50,6 +50,7 @@ module.exports = {
           browser,
           '.InventoryItem:nth-of-type(' + i + ')', 10, 10,
           '.construct-viewer:nth-of-type(1) .sceneGraph .sbol-glyph:nth-of-type(1)', 10, 10);
+      browser.pause(50);
     }
 
     // should have 10 blocks total
@@ -88,6 +89,7 @@ module.exports = {
 
     // click outside the blocks to deselect them all
     clickAt(browser, '.scenegraph-userinterface', 10, 10);
+    browser.pause(1000);
     browser.assert.countelements(".scenegraph-userinterface-selection", 0);
 
     // simulate a fence drag over the entire construct to reselect everything
