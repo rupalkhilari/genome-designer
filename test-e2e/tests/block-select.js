@@ -26,8 +26,8 @@ module.exports = {
       // open inventory
       .click('.Inventory-trigger')
       .waitForElementPresent('.SidePanel.Inventory.visible', 5000, 'Expected inventory to be visible')
-      // click the second inventory group 'EGF Parts' to open it
-      .click('.InventoryGroup:nth-of-type(2) .InventoryGroup-heading');
+      // sketch blocks
+      .click('.InventoryGroup:nth-of-type(4) .InventoryGroup-heading');
 
     // start with a fresh project
     newProject(browser);
@@ -49,7 +49,7 @@ module.exports = {
       dragFromTo(
           browser,
           '.InventoryItem:nth-of-type(' + i + ')', 10, 10,
-          '.construct-viewer:nth-of-type(1) .sceneGraph .sbol-glyph:nth-of-type(1)', 30, 10);
+          '.construct-viewer:nth-of-type(1) .sceneGraph .sbol-glyph:nth-of-type(1)', 10, 10);
     }
 
     // should have 10 blocks total
