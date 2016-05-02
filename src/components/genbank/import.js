@@ -44,6 +44,7 @@ class ImportGenBankModal extends Component {
       files: [],
       error: null,
       processing: false,
+      destination: 'new project', // or 'current project'
     };
   }
 
@@ -78,18 +79,25 @@ class ImportGenBankModal extends Component {
       this.setState({processing: true});
       const formData = new FormData();
       let isCSV = false;
+      invariant(this.state.files.length === 1, 'currently import only supports 1 file at a time, the UI should not allow more');
       this.state.files.forEach(file => {
         formData.append('data', file, file.name);
         isCSV = file.name.toLowerCase().endsWith('.csv')
       });
       const xhr = new XMLHttpRequest();
-      xhr.open('POST', `/import/${isCSV ? 'csv' : 'genbank'}`, true);
+      const uri = `/import/${isCSV ? 'csv' : 'genbank'}${this.state.destination === 'current project' ? '/' + this.props.currentProjectId : ''}`;
+
+      xhr.open('POST', uri, true);
       xhr.onload = () => {
         if (xhr.status === 200) {
           this.props.uiShowGenBankImport(false);
           const json = JSON.parse(xhr.response);
           invariant(json && json.ProjectId, 'expect a project ID');
-          this.props.push(`/project/${json.ProjectId}`);
+          if (json.ProjectId === this.props.currentProjectId) {
+            this.props.projectLoad(json.ProjectId);
+          } else {
+            this.props.push(`/project/${json.ProjectId}`);
+          }
         } else {
           this.setState({error: `Error uploading file(s): ${xhr.status}`});
         }
@@ -117,13 +125,25 @@ class ImportGenBankModal extends Component {
               <div className="title">Import</div>
               <div className="radio">
                 <div>Import data to:</div>
-                <input type="radio" name="destination" disabled={this.state.processing}/>
-                <div>My Inventory</div>
+                <input
+                  checked={this.state.destination === 'new project'}
+                  type="radio"
+                  name="destination"
+                  disabled={this.state.processing}
+                  onChange={() => this.setState({destination: 'new project'})}
+                  />
+                <div>New Project</div>
               </div>
               <div className="radio">
                 <div/>
-                <input type="radio" name="destination" disabled={this.state.processing}/>
-                <div>My Project</div>
+                <input
+                  checked={this.state.destination === 'current project'}
+                  type="radio"
+                  name="destination"
+                  disabled={this.state.processing}
+                  onChange={() => this.setState({destination: 'current project'})}
+                  />
+                <div>Current Project</div>
               </div>
               <Dropzone
                 onDrop={this.onDrop.bind(this)}
