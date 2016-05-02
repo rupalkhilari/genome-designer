@@ -2,6 +2,12 @@ import Vector2D from './geometry/vector2d';
 import invariant from 'invariant';
 
 /**
+ * MS and pixel thresholds to register a double click
+ */
+const doubleClickTimeThreshold = 500;
+const doubleClickSpatialThreshold = 4;
+
+/**
  * handle mousedown,mousemove,mouseup events for the given element including
  * converting to local coordinates and capturing the mouse on the document.body
  * during a drag.
@@ -31,6 +37,7 @@ export default class MouseTrap {
     // mouseMove: Function - callback for mousemove event (point, event)
     // mouseDrag: Function - callback for mousemove with button held down event (point, event)
     // mouseUp: Function - callback for mouseup event (point, event) only when mousedown preceeded.
+    // doubleClick: Function - callback for left double click ( no drag will start on second click ) (point, event)
     this.options = Object.assign({}, options);
     invariant(this.options.element, 'options must contain an element');
     this.element = options.element;
@@ -71,14 +78,26 @@ export default class MouseTrap {
     // get local position and record the starting position and setup
     // move/up handlers on the body
     const localPosition = new Vector2D(event.offsetX, event.offsetY);
+    const time = Date.now();
+    // first check for a double click, otherwise treat as start of a drag
+    if (this.lastLeftClick && this.lastLeftClick.sub(localPosition).len() <= doubleClickSpatialThreshold
+        && time - this.lastLeftClickTime <= doubleClickTimeThreshold) {
+          this.lastLeftClick = null;
+          this.callback('doubleClick', event, localPosition);
+          return;
+        }
+
+    this.lastLeftClick = localPosition;
+    this.lastLeftClickTime = time;
+
     this.dragging = {
-      startPosition: localPosition,
+      startPosition: this.lastLeftClick,
     };
     document.body.addEventListener('mousemove', this.mouseDrag);
     document.body.addEventListener('mouseup', this.mouseUp);
 
     // invoke optional callback
-    this.callback('mouseDown', event, localPosition);
+    this.callback('mouseDown', event, this.lastLeftClick);
   }
 
   /**
