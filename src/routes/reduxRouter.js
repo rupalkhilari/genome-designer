@@ -6,7 +6,6 @@ import { Route, IndexRedirect, IndexRoute } from 'react-router';
 
 import App from '../containers/App';
 import ProjectPage from '../containers/ProjectPage';
-import AboutPage from '../components/AboutPage';
 import HomePage from '../components/homepage';
 import SupportPage from '../components/SupportPage';
 import AuthRouteWrapper from '../components/authentication/authRouteWrapper';
@@ -29,7 +28,6 @@ export default (
 
       {/* do not require authentication */}
 
-      <Route path="/about" component={AboutPage}/>
       <Route path="/support" component={SupportPage}/>
 
       <Route path="/homepage">
