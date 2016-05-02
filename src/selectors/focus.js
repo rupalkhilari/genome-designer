@@ -25,7 +25,7 @@ export const focusGetBlocks = (defaultToConstruct = true) => {
       return forceBlocks;
     }
     if (!blocks.length && defaultToConstruct === true) {
-      return dispatch(state.blocks[construct]);
+      return state.blocks[construct];
     }
     return blocks.map(blockId => state.blocks[blockId]);
   };
