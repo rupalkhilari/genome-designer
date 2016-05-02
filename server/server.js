@@ -45,7 +45,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 //HTTP logging middleware
 app.use(morgan('dev', {
-  skip: (req, res) => req.path.indexOf('browser-sync') >= 0,
+  skip: (req, res) => req.path.indexOf('browser-sync') >= 0 || req.path.indexOf('__webpack') >= 0,
 }));
 
 // view engine setup
