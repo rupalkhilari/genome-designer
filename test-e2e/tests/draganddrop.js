@@ -16,13 +16,10 @@ module.exports = {
 
     // now we can go to the project page
     browser
-      .url('http://localhost:3001/project/test')
       // wait for inventory and inspector to be present
       .waitForElementPresent('.SidePanel.Inventory', 5000, 'Expected Inventory Groups')
       .waitForElementPresent('.SidePanel.Inspector', 5000, 'Expected Inspector')
 
-    // start with a fresh project
-    newProject(browser);
     // create three new constructs
     newConstruct(browser);
     newConstruct(browser);
@@ -59,7 +56,7 @@ module.exports = {
 
     browser
       .pause(2000)
-      .assert.countelements('.sbol-glyph', 18)
+      .assert.countelements('.sbol-glyph', 21)
       .end();
   }
 };

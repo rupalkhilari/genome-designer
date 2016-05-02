@@ -265,12 +265,16 @@ export default class Layout {
     if (this.showHeader && !this.banner) {
       this.banner = new Node2D({
         sg: this.sceneGraph,
-        fill: this.baseColor,
-        stroke: this.baseColor,
         glyph: 'construct-banner',
         bounds: new Box2D(this.insetX, this.insetY, this.sceneGraph.availableWidth - this.insetX, kT.bannerHeight),
       });
       this.sceneGraph.root.appendChild(this.banner);
+    }
+    if (this.banner) {
+      this.banner.set({
+        fill: this.baseColor,
+        stroke: this.baseColor,
+      });
     }
   }
   /**
@@ -406,6 +410,9 @@ export default class Layout {
 
     default: throw new Error('Not a valid layout algorithm');
     }
+    // update connections etc after layout
+    this.postLayout();
+
     // auto size scene after layout
     this.autoSizeSceneGraph();
 
@@ -559,9 +566,6 @@ export default class Layout {
           this.currentBlocks,
           this.currentConstructId) + kT.nestedInsetY;
 
-        // update / create connection
-        this.updateConnection(part);
-
         // remove from old collection so the layout won't get disposed
         // and add to the new set of layouts
         this.newNestedLayouts[part] = nestedLayout;
@@ -578,8 +582,6 @@ export default class Layout {
       const rowWidth = rowEnd - rowStart;
       row.set({translateX: rowStart + rowWidth / 2, width: rowWidth});
     }
-    // cleanup dangling connections
-    this.releaseConnections();
 
     // cleanup any dangling rows
     this.disposeRows();
@@ -616,6 +618,22 @@ export default class Layout {
     return heightUsed + nestedVertical + kT.rowBarH;
   }
 
+  /**
+   * update connections after the layout
+   */
+  postLayout() {
+    // update / make all the parts
+    this.construct.components.forEach(part => {
+      // render children ( nested constructs )
+      if (this.hasChildren(part) && this.nodeFromElement(part).showChildren) {
+        // update / create connection
+        this.updateConnection(part);
+      }
+    });
+    // dispose dangling connections
+    this.disposeConnections();
+  }
+
   // the connector drops from the center of the source part, so the initial
   // row limit for the child is the right edge of this point
   getConnectionRowLimit(sourcePart) {
@@ -639,6 +657,7 @@ export default class Layout {
         strokeWidth: kT.rowBarW,
         sg: this.sceneGraph,
         parent: this.sceneGraph.root,
+        dataAttribute: {name: 'connection', value: cnodes.sourceBlock.id},
       });
       connector = {line};
       this.connectors[key] = connector;
@@ -660,7 +679,7 @@ export default class Layout {
   /**
    * remove any connections that are no longer in use
    */
-  releaseConnections() {
+  disposeConnections() {
     Object.keys(this.connectors).forEach(key => {
       const connector = this.connectors[key];
       if (connector.updateReference !== this.updateReference) {

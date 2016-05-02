@@ -76,7 +76,8 @@ export class InspectorBlock extends Component {
     if (this.props.instances.length === 1) {
       return this.props.instances[0].rules.sbol;
     }
-    return null;
+    //false is specially handled in symbol picker as blank, and is different than null (no symbol)
+    return false;
   }
 
   /**
@@ -84,7 +85,7 @@ export class InspectorBlock extends Component {
    */
   currentName() {
     if (this.props.instances.length === 1) {
-      return this.props.instances[0].metadata.name;
+      return this.props.instances[0].metadata.name || this.props.instances[0].rules.sbol;
     }
     return '';
   }
@@ -137,6 +138,7 @@ export class InspectorBlock extends Component {
                      onFocus={this.startTransaction}
                      onBlur={this.endTransaction}
                      onEscape={() => this.endTransaction(true)}
+                     updateOnBlur
                      value={this.currentName()}/>
 
         <h4 className="InspectorContent-heading">Description</h4>

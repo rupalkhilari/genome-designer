@@ -28,7 +28,17 @@ export const uiShowDNAImport = (bool) => {
       type: ActionTypes.UI_SHOW_DNAIMPORT,
       showDNAImport: bool,
     });
-    return name;
+    return bool;
+  };
+};
+
+export const uiShowAbout = (bool) => {
+  return (dispatch, getState) => {
+    dispatch({
+      type: ActionTypes.UI_SHOW_ABOUT,
+      showAbout: bool,
+    });
+    return bool;
   };
 };
 

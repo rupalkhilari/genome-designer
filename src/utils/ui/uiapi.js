@@ -164,3 +164,6 @@ export function domSummary() {
     console.log(`${classInfo.className} / Count: ${classInfo.count}`);
   });
 }
+
+export const tos = 'http://www.autodesk.com/company/legal-notices-trademarks/terms-of-service-autodesk360-web-services';
+export const privacy = 'http://www.autodesk.com/company/legal-notices-trademarks/privacy-statement';

@@ -5,6 +5,7 @@ var dragFromTo = require('../fixtures/dragfromto');
 var newProject = require('../fixtures/newproject');
 var newConstruct = require('../fixtures/newconstruct');
 var clickMainMenu = require('../fixtures/click-main-menu');
+var testProject = require('../fixtures/testproject');
 
 module.exports = {
   'Test copy and paste via keyboard for nested test project' : function (browser) {
@@ -15,14 +16,13 @@ module.exports = {
     // register via fixture
     var credentials = homepageRegister(browser);
 
+    // start with simple test project
+    testProject(browser);
+
     // now we can go to the project page
     browser
-      .url('http://localhost:3001/project/test')
-      // wait for inventory and inspector to be present
-      .waitForElementPresent('.SidePanel.Inventory', 5000, 'Expected Inventory Groups')
-      .waitForElementPresent('.SidePanel.Inspector', 5000, 'Expected Inspector')
       // expect to start with 8 blocks
-      .assert.countelements('.sbol-glyph', 8)
+      .assert.countelements('.sbol-glyph', 6)
       // send select all
       .keys([browser.Keys.COMMAND, 'a'])
       .pause(1000)
@@ -36,7 +36,7 @@ module.exports = {
       .keys([browser.Keys.NULL, browser.Keys.COMMAND, 'v'])
       .pause(1000)
       // should now have 16 blocks
-      .assert.countelements(".sbol-glyph", 16)
+      .assert.countelements(".sbol-glyph", 12)
       .end();
   }
 };

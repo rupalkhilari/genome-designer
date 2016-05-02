@@ -45,7 +45,7 @@ module.exports = {
     browser
       // we should have a single focused block, so changing its text should change the displayed block
       .clearValue('.Inspector .InputSimple-input')
-      .setValue('.Inspector .InputSimple-input', 'Donald Trump')
+      .setValue('.Inspector .InputSimple-input', ['Donald Trump', browser.Keys.ENTER])
       .pause(500)
       // expect the construct title to be updated
       .assert.containsText('[data-nodetype="block"] .nodetext', 'Donald Trump');
@@ -54,7 +54,7 @@ module.exports = {
       clickConstructTitle(browser, 'New Construct');
     browser
       .clearValue('.Inspector .InputSimple-input')
-      .setValue('.Inspector .InputSimple-input', 'Hillary Clinton')
+      .setValue('.Inspector .InputSimple-input', ['Hillary Clinton', browser.Keys.ENTER])
       .pause(500)
       .assert.containsText('[data-nodetype="construct-title"] .nodetext', 'Hillary Clinton');
     browser
@@ -62,7 +62,7 @@ module.exports = {
       .click('.ProjectHeader')
       .pause(500)
       .clearValue('.Inspector .InputSimple-input')
-      .setValue('.Inspector .InputSimple-input', 'Bernie Saunders')
+      .setValue('.Inspector .InputSimple-input', ['Bernie Saunders', browser.Keys.ENTER])
       .pause(500)
       .assert.containsText('.ProjectHeader-title', 'Bernie Saunders')
       .end();

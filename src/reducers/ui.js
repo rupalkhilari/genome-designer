@@ -6,6 +6,7 @@ export const initialState = {
   showMainMenu: true,
   authenticationForm: 'none',
   showDNAImport: false,
+  showAbout: false,
   gruntMessage: null,
   showGenBankImport: false,
   userWidgetVisible: true,
@@ -24,6 +25,10 @@ export default function inventory(state = initialState, action) {
   case ActionTypes.UI_SHOW_DNAIMPORT: {
     const { showDNAImport } = action;
     return Object.assign({}, state, {showDNAImport});
+  }
+  case ActionTypes.UI_SHOW_ABOUT: {
+    const { showAbout } = action;
+    return Object.assign({}, state, {showAbout});
   }
   case ActionTypes.UI_TOGGLE_DETAIL_VIEW : {
     const { nextState } = action;

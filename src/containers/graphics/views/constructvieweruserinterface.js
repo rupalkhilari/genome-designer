@@ -189,16 +189,25 @@ export default class ConstructViewerUserInterface extends UserInterface {
   }
 
   /**
+   * double click handler
+   */
+  doubleClick(evt, point) {
+    const block = this.topBlockAt(point);
+    if (block) {
+      this.constructViewer.openInspector();
+    }
+  }
+  /**
    * mouse move handler ( note, not the same as drag which is with a button held down )
    */
   mouseMove(evt, point) {
     this.setHover(this.topBlockAt(point));
   }
   /**
-   * mouse down handler
+   * mouse down handler, selection occurs on up since we have to wait to
+   * see if a drag occurs first.
    */
   mouseDown(evt, point) {
-    //this.mouseSelect(evt, point);
   }
 
   /**
@@ -210,6 +219,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
       this.selectNodesByRectangle(this.fence.getBox());
       this.fence.dispose();
       this.fence = null;
+      this.constructViewer.props.endMouseScroll();
     } else {
       this.mouseSelect(evt, point);
     }
@@ -414,6 +424,9 @@ export default class ConstructViewerUserInterface extends UserInterface {
       }
     } else {
       if (this.fence) {
+        // mousetrap sends local mouse position but we want the global one for
+        // autoscrolling in the canvas
+        this.constructViewer.props.mouseScroll(this.mouseTrap.mouseToGlobal(evt));
         this.fence.update(point);
       }
     }
@@ -482,28 +495,16 @@ export default class ConstructViewerUserInterface extends UserInterface {
     this.selectConstruct();
     // convert global point to local space via our mousetrap
     const localPosition = this.mouseTrap.globalToLocal(globalPosition, this.el);
-    // there is a different highlight / UX experience depending on what is being dragged
-    const { type } = payload;
-    if (type === sbolDragType) {
-      // sbol symbol so we highlight the targeted block
-      const hit = this.nearestBlockAndOptionalVerticalEdgeAt(localPosition, proxySize);
-      if (hit) {
-        if (hit.edge) {
-          this.showInsertionPointForEdge(hit.block, hit.edge);
-        } else {
-          this.showInsertionPointForBlock(hit.block);
-        }
-      } else {
-        this.showDefaultInsertPoint();
-      }
-    } else {
-      // block, so we highlight the insertion point
-      const hit = this.nearestBlockAndOptionalVerticalEdgeAt(localPosition, proxySize);
-      if (hit) {
+    // user might be targeting the edge or center of block, or no block at all
+    const hit = this.nearestBlockAndOptionalVerticalEdgeAt(localPosition, proxySize);
+    if (hit) {
+      if (hit.edge) {
         this.showInsertionPointForEdge(hit.block, hit.edge);
       } else {
-        this.showDefaultInsertPoint();
+        this.showInsertionPointForBlock(hit.block);
       }
+    } else {
+      this.showDefaultInsertPoint();
     }
   }
   /**
@@ -538,7 +539,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
     const node = this.layout.nodeFromElement(block);
     const AABB = node.getAABB();
     const xposition = edge === 'left' ? AABB.x : AABB.right;
-    this.showInsertionPointForEdgeAt(xposition - 1, AABB.y + 1);
+    this.showInsertionPointForEdgeAt(xposition - 4, AABB.y + 1);
 
     // save the current insertion point
     this.insertion = {block, node, edge};
@@ -556,7 +557,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
     }
     this.insertionEdgeEl.style.display = 'block';
     this.insertionEdgeEl.style.left = x + 'px';
-    this.insertionEdgeEl.style.top = y + 'px';
+    this.insertionEdgeEl.style.top = y - 12 + 'px';
   }
  /**
   * show the insertion point over the given block, usually used when dropping
@@ -577,10 +578,10 @@ export default class ConstructViewerUserInterface extends UserInterface {
     const node = this.layout.nodeFromElement(block);
     const AABB = node.getAABB();
     // position insertion element at the appropriate edge
-    this.insertionBlockEl.style.left = AABB.x + 'px';
-    this.insertionBlockEl.style.top = AABB.y + 'px';
-    this.insertionBlockEl.style.width = AABB.w + 'px';
-    this.insertionBlockEl.style.height = AABB.h + 'px';
+    this.insertionBlockEl.style.left = AABB.x - 8 + 'px';
+    this.insertionBlockEl.style.top = AABB.y - 8 + 'px';
+    this.insertionBlockEl.style.width = AABB.w + 1 + 'px';
+    this.insertionBlockEl.style.height = AABB.h + 1 + 'px';
 
     // save the current insertion point
     this.insertion = {block, node};

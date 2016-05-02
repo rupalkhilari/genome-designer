@@ -16,7 +16,8 @@ import errorHandlingMiddleware from '../utils/errorHandlingMiddleware';
 
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
-  strict: false, //allow values other than arrays and objects
+  strict: false, //allow values other than arrays and objects,
+  limit: 10 * 1024 * 1024,
 });
 
 /***************************

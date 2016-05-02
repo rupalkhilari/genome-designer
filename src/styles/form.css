@@ -113,6 +113,10 @@
     font-size: var(--fontsize);
     color: var(--textcolor);
   }
+  p {
+    font-size: var(--fontsize);
+    color: var(--textcolor);
+  }
   a.blue-link {
     color: var(--colors-bluetext);
   }

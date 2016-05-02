@@ -8,7 +8,7 @@ import '../../styles/SymbolPicker.css';
 export default class SymbolPicker extends Component {
   static propTypes = {
     readOnly: PropTypes.bool,
-    current: PropTypes.string,
+    current: PropTypes.any,
     onSelect: PropTypes.func,
   };
 
@@ -22,8 +22,6 @@ export default class SymbolPicker extends Component {
 
   onClickCurrent = () => {
     const handleDocumentClick = (evt) => {
-      if (this.pickerToggler.contains(evt.target)) return;
-
       this.setState({showContent: false});
       document.removeEventListener('click', handleDocumentClick);
     };
@@ -38,16 +36,14 @@ export default class SymbolPicker extends Component {
   };
 
   onMouseOut = () => {
-    const def = 'No Symbol';
-    this.setState({ hoverText: this.props.current || def });
+    this.setState({ hoverText: this.props.current });
   };
 
   render() {
     const { current, readOnly, onSelect } = this.props;
     const noSymbol = 'noSymbol';
-    const hoverTextDefault = 'No Symbol';
-
-    //hack hack hack - just positioning picker using pixels, not very smart about figuring out where it is, assuming this is always a second picker
+    const noSymbolText = 'No Symbol';
+    const currentSymbol = current || ((current === false) ? null : noSymbol);
 
     return (
       <div className={'Picker SymbolPicker' + (!!readOnly ? ' readOnly' : '')}>
@@ -55,12 +51,12 @@ export default class SymbolPicker extends Component {
              ref={ref => this.pickerToggler = ref}
              onClick={this.onClickCurrent}>
           <PickerItem isCurrent={false}
-                      svg={current || noSymbol}/>
+                      svg={currentSymbol}/>
         </div>
         {this.state.showContent && (
           <div className="Picker-content"
                onMouseOut={this.onMouseOut}>
-            <div className="Picker-currentHovered">{this.state.hoverText || hoverTextDefault}</div>
+            <div className="Picker-currentHovered">{this.state.hoverText || noSymbolText}</div>
             <div className="Picker-options">
               {symbols.map(symbolObj => {
                 const { id, name } = symbolObj;
@@ -74,7 +70,7 @@ export default class SymbolPicker extends Component {
                 />);
               })}
               <PickerItem isCurrent={!current}
-                          name={'No Symbol'}
+                          name={noSymbolText}
                           svg={noSymbol}
                           onClick={() => !readOnly && onSelect(null)}
               />
