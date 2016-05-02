@@ -39,7 +39,7 @@ class DNAImportForm extends Component {
       }
       // check for valid sequence
       // ( you should not be able to enter an invalid sequence but just in case )
-      const dnaRegex = dnaLooseRegexp;
+      const dnaRegex = dnaLooseRegexp();
       const isValid = dnaRegex.test(clean);
       this.setState({
         inputValid: isValid,

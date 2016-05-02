@@ -1,6 +1,6 @@
-import React, {Component, PropTypes} from 'react';
-import {connect} from 'react-redux';
-import {inspectorToggleVisibility} from '../actions/inspector';
+import React, { Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
+import { inspectorToggleVisibility } from '../actions/inspector';
 
 import InspectorBlock from '../components/InspectorBlock';
 import InspectorProject from '../components/InspectorProject';
@@ -28,9 +28,9 @@ export class Inspector extends Component {
     const { isVisible, instances, project, readOnly } = this.props;
 
     // inspect instances, or construct if no instance or project if no construct or instances
-    let inspect = instances && instances.length
-    ? <InspectorBlock instances={instances} readOnly={readOnly}/>
-    : <InspectorProject instance={project} readOnly={readOnly}/>;
+    const inspect = instances && instances.length
+      ? <InspectorBlock instances={instances} readOnly={readOnly}/>
+      : <InspectorProject instance={project} readOnly={readOnly}/>;
 
     return (
       <div className={'SidePanel Inspector no-vertical-scroll' +
@@ -68,7 +68,7 @@ function mapStateToProps(state, props) {
   //ensure that blocks removed from store dont error / don't pass empty instances
   let instances = unfilteredInstances.filter(el => !!el);
   if (!instances.length && !!construct) {
-    instances = [ state.blocks[construct] ];
+    instances = [state.blocks[construct]];
   }
 
   const { projectId } = props; //from routing
@@ -88,7 +88,6 @@ function mapStateToProps(state, props) {
     project,
   };
 }
-
 
 export default connect(mapStateToProps, {
   inspectorToggleVisibility,

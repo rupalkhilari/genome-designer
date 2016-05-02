@@ -88,9 +88,10 @@ export const sequence = (params = {}) => input => {
     return new Error(`${input} is not a string`);
   }
 
-  const sequenceRegex = params.loose === true ? dnaLooseRegexp : dnaStrictRegexp;
+  const sequenceRegex = params.loose === true ? dnaLooseRegexp() : dnaStrictRegexp();
 
-  if (!sequenceRegex.test(input)) {
+  if (sequenceRegex.test(input) !== true) {
+    console.log('got error');
     return new Error(`${input} is not a valid sequence`);
   }
 };
