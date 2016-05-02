@@ -125,7 +125,11 @@ class ImportGenBankModal extends Component {
                 <input type="radio" name="destination" disabled={this.state.processing}/>
                 <div>My Project</div>
               </div>
-              <Dropzone onDrop={this.onDrop.bind(this)} className="dropzone" activeClassName="dropzone-hot">
+              <Dropzone
+                onDrop={this.onDrop.bind(this)}
+                className="dropzone"
+                activeClassName="dropzone-hot"
+                multiple={false}>
                 <div className="dropzone-text">Drop Files Here</div>
               </Dropzone>
               {this.showFiles()}
