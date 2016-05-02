@@ -147,10 +147,10 @@ class GlobalNav extends Component {
   }
 
   /**
-   * save current project and signal this as the most recent project to reopen
+   * save current project, return promise for chaining
    */
   saveProject() {
-    this.props.projectSave(this.props.currentProjectId);
+    return this.props.projectSave(this.props.currentProjectId);
   }
 
   /**
@@ -184,12 +184,15 @@ class GlobalNav extends Component {
    * @return {[type]} [description]
    */
   downloadProjectGenbank() {
-    // for now use an iframe otherwise any errors will corrupt the page
-    const url = `${window.location.protocol}//${window.location.host}/export/genbank/${this.props.currentProjectId}`;
-    var iframe = document.createElement("iframe");
-    iframe.style.display = "none";
-    iframe.src = url;
-    document.body.appendChild(iframe);
+    this.saveProject()
+      .then(() => {
+        // for now use an iframe otherwise any errors will corrupt the page
+        const url = `${window.location.protocol}//${window.location.host}/export/genbank/${this.props.currentProjectId}`;
+        var iframe = document.createElement("iframe");
+        iframe.style.display = "none";
+        iframe.src = url;
+        document.body.appendChild(iframe);
+      });
   }
 
   /**
