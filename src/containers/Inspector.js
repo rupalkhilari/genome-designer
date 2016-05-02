@@ -57,18 +57,18 @@ export class Inspector extends Component {
 
 function mapStateToProps(state, props) {
   const { isVisible } = state.inspector;
-  const { forceBlocks, blocks, forceProject, construct } = state.focus;
+  const { forceBlocks, blockIds, forceProject, constructId } = state.focus;
 
   //use forceBlock if available, otherwise use selected blocks
   const unfilteredInstances = forceBlocks.length ?
     forceBlocks :
-    (blocks && blocks.length) ?
-      blocks.map(blockId => state.blocks[blockId]) :
+    (blockIds && blockIds.length) ?
+      blockIds.map(blockId => state.blocks[blockId]) :
       [];
   //ensure that blocks removed from store dont error / don't pass empty instances
   let instances = unfilteredInstances.filter(el => !!el);
-  if (!instances.length && !!construct) {
-    instances = [state.blocks[construct]];
+  if (!instances.length && !!constructId) {
+    instances = [state.blocks[constructId]];
   }
 
   const { projectId } = props; //from routing

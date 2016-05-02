@@ -2,32 +2,32 @@ import * as BlockSelector from './blocks';
 
 export const focusGetProject = () => {
   return (dispatch, getState) => {
-    const { forceProject, project } = getState().focus;
+    const { forceProject, projectId } = getState().focus;
     if (forceProject) {
       return forceProject;
     }
-    return getState().projects[project];
+    return getState().projects[projectId];
   };
 };
 
 export const focusGetConstruct = () => {
   return (dispatch, getState) => {
     const state = getState();
-    return state.blocks[state.focus.construct];
+    return state.blocks[state.focus.constructId];
   };
 };
 
 export const focusGetBlocks = (defaultToConstruct = true) => {
   return (dispatch, getState) => {
     const state = getState();
-    const { forceBlocks, blocks, construct } = state.focus;
+    const { forceBlocks, blockIds, constructId } = state.focus;
     if (forceBlocks.length) {
       return forceBlocks;
     }
-    if (!blocks.length && defaultToConstruct === true) {
-      return state.blocks[construct];
+    if (!blockIds.length && defaultToConstruct === true) {
+      return state.blocks[constructId];
     }
-    return blocks.map(blockId => state.blocks[blockId]);
+    return blockIds.map(blockId => state.blocks[blockId]);
   };
 };
 

@@ -20,19 +20,19 @@ export const focusProject = (inputProjectId) => {
 
 export const focusConstruct = (inputConstructId) => {
   return (dispatch, getState) => {
+    //null is valid to unselect all constructs
     const constructId = idValidator(inputConstructId) ? inputConstructId : null;
 
     //prune blocks if outside current construct
-    const currentBlocks = getState().focus.blocks;
+    const currentBlocks = getState().focus.blockIds;
     if (constructId && currentBlocks.length) {
-      //const construct = state.blocks[constructId];
       const children = dispatch(BlockSelector.blockGetChildrenRecursive(constructId));
-      const blocks = currentBlocks.filter(blockId => {
+      const blockIds = currentBlocks.filter(blockId => {
         return children.some(block => block.id === blockId);
       });
       dispatch({
         type: ActionTypes.FOCUS_BLOCKS,
-        blocks,
+        blockIds,
       });
     }
 
@@ -44,17 +44,17 @@ export const focusConstruct = (inputConstructId) => {
   };
 };
 
-export const focusBlocks = (blocks) => {
+export const focusBlocks = (blockIds) => {
   return (dispatch, getState) => {
-    invariant(Array.isArray(blocks), 'must pass array to focus blocks');
-    invariant(blocks.every(block => idValidator(block)), 'must pass array of block IDs');
+    invariant(Array.isArray(blockIds), 'must pass array to focus blocks');
+    invariant(blockIds.every(block => idValidator(block)), 'must pass array of block IDs');
 
-    if (blocks.length) {
-      const firstBlockId = blocks[0];
+    if (blockIds.length) {
+      const firstBlockId = blockIds[0];
       const construct = dispatch(BlockSelector.blockGetParentRoot(firstBlockId));
       // null => no parent => construct (or detached)... undefined could be soething else
       const constructId = !!construct ? construct.id : (construct !== null ? firstBlockId : undefined);
-      if (constructId !== getState().focus.construct || constructId === firstBlockId) {
+      if (constructId !== getState().focus.constructId || constructId === firstBlockId) {
         dispatch({
           type: ActionTypes.FOCUS_CONSTRUCT,
           constructId,
@@ -64,21 +64,21 @@ export const focusBlocks = (blocks) => {
 
     dispatch({
       type: ActionTypes.FOCUS_BLOCKS,
-      blocks,
+      blockIds,
     });
-    return blocks;
+    return blockIds;
   };
 };
 
-export const focusBlocksAdd = (blocksToAdd) => {
+export const focusBlocksAdd = (blocksIdsToAdd) => {
   return (dispatch, getState) => {
-    invariant(Array.isArray(blocksToAdd), 'must pass array to focus blocks');
-    invariant(blocksToAdd.every(block => idValidator(block)), 'must pass array of block IDs');
+    invariant(Array.isArray(blocksIdsToAdd), 'must pass array to focus blocks');
+    invariant(blocksIdsToAdd.every(block => idValidator(block)), 'must pass array of block IDs');
 
-    const base = getState().focus.blocks;
-    const blocks = [...new Set([...base, ...blocksToAdd])];
+    const base = getState().focus.blockIds;
+    const blockIds = [...new Set([...base, ...blocksIdsToAdd])];
 
-    return dispatch(focusBlocks(blocks));
+    return dispatch(focusBlocks(blockIds));
   };
 };
 
@@ -86,8 +86,8 @@ export const focusBlocksToggle = (blocksToToggle) => {
   return (dispatch, getState) => {
     invariant(Array.isArray(blocksToToggle), 'must pass array to focus blocks');
 
-    const currentBlocks = getState().focus.blocks
-    const blockSet = new Set(currentBlocks);
+    const currentBlockIds = getState().focus.blockIds;
+    const blockSet = new Set(currentBlockIds);
 
     blocksToToggle.forEach(block => {
       if (blockSet.has(block)) {
@@ -96,9 +96,9 @@ export const focusBlocksToggle = (blocksToToggle) => {
         blockSet.add(block);
       }
     });
-    const blocks = [...blockSet];
+    const blockIds = [...blockSet];
 
-    return dispatch(focusBlocks(blocks));
+    return dispatch(focusBlocks(blockIds));
   };
 };
 

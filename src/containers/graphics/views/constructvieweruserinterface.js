@@ -51,7 +51,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
       }
     });
     // combine with existing selection
-    this.constructViewer.blockSelected(parts.concat(this.constructViewer.props.focus.blocks));
+    this.constructViewer.blockSelected(parts.concat(this.constructViewer.props.focus.blockIds));
   }
 
   /**
@@ -314,7 +314,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * true if we are the selected construct
    */
   isSelectedConstruct() {
-    return this.constructViewer.props.construct.id === this.constructViewer.props.focus.construct;
+    return this.constructViewer.props.construct.id === this.constructViewer.props.focus.constructId;
   }
   /**
    * select the construct if not already selected
@@ -322,7 +322,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
   selectConstruct() {
     // select the construct if not already the selected construct ( changing
     // the construct will remove blocks that are not part of the construct from the selections )
-    if (this.constructViewer.props.construct.id !== this.constructViewer.props.focus.construct) {
+    if (this.constructViewer.props.construct.id !== this.constructViewer.props.focus.constructId) {
       this.constructViewer.constructSelected(this.constructViewer.props.construct.id);
     }
   }
@@ -385,7 +385,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
         dispatch(transact());
         // if the block being dragging is one of the selections then single select it
         let draggables = this.selectedElements;
-        if (!this.constructViewer.props.focus.blocks.includes(block)) {
+        if (!this.constructViewer.props.focus.blockIds.includes(block)) {
           draggables = [block];
           this.constructViewer.blockSelected(draggables);
         }

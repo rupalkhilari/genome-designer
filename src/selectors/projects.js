@@ -17,7 +17,7 @@ export const projectGet = (projectId) => {
 export const projectGetCurrentId = () => {
   return (dispatch, getState) => {
     const { focus } = getState();
-    return !!focus ? focus.project : null;
+    return !!focus ? focus.projectId : null;
   };
 };
 

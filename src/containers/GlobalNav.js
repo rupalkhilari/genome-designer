@@ -143,7 +143,7 @@ class GlobalNav extends Component {
    * select all blocks of the current construct
    */
   onSelectAll() {
-    this.props.focusBlocks(this.props.blockGetChildrenRecursive(this.props.focus.construct).map(block => block.id));
+    this.props.focusBlocks(this.props.blockGetChildrenRecursive(this.props.focus.constructId).map(block => block.id));
   }
 
   /**
@@ -207,7 +207,7 @@ class GlobalNav extends Component {
    */
   findInsertBlock() {
     // sort blocks according to 'natural order'
-    const sorted = sortBlocksByIndexAndDepth(this.props.focus.blocks);
+    const sorted = sortBlocksByIndexAndDepth(this.props.focus.blockIds);
     // the right most, top most block is the insertion point
     const highest = sorted.pop();
     // return parent of highest block and index + 1 so that the block is inserted after the highest block
@@ -217,7 +217,7 @@ class GlobalNav extends Component {
     };
 
     // now locate the block and returns its parent id and the index to start inserting at
-    let current = this.props.focus.construct;
+    let current = this.props.focus.constructId;
     let index = 0;
     let blockIndex = -1;
     let blockParent = null;
@@ -235,12 +235,12 @@ class GlobalNav extends Component {
 
   // copy the focused blocks to the clipboard using a deep clone
   copyFocusedBlocksToClipboard() {
-    if (this.props.focus.blocks.length) {
+    if (this.props.focus.blockIds.length) {
       // sort selected blocks so they are pasted in the same order as they exist now.
       // NOTE: we don't copy the children of any selected parents since they will
       // be cloned along with their parent
       //const sorted = sortBlocksByIndexAndDepth(this.props.focus.blocks);
-      const sorted = sortBlocksByIndexAndDepthExclude(this.props.focus.blocks);
+      const sorted = sortBlocksByIndexAndDepthExclude(this.props.focus.blockIds);
       // sorted is an array of array, flatten while retaining order
       const currentProjectVersion = this.props.projectGetVersion(this.props.currentProjectId);
       const clones = sorted.map(info => {
@@ -258,7 +258,7 @@ class GlobalNav extends Component {
    * select all the empty blocks in the current construct
    */
   selectEmptyBlocks() {
-    const allChildren = this.props.blockGetChildrenRecursive(this.props.focus.construct);
+    const allChildren = this.props.blockGetChildrenRecursive(this.props.focus.constructId);
     const emptySet = allChildren.filter(block => !block.hasSequence()).map(block => block.id);
     this.props.focusBlocks(emptySet);
     if (!emptySet.length) {
@@ -273,8 +273,8 @@ class GlobalNav extends Component {
 
   // cut focused blocks to the clipboard, no clone required since we are removing them.
   cutFocusedBlocksToClipboard() {
-    if (this.props.focus.blocks.length) {
-      const blockIds = this.props.blockDetach(...this.props.focus.blocks);
+    if (this.props.focus.blockIds.length) {
+      const blockIds = this.props.blockDetach(...this.props.focus.blockIds);
       this.props.clipboardSetData([clipboardFormats.blocks], [blockIds.map(blockId => this.props.blocks[blockId])]);
       this.props.focusBlocks([]);
     }
@@ -288,7 +288,7 @@ class GlobalNav extends Component {
       const blocks = this.props.clipboard.data[index];
       invariant(blocks && blocks.length && Array.isArray(blocks), 'expected array of blocks on clipboard for this format');
       // get current construct
-      const construct = this.props.blocks[this.props.focus.construct];
+      const construct = this.props.blocks[this.props.focus.constructId];
       invariant(construct, 'expected a construct');
       // we have to clone the blocks currently on the clipboard since they
       // can't be pasted twice
@@ -298,7 +298,7 @@ class GlobalNav extends Component {
       // insert at end of construct if no blocks selected
       let insertIndex = construct.components.length;
       let parentId = construct.id;
-      if (this.props.focus.blocks.length) {
+      if (this.props.focus.blockIds.length) {
         const insertInfo = this.findInsertBlock();
         insertIndex = insertInfo.index;
         parentId = insertInfo.parent;
@@ -368,21 +368,21 @@ class GlobalNav extends Component {
             }, {}, {
               text: 'Select All',
               shortcut: stringToShortcut('meta A'),
-              disabled: !this.props.focus.construct,
+              disabled: !this.props.focus.constructId,
               action: () => {
                 this.onSelectAll();
               },
             }, {
               text: 'Cut',
               shortcut: stringToShortcut('meta X'),
-              disabled: !this.props.focus.blocks.length,
+              disabled: !this.props.focus.blockIds.length,
               action: () => {
                 this.cutFocusedBlocksToClipboard();
               },
             }, {
               text: 'Copy',
               shortcut: stringToShortcut('meta C'),
-              disabled: !this.props.focus.blocks.length,
+              disabled: !this.props.focus.blockIds.length,
               action: () => {
                 this.copyFocusedBlocksToClipboard();
               },
@@ -396,7 +396,7 @@ class GlobalNav extends Component {
             }, {}, {
               text: 'Add Sequence',
               action: () => {
-                if (!this.props.focus.blocks.length) {
+                if (!this.props.focus.blockIds.length) {
                   this.props.uiSetGrunt('Sequence data must be added to or before a selected block. Please select a block and try again.');
                 } else {
                   this.props.uiShowDNAImport(true);
@@ -404,7 +404,7 @@ class GlobalNav extends Component {
               },
             }, {
               text: 'Select Empty Blocks',
-              disabled: !this.props.focus.construct,
+              disabled: !this.props.focus.constructId,
               action: () => {
                 this.selectEmptyBlocks();
               },
@@ -433,7 +433,7 @@ class GlobalNav extends Component {
               shortcut: stringToShortcut('meta u'),
             }, {}, {
               text: 'Select Empty Blocks',
-              disabled: !this.props.focus.construct,
+              disabled: !this.props.focus.constructId,
               action: () => {
                 this.selectEmptyBlocks();
               },
