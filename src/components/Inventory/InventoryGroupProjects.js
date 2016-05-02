@@ -150,6 +150,7 @@ export class InventoryGroupProjects extends Component {
             <InventoryListGroup key={projectId}
                                 title={project.metadata.name || 'Untitled Project'}
                                 manual
+                                hideToggle={!project.components.length}
                                 isExpanded={isExpanded}
                                 onToggle={(nextState) => this.onToggleProject(nextState, projectId)}
                                 isActive={isActive}>
