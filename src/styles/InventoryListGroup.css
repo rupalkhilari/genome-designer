@@ -11,7 +11,8 @@
   }
 
   &-title {
-
+    cursor: pointer;
+    user-select: none;
   }
 
   &-toggle {
@@ -24,6 +25,7 @@
     background-repeat: no-repeat;
     background-size: contain;
     transition: transform var(--timing-extrafast) ease-out;
+    cursor: pointer;
   }
 
   &-contents {
