@@ -14,17 +14,15 @@ export default function inventory(state = initialState, action) {
   switch (action.type) {
   case ActionTypes.FOCUS_FORCE_PROJECT: {
     const { project } = action;
-    return Object.assign({}, state, {
+    return Object.assign({}, initialState, {
       forceProject: project,
-      forceBlocks: [],
     });
   }
   case ActionTypes.FOCUS_FORCE_BLOCKS: {
     const { blocks } = action;
     invariant(Array.isArray(blocks), 'must pass array to FOCUS_FORCE_BLOCKS');
-    return Object.assign({}, state, {
+    return Object.assign({}, initialState, {
       forceBlocks: blocks,
-      forceProject: null,
     });
   }
   case ActionTypes.FOCUS_PROJECT: {
