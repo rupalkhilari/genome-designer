@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { push } from 'react-router-redux';
 import { projectGet, projectListAllBlocks } from '../../selectors/projects';
-import { projectList, projectLoad } from '../../actions/projects';
+import { projectList, projectLoad, projectSave } from '../../actions/projects';
 import { focusForceProject } from '../../actions/focus';
 import { blockStash } from '../../actions/blocks';
 import { inspectorToggleVisibility } from '../../actions/inspector';
@@ -25,6 +25,7 @@ export class InventoryGroupProjects extends Component {
     projectList: PropTypes.func.isRequired,
     projectLoad: PropTypes.func.isRequired,
     projectGet: PropTypes.func.isRequired,
+    projectSave: PropTypes.func.isRequired,
     projectListAllBlocks: PropTypes.func.isRequired,
     focusForceProject: PropTypes.func.isRequired,
     inspectorToggleVisibility: PropTypes.func.isRequired,
@@ -70,8 +71,9 @@ export class InventoryGroupProjects extends Component {
         //inspect it
         this.inspectProject(projectId);
       } else {
-        //open it
-        this.openProject(projectId);
+        //save the previous one, open the new one
+        this.props.projectSave()
+          .then(() => this.openProject(projectId));
       }
     });
   };
@@ -116,6 +118,8 @@ export class InventoryGroupProjects extends Component {
     //we just want to load when the project is actually loaded. Dont add to store if we're going to just push it on with forceBlocks
     //however, need to make sure that blockClone will work. Perhaps we can add them to the store before the drag starts
     //todo - caching should be at API level, not in this component
+
+    //todo - if we're just showing the blocks hierarchically, we can fetch components lazily using the middleware function to get components of a block. Or, since we're loading the whole project, we can just get them from the store as is.
 
     return !!loadedProjects[projectId]
       ?
@@ -212,6 +216,7 @@ export default connect(mapStateToProps, {
   projectList,
   projectLoad,
   projectGet,
+  projectSave,
   projectListAllBlocks,
   focusForceProject,
   inspectorToggleVisibility,

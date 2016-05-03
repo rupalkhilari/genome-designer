@@ -8,6 +8,9 @@ import Project from '../models/Project';
 
 import { setItem } from '../middleware/localStorageCache';
 
+//todo - should this go in the reducers (i.e. a cache outside store state)? One for projects, one for blocks? Then compare rollup components to those directly. That way we can track individual resources more easily rather than just whole rollups.
+//note that goal is to track lastSaved versions, and so the cache if in the reducer should handle dirty tracking
+
 //project rollup cache
 //used in saving and loading
 //track the last versions saved so we aren't saving over and over
