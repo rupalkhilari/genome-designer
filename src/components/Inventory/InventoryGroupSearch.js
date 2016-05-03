@@ -50,11 +50,11 @@ export class InventoryGroupSearch extends Component {
       searchApi.search(term, options, sourceList)
         .then(searchResults => this.setState({
           searchResults,
-          sourcesVisible: createSourcesVisible((source) => !!searchResults[source].length),
+          sourcesVisible: createSourcesVisible((source) => searchResults[source] && searchResults[source].length > 0),
           searching: false,
         }))
         .catch(err => {
-          console.log('couldnt fetch results!', err);
+          console.warn('couldnt fetch results!', err);
           this.setState({
             searchResults: defaultSearchResults,
             searching: false,
@@ -157,7 +157,7 @@ export class InventoryGroupSearch extends Component {
     // could do this sorting when the results come in?
     //nested ternary - null if no lengths, then handle based on groupBy
     const groupsContent = noSearchResults ?
-      null :
+      (!searching && <div className="InventoryGroup-placeholderContent">No Results Found</div>) :
       (groupBy === 'source')
         ?
         sourceList.map(key => {

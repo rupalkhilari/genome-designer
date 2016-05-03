@@ -55,5 +55,10 @@
 
   &.disabled {
     color: var(--colors-grey);
+
+    .InventoryListGroup-title ,
+    .InventoryListGroup-toggle {
+      cursor: default;
+    }
   }
 }
