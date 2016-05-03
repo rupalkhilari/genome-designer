@@ -6,6 +6,10 @@ var newProject = require('../fixtures/newproject');
 var newConstruct = require('../fixtures/newconstruct');
 var clickMainMenu = require('../fixtures/click-main-menu');
 var http = require("http");
+var path = require('path');
+
+var gbFile = path.resolve(__dirname + '../fixtures/test.gb');
+console.log('FILE:', gbFile);
 
 module.exports = {
   'Import a genbank file as a project then export project as a genbank file' : function (browser) {
@@ -26,18 +30,25 @@ module.exports = {
     // click the file menu -> Upload Genbank File
     clickMainMenu(browser, 1, 4);
 
-    // set hacky global to indicate we are testing the form
-    browser.execute(function() {
-      window.__testGenbankImport = true;
-    });
-
     browser
       .waitForElementPresent('.genbank-import-form', 5000, 'Expect the import dialog to appear')
+      // click import into new project
+      .click('.genbank-import-form input:nth-of-type(1)');
+
+      browser.execute(function() {
+        document.querySelector('.genbank-import-form input[type="file"]').style.display = 'block';
+        document.querySelector('.dropzone').style.marginBottom = '5rem';
+      }, [], function() {});
+
+      // send file name to hidden input[file]
+    browser
+      .setValue('.genbank-import-form input[type="file"]', gbFile)
+      .pause(3000)
       // click submit button to start the upload of fake data
       .submitForm('.genbank-import-form')
       // wait for a construct viewer to become visible
       .waitForElementPresent('.construct-viewer', 5000, 'expected a construct viewer to appear')
-      .pause(5000);
+      .pause(1000000);
 
     // we can't actually download the file but we can ensure the correct header is present at the expected url
     browser.url(function (response) {
@@ -50,7 +61,6 @@ module.exports = {
         .pause(5000)
         .assert.urlContains(projectURL)
         .end();
-
     });
   }
 };

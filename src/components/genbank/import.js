@@ -12,7 +12,12 @@ import {projectList, projectLoad} from '../../actions/projects';
 import '../../../src/styles/genbank.css';
 
 // purely for testing
-const genbank_testing = `LOCUS       AC000263                 368 bp    mRNA    linear   PRI 05-FEB-1999
+const genbank_testing = `
+------WebKitFormBoundaryiU64fJMI7iSXtxzP
+Content-Disposition: form-data; name="data"; filename="test.csv"
+Content-Type: text/text
+
+LOCUS       AC000263                 368 bp    mRNA    linear   PRI 05-FEB-1999
 DEFINITION  Homo sapiens mRNA for prepro cortistatin like peptide, complete
             cds.
 ACCESSION   AB000263
@@ -25,6 +30,7 @@ ORIGIN
       301 agaccttctc ctcctgcaaa taaaacctca cccatgaatg ctcacgcaag tttaattaca
       361 gacctgaa
 //
+------WebKitFormBoundaryiU64fJMI7iSXtxzP
 `;
 
 /**
@@ -79,11 +85,16 @@ class ImportGenBankModal extends Component {
       this.setState({processing: true});
       const formData = new FormData();
       let isCSV = false;
-      invariant(this.state.files.length === 1, 'currently import only supports 1 file at a time, the UI should not allow more');
-      this.state.files.forEach(file => {
-        formData.append('data', file, file.name);
-        isCSV = file.name.toLowerCase().endsWith('.csv')
-      });
+      if (window.__testGenbankImport) {
+        // fake the form data for testing
+        formData.append('data', genbank_testing);
+      } else {
+        invariant(this.state.files.length === 1, 'currently import only supports 1 file at a time, the UI should not allow more');
+        this.state.files.forEach(file => {
+          formData.append('data', file, file.name);
+          isCSV = file.name.toLowerCase().endsWith('.csv')
+        });
+      }
       const xhr = new XMLHttpRequest();
       const uri = `/import/${isCSV ? 'csv' : 'genbank'}${this.state.destination === 'current project' ? '/' + this.props.currentProjectId : ''}`;
 
@@ -103,7 +114,7 @@ class ImportGenBankModal extends Component {
         }
         this.setState({processing: false});
       }
-      xhr.send(window.__testGenbankImport ? genbank_testing : formData);
+      xhr.send(formData);
     }
   }
 
