@@ -135,7 +135,6 @@ const handleProject = (outputProject, rootBlockIds) => {
 // These return structures are NOT in GD format.
 const readGenbankFile = (genbankString) => {
   const inputFile = createRandomStorageFile();
-
   const outputFile = createRandomStorageFile();
 
   const cmd = `python ${path.resolve(__dirname, 'convert.py')} from_genbank ${inputFile} ${outputFile}`;
@@ -275,4 +274,3 @@ export const exportConstruct = (input) => {
         .catch(err => Promise.reject(err));
     });
 };
-

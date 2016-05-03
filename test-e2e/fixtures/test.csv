@@ -1,0 +1,4 @@
+Name,Description,SBOL Type,Background Color,Sequence
+P91,Promoter 91,Promoter,#e7aaa9,tggtcatggtcatggtcatggtca
+C11,Gene for Enzimawesome,CDS,#EFD79A,ggtcaggtcaggtcaggtcaggtcaggtcaggtcaggtcaggtcaggtcaggtcaggtcaggtcaggtcaggtcaggtca
+T31,Terminator low efficiency,Terminator,#6DA19C,actggtcaactggtcaactggtcaactggtcaactggtcaactggtcaactggtcaactggtca

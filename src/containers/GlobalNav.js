@@ -196,6 +196,16 @@ class GlobalNav extends Component {
   }
 
   /**
+   * upload a genbank into current or new project
+   */
+  uploadGenbankFile() {
+    this.saveProject()
+      .then(() => {
+        this.props.uiShowGenBankImport(true);
+      });
+  }
+
+  /**
    * get parent block of block with given id
    */
   blockGetParent(blockId) {
@@ -345,9 +355,9 @@ class GlobalNav extends Component {
                 this.newConstruct();
               },
             }, {}, {
-              text: 'Upload Genbank File',
+              text: 'Upload Genbank or CSV File',
               action: () => {
-                this.props.uiShowGenBankImport(true);
+                this.uploadGenbankFile();
               },
             }, {
               text: 'Download Genbank File',
