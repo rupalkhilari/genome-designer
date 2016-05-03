@@ -10,22 +10,6 @@ import { projectList, projectLoad, projectOpen } from '../../actions/projects';
 
 import '../../../src/styles/genbank.css';
 
-// purely for testing
-const genbank_testing = `LOCUS       AC000263                 368 bp    mRNA    linear   PRI 05-FEB-1999
-DEFINITION  Homo sapiens mRNA for prepro cortistatin like peptide, complete
-            cds.
-ACCESSION   AB000263
-ORIGIN
-        1 acaagatgcc attgtccccc ggcctcctgc tgctgctgct ctccggggcc acggccaccg
-       61 ctgccctgcc cctggagggt ggccccaccg gccgagacag cgagcatatg caggaagcgg
-      121 caggaataag gaaaagcagc ctcctgactt tcctcgcttg gtggtttgag tggacctccc
-      181 aggccagtgc cgggcccctc ataggagagg aagctcggga ggtggccagg cggcaggaag
-      241 gcgcaccccc ccagcaatcc gcgcgccggg acagaatgcc ctgcaggaac ttcttctgga
-      301 agaccttctc ctcctgcaaa taaaacctca cccatgaatg ctcacgcaag tttaattaca
-      361 gacctgaa
-//
-`;
-
 /**
  * Genbank import dialog.
  * NOTE: For E2E Tests we check for a global __testGenbankImport. If present
@@ -43,6 +27,7 @@ class ImportGenBankModal extends Component {
       files: [],
       error: null,
       processing: false,
+      destination: 'new project', // or 'current project'
     };
   }
 
@@ -76,23 +61,33 @@ class ImportGenBankModal extends Component {
     if (this.state.files.length || window.__testGenbankImport) {
       this.setState({ processing: true });
       const formData = new FormData();
-      this.state.files.forEach(file => {
-        formData.append('genBankFiles', file, file.name);
-      });
+
+      let isCSV = false;
+      invariant(this.state.files.length === 1, 'currently import only supports 1 file at a time, the UI should not allow more');
+      const file = this.state.files[0];
+      formData.append('data', file, file.name);
+      isCSV = file.name.toLowerCase().endsWith('.csv')
+
       const xhr = new XMLHttpRequest();
-      xhr.open('POST', '/import/genbank', true);
+      const uri = `/import/${isCSV ? 'csv' : 'genbank'}${this.state.destination === 'current project' ? '/' + this.props.currentProjectId : ''}`;
+
+      xhr.open('POST', uri, true);
       xhr.onload = () => {
         if (xhr.status === 200) {
           this.props.uiShowGenBankImport(false);
           const json = JSON.parse(xhr.response);
           invariant(json && json.ProjectId, 'expect a project ID');
-          this.props.projectOpen(json.ProjectId);
+          if (json.ProjectId === this.props.currentProjectId) {
+            this.props.projectLoad(json.ProjectId);
+          } else {
+            this.props.projectOpen(json.ProjectId)
+          }
         } else {
           this.setState({ error: `Error uploading file(s): ${xhr.status}` });
         }
         this.setState({ processing: false });
       }
-      xhr.send(window.__testGenbankImport ? genbank_testing : formData);
+      xhr.send(formData);
     }
   }
 
@@ -114,15 +109,31 @@ class ImportGenBankModal extends Component {
               <div className="title">Import</div>
               <div className="radio">
                 <div>Import data to:</div>
-                <input type="radio" name="destination" disabled={this.state.processing}/>
-                <div>My Inventory</div>
+                <input
+                  checked={this.state.destination === 'new project'}
+                  type="radio"
+                  name="destination"
+                  disabled={this.state.processing}
+                  onChange={() => this.setState({destination: 'new project'})}
+                  />
+                <div>New Project</div>
               </div>
               <div className="radio">
                 <div/>
-                <input type="radio" name="destination" disabled={this.state.processing}/>
-                <div>My Project</div>
+                <input
+                  checked={this.state.destination === 'current project'}
+                  type="radio"
+                  name="destination"
+                  disabled={this.state.processing}
+                  onChange={() => this.setState({destination: 'current project'})}
+                  />
+                <div>Current Project</div>
               </div>
-              <Dropzone onDrop={this.onDrop.bind(this)} className="dropzone" activeClassName="dropzone-hot">
+              <Dropzone
+                onDrop={this.onDrop.bind(this)}
+                className="dropzone"
+                activeClassName="dropzone-hot"
+                multiple={false}>
                 <div className="dropzone-text">Drop Files Here</div>
               </Dropzone>
               {this.showFiles()}

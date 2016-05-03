@@ -9,6 +9,7 @@ import BlockDefinition from '../../../src/schemas/Block';
 import ProjectDefinition from '../../../src/schemas/Project';
 import md5 from 'md5';
 import * as persistence from '../../../server/data/persistence';
+import formidable from 'formidable';
 
 import {chunk, cloneDeep} from 'lodash';
 
@@ -131,15 +132,14 @@ const handleProject = (outputProject, rootBlockIds) => {
   }));
 };
 
-// Reads a cvs file and returns a project structure and all the blocks
+// Reads a csv file and returns a project structure and all the blocks
 // These return structures are NOT in GD format.
-const readCvsFile = (cvsString) => {
+const readCsvFile = (csvString) => {
   const inputFile = createRandomStorageFile();
-
   const outputFile = createRandomStorageFile();
 
   const cmd = `python ${path.resolve(__dirname, 'convert.py')} from_csv ${inputFile} ${outputFile}`;
-  return runCommand(cmd, cvsString, inputFile, outputFile)
+  return runCommand(cmd, csvString, inputFile, outputFile)
     .then(resStr => {
       try {
         const res = JSON.parse(resStr);
@@ -154,9 +154,9 @@ const readCvsFile = (cvsString) => {
     });
 };
 
-// Creates a rough project structure (not in GD format yet!) and a list of blocks from a cvs file
-const handleBlocks = (cvsInput) => {
-  return readCvsFile(cvsInput)
+// Creates a rough project structure (not in GD format yet!) and a list of blocks from a csv file
+const handleBlocks = (csvInput) => {
+  return readCsvFile(csvInput)
     .then(result => {
       if (result && result.project && result.blocks &&
         result.project.components && result.project.components.length > 0) {
@@ -170,7 +170,7 @@ const handleBlocks = (cvsInput) => {
           });
       }
       else {
-        return 'Invalid cvs format.';
+        return 'Invalid csv format.';
       }
     });
 };
@@ -178,26 +178,26 @@ const handleBlocks = (cvsInput) => {
 //////////////////////////////////////////////////////////////
 // IMPORT
 //////////////////////////////////////////////////////////////
-// Import project and construct/s from cvs
+// Import project and construct/s from csv
 // Returns a project structure and the list of all blocks
-export const importProject = (cvsstr) => {
-  return handleBlocks(cvsstr)
+export const importProject = (csvstr) => {
+  return handleBlocks(csvstr)
     .then((result) => {
       if (_.isString(result)) {
         return result;
       }
       const resProject = handleProject(result.project, result.rootBlocks);
 
-      const outputFile = filePaths.createStorageUrl('imported_from_cvs.json');
+      const outputFile = filePaths.createStorageUrl('imported_from_csv.json');
       fileSystem.fileWrite(outputFile, {project: resProject, blocks: result.blocks});
       return {project: resProject, blocks: result.blocks};
     });
 };
 
-// Import only construct/s from cvs
+// Import only construct/s from csv
 // Returns a list of block ids that represent the constructs, and the list of all blocks
-export const importConstruct = (cvsString) => {
-  return handleBlocks(cvsString)
+export const importConstruct = (csvString) => {
+  return handleBlocks(csvString)
     .then((rawProjectRootsAndBlocks) => {
       if (_.isString(rawProjectRootsAndBlocks)) {
         return rawProjectRootsAndBlocks;
