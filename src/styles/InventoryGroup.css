@@ -14,12 +14,12 @@
     flex-shrink: 0;
     cursor: pointer;
     user-select: none;
+    border-top: 1px solid var(--colors-greyLight);
 
     &:hover {
       background-color: var(--colors-blueGreyDark);
     }
   }
-
 
   &.active {
     flex-grow: 1;
@@ -27,7 +27,13 @@
 
     .InventoryGroup-heading {
       background-color: transparent;
+      border-top-color: transparent;
     }
+  }
+
+  &.active + & .InventoryGroup-heading,
+  &:first-child .InventoryGroup-heading {
+    border-color: transparent;
   }
 
   &-content {

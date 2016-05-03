@@ -77,6 +77,7 @@ export default class InputSimple extends Component {
           ref="input"
           rows="5"
           className="InputSimple-input"
+          disabled={this.props.readOnly}
           placeholder={this.props.placeholder}
           defaultValue={this.props.value || this.props.default}
           onBlur={this.handleBlur}
@@ -87,6 +88,7 @@ export default class InputSimple extends Component {
         <input
           size="30"
           ref="input"
+          disabled={this.props.readOnly}
           className="InputSimple-input"
           placeholder={this.props.placeholder}
           defaultValue={this.props.value || this.props.default}

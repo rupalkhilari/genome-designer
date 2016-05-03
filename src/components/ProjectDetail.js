@@ -21,6 +21,7 @@ export class ProjectDetail extends Component {
     openHeight: 400,
   };
 
+  extensionRendered = false;
   extensions = [];
 
   componentWillMount() {
@@ -33,6 +34,9 @@ export class ProjectDetail extends Component {
   componentDidMount() {
     this.extensionsListener = onRegister(() => {
       Object.assign(this, { extensions: extensionsByRegion('sequenceDetail').filter(manifest => manifest.name !== 'simple') });
+      if (!this.state.currentExtension) {
+        this.setState({ currentExtension: this.extensions[0] });
+      }
       this.forceUpdate();
     });
   }
@@ -80,29 +84,44 @@ export class ProjectDetail extends Component {
     }, 300);
   };
 
-  //todo - need to provide a way to unregister event handlers (e.g. an un-render() callback)
+  //todo - need to provide a way to unregister event handlers (e.g. an un-render() callback) to the extension
   loadExtension = (manifest) => {
     if (!manifest) {
       return;
     }
 
-    try {
-      this.toggle(true);
-      this.setState({ currentExtension: manifest });
-      lastExtension = manifest;
+    this.toggle(true);
+    this.setState({ currentExtension: manifest });
+    lastExtension = manifest;
 
-      setTimeout(() => {
-        const boundingBox = this.refs.extensionContainer.getBoundingClientRect();
-        manifest.render(this.refs.extensionView, { boundingBox });
-      });
-    } catch (err) {
-      console.error('error loading / rendering extension!', manifest);
-      throw err;
-    }
+    this.renderCurrentExtension();
   };
 
+  renderCurrentExtension() {
+    const { currentExtension } = this.state;
+
+    if (!currentExtension) {
+      return;
+    }
+
+    try {
+      setTimeout(() => {
+        const boundingBox = this.refs.extensionContainer.getBoundingClientRect();
+        currentExtension.render(this.refs.extensionView, { boundingBox });
+        this.extensionRendered = true;
+      });
+    } catch (err) {
+      console.error('error loading / rendering extension!', currentExtension);
+      throw err;
+    }
+  }
+
   render() {
-    const header = (this.props.isVisible) ?
+    if (this.props.isVisible && !this.extensionRendered) {
+      this.renderCurrentExtension();
+    }
+
+    const header = (this.props.isVisible && this.state.currentExtension) ?
       (
         <div className="ProjectDetail-heading">
           <a

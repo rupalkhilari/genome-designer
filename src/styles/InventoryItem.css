@@ -19,6 +19,8 @@
   display: block;
   font-size: 12px;
   cursor: default;
+  border-radius: 3px;
+  /* transition: background-color var(--timing-fast) ease-out; */
 
   &.hasImage {
     white-space: nowrap;
@@ -29,19 +31,16 @@
     background-color: rgba(255,255,255,0.2);
   }
 
+  &:hover{
+    background-color: var(--colors-selected);
+  }
+
   &-item {
     display: inline-block;
+    cursor: pointer;
     padding: 2px 5px;
     margin: 1px 0;
     width: 100%;
-    border-radius: 3px;
-    transition: background-color var(--timing-fast) ease-out;
-
-    &:hover,
-    .isDragging & {
-      background-color: var(--colors-selected);
-      transition: 0s;
-    }
   }
 
   &-image {

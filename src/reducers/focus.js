@@ -5,9 +5,9 @@ import invariant from 'invariant';
 export const initialState = {
   forceProject: null, //forced model
   forceBlocks: [], //forced models
-  project: null, //unclear? may want in dashboard. get from route
-  blocks: [], //ids of selection
-  construct: null, //id of current
+  projectId: null, //current project. Set by projectPage. preferred over route query.
+  blockIds: [], //ids of selection
+  constructId: null, //id of current
 };
 
 export default function inventory(state = initialState, action) {
@@ -31,19 +31,25 @@ export default function inventory(state = initialState, action) {
     const { projectId } = action;
     return Object.assign({}, state, {
       forceProject: null,
-      project: projectId,
+      forceBlocks: [],
+      projectId: projectId,
     });
   }
   case ActionTypes.FOCUS_CONSTRUCT: {
     const { constructId } = action;
-    return Object.assign({}, state, {construct: constructId });
+    return Object.assign({}, state, {
+      forceProject: null,
+      forceBlocks: [],
+      constructId: constructId,
+    });
   }
   case ActionTypes.FOCUS_BLOCKS : {
-    const { blocks } = action;
-    invariant(Array.isArray(blocks), 'must pass array to FOCUS_BLOCKS');
+    const { blockIds } = action;
+    invariant(Array.isArray(blockIds), 'must pass array to FOCUS_BLOCKS');
     return Object.assign({}, state, {
+      forceProject: null,
       forceBlocks: [],
-      blocks: blocks,
+      blockIds: blockIds,
     });
   }
   case LOCATION_CHANGE: {

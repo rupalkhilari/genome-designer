@@ -41,7 +41,7 @@ export const projectCreate = (initialModel) => {
 export const projectSave = (inputProjectId) => {
   return (dispatch, getState) => {
     //if dont pass project id, get the currently viewed one
-    const projectId = !!inputProjectId ? inputProjectId : getState().focus.project;
+    const projectId = !!inputProjectId ? inputProjectId : getState().focus.projectId;
 
     const project = getState().projects[projectId];
     const roll = dispatch(projectSelectors.projectCreateRollup(projectId));

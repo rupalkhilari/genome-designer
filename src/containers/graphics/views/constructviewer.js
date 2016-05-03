@@ -116,7 +116,7 @@ export class ConstructViewer extends Component {
     window.addEventListener('resize', this.resizeDebounced);
 
     // if there is no focused construct then we should grab it
-    if (!this.props.focus.construct) {
+    if (!this.props.focus.constructId) {
       this.props.focusConstruct(this.props.constructId);
       ReactDOM.findDOMNode(this).scrollIntoView();
     } else {
@@ -342,8 +342,8 @@ export class ConstructViewer extends Component {
       this.props.construct,
       this.props.layoutAlgorithm,
       this.props.blocks,
-      this.props.focus.blocks,
-      this.props.focus.construct);
+      this.props.focus.blockIds,
+      this.props.focus.constructId);
     this.sg.update();
     this.sg.ui.update();
     //console.log(`DOM size after update: ${document.querySelectorAll('*').length}`);

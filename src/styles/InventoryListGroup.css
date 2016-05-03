@@ -11,7 +11,8 @@
   }
 
   &-title {
-
+    cursor: pointer;
+    user-select: none;
   }
 
   &-toggle {
@@ -24,11 +25,12 @@
     background-repeat: no-repeat;
     background-size: contain;
     transition: transform var(--timing-extrafast) ease-out;
+    cursor: pointer;
   }
 
   &-contents {
     flex-grow: 1;
-    margin: 0.5em 0 0.5em 1.75em;
+    margin: 0.5em 0 0.5em 2em;
     overflow-y: scroll;
   }
 

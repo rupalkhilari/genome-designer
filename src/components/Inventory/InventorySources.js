@@ -32,7 +32,10 @@ export default class InventorySources extends Component {
           const source = registry[key];
           return (
             <div key={key}
-                 onClick={() => onSourceToggle(key)}
+                 onClick={(evt) => {
+                   evt.stopPropagation();
+                   onSourceToggle(key);
+                 }}
                  className="InventorySources-source">
               <input type="checkbox"
                      className="InventorySources-toggler"
@@ -43,9 +46,8 @@ export default class InventorySources extends Component {
       </div>;
 
     return (
-      <div className={'InventorySources' + (expanded ? ' expanded' : '')}>
-        <div className="InventorySources-cog"
-             onClick={this.toggleExpanded}></div>
+      <div className={'InventorySources' + (expanded ? ' expanded' : '')} onClick={this.toggleExpanded}>
+        <div className="InventorySources-cog"></div>
         <div className="InventorySources-sources">
           <span>Sources: </span>
           {content}
