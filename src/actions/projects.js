@@ -36,6 +36,19 @@ export const projectCreate = (initialModel) => {
   };
 };
 
+//track the last versions saved so we aren't saving over and over
+const rollMap = new Map();
+const isRollSame = (oldRoll, newRoll) => {
+  if (!oldRoll || !newRoll) return false;
+  //check projects same
+  if (oldRoll.project !== newRoll.project) return false; //todo - may want avoid to comparing versions
+  //check all blocks same
+  return oldRoll.blocks.every(oldBlock => {
+    const analog = newRoll.blocks.find(newBlock => newBlock.id === oldBlock.id);
+    return analog && analog === oldBlock;
+  });
+};
+
 //Promise
 //this is a background save (e.g. autosave)
 export const projectSave = (inputProjectId) => {
@@ -46,6 +59,14 @@ export const projectSave = (inputProjectId) => {
     const project = getState().projects[projectId];
     const roll = dispatch(projectSelectors.projectCreateRollup(projectId));
     setItem('mostRecentProject', projectId);
+
+    //check if project is new, and save if it is
+    const oldRoll = rollMap.get(projectId);
+    if (isRollSame(oldRoll, roll)) {
+      return Promise.resolve(project);
+    }
+    rollMap.set(projectId, roll);
+
     return saveProject(projectId, roll)
       .then(json => {
         dispatch({
