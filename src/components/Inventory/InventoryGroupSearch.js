@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { inventorySearch } from '../../actions/inventory';
+import { inventorySearch, inventorySourcesVisibility } from '../../actions/inventory';
 import { blockStash } from '../../actions/blocks';
 import { block as blockDragType } from '../../constants/DragTypes';
 import { chain, debounce, escapeRegExp } from 'lodash';
@@ -28,7 +28,9 @@ const inventoryTabs = [
 export class InventoryGroupSearch extends Component {
   static propTypes = {
     searchTerm: PropTypes.string.isRequired,
+    sourcesToggling: PropTypes.bool.isRequired,
     inventorySearch: PropTypes.func.isRequired,
+    inventorySourcesVisibility: PropTypes.func.isRequired,
     blockStash: PropTypes.func.isRequired,
   };
 
@@ -129,6 +131,10 @@ export class InventoryGroupSearch extends Component {
     return this.getFullItem(registryKey, item, true);
   };
 
+  handleToggleSourceVisiblity = (nextState) => {
+    this.props.inventorySourcesVisibility(nextState);
+  };
+
   //want to filter down results while next query running
   filterListItems = list => {
     const { searchTerm } = this.props;
@@ -141,7 +147,7 @@ export class InventoryGroupSearch extends Component {
   };
 
   render() {
-    const { searchTerm } = this.props;
+    const { searchTerm, sourcesToggling } = this.props;
     const { searching, sourceList, searchResults, sourcesVisible, groupBy } = this.state;
 
     //doesnt account for filtering...
@@ -204,31 +210,41 @@ export class InventoryGroupSearch extends Component {
       <div className={'InventoryGroup-content InventoryGroupSearch'}>
         <InventorySearch searchTerm={searchTerm}
                          isSearching={searching}
+                         disabled={sourcesToggling}
                          onSearchChange={this.handleSearchChange}/>
         <InventorySources registry={registry}
                           sourceList={sourceList}
+                          toggling={sourcesToggling}
+                          onToggleVisible={this.handleToggleSourceVisiblity}
                           onSourceToggle={this.onSourceToggle}/>
-        {!noSearchResults && (<InventoryTabs tabs={inventoryTabs}
-                                             activeTabKey={groupBy}
-                                             onTabSelect={(tab) => this.handleTabSelect(tab.key)}/>)}
 
-        <div className="InventoryGroup-contentInner no-vertical-scroll">
-          {groupsContent}
-        </div>
+        {(!noSearchResults && !sourcesToggling) && (
+          <InventoryTabs tabs={inventoryTabs}
+                         activeTabKey={groupBy}
+                         onTabSelect={(tab) => this.handleTabSelect(tab.key)}/>
+        )}
+
+        {!sourcesToggling && (
+          <div className="InventoryGroup-contentInner no-vertical-scroll">
+            {groupsContent}
+          </div>
+        )}
       </div>
     );
   }
 }
 
 function mapStateToProps(state, props) {
-  const { searchTerm } = state.inventory;
+  const { searchTerm, sourcesToggling } = state.inventory;
 
   return {
     searchTerm,
+    sourcesToggling,
   };
 }
 
 export default connect(mapStateToProps, {
   inventorySearch,
+  inventorySourcesVisibility,
   blockStash,
 })(InventoryGroupSearch);
