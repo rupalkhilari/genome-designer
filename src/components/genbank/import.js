@@ -11,28 +11,6 @@ import {projectList, projectLoad} from '../../actions/projects';
 
 import '../../../src/styles/genbank.css';
 
-// purely for testing
-const genbank_testing = `
-------WebKitFormBoundaryiU64fJMI7iSXtxzP
-Content-Disposition: form-data; name="data"; filename="test.csv"
-Content-Type: text/text
-
-LOCUS       AC000263                 368 bp    mRNA    linear   PRI 05-FEB-1999
-DEFINITION  Homo sapiens mRNA for prepro cortistatin like peptide, complete
-            cds.
-ACCESSION   AB000263
-ORIGIN
-        1 acaagatgcc attgtccccc ggcctcctgc tgctgctgct ctccggggcc acggccaccg
-       61 ctgccctgcc cctggagggt ggccccaccg gccgagacag cgagcatatg caggaagcgg
-      121 caggaataag gaaaagcagc ctcctgactt tcctcgcttg gtggtttgag tggacctccc
-      181 aggccagtgc cgggcccctc ataggagagg aagctcggga ggtggccagg cggcaggaag
-      241 gcgcaccccc ccagcaatcc gcgcgccggg acagaatgcc ctgcaggaac ttcttctgga
-      301 agaccttctc ctcctgcaaa taaaacctca cccatgaatg ctcacgcaag tttaattaca
-      361 gacctgaa
-//
-------WebKitFormBoundaryiU64fJMI7iSXtxzP
-`;
-
 /**
  * Genbank import dialog.
  * NOTE: For E2E Tests we check for a global __testGenbankImport. If present
@@ -84,17 +62,13 @@ class ImportGenBankModal extends Component {
     if (this.state.files.length || window.__testGenbankImport) {
       this.setState({processing: true});
       const formData = new FormData();
+
       let isCSV = false;
-      if (window.__testGenbankImport) {
-        // fake the form data for testing
-        formData.append('data', genbank_testing);
-      } else {
-        invariant(this.state.files.length === 1, 'currently import only supports 1 file at a time, the UI should not allow more');
-        this.state.files.forEach(file => {
-          formData.append('data', file, file.name);
-          isCSV = file.name.toLowerCase().endsWith('.csv')
-        });
-      }
+      invariant(this.state.files.length === 1, 'currently import only supports 1 file at a time, the UI should not allow more');
+      const file = this.state.files[0];
+      formData.append('data', file, file.name);
+      isCSV = file.name.toLowerCase().endsWith('.csv')
+
       const xhr = new XMLHttpRequest();
       const uri = `/import/${isCSV ? 'csv' : 'genbank'}${this.state.destination === 'current project' ? '/' + this.props.currentProjectId : ''}`;
 
