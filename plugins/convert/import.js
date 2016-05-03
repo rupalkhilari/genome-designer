@@ -46,6 +46,13 @@ function importProject(pluginId, data) {
 router.post('/:pluginId/:projectId?', jsonParser, (req, resp, next) => {
   const {pluginId, projectId} = req.params;
 
+  // needed for genbank without a project.
+  if (projectId === 'convert') {
+    return callImportFunction('convert', pluginId, data)
+    .then(converted => resp.status(200).json(converted))
+    .catch(err => next(err));
+  }
+
   // save incoming file then read back the string data.
   // If these files turn out to be large we could modify the import functions to take
   // file names instead but for now, in memory is fine.
@@ -53,13 +60,6 @@ router.post('/:pluginId/:projectId?', jsonParser, (req, resp, next) => {
   form.parse(req, (err, fields, files) => {
 
     fs.readFile(files.data.path, 'utf8', (err, data) => {
-
-      // needed for genbank without a project.
-      if (projectId === 'convert') {
-        return callImportFunction('convert', pluginId, data)
-        .then(converted => resp.status(200).json(converted))
-        .catch(err => next(err));
-      }
 
       return importProject(pluginId, data)
       .then((roll) => {
