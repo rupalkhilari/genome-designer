@@ -1,8 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { push } from 'react-router-redux';
 import { projectGet, projectListAllBlocks } from '../../selectors/projects';
-import { projectList, projectLoad, projectSave } from '../../actions/projects';
+import { projectList, projectLoad, projectSave, projectOpen } from '../../actions/projects';
 import { focusForceProject } from '../../actions/focus';
 import { blockStash } from '../../actions/blocks';
 import { inspectorToggleVisibility } from '../../actions/inspector';
@@ -29,7 +28,7 @@ export class InventoryGroupProjects extends Component {
     projectListAllBlocks: PropTypes.func.isRequired,
     focusForceProject: PropTypes.func.isRequired,
     inspectorToggleVisibility: PropTypes.func.isRequired,
-    push: PropTypes.func.isRequired,
+    projectOpen: PropTypes.func.isRequired,
   };
 
   constructor() {
@@ -103,8 +102,7 @@ export class InventoryGroupProjects extends Component {
   };
 
   openProject = (projectId) => {
-    //dont need to load the project before doing this, project page will handle it
-    this.props.push(`/project/${projectId}`);
+    this.props.projectOpen(projectId);
   };
 
   inspectProject = (projectId) => {
@@ -220,5 +218,5 @@ export default connect(mapStateToProps, {
   projectListAllBlocks,
   focusForceProject,
   inspectorToggleVisibility,
-  push,
+  projectOpen,
 })(InventoryGroupProjects);

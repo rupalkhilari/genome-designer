@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import invariant from 'invariant';
-import { push } from 'react-router-redux';
 import MenuBar from '../components/Menu/MenuBar';
 import UserWidget from '../components/authentication/userwidget';
 import RibbonGrunt from '../components/ribbongrunt';
@@ -9,6 +8,7 @@ import {
   projectCreate,
   projectAddConstruct,
   projectSave,
+  projectOpen,
 } from '../actions/projects';
 import {
   focusBlocks,
@@ -65,7 +65,6 @@ class GlobalNav extends Component {
   static propTypes = {
     undo: PropTypes.func.isRequired,
     redo: PropTypes.func.isRequired,
-    push: PropTypes.func.isRequired,
     projectCreate: PropTypes.func.isRequired,
     projectAddConstruct: PropTypes.func.isRequired,
     projectSave: PropTypes.func.isRequired,
@@ -164,7 +163,7 @@ class GlobalNav extends Component {
     this.props.blockRename(block.id, 'New Construct');
     this.props.projectAddConstruct(project.id, block.id);
     this.props.focusConstruct(block.id);
-    this.props.push(`/project/${project.id}`);
+    this.props.projectOpen(project.id);
   }
 
   /**
@@ -321,7 +320,7 @@ class GlobalNav extends Component {
               text: 'Open Project',
               disabled: !this.props.focus.forceProject,
               action: () => {
-                this.props.push(`/project/${this.props.focus.forceProject.id}`);
+                this.props.projectOpen(this.props.focus.forceProject.id);
               },
             },
             {
@@ -524,6 +523,7 @@ export default connect(mapStateToProps, {
   projectAddConstruct,
   projectCreate,
   projectSave,
+  projectOpen,
   projectGetVersion,
   blockCreate,
   blockClone,
@@ -540,7 +540,6 @@ export default connect(mapStateToProps, {
   redo,
   transact,
   commit,
-  push,
   uiShowGenBankImport,
   uiToggleDetailView,
   uiShowAbout,

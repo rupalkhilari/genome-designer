@@ -1,13 +1,12 @@
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
-import { push } from 'react-router-redux';
 import {
   uiShowAuthenticationForm,
   uiSetGrunt,
   uiShowUserWidget,
  } from '../actions/ui';
 import '../styles/homepage.css';
-import { getItem } from '../middleware/localStorageCache';
+import { projectOpen } from '../actions/projects';
 
 export default class HomePage extends Component {
 
@@ -15,7 +14,7 @@ export default class HomePage extends Component {
     uiShowAuthenticationForm: PropTypes.func.isRequired,
     uiShowUserWidget: PropTypes.func.isRequired,
     uiSetGrunt: PropTypes.func.isRequired,
-    push: PropTypes.func.isRequired,
+    projectOpen: PropTypes.func.isRequired,
     location: PropTypes.object.isRequired,
     params: PropTypes.object.isRequired,
     user: PropTypes.object,
@@ -36,8 +35,8 @@ export default class HomePage extends Component {
       // if not showing an auth form goto most recent project or demo project
       // NOTE: the nodirect query string prevents redirection
       if (this.props.user && this.props.user.userid && !this.props.location.query.noredirect) {
-        // revisit last project or test project if user is logged in
-        this.props.push(`/project/${getItem('mostRecentProject')}`);
+        // revisit last project
+        this.props.projectOpen(null);
         return;
       }
     }
@@ -105,5 +104,5 @@ export default connect(mapStateToProps, {
   uiShowAuthenticationForm,
   uiShowUserWidget,
   uiSetGrunt,
-  push,
+  projectOpen,
 })(HomePage);

@@ -1,11 +1,10 @@
 import React, { Component, PropTypes } from 'react';
-import {connect} from 'react-redux';
-import { push } from 'react-router-redux';
+import { connect } from 'react-redux';
 import { uiShowAuthenticationForm, uiSetGrunt } from '../../actions/ui';
 import { userLogin } from '../../actions/user';
 import { reset } from '../../middleware/api';
 import invariant from 'invariant';
-import { getItem } from '../../middleware/localStorageCache';
+import { projectOpen } from '../../actions/projects';
 
 /**
  * default visibility and text for error labels
@@ -27,7 +26,7 @@ class RegisterForm extends Component {
   static propTypes = {
     uiShowAuthenticationForm: PropTypes.func.isRequired,
     uiSetGrunt: PropTypes.func.isRequired,
-    push: PropTypes.func.isRequired,
+    projectOpen: PropTypes.func.isRequired,
   };
 
   constructor() {
@@ -57,7 +56,7 @@ class RegisterForm extends Component {
           .then(user => {
             // close the form
             this.props.uiShowAuthenticationForm('none');
-            this.props.push(`/project/${getItem('mostRecentProject')}`);
+            this.props.projectOpen(null);
           })
           .catch((reason) => {
             // if the sign in failed just redirect to sign in
@@ -95,6 +94,7 @@ class RegisterForm extends Component {
   getParameter(name) {
     return this.getQueryStrings()[name];
   }
+
   /**
    * basic validation occurs on client i.e. matching email addresses, Passwords
    * and all required fields present
@@ -105,10 +105,10 @@ class RegisterForm extends Component {
     // parse individual problems and report
 
     if (!this.password) {
-      newState.password1Error = { visible: true, text: 'Please enter a password'};
+      newState.password1Error = { visible: true, text: 'Please enter a password' };
     }
     if (!this.passwordConfirm || this.password !== this.passwordConfirm) {
-      newState.password2Error = { visible: true, text: 'Passwords do not match'};
+      newState.password2Error = { visible: true, text: 'Passwords do not match' };
     }
 
     // display appropriate errors
@@ -122,6 +122,7 @@ class RegisterForm extends Component {
   get password() {
     return this.refs.password.value.trim();
   }
+
   get passwordConfirm() {
     return this.refs.passwordConfirm.value.trim();
   }
@@ -148,25 +149,28 @@ class RegisterForm extends Component {
         onSubmit={this.onSubmit.bind(this)}>
         <div className="title">Reset Password</div>
 
-        <div className={`error ${this.state.password1Error.visible ? 'visible' : ''}`}>{`${this.state.password1Error.text}`}</div>
-         <input
-           ref="password"
-           type="password"
-           className="input"
-           placeholder="New password"/>
+        <div
+          className={`error ${this.state.password1Error.visible ? 'visible' : ''}`}>{`${this.state.password1Error.text}`}</div>
+        <input
+          ref="password"
+          type="password"
+          className="input"
+          placeholder="New password"/>
         <input
           ref="passwordConfirm"
           type="password"
           className="input"
           placeholder="Confirm new password"/>
-        <div className={`error ${this.state.password2Error.visible ? 'visible' : ''}`}>{`${this.state.password2Error.text}`}</div>
+        <div
+          className={`error ${this.state.password2Error.visible ? 'visible' : ''}`}>{`${this.state.password2Error.text}`}</div>
 
         <button type="submit">Reset Password</button>
         <button
           type="button"
           onClick={() => {
             this.props.uiShowAuthenticationForm('none');
-          }}>Cancel</button>
+          }}>Cancel
+        </button>
       </form>
     );
   }
@@ -179,5 +183,5 @@ export default connect(mapStateToProps, {
   uiShowAuthenticationForm,
   uiSetGrunt,
   userLogin,
-  push,
+  projectOpen,
 })(RegisterForm);
