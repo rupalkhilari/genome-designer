@@ -385,14 +385,12 @@ export class ConstructViewer extends Component {
               this.openInspector();
             },
           },
-          {},
           {
             text: 'Import DNA Sequence',
             action: () => {
               this.props.uiShowDNAImport(true);
             }
           },
-          {},
           {
             text: 'Delete',
             action: () => {
