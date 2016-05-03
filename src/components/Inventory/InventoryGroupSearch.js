@@ -40,6 +40,7 @@ export class InventoryGroupSearch extends Component {
     sourcesVisible: createSourcesVisible(),
     searchResults: defaultSearchResults,
     groupBy: 'source',
+    lastSearch: { term: '', sourceList: [] },
   };
 
   componentDidMount() {
@@ -50,6 +51,7 @@ export class InventoryGroupSearch extends Component {
       searchApi.search(term, options, sourceList)
         .then(searchResults => this.setState({
           searchResults,
+          lastSearch: { term, sourceList },
           sourcesVisible: createSourcesVisible((source) => searchResults[source] && searchResults[source].length > 0),
           searching: false,
         }))
@@ -62,6 +64,7 @@ export class InventoryGroupSearch extends Component {
         });
     };
 
+    this.forceSearch = searchingFunction;
     this.debouncedSearch = debounce(searchingFunction, 200);
   }
 
@@ -132,7 +135,14 @@ export class InventoryGroupSearch extends Component {
   };
 
   handleToggleSourceVisiblity = (nextState) => {
-    this.props.inventorySourcesVisibility(nextState);
+    const newState = this.props.inventorySourcesVisibility(nextState);
+
+    //if hiding, check if any new sources enabled, and if so run a new search
+    if (!newState) {
+      if (this.state.sourceList.some(source => !this.state.lastSearch.sourceList.includes(source))) {
+        this.forceSearch(this.props.searchTerm);
+      }
+    }
   };
 
   //want to filter down results while next query running
