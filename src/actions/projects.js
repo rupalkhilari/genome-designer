@@ -1,11 +1,27 @@
 import * as ActionTypes from '../constants/ActionTypes';
 import { saveProject, loadProject, snapshot, listProjects } from '../middleware/api';
 import * as projectSelectors from '../selectors/projects';
+import * as undoActions from '../store/undo/actions';
 
 import Block from '../models/Block';
 import Project from '../models/Project';
 
 import { setItem } from '../middleware/localStorageCache';
+
+//project rollup cache
+//used in saving and loading
+//track the last versions saved so we aren't saving over and over
+const rollMap = new Map();
+const isRollSame = (oldRoll, newRoll) => {
+  if (!oldRoll || !newRoll) return false;
+  //check projects same
+  if (oldRoll.project !== newRoll.project) return false; //todo - may want avoid to comparing versions
+  //check all blocks same
+  return oldRoll.blocks.every(oldBlock => {
+    const analog = newRoll.blocks.find(newBlock => newBlock.id === oldBlock.id);
+    return analog && analog === oldBlock;
+  });
+};
 
 //Promise
 export const projectList = () => {
@@ -34,19 +50,6 @@ export const projectCreate = (initialModel) => {
     });
     return project;
   };
-};
-
-//track the last versions saved so we aren't saving over and over
-const rollMap = new Map();
-const isRollSame = (oldRoll, newRoll) => {
-  if (!oldRoll || !newRoll) return false;
-  //check projects same
-  if (oldRoll.project !== newRoll.project) return false; //todo - may want avoid to comparing versions
-  //check all blocks same
-  return oldRoll.blocks.every(oldBlock => {
-    const analog = newRoll.blocks.find(newBlock => newBlock.id === oldBlock.id);
-    return analog && analog === oldBlock;
-  });
 };
 
 //Promise
@@ -102,7 +105,8 @@ export const projectLoad = (projectId) => {
         const { project, blocks } = rollup;
         const projectModel = new Project(project);
 
-        //todo (future) - transaction
+        dispatch(undoActions.transact());
+
         blocks.forEach((blockObject) => {
           const block = new Block(blockObject);
           dispatch({
@@ -115,6 +119,10 @@ export const projectLoad = (projectId) => {
           type: ActionTypes.PROJECT_LOAD,
           project: projectModel,
         });
+
+        dispatch(undoActions.commit());
+
+        rollMap.set(projectId, rollup);
 
         return project;
       });
