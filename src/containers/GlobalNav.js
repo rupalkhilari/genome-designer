@@ -33,6 +33,7 @@ import {
   blockGetChildrenRecursive,
 } from '../selectors/blocks';
 import { projectGetVersion } from '../selectors/projects';
+import { focusDetailsExist } from '../selectors/focus';
 import { undo, redo, transact, commit } from '../store/undo/actions';
 import {
   uiShowGenBankImport,
@@ -73,6 +74,7 @@ class GlobalNav extends Component {
     blockCreate: PropTypes.func.isRequired,
     showMainMenu: PropTypes.bool.isRequired,
     blockGetParents: PropTypes.func.isRequired,
+    focusDetailsExist: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -433,6 +435,7 @@ class GlobalNav extends Component {
               shortcut: stringToShortcut('meta i'),
             }, {
               text: 'Sequence Details',
+              disabled: !this.props.focusDetailsExist(),
               action: () => {
                 this.props.uiToggleDetailView();
               },
@@ -549,6 +552,7 @@ export default connect(mapStateToProps, {
   focusBlocksAdd,
   focusBlocksToggle,
   focusConstruct,
+  focusDetailsExist,
   clipboardSetData,
   blockAddComponent,
   blockAddComponents,
