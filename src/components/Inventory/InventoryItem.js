@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom';
 import DnD from '../../containers/graphics/dnd/dnd';
 import MouseTrap from '../../containers/graphics/mousetrap';
 import SvgSbol from '../../components/svgsbol';
+import BasePairCount from '../../components/Inventory/BasePairCount';
 
 import { inspectorToggleVisibility } from '../../actions/inspector';
 import { focusForceBlocks } from '../../actions/focus';
@@ -92,22 +93,12 @@ export class InventoryItem extends Component {
     return proxy;
   }
 
-  formatLength(length) {
-    if (!length) {
-      return '0 bp';
-    }
-    const thresh = 1000;
-    const sizes = ['bp', 'kb', 'Mb', 'Gb', 'Tb'];
-    const ind = Math.floor(Math.log(length) / Math.log(thresh));
-    return `${parseFloat((length / Math.pow(thresh, ind))).toFixed(1)} ${sizes[ind]}`;
-  }
-
   render() {
     const item = this.props.item;
     const imagePath = item.metadata.image;
     const isSelected = this.props.forceBlocks.indexOf(item) >= 0;
 
-    const sequenceLength = (item.sequence && item.sequence.length) ? ` (${this.formatLength(item.sequence.length)})` : '';
+    const hasSequence = item.sequence && item.sequence.length;
     const itemName = item.metadata.name || 'Unnamed';
 
     return (
@@ -120,7 +111,7 @@ export class InventoryItem extends Component {
           <span className="InventoryItem-text">
             {itemName}
           </span>
-          {!!sequenceLength && <span className="InventoryItem-textDetail">{sequenceLength}</span>}
+          {hasSequence && <BasePairCount count={item.sequence.length} />}
         </a>
       </div>
     );
