@@ -112,3 +112,7 @@ export const search = (query, options = {}) => {
     .then(json => json.esearchresult.idlist)
     .then(ids => getSummary(...ids));
 };
+
+export const sourceUrl = ({id}) => {
+  return `http://www.ncbi.nlm.nih.gov/nuccore/${id}`;
+};

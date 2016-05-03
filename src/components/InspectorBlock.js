@@ -5,6 +5,7 @@ import { blockMerge, blockSetColor, blockSetSbol, blockRename } from '../actions
 import InputSimple from './InputSimple';
 import ColorPicker from './ui/ColorPicker';
 import SymbolPicker from './ui/SymbolPicker';
+import BlockSource from './BlockSource';
 
 export class InspectorBlock extends Component {
   static propTypes = {
@@ -124,6 +125,13 @@ export class InspectorBlock extends Component {
     return [];
   }
 
+  currentSource() {
+    if (this.props.instances.length === 1) {
+      return (<BlockSource block={this.props.instances[0]} />);
+    }
+    return (<p>Multiple Sources</p>);
+  }
+
   render() {
     const { readOnly } = this.props;
 
@@ -151,6 +159,9 @@ export class InspectorBlock extends Component {
                      onEscape={() => this.endTransaction(true)}
                      updateOnBlur
                      value={this.currentDescription()}/>
+
+        <h4 className="InspectorContent-heading">Source</h4>
+        {this.currentSource()}
 
         <h4 className="InspectorContent-heading">Sequence Length</h4>
         <p><strong>{this.currentSequenceLength()}</strong></p>
