@@ -285,18 +285,35 @@ export default class Layout {
   titleFactory() {
     if (this.showHeader) {
       if (!this.titleNode) {
+        // node that carries the text
         this.titleNode = new Node2D(Object.assign({
           dataAttribute: {name: 'nodetype', value: 'construct-title'},
           sg: this.sceneGraph,
-          bounds: new Box2D(this.insetX, this.insetY + kT.bannerHeight, this.sceneGraph.availableWidth - this.insetX, kT.titleH),
         }, kT.titleAppearance));
+        // add the context menu dots
+        this.titleNodeDots = new Node2D({
+          sg: this.sceneGraph,
+          glyph: 'dots',
+        });
+        this.titleNode.appendChild(this.titleNodeDots);
         this.sceneGraph.root.appendChild(this.titleNode);
       }
 
-      // update title to current position and text
+      // update title to current position and text and width
+      const text = this.construct.metadata.name || 'Construct';
+      const width = this.titleNode.measureText(text).x + kT.textPad;
+
       this.titleNode.set({
-        text: this.construct.metadata.name || 'Construct',
+        text: text,
         color: this.baseColor,
+        bounds: new Box2D(this.insetX, this.insetY + kT.bannerHeight, width, kT.titleH),
+      });
+
+      // set dots to the right of the text
+      this.titleNodeDots.set({
+        bounds: new Box2D(width, (kT.titleH - kT.contextDotsH) / 2, kT.contextDotsW, kT.contextDotsH),
+        visible: true,
+        dotColor: this.baseColor,
       });
     }
   }
