@@ -197,6 +197,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
       this.constructViewer.openInspector();
     }
   }
+
   /**
    * mouse move handler ( note, not the same as drag which is with a button held down )
    */
@@ -243,6 +244,35 @@ export default class ConstructViewerUserInterface extends UserInterface {
     return this.osType === 'mac' ? evt.metaKey : evt.ctrlKey;
   }
 
+  /**
+   * context menu is handled in a very similar way to mouse down/up
+   * but selection is not changed and the context menu is always opened if there is a selection
+   */
+  contextMenu(evt, point) {
+    evt.preventDefault();
+    // select construct regardless of where click occurred.
+    this.selectConstruct();
+    const showMenu = () => {
+      this.constructViewer.openPopup({
+        blockPopupMenuOpen: true,
+        menuPosition: this.mouseTrap.mouseToGlobal(evt),
+      });
+    }
+    // if there are no selections try to select the block at the cursor
+    if (!this.selections.length) {
+      const block = this.topBlockAt(point);
+      if (block) {
+        this.constructViewer.blockSelected([block])
+        showMenu();
+      }
+    } else {
+      showMenu();
+    }
+  }
+
+  /**
+   * select with mouse including handling ancillary actions like opening the context menu and toggle nested construct
+   */
   mouseSelect(evt, point) {
     evt.preventDefault();
     const block = this.topBlockAt(point);
