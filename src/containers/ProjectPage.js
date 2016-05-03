@@ -80,7 +80,7 @@ class ProjectPage extends Component {
               //otherwise no blocks will show
               //ideally, this would just get ids
               this.props.projectLoad(nextId)
-                .then(() => this.props.projectOpen(nextId);
+                .then(() => this.props.projectOpen(nextId));
             } else {
               //if no manifests, create a new project
               const newProject = this.props.projectCreate();
