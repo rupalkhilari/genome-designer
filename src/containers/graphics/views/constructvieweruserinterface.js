@@ -259,13 +259,23 @@ export default class ConstructViewerUserInterface extends UserInterface {
   }
 
   /**
-   * context menu is handled in a very similar way to mouse down/up
-   * but selection is not changed and the context menu is always opened if there is a selection
+   * context menu for blocks and constructs
    */
   contextMenu(evt, point) {
     evt.preventDefault();
     // select construct regardless of where click occurred.
     this.selectConstruct();
+    // open construct menu for title according to position
+    const hits = this.sg.findNodesAt(point);
+    if (this.isConstructTitleNode(hits.length ? hits.pop() : null)) {
+      this.constructViewer.openPopup({
+        constructPopupMenuOpen: true,
+        menuPosition: this.mouseTrap.mouseToGlobal(evt),
+      });
+      return;
+    }
+
+    // show context menu for blocks if there are selections of the user is over a block
     const showMenu = () => {
       this.constructViewer.openPopup({
         blockPopupMenuOpen: true,

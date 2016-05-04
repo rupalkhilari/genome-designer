@@ -140,3 +140,17 @@ export const projectAddConstruct = (projectId, componentId) => {
     return project;
   };
 };
+
+//Adds a construct to a project. Does not create the construct. Use blocks.js
+export const projectRemoveConstruct = (projectId, componentId) => {
+  return (dispatch, getState) => {
+    const oldProject = getState().projects[projectId];
+    const project = oldProject.removeComponents(componentId);
+    dispatch({
+      type: ActionTypes.PROJECT_REMOVE_CONSTRUCT,
+      undoable: true,
+      project,
+    });
+    return project;
+  };
+};

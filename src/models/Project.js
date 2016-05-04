@@ -19,4 +19,8 @@ export default class Project extends Instance {
   addComponents(...components) {
     return this.mutate('components', this.components.concat(components));
   }
+
+  removeComponents(...components) {
+   return this.mutate('components', [...new Set(this.components.filter(comp => !components.includes(comp)))]);
+ }
 }

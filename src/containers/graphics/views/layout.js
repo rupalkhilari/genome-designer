@@ -301,7 +301,7 @@ export default class Layout {
 
       // update title to current position and text and width
       const text = this.construct.metadata.name || 'Construct';
-      const width = this.titleNode.measureText(text).x + kT.textPad;
+      const width = this.titleNode.measureText(text).x + kT.textPad + kT.contextDotsW;
 
       this.titleNode.set({
         text: text,
@@ -311,7 +311,7 @@ export default class Layout {
 
       // set dots to the right of the text
       this.titleNodeDots.set({
-        bounds: new Box2D(width, (kT.titleH - kT.contextDotsH) / 2, kT.contextDotsW, kT.contextDotsH),
+        bounds: new Box2D(width - kT.contextDotsW, (kT.titleH - kT.contextDotsH) / 2, kT.contextDotsW, kT.contextDotsH),
         visible: this.titleNode.hover,
         dotColor: this.baseColor,
       });
