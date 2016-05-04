@@ -98,7 +98,7 @@ export class InventoryItem extends Component {
     const imagePath = item.metadata.image;
     const isSelected = this.props.forceBlocks.indexOf(item) >= 0;
 
-    const hasSequence = item.sequence && item.sequence.length;
+    const hasSequence = item.sequence && item.sequence.length > 0;
     const itemName = item.metadata.name || 'Unnamed';
 
     return (

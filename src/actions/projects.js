@@ -180,7 +180,7 @@ export const projectAddConstruct = (projectId, componentId) => {
 export const projectOpen = (inputProjectId) => {
   return (dispatch, getState) => {
     //save the current project
-    return projectSave()
+    return dispatch(projectSave())
       .then(() => {
         //dont need to load the project, projectPage will handle that
         const projectId = !!inputProjectId ? inputProjectId : getItem(recentProjectKey);
