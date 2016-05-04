@@ -312,7 +312,7 @@ export default class Layout {
       // set dots to the right of the text
       this.titleNodeDots.set({
         bounds: new Box2D(width, (kT.titleH - kT.contextDotsH) / 2, kT.contextDotsW, kT.contextDotsH),
-        visible: true,
+        visible: this.titleNode.hover,
         dotColor: this.baseColor,
       });
     }

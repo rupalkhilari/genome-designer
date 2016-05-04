@@ -86,7 +86,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * true if the node is the title node for the construct
    */
   isConstructTitleNode(node) {
-    return node && this.layout.titleNode === node;
+    return !!(node && this.layout.titleNode === node);
   }
 
   /**
@@ -160,15 +160,15 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * mouse enter/leave are used to ensure no block is in the hover state
    */
   mouseEnter(event) {
-    this.setHover();
+    this.setBlockHover();
   }
   mouseLeave(event) {
-    this.setHover();
+    this.setBlockHover();
   }
   /**
    * set the given block to the hover state
    */
-  setHover(block) {
+  setBlockHover(block) {
     if (this.hover) {
       this.hover.node.set({
         hover: false,
@@ -187,6 +187,18 @@ export default class ConstructViewerUserInterface extends UserInterface {
       this.hover.node.updateBranch();
     }
   }
+  /**
+   * set hover state for title node
+   */
+  setTitleHover(bool) {
+    if (bool !== this.titleHover) {
+      this.titleHover = bool;
+      if (this.layout.titleNode) {
+        this.layout.titleNode.children[0].set({visible: this.titleHover});
+        this.layout.titleNode.children[0].updateBranch();
+      }
+    }
+  }
 
   /**
    * double click handler
@@ -202,7 +214,9 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * mouse move handler ( note, not the same as drag which is with a button held down )
    */
   mouseMove(evt, point) {
-    this.setHover(this.topBlockAt(point));
+    const hits = this.sg.findNodesAt(point);
+    this.setTitleHover(this.isConstructTitleNode(hits.length ? hits.pop() : null));
+    this.setBlockHover(this.topBlockAt(point));
   }
   /**
    * mouse down handler, selection occurs on up since we have to wait to
@@ -275,10 +289,10 @@ export default class ConstructViewerUserInterface extends UserInterface {
    */
   mouseSelect(evt, point) {
     evt.preventDefault();
+    // select construct whenever a selection occcurs regardless of blocks hit etc
+    this.selectConstruct();
     const block = this.topBlockAt(point);
     if (block) {
-      // select construct when block selected
-      this.selectConstruct();
       // if the user clicks a sub component ( ... menu accessor or expand / collapse for example )
       // the clicked block is just added to the selections, otherwise it replaces the selection.
       // Also, if the shift key is used the block is added and does not replace the selection
