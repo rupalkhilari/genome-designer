@@ -3,7 +3,7 @@
 .InventoryListGroup {
   display: flex;
   flex-direction: column;
-  padding: 0 0 0.5em;
+  margin: 0 0 0.5em;
   flex-shrink: 0;
 
   &-heading {
@@ -32,33 +32,43 @@
     flex-grow: 1;
     margin: 0.5em 0 0.5em 2em;
     overflow-y: scroll;
+
+    > * > .InventoryListGroup {
+      margin-bottom: 0;
+    }
   }
 
   &.expanded {
     flex-shrink: 0;
 
-    .InventoryListGroup-title {
-      font-weight: bold;
-    }
+    > .InventoryListGroup-heading {
+      .InventoryListGroup-title {
+        font-weight: bold;
+      }
 
-    .InventoryListGroup-toggle {
-      transform: rotate(90deg);
+      .InventoryListGroup-toggle {
+        transform: rotate(90deg);
+      }
     }
   }
 
   &.active {
-    .InventoryListGroup-title {
-      font-weight: bold;
-      color: var(--colors-selected);
+    > .InventoryListGroup-heading {
+      .InventoryListGroup-title {
+        font-weight: bold;
+        color: var(--colors-selected);
+      }
     }
   }
 
   &.disabled {
     color: var(--colors-grey);
 
-    .InventoryListGroup-title ,
-    .InventoryListGroup-toggle {
-      cursor: default;
+    > .InventoryListGroup-heading {
+      .InventoryListGroup-title,
+      .InventoryListGroup-toggle {
+        cursor: default;
+      }
     }
   }
 }

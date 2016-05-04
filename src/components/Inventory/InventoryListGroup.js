@@ -1,4 +1,4 @@
-import React, { Component, Children, PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
 import invariant from 'invariant';
 
 import '../../styles/InventoryListGroup.css';
@@ -10,7 +10,7 @@ export default class InventoryListGroup extends Component {
     disabled: PropTypes.bool,
     manual: PropTypes.bool,
     isExpanded: PropTypes.bool,
-    onToggle: PropTypes.func, //you are required for maintaining state...
+    onToggle: PropTypes.func, //you are required for maintaining state if manual...
     isActive: PropTypes.bool, //to do with color, not whether expanded or not
     hideToggle: PropTypes.bool, //disable toggler (hide it)
   };
@@ -62,7 +62,7 @@ export default class InventoryListGroup extends Component {
           </a>
         </div>
         {expanded && <div className="InventoryListGroup-contents no-vertical-scroll">
-          {Children.only(children)}
+          {children}
         </div>}
       </div>
     );

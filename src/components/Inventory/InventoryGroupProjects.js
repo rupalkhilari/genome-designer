@@ -9,6 +9,7 @@ import { block as blockDragType } from '../../constants/DragTypes';
 import { infoQuery } from '../../middleware/api';
 import { symbolMap } from '../../inventory/sbol';
 
+import InventoryConstruct from './InventoryConstruct';
 import InventoryListGroup from './InventoryListGroup';
 import InventoryList from './InventoryList';
 import InventoryTabs from './InventoryTabs';
@@ -50,6 +51,7 @@ export class InventoryGroupProjects extends Component {
 
   componentDidMount() {
     //retrigger on each load?
+    //todo - state for loading
     this.props.projectList();
   }
 
@@ -161,8 +163,12 @@ export class InventoryGroupProjects extends Component {
                                 isExpanded={isExpanded}
                                 onToggle={(nextState) => this.onToggleProject(nextState, projectId)}
                                 isActive={isActive}>
-              <InventoryList inventoryType={blockDragType}
-                             items={loadedProjects[projectId]}/>
+              {project.components.map(compId => {
+                return (<InventoryConstruct key={compId}
+                                            blockId={compId} />);
+              })}
+              {/*<InventoryList inventoryType={blockDragType}
+                             items={loadedProjects[projectId]}/> */}
             </InventoryListGroup>
           );
         });

@@ -20,6 +20,7 @@ export class InventoryItem extends Component {
         image: PropTypes.string,
       }).isRequired,
     }).isRequired,
+    defaultName: PropTypes.string,
     onDrop: PropTypes.func, //can return promise (e.g. update store), value is used for onDrop in DnD registered drop target. Can pass value from promise to use for drop as payload, or undefined
     onDragStart: PropTypes.func, //transact
     onDragComplete: PropTypes.func, //commit
@@ -99,7 +100,7 @@ export class InventoryItem extends Component {
     const isSelected = this.props.forceBlocks.indexOf(item) >= 0;
 
     const hasSequence = item.sequence && item.sequence.length > 0;
-    const itemName = item.metadata.name || 'Unnamed';
+    const itemName = item.metadata.name || this.props.defaultName || 'Unnamed';
 
     return (
       <div className={'InventoryItem' +
