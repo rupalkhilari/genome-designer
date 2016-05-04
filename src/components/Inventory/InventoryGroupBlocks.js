@@ -1,16 +1,14 @@
 import React, { Component, PropTypes } from 'react';
-import { connect } from 'react-redux';
-import { block as blockDragType} from '../../constants/DragTypes';
 import BlockDefinition from '../../schemas/Block';
 import * as validators from '../../schemas/fields/validators';
 import { escapeRegExp } from 'lodash';
 
 import InventorySearch from './InventorySearch';
-import InventoryList from './InventoryList';
+import InventoryBlock from './InventoryBlock';
 
 export default class InventoryGroupBlocks extends Component {
   static propTypes = {
-    items: ({items}) => validators.arrayOf(item => BlockDefinition.validate(item, true))(items) || null,
+    items: ({ items }) => validators.arrayOf(item => BlockDefinition.validate(item, true))(items) || null,
   };
 
   state = {
@@ -34,8 +32,13 @@ export default class InventoryGroupBlocks extends Component {
         <InventorySearch searchTerm={searchTerm}
                          placeholder="Filter by name or biological function"
                          onSearchChange={this.handleSearchChange}/>
-        <InventoryList inventoryType={blockDragType}
-                       items={listingItems}/>
+
+        <div className="InventoryGroup-contentInner no-vertical-scroll">
+          {listingItems.map(item => {
+            return (<InventoryBlock key={item.id}
+                                    block={item}/>);
+          })}
+        </div>
       </div>
     );
   }

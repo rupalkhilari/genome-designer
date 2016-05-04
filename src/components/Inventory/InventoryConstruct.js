@@ -1,8 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import InventoryListGroup from './InventoryListGroup';
-import InventoryList from './InventoryList';
-import InventoryItem from './InventoryItem';
 import InventoryBlock from './InventoryBlock';
 
 import { block as blockDragType } from '../../constants/DragTypes';
@@ -10,6 +8,7 @@ import { block as blockDragType } from '../../constants/DragTypes';
 //note - assumes that blocks are in the store
 
 //todo - constructs should be draggable - need to handle complicated cloning etc.
+//todo - abstract draggable component from inventory Item and use here
 
 export class InventoryConstruct extends Component {
   static propTypes = {
@@ -24,11 +23,12 @@ export class InventoryConstruct extends Component {
     const innerContent = isConstruct ?
       //explicitly call connected component to handle recursion
       (
-        <InventoryListGroup title={block.getName()}>
+        <InventoryListGroup title={block.getName()}
+                            isSelectable>
           {block.components.map(compId => (
-            <InventoryConstructConnected key={compId}
-                                         blockId={compId}
-                                         {...rest} />
+            <InventoryConstructConnected {...rest}
+              key={compId}
+              blockId={compId}/>
           ))}
         </InventoryListGroup>
       )

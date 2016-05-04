@@ -9,6 +9,7 @@ export default class InventoryListGroup extends Component {
     children: PropTypes.node.isRequired,
     disabled: PropTypes.bool,
     manual: PropTypes.bool,
+    isSelectable: PropTypes.bool,
     isExpanded: PropTypes.bool,
     onToggle: PropTypes.func, //you are required for maintaining state if manual...
     isActive: PropTypes.bool, //to do with color, not whether expanded or not
@@ -20,6 +21,7 @@ export default class InventoryListGroup extends Component {
     hideToggle: false,
     isActive: false,
     isExpanded: false,
+    isSelectable: false,
   };
 
   state = {
@@ -46,11 +48,12 @@ export default class InventoryListGroup extends Component {
   };
 
   render() {
-    const { hideToggle, title, manual, isExpanded, isActive, children, disabled } = this.props;
+    const { isSelectable, hideToggle, title, manual, isExpanded, isActive, children, disabled } = this.props;
     const expanded = manual ? isExpanded : this.state.expanded;
 
     return (
       <div className={'InventoryListGroup' +
+      (isSelectable ? ' isSelectable' : '') +
       (expanded ? ' expanded' : '') +
       (disabled ? ' disabled' : '') +
       (isActive ? ' active' : '')}>

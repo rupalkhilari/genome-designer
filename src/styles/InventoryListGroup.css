@@ -33,7 +33,7 @@
     margin: 0.5em 0 0.5em 2em;
     overflow-y: scroll;
 
-    > * > .InventoryListGroup {
+    > *:last-child > .InventoryListGroup {
       margin-bottom: 0;
     }
   }
