@@ -1,13 +1,12 @@
 import React, { Component, PropTypes } from 'react';
-import {connect} from 'react-redux';
-import {push} from 'react-router-redux';
+import { connect } from 'react-redux';
 import invariant from 'invariant';
 import ModalWindow from '../modal/modalwindow';
 import Balls from '../../components/balls/balls';
 import Dropzone from 'react-dropzone';
 import { uiShowGenBankImport } from '../../actions/ui';
-import {projectGet, projectListAllBlocks} from '../../selectors/projects';
-import {projectList, projectLoad} from '../../actions/projects';
+import { projectGet, projectListAllBlocks } from '../../selectors/projects';
+import { projectList, projectLoad, projectOpen } from '../../actions/projects';
 
 import '../../../src/styles/genbank.css';
 
@@ -19,7 +18,7 @@ import '../../../src/styles/genbank.css';
 class ImportGenBankModal extends Component {
 
   static propTypes = {
-
+    projectOpen: PropTypes.func.isRequired,
   };
 
   constructor() {
@@ -33,7 +32,7 @@ class ImportGenBankModal extends Component {
   }
 
   onDrop(files) {
-    this.setState({files});
+    this.setState({ files });
   }
 
   showFiles() {
@@ -60,7 +59,7 @@ class ImportGenBankModal extends Component {
     });
 
     if (this.state.files.length || window.__testGenbankImport) {
-      this.setState({processing: true});
+      this.setState({ processing: true });
       const formData = new FormData();
 
       let isCSV = false;
@@ -81,12 +80,12 @@ class ImportGenBankModal extends Component {
           if (json.ProjectId === this.props.currentProjectId) {
             this.props.projectLoad(json.ProjectId);
           } else {
-            this.props.push(`/project/${json.ProjectId}`);
+            this.props.projectOpen(json.ProjectId)
           }
         } else {
-          this.setState({error: `Error uploading file(s): ${xhr.status}`});
+          this.setState({ error: `Error uploading file(s): ${xhr.status}` });
         }
-        this.setState({processing: false});
+        this.setState({ processing: false });
       }
       xhr.send(formData);
     }
@@ -175,5 +174,5 @@ export default connect(mapStateToProps, {
   projectListAllBlocks,
   projectList,
   projectLoad,
-  push,
+  projectOpen,
 })(ImportGenBankModal);

@@ -1,0 +1,10 @@
+@import 'variables.css';
+
+.BlockSource {
+  text-decoration: none;
+  color: var(--colors-white);
+
+  &[href] {
+    cursor: pointer;
+  }
+}

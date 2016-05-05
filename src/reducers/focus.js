@@ -15,8 +15,10 @@ export default function inventory(state = initialState, action) {
   case ActionTypes.FOCUS_FORCE_PROJECT: {
     const { project } = action;
     return Object.assign({}, state, {
-      forceProject: project,
       forceBlocks: [],
+      blockIds: [],
+      constructId: null,
+      forceProject: project,
     });
   }
   case ActionTypes.FOCUS_FORCE_BLOCKS: {
@@ -25,6 +27,8 @@ export default function inventory(state = initialState, action) {
     return Object.assign({}, state, {
       forceBlocks: blocks,
       forceProject: null,
+      blockIds: [],
+      constructId: null,
     });
   }
   case ActionTypes.FOCUS_PROJECT: {
@@ -53,6 +57,7 @@ export default function inventory(state = initialState, action) {
     });
   }
   case LOCATION_CHANGE: {
+    //todo - ensure project page sets project ID properly
     return Object.assign({}, initialState);
   }
   default : {

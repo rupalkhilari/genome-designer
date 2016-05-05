@@ -1,10 +1,9 @@
 import React, { Component, PropTypes } from 'react';
 import {connect} from 'react-redux';
 import { uiShowAuthenticationForm, uiSetGrunt } from '../../actions/ui';
-import { push } from 'react-router-redux';
+import { projectOpen } from '../../actions/projects';
 import { userRegister } from '../../actions/user';
 import invariant from 'invariant';
-import { getItem, setItem } from '../../middleware/localStorageCache';
 import { tos, privacy } from '../../utils/ui/uiapi';
 
 /**
@@ -44,7 +43,7 @@ class RegisterForm extends Component {
     uiShowAuthenticationForm: PropTypes.func.isRequired,
     uiSetGrunt: PropTypes.func.isRequired,
     userRegister: PropTypes.func.isRequired,
-    push: PropTypes.func.isRequired,
+    projectOpen: PropTypes.func.isRequired,
   };
 
   constructor() {
@@ -71,7 +70,7 @@ class RegisterForm extends Component {
     .then((json) => {
       // close the form
       this.props.uiShowAuthenticationForm('none');
-      this.props.push(`/project/${getItem('mostRecentProject')}`);
+      this.props.projectOpen(null);
     })
     .catch((reason) => {
       const defaultMessage = 'Unexpected error, please check your connection';
@@ -297,5 +296,5 @@ export default connect(mapStateToProps, {
   uiShowAuthenticationForm,
   uiSetGrunt,
   userRegister,
-  push,
+  projectOpen,
 })(RegisterForm);

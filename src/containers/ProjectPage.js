@@ -1,13 +1,12 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { push } from 'react-router-redux';
 import ConstructViewer from './graphics/views/constructviewer';
 import ConstructViewerCanvas from './graphics/views/constructViewerCanvas';
 import ProjectDetail from '../components/ProjectDetail';
 import ProjectHeader from '../components/ProjectHeader';
 import Inventory from './Inventory';
 import Inspector from './Inspector';
-import { projectList, projectLoad, projectCreate } from '../actions/projects';
+import { projectList, projectLoad, projectCreate, projectOpen } from '../actions/projects';
 import { uiShowMainMenu, uiSetGrunt } from '../actions/ui';
 import { focusProject } from '../actions/focus';
 import autosaveInstance from '../store/autosave/autosaveInstance';
@@ -23,7 +22,7 @@ class ProjectPage extends Component {
     projectCreate: PropTypes.func.isRequired,
     projectList: PropTypes.func.isRequired,
     projectLoad: PropTypes.func.isRequired,
-    push: PropTypes.func.isRequired,
+    projectOpen: PropTypes.func.isRequired,
     uiShowMainMenu: PropTypes.func.isRequired,
     uiSetGrunt: PropTypes.func.isRequired,
     focusProject: PropTypes.func.isRequired,
@@ -81,11 +80,11 @@ class ProjectPage extends Component {
               //otherwise no blocks will show
               //ideally, this would just get ids
               this.props.projectLoad(nextId)
-                .then(() => this.props.push(`/project/${nextId}`));
+                .then(() => this.props.projectOpen(nextId));
             } else {
               //if no manifests, create a new project
               const newProject = this.props.projectCreate();
-              this.props.push(`/project/${newProject.id}`);
+              this.props.projectOpen(newProject.id);
             }
           });
         });
@@ -146,7 +145,7 @@ export default connect(mapStateToProps, {
   projectList,
   projectLoad,
   projectCreate,
-  push,
+  projectOpen,
   uiShowMainMenu,
   uiSetGrunt,
   focusProject,

@@ -1,10 +1,10 @@
 import React, { Component, PropTypes } from 'react';
 import {connect} from 'react-redux';
-import { push } from 'react-router-redux';
 import { uiShowAuthenticationForm, uiSetGrunt } from '../../actions/ui';
 import invariant from 'invariant';
 import { userLogin } from '../../actions/user';
-import { getItem } from '../../middleware/localStorageCache';
+import { projectOpen } from '../../actions/projects';
+
 /**
  * default visibility and text for error labels
  * @type {Object}
@@ -22,7 +22,7 @@ class SignInForm extends Component {
     uiShowAuthenticationForm: PropTypes.func.isRequired,
     uiSetGrunt: PropTypes.func.isRequired,
     userLogin: PropTypes.func.isRequired,
-    push: PropTypes.func.isRequired,
+    projectOpen: PropTypes.func.isRequired,
   };
 
   constructor() {
@@ -45,7 +45,7 @@ class SignInForm extends Component {
       .then(user => {
         // close the form
         this.props.uiShowAuthenticationForm('none');
-        this.props.push(`/project/${getItem('mostRecentProject')}`);
+        this.props.projectOpen(null);
       })
       .catch((reason) => {
         const defaultMessage = 'Email address or password are not recognized.';
@@ -145,5 +145,5 @@ export default connect(mapStateToProps, {
   uiShowAuthenticationForm,
   uiSetGrunt,
   userLogin,
-  push,
+  projectOpen,
 })(SignInForm);
