@@ -7,13 +7,12 @@ import Dropzone from 'react-dropzone';
 import { uiShowGenBankImport } from '../../actions/ui';
 import { projectGet, projectListAllBlocks } from '../../selectors/projects';
 import { projectList, projectLoad, projectOpen } from '../../actions/projects';
+import { importGenbankOrCSV } from '../../middleware/api';
 
 import '../../../src/styles/genbank.css';
 
 /**
  * Genbank import dialog.
- * NOTE: For E2E Tests we check for a global __testGenbankImport. If present
- * we send the genbank_testing string above.
  */
 class ImportGenBankModal extends Component {
 
@@ -53,41 +52,31 @@ class ImportGenBankModal extends Component {
 
   onSubmit(evt) {
     evt.preventDefault();
-
     this.setState({
       error: null
     });
 
-    if (this.state.files.length || window.__testGenbankImport) {
-      this.setState({ processing: true });
-      const formData = new FormData();
-
-      let isCSV = false;
-      invariant(this.state.files.length === 1, 'currently import only supports 1 file at a time, the UI should not allow more');
+    if (this.state.files.length) {
+      const projectId = this.state.destination === 'current project' ? '/' + this.props.currentProjectId : '';
       const file = this.state.files[0];
-      formData.append('data', file, file.name);
-      isCSV = file.name.toLowerCase().endsWith('.csv')
-
-      const xhr = new XMLHttpRequest();
-      const uri = `/import/${isCSV ? 'csv' : 'genbank'}${this.state.destination === 'current project' ? '/' + this.props.currentProjectId : ''}`;
-
-      xhr.open('POST', uri, true);
-      xhr.onload = () => {
-        if (xhr.status === 200) {
-          this.props.uiShowGenBankImport(false);
-          const json = JSON.parse(xhr.response);
-          invariant(json && json.ProjectId, 'expect a project ID');
-          if (json.ProjectId === this.props.currentProjectId) {
-            this.props.projectLoad(json.ProjectId);
+      importGenbankOrCSV(file, projectId)
+        .then(projectId => {
+          if (projectId === this.props.currentProjectId) {
+            this.props.projectLoad(projectId);
           } else {
-            this.props.projectOpen(json.ProjectId)
+            this.props.projectOpen(projectId);
           }
-        } else {
-          this.setState({ error: `Error uploading file(s): ${xhr.status}` });
-        }
-        this.setState({ processing: false });
-      }
-      xhr.send(formData);
+          this.setState({
+            processing: false,
+          });
+          this.props.uiShowGenBankImport(false);
+        })
+        .catch(error => {
+          this.setState({
+            error: `Error uploading file: ${error}`,
+            processing: false,
+          });
+        });
     }
   }
 
