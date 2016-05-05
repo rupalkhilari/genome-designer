@@ -1,6 +1,5 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import ReactDOM from 'react-dom';
 import DnD from '../../containers/graphics/dnd/dnd';
 import MouseTrap from '../../containers/graphics/mousetrap';
 import SvgSbol from '../../components/svgsbol';
@@ -31,9 +30,8 @@ export class InventoryItem extends Component {
   };
 
   componentDidMount() {
-    const dom = ReactDOM.findDOMNode(this);
     this.mouseTrap = new MouseTrap({
-      element: dom,
+      element: this.itemElement,
       mouseDrag: this.mouseDrag.bind(this),
     });
   }
@@ -66,6 +64,22 @@ export class InventoryItem extends Component {
     });
   }
 
+  /**
+   * make a drag and drop proxy for the item
+   */
+  makeDnDProxy() {
+    const proxy = document.createElement('div');
+    proxy.className = 'InventoryItemProxy';
+    proxy.innerHTML = this.props.item.metadata.name;
+    const svg = this.itemElement.querySelector('svg');
+    if (svg) {
+      const svgClone = svg.cloneNode(true);
+      svgClone.removeAttribute('data-reactid');
+      proxy.appendChild(svgClone);
+    }
+    return proxy;
+  }
+
   handleClick = () => {
     const { item, onSelect, inspectorToggleVisibility, focusForceBlocks } = this.props;
 
@@ -76,23 +90,6 @@ export class InventoryItem extends Component {
       inspectorToggleVisibility(true);
     });
   };
-
-  /**
-   * make a drag and drop proxy for the item
-   */
-  makeDnDProxy() {
-    const proxy = document.createElement('div');
-    proxy.className = 'InventoryItemProxy';
-    proxy.innerHTML = this.props.item.metadata.name;
-    const dom = ReactDOM.findDOMNode(this);
-    const svg = dom.querySelector('svg');
-    if (svg) {
-      const svgClone = svg.cloneNode(true);
-      svgClone.removeAttribute('data-reactid');
-      proxy.appendChild(svgClone);
-    }
-    return proxy;
-  }
 
   render() {
     const item = this.props.item;
@@ -105,14 +102,15 @@ export class InventoryItem extends Component {
     return (
       <div className={'InventoryItem' +
         (!!imagePath ? ' hasImage' : '') +
-        (!!isSelected ? ' selected' : '')}>
+        (!!isSelected ? ' selected' : '')}
+           ref={(el) => this.itemElement = el}>
         <a className="InventoryItem-item"
            onClick={this.handleClick}>
           {item.metadata.isSBOL ? <SvgSbol symbolName={item.id} color="white"/> : null}
           <span className="InventoryItem-text">
             {itemName}
           </span>
-          {hasSequence && <BasePairCount count={item.sequence.length} />}
+          {hasSequence && <BasePairCount count={item.sequence.length}/>}
         </a>
       </div>
     );
