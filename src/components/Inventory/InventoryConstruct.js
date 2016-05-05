@@ -46,34 +46,21 @@ export class InventoryConstruct extends Component {
     });
   }
 
-  //todo - constructs should be draggable - need to handle complicated cloning etc.
+  //dont need to do any special handling for cloning, since this component expects all the components to already be in the store, so deep clone will be fine
   mouseDrag(event, localPosition, startPosition, distance) {
-    const { block } = this.props;
+    const { block} = this.props;
 
     // cancel mouse drag and start a drag and drop
     this.mouseTrap.cancelDrag();
     // get global point as starting point for drag
     const globalPoint = this.mouseTrap.mouseToGlobal(event);
 
-    //onDragStart handler
-    this.props.onDragStart && this.props.onDragStart(block);
-
     // start DND
     DnD.startDrag(this.makeDnDProxy(), globalPoint, {
       item: block,
       type: blockDragType,
       source: 'inventory',
-    }, {
-      onDrop: (target, position) => {
-        if (this.props.onDrop) {
-          return this.props.onDrop(block, target, position);
-        }
-      },
-      onDragComplete: (target, position, payload) => {
-        if (this.props.onDragComplete) {
-          this.props.onDragComplete(payload.item, target, position);
-        }
-      },
+      undoRedoTransaction: true,
     });
   }
 
