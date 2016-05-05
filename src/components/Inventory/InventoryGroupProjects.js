@@ -167,8 +167,6 @@ export class InventoryGroupProjects extends Component {
                 return (<InventoryConstruct key={compId}
                                             blockId={compId} />);
               })}
-              {/*<InventoryList inventoryType={blockDragType}
-                             items={loadedProjects[projectId]}/> */}
             </InventoryListGroup>
           );
         });

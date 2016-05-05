@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import invariant from 'invariant';
 import { block as blockDragType } from '../../constants/DragTypes';
 
 import InventoryItem from './InventoryItem';
@@ -10,6 +11,10 @@ export default class InventoryItemBlock extends Component {
     block: PropTypes.object.isRequired,
   };
 
+  componentDidMount() {
+    invariant(!this.props.block.components.length, 'Do not use InventoryItemBlock on blocks with components');
+  }
+
   render() {
     const { block, ...rest } = this.props;
 
@@ -17,6 +22,7 @@ export default class InventoryItemBlock extends Component {
       <div className="InventoryBlock">
         <InventoryItem {...rest}
           inventoryType={blockDragType}
+          defaultName={block.getName()}
           item={block}/>
       </div>
     );

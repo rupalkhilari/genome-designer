@@ -1,5 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import DnD from '../../containers/graphics/dnd/dnd';
+import MouseTrap from '../../containers/graphics/mousetrap';
 import { focusForceBlocks } from '../../actions/focus';
 import InventoryListGroup from './InventoryListGroup';
 import InventoryItemBlock from './InventoryItemBlock';
@@ -8,37 +10,108 @@ import { block as blockDragType } from '../../constants/DragTypes';
 
 //note - assumes that blocks are in the store
 
-//todo - constructs should be draggable - need to handle complicated cloning etc.
 //todo - abstract draggable component from inventory Item and use here
 
 export class InventoryConstruct extends Component {
   static propTypes = {
     blockId: PropTypes.string.isRequired,
     isActive: PropTypes.bool.isRequired,
+    isConstruct: PropTypes.bool.isRequired,
     block: PropTypes.object.isRequired,
     focusForceBlocks: PropTypes.func.isRequired,
   };
 
-  render() {
-    const { blockId, block, isActive, focusForceBlocks, ...rest } = this.props;
-    const isConstruct = block.components.length > 0;
+  componentDidMount() {
+    if (this.props.isConstruct) {
+      this.registerMouseTrap();
+    }
+  }
 
-    const innerContent = isConstruct ?
+  componentDidUpdate(prevProps) {
+    //dispose if no longer construct
+    if (prevProps.isConstruct && !this.props.isConstruct) {
+      this.mouseTrap.dispose();
+    }
+
+    //register if construct now
+    if (!prevProps.isConstruct && this.props.isConstruct) {
+      this.registerMouseTrap();
+    }
+  }
+
+  registerMouseTrap() {
+    this.mouseTrap = new MouseTrap({
+      element: this.itemElement,
+      mouseDrag: this.mouseDrag.bind(this),
+    });
+  }
+
+  //todo - constructs should be draggable - need to handle complicated cloning etc.
+  mouseDrag(event, localPosition, startPosition, distance) {
+    const { block } = this.props;
+
+    // cancel mouse drag and start a drag and drop
+    this.mouseTrap.cancelDrag();
+    // get global point as starting point for drag
+    const globalPoint = this.mouseTrap.mouseToGlobal(event);
+
+    //onDragStart handler
+    this.props.onDragStart && this.props.onDragStart(block);
+
+    // start DND
+    DnD.startDrag(this.makeDnDProxy(), globalPoint, {
+      item: block,
+      type: blockDragType,
+      source: 'inventory',
+    }, {
+      onDrop: (target, position) => {
+        if (this.props.onDrop) {
+          return this.props.onDrop(block, target, position);
+        }
+      },
+      onDragComplete: (target, position, payload) => {
+        if (this.props.onDragComplete) {
+          this.props.onDragComplete(payload.item, target, position);
+        }
+      },
+    });
+  }
+
+  /**
+   * make a drag and drop proxy for the item
+   */
+  makeDnDProxy() {
+    const { block } = this.props;
+    const proxy = document.createElement('div');
+    proxy.className = 'InventoryItemProxy';
+    proxy.innerHTML = block.getName();
+    return proxy;
+  }
+
+  render() {
+    const { blockId, block, isConstruct, isActive, focusForceBlocks, ...rest } = this.props;
+
+    //use !isConstruct so short circuit, to avoid calling ref in InventoryListGroup (will be null if never mounted, cause errors)
+    const innerContent = !isConstruct
+      ?
+      <InventoryItemBlock block={block} {...rest} />
+      :
       //explicitly call connected component to handle recursion
       (
         <InventoryListGroup title={block.getName()}
                             isActive={isActive}
                             onSelect={() => focusForceBlocks([block])}
-                            isSelectable>
+                            isSelectable
+                            ref={(el) => {
+                              if (el) { this.itemElement = el.getHeading(); }
+                            }}>
           {block.components.map(compId => (
             <InventoryConstructConnected {...rest}
               key={compId}
               blockId={compId}/>
           ))}
         </InventoryListGroup>
-      )
-      :
-      <InventoryItemBlock block={block} {...rest} />;
+      );
 
     return (
       <div className="InventoryConstruct">
@@ -51,11 +124,13 @@ export class InventoryConstruct extends Component {
 const InventoryConstructConnected = connect((state, props) => {
   const { blockId } = props;
   const block = state.blocks[blockId];
+  const isConstruct = block.components.length > 0;
   const isActive = state.focus.forceBlocks.some(block => block.id === blockId);
 
   return {
     block,
     isActive,
+    isConstruct,
   };
 }, {
   focusForceBlocks,

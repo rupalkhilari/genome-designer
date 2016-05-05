@@ -36,6 +36,11 @@ export default class InventoryListGroup extends Component {
     invariant(!this.props.manual || (this.props.hasOwnProperty('isExpanded') && this.props.hasOwnProperty('onToggle')), 'If the component is manual, you must pass isExpanded and onToggle to handle state changes');
   }
 
+  //e.g. for registering mouse drag handler, only on header
+  getHeading() {
+    return this.headingElement;
+  }
+
   handleToggle = (evt) => {
     const { disabled, manual, isExpanded, onToggle } = this.props;
 
@@ -76,6 +81,7 @@ export default class InventoryListGroup extends Component {
       (disabled ? ' disabled' : '') +
       (isActive ? ' active' : '')}>
         <div className="InventoryListGroup-heading"
+             ref={(el) => this.headingElement = el}
              onClick={this.handleSelect}>
           <Toggler hidden={hideToggle}
                    onClick={this.handleToggle}

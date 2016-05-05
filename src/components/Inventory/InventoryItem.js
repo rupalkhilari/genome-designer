@@ -43,7 +43,9 @@ export class InventoryItem extends Component {
     const globalPoint = this.mouseTrap.mouseToGlobal(event);
 
     //onDragStart handler
-    this.props.onDragStart && this.props.onDragStart(this.props.item);
+    if (this.props.onDragStart) {
+      this.props.onDragStart(this.props.item);
+    }
 
     // start DND
     DnD.startDrag(this.makeDnDProxy(), globalPoint, {
