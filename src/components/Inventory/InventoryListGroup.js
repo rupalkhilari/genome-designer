@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import invariant from 'invariant';
+import Toggler from '../ui/Toggler';
 
 import '../../styles/InventoryListGroup.css';
 
@@ -76,8 +77,9 @@ export default class InventoryListGroup extends Component {
       (isActive ? ' active' : '')}>
         <div className="InventoryListGroup-heading"
              onClick={this.handleSelect}>
-          {!hideToggle && <span className="InventoryListGroup-toggle"
-                                onClick={this.handleToggle}/>}
+          <Toggler hidden={hideToggle}
+                   onClick={this.handleToggle}
+                   open={expanded}/>
           <a className="InventoryListGroup-title">
             <span>{title}</span>
           </a>

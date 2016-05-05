@@ -17,20 +17,6 @@
     user-select: none;
   }
 
-  &-toggle {
-    width: 1em;
-    height: 1em;
-    padding: 3px;
-    display: inline-block;
-    margin-right: 0.5em;
-    background-image: url('/images/ui/disclosure_triangle_closed.svg');
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-size: 10px 10px;
-    transition: transform var(--timing-extrafast) ease-out;
-    cursor: pointer;
-  }
-
   &-contents {
     flex-grow: 1;
     margin: 0 0 0 1.5em;
