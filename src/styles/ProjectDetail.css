@@ -104,4 +104,8 @@
       display: flex;
     }
   }
+
+  .disabled {
+    pointer: disabled;
+  }
 }

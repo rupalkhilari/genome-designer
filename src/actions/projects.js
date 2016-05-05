@@ -63,6 +63,9 @@ export const projectSave = (inputProjectId) => {
   return (dispatch, getState) => {
     //if dont pass project id, get the currently viewed one
     const projectId = !!inputProjectId ? inputProjectId : getState().focus.projectId;
+    if (!projectId) {
+      return Promise.resolve(null);
+    }
 
     const project = getState().projects[projectId];
     const roll = dispatch(projectSelectors.projectCreateRollup(projectId));
@@ -187,5 +190,19 @@ export const projectOpen = (inputProjectId) => {
         //alternatively, we can just call react-router's browserHistory.push() directly
         dispatch(push(`/project/${projectId}`));
       });
+  };
+};
+
+//Adds a construct to a project. Does not create the construct. Use blocks.js
+export const projectRemoveConstruct = (projectId, componentId) => {
+  return (dispatch, getState) => {
+    const oldProject = getState().projects[projectId];
+    const project = oldProject.removeComponents(componentId);
+    dispatch({
+      type: ActionTypes.PROJECT_REMOVE_CONSTRUCT,
+      undoable: true,
+      project,
+    });
+    return project;
   };
 };
