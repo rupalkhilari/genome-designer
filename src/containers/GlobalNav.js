@@ -160,7 +160,6 @@ class GlobalNav extends Component {
     const project = this.props.projectCreate();
     // add a construct to the new project
     const block = this.props.blockCreate({projectId: project.id});
-    this.props.blockRename(block.id, 'New Construct');
     this.props.projectAddConstruct(project.id, block.id);
     this.props.focusConstruct(block.id);
     this.props.projectOpen(project.id);
