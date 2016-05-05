@@ -11,6 +11,7 @@ describe('inventory reducers', () => {
     expect(initialState).to.eql({
       isVisible: false,
       searchTerm: '',
+      sourcesToggling: false,
     });
   });
 
