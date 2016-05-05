@@ -11,10 +11,12 @@ export default class ContextDots2D extends Glyph2D {
     super(node);
     this.el = document.createElement('div');
     this.el.className = 'dot-container';
+    this.dots = [];
     for (let i = 0; i < 3; i += 1) {
       const dot = document.createElement('div');
       dot.className = 'dot';
       this.el.appendChild(dot);
+      this.dots.push(dot);
     }
     this.node.el.appendChild(this.el);
   }
@@ -28,5 +30,8 @@ export default class ContextDots2D extends Glyph2D {
     this.el.style.top = '0px';
     this.el.style.width = this.node.width + 'px';
     this.el.style.height = this.node.height + 'px';
+    this.dots.forEach(dot => {
+      dot.style.backgroundColor = this.node.dotColor || 'black';
+    });
   }
 }

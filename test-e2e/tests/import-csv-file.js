@@ -9,7 +9,7 @@ var http = require("http");
 var path = require('path');
 
 module.exports = {
-  'Import a genbank file as a project then export project as a genbank file' : function (browser) {
+  'Import a CSV file' : function (browser) {
 
     // register via fixture
     var credentials = homepageRegister(browser);
@@ -36,29 +36,16 @@ module.exports = {
         document.querySelector('.dropzone').style.marginBottom = '5rem';
       }, [], function() {});
 
-    var gbFile = path.resolve(__dirname + '/../fixtures/test.gb');
+    var csvFile = path.resolve(__dirname + '/../fixtures/test.csv');
 
       // send file name to hidden input[file]
     browser
-      .setValue('.genbank-import-form input[type="file"]', gbFile)
+      .setValue('.genbank-import-form input[type="file"]', csvFile)
       .pause(3000)
       // click submit button to start the upload of fake data
       .submitForm('.genbank-import-form')
       // wait for a construct viewer to become visible
       .waitForElementPresent('.construct-viewer', 5000, 'expected a construct viewer to appear')
-      .pause(1000);
-
-    // we can't actually download the file but we can ensure the correct header is present at the expected url
-    browser.url(function (response) {
-      // save original project url
-      var projectURL = response.value;
-      var projectId = response.value.split('/').pop();
-      var uri = 'http://localhost:3001/export/genbank/' + projectId;
-      browser
-        .url(uri)
-        .pause(5000)
-        .assert.urlContains(projectURL)
-        .end();
-    });
+      .end();
   }
 };

@@ -43,7 +43,7 @@ class App extends Component {
       <div className="App">
         <GlobalNav currentProjectId={this.props.currentProjectId}/>
         <AuthenticationForms />
-        <ImportGenBankModal />
+        <ImportGenBankModal currentProjectId={this.props.currentProjectId}/>
         <ImportDNAForm />
         <AboutForm />
         <div className="App-pageContent">

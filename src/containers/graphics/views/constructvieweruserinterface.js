@@ -86,7 +86,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * true if the node is the title node for the construct
    */
   isConstructTitleNode(node) {
-    return node && this.layout.titleNode === node;
+    return !!(node && this.layout.titleNode === node);
   }
 
   /**
@@ -160,15 +160,15 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * mouse enter/leave are used to ensure no block is in the hover state
    */
   mouseEnter(event) {
-    this.setHover();
+    this.setBlockHover();
   }
   mouseLeave(event) {
-    this.setHover();
+    this.setBlockHover();
   }
   /**
    * set the given block to the hover state
    */
-  setHover(block) {
+  setBlockHover(block) {
     if (this.hover) {
       this.hover.node.set({
         hover: false,
@@ -187,6 +187,18 @@ export default class ConstructViewerUserInterface extends UserInterface {
       this.hover.node.updateBranch();
     }
   }
+  /**
+   * set hover state for title node
+   */
+  setTitleHover(bool) {
+    if (bool !== this.titleHover) {
+      this.titleHover = bool;
+      if (this.layout.titleNode) {
+        this.layout.titleNode.children[0].set({visible: this.titleHover});
+        this.layout.titleNode.children[0].updateBranch();
+      }
+    }
+  }
 
   /**
    * double click handler
@@ -197,11 +209,14 @@ export default class ConstructViewerUserInterface extends UserInterface {
       this.constructViewer.openInspector();
     }
   }
+
   /**
    * mouse move handler ( note, not the same as drag which is with a button held down )
    */
   mouseMove(evt, point) {
-    this.setHover(this.topBlockAt(point));
+    const hits = this.sg.findNodesAt(point);
+    this.setTitleHover(this.isConstructTitleNode(hits.length ? hits.pop() : null));
+    this.setBlockHover(this.topBlockAt(point));
   }
   /**
    * mouse down handler, selection occurs on up since we have to wait to
@@ -243,12 +258,51 @@ export default class ConstructViewerUserInterface extends UserInterface {
     return this.osType === 'mac' ? evt.metaKey : evt.ctrlKey;
   }
 
+  /**
+   * context menu for blocks and constructs
+   */
+  contextMenu(evt, point) {
+    evt.preventDefault();
+    // select construct regardless of where click occurred.
+    this.selectConstruct();
+    // open construct menu for title according to position
+    const hits = this.sg.findNodesAt(point);
+    if (this.isConstructTitleNode(hits.length ? hits.pop() : null)) {
+      this.constructViewer.openPopup({
+        constructPopupMenuOpen: true,
+        menuPosition: this.mouseTrap.mouseToGlobal(evt),
+      });
+      return;
+    }
+
+    // show context menu for blocks if there are selections of the user is over a block
+    const showMenu = () => {
+      this.constructViewer.openPopup({
+        blockPopupMenuOpen: true,
+        menuPosition: this.mouseTrap.mouseToGlobal(evt),
+      });
+    }
+    // if there are no selections try to select the block at the cursor
+    if (!this.selections.length) {
+      const block = this.topBlockAt(point);
+      if (block) {
+        this.constructViewer.blockSelected([block])
+        showMenu();
+      }
+    } else {
+      showMenu();
+    }
+  }
+
+  /**
+   * select with mouse including handling ancillary actions like opening the context menu and toggle nested construct
+   */
   mouseSelect(evt, point) {
     evt.preventDefault();
+    // select construct whenever a selection occcurs regardless of blocks hit etc
+    this.selectConstruct();
     const block = this.topBlockAt(point);
     if (block) {
-      // select construct when block selected
-      this.selectConstruct();
       // if the user clicks a sub component ( ... menu accessor or expand / collapse for example )
       // the clicked block is just added to the selections, otherwise it replaces the selection.
       // Also, if the shift key is used the block is added and does not replace the selection

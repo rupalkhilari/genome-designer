@@ -38,7 +38,10 @@ import {
   focusConstruct,
 } from '../../../actions/focus';
 import invariant from 'invariant';
-import { projectGetVersion } from '../../../selectors/projects';
+import {
+  projectGetVersion,
+ } from '../../../selectors/projects';
+ import { projectRemoveConstruct } from '../../../actions/projects';
 import * as undoActions from '../../../store/undo/actions';
 
 // static hash for matching viewers to constructs
@@ -65,6 +68,7 @@ export class ConstructViewer extends Component {
     blockRemoveComponent: PropTypes.func,
     blockGetParents: PropTypes.func,
     projectGetVersion: PropTypes.func,
+    projectRemoveConstruct: PropTypes.func,
     blocks: PropTypes.object,
     focus: PropTypes.object,
   };
@@ -74,6 +78,7 @@ export class ConstructViewer extends Component {
     idToViewer[this.props.constructId] = this;
     this.state = {
       blockPopupMenuOpen: false,    // context menu for blocks
+      constructPopupMenuOpen: false,// context menu for construct
       menuPosition: new Vector2D(), // position for any popup menu,
       modalOpen: false,             // controls visibility of test modal window
     };
@@ -354,7 +359,10 @@ export class ConstructViewer extends Component {
    * close all popup menus
    */
   closePopups() {
-    this.setState({blockPopupMenuOpen: false});
+    this.setState({
+      blockPopupMenuOpen: false,
+      constructPopupMenuOpen: false,
+    });
   }
   /**
    * open any popup menu by apply the appropriate state and global position
@@ -385,19 +393,36 @@ export class ConstructViewer extends Component {
               this.openInspector();
             },
           },
-          {},
           {
             text: 'Import DNA Sequence',
             action: () => {
               this.props.uiShowDNAImport(true);
             }
           },
-          {},
           {
             text: 'Delete',
             action: () => {
               this.removePartsList(this.sg.ui.selectedElements);
             }
+          },
+        ]
+      }/>);
+  }
+  /**
+   * return JSX for construct context menu
+   */
+  constructContextMenu() {
+    return (<PopupMenu
+      open={this.state.constructPopupMenuOpen}
+      position={this.state.menuPosition}
+      closePopup={this.closePopups.bind(this)}
+      menuItems={
+        [
+          {
+            text: 'Delete Construct',
+            action: () => {
+              this.props.projectRemoveConstruct(this.props.projectId, this.props.constructId);
+            },
           },
         ]
       }/>);
@@ -444,6 +469,7 @@ export class ConstructViewer extends Component {
           <div className="sceneGraph"/>
         </div>
         {this.blockContextMenu()}
+        {this.constructContextMenu()}
       </div>
     );
     return rendered;
@@ -475,6 +501,7 @@ export default connect(mapStateToProps, {
   focusBlocksToggle,
   focusConstruct,
   projectGetVersion,
+  projectRemoveConstruct,
   inspectorToggleVisibility,
   uiShowDNAImport,
   uiToggleDetailView,
