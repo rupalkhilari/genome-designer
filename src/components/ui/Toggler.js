@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react';
+import React, { PropTypes } from 'react';
 
 import '../../styles/Toggler.css';
 
@@ -9,8 +9,8 @@ export default function Toggler({ onClick, hidden, open, disabled }) {
   }
 
   const handleClick = (evt) => {
-    if (!this.props.disabled) {
-      this.props.onClick(evt);
+    if (!disabled) {
+      onClick(evt);
     }
   };
 
