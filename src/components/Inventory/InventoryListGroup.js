@@ -12,9 +12,10 @@ export default class InventoryListGroup extends Component {
     isSelectable: PropTypes.bool,
     isExpanded: PropTypes.bool,
     onToggle: PropTypes.func, //click toggle, you are required for maintaining state if manual...
-    onSelect: PropTypes.func, //click title
+    onSelect: PropTypes.func, //click title. return false if toggleOnSelect to prevent
     isActive: PropTypes.bool, //to do with color, not whether expanded or not
     hideToggle: PropTypes.bool, //disable toggler (hide it)
+    toggleOnSelect: PropTypes.bool, //run toggling on selection
   };
 
   static defaultProps = {
@@ -23,6 +24,7 @@ export default class InventoryListGroup extends Component {
     isActive: false,
     isExpanded: false,
     isSelectable: false,
+    toggleOnSelect: true,
   };
 
   state = {
@@ -33,8 +35,10 @@ export default class InventoryListGroup extends Component {
     invariant(!this.props.manual || (this.props.hasOwnProperty('isExpanded') && this.props.hasOwnProperty('onToggle')), 'If the component is manual, you must pass isExpanded and onToggle to handle state changes');
   }
 
-  handleToggle = () => {
+  handleToggle = (evt) => {
     const { disabled, manual, isExpanded, onToggle } = this.props;
+
+    evt.stopPropagation();
 
     if (disabled) {
       return;
@@ -49,13 +53,15 @@ export default class InventoryListGroup extends Component {
   };
 
   handleSelect = (evt) => {
-    const { onSelect, disabled } = this.props;
+    const { onSelect, toggleOnSelect, disabled } = this.props;
 
     if (disabled) {
       return;
     }
 
-    onSelect && onSelect(evt);
+    if (((onSelect && onSelect(evt) !== false) || !onSelect) && !!toggleOnSelect) {
+      this.handleToggle(evt);
+    }
   };
 
   render() {
@@ -68,11 +74,11 @@ export default class InventoryListGroup extends Component {
       (expanded ? ' expanded' : '') +
       (disabled ? ' disabled' : '') +
       (isActive ? ' active' : '')}>
-        <div className="InventoryListGroup-heading">
+        <div className="InventoryListGroup-heading"
+             onClick={this.handleSelect}>
           {!hideToggle && <span className="InventoryListGroup-toggle"
                                 onClick={this.handleToggle}/>}
-          <a className="InventoryListGroup-title"
-             onClick={this.handleSelect}>
+          <a className="InventoryListGroup-title">
             <span>{title}</span>
           </a>
         </div>

@@ -18,14 +18,15 @@
   }
 
   &-toggle {
-    width: 10px;
-    height: 10px;
+    width: 1em;
+    height: 1em;
+    padding: 3px;
     display: inline-block;
     margin-right: 0.5em;
     background-image: url('/images/ui/disclosure_triangle_closed.svg');
-    background-position: top left;
+    background-position: center center;
     background-repeat: no-repeat;
-    background-size: contain;
+    background-size: 10px 10px;
     transition: transform var(--timing-extrafast) ease-out;
     cursor: pointer;
   }
@@ -76,16 +77,6 @@
   }
 
   &.isSelectable {
-    > .InventoryListGroup-heading {
-      cursor: pointer;
-
-      &:hover {
-        background-color: var(--colors-selected);
-      }
-
-      .InventoryListGroup-title {}
-    }
-
     .InventoryListGroup-toggle {
       /* todo - make this a different color, needs svg */
     }
@@ -105,6 +96,14 @@
     &.expanded {
       > .InventoryListGroup-heading .InventoryListGroup-title {
         font-weight: bold;
+      }
+    }
+
+    > .InventoryListGroup-heading {
+      cursor: pointer;
+
+      &:hover {
+        background-color: var(--colors-selected);
       }
     }
   }
