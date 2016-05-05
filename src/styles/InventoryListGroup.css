@@ -3,11 +3,13 @@
 .InventoryListGroup {
   display: flex;
   flex-direction: column;
-  margin: 0 0 0.5em;
   flex-shrink: 0;
+  margin: 0 0 3px;
 
   &-heading {
     flex-shrink: 0;
+    padding: 2px 5px;
+    border-radius: 3px;
   }
 
   &-title {
@@ -30,7 +32,8 @@
 
   &-contents {
     flex-grow: 1;
-    margin: 0.5em 0 0.5em 2em;
+    margin: 0 0 0 1.5em;
+    padding: 0.25em 0;
     overflow-y: scroll;
 
     > *:last-child > .InventoryListGroup {
@@ -68,6 +71,20 @@
       .InventoryListGroup-title,
       .InventoryListGroup-toggle {
         cursor: default;
+      }
+    }
+  }
+
+  &.isSelectable {
+    > .InventoryListGroup-heading {
+      cursor: pointer;
+
+      &.selected {
+        background-color: rgba(255,255,255,0.2);
+      }
+
+      &:hover {
+        background-color: var(--colors-selected);
       }
     }
   }

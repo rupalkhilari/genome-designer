@@ -4,7 +4,7 @@ import * as validators from '../../schemas/fields/validators';
 import { escapeRegExp } from 'lodash';
 
 import InventorySearch from './InventorySearch';
-import InventoryBlock from './InventoryBlock';
+import InventoryItemBlock from './InventoryItemBlock';
 
 export default class InventoryGroupBlocks extends Component {
   static propTypes = {
@@ -35,8 +35,8 @@ export default class InventoryGroupBlocks extends Component {
 
         <div className="InventoryGroup-contentInner no-vertical-scroll">
           {listingItems.map(item => {
-            return (<InventoryBlock key={item.id}
-                                    block={item}/>);
+            return (<InventoryItemBlock key={item.id}
+                                        block={item}/>);
           })}
         </div>
       </div>

@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import InventoryListGroup from './InventoryListGroup';
-import InventoryBlock from './InventoryBlock';
+import InventoryItemBlock from './InventoryItemBlock';
 
 import { block as blockDragType } from '../../constants/DragTypes';
 
@@ -33,7 +33,7 @@ export class InventoryConstruct extends Component {
         </InventoryListGroup>
       )
       :
-      <InventoryBlock block={block} {...rest} />;
+      <InventoryItemBlock block={block} {...rest} />;
 
     return (
       <div className="InventoryConstruct">
