@@ -67,6 +67,7 @@ export class InventoryGroupProjects extends Component {
   onToggleProject = (nextState, projectId) => {
     const { currentProject } = this.props;
 
+    //this ensures the project is in the store
     this.handleToggleProject(nextState, projectId).then(() => {
       if (projectId === currentProject) {
         //inspect it
@@ -74,7 +75,7 @@ export class InventoryGroupProjects extends Component {
       } else {
         //save the previous one, open the new one
         this.props.projectSave()
-          .then(() => this.openProject(projectId));
+          .then(() => this.props.projectOpen(projectId));
       }
     });
   };
@@ -82,6 +83,7 @@ export class InventoryGroupProjects extends Component {
   onToggleType = (nextState, type) => {
     if (!nextState) return;
     //no caching for now...
+    //when update to a cache, this should live update (right now, updates only when change tabs)
 
     infoQuery('sbol', type).then(blocks => this.setState({
       loadedTypes: Object.assign(this.state.loadedTypes, { [type]: blocks }),
@@ -103,10 +105,7 @@ export class InventoryGroupProjects extends Component {
       .then(() => item);
   };
 
-  openProject = (projectId) => {
-    this.props.projectOpen(projectId);
-  };
-
+  //only call after project has been loaded and is in the store
   inspectProject = (projectId) => {
     const project = this.props.projectGet(projectId);
     this.props.focusForceProject(project);
@@ -161,7 +160,8 @@ export class InventoryGroupProjects extends Component {
                                 manual
                                 hideToggle={!project.components.length}
                                 isExpanded={isExpanded}
-                                onToggle={(nextState) => this.onToggleProject(nextState, projectId)}
+                                onToggle={(nextState) => this.handleToggleProject(nextState, projectId)}
+                                onSelect={(nextState) => this.onToggleProject(nextState, projectId)}
                                 isActive={isActive}>
               {project.components.map(compId => {
                 return (<InventoryConstruct key={compId}

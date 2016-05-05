@@ -8,9 +8,13 @@ import InventoryItemBlock from './InventoryItemBlock';
 
 import { block as blockDragType } from '../../constants/DragTypes';
 
-//note - assumes that blocks are in the store
+/*
+ InventoryConstruct takes a blockId of a block in a loaded project (i.e. block and components recursively are in the store), and delegates between inventoryItemBlock for blocks and InventoryListGroup to recursively lay out constructs. Use this component if you are unsure whether you have a block or a construct.
 
-//todo - abstract draggable component from inventory Item and use here
+ - note - assumes that blocks are in the store
+ - attaches a mousetrap to the list group header, if this is in fact a construct
+
+ */
 
 export class InventoryConstruct extends Component {
   static propTypes = {
@@ -48,7 +52,7 @@ export class InventoryConstruct extends Component {
 
   //dont need to do any special handling for cloning, since this component expects all the components to already be in the store, so deep clone will be fine
   mouseDrag(event, localPosition, startPosition, distance) {
-    const { block} = this.props;
+    const { block } = this.props;
 
     // cancel mouse drag and start a drag and drop
     this.mouseTrap.cancelDrag();
