@@ -11,7 +11,8 @@ export default class InventoryListGroup extends Component {
     manual: PropTypes.bool,
     isSelectable: PropTypes.bool,
     isExpanded: PropTypes.bool,
-    onToggle: PropTypes.func, //you are required for maintaining state if manual...
+    onToggle: PropTypes.func, //click toggle, you are required for maintaining state if manual...
+    onSelect: PropTypes.func, //click title
     isActive: PropTypes.bool, //to do with color, not whether expanded or not
     hideToggle: PropTypes.bool, //disable toggler (hide it)
   };
@@ -47,6 +48,16 @@ export default class InventoryListGroup extends Component {
     onToggle && onToggle(nextState);
   };
 
+  handleSelect = (evt) => {
+    const { onSelect, disabled } = this.props;
+
+    if (disabled) {
+      return;
+    }
+
+    onSelect && onSelect(evt);
+  };
+
   render() {
     const { isSelectable, hideToggle, title, manual, isExpanded, isActive, children, disabled } = this.props;
     const expanded = manual ? isExpanded : this.state.expanded;
@@ -57,10 +68,11 @@ export default class InventoryListGroup extends Component {
       (expanded ? ' expanded' : '') +
       (disabled ? ' disabled' : '') +
       (isActive ? ' active' : '')}>
-        <div className="InventoryListGroup-heading"
-             onClick={this.handleToggle}>
-          {!hideToggle && <span className="InventoryListGroup-toggle"/>}
-          <a className="InventoryListGroup-title">
+        <div className="InventoryListGroup-heading">
+          {!hideToggle && <span className="InventoryListGroup-toggle"
+                                onClick={this.handleToggle}/>}
+          <a className="InventoryListGroup-title"
+             onClick={this.handleSelect}>
             <span>{title}</span>
           </a>
         </div>

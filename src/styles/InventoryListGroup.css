@@ -79,12 +79,32 @@
     > .InventoryListGroup-heading {
       cursor: pointer;
 
-      &.selected {
-        background-color: rgba(255,255,255,0.2);
-      }
-
       &:hover {
         background-color: var(--colors-selected);
+      }
+
+      .InventoryListGroup-title {}
+    }
+
+    .InventoryListGroup-toggle {
+      /* todo - make this a different color, needs svg */
+    }
+
+    &.active,
+    &.selected {
+      > .InventoryListGroup-heading {
+        background-color: rgba(255, 255, 255, 0.2);
+
+        .InventoryListGroup-title {
+          font-weight: inherit;
+          color: inherit;
+        }
+      }
+    }
+
+    &.expanded {
+      > .InventoryListGroup-heading .InventoryListGroup-title {
+        font-weight: bold;
       }
     }
   }
