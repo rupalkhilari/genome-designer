@@ -40,7 +40,7 @@ module.exports = {
       // expect one focused construct viewer
       .assert.countelements(".construct-viewer", 1);
       // drag one block to first construct
-      dragFromTo(browser, '.InventoryItem:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 30, 30);
+      dragFromTo(browser, '.InventoryItemBlock:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 30, 30);
 
     browser
       // we should have a single focused block, so changing its text should change the displayed block
