@@ -26,6 +26,7 @@ export default class UserInterface {
       mouseDrag: this.mouseDrag.bind(this),
       mouseUp: this.mouseUp.bind(this),
       doubleClick: this.doubleClick.bind(this),
+      contextMenu: this.contextMenu.bind(this),
     });
   }
   /**
@@ -156,6 +157,10 @@ export default class UserInterface {
    * this is the actual mouse up event you should override in descendant classes
    */
   doubleClick(point, event) {}
+  /**
+   * mouse down with right button
+   */
+  contextMenu(point, event) {}
 
   /**
    * general update, called whenever our scenegraph updates

@@ -49,6 +49,8 @@ export default class MouseTrap {
     this.mouseMove = this.onMouseMove.bind(this);
     this.mouseDrag = this.onMouseDrag.bind(this);
     this.mouseUp = this.onMouseUp.bind(this);
+    this.contextMenu = this.onContextMenu.bind(this);
+
     // mouse enter/leave are always running
     this.element.addEventListener('mouseenter', this.mouseEnter);
     this.element.addEventListener('mouseleave', this.mouseLeave);
@@ -56,8 +58,18 @@ export default class MouseTrap {
     this.element.addEventListener('mousedown', this.mouseDown);
     // for normal mouse move with no button we track via the target element itself
     this.element.addEventListener('mousemove', this.mouseMove);
+    // context menus are also handled by the mousetrap but only prevented if the user sinks the event
+    this.element.addEventListener('contextmenu', this.contextMenu);
   }
 
+  /**
+   * context menu event
+   * @param  {[type]} event [description]
+   * @return {[type]}       [description]
+   */
+  onContextMenu(event) {
+    this.callback('contextMenu', event, new Vector2D(event.offsetX, event.offsetY));
+  }
   /**
    * mouse enter/leave handlers
    */
@@ -168,6 +180,7 @@ export default class MouseTrap {
     this.element.removeEventListener('mouseleave', this.mouseLeave);
     this.element.removeEventListener('mousedown', this.mouseDown);
     this.element.removeEventListener('mousemove', this.mouseMove);
+    this.element.removeEventListener('contextmenu', this.contextMenu);
     this.cancelDrag();
     this.dragging = this.element = this.owner = null;
   }

@@ -48,3 +48,14 @@ export const focusGetBlockRange = () => {
     return dispatch(BlockSelector.blockGetRange(...focusedIds));
   };
 };
+
+//if focused blocks / construct have components
+//e.g. whether can open sequence detail view
+export const focusDetailsExist = () => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const { forceBlocks, blockIds, constructId } = state.focus;
+    const construct = state.blocks[constructId];
+    return forceBlocks.length || blockIds.length || (construct && construct.components.length);
+  };
+};
