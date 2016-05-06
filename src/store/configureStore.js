@@ -5,6 +5,7 @@ import { routerMiddleware } from 'react-router-redux';
 import { browserHistory } from 'react-router';
 import saveLastActionMiddleware from './saveLastActionMiddleware';
 import combinedReducer from '../reducers/index';
+import pausableStore from './pausableStore';
 
 // note that the store loads the routes, which in turn load components
 // Routes are provided to the store. ReduxRouter works with react-router. see routes.js - they are injected as middleware here so they can be provided to components, and route information can be accessed as application state.
@@ -26,10 +27,14 @@ if (process.env.NODE_ENV !== 'production') {
 
   finalCreateStore = compose(
     applyMiddleware(...middleware),
+    pausableStore(),
     DevTools.instrument()
   )(createStore);
 } else {
-  finalCreateStore = applyMiddleware(...middleware)(createStore);
+  finalCreateStore = compose(
+    applyMiddleware(...middleware),
+    pausableStore()
+  )(createStore);
 }
 
 // expose reducer so you can pass in only one reducer for tests
