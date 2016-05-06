@@ -35,7 +35,7 @@ module.exports = {
     browser.assert.countelements('.construct-viewer', 1);
 
     // add a single block
-    dragFromTo(browser, '.InventoryItem:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(1)', 100, 70);
+    dragFromTo(browser, '.InventoryItemSbol:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(1)', 100, 70);
 
     browser
       // expect one block
@@ -48,7 +48,7 @@ module.exports = {
     for(var i = 1; i < 10; i += 1) {
       dragFromTo(
           browser,
-          '.InventoryItem:nth-of-type(' + i + ')', 10, 10,
+          '.InventoryItemSbol:nth-of-type(' + i + ')', 10, 10,
           '.construct-viewer:nth-of-type(1) .sceneGraph .sbol-glyph:nth-of-type(1)', 10, 10);
       browser.pause(50);
     }

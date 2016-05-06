@@ -40,16 +40,16 @@ module.exports = {
       // .assert.countelements('.sbol-glyph', 7);
 
     // drag a block to each construct to start them off
-    dragFromTo(browser, '.InventoryItem:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 30, 30);
-    dragFromTo(browser, '.InventoryItem:nth-of-type(2)', 10, 10, '.construct-viewer:nth-of-type(2) .sceneGraph', 30, 30);
-    dragFromTo(browser, '.InventoryItem:nth-of-type(3)', 10, 10, '.construct-viewer:nth-of-type(3) .sceneGraph', 30, 30);
+    dragFromTo(browser, '.InventoryItemBlock:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 30, 30);
+    dragFromTo(browser, '.InventoryItemBlock:nth-of-type(2)', 10, 10, '.construct-viewer:nth-of-type(2) .sceneGraph', 30, 30);
+    dragFromTo(browser, '.InventoryItemBlock:nth-of-type(3)', 10, 10, '.construct-viewer:nth-of-type(3) .sceneGraph', 30, 30);
 
     // drag an item from the inventory
     for(var j = 1; j <= 3; j += 1) {
       for(var i = 1; i <= 5; i += 1) {
         dragFromTo(
             browser,
-            '.InventoryItem:nth-of-type(' + i + ')', 10, 10,
+            '.InventoryItemBlock:nth-of-type(' + i + ')', 10, 10,
             '.construct-viewer:nth-of-type(' + j + ') .sceneGraph .sbol-glyph:nth-of-type(1)', 30, 10);
       }
     }
