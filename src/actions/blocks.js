@@ -339,7 +339,7 @@ export const blockAddComponent = (blockId, componentId, index) => {
 };
 
 /**
- * add the array of componentIds into the given part at the given starting index.
+ * add the array of componentIds into the given part at the given starting index. Rather than adding them all at once, dispatch an event for each to ensure we remove from previous parents and stay in a valid state.
  */
 export const blockAddComponents = (blockId, componentIds, index) => {
   return (dispatch, getState) => {
