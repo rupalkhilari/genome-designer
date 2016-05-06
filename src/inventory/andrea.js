@@ -939,7 +939,7 @@ const parts = [
       flanks: "CCAG-CAGC",
     },
   },
-].map((part) => Block.classless(part));
+].map((part) => new Block(part));
 
 //add dummy annotations to the first block
 merge(parts[0], {
