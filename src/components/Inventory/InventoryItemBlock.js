@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import invariant from 'invariant';
+import Block from '../../models/Block';
 import { block as blockDragType } from '../../constants/DragTypes';
 
 import InventoryItem from './InventoryItem';
@@ -8,7 +9,11 @@ import InventoryItem from './InventoryItem';
 
 export default class InventoryItemBlock extends Component {
   static propTypes = {
-    block: PropTypes.object.isRequired,
+    block: (props, propName) => {
+      if (!(Block.validate(props[propName]) && props[propName] instanceof Block)) {
+        return new Error('must pass a real block (Block model) to InventoryItemBlock');
+      }
+    },
   };
 
   componentDidMount() {
@@ -19,7 +24,7 @@ export default class InventoryItemBlock extends Component {
     const { block, ...rest } = this.props;
 
     return (
-      <div className="InventoryBlock">
+      <div className="InventoryItemBlock">
         <InventoryItem {...rest}
           inventoryType={blockDragType}
           defaultName={block.getName()}

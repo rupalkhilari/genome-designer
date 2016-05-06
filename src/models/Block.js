@@ -22,7 +22,7 @@ export default class Block extends Instance {
     return cloneDeep(new Block(input));
   }
 
-  static validate(input, throwOnError) {
+  static validate(input, throwOnError = false) {
     return BlockDefinition.validate(input, throwOnError);
   }
 
