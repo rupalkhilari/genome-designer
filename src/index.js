@@ -21,13 +21,13 @@ Object.assign(exposed, {
   actionTypes,
   api: orchestrator,
   store: {
-    dispatch: store.dispatch,
-    getState: store.getState,
+    ...store,
     lastAction: lastAction,
     subscribe: (callback) => {
       return store.subscribe(() => {
         callback(store.getState(), lastAction());
       });
     },
+    replaceReducer: () => {}, //hide from 3rd party
   },
 });

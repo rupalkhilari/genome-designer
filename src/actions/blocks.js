@@ -7,6 +7,7 @@ import { saveBlock, loadBlock } from '../middleware/api';
 import * as selectors from '../selectors/blocks';
 import * as projectSelectors from '../selectors/projects';
 import * as undoActions from '../store/undo/actions';
+import { pauseAction, resumeAction } from '../store/pausableStore';
 
 //Promise
 export const blockSave = (blockId, forceProjectId = false) => {
@@ -128,18 +129,12 @@ export const blockClone = (blockInput, parentObjectInput = {}, shallowOnly = fal
       return clone.mutate('components', newComponents);
     });
 
-    //start transaction
-    dispatch(undoActions.transact());
-
     //add clones to the store
-    clones.forEach(block => {
-      dispatch({
-        type: ActionTypes.BLOCK_CLONE,
-        block,
-      });
+    //note, not using the action BLOCK_CLONE
+    dispatch({
+      type: ActionTypes.BLOCK_STASH,
+      blocks: clones,
     });
-
-    dispatch(undoActions.commit());
 
     //return the clone of root passed in
     const rootId = cloneIdMap[oldBlock.id];
@@ -166,6 +161,7 @@ export const blockMerge = (blockId, toMerge) => {
 export const blockDelete = (...blocks) => {
   return (dispatch, getState) => {
     //transact for all blocks
+    dispatch(pauseAction());
     dispatch(undoActions.transact());
 
     blocks.forEach(blockId => {
@@ -187,6 +183,7 @@ export const blockDelete = (...blocks) => {
 
     //end transaction
     dispatch(undoActions.commit());
+    dispatch(resumeAction());
 
     return blocks;
   };
@@ -197,6 +194,7 @@ export const blockDelete = (...blocks) => {
 export const blockDetach = (...blockIds) => {
   return (dispatch, getState) => {
     //transact for all blocks
+    dispatch(pauseAction());
     dispatch(undoActions.transact());
 
     blockIds.forEach(blockId => {
@@ -210,6 +208,7 @@ export const blockDetach = (...blockIds) => {
 
     //end transaction
     dispatch(undoActions.commit());
+    dispatch(resumeAction());
 
     return blockIds;
   };
@@ -285,14 +284,13 @@ export const blockAddSbol = (blockId, sbol) => {
     dispatch(undoActions.transact());
     const oldBlock = getState().blocks[blockId];
     const newBlock = dispatch(blockCreate());
-    dispatch(blockSetSbol(newBlock.id, sbol))
+    dispatch(blockSetSbol(newBlock.id, sbol));
     dispatch(blockAddComponent(oldBlock.id, newBlock.id, oldBlock.components.length));
     //end transaction
     dispatch(undoActions.commit());
     return newBlock;
   };
 };
-
 
 /***************************************
  * Components
@@ -339,11 +337,12 @@ export const blockAddComponent = (blockId, componentId, index) => {
 };
 
 /**
- * add the array of componentIds into the given part at the given starting index.
+ * add the array of componentIds into the given part at the given starting index. Rather than adding them all at once, dispatch an event for each to ensure we remove from previous parents and stay in a valid state.
  */
 export const blockAddComponents = (blockId, componentIds, index) => {
   return (dispatch, getState) => {
     //transact for all blocks
+    dispatch(pauseAction());
     dispatch(undoActions.transact());
 
     componentIds.forEach((componentId, subIndex) => {
@@ -352,6 +351,7 @@ export const blockAddComponents = (blockId, componentIds, index) => {
 
     //end transaction
     dispatch(undoActions.commit());
+    dispatch(resumeAction());
 
     return componentIds;
   };
