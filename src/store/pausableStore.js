@@ -41,7 +41,7 @@ const patchSubscribe = (options = {}, reducer, createStore, initialState, ...sto
     paused += 1;
 
     if (!!timeoutId) {
-      timeoutId = window.setTimeout(() => resume(), params.timeout);
+      timeoutId = window.setTimeout(() => resume(false, true), params.timeout);
     }
 
     return isPaused();
