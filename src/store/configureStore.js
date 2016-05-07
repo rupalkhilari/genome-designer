@@ -22,7 +22,7 @@ const middleware = [
 ];
 
 let finalCreateStore;
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.DEBUGMODE) {
   const DevTools = require('../containers/DevTools.js');
 
   finalCreateStore = compose(
