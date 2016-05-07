@@ -39,6 +39,18 @@ def add_features(block, allblocks, gb, start):
 
     gb.features.append(sf)
 
+    convert_annotations(block, gb)
+
+    # Add my children as features
+    child_start = start
+    for i in range(0, len(block["components"])):
+        block_id = block["components"][i]
+        bl = [b for b in allblocks if b["id"] == block_id][0]
+        child_start = add_features(bl, allblocks, gb, child_start)
+
+    return end
+
+def convert_annotations(block, gb):
     # Add My annotations as features
     for annotation in block["sequence"]["annotations"]:
         gb_annot = SeqFeature.SeqFeature()
@@ -58,20 +70,12 @@ def add_features(block, allblocks, gb, start):
             strand = 1
             if "strand" in annotation and annotation["strand"] == -1:
                 strand = -1
-            gb_annot.location = SeqFeature.FeatureLocation(annotation["start"], annotation["end"], strand)
+            gb_annot.location = SeqFeature.FeatureLocation(annotation["start"], annotation["end"]+1, strand)
 
         gb_annot.type = annotation_type
 
         gb.features.append(gb_annot)
 
-    # Add my children as features
-    child_start = start
-    for i in range(0, len(block["components"])):
-        block_id = block["components"][i]
-        bl = [b for b in allblocks if b["id"] == block_id][0]
-        child_start = add_features(bl, allblocks, gb, child_start)
-
-    return end
 
 # Return the full sequence from a block,
 # building it from the sequence of children
@@ -99,10 +103,10 @@ def project_to_genbank(filename, project, allblocks):
             continue
 
         # Grab the original ID that came from genbank before if available, otherwise the GD Name as the name
-        if "genbank" in block["metadata"] and "original_id" in block["metadata"]["genbank"]:
-            genbank_id = block["metadata"]["genbank"]["original_id"]
+        if "genbank" in block["metadata"] and "id" in block["metadata"]["genbank"]:
+            genbank_id = block["metadata"]["genbank"]["id"]
         else:
-            genbank_id = block["metadata"]["name"]
+            genbank_id = block["metadata"]["name"].replace(" ", "")
 
         sequence = build_sequence(block, allblocks)
         seq_obj = SeqIO.SeqRecord(Seq.Seq(sequence,Seq.Alphabet.DNAAlphabet()), genbank_id)
@@ -138,7 +142,9 @@ def project_to_genbank(filename, project, allblocks):
         if "description" in block["metadata"]:
             seq_obj.description = block["metadata"]["description"]
         if "name" in block["metadata"]:
-            seq_obj.name = block["metadata"]["name"]
+            seq_obj.name = block["metadata"]["name"].replace(" ", "")
+
+        convert_annotations(block, seq_obj)
 
         # Add a block for each of the features, recursively
         start = 0

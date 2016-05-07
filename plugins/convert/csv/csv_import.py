@@ -33,8 +33,10 @@ def line_to_block(line):
     block = create_block_json(block_id, line["Sequence"], [])
     block["metadata"]["name"] = line["Name"]
     block["metadata"]["description"] = line["Description"]
-    block["rules"]["sbol"] = line["SBOL Type"]
-    block["metadata"]["color"] = line["Background Color"]
+    if "SBOL Type" in line:
+        block["rules"]["sbol"] = line["SBOL Type"]
+    if "Background Color" in line:
+        block["metadata"]["color"] = line["Background Color"]
     return {"id": block_id, "block": block}
 
 # Given a file, create project and blocks structures to import into GD
