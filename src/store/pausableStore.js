@@ -4,6 +4,9 @@
 export const PAUSE_ACTION = 'PAUSABLE_PAUSE';
 export const RESUME_ACTION = 'PAUSABLE_RESUME';
 
+export const pauseAction = () => ({ type: PAUSE_ACTION });
+export const resumeAction = (preventDispatch, reset) => ({ type: RESUME_ACTION, preventDispatch, reset });
+
 export const ON_RESUME_ACTION = 'PAUSABLE_ON_RESUME';
 
 const patchSubscribe = (options = {}, reducer, createStore, initialState, ...storeArgs) => {
@@ -80,6 +83,7 @@ const patchSubscribe = (options = {}, reducer, createStore, initialState, ...sto
           listener(...args);
         }
       }
+
       return store.subscribe(pausableListener);
     },
     isPaused,
