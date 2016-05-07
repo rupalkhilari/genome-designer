@@ -25,6 +25,10 @@
   &.hasImage {
     white-space: nowrap;
     text-overflow: ellipsis;
+
+    .InventoryItem-text {
+      margin-left: 0.5em;
+    }
   }
 
   &.selected {
@@ -41,12 +45,5 @@
     padding: 2px 5px;
     margin: 1px 0;
     width: 100%;
-  }
-
-  &-image {
-    width: 27px;
-    height: 27px;
-    margin-right: 0.5em;
-    background: transparent;
   }
 }

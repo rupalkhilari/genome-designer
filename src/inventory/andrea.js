@@ -1,5 +1,5 @@
 import merge from 'lodash.merge';
-import BlockSchema from '../schemas/Block';
+import Block from '../models/Block';
 /* eslint-disable quotes */
 
 const parts = [
@@ -939,12 +939,7 @@ const parts = [
       flanks: "CCAG-CAGC",
     },
   },
-].map((part) => {
-  return merge(
-    BlockSchema.scaffold(),
-    part
-  );
-});
+].map((part) => new Block(part));
 
 //add dummy annotations to the first block
 merge(parts[0], {

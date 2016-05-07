@@ -16,9 +16,9 @@ var newproject = function(browser) {
     .waitForElementPresent('.InventoryItem', 5000, 'expected an inventory item');
 
   // drag 3 egf parts into construct
-  dragFromTo(browser, '.InventoryItem:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 700, 30);
-  dragFromTo(browser, '.InventoryItem:nth-of-type(2)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 700, 30);
-  dragFromTo(browser, '.InventoryItem:nth-of-type(3)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 700, 30);
+  dragFromTo(browser, '.InventoryItemBlock:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 700, 30);
+  dragFromTo(browser, '.InventoryItemBlock:nth-of-type(2)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 700, 30);
+  dragFromTo(browser, '.InventoryItemBlock:nth-of-type(3)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 700, 30);
 
   browser
     .click('.InventoryGroup:nth-of-type(4) .InventoryGroup-heading')
@@ -26,9 +26,9 @@ var newproject = function(browser) {
     .waitForElementPresent('.InventoryItem', 5000, 'expected an inventory item');
 
   // drag 3 sbol symbols into construct
-  dragFromTo(browser, '.InventoryItem:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 700, 30);
-  dragFromTo(browser, '.InventoryItem:nth-of-type(2)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 700, 30);
-  dragFromTo(browser, '.InventoryItem:nth-of-type(3)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 700, 30);
+  dragFromTo(browser, '.InventoryItemSbol:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 700, 30);
+  dragFromTo(browser, '.InventoryItemSbol:nth-of-type(2)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 700, 30);
+  dragFromTo(browser, '.InventoryItemSbol:nth-of-type(3)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 700, 30);
 
   browser
     .pause(250)

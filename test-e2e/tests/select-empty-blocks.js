@@ -33,11 +33,11 @@ module.exports = {
       .click('.InventoryGroup:nth-of-type(4) .InventoryGroup-heading')
       .pause(1000);
 
-    dragFromTo(browser, '.InventoryItem:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 300, 30);
+    dragFromTo(browser, '.InventoryItemSbol:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 300, 30);
     browser.pause(1000);
-    dragFromTo(browser, '.InventoryItem:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 300, 30);
+    dragFromTo(browser, '.InventoryItemSbol:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 300, 30);
     browser.pause(1000);
-    dragFromTo(browser, '.InventoryItem:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 300, 30);
+    dragFromTo(browser, '.InventoryItemSbol:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 300, 30);
     browser.pause(1000);
     // click select empty blocks in main menu
     clickMainMenu(browser, 2, 8);

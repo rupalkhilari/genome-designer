@@ -17,7 +17,7 @@ import { createExampleRollup } from '../utils/rollup';
 describe('Middleware', () => {
   describe('Rollup', () => {
     //create a test project to load
-    const userId = uuid.v4();
+    const userId = '0'; //for test environment
     const roll = createExampleRollup();
     const project = roll.project;
     const projectId = project.id;
