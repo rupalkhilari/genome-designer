@@ -341,20 +341,20 @@ export class ConstructViewer extends Component {
    * update the layout and then the scene graph
    */
   _update() {
-    console.time(`LAYOUT`);
+    //console.time(`LAYOUT`);
     this.layout.update(
       this.props.construct,
       this.props.layoutAlgorithm,
       this.props.blocks,
       this.props.focus.blockIds,
       this.props.focus.constructId);
-    console.timeEnd(`LAYOUT`);
-    console.time('GRAPH');
+    //console.timeEnd(`LAYOUT`);
+    //console.time('GRAPH');
     this.sg.update();
-    console.timeEnd('GRAPH');
-    console.time('UI');
+    //console.timeEnd('GRAPH');
+    //console.time('UI');
     this.sg.ui.update();
-    console.timeEnd('UI');
+    //console.timeEnd('UI');
   }
 
   /**
