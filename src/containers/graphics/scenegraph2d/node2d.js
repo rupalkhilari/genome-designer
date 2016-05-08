@@ -121,8 +121,8 @@ export default class Node2D {
       // value should be {name:'xyz', value:'123'} which would appear in
       // the dom as data-xyz="123"
       case 'dataAttribute':
-      this.el.setAttribute(`data-${value.name}`, value.value);
-      break;
+        this.el.setAttribute(`data-${value.name}`, value.value);
+        break;
 
         // default behaviour is to just set the property
       default: this[key] = props[key];
@@ -374,7 +374,6 @@ export default class Node2D {
    * @return {Node2D}
    */
   updateBranch() {
-
     // if this is called on the root node of a scene graph the node is temporarily
     // remove from its parent to prevent costly reflows
     let tempParent = null;
