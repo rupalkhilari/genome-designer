@@ -20,7 +20,6 @@ import { dispatch } from '../../store/index';
  * [F, E, B, D, A, C]
  */
 export function sortBlocksByIndexAndDepth(blockIds) {
-
   const getParents = (blockId) => {
     return dispatch(blockGetParents(blockId));
   };
@@ -48,7 +47,7 @@ export function sortBlocksByIndexAndDepth(blockIds) {
    *  [4,1,3]
    */
   const getPath = (blockId) => {
-    let path = [];
+    const path = [];
     let current = blockId;
     while (hasParent(current)) {
       path.unshift({blockId: current, index: getIndex(current)});
@@ -127,42 +126,42 @@ export function clearSelection() {
  * investigating a DOM leak.
  */
 export function domSummary() {
-  let tags = {};
-  let classes = {};
-  [...document.querySelectorAll('*')].forEach(element => {
-    const tagName = element.tagName;
-    if (tags[tagName]) {
-      tags[tagName].count += 1;
-    } else {
-      tags[tagName] = {tagName, count: 1};
-    }
-    element.classList.forEach(className => {
-      if (className) {
-        if (classes[className]) {
-          classes[className].count += 1;
-        } else {
-          classes[className] = {className, count: 1};
-        }
-      }
-    });
-  });
-  // turn into arrays
-  tags = Object.keys(tags).map(tagName => tags[tagName]);
-  classes = Object.keys(classes).map(className => classes[className]);
-
-  // sort highest first
-  tags.sort((a, b) => { return b.count - a.count; });
-  classes.sort((a, b) => { return b.count - a.count; });
-
-  console.log('DOM Summary: ==============');
-  console.log('Tags: ---------------------')
-  tags.forEach(tagInfo => {
-    console.log(`${tagInfo.tagName} / Count: ${tagInfo.count}`);
-  });
-  console.log('Classes: ------------------')
-  classes.forEach(classInfo => {
-    console.log(`${classInfo.className} / Count: ${classInfo.count}`);
-  });
+  // let tags = {};
+  // let classes = {};
+  // [...document.querySelectorAll('*')].forEach(element => {
+  //   const tagName = element.tagName;
+  //   if (tags[tagName]) {
+  //     tags[tagName].count += 1;
+  //   } else {
+  //     tags[tagName] = {tagName, count: 1};
+  //   }
+  //   element.classList.forEach(className => {
+  //     if (className) {
+  //       if (classes[className]) {
+  //         classes[className].count += 1;
+  //       } else {
+  //         classes[className] = {className, count: 1};
+  //       }
+  //     }
+  //   });
+  // });
+  // // turn into arrays
+  // tags = Object.keys(tags).map(tagName => tags[tagName]);
+  // classes = Object.keys(classes).map(className => classes[className]);
+  //
+  // // sort highest first
+  // tags.sort((aaa, bbb) => { return bbb.count - aaa.count; });
+  // classes.sort((aaa, bbb) => { return bbb.count - aaa.count; });
+  //
+  // console.log('DOM Summary: ==============');
+  // console.log('Tags: ---------------------')
+  // tags.forEach(tagInfo => {
+  //   console.log(`${tagInfo.tagName} / Count: ${tagInfo.count}`);
+  // });
+  // console.log('Classes: ------------------')
+  // classes.forEach(classInfo => {
+  //   console.log(`${classInfo.className} / Count: ${classInfo.count}`);
+  // });
 }
 
 export const tos = 'http://www.autodesk.com/company/legal-notices-trademarks/terms-of-service-autodesk360-web-services';

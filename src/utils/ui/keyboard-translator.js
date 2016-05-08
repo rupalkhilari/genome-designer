@@ -8,39 +8,39 @@
 
 export const microsoft = {
   'ctrl': 'Ctrl',
-  'mod' : 'Ctrl',
+  'mod': 'Ctrl',
   '⌘': 'Ctrl',
-  'option' : 'Ctrl',
+  'option': 'Ctrl',
   'meta': 'Ctrl',
-  '^' : 'Ctrl',
+  '^': 'Ctrl',
   'shift': 'Shift',
-  '⇧' : 'Shift',
+  '⇧': 'Shift',
   'alt': 'Alt',
-  '⌥' : 'Alt',
-  join: '+'
-}
+  '⌥': 'Alt',
+  join: '+',
+};
 
 export const apple = {
   'ctrl': '^',
-  'mod' : '⌘',
+  'mod': '⌘',
   '⌘': '⌘',
   'meta': '⌘',
-  '^' : '^',
+  '^': '^',
   'shift': '⇧',
-  '⇧' : '⇧',
+  '⇧': '⇧',
   'alt': '⌥',
-  'option' : '⌥',
-  '⌥' : '⌥',
+  'option': '⌥',
+  '⌥': '⌥',
   join: '',
-}
+};
 
-export function stringToShortcut (str) {
+export function stringToShortcut(str) {
   const table = /Mac|iPod|iPhone|iPad/.test(navigator.platform) ? apple : microsoft;
   return translate(table, str);
-};
+}
 
 export function translate(table, str) {
   return str.toLowerCase().split(' ').map(symbol => {
     return table[symbol] ? table[symbol] : symbol.toUpperCase();
   }).join(table.join);
-};
+}
