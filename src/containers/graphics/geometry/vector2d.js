@@ -11,29 +11,9 @@ export default class Vector2D {
    * @param {Number} y
    */
   constructor(x, y) {
-    // this._v = [x, y];
     this.x = x || 0;
     this.y = y || 0;
   }
-
-  // get x() {
-  //   return this._v[0];
-  // }
-  //
-  // set x(newValue) {
-  //   invariant(isRealNumber(newValue), 'Bad parameter');
-  //   this._v[0] = newValue;
-  // }
-  //
-  // get y() {
-  //   return this._v[1];
-  // }
-  //
-  // set y(newValue) {
-  //   invariant(isRealNumber(newValue), 'Bad parameter');
-  //
-  //   this._v[1] = newValue;
-  // }
 
   /**
    * comma separated string representation
