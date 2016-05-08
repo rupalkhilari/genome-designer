@@ -1,6 +1,5 @@
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
-import ReactTransitionGroup from 'react-addons-css-transition-group';
 
 import '../../../src/styles/Modal.css';
 

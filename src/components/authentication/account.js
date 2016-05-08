@@ -67,9 +67,9 @@ class AccountForm extends Component {
         !this.emailConfirm &&
         !this.password &&
         !this.passwordConfirm) {
-          this.props.uiShowAuthenticationForm('none');
-          return;
-        }
+      this.props.uiShowAuthenticationForm('none');
+      return;
+    }
 
     // client side validation first
     if (this.clientValidation()) {
@@ -93,7 +93,6 @@ class AccountForm extends Component {
 
     this.props.userUpdate(payload)
       .then((user) => {
-
         // show grunt / close form
         this.props.uiSetGrunt(`Account updated to ${user.firstName} ${user.lastName} ( ${user.email} )`);
         this.props.uiShowAuthenticationForm('none');

@@ -81,27 +81,20 @@ class RegisterForm extends Component {
     });
   }
 
-  // syntactic suger for fetcing values from inputs
-  get firstName() {
-    return this.refs.firstName.value.trim();
+  onSignIn(evt) {
+    evt.preventDefault();
+    this.props.uiShowAuthenticationForm('signin');
   }
-  get lastName() {
-    return this.refs.lastName.value.trim();
-  }
-  get emailAddress() {
-    return this.refs.emailAddress.value.trim();
-  }
-  get emailConfirm() {
-    return this.refs.emailConfirm.value.trim();
-  }
-  get password() {
-    return this.refs.password.value.trim();
-  }
-  get passwordConfirm() {
-    return this.refs.passwordConfirm.value.trim();
-  }
-  get tos() {
-    return this.refs.tos.checked;
+
+  onTextChanged() {
+    this.setState({
+      canSubmit: this.firstName &&
+      this.lastName &&
+      this.emailAddress &&
+      this.emailConfirm &&
+      this.password &&
+      this.passwordConfirm,
+    });
   }
 
   /**
@@ -155,6 +148,8 @@ class RegisterForm extends Component {
       },
     });
   }
+
+
   /**
    * basic validation occurs on client i.e. matching email addresses, Passwords
    * and all required fields present
@@ -192,24 +187,30 @@ class RegisterForm extends Component {
     });
   }
 
-  onSignIn(evt) {
-    evt.preventDefault();
-    this.props.uiShowAuthenticationForm('signin');
+  // syntactic suger for fetcing values from inputs
+  get firstName() {
+    return this.refs.firstName.value.trim();
   }
-
-  onTextChanged() {
-    this.setState({
-      canSubmit: this.firstName &&
-      this.lastName &&
-      this.emailAddress &&
-      this.emailConfirm &&
-      this.password &&
-      this.passwordConfirm,
-    });
+  get lastName() {
+    return this.refs.lastName.value.trim();
+  }
+  get emailAddress() {
+    return this.refs.emailAddress.value.trim();
+  }
+  get emailConfirm() {
+    return this.refs.emailConfirm.value.trim();
+  }
+  get password() {
+    return this.refs.password.value.trim();
+  }
+  get passwordConfirm() {
+    return this.refs.passwordConfirm.value.trim();
+  }
+  get tos() {
+    return this.refs.tos.checked;
   }
 
   render() {
-
     const registerStyle = {
       textAlign: 'center',
       margin: '1rem 0 2rem 0',
