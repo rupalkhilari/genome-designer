@@ -27,8 +27,6 @@ import {
 
 import { sbol as sbolDragType } from '../../../constants/DragTypes';
 import debounce from 'lodash.debounce';
-import { nodeIndex } from '../utils';
-import ConstructViewerMenu from './constructviewermenu';
 import UserInterface from './constructvieweruserinterface';
 import { inspectorToggleVisibility } from '../../../actions/inspector';
 import {
@@ -41,8 +39,7 @@ import invariant from 'invariant';
 import {
   projectGetVersion,
  } from '../../../selectors/projects';
- import { projectRemoveConstruct } from '../../../actions/projects';
-import * as undoActions from '../../../store/undo/actions';
+import { projectRemoveConstruct } from '../../../actions/projects';
 
 // static hash for matching viewers to constructs
 const idToViewer = {};
@@ -65,8 +62,12 @@ export class ConstructViewer extends Component {
     blockGetParent: PropTypes.func,
     blockClone: PropTypes.func,
     blockAddComponent: PropTypes.func,
+    blockAddComponents: PropTypes.func,
+    blockDetach: PropTypes.func,
+    uiShowDNAImport: PropTypes.func,
     blockRemoveComponent: PropTypes.func,
     blockGetParents: PropTypes.func,
+    blockAddSbol: PropTypes.func,
     projectGetVersion: PropTypes.func,
     projectRemoveConstruct: PropTypes.func,
     blocks: PropTypes.object,
@@ -78,26 +79,17 @@ export class ConstructViewer extends Component {
     super(props);
     idToViewer[this.props.constructId] = this;
     this.state = {
-      blockPopupMenuOpen: false,    // context menu for blocks
-      constructPopupMenuOpen: false,// context menu for construct
-      menuPosition: new Vector2D(), // position for any popup menu,
-      modalOpen: false,             // controls visibility of test modal window
+      blockPopupMenuOpen: false,     // context menu for blocks
+      constructPopupMenuOpen: false, // context menu for construct
+      menuPosition: new Vector2D(),  // position for any popup menu,
+      modalOpen: false,              // controls visibility of test modal window
     };
     this.update = debounce(this._update.bind(this), 1);
   }
-
-  /**
-   * given a construct ID return the current viewer if there is one
-   */
-  static getViewerForConstruct(id) {
-    return idToViewer[id];
-  }
-
   /**
    * setup the scene graph and layout component.
    */
   componentDidMount() {
-
     // create the scene graph we are going to use to display the construct
     this.sg = new SceneGraph2D({
       width: this.dom.clientWidth,
@@ -132,6 +124,28 @@ export class ConstructViewer extends Component {
     // }
   }
 
+  shouldComponentUpdate(props, nextProps) {
+    // console.log(`CT:${this.props.construct.id}, ${props.construct !== nextProps.construct}`);
+    // return props.construct !== nextProps.construct;
+    return true;
+  }
+
+  /**
+   * scroll into view if needed and update scenegraph
+   * @param  {[type]} prevProps [description]
+   * @return {[type]}           [description]
+   */
+  componentDidUpdate(prevProps) {
+    // if we are newly focused then scroll ourselves into view
+    // const oldFocus = prevProps.construct.id === prevProps.focus.construct;
+    // const newFocus = this.props.construct.id === this.props.focus.construct;
+    // if (!oldFocus && newFocus) {
+    //   const dom = ReactDOM.findDOMNode(this);
+    //   dom.scrollIntoView();
+    // }
+    this.update();
+  }
+
   /**
    * ensure we don't get any resize events after dismounting
    */
@@ -139,6 +153,13 @@ export class ConstructViewer extends Component {
     delete idToViewer[this.props.constructId];
     this.resizeDebounced.cancel();
     window.removeEventListener('resize', this.resizeDebounced);
+  }
+
+  /**
+   * given a construct ID return the current viewer if there is one
+   */
+  static getViewerForConstruct(id) {
+    return idToViewer[id];
   }
 
   /**
@@ -153,108 +174,18 @@ export class ConstructViewer extends Component {
   }
 
   /**
-   * add the given item using an insertion point from the constructviewer user interface.
-   * Insertion point may be null, in which the block is added at the end
-   */
-  addItemAtInsertionPoint(payload, insertionPoint, event) {
-    const { item, type } = payload;
-    let index;
-    // get the immediate parent ( which might not be the top level block if this is a nested construct )
-    let parent = insertionPoint ? this.getBlockParent(insertionPoint.block) : this.props.construct;
-    if (type === sbolDragType) {
-
-      // insert next to block, inject into a block, or add as the first block of an empty construct
-      if (insertionPoint) {
-        if (insertionPoint.edge) {
-          // create new block
-          const block = this.props.blockCreate({rules: {sbol: item.id}});
-          // get index of insertion allowing for the edge closest to the drop if provided
-          index = parent.components.indexOf(insertionPoint.block) + (insertionPoint.edge === 'right' ? 1 : 0);
-          // add
-          this.props.blockAddComponent(parent.id, block.id, index);
-          // return the newly created block or the block dropped on
-          return [block.id];
-        }
-        // drop on existing block
-        const newBlock = this.props.blockAddSbol(insertionPoint.block, item.id);
-        return [newBlock.id];
-      } else {
-        // create new block
-        const block = this.props.blockCreate({rules: {sbol: item.id}});
-        // the construct must be empty, add as the first child of the construct
-        this.props.blockAddComponent(parent.id, block.id, 0);
-        return [block.id];
-      }
-    }
-
-    // this will become the new blocks we are going to insert, declare here first
-    // in case we do a push down
-    const newBlocks = [];
-
-    // if no edge specified then the parent becomes the target block and index is simply
-    // the length of components to add them at the end of the current children
-    if (insertionPoint && !insertionPoint.edge) {
-      const oldParent = parent;
-      parent = this.props.blocks[insertionPoint.block];
-      index = parent.components.length;
-      // if the block we are targeting already has a sequence then we will replace it with a new empty
-      // block, then insert the old block at the start of the payload so it is added as a child to the new block
-      if (parent.hasSequence()) {
-        // create new block and replace current parent
-        const block = this.props.blockCreate();
-        const replaceIndex = oldParent.components.indexOf(parent.id);
-        invariant(replaceIndex >= 0, 'expect to get an index here');
-        this.props.blockRemoveComponent(oldParent.id, parent.id);
-        this.props.blockAddComponent(oldParent.id, block.id, replaceIndex);
-        // seed new blocks with the old target block
-        newBlocks.push(parent.id);
-        // bump the index
-        index += 1;
-        // now make parent equal to the new block so blocks get added to it.
-        parent = block;
-      }
-    } else {
-      index = parent.components.length;
-      if (insertionPoint) {
-        index = parent.components.indexOf(insertionPoint.block) + (insertionPoint.edge === 'right' ? 1 : 0);
-      }
-    }
-
-    // if the source is the inventory and we are dragging a single block with components
-    // then we don't want to insert the parent, so replace the payload with just the children
-    if (!Array.isArray(payload.item) && payload.source === 'inventory' && payload.item.components.length ) {
-      payload.item = payload.item.components.slice();
-    }
-
-    // add all blocks in the payload
-    const blocks = Array.isArray(payload.item) ? payload.item : [payload.item];
-    // return the list of newly added blocks so we can select them for example
-    const projectVersion = this.props.projectGetVersion(this.props.projectId);
-    blocks.forEach(block => {
-      const newBlock = (payload.source === 'inventory' || payload.copying)
-        ? this.props.blockClone(block)
-        : this.props.blocks[block];
-      newBlocks.push(newBlock.id);
-    });
-    // now insert the blocks in one go
-    return this.props.blockAddComponents(parent.id, newBlocks, index);
-  }
-  /**
    * remove the given block, which we assume if part of our construct and
    * return the scenegraph node that was representing it.
    */
   removePart(partId) {
     this.props.blockDetach(partId);
-
-    // const parent = this.getBlockParent(partId);
-    // this.props.blockRemoveComponent(parent.id, partId);
   }
 
   /**
    * remove all parts in the list
    */
   removePartsList(partList) {
-    this.props.blockDetach(...partList)
+    this.props.blockDetach(...partList);
   }
 
   /**
@@ -398,14 +329,14 @@ export class ConstructViewer extends Component {
         text: 'Delete Blocks',
         action: () => {
           this.removePartsList(this.sg.ui.selectedElements);
-        }
+        },
       },
       {
         text: 'Import DNA Sequence',
         disabled: this.props.focus.blockIds.length !== 1,
         action: () => {
           this.props.uiShowDNAImport(true);
-        }
+        },
       },
     ];
   }
@@ -458,25 +389,88 @@ export class ConstructViewer extends Component {
   }
 
   /**
-   * scroll into view if needed and update scenegraph
-   * @param  {[type]} prevProps [description]
-   * @return {[type]}           [description]
+   * add the given item using an insertion point from the constructviewer user interface.
+   * Insertion point may be null, in which the block is added at the end
    */
-  componentDidUpdate(prevProps) {
-    // if we are newly focused then scroll ourselves into view
-    // const oldFocus = prevProps.construct.id === prevProps.focus.construct;
-    // const newFocus = this.props.construct.id === this.props.focus.construct;
-    // if (!oldFocus && newFocus) {
-    //   const dom = ReactDOM.findDOMNode(this);
-    //   dom.scrollIntoView();
-    // }
-    this.update();
-  }
+  addItemAtInsertionPoint(payload, insertionPoint, event) {
+    const { item, type } = payload;
+    let index;
+    // get the immediate parent ( which might not be the top level block if this is a nested construct )
+    let parent = insertionPoint ? this.getBlockParent(insertionPoint.block) : this.props.construct;
+    if (type === sbolDragType) {
+      // insert next to block, inject into a block, or add as the first block of an empty construct
+      if (insertionPoint) {
+        if (insertionPoint.edge) {
+          // create new block
+          const block = this.props.blockCreate({rules: {sbol: item.id}});
+          // get index of insertion allowing for the edge closest to the drop if provided
+          index = parent.components.indexOf(insertionPoint.block) + (insertionPoint.edge === 'right' ? 1 : 0);
+          // add
+          this.props.blockAddComponent(parent.id, block.id, index);
+          // return the newly created block or the block dropped on
+          return [block.id];
+        }
+        // drop on existing block
+        const newBlock = this.props.blockAddSbol(insertionPoint.block, item.id);
+        return [newBlock.id];
+      }
+      // create new block
+      const block = this.props.blockCreate({rules: {sbol: item.id}});
+      // the construct must be empty, add as the first child of the construct
+      this.props.blockAddComponent(parent.id, block.id, 0);
+      return [block.id];
+    }
 
-  shouldComponentUpdate(props, nextProps) {
-    // console.log(`CT:${this.props.construct.id}, ${props.construct !== nextProps.construct}`);
-    // return props.construct !== nextProps.construct;
-    return true;
+    // this will become the new blocks we are going to insert, declare here first
+    // in case we do a push down
+    const newBlocks = [];
+
+    // if no edge specified then the parent becomes the target block and index is simply
+    // the length of components to add them at the end of the current children
+    if (insertionPoint && !insertionPoint.edge) {
+      const oldParent = parent;
+      parent = this.props.blocks[insertionPoint.block];
+      index = parent.components.length;
+      // if the block we are targeting already has a sequence then we will replace it with a new empty
+      // block, then insert the old block at the start of the payload so it is added as a child to the new block
+      if (parent.hasSequence()) {
+        // create new block and replace current parent
+        const block = this.props.blockCreate();
+        const replaceIndex = oldParent.components.indexOf(parent.id);
+        invariant(replaceIndex >= 0, 'expect to get an index here');
+        this.props.blockRemoveComponent(oldParent.id, parent.id);
+        this.props.blockAddComponent(oldParent.id, block.id, replaceIndex);
+        // seed new blocks with the old target block
+        newBlocks.push(parent.id);
+        // bump the index
+        index += 1;
+        // now make parent equal to the new block so blocks get added to it.
+        parent = block;
+      }
+    } else {
+      index = parent.components.length;
+      if (insertionPoint) {
+        index = parent.components.indexOf(insertionPoint.block) + (insertionPoint.edge === 'right' ? 1 : 0);
+      }
+    }
+
+    // if the source is the inventory and we are dragging a single block with components
+    // then we don't want to insert the parent, so replace the payload with just the children
+    if (!Array.isArray(payload.item) && payload.source === 'inventory' && payload.item.components.length ) {
+      payload.item = payload.item.components.slice();
+    }
+
+    // add all blocks in the payload
+    const blocks = Array.isArray(payload.item) ? payload.item : [payload.item];
+    // return the list of newly added blocks so we can select them for example
+    blocks.forEach(block => {
+      const newBlock = (payload.source === 'inventory' || payload.copying)
+        ? this.props.blockClone(block)
+        : this.props.blocks[block];
+      newBlocks.push(newBlock.id);
+    });
+    // now insert the blocks in one go
+    return this.props.blockAddComponents(parent.id, newBlocks, index);
   }
 
   /**

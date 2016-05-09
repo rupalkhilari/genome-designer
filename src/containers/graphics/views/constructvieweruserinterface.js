@@ -1,17 +1,12 @@
 import UserInterface from '../scenegraph2d/userinterface';
-import { sbol as sbolDragType } from '../../../constants/DragTypes';
 import DnD from '../dnd/dnd';
 import Vector2D from '../geometry/vector2d';
 import Box2D from '../geometry/box2d';
-import Line2D from '../geometry/line2d';
+import { transact } from '../../../store/undo/actions';
 import kT from './layoutconstants';
 import Fence from './fence';
-import invariant from 'invariant';
-import { transact, commit, abort } from '../../../store/undo/actions';
 import { dispatch } from '../../../store/index';
-import {
-  sortBlocksByIndexAndDepthExclude
-} from '../../../utils/ui/uiapi';
+import { sortBlocksByIndexAndDepthExclude } from '../../../utils/ui/uiapi';
 
 
 // # of pixels of mouse movement before a drag is triggered.
@@ -108,7 +103,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
       const intersection = item.AABB.intersectWithBox(pbox);
       if (intersection) {
         // area of intersection
-        const area =  intersection.width * intersection.height;
+        const area = intersection.width * intersection.height;
         if (!bestItem || area > bestItem.area) {
           // decorate item with distance/bounds for comparison with other items
           item.area = area;
@@ -145,7 +140,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
       if (point.x >= bestItem.AABB.right - edgeThreshold) {
         edge = 'right';
       }
-      return {block : bestItem.block, edge};
+      return {block: bestItem.block, edge};
     }
     // the construct must be empty
     return null;
@@ -276,12 +271,12 @@ export default class ConstructViewerUserInterface extends UserInterface {
         blockPopupMenuOpen: true,
         menuPosition: this.mouseTrap.mouseToGlobal(evt),
       });
-    }
+    };
     // if there are no selections try to select the block at the cursor
     if (!this.selections.length) {
       const block = this.topBlockAt(point);
       if (block) {
-        this.constructViewer.blockSelected([block])
+        this.constructViewer.blockSelected([block]);
         showMenu();
       }
     } else {
@@ -342,7 +337,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
       const region = this.getBlockRegion(block, globalPoint);
       switch (region) {
 
-        case 'dots':
+      case 'dots':
         this.constructViewer.openPopup({
           blockPopupMenuOpen: true,
           menuPosition: globalPoint,
@@ -353,7 +348,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
         }
         break;
 
-        case 'triangle':
+      case 'triangle':
         const node = this.layout.nodeFromElement(block);
         node.showChildren = !node.showChildren;
         this.constructViewer.update();
@@ -362,12 +357,14 @@ export default class ConstructViewerUserInterface extends UserInterface {
           action = 'add';
         }
         break;
+
+      default: break;
       }
       // perform the final selection action using block
       switch (action) {
-        case 'toggle' : this.constructViewer.blockToggleSelected([block]); break;
-        case 'add': this.constructViewer.blockAddToSelectionsRange(block, this.selectedElements); break;
-        default: this.constructViewer.blockSelected([block]); break;
+      case 'toggle' : this.constructViewer.blockToggleSelected([block]); break;
+      case 'add': this.constructViewer.blockAddToSelectionsRange(block, this.selectedElements); break;
+      default: this.constructViewer.blockSelected([block]); break;
       }
     } else {
       // clear block selections
@@ -385,7 +382,11 @@ export default class ConstructViewerUserInterface extends UserInterface {
    */
   update() {
     super.update();
-    this.isSelectedConstruct() ? this.lighten() : this.darken();
+    if (this.isSelectedConstruct()) {
+      this.lighten();
+    } else {
+      this.darken();
+    }
   }
   /**
    * true if we are the selected construct
@@ -472,7 +473,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
         // proxy representing 1 ore more blocks
         const proxy = this.makeDragProxy(draggables);
         // remove the blocks, unless meta key pressed
-        let copying = evt.altKey;
+        const copying = evt.altKey;
         // filter our selected elements so they are in natural order
         // and with children of selected parents excluded.
         const blockIds = sortBlocksByIndexAndDepthExclude(draggables).map(info => info.blockId);
@@ -484,7 +485,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
         DnD.startDrag(proxy, globalPoint, {
           item: blockIds,
           source: 'construct-viewer',
-          copying: copying
+          copying: copying,
         }, {
           undoRedoTransaction: true,
         });
@@ -597,7 +598,6 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * show the insertion point at the top left of an empty construct.
    */
   showDefaultInsertPoint() {
-
     // insertion point may alternate so ensure we remove the block cursor
     this.hideBlockInsertionPoint();
     const point = this.layout.getInitialLayoutPoint();
@@ -608,7 +608,6 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * used when dropping a new block(s) into the construct
    */
   showInsertionPointForEdge(block, edge) {
-
     // insertion point may alternate so ensure we remove the block cursor
     this.hideBlockInsertionPoint();
 
@@ -625,7 +624,6 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * create and show insertion point for edge at the given position
    */
   showInsertionPointForEdgeAt(x, y) {
-
     // create insertion point as necessary
     if (!this.insertionEdgeEl) {
       this.insertionEdgeEl = document.createElement('div');
@@ -674,7 +672,6 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * hide / deletion insertion point element
    */
   hideBlockInsertionPoint() {
-
     if (this.insertionBlockEl) {
       // this.el.removeChild(this.insertionBlockEl);
       // this.insertionBlockEl = null;
@@ -683,7 +680,6 @@ export default class ConstructViewerUserInterface extends UserInterface {
     this.insertion = null;
   }
   hideEdgeInsertionPoint() {
-
     if (this.insertionEdgeEl) {
       // this.el.removeChild(this.insertionEdgeEl);
       // this.insertionEdgeEl = null;

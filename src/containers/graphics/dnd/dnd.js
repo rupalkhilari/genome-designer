@@ -1,9 +1,9 @@
 import Vector2D from '../geometry/vector2d';
 import Box2D from '../geometry/box2d';
 import invariant from 'invariant';
-import { transact, commit, abort } from '../../../store/undo/actions';
+import { commit, abort } from '../../../store/undo/actions';
 import { dispatch } from '../../../store/index';
-import { union, difference, intersection } from '../../../utils/set/set';
+import { difference } from '../../../utils/set/set';
 
 /**
  * actual Drag and Drop manager.
@@ -68,7 +68,6 @@ class DnD {
 
     // block selection on anything while dragging
     document.body.classList.add('prevent-selection');
-
   }
 
   /**
@@ -160,7 +159,6 @@ class DnD {
       if (this.undoCommit) {
         dispatch(abort());
       }
-
     }
     this.cancelDrag();
   }
@@ -204,7 +202,7 @@ class DnD {
       return this.getElementBounds(options.element).pointInBox(globalPoint);
     });
     // sort by zorder and return the one with the highest values
-    hits.sort((a, b) => {return a.options.zorder - b.options.zorder});
+    hits.sort((aaa, bbb) => {return aaa.options.zorder - bbb.options.zorder;});
     return hits.pop();  // undefined on an empty array
   }
 

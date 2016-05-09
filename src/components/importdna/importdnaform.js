@@ -4,7 +4,6 @@ import { uiShowDNAImport } from '../../actions/ui';
 import { blockGetSequence, blockSetSequence } from '../../actions/blocks';
 import { focusBlocks } from '../../actions/focus';
 import { uiSetGrunt } from '../../actions/ui';
-import invariant from 'invariant';
 import ModalWindow from '../modal/modalwindow';
 import { blockCreate, blockAddComponent } from '../../actions/blocks';
 import { dnaLoose, dnaLooseRegexp } from '../../utils/dna/dna';
@@ -17,6 +16,14 @@ class DNAImportForm extends Component {
   static propTypes = {
     uiShowDNAImport: PropTypes.func.isRequired,
     open: PropTypes.bool.isRequired,
+    blockSetSequence: PropTypes.func.isRequired,
+    blockCreate: PropTypes.func.isRequired,
+    blockAddComponent: PropTypes.func.isRequired,
+    uiSetGrunt: PropTypes.func.isRequired,
+    focusedBlocks: PropTypes.array.isRequired,
+    focusBlocks: PropTypes.func.isRequired,
+    blockGetSequence: PropTypes.func.isRequired,
+    currentConstruct: PropTypes.string,
   };
 
   constructor() {
@@ -55,6 +62,36 @@ class DNAImportForm extends Component {
     }
   }
 
+  onSubmit(evt) {
+    evt.preventDefault();
+    // be sure we have a valid sequence before continuing
+    if (this.state.inputValid
+      && this.state.validLength
+      && this.state.sequence
+      && this.state.validLength === this.state.sequence.length) {
+      // get the currently selected blocks from the store
+      Promise.all(this.props.focusedBlocks.map(blockId => {
+        return this.props.blockGetSequence(blockId);
+      }))
+      .then(sequences => {
+        // get index of first empty sequence
+        const emptyIndex = sequences.findIndex(sequence => !sequence);
+        if (emptyIndex >= 0) {
+          this.setSequenceAndClose(this.props.focusedBlocks[emptyIndex], this.state.sequence);
+        } else {
+          const block = this.props.blockCreate();
+          this.props.blockAddComponent(this.props.currentConstruct, block.id, 0);
+          this.setSequenceAndClose(block.id, this.state.sequence);
+        }
+      })
+      .catch(reason => {
+        // close the dialog
+        this.props.uiShowDNAImport(false);
+        this.props.uiSetGrunt(`There was a problem fetching the block sequences: ${reason.toString()}`);
+      });
+    }
+  }
+
   setSequenceAndClose(blockId, sequence) {
     this.props.blockSetSequence(blockId, sequence)
       .then(block => {
@@ -70,37 +107,6 @@ class DNAImportForm extends Component {
       });
   }
 
-  onSubmit(evt) {
-    evt.preventDefault();
-    // be sure we have a valid sequence before continuing
-    if (this.state.inputValid
-      && this.state.validLength
-      && this.state.sequence
-      && this.state.validLength === this.state.sequence.length) {
-
-      // get the currently selected blocks from the store
-      Promise.all(this.props.focusedBlocks.map(blockId => {
-          return this.props.blockGetSequence(blockId);
-        }))
-        .then(sequences => {
-          // get index of first empty sequence
-          const emptyIndex = sequences.findIndex(sequence => !sequence);
-          if (emptyIndex >= 0) {
-            this.setSequenceAndClose(this.props.focusedBlocks[emptyIndex], this.state.sequence);
-          } else {
-            const block = this.props.blockCreate();
-            this.props.blockAddComponent(this.props.currentConstruct, block.id, 0);
-            this.setSequenceAndClose(block.id, this.state.sequence);
-          }
-        })
-        .catch(reason => {
-          // close the dialog
-          this.props.uiShowDNAImport(false);
-          this.props.uiSetGrunt(`There was a problem fetching the block sequences: ${reason.toString()}`);
-        });
-    }
-  }
-
   render() {
     // no render when not open
     if (!this.props.open) {
@@ -112,8 +118,8 @@ class DNAImportForm extends Component {
       title="Add Sequence"
       closeOnClickOutside
       closeModal={(buttonText) => {
-          this.props.uiShowDNAImport(false);
-        }}
+        this.props.uiShowDNAImport(false);
+      }}
       payload={
           <form className="gd-form importdnaform" onSubmit={this.onSubmit.bind(this)}>
             <div className="title">Add Sequence</div>
@@ -142,7 +148,7 @@ class DNAImportForm extends Component {
           </form>}
 
     />);
-  };
+  }
 }
 
 function mapStateToProps(state) {

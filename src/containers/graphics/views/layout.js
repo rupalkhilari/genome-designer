@@ -55,11 +55,10 @@ export default class Layout {
    * @return {[type]} [description]
    */
   autoSizeSceneGraph() {
-
     if (this.rootLayout) {
       // start with a box at 0,0, to ensure we capture the top left of the view
-      // and ensure we at least use the available width
-      let aabb = this.getBlocksAABB();
+      // and ensure we at least use the available
+      const aabb = this.getBlocksAABB();
       this.sceneGraph.width = Math.max(aabb.right, kT.minWidth);
       this.sceneGraph.height = Math.max(aabb.bottom, kT.minHeight) + kT.bottomPad;
       this.sceneGraph.updateSize();
@@ -80,7 +79,6 @@ export default class Layout {
       aabb = layout.getBlocksAABB().union(aabb);
     });
     return aabb;
-
   }
 
   /**
@@ -353,7 +351,7 @@ export default class Layout {
     // set bounds and update to current color
     row.set({
       bounds: bounds,
-      fill: this.baseColor
+      fill: this.baseColor,
     });
 
     // save into new rows so we know this row is in use
