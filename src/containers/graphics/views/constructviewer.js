@@ -121,12 +121,14 @@ export class ConstructViewer extends Component {
     window.addEventListener('resize', this.resizeDebounced);
 
     // if there is no focused construct then we should grab it
-    if (!this.props.focus.constructId) {
-      this.props.focusConstruct(this.props.constructId);
-      ReactDOM.findDOMNode(this).scrollIntoView();
-    } else {
-      ReactDOM.findDOMNode(this).scrollIntoView();
-    }
+    // NOTE: For now this is disabled because it often does not product the desired result
+    // and can move the page beyind the scroll limits set.
+    // if (!this.props.focus.constructId) {
+    //   this.props.focusConstruct(this.props.constructId);
+    //   ReactDOM.findDOMNode(this).scrollIntoView();
+    // } else {
+    //   ReactDOM.findDOMNode(this).scrollIntoView();
+    // }
   }
 
   /**
