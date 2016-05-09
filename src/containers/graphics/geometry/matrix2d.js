@@ -235,6 +235,7 @@ export default class Matrix2D {
    */
   toCSSString() {
     const _v = this._v;
-    return `matrix(${_v[0]}, ${_v[3]}, ${_v[1]}, ${_v[4]}, ${_v[2]}, ${_v[5]})`;
+    // using limited notation since Safari doesn't like a matrix with values like 6.123233995736766e-17
+    return `matrix(${_v[0].toFixed(8)}, ${_v[3].toFixed(8)}, ${_v[1].toFixed(8)}, ${_v[4].toFixed(8)}, ${_v[2].toFixed(8)}, ${_v[5].toFixed(8)})`;
   }
 }
