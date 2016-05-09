@@ -15,6 +15,7 @@
     width: 0; /* hack - flexbox will give it min-width */
     overflow-y: hidden;
     overflow-x: hidden;
+    height: calc(100vh - var(--GlobalNav-height-chrome));
   }
 
   &-constructs {
