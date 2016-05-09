@@ -567,7 +567,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
    */
   onDrop(globalPosition, payload, event) {
     // flatten dropped object and treats as new construct if we are empty.
-    const blockids = this.constructViewer.addItemAtInsertionPoint(payload, this.insertion, event, this.construct.components.length === 0);
+    const blockids = this.constructViewer.addItemAtInsertionPoint(payload, this.insertion, event);
     this.constructViewer.blockSelected(blockids);
     this.constructViewer.constructSelected(this.constructViewer.props.constructId);
   }

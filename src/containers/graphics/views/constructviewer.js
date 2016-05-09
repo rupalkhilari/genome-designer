@@ -153,7 +153,7 @@ export class ConstructViewer extends Component {
    * add the given item using an insertion point from the constructviewer user interface.
    * Insertion point may be null, in which the block is added at the end
    */
-  addItemAtInsertionPoint(payload, insertionPoint, event, newConstruct) {
+  addItemAtInsertionPoint(payload, insertionPoint, event) {
     const { item, type } = payload;
     let index;
     // get the immediate parent ( which might not be the top level block if this is a nested construct )
@@ -219,8 +219,7 @@ export class ConstructViewer extends Component {
 
     // if the source is the inventory and we are dragging a single block with components
     // then we don't want to insert the parent, so replace the payload with just the children
-    // NOTE: Flatten only for new constructs
-    if (newConstruct && !Array.isArray(payload.item) && payload.source === 'inventory' && payload.item.components.length ) {
+    if (!Array.isArray(payload.item) && payload.source === 'inventory' && payload.item.components.length ) {
       payload.item = payload.item.components.slice();
     }
 
