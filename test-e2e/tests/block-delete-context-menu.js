@@ -30,7 +30,7 @@ module.exports = {
 
     // delete block from second construct viewer
     var blockBounds = openNthBlockContextMenu(browser, '.construct-viewer:nth-of-type(1) .sceneGraph', 0);
-    clickNthContextMenuItem(browser, 3);
+    clickNthContextMenuItem(browser, 2);
 
     // NOTE: The last item add will be selected. Clicking the first item will group select all blocks
 

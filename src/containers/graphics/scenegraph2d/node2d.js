@@ -170,6 +170,21 @@ export default class Node2D {
   }
 
   /**
+   * return true if we are any kind of distance descendant of the given node
+   */
+  isNodeOrChildOf(otherNode) {
+    let current = this;
+    while (current) {
+      if (current === otherNode) {
+        return true;
+      } else {
+        current = current.parent;
+      }
+    }
+    return false;
+  }
+
+  /**
    * convert a point ( or array of points ) in global ( scene graph space ) to local space
    */
   globalToLocal(point) {

@@ -71,6 +71,7 @@ export class ConstructViewer extends Component {
     projectRemoveConstruct: PropTypes.func,
     blocks: PropTypes.object,
     focus: PropTypes.object,
+    constructPopupMenuOpen: PropTypes.bool.isRequired,
   };
 
   constructor(props) {
@@ -382,6 +383,33 @@ export class ConstructViewer extends Component {
     this.props.inspectorToggleVisibility(true);
   }
   /**
+   * menu items for blocks context menu, can get merged with construct context menu
+   */
+  blockContextMenuItems = () => {
+    return [
+      {
+        text: 'Inspect Block',
+        disabled: this.props.focus.blockIds.length !== 1,
+        action: () => {
+          this.openInspector();
+        },
+      },
+      {
+        text: 'Delete Blocks',
+        action: () => {
+          this.removePartsList(this.sg.ui.selectedElements);
+        }
+      },
+      {
+        text: 'Import DNA Sequence',
+        disabled: this.props.focus.blockIds.length !== 1,
+        action: () => {
+          this.props.uiShowDNAImport(true);
+        }
+      },
+    ];
+  }
+  /**
    * return JSX for block construct menu
    */
   blockContextMenu() {
@@ -389,47 +417,44 @@ export class ConstructViewer extends Component {
       open={this.state.blockPopupMenuOpen}
       position={this.state.menuPosition}
       closePopup={this.closePopups.bind(this)}
-      menuItems={
-        [
-          {
-            text: 'Inspect',
-            action: () => {
-              this.openInspector();
-            },
-          },
-          {
-            text: 'Import DNA Sequence',
-            action: () => {
-              this.props.uiShowDNAImport(true);
-            }
-          },
-          {
-            text: 'Delete',
-            action: () => {
-              this.removePartsList(this.sg.ui.selectedElements);
-            }
-          },
-        ]
-      }/>);
+      menuItems={this.blockContextMenuItems()}/>);
+  }
+  /**
+   * menu items for the construct context menu
+   */
+  constructContextMenuItems = () =>{
+    return [
+      {
+        text: 'Inspect Construct',
+        action: () => {
+          this.openInspector();
+          this.props.focusBlocks([]);
+          this.props.focusConstruct(this.props.constructId);
+        },
+      },
+      {
+        text: 'Delete Construct',
+        action: () => {
+          this.props.projectRemoveConstruct(this.props.projectId, this.props.constructId);
+        },
+      },
+    ];
   }
   /**
    * return JSX for construct context menu
    */
   constructContextMenu() {
+    // add the blocks context menu items if there are selected blocks
+    let items = this.constructContextMenuItems();
+    if (this.props.focus.blockIds.length) {
+      items = [...items, {}, ...this.blockContextMenuItems()];
+    }
+
     return (<PopupMenu
       open={this.state.constructPopupMenuOpen}
       position={this.state.menuPosition}
       closePopup={this.closePopups.bind(this)}
-      menuItems={
-        [
-          {
-            text: 'Delete Construct',
-            action: () => {
-              this.props.projectRemoveConstruct(this.props.projectId, this.props.constructId);
-            },
-          },
-        ]
-      }/>);
+      menuItems={items}/>);
   }
 
   /**

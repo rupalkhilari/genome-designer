@@ -86,7 +86,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * true if the node is the title node for the construct
    */
   isConstructTitleNode(node) {
-    return !!(node && this.layout.titleNode === node);
+    return !!(node && node.isNodeOrChildOf(this.layout.titleNode));
   }
 
   /**
@@ -266,12 +266,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
     // select construct regardless of where click occurred.
     this.selectConstruct();
     // open construct menu for title according to position
-    const hits = this.sg.findNodesAt(point);
-    if (this.isConstructTitleNode(hits.length ? hits.pop() : null)) {
-      this.constructViewer.openPopup({
-        constructPopupMenuOpen: true,
-        menuPosition: this.mouseTrap.mouseToGlobal(evt),
-      });
+    if (this.titleContextMenu(evt, point)) {
       return;
     }
 
@@ -295,12 +290,40 @@ export default class ConstructViewerUserInterface extends UserInterface {
   }
 
   /**
+   * run the title context menu if the point is over the title block, or only
+   * over the context menu dots if onlyDots is specified
+   */
+  titleContextMenu(evt, point, onlyDots) {
+    const hits = this.sg.findNodesAt(point);
+    if (this.isConstructTitleNode(hits.length ? hits.pop() : null)) {
+      // over the entire block, refine test as required
+      if (onlyDots) {
+        const AABB = this.layout.titleNode.getAABB();
+        if (point.x < AABB.right - kT.contextDotsW) {
+          return false;
+        }
+      }
+      this.constructViewer.openPopup({
+        constructPopupMenuOpen: true,
+        menuPosition: this.mouseTrap.mouseToGlobal(evt),
+      });
+      return true;
+    }
+    return false;
+  }
+
+  /**
    * select with mouse including handling ancillary actions like opening the context menu and toggle nested construct
    */
   mouseSelect(evt, point) {
     evt.preventDefault();
     // select construct whenever a selection occcurs regardless of blocks hit etc
     this.selectConstruct();
+    // open construct menu for title according to position
+    if (this.titleContextMenu(evt, point, true)) {
+      return;
+    }
+    // check for block select
     const block = this.topBlockAt(point);
     if (block) {
       // if the user clicks a sub component ( ... menu accessor or expand / collapse for example )
