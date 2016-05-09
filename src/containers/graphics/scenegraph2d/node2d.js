@@ -121,6 +121,7 @@ export default class Node2D {
       // value should be {name:'xyz', value:'123'} which would appear in
       // the dom as data-xyz="123"
       case 'dataAttribute':
+      this.dataAttribute = value;
       this.el.setAttribute(`data-${value.name}`, value.value);
       break;
 
@@ -166,6 +167,21 @@ export default class Node2D {
    */
   get inverseTransformationMatrix() {
     return this.transformationMatrix.inverse();
+  }
+
+  /**
+   * return true if we are any kind of distance descendant of the given node
+   */
+  isNodeOrChildOf(otherNode) {
+    let current = this;
+    while (current) {
+      if (current === otherNode) {
+        return true;
+      } else {
+        current = current.parent;
+      }
+    }
+    return false;
   }
 
   /**
@@ -343,7 +359,7 @@ export default class Node2D {
    * @return {[type]} [description]
    */
   update() {
-    // if we have additional CSS classes to apply do that
+    //if we have additional CSS classes to apply do that
     if (this.classes) {
       this.el.className = `node ${this.classes}`;
     }
@@ -374,27 +390,10 @@ export default class Node2D {
    * @return {Node2D}
    */
   updateBranch() {
-
-    // if this is called on the root node of a scene graph the node is temporarily
-    // remove from its parent to prevent costly reflows
-    let tempParent = null;
-    if (this.isRoot) {
-      if (this.el.parentElement) {
-        tempParent = this.el.parentElement;
-        this.el.parentElement.removeChild(this.el);
-      }
-    }
-
     this.update();
     this.children.forEach(child => {
       child.updateBranch();
     });
-
-    //re-attach to DOM if we were removed for updating
-    if (tempParent) {
-      tempParent.appendChild(this.el);
-    }
-
     return this.el;
   }
 }

@@ -5,6 +5,18 @@ import merge from 'lodash.merge';
 import ProjectDefinition from '../schemas/Project';
 import BlockDefinition from '../schemas/Block';
 
+/*
+var isNode =
+  typeof global !== "undefined" &&
+  {}.toString.call(global) == '[object global]';
+
+if (isNode) {
+  var FormData = require('form-data');
+  var FileAPI = require('file-api');
+  const File = FileAPI.File;
+}
+ */
+
 /*************************
  Utils
  *************************/

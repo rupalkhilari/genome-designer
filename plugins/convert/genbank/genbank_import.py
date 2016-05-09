@@ -67,13 +67,17 @@ def convert_block_to_feature(all_blocks, to_convert, parent, to_remove_list):
         else:
             feature["notes"][key] = value
 
-    feature["sequence"] = to_convert["sequence"]["sequence"]
+    #feature["sequence"] = to_convert["sequence"]["sequence"]
 
     if "annotations" not in parent["sequence"]:
         parent["sequence"]["annotations"] = []
 
     parent["sequence"]["annotations"].append(feature)
     to_remove_list.append(to_convert["id"])
+
+    if "annotations" in to_convert["sequence"]:
+        for annotation in to_convert["sequence"]["annotations"]:
+            parent["sequence"]["annotations"].append(annotation)
 
     # And also convert to features all the components of the removed block, recursively
     for to_convert_child_id in to_convert["components"]:
@@ -90,7 +94,7 @@ def create_root_block_from_genbank(gb, sequence):
     root_block["metadata"]["name"] = gb.name
     root_block["metadata"]["start"] = 0
     root_block["metadata"]["end"] = full_length - 1
-    root_block["metadata"]["genbank"]["original_id"] = gb.id
+    root_block["metadata"]["genbank"]["id"] = gb.id
     root_block["sequence"]["length"] = full_length
     if "references" in gb.annotations:
         for ref in gb.annotations["references"]:

@@ -15,6 +15,8 @@
     width: 0; /* hack - flexbox will give it min-width */
     overflow-y: hidden;
     overflow-x: hidden;
+    /*most of the content on the project page uses overflow-y: scroll, except on chrome this requires an explicit height to work*/
+    height: calc(100vh - var(--GlobalNav-height-chrome));
   }
 
   &-constructs {

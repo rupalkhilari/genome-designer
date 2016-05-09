@@ -115,12 +115,9 @@ export const projectLoad = (projectId) => {
 
         dispatch(undoActions.transact());
 
-        blocks.forEach((blockObject) => {
-          const block = new Block(blockObject);
-          dispatch({
-            type: ActionTypes.BLOCK_LOAD,
-            block,
-          });
+        dispatch({
+          type: ActionTypes.BLOCK_STASH,
+          blocks: blocks.map((blockObject) => new Block(blockObject)),
         });
 
         dispatch({
