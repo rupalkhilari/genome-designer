@@ -171,8 +171,8 @@ export default class Node2D {
   /**
    * return true if we are any kind of distance descendant of the given node
    */
-  isChildOf(otherNode) {
-    let current = this.parent;
+  isNodeOrChildOf(otherNode) {
+    let current = this;
     while (current) {
       if (current === otherNode) {
         return true;

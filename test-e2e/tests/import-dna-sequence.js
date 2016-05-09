@@ -45,7 +45,7 @@ module.exports = {
 
 
     var blockBounds = openNthBlockContextMenu(browser, '.sceneGraph', 0);
-    clickNthContextMenuItem(browser, 2);
+    clickNthContextMenuItem(browser, 3);
 
     // wait for the import DNA modal window
     browser
