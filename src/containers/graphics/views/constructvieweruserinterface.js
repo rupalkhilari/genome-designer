@@ -86,7 +86,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * true if the node is the title node for the construct
    */
   isConstructTitleNode(node) {
-    return !!(node && this.layout.titleNode === node);
+    return !!(node && node.isChildOf(this.layout.titleNode));
   }
 
   /**
