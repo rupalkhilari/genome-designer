@@ -86,7 +86,7 @@ def build_sequence(block, allblocks):
             block = [b for b in allblocks if b["id"] == component][0]
             seq = seq + build_sequence(block, allblocks)
     else:
-        if block["sequence"]["sequence"]:
+        if "sequence" in block["sequence"] and block["sequence"]["sequence"]:
             seq = block["sequence"]["sequence"]
     return seq
 
