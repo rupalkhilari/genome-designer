@@ -3,7 +3,6 @@ import { LOCATION_CHANGE } from 'react-router-redux';
 
 export const initialState = {
   detailViewVisible: false,
-  showMainMenu: true,
   authenticationForm: 'none',
   showDNAImport: false,
   showAbout: false,
@@ -33,10 +32,6 @@ export default function inventory(state = initialState, action) {
   case ActionTypes.UI_TOGGLE_DETAIL_VIEW : {
     const { nextState } = action;
     return Object.assign({}, state, {detailViewVisible: nextState});
-  }
-  case ActionTypes.UI_SHOW_MAIN_MENU : {
-    const { showMainMenu } = action;
-    return Object.assign({}, state, {showMainMenu});
   }
   case ActionTypes.UI_SHOW_USER_WIDGET : {
     const { userWidgetVisible } = action;

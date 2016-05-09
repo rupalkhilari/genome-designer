@@ -40,7 +40,7 @@ import {
   uiToggleDetailView,
   uiSetGrunt,
   uiShowAbout,
- } from '../actions/ui';
+} from '../actions/ui';
 import { inspectorToggleVisibility } from '../actions/inspector';
 import { inventoryToggleVisibility } from '../actions/inventory';
 import { uiShowDNAImport } from '../actions/ui';
@@ -71,7 +71,7 @@ class GlobalNav extends Component {
     projectSave: PropTypes.func.isRequired,
     currentProjectId: PropTypes.string,
     blockCreate: PropTypes.func.isRequired,
-    showMainMenu: PropTypes.bool.isRequired,
+    showMenu: PropTypes.bool.isRequired,
     blockGetParents: PropTypes.func.isRequired,
     focusDetailsExist: PropTypes.func.isRequired,
   };
@@ -161,7 +161,7 @@ class GlobalNav extends Component {
     // create project and add a default construct
     const project = this.props.projectCreate();
     // add a construct to the new project
-    const block = this.props.blockCreate({projectId: project.id});
+    const block = this.props.blockCreate({ projectId: project.id });
     this.props.projectAddConstruct(project.id, block.id);
     this.props.focusConstruct(block.id);
     this.props.projectOpen(project.id);
@@ -505,12 +505,14 @@ class GlobalNav extends Component {
   }
 
   render() {
+    const { showMenu } = this.props;
+
     return (
       <div className="GlobalNav">
         <RibbonGrunt />
         <span className="GlobalNav-title">GD</span>
-        {this.props.showMainMenu ? this.menuBar() : null}
-        <span className="GlobalNav-spacer" />
+        {showMenu ? this.menuBar() : null}
+        <span className="GlobalNav-spacer"/>
         <AutosaveTracking />
         <UserWidget/>
       </div>
@@ -520,7 +522,6 @@ class GlobalNav extends Component {
 
 function mapStateToProps(state) {
   return {
-    showMainMenu: state.ui.showMainMenu,
     focus: state.focus,
     blocks: state.blocks,
     clipboard: state.clipboard,
