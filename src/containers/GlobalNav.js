@@ -126,7 +126,6 @@ class GlobalNav extends Component {
       this.props.inventorySelectTab('sbol');
     });
     KeyboardTrap.bind('option+n', (evt) => {
-      debugger;
       evt.preventDefault();
       this.newProject();
     });
