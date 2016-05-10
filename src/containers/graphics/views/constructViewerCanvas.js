@@ -31,14 +31,21 @@ export class ConstructViewerCanvas extends Component {
    * create a new construct, add dropped block to it
    */
   onDrop(globalPosition, payload, event) {
-    // make new construct
-    const construct = this.props.blockCreate();
-    this.props.blockRename(construct.id, 'New Construct');
-    this.props.projectAddConstruct(this.props.currentProjectId, construct.id);
-    const constructViewer = ConstructViewer.getViewerForConstruct(construct.id);
-    invariant(constructViewer, 'expect to find a viewer for the new construct');
-    constructViewer.addItemAtInsertionPoint(payload, null, null);
-    this.props.focusConstruct(construct.id);
+    // clone construct and add to project if a construct from inventory otherwise
+    // treat as a list of one or more blocks
+    if (payload.source === 'inventory construct') {
+      debugger;
+      const construct = this.props.blockClone(payload.item.id);
+      this.props.projectAddConstruct(this.props.currentProjectId, construct.id)
+      this.props.focusConstruct(construct.id);
+    } else {
+      const construct = this.props.blockCreate();
+      this.props.projectAddConstruct(this.props.currentProjectId, construct.id);
+      const constructViewer = ConstructViewer.getViewerForConstruct(construct.id);
+      invariant(constructViewer, 'expect to find a viewer for the new construct');
+      constructViewer.addItemAtInsertionPoint(payload, null, null);
+      this.props.focusConstruct(construct.id);
+    }
   }
 
   /**
