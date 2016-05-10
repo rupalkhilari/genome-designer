@@ -6,7 +6,6 @@ import { projectList, projectLoad, projectSave, projectOpen } from '../../action
 import { focusForceProject } from '../../actions/focus';
 import { inspectorToggleVisibility } from '../../actions/ui';
 
-import Spinner from '../ui/Spinner';
 import InventoryConstruct from './InventoryConstruct';
 import InventoryListGroup from './InventoryListGroup';
 
@@ -77,6 +76,7 @@ export default class InventoryProject extends Component {
         }));
     }
 
+    //otherwise, closing
     this.setState({ isExpanded: false });
     return Promise.resolve();
   };
