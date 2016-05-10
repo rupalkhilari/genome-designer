@@ -12,7 +12,7 @@ import { block as blockDragType } from '../../constants/DragTypes';
  InventoryConstruct takes a blockId of a block in a loaded project (i.e. block and components recursively are in the store), and delegates between inventoryItemBlock for blocks and InventoryListGroup to recursively lay out constructs. Use this component if you are unsure whether you have a block or a construct.
 
  - note - assumes that blocks are in the store
- - attaches a mousetrap to the list group header, if this is in fact a construct
+ - attaches a mousetrap to the list group header, if this is in fact a construct, using ref clause for itemElement
 
  */
 

@@ -1,20 +1,16 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { projectGet, projectListAllBlocks } from '../../selectors/projects';
-import { projectList, projectLoad, projectSave, projectOpen } from '../../actions/projects';
-import { focusForceProject } from '../../actions/focus';
+import { projectList } from '../../actions/projects';
 import { blockStash } from '../../actions/blocks';
 import { inspectorToggleVisibility } from '../../actions/ui';
 import { block as blockDragType } from '../../constants/DragTypes';
 import { infoQuery } from '../../middleware/api';
 import { symbolMap } from '../../inventory/sbol';
 
-import InventoryConstruct from './InventoryConstruct';
+import InventoryProject from './InventoryProject';
 import InventoryListGroup from './InventoryListGroup';
 import InventoryList from './InventoryList';
 import InventoryTabs from './InventoryTabs';
-
-const loadedProjects = {};
 
 export class InventoryGroupProjects extends Component {
   static propTypes = {
@@ -23,35 +19,23 @@ export class InventoryGroupProjects extends Component {
     currentProject: PropTypes.string.isRequired,
     blockStash: PropTypes.func.isRequired,
     projectList: PropTypes.func.isRequired,
-    projectLoad: PropTypes.func.isRequired,
-    projectGet: PropTypes.func.isRequired,
-    projectSave: PropTypes.func.isRequired,
-    projectListAllBlocks: PropTypes.func.isRequired,
     focusForceProject: PropTypes.func.isRequired,
     inspectorToggleVisibility: PropTypes.func.isRequired,
-    projectOpen: PropTypes.func.isRequired,
   };
 
-  constructor() {
-    super();
-    this.clicks = 0;
-
-    this.inventoryTabs = [
-      { key: 'project', name: 'By Project' },
-      { key: 'type', name: 'By Kind' },
-    ];
-  }
-
   state = {
-    expandedProjects: {},
     loadedTypes: {},
     groupBy: 'project',
     typeMap: {},
   };
 
+  inventoryTabs = [
+    { key: 'project', name: 'By Project' },
+    { key: 'type', name: 'By Kind' },
+  ];
+
   componentDidMount() {
     //retrigger on each load?
-    //todo - state for loading
     this.props.projectList();
   }
 
@@ -59,25 +43,9 @@ export class InventoryGroupProjects extends Component {
     this.setState({ groupBy: key });
 
     if (key === 'type') {
+      //returns a map { <sbolkey> : number }
       infoQuery('sbol').then(typeMap => this.setState({ typeMap }));
     }
-  };
-
-  //handle double-click to open
-  onToggleProject = (nextState, projectId) => {
-    const { currentProject } = this.props;
-
-    //this ensures the project is in the store
-    this.handleToggleProject(nextState, projectId).then(() => {
-      if (projectId === currentProject) {
-        //inspect it
-        this.inspectProject(projectId);
-      } else {
-        //save the previous one, open the new one
-        this.props.projectSave()
-          .then(() => this.props.projectOpen(projectId));
-      }
-    });
   };
 
   onToggleType = (nextState, type) => {
@@ -85,6 +53,7 @@ export class InventoryGroupProjects extends Component {
     //no caching for now...
     //when update to a cache, this should live update (right now, updates only when change tabs)
 
+    //returns an array of blocks
     infoQuery('sbol', type).then(blocks => this.setState({
       loadedTypes: Object.assign(this.state.loadedTypes, { [type]: blocks }),
     }));
@@ -97,53 +66,19 @@ export class InventoryGroupProjects extends Component {
     }
 
     //get components if its a construct and add blocks to the store
+    //note - this may be a very large query
     return infoQuery('components', item.id)
       .then(componentsObj => {
+        //this object is a map of { <blockId> : <block> }, including the item itself
         const components = Object.keys(componentsObj).map(key => componentsObj[key]);
         return this.props.blockStash(...components);
       })
       .then(() => item);
   };
 
-  //only call after project has been loaded and is in the store
-  inspectProject = (projectId) => {
-    const project = this.props.projectGet(projectId);
-    this.props.focusForceProject(project);
-    this.props.inspectorToggleVisibility(true);
-  };
-
-  loadProject = (projectId) => {
-    //todo - dont load blocks into store until the project is loaded (update selector)
-    //we just want to load when the project is actually loaded. Dont add to store if we're going to just push it on with forceBlocks
-    //however, need to make sure that blockClone will work. Perhaps we can add them to the store before the drag starts
-    //todo - caching should be at API level, not in this component
-
-    //todo - if we're just showing the blocks hierarchically, we can fetch components lazily using the middleware function to get components of a block. Or, since we're loading the whole project, we can just get them from the store as is.
-
-    return !!loadedProjects[projectId]
-      ?
-      Promise.resolve(loadedProjects[projectId])
-      :
-      this.props.projectLoad(projectId)
-        .then((project) => this.props.projectListAllBlocks(projectId))
-        .then(blocks => {
-          Object.assign(loadedProjects, { [projectId]: blocks });
-          return loadedProjects[projectId];
-        });
-  };
-
-  handleToggleProject = (nextState, projectId) => {
-    return this.loadProject(projectId)
-      .then(() => {
-        this.setState({
-          expandedProjects: Object.assign(this.state.expandedProjects, { [projectId]: nextState }),
-        });
-      });
-  };
-
   render() {
     const { projects, currentProject } = this.props;
-    const { expandedProjects, loadedTypes, groupBy, typeMap } = this.state;
+    const { loadedTypes, groupBy, typeMap } = this.state;
 
     const projectList =
       (!Object.keys(projects).length)
@@ -153,24 +88,15 @@ export class InventoryGroupProjects extends Component {
         Object.keys(projects).map(projectId => {
           const project = projects[projectId];
           const isActive = (projectId === currentProject);
-          const isExpanded = expandedProjects[projectId];
+
           return (
-            <InventoryListGroup key={projectId}
-                                title={project.metadata.name || 'Untitled Project'}
-                                manual
-                                hideToggle={!project.components.length}
-                                isExpanded={isExpanded}
-                                onToggle={(nextState) => this.handleToggleProject(nextState, projectId)}
-                                onSelect={(nextState) => this.onToggleProject(nextState, projectId)}
-                                isActive={isActive}>
-              {project.components.map(compId => {
-                return (<InventoryConstruct key={compId}
-                                            blockId={compId} />);
-              })}
-            </InventoryListGroup>
+            <InventoryProject key={projectId}
+                              project={project}
+                              isActive={isActive}/>
           );
         });
 
+    //todo - this should be broken into its own component and handle specific cases (e.g. loading) inside of it
     const byKindList = Object.keys(typeMap).map(type => {
       const count = typeMap[type];
       const name = symbolMap[type] || type;
@@ -216,11 +142,5 @@ function mapStateToProps(state, props) {
 export default connect(mapStateToProps, {
   blockStash,
   projectList,
-  projectLoad,
-  projectGet,
-  projectSave,
-  projectListAllBlocks,
-  focusForceProject,
   inspectorToggleVisibility,
-  projectOpen,
 })(InventoryGroupProjects);

@@ -2,21 +2,21 @@ import React, { PropTypes } from 'react';
 
 import '../../styles/Spinner.css';
 
-export default function LoadingSpinner({ hidden, styles }) {
+export default function Spinner({ hidden, styles }) {
   if (hidden) {
     //todo - in React v15, can return null
     return <noscript />;
   }
 
-  return (<div className="loadingSpinner" styles={styles}/>);
+  return (<div className="Spinner" styles={styles}/>);
 }
 
-LoadingSpinner.propTypes = {
+Spinner.propTypes = {
   hidden: PropTypes.bool,
   styles: PropTypes.object,
 };
 
-LoadingSpinner.defaultProps = {
+Spinner.defaultProps = {
   hidden: false,
-  styles: {}
+  styles: {},
 };

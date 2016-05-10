@@ -1,10 +1,10 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { transact, commit, abort } from '../store/undo/actions';
-import { blockMerge, blockSetColor, blockSetSbol, blockRename } from '../actions/blocks';
-import InputSimple from './InputSimple';
-import ColorPicker from './ui/ColorPicker';
-import SymbolPicker from './ui/SymbolPicker';
+import { transact, commit, abort } from '../../store/undo/actions';
+import { blockMerge, blockSetColor, blockSetSbol, blockRename } from '../../actions/blocks';
+import InputSimple from './../InputSimple';
+import ColorPicker from './../ui/ColorPicker';
+import SymbolPicker from './../ui/SymbolPicker';
 import BlockSource from './BlockSource';
 
 export class InspectorBlock extends Component {

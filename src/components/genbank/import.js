@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import ModalWindow from '../modal/modalwindow';
-import Balls from '../../components/balls/balls';
+import Balls from '../ui/balls';
 import Dropzone from 'react-dropzone';
 import { uiShowGenBankImport } from '../../actions/ui';
 import { projectGet, projectListAllBlocks } from '../../selectors/projects';

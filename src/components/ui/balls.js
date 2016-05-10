@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import '../../../src/styles/balls.css';
+import '../../styles/balls.css';
 
 export default class Balls extends Component {
 

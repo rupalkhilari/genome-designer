@@ -1,8 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { transact, commit, abort } from '../store/undo/actions';
-import { projectRename, projectMerge } from '../actions/projects';
-import InputSimple from './InputSimple';
+import { transact, commit, abort } from '../../store/undo/actions';
+import { projectRename, projectMerge } from '../../actions/projects';
+import InputSimple from './../InputSimple';
 
 //for now, assumes only blocks. Later, may need to pass a type as well
 
