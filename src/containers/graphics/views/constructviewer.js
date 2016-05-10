@@ -4,7 +4,7 @@ import SceneGraph2D from '../scenegraph2d/scenegraph2d';
 import Vector2D from '../geometry/vector2d';
 import Layout from './layout.js';
 import PopupMenu from '../../../components/Menu/PopupMenu';
-import {connect } from 'react-redux';
+import { connect } from 'react-redux';
 import {
   blockCreate,
   blockDelete,
@@ -38,7 +38,7 @@ import {
 import invariant from 'invariant';
 import {
   projectGetVersion,
- } from '../../../selectors/projects';
+} from '../../../selectors/projects';
 import { projectRemoveConstruct } from '../../../actions/projects';
 
 // static hash for matching viewers to constructs
@@ -86,6 +86,7 @@ export class ConstructViewer extends Component {
     };
     this.update = debounce(this._update.bind(this), 1);
   }
+
   /**
    * setup the scene graph and layout component.
    */
@@ -225,6 +226,7 @@ export class ConstructViewer extends Component {
   blockAddToSelections(partIds) {
     this.props.focusBlocksAdd(partIds);
   }
+
   /**
    * Join the given block with any other selected block in the same
    * construct level and select them all
@@ -263,6 +265,7 @@ export class ConstructViewer extends Component {
   get dom() {
     return ReactDOM.findDOMNode(this);
   }
+
   /**
    * accessor that fetches the actual scene graph element within our DOM
    * @return {[type]} [description]
@@ -300,12 +303,14 @@ export class ConstructViewer extends Component {
       constructPopupMenuOpen: false,
     });
   }
+
   /**
    * open any popup menu by apply the appropriate state and global position
    */
   openPopup(state) {
     this.setState(state);
   }
+
   /**
    * open the inspector
    * @return {[type]} [description]
@@ -313,6 +318,7 @@ export class ConstructViewer extends Component {
   openInspector() {
     this.props.inspectorToggleVisibility(true);
   }
+
   /**
    * menu items for blocks context menu, can get merged with construct context menu
    */
@@ -339,7 +345,8 @@ export class ConstructViewer extends Component {
         },
       },
     ];
-  }
+  };
+
   /**
    * return JSX for block construct menu
    */
@@ -350,10 +357,11 @@ export class ConstructViewer extends Component {
       closePopup={this.closePopups.bind(this)}
       menuItems={this.blockContextMenuItems()}/>);
   }
+
   /**
    * menu items for the construct context menu
    */
-  constructContextMenuItems = () =>{
+  constructContextMenuItems = () => {
     return [
       {
         text: 'Inspect Construct',
@@ -370,7 +378,8 @@ export class ConstructViewer extends Component {
         },
       },
     ];
-  }
+  };
+
   /**
    * return JSX for construct context menu
    */
@@ -402,7 +411,7 @@ export class ConstructViewer extends Component {
       if (insertionPoint) {
         if (insertionPoint.edge) {
           // create new block
-          const block = this.props.blockCreate({rules: {sbol: item.id}});
+          const block = this.props.blockCreate({ rules: { sbol: item.id } });
           // get index of insertion allowing for the edge closest to the drop if provided
           index = parent.components.indexOf(insertionPoint.block) + (insertionPoint.edge === 'right' ? 1 : 0);
           // add
@@ -415,7 +424,7 @@ export class ConstructViewer extends Component {
         return [newBlock.id];
       }
       // create new block
-      const block = this.props.blockCreate({rules: {sbol: item.id}});
+      const block = this.props.blockCreate({ rules: { sbol: item.id } });
       // the construct must be empty, add as the first child of the construct
       this.props.blockAddComponent(parent.id, block.id, 0);
       return [block.id];
@@ -456,7 +465,7 @@ export class ConstructViewer extends Component {
 
     // if the source is the inventory and we are dragging a single block with components
     // then we don't want to insert the parent, so replace the payload with just the children
-    if (!Array.isArray(payload.item) && payload.source === 'inventory' && payload.item.components.length ) {
+    if (!Array.isArray(payload.item) && payload.source === 'inventory' && payload.item.components.length) {
       payload.item = payload.item.components.slice();
     }
 
@@ -483,7 +492,6 @@ export class ConstructViewer extends Component {
     //   constructId={this.props.constructId}
     //   layoutAlgorithm={this.props.layoutAlgorithm}
     //   />;
-
 
     const rendered = (
       <div className="construct-viewer" key={this.props.construct.id}>
