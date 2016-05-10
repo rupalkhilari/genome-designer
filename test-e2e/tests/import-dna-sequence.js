@@ -22,15 +22,18 @@ module.exports = {
       .url('http://localhost:3001/project/test')
       // wait for inventory and inspector to be present
       .waitForElementPresent('.SidePanel.Inventory', 5000, 'Expected Inventory Groups')
-      .waitForElementPresent('.SidePanel.Inspector', 5000, 'Expected Inspector')
+      .waitForElementPresent('.SidePanel.Inspector', 5000, 'Expected Inspector');
+
+
+    // start with a fresh project
+    newProject(browser);
+    browser
       // open inventory
       .click('.Inventory-trigger')
       .waitForElementPresent('.SidePanel.Inventory.visible', 5000, 'Expected inventory to be visible')
       // open the sketch blocks
       .click('.InventoryGroup:nth-of-type(4) .InventoryGroup-heading');
 
-    // start with a fresh project
-    newProject(browser);
 
     // double check there are no construct viewers present
     browser.assert.countelements('.construct-viewer', 1);

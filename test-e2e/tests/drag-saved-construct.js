@@ -26,6 +26,8 @@ module.exports = {
       // click the second inventory group 'EGF Parts' to open it
       .click('.InventoryGroup:nth-of-type(2) .InventoryGroup-heading');
 
+
+
     // we should have an empty project
     browser
       .assert.countelements('.construct-viewer', 0);
@@ -47,7 +49,7 @@ module.exports = {
       .assert.countelements('.construct-viewer svg', 2);
 
     // save project
-    clickMainMenu(browser, 1, 2);
+    clickMainMenu(browser, 1, 1);
 
     // click the my projects inventory tab and expect a project.
     browser
