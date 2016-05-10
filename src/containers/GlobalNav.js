@@ -93,7 +93,7 @@ class GlobalNav extends Component {
     inspectorVisible: PropTypes.bool.isRequired,
     detailViewVisible: PropTypes.bool.isRequired,
     focus: PropTypes.object.isRequired,
-    blocks: PropTypes.array,
+    blocks: PropTypes.object,
   };
 
   constructor(props) {

@@ -25,7 +25,7 @@ export class ConstructViewerCanvas extends Component {
     projectAddConstruct: PropTypes.func.isRequired,
     focusConstruct: PropTypes.func.isRequired,
     focusBlocks: PropTypes.func.isRequired,
-    children: PropTypes.object.isRequired,
+    children: PropTypes.array.isRequired,
     currentProjectId: PropTypes.string.isRequired,
   };
 

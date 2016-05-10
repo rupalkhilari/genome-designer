@@ -72,7 +72,7 @@ export class ConstructViewer extends Component {
     projectRemoveConstruct: PropTypes.func,
     blocks: PropTypes.object,
     focus: PropTypes.object,
-    constructPopupMenuOpen: PropTypes.bool.isRequired,
+    constructPopupMenuOpen: PropTypes.bool,
   };
 
   constructor(props) {
