@@ -2,7 +2,6 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { projectList } from '../../actions/projects';
 import { blockStash } from '../../actions/blocks';
-import { infoQuery } from '../../middleware/api';
 
 import InventoryProject from './InventoryProject';
 import InventorySbolMap from './InventorySbolMap';

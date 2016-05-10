@@ -5,11 +5,9 @@ import { block as blockDragType } from '../../constants/DragTypes';
 import { infoQuery } from '../../middleware/api';
 import { symbolMap } from '../../inventory/sbol';
 
-import InventoryConstruct from './InventoryConstruct';
 import InventoryListGroup from './InventoryListGroup';
 import InventoryList from './InventoryList';
-
-//this component expects the project to be available in the store, but not necessarily its components. It handles loading the project's components and adding them to the store.
+import Spinner from '../ui/Spinner';
 
 export default class InventorySbolMap extends Component {
   static propTypes = {
@@ -17,13 +15,24 @@ export default class InventorySbolMap extends Component {
   };
 
   state = {
+    loadingMap: true,
     loadedTypes: {},
     typeMap: {},
   };
 
   componentDidMount() {
     //returns a map { <sbolkey> : number }
-    infoQuery('sbol').then(typeMap => this.setState({ typeMap }));
+    infoQuery('sbol').then(typeMap => this.setState({
+      typeMap,
+      loadingMap: false,
+    }));
+  }
+
+  //null is for loading
+  setSbolType(type, blocks = false) {
+    this.setState({
+      loadedTypes: Object.assign(this.state.loadedTypes, { [type]: blocks }),
+    });
   }
 
   onToggleType = (nextState, type) => {
@@ -31,10 +40,12 @@ export default class InventorySbolMap extends Component {
     //no caching for now...
     //when update to a cache, this should live update (right now, updates only when change tabs)
 
+    //loading
+    this.setSbolType(type, false);
+
     //returns an array of blocks
-    infoQuery('sbol', type).then(blocks => this.setState({
-      loadedTypes: Object.assign(this.state.loadedTypes, { [type]: blocks }),
-    }));
+    infoQuery('sbol', type)
+      .then(blocks => this.setSbolType(type, blocks));
   };
 
   onBlockDrop = (item, target) => {
@@ -55,24 +66,30 @@ export default class InventorySbolMap extends Component {
   };
 
   render() {
-    const { typeMap, loadedTypes } = this.state;
+    const { typeMap, loadedTypes, loadingMap } = this.state;
+
+    const content = loadingMap ?
+      <Spinner /> :
+      Object.keys(typeMap).map(type => {
+        const count = typeMap[type];
+        const name = symbolMap[type] || type;
+        const items = loadedTypes[type] || [];
+        const isLoading = loadedTypes[type] === false;
+        return (
+          <InventoryListGroup key={type}
+                              title={name + ` (${count})`}
+                              isLoading={isLoading}
+                              onToggle={(nextState) => this.onToggleType(nextState, type)}>
+            <InventoryList inventoryType={blockDragType}
+                           onDrop={this.onBlockDrop}
+                           items={items}/>
+          </InventoryListGroup>
+        );
+      });
 
     return (
       <div className="InventorySbolMap">
-        {Object.keys(typeMap).map(type => {
-          const count = typeMap[type];
-          const name = symbolMap[type] || type;
-          const items = loadedTypes[type] || [];
-          return (
-            <InventoryListGroup key={type}
-                                title={name + ` (${count})`}
-                                onToggle={(nextState) => this.onToggleType(nextState, type)}>
-              <InventoryList inventoryType={blockDragType}
-                             onDrop={this.onBlockDrop}
-                             items={items}/>
-            </InventoryListGroup>
-          );
-        })}
+        {content}
       </div>
     );
   }
