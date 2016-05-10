@@ -1,7 +1,6 @@
 import Glyph2D from '../glyph2d';
 
 import kT from '../../../views/layoutconstants';
-import symbols from '../../../../../inventory/sbol';
 import { setAttribute } from '../../../utils';
 
 export default class SBOLGlyph2D extends Glyph2D {
@@ -41,7 +40,6 @@ export default class SBOLGlyph2D extends Glyph2D {
     this.el.style.backgroundColor = this.node.fill;
     this.el.style.border = sw ? `${sw}px solid ${this.node.stroke}` : 'none';
     if (this.node.sbolName) {
-
       if (this.sbolName !== this.node.sbolName) {
         this.sbolName = this.node.sbolName;
         // remove existing svg

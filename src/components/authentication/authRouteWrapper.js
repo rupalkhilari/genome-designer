@@ -13,7 +13,7 @@ class RouteWrapper extends Component {
     }
 
     if (process.env.NODE_ENV !== 'production') {
-      console.log('no user for RouteWrapper');
+      //console.log('no user for RouteWrapper');
     }
 
     return null;

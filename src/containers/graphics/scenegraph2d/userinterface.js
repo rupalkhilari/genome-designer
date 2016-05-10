@@ -80,7 +80,6 @@ export default class UserInterface {
    * @return {[type]} [description]
    */
   updateSelections() {
-
     // bucket any items are don't need anymore, we will try to reuse them
     // before removing them from the DOM
     const bucket = [];

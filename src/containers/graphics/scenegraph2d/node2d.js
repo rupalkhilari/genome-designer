@@ -121,9 +121,9 @@ export default class Node2D {
       // value should be {name:'xyz', value:'123'} which would appear in
       // the dom as data-xyz="123"
       case 'dataAttribute':
-      this.dataAttribute = value;
-      this.el.setAttribute(`data-${value.name}`, value.value);
-      break;
+        this.dataAttribute = value;
+        this.el.setAttribute(`data-${value.name}`, value.value);
+        break;
 
         // default behaviour is to just set the property
       default: this[key] = props[key];

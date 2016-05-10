@@ -22,6 +22,6 @@ export default class Balls extends Component {
         <div className="loading-ball" style={{backgroundColor: this.props.color}}/>
         <div className="loading-ball" style={{backgroundColor: this.props.color}}/>
       </div>
-    )
+    );
   }
 }

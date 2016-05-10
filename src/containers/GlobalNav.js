@@ -46,12 +46,7 @@ import { inventoryToggleVisibility } from '../actions/inventory';
 import { uiShowDNAImport } from '../actions/ui';
 
 import KeyboardTrap from 'mousetrap';
-import {
-  microsoft,
-  apple,
-  stringToShortcut,
-  translate,
-} from '../utils/ui/keyboard-translator';
+import { stringToShortcut } from '../utils/ui/keyboard-translator';
 import {
   sortBlocksByIndexAndDepth,
   sortBlocksByIndexAndDepthExclude,
@@ -74,6 +69,31 @@ class GlobalNav extends Component {
     showMainMenu: PropTypes.bool.isRequired,
     blockGetParents: PropTypes.func.isRequired,
     focusDetailsExist: PropTypes.func.isRequired,
+    focusBlocks: PropTypes.func.isRequired,
+    inventoryToggleVisibility: PropTypes.func.isRequired,
+    uiToggleDetailView: PropTypes.func.isRequired,
+    inspectorToggleVisibility: PropTypes.func.isRequired,
+    projectOpen: PropTypes.func.isRequired,
+    focusConstruct: PropTypes.func.isRequired,
+    transact: PropTypes.func.isRequired,
+    commit: PropTypes.func.isRequired,
+    uiShowGenBankImport: PropTypes.func.isRequired,
+    projectGetVersion: PropTypes.func.isRequired,
+    blockClone: PropTypes.func.isRequired,
+    clipboardSetData: PropTypes.func.isRequired,
+    uiSetGrunt: PropTypes.func.isRequired,
+    blockDetach: PropTypes.func.isRequired,
+    clipboard: PropTypes.object.isRequired,
+    blockGetChildrenRecursive: PropTypes.func.isRequired,
+    blockAddComponent: PropTypes.func.isRequired,
+    blockAddComponents: PropTypes.func.isRequired,
+    uiShowAbout: PropTypes.func.isRequired,
+    uiShowDNAImport: PropTypes.func.isRequired,
+    inventoryVisible: PropTypes.bool.isRequired,
+    inspectorVisible: PropTypes.bool.isRequired,
+    detailViewVisible: PropTypes.bool.isRequired,
+    focus: PropTypes.object.isRequired,
+    blocks: PropTypes.array,
   };
 
   constructor(props) {
@@ -102,7 +122,7 @@ class GlobalNav extends Component {
     KeyboardTrap.bind('mod+shift+z', (evt) => {
       evt.preventDefault();
       this.props.redo();
-    })
+    });
     // select all/cut/copy/paste
     KeyboardTrap.bind('mod+a', (evt) => {
       evt.preventDefault();
@@ -147,37 +167,10 @@ class GlobalNav extends Component {
     this.props.focusBlocks(this.props.blockGetChildrenRecursive(this.props.focus.constructId).map(block => block.id));
   }
 
-  /**
-   * save current project, return promise for chaining
-   */
-  saveProject() {
-    return this.props.projectSave(this.props.currentProjectId);
+  // get parent of block
+  getBlockParentId(blockId) {
+    return this.props.blockGetParents(blockId)[0].id;
   }
-
-  /**
-   * new project and navigate to new project
-   */
-  newProject() {
-    // create project and add a default construct
-    const project = this.props.projectCreate();
-    // add a construct to the new project
-    const block = this.props.blockCreate({projectId: project.id});
-    this.props.projectAddConstruct(project.id, block.id);
-    this.props.focusConstruct(block.id);
-    this.props.projectOpen(project.id);
-  }
-
-  /**
-   * add a new construct to the current project
-   */
-  newConstruct() {
-    this.props.transact();
-    const block = this.props.blockCreate();
-    this.props.projectAddConstruct(this.props.currentProjectId, block.id);
-    this.props.commit();
-    this.props.focusConstruct(block.id);
-  }
-
   /**
    * download the current file as a genbank file
    * @return {[type]} [description]
@@ -187,8 +180,8 @@ class GlobalNav extends Component {
       .then(() => {
         // for now use an iframe otherwise any errors will corrupt the page
         const url = `${window.location.protocol}//${window.location.host}/export/genbank/${this.props.currentProjectId}`;
-        var iframe = document.createElement("iframe");
-        iframe.style.display = "none";
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
         iframe.src = url;
         document.body.appendChild(iframe);
       });
@@ -223,22 +216,6 @@ class GlobalNav extends Component {
     return {
       parent: this.blockGetParent(this.props.blocks[highest.blockId].id).id,
       index: highest.index + 1,
-    };
-
-    // now locate the block and returns its parent id and the index to start inserting at
-    let current = this.props.focus.constructId;
-    let index = 0;
-    let blockIndex = -1;
-    let blockParent = null;
-    do {
-      blockIndex = highest[index].index;
-      blockParent = current;
-      current = this.props.blocks[current].components[blockIndex];
-    } while (++index < highest.length);
-    // return index + 1 to make the insert occur after the highest selected block
-    return {
-      parent: blockParent,
-      blockIndex: blockIndex + 1,
     };
   }
 
@@ -275,9 +252,34 @@ class GlobalNav extends Component {
     }
   }
 
-  // get parent of block
-  getBlockParentId(blockId) {
-    return this.props.blockGetParents(blockId)[0].id;
+  /**
+   * save current project, return promise for chaining
+   */
+  saveProject() {
+    return this.props.projectSave(this.props.currentProjectId);
+  }
+  /**
+   * add a new construct to the current project
+   */
+  newConstruct() {
+    this.props.transact();
+    const block = this.props.blockCreate();
+    this.props.projectAddConstruct(this.props.currentProjectId, block.id);
+    this.props.commit();
+    this.props.focusConstruct(block.id);
+  }
+
+  /**
+   * new project and navigate to new project
+   */
+  newProject() {
+    // create project and add a default construct
+    const project = this.props.projectCreate();
+    // add a construct to the new project
+    const block = this.props.blockCreate({projectId: project.id});
+    this.props.projectAddConstruct(project.id, block.id);
+    this.props.focusConstruct(block.id);
+    this.props.projectOpen(project.id);
   }
 
   // cut focused blocks to the clipboard, no clone required since we are removing them.

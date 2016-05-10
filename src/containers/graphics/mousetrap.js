@@ -93,11 +93,11 @@ export default class MouseTrap {
     const time = Date.now();
     // first check for a double click, otherwise treat as start of a drag
     if (this.lastLeftClick && this.lastLeftClick.sub(localPosition).len() <= doubleClickSpatialThreshold
-        && time - this.lastLeftClickTime <= doubleClickTimeThreshold) {
-          this.lastLeftClick = null;
-          this.callback('doubleClick', event, localPosition);
-          return;
-        }
+    && time - this.lastLeftClickTime <= doubleClickTimeThreshold) {
+      this.lastLeftClick = null;
+      this.callback('doubleClick', event, localPosition);
+      return;
+    }
 
     this.lastLeftClick = localPosition;
     this.lastLeftClickTime = time;

@@ -60,19 +60,23 @@ class SignInForm extends Component {
     evt.preventDefault();
     this.props.uiShowAuthenticationForm('signup');
   }
-
+  onTextChanged() {
+    this.setState({
+      canSubmit: this.emailAddress && this.password,
+    });
+  }
   get emailAddress() {
     return this.refs.emailAddress.value.trim();
   }
   get password() {
     return this.refs.password.value.trim();
   }
+
   /**
    * display server errors in the most logical way
    */
   showServerErrors(json) {
     invariant(json && json.message, 'We expected an error message');
-
     // any unrecognized errors are displayed below the tos
     this.setState({
       signinError: {
@@ -82,14 +86,7 @@ class SignInForm extends Component {
     });
   }
 
-  onTextChanged() {
-    this.setState({
-      canSubmit: this.emailAddress && this.password,
-    });
-  }
-
   render() {
-
     const registerStyle = {
       textAlign: 'center',
       margin: '1rem 0 2rem 0',

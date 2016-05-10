@@ -20,7 +20,13 @@ import '../../../styles/constructviewercanvas.css';
 export class ConstructViewerCanvas extends Component {
 
   static propTypes = {
-
+    blockCreate: PropTypes.func.isRequired,
+    blockRename: PropTypes.func.isRequired,
+    projectAddConstruct: PropTypes.func.isRequired,
+    focusConstruct: PropTypes.func.isRequired,
+    focusBlocks: PropTypes.func.isRequired,
+    children: PropTypes.object.isRequired,
+    currentProjectId: PropTypes.string.isRequired,
   };
 
   constructor(props) {
@@ -34,7 +40,6 @@ export class ConstructViewerCanvas extends Component {
     // clone construct and add to project if a construct from inventory otherwise
     // treat as a list of one or more blocks
     if (payload.source === 'inventory construct') {
-      debugger;
       const construct = this.props.blockClone(payload.item.id);
       this.props.projectAddConstruct(this.props.currentProjectId, construct.id)
       this.props.focusConstruct(construct.id);
@@ -53,9 +58,8 @@ export class ConstructViewerCanvas extends Component {
    * higher values ( constructviewers ) will get dropped on first
    */
   componentDidMount() {
-
     // monitor drag overs to autoscroll the canvas when the mouse is near top or bottom
-    DnD.registerMonitor(ReactDOM.findDOMNode(this),  {
+    DnD.registerMonitor(ReactDOM.findDOMNode(this), {
       monitorOver: this.mouseScroll.bind(this),
       monitorEnter: () => {},
       monitorLeave: this.endMouseScroll.bind(this),
@@ -78,7 +82,6 @@ export class ConstructViewerCanvas extends Component {
       element: ReactDOM.findDOMNode(this),
     });
   }
-
   /**
    * unregister DND handlers
    */
@@ -88,26 +91,16 @@ export class ConstructViewerCanvas extends Component {
     this.mouseTrap.dispose();
     this.mouseTrap = null;
   }
-
   /**
-   * start, continue or stop autoscroll based on given global mouse position
+   * clicking on canvas unselects all blocks
    */
-  mouseScroll(globalPosition) {
-    const local = this.mouseTrap.globalToLocal(globalPosition, ReactDOM.findDOMNode(this));
-    const box = this.mouseTrap.element.getBoundingClientRect();
-    const edge = 100;
-    if (local.y < edge) {
-      this.autoScroll(-1);
-    } else {
-      if (local.y > box.height - edge) {
-        this.autoScroll(1);
-      } else {
-        // cancel the autoscroll
-        this.autoScroll(0);
-      }
+  onClick = (evt) => {
+    if (evt.target === ReactDOM.findDOMNode(this)) {
+      evt.preventDefault();
+      evt.stopPropagation();
+      this.props.focusBlocks([]);
     }
-  }
-
+  };
   /**
    * end mouse scrolling
    */
@@ -142,23 +135,30 @@ export class ConstructViewerCanvas extends Component {
   }
   autoScrollUpdate() {
     invariant(this.autoScrollDirection === -1 || this.autoScrollDirection === 1, 'bad direction for autoscroll');
-    const el = ReactDOM.findDOMNode(this)
+    const el = ReactDOM.findDOMNode(this);
     el.scrollTop += this.autoScrollDirection * 20;
     // start a new request unless the direction has changed to zero
     this.autoScrollRequest = this.autoScrollDirection ? window.requestAnimationFrame(this.autoScrollBound) : 0;
   }
 
   /**
-   * clicking on canvas unselects all blocks
+   * start, continue or stop autoscroll based on given global mouse position
    */
-  onClick = (evt) => {
-    if (evt.target === ReactDOM.findDOMNode(this)) {
-      evt.preventDefault();
-      evt.stopPropagation();
-      this.props.focusBlocks([]);
+  mouseScroll(globalPosition) {
+    const local = this.mouseTrap.globalToLocal(globalPosition, ReactDOM.findDOMNode(this));
+    const box = this.mouseTrap.element.getBoundingClientRect();
+    const edge = 100;
+    if (local.y < edge) {
+      this.autoScroll(-1);
+    } else {
+      if (local.y > box.height - edge) {
+        this.autoScroll(1);
+      } else {
+        // cancel the autoscroll
+        this.autoScroll(0);
+      }
     }
-  };
-
+  }
   /**
    * render the component, the scene graph will render later when componentDidUpdate is called
    */

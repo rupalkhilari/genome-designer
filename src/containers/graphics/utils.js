@@ -68,7 +68,6 @@ export const nearly = (v1, v2) => {
  *
  */
 export const setAttribute = (element, attributeName, attributeValue, useNS = false) => {
-
   // get child elements with this attribute as an array
   const matches = Array.prototype.slice.call(element.querySelectorAll(`[${attributeName}]`));
   // add the element itself if necessary
@@ -82,5 +81,4 @@ export const setAttribute = (element, attributeName, attributeValue, useNS = fal
       el.setAttribute(attributeName, attributeValue);
     }
   });
-
 };
