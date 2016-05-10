@@ -27,7 +27,7 @@ export class ProjectDetail extends Component {
   componentDidMount() {
     this.extensionsListener = onRegister(() => {
       Object.assign(this, { extensions: extensionsByRegion('sequenceDetail').filter(manifest => manifest.name !== 'simple') });
-      if (!this.props.currentExtension) {
+      if (!this.props.currentExtension && this.extensions.length) {
         this.setCurrentExtension(this.extensions[0]);
       }
     });

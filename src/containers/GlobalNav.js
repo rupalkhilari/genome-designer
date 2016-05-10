@@ -162,11 +162,11 @@ class GlobalNav extends Component {
     // **************** VIEW ******************
     KeyboardTrap.bind('shift+mod+i', (evt) => {
       evt.preventDefault();
-      this.props.inventoryToggleVisibility(!this.props.inventoryVisible);
+      this.props.inventoryToggleVisibility();
     });
     KeyboardTrap.bind('mod+i', (evt) => {
       evt.preventDefault();
-      this.props.inspectorToggleVisibility(!this.props.inspectorVisible);
+      this.props.inspectorToggleVisibility();
     });
     KeyboardTrap.bind('mod+u', (evt) => {
       evt.preventDefault();

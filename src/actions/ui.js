@@ -3,7 +3,7 @@ import invariant from 'invariant';
 
 export const inspectorToggleVisibility = (forceState) => {
   return (dispatch, getState) => {
-    const currentState = getState().inspector.isVisible;
+    const currentState = getState().ui.inspector.isVisible;
     const nextState = (forceState !== undefined) ? !!forceState : !currentState;
     dispatch({
       type: ActionTypes.INSPECTOR_TOGGLE_VISIBILITY,
@@ -15,7 +15,7 @@ export const inspectorToggleVisibility = (forceState) => {
 
 export const inventoryToggleVisibility = (forceState) => {
   return (dispatch, getState) => {
-    const currentState = getState().inventory.isVisible;
+    const currentState = getState().ui.inventory.isVisible;
     const nextState = (forceState !== undefined) ? !!forceState : !currentState;
     dispatch({
       type: ActionTypes.INVENTORY_TOGGLE_VISIBILITY,
@@ -39,7 +39,7 @@ export const inventorySelectTab = (tab) => {
 
 export const uiToggleDetailView = (forceState) => {
   return (dispatch, getState) => {
-    const currentState = getState().ui.detailViewVisible;
+    const currentState = getState().ui.detailView.isVisible;
     const nextState = (forceState !== undefined) ? !!forceState : !currentState;
     dispatch({
       type: ActionTypes.DETAIL_VIEW_TOGGLE_VISIBILITY,
@@ -51,6 +51,7 @@ export const uiToggleDetailView = (forceState) => {
 
 export const detailViewSelectExtension = (manifest) => {
   return (dispatch, getState) => {
+    invariant(manifest === null || (manifest.name && typeof manifest.render === 'function'), 'improper formed manifest');
     dispatch({
       type: ActionTypes.DETAIL_VIEW_SELECT_EXTENSION,
       manifest,
