@@ -117,12 +117,12 @@ export class ConstructViewer extends Component {
     // if there is no focused construct then we should grab it
     // NOTE: For now this is disabled because it often does not product the desired result
     // and can move the page beyind the scroll limits set.
-    // if (!this.props.focus.constructId) {
-    //   this.props.focusConstruct(this.props.constructId);
-    //   ReactDOM.findDOMNode(this).scrollIntoView();
-    // } else {
-    //   ReactDOM.findDOMNode(this).scrollIntoView();
-    // }
+    if (!this.props.focus.constructId) {
+      this.props.focusConstruct(this.props.constructId);
+      //ReactDOM.findDOMNode(this).scrollIntoView();
+    } else {
+      //ReactDOM.findDOMNode(this).scrollIntoView();
+    }
   }
 
   shouldComponentUpdate(props, nextProps) {
