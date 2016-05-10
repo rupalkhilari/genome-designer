@@ -55,7 +55,7 @@ class AuthenticationForms extends Component {
 
 function mapStateToProps(state) {
   return {
-    authenticationForm: state.ui.authenticationForm,
+    authenticationForm: state.ui.modals.authenticationForm,
   };
 }
 

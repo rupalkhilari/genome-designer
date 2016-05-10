@@ -7,7 +7,6 @@ import { Route, IndexRedirect, IndexRoute } from 'react-router';
 import App from '../containers/App';
 import ProjectPage from '../containers/ProjectPage';
 import HomePage from '../components/homepage';
-import SupportPage from '../components/SupportPage';
 import AuthRouteWrapper from '../components/authentication/authRouteWrapper';
 
 const history = syncHistoryWithStore(browserHistory, store, {
@@ -27,8 +26,6 @@ export default (
       </Route>
 
       {/* do not require authentication */}
-
-      <Route path="/support" component={SupportPage}/>
 
       <Route path="/homepage">
         <Route path=":comp" component={HomePage}/>

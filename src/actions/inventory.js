@@ -10,18 +10,6 @@ export const inventorySearch = (searchTerm) => {
   };
 };
 
-export const inventoryToggleVisibility = (forceState) => {
-  return (dispatch, getState) => {
-    const currentState = getState().inventory.isVisible;
-    const nextState = (forceState !== undefined) ? !!forceState : !currentState;
-    dispatch({
-      type: ActionTypes.INVENTORY_TOGGLE_VISIBILITY,
-      nextState,
-    });
-    return nextState;
-  };
-};
-
 export const inventorySourcesVisibility = forceState => {
   return (dispatch, getState) => {
     const currentState = getState().inventory.sourcesToggling;

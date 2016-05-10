@@ -8,8 +8,4 @@ describe('inventory actions', () => {
   it('inventorySearch -> INVENTORY_SEARCH action', () => {
     expect(dispatch(actions.inventorySearch('blah'))).to.equal('blah');
   });
-
-  it('inventoryToggleVisiblity -> INVENTORY_TOGGLE_VISIBILITY action', () => {
-    expect(dispatch(actions.inventoryToggleVisibility(true))).to.equal(true);
-  });
 });

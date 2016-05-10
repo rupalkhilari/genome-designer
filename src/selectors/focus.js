@@ -56,6 +56,6 @@ export const focusDetailsExist = () => {
     const state = getState();
     const { forceBlocks, blockIds, constructId } = state.focus;
     const construct = state.blocks[constructId];
-    return forceBlocks.length || blockIds.length || (construct && construct.components.length);
+    return !!forceBlocks.length || !!blockIds.length || (construct && !!construct.components.length);
   };
 };

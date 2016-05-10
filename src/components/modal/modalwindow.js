@@ -1,6 +1,5 @@
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
-import ReactTransitionGroup from 'react-addons-css-transition-group';
 
 import '../../../src/styles/Modal.css';
 
@@ -23,7 +22,7 @@ export default class ModalWindow extends Component {
   constructor() {
     super();
     setTimeout(() => {
-      const dom = React.findDOMNode(this.refs.window);
+      const dom = ReactDOM.findDOMNode(this.refs.window);
       if (dom) {
         dom.style.transform = `translate(-50%, 0px)`;
       }

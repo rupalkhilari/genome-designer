@@ -20,6 +20,7 @@ import {
 import {
   uiShowDNAImport,
   uiToggleDetailView,
+  inspectorToggleVisibility
 } from '../../../actions/ui';
 import {
   blockGetParents,
@@ -30,7 +31,6 @@ import debounce from 'lodash.debounce';
 import { nodeIndex } from '../utils';
 import ConstructViewerMenu from './constructviewermenu';
 import UserInterface from './constructvieweruserinterface';
-import { inspectorToggleVisibility } from '../../../actions/inspector';
 import {
   focusBlocks,
   focusBlocksAdd,

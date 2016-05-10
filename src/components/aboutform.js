@@ -47,7 +47,7 @@ class AboutForm extends Component {
 
 function mapStateToProps(state) {
   return {
-    open: state.ui.showAbout,
+    open: state.ui.modals.showAbout,
   };
 }
 

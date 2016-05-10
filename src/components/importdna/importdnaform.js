@@ -147,7 +147,7 @@ class DNAImportForm extends Component {
 
 function mapStateToProps(state) {
   return {
-    open: state.ui.showDNAImport,
+    open: state.ui.modals.showDNAImport,
     focusedBlocks: state.focus.blockIds,
     currentConstruct: state.focus.constructId,
   };

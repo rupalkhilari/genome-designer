@@ -153,7 +153,7 @@ class ImportGenBankModal extends Component {
 
 function mapStateToProps(state) {
   return {
-    open: state.ui.showGenBankImport,
+    open: state.ui.modals.showGenBankImport,
   };
 }
 

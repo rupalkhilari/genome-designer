@@ -41,10 +41,7 @@ import {
   uiSetGrunt,
   uiShowAbout,
 } from '../actions/ui';
-import { inspectorToggleVisibility } from '../actions/inspector';
-import { inventoryToggleVisibility } from '../actions/inventory';
-import { uiShowDNAImport } from '../actions/ui';
-
+import { inspectorToggleVisibility, inventoryToggleVisibility, uiShowDNAImport } from '../actions/ui';
 import KeyboardTrap from 'mousetrap';
 import {
   microsoft,
@@ -525,9 +522,9 @@ function mapStateToProps(state) {
     focus: state.focus,
     blocks: state.blocks,
     clipboard: state.clipboard,
-    inspectorVisible: state.inspector.isVisible,
-    inventoryVisible: state.inventory.isVisible,
-    detailViewVisible: state.ui.detailViewVisible,
+    inspectorVisible: state.ui.inspector.isVisible,
+    inventoryVisible: state.ui.inventory.isVisible,
+    detailViewVisible: state.ui.detailView.isVisible,
   };
 }
 

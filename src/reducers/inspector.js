@@ -1,17 +1,10 @@
-import * as ActionTypes from '../constants/ActionTypes';
+//import * as ActionTypes from '../constants/ActionTypes';
 
-export const initialState = {
-  isVisible: false,
-};
+export const initialState = {};
 
 export default function inspector(state = initialState, action) {
   switch (action.type) {
-  case ActionTypes.INSPECTOR_TOGGLE_VISIBILITY : {
-    const { nextState } = action;
-    return Object.assign({}, state, {isVisible: nextState});
-  }
-  default : {
+  default :
     return state;
-  }
   }
 }
