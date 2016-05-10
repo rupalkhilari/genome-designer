@@ -9,7 +9,7 @@ import InventoryListGroup from './InventoryListGroup';
 import InventoryList from './InventoryList';
 import Spinner from '../ui/Spinner';
 
-export default class InventorySbolMap extends Component {
+export class InventorySbolMap extends Component {
   static propTypes = {
     blockStash: PropTypes.func.isRequired,
   };

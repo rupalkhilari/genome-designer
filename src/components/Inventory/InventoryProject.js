@@ -11,7 +11,7 @@ import InventoryListGroup from './InventoryListGroup';
 
 //this component expects the project to be available in the store, but not necessarily its components. It handles loading the project's components and adding them to the store.
 
-export default class InventoryProject extends Component {
+export class InventoryProject extends Component {
   static propTypes = {
     project: (props, propName) => {
       if (!(Project.validate(props[propName]) && props[propName] instanceof Project)) {
