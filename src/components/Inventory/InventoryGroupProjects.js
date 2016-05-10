@@ -19,7 +19,6 @@ export class InventoryGroupProjects extends Component {
     currentProject: PropTypes.string.isRequired,
     blockStash: PropTypes.func.isRequired,
     projectList: PropTypes.func.isRequired,
-    focusForceProject: PropTypes.func.isRequired,
     inspectorToggleVisibility: PropTypes.func.isRequired,
   };
 

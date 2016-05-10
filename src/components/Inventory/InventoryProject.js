@@ -1,12 +1,12 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import Project from '../../models/Project';
-import { infoQuery } from '../../middleware/api';
 import { projectGet, projectListAllBlocks } from '../../selectors/projects';
 import { projectList, projectLoad, projectSave, projectOpen } from '../../actions/projects';
 import { focusForceProject } from '../../actions/focus';
 import { inspectorToggleVisibility } from '../../actions/ui';
 
+import Spinner from '../ui/Spinner';
 import InventoryConstruct from './InventoryConstruct';
 import InventoryListGroup from './InventoryListGroup';
 
@@ -29,6 +29,7 @@ export default class InventoryProject extends Component {
   };
 
   state = {
+    isLoading: false,
     isExpanded: false,
   };
 
@@ -66,19 +67,30 @@ export default class InventoryProject extends Component {
   };
 
   handleToggleProject = (nextState, projectId) => {
-    return this.loadProject(projectId)
-      .then(() => this.setState({ isExpanded: nextState }));
+    if (!!nextState) {
+      this.setState({ isLoading: true });
+
+      return this.loadProject(projectId)
+        .then(() => this.setState({
+          isLoading: false,
+          isExpanded: true,
+        }));
+    }
+
+    this.setState({ isExpanded: false });
+    return Promise.resolve();
   };
 
   render() {
     const { project, isActive } = this.props;
-    const { isExpanded } = this.state;
+    const { isLoading, isExpanded } = this.state;
     const projectId = project.id;
 
     return (
       <InventoryListGroup title={project.getName()}
                           manual
                           hideToggle={!project.components.length}
+                          isLoading={isLoading}
                           isExpanded={isExpanded}
                           onToggle={(nextState) => this.handleToggleProject(nextState, projectId)}
                           onSelect={(nextState) => this.onToggleProject(nextState, projectId)}
