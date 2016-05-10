@@ -1,6 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import '../../../src/styles/balls.css';
-
+import '../../styles/balls.css';
 
 export default class Balls extends Component {
 
@@ -8,7 +7,6 @@ export default class Balls extends Component {
     running: PropTypes.bool.isRequired,
     color: PropTypes.string.isRequired,
   };
-
 
   render() {
     if (!this.props.running) {

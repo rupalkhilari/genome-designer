@@ -9,7 +9,6 @@ import '../styles/homepage.css';
 import { projectOpen } from '../actions/projects';
 
 export default class HomePage extends Component {
-
   static propTypes = {
     uiShowAuthenticationForm: PropTypes.func.isRequired,
     uiShowUserWidget: PropTypes.func.isRequired,
@@ -19,10 +18,6 @@ export default class HomePage extends Component {
     params: PropTypes.object.isRequired,
     user: PropTypes.object,
   };
-
-  constructor() {
-    super();
-  }
 
   // this route can result from path like 'homepage/signin', 'homepage', 'homepage/register' etc.
   // If the final path is the name of an authorization form we will show it

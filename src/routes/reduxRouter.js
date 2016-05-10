@@ -6,7 +6,7 @@ import { Route, IndexRedirect, IndexRoute } from 'react-router';
 
 import App from '../containers/App';
 import ProjectPage from '../containers/ProjectPage';
-import HomePage from '../components/homepage';
+import HomePage from '../containers/homepage';
 import AuthRouteWrapper from '../components/authentication/authRouteWrapper';
 
 const history = syncHistoryWithStore(browserHistory, store, {

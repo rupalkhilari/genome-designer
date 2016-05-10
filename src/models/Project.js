@@ -32,6 +32,10 @@ export default class Project extends Instance {
     return isEqual(one, massaged);
   }
 
+  getName() {
+    return this.metadata.name || 'Untitled Project';
+  }
+
   //ideally, this would just return the same instance, would be much easier
   updateVersion(sha) {
     invariant(versionValidator(sha), 'must pass valid SHA to update version');

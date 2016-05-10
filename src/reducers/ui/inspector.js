@@ -11,9 +11,6 @@ export default function inspector(state = initialState, action) {
     const { nextState } = action;
     return Object.assign({}, state, { isVisible: nextState });
 
-  case LOCATION_CHANGE :
-    return Object.assign({}, initialState);
-
   default :
     return state;
   }

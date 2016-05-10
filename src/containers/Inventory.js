@@ -53,7 +53,7 @@ export class Inventory extends Component {
                             items={inventoryAndrea}/>
             <InventoryGroup title="My Projects"
                             type="projects"
-                            projectId={projectId}
+                            currentProject={projectId}
                             isActive={currentTab === 'projects'}
                             setActive={() => inventorySelectTab('projects')}/>
             <InventoryGroup title="Sketch Library"

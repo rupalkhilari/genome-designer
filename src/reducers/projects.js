@@ -30,7 +30,8 @@ export default function projects(state = initialState, action) {
   case ActionTypes.PROJECT_LIST :
     const { projects } = action;
     const zippedProjects = projects.reduce((acc, project) => Object.assign(acc, { [project.id]: project }), {});
-    return Object.assign({}, state, zippedProjects);
+    //prefer state versions to zipped versions
+    return Object.assign({}, zippedProjects, state);
 
   default :
     return state;

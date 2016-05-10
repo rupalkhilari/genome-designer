@@ -16,9 +16,6 @@ export default function inventory(state = initialState, action) {
     const { tab } = action;
     return Object.assign({}, state, { currentTab: tab });
 
-  case LOCATION_CHANGE :
-    return Object.assign({}, initialState);
-
   default :
     return state;
   }

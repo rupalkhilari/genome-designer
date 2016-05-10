@@ -2,8 +2,8 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { inspectorToggleVisibility } from '../actions/ui';
 
-import InspectorBlock from '../components/InspectorBlock';
-import InspectorProject from '../components/InspectorProject';
+import InspectorBlock from '../components/Inspector/InspectorBlock';
+import InspectorProject from '../components/Inspector/InspectorProject';
 
 import '../styles/Inspector.css';
 import '../styles/SidePanel.css';
