@@ -1,6 +1,5 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import invariant from 'invariant';
 import ModalWindow from '../modal/modalwindow';
 import Balls from '../../components/balls/balls';
 import Dropzone from 'react-dropzone';
@@ -18,6 +17,10 @@ class ImportGenBankModal extends Component {
 
   static propTypes = {
     projectOpen: PropTypes.func.isRequired,
+    currentProjectId: PropTypes.string.isRequired,
+    open: PropTypes.bool.isRequired,
+    uiShowGenBankImport: PropTypes.func.isRequired,
+    projectLoad: PropTypes.func.isRequired,
   };
 
   constructor() {
@@ -30,17 +33,6 @@ class ImportGenBankModal extends Component {
     };
   }
 
-  onDrop(files) {
-    this.setState({ files });
-  }
-
-  showFiles() {
-    const files = this.state.files.map((file, index) => {
-      return <div className="file-name" key={index}>{file.name}</div>
-    });
-    return files;
-  }
-
   componentWillReceiveProps(nextProps) {
     if (nextProps.open && !this.props.open) {
       this.setState({
@@ -50,10 +42,14 @@ class ImportGenBankModal extends Component {
     }
   }
 
+  onDrop(files) {
+    this.setState({ files });
+  }
+
   onSubmit(evt) {
     evt.preventDefault();
     this.setState({
-      error: null
+      error: null,
     });
 
     if (this.state.files.length) {
@@ -78,6 +74,13 @@ class ImportGenBankModal extends Component {
           });
         });
     }
+  }
+
+  showFiles() {
+    const files = this.state.files.map((file, index) => {
+      return <div className="file-name" key={index}>{file.name}</div>;
+    });
+    return files;
   }
 
   render() {

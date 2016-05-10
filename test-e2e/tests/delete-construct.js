@@ -20,7 +20,7 @@ module.exports = {
 
     rightClickAt(browser, '[data-nodetype="construct-title"]', 15, 15);
 
-    clickContextMenu(browser, 1);
+    clickContextMenu(browser, 2);
 
     browser
       .waitForElementNotPresent('.construct-viewer', 5000, 'expected construct viewer to go away')

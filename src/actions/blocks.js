@@ -214,83 +214,6 @@ export const blockDetach = (...blockIds) => {
   };
 };
 
-/***************************************
- * Metadata things
- ***************************************/
-
-export const blockRename = (blockId, name) => {
-  return (dispatch, getState) => {
-    const oldBlock = getState().blocks[blockId];
-
-    if (oldBlock.metadata.name === name) {
-      return oldBlock;
-    }
-
-    const block = oldBlock.setName(name);
-    dispatch({
-      type: ActionTypes.BLOCK_RENAME,
-      undoable: true,
-      block,
-    });
-    return block;
-  };
-};
-
-export const blockSetColor = (blockId, color) => {
-  return (dispatch, getState) => {
-    const oldBlock = getState().blocks[blockId];
-
-    if (oldBlock.metadata.color === color) {
-      return oldBlock;
-    }
-
-    const block = oldBlock.setColor(color);
-    dispatch({
-      type: ActionTypes.BLOCK_SET_COLOR,
-      undoable: true,
-      block,
-    });
-    return block;
-  };
-};
-
-/**
- * change the sbol symbol of the block e.g. from the inspector
- */
-export const blockSetSbol = (blockId, sbol) => {
-  return (dispatch, getState) => {
-    const oldBlock = getState().blocks[blockId];
-
-    if (oldBlock.rules.sbol === sbol) {
-      return oldBlock;
-    }
-
-    const block = oldBlock.setSbol(sbol);
-    dispatch({
-      type: ActionTypes.BLOCK_SET_SBOL,
-      undoable: true,
-      block,
-    });
-    return block;
-  };
-};
-
-/**
- * e.g. when the user drop an sbol symbol on an existing block.
- * Create a new child block and set the given sbol symbol
- */
-export const blockAddSbol = (blockId, sbol) => {
-  return (dispatch, getState) => {
-    dispatch(undoActions.transact());
-    const oldBlock = getState().blocks[blockId];
-    const newBlock = dispatch(blockCreate());
-    dispatch(blockSetSbol(newBlock.id, sbol));
-    dispatch(blockAddComponent(oldBlock.id, newBlock.id, oldBlock.components.length));
-    //end transaction
-    dispatch(undoActions.commit());
-    return newBlock;
-  };
-};
 
 /***************************************
  * Components
@@ -368,6 +291,84 @@ export const blockMoveComponent = (blockId, componentId, newIndex) => {
       block,
     });
     return block;
+  };
+};
+
+/***************************************
+ * Metadata things
+ ***************************************/
+
+export const blockRename = (blockId, name) => {
+  return (dispatch, getState) => {
+    const oldBlock = getState().blocks[blockId];
+
+    if (oldBlock.metadata.name === name) {
+      return oldBlock;
+    }
+
+    const block = oldBlock.setName(name);
+    dispatch({
+      type: ActionTypes.BLOCK_RENAME,
+      undoable: true,
+      block,
+    });
+    return block;
+  };
+};
+
+export const blockSetColor = (blockId, color) => {
+  return (dispatch, getState) => {
+    const oldBlock = getState().blocks[blockId];
+
+    if (oldBlock.metadata.color === color) {
+      return oldBlock;
+    }
+
+    const block = oldBlock.setColor(color);
+    dispatch({
+      type: ActionTypes.BLOCK_SET_COLOR,
+      undoable: true,
+      block,
+    });
+    return block;
+  };
+};
+
+/**
+ * change the sbol symbol of the block e.g. from the inspector
+ */
+export const blockSetSbol = (blockId, sbol) => {
+  return (dispatch, getState) => {
+    const oldBlock = getState().blocks[blockId];
+
+    if (oldBlock.rules.sbol === sbol) {
+      return oldBlock;
+    }
+
+    const block = oldBlock.setSbol(sbol);
+    dispatch({
+      type: ActionTypes.BLOCK_SET_SBOL,
+      undoable: true,
+      block,
+    });
+    return block;
+  };
+};
+
+/**
+ * e.g. when the user drop an sbol symbol on an existing block.
+ * Create a new child block and set the given sbol symbol
+ */
+export const blockAddSbol = (blockId, sbol) => {
+  return (dispatch, getState) => {
+    dispatch(undoActions.transact());
+    const oldBlock = getState().blocks[blockId];
+    const newBlock = dispatch(blockCreate());
+    dispatch(blockSetSbol(newBlock.id, sbol));
+    dispatch(blockAddComponent(oldBlock.id, newBlock.id, oldBlock.components.length));
+    //end transaction
+    dispatch(undoActions.commit());
+    return newBlock;
   };
 };
 

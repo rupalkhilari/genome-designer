@@ -6,6 +6,7 @@ export default class ConstructViewerMenu extends Component {
   static propTypes = {
     layoutAlgorithm: PropTypes.string.isRequired,
     constructId: PropTypes.string.isRequired,
+    open: PropTypes.bool.isRequired,
   };
 
   constructor(props) {
@@ -39,8 +40,7 @@ export default class ConstructViewerMenu extends Component {
           <a className="link">Crop</a>
         </div>
       );
-    } else {
-      return <div className="construct-viewer-menu"></div>;
     }
+    return <div className="construct-viewer-menu"></div>;
   }
 }

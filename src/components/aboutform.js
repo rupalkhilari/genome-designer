@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { uiShowAbout } from '../actions/ui';
-import invariant from 'invariant';
 import ModalWindow from './modal/modalwindow';
 
 import '../../src/styles/form.css';
@@ -25,8 +24,8 @@ class AboutForm extends Component {
       title="Genome Designer"
       closeOnClickOutside
       closeModal={(buttonText) => {
-          this.props.uiShowAbout(false);
-        }}
+        this.props.uiShowAbout(false);
+      }}
       payload={
           <div className="gd-form aboutform">
             <div className="title">Genome Designer</div>
@@ -42,7 +41,7 @@ class AboutForm extends Component {
             </button>
           </div>}
     />);
-  };
+  }
 }
 
 function mapStateToProps(state) {

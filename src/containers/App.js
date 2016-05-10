@@ -29,7 +29,7 @@ class App extends Component {
 
   rejectBackspace(evt) {
     const rx = /INPUT|SELECT|TEXTAREA/i;
-    if (evt.which == 8) { // 8 == backspace
+    if (evt.which === 8) { // 8 == backspace
       if (evt.target.hasAttribute('contenteditable')) {
         return;
       }

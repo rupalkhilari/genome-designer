@@ -1,8 +1,6 @@
 import Box2D from '../geometry/box2d';
 import invariant from 'invariant';
-import {
-  clearSelection
-} from '../../../utils/ui/uiapi';
+import { clearSelection } from '../../../utils/ui/uiapi';
 
 /**
  * an interactive fence / drag box for the construct viewer

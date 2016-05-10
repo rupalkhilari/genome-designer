@@ -1,12 +1,19 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { setAttribute } from '../containers/graphics/utils';
-import invariant from 'invariant';
 
 const serializer = navigator.userAgent.indexOf('Node.js') < 0 ? new XMLSerializer() : {
-  serializeToString: function() {return '<SVG/>';}
+  serializeToString: () => {return '<SVG/>';},
 };
 
 export default class SvgSbol extends Component {
+  static propTypes = {
+    symbolName: PropTypes.string,
+    color: PropTypes.string,
+    width: PropTypes.string,
+    height: PropTypes.string,
+    stroke: PropTypes.number,
+  };
+
   render() {
     if (!this.markup) {
       // clone the template
@@ -42,7 +49,7 @@ export default class SvgSbol extends Component {
     }
 
     const style = {
-      display: 'inline-block'
+      display: 'inline-block',
     };
     if (this.props.width) {
       style.width = this.props.width;

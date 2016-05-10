@@ -17,6 +17,7 @@ class UserWidget extends Component {
     user: PropTypes.object,
     push: PropTypes.func.isRequired,
     userLogout: PropTypes.func.isRequired,
+    userWidgetVisible: PropTypes.bool.isRequired,
   };
 
   constructor() {
@@ -83,7 +84,6 @@ class UserWidget extends Component {
   }
 
   render() {
-
     if (!this.props.userWidgetVisible) {
       return null;
     }

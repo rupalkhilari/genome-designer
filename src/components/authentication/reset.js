@@ -27,6 +27,7 @@ class RegisterForm extends Component {
     uiShowAuthenticationForm: PropTypes.func.isRequired,
     uiSetGrunt: PropTypes.func.isRequired,
     projectOpen: PropTypes.func.isRequired,
+    userLogin: PropTypes.func.isRequired,
   };
 
   constructor() {
