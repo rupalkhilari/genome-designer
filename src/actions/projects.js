@@ -79,12 +79,13 @@ export const projectSave = (inputProjectId) => {
     rollMap.set(projectId, roll);
 
     return saveProject(projectId, roll)
-      .then(json => {
+      .then(({sha}) => {
         dispatch({
           type: ActionTypes.PROJECT_SAVE,
-          project,
+          projectId,
+          sha,
         });
-        return json;
+        return sha;
       });
   };
 };
@@ -95,9 +96,10 @@ export const projectSnapshot = (projectId, message) => {
   return (dispatch, getState) => {
     const roll = dispatch(projectSelectors.projectCreateRollup(projectId));
     return snapshot(projectId, roll, message)
-      .then(sha => {
+      .then(({sha}) => {
         dispatch({
           type: ActionTypes.PROJECT_SNAPSHOT,
+          projectId,
           sha,
         });
         return sha;

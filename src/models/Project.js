@@ -1,6 +1,11 @@
 import { cloneDeep, isEqual } from 'lodash';
+import invariant from 'invariant';
 import Instance from './Instance';
 import ProjectDefinition from '../schemas/Project';
+import safeValidate from '../schemas/fields/safeValidate';
+import { version } from '../schemas/fields/validators';
+
+const versionValidator = (ver, required = false) => safeValidate(version(), required, ver);
 
 export default class Project extends Instance {
   constructor(input) {
@@ -29,6 +34,7 @@ export default class Project extends Instance {
 
   //ideally, this would just return the same instance, would be much easier
   updateVersion(sha) {
+    invariant(versionValidator(sha), 'must pass valid SHA to update version');
     return this.mutate('version', sha);
   }
 
