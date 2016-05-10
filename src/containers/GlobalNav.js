@@ -40,6 +40,7 @@ import {
   uiToggleDetailView,
   uiSetGrunt,
   uiShowAbout,
+  inventorySelectTab,
 } from '../actions/ui';
 import { inspectorToggleVisibility, inventoryToggleVisibility, uiShowDNAImport } from '../actions/ui';
 import KeyboardTrap from 'mousetrap';
@@ -78,6 +79,7 @@ class GlobalNav extends Component {
     projectGetVersion: PropTypes.func.isRequired,
     blockClone: PropTypes.func.isRequired,
     clipboardSetData: PropTypes.func.isRequired,
+    inventorySelectTab: PropTypes.func.isRequired,
     uiSetGrunt: PropTypes.func.isRequired,
     blockDetach: PropTypes.func.isRequired,
     clipboard: PropTypes.object.isRequired,
@@ -103,11 +105,32 @@ class GlobalNav extends Component {
       evt.preventDefault();
       this.saveProject();
     });
-    KeyboardTrap.bind('ctrl+n', (evt) => {
+    KeyboardTrap.bind('mod+o', (evt) => {
+      evt.preventDefault();
+      this.props.inventoryToggleVisibility(true);
+      this.props.inventorySelectTab('projects');
+    });
+    KeyboardTrap.bind('mod+f', (evt) => {
+      evt.preventDefault();
+      this.props.inventoryToggleVisibility(true);
+      this.props.inventorySelectTab('search');
+    });
+    KeyboardTrap.bind('mod+e', (evt) => {
+      evt.preventDefault();
+      this.props.inventoryToggleVisibility(true);
+      this.props.inventorySelectTab('egf');
+    });
+    KeyboardTrap.bind('mod+b', (evt) => {
+      evt.preventDefault();
+      this.props.inventoryToggleVisibility(true);
+      this.props.inventorySelectTab('sbol');
+    });
+    KeyboardTrap.bind('option+n', (evt) => {
+      debugger;
       evt.preventDefault();
       this.newProject();
     });
-    KeyboardTrap.bind('shift+ctrl+n', (evt) => {
+    KeyboardTrap.bind('shift+option+n', (evt) => {
       evt.preventDefault();
       this.newConstruct();
     });
@@ -140,16 +163,23 @@ class GlobalNav extends Component {
     // **************** VIEW ******************
     KeyboardTrap.bind('shift+mod+i', (evt) => {
       evt.preventDefault();
-      this.props.inventoryToggleVisibility();
+      this.props.inventoryToggleVisibility(!this.props.inventoryVisible);
     });
     KeyboardTrap.bind('mod+i', (evt) => {
       evt.preventDefault();
-      this.props.inspectorToggleVisibility();
+      this.props.inspectorToggleVisibility(!this.props.inspectorVisible);
     });
     KeyboardTrap.bind('mod+u', (evt) => {
       evt.preventDefault();
       this.props.uiToggleDetailView();
     });
+  }
+
+  /**
+   * unsink all keyboard events on unmount
+   */
+  componentWillUnmount() {
+    KeyboardTrap.reset();
   }
 
   state = {
@@ -351,38 +381,67 @@ class GlobalNav extends Component {
           text: 'FILE',
           items: [
             {
-              text: 'Open Project',
-              disabled: !this.props.focus.forceProject,
-              action: () => {
-                this.props.projectOpen(this.props.focus.forceProject.id);
-              },
-            },
-            {
-              text: 'Save Project',
+              text: 'Snapshot Project',
               shortcut: stringToShortcut('meta S'),
               action: () => {
                 this.saveProject();
               },
             },
+            {
+              text: 'Open Project',
+              shortcut: stringToShortcut('meta O'),
+              action: () => {
+                this.props.inventoryToggleVisibility(true);
+                this.props.inventorySelectTab('projects');
+              },
+            },
+            {
+              text: 'Search',
+              shortcut: stringToShortcut('meta F'),
+              action: () => {
+                this.props.inventoryToggleVisibility(true);
+                this.props.inventorySelectTab('search');
+              },
+            },
+            {
+              text: 'EGF Library',
+              shortcut: stringToShortcut('meta E'),
+              action: () => {
+                this.props.inventoryToggleVisibility(true);
+                this.props.inventorySelectTab('egf');
+              },
+            },
+            {
+              text: 'SBOL Sketch Library',
+              shortcut: stringToShortcut('meta B'),
+              action: () => {
+                this.props.inventoryToggleVisibility(true);
+                this.props.inventorySelectTab('sbol');
+              },
+            },
             {},
             {
               text: 'New Project',
-              shortcut: stringToShortcut('ctrl N'),
+              shortcut: stringToShortcut('option N'),
               action: () => {
                 this.newProject();
               },
-            }, {
+            },
+            {
               text: 'New Construct',
-              shortcut: stringToShortcut('shift ctrl N'),
+              shortcut: stringToShortcut('shift option N'),
               action: () => {
                 this.newConstruct();
               },
-            }, {}, {
-              text: 'Upload Genbank or CSV File',
+            },
+            {},
+            {
+              text: 'Import Genbank or CSV File...',
               action: () => {
                 this.uploadGenbankFile();
               },
-            }, {
+            },
+            {
               text: 'Download Genbank File',
               action: () => {
                 this.downloadProjectGenbank();
@@ -457,12 +516,16 @@ class GlobalNav extends Component {
             {
               text: 'Inventory',
               checked: this.props.inventoryVisible,
-              action: this.props.inventoryToggleVisibility,
+              action: () => {
+                this.props.inventoryToggleVisibility(!this.props.inventoryVisible);
+              },
               shortcut: stringToShortcut('shift meta i'),
             }, {
               text: 'Inspector',
               checked: this.props.inspectorVisible,
-              action: this.props.inspectorToggleVisibility,
+              action: () => {
+                this.props.inspectorToggleVisibility(!this.props.inspectorVisible);
+              },
               shortcut: stringToShortcut('meta i'),
             }, {
               text: 'Sequence Details',
@@ -572,6 +635,7 @@ export default connect(mapStateToProps, {
   blockGetParents,
   blockGetChildrenRecursive,
   uiShowDNAImport,
+  inventorySelectTab,
   undo,
   redo,
   transact,
