@@ -17,9 +17,9 @@ export default class Block extends Instance {
     super(input, BlockDefinition.scaffold(), { metadata: { color: color() } });
   }
 
-  //return an unfrozen JSON (
+  //return an unfrozen JSON, no instance methods
   static classless(input) {
-    return cloneDeep(new Block(input));
+    return Object.assign({}, cloneDeep(new Block(input)));
   }
 
   static validate(input, throwOnError = false) {

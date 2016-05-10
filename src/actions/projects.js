@@ -20,7 +20,7 @@ const rollMap = new Map();
 const isRollSame = (oldRoll, newRoll) => {
   if (!oldRoll || !newRoll) return false;
   //check projects same
-  if (oldRoll.project !== newRoll.project) return false; //todo - may want avoid to comparing versions
+  if (!Project.compare(oldRoll.project, newRoll.project)) return false;
   //check all blocks same
   return oldRoll.blocks.every(oldBlock => {
     const analog = newRoll.blocks.find(newBlock => newBlock.id === oldBlock.id);

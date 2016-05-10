@@ -1,4 +1,4 @@
-import cloneDeep from 'lodash.clonedeep';
+import { cloneDeep, isEqual } from 'lodash';
 import Instance from './Instance';
 import ProjectDefinition from '../schemas/Project';
 
@@ -7,13 +7,29 @@ export default class Project extends Instance {
     super(input, ProjectDefinition.scaffold());
   }
 
-  //return an unfrozen JSON (
+  //return an unfrozen JSON, no instnace methods
   static classless(input) {
-    return cloneDeep(new Project(input));
+    return Object.assign({}, cloneDeep(new Project(input)));
   }
 
   static validate(input, throwOnError) {
     return ProjectDefinition.validate(input, throwOnError);
+  }
+
+  //compares two projects, checking if they are the same (ignoring project version)
+  static compare(one, two) {
+    if (one === two) return true;
+
+    //massage two into a temp object with fields from one that we dont want to compare
+    const massaged = Object.assign(cloneDeep(two), {
+      version: one.version,
+    });
+    return isEqual(one, massaged);
+  }
+
+  //ideally, this would just return the same instance, would be much easier
+  updateVersion(sha) {
+    return this.mutate('version', sha);
   }
 
   addComponents(...components) {
@@ -21,6 +37,6 @@ export default class Project extends Instance {
   }
 
   removeComponents(...components) {
-   return this.mutate('components', [...new Set(this.components.filter(comp => !components.includes(comp)))]);
- }
+    return this.mutate('components', [...new Set(this.components.filter(comp => !components.includes(comp)))]);
+  }
 }

@@ -33,7 +33,9 @@ describe('Model', () => {
         });
         expect(instance.id).to.be.defined;
         expect(instance.rules.sbol === 'promoter');
-        expect(instance.annotate).to.be.undefined;
+        expect(instance.merge).to.be.undefined;
+        expect(instance.clone).to.be.undefined;
+        expect(instance.getName).to.be.undefined;
         expect(() => Object.assign(instance, {id: 'newId'})).to.not.throw();
         expect(instance.id).to.equal('newId');
       });
