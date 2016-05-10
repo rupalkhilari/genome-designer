@@ -1,50 +1,44 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { uiToggleDetailView } from '../actions/ui';
+import { uiToggleDetailView, detailViewSelectExtension } from '../actions/ui';
 import { focusDetailsExist } from '../selectors/focus';
 import { extensionsByRegion, onRegister } from '../extensions/clientRegistry';
 import { throttle } from 'lodash';
 
 import '../styles/ProjectDetail.css';
 
-//save across instances in case tossed + reused
-let lastExtension = null;
-
 export class ProjectDetail extends Component {
   static propTypes = {
     uiToggleDetailView: PropTypes.func.isRequired,
+    detailViewSelectExtension: PropTypes.func.isRequired,
     focusDetailsExist: PropTypes.func.isRequired,
     isVisible: PropTypes.bool.isRequired,
+    currentExtension: PropTypes.object,
     project: PropTypes.object.isRequired,
   };
 
   state = {
-    currentExtension: lastExtension,
     openHeight: 400,
   };
 
   extensionRendered = false;
   extensions = [];
 
-  componentWillMount() {
-    //e.g. if change project and component completely re-renders
-    if (this.props.isVisible) {
-      this.setState({ currentExtension: lastExtension });
-    }
-  }
-
   componentDidMount() {
     this.extensionsListener = onRegister(() => {
       Object.assign(this, { extensions: extensionsByRegion('sequenceDetail').filter(manifest => manifest.name !== 'simple') });
-      if (!this.state.currentExtension) {
-        this.setState({ currentExtension: this.extensions[0] });
+      if (!this.props.currentExtension) {
+        this.setCurrentExtension(this.extensions[0]);
       }
-      this.forceUpdate();
     });
   }
 
   componentWillUnmount() {
     this.extensionsListener();
+  }
+
+  setCurrentExtension(manifest) {
+    this.props.detailViewSelectExtension(manifest);
   }
 
   throttledDispatchResize = throttle(() => window.dispatchEvent(new Event('resize')), 50);
@@ -96,18 +90,17 @@ export class ProjectDetail extends Component {
 
   //todo - need to provide a way to unregister event handlers (e.g. an un-render() callback) to the extension
   loadExtension = (manifest) => {
-    if (!manifest || manifest === lastExtension) {
+    if (!manifest) {
       return;
     }
 
     this.toggle(true);
-    this.setState({ currentExtension: manifest });
-    lastExtension = manifest;
-    this.renderCurrentExtension();
+    this.extensionRendered = false;
+    this.setCurrentExtension(manifest);
   };
 
   renderCurrentExtension() {
-    const { currentExtension } = this.state;
+    const { currentExtension } = this.props;
 
     if (!currentExtension) {
       return;
@@ -126,11 +119,10 @@ export class ProjectDetail extends Component {
   }
 
   render() {
-    const { isVisible } = this.props;
-    const { currentExtension } = this.state;
+    const { isVisible, currentExtension } = this.props;
     const detailsExist = this.props.focusDetailsExist();
 
-    if (isVisible && !this.extensionRendered) {
+    if (isVisible && currentExtension && !this.extensionRendered) {
       this.renderCurrentExtension();
     }
 
@@ -173,20 +165,25 @@ export class ProjectDetail extends Component {
           <div ref="extensionView"
                className="ProjectDetail-extensionView"></div>
         </div>
-
       </div>
     );
   }
 }
 
 const mapStateToProps = (state, props) => {
-  const isVisible = state.ui.detailViewVisible;
+  const { isVisible, currentExtension } = state.ui.detailView;
+  const { constructId, forceBlocks, blockIds } = state.focus; //to force rendering (check for if details exist) on focus change
   return {
     isVisible,
+    currentExtension,
+    blockIds,
+    constructId,
+    forceBlocks,
   };
 };
 
 export default connect(mapStateToProps, {
   uiToggleDetailView,
+  detailViewSelectExtension,
   focusDetailsExist,
 })(ProjectDetail);

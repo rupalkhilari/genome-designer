@@ -48,7 +48,7 @@ class RibbonGrunt extends Component {
 
 function mapStateToProps(state) {
   return {
-    gruntMessage: state.ui.gruntMessage,
+    gruntMessage: state.ui.modals.gruntMessage,
   };
 }
 export default connect(mapStateToProps, {

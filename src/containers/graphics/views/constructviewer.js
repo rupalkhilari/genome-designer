@@ -20,6 +20,7 @@ import {
 import {
   uiShowDNAImport,
   uiToggleDetailView,
+  inspectorToggleVisibility
 } from '../../../actions/ui';
 import {
   blockGetParents,
@@ -28,7 +29,6 @@ import {
 import { sbol as sbolDragType } from '../../../constants/DragTypes';
 import debounce from 'lodash.debounce';
 import UserInterface from './constructvieweruserinterface';
-import { inspectorToggleVisibility } from '../../../actions/inspector';
 import {
   focusBlocks,
   focusBlocksAdd,
@@ -465,7 +465,7 @@ export class ConstructViewer extends Component {
 
     // if the source is the inventory and we are dragging a single block with components
     // then we don't want to insert the parent, so replace the payload with just the children
-    if (!Array.isArray(payload.item) && payload.source === 'inventory' && payload.item.components.length) {
+    if (!Array.isArray(payload.item) && (payload.source === 'inventory' || payload.source === 'inventory construct') && payload.item.components.length) {
       payload.item = payload.item.components.slice();
     }
 
@@ -473,7 +473,7 @@ export class ConstructViewer extends Component {
     const blocks = Array.isArray(payload.item) ? payload.item : [payload.item];
     // return the list of newly added blocks so we can select them for example
     blocks.forEach(block => {
-      const newBlock = (payload.source === 'inventory' || payload.copying)
+      const newBlock = (payload.source === 'inventory' payload.source === 'inventory construct'  || payload.copying)
         ? this.props.blockClone(block)
         : this.props.blocks[block];
       newBlocks.push(newBlock.id);

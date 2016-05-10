@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { inspectorToggleVisibility } from '../actions/inspector';
+import { inspectorToggleVisibility } from '../actions/ui';
 
 import InspectorBlock from '../components/InspectorBlock';
 import InspectorProject from '../components/InspectorProject';
@@ -56,7 +56,7 @@ export class Inspector extends Component {
 }
 
 function mapStateToProps(state, props) {
-  const { isVisible } = state.inspector;
+  const { isVisible } = state.ui.inspector;
   const { forceBlocks, blockIds, forceProject, constructId } = state.focus;
 
   //use forceBlock if available, otherwise use selected blocks

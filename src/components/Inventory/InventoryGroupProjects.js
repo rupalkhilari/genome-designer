@@ -4,7 +4,7 @@ import { projectGet, projectListAllBlocks } from '../../selectors/projects';
 import { projectList, projectLoad, projectSave, projectOpen } from '../../actions/projects';
 import { focusForceProject } from '../../actions/focus';
 import { blockStash } from '../../actions/blocks';
-import { inspectorToggleVisibility } from '../../actions/inspector';
+import { inspectorToggleVisibility } from '../../actions/ui';
 import { block as blockDragType } from '../../constants/DragTypes';
 import { infoQuery } from '../../middleware/api';
 import { symbolMap } from '../../inventory/sbol';

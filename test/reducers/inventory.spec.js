@@ -9,7 +9,6 @@ describe('inventory reducers', () => {
     expect(inventory(undefined, {})).to.eql(initialState);
 
     expect(initialState).to.eql({
-      isVisible: false,
       searchTerm: '',
       sourcesToggling: false,
     });
