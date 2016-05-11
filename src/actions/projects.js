@@ -86,7 +86,11 @@ export const projectSave = (inputProjectId) => {
           sha,
         });
         return sha;
-      });
+      })
+      .catch(err => {
+        console.log(err);
+        return Promise.reject(err);
+      })
   };
 };
 

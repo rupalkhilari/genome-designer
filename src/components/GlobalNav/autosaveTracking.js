@@ -4,15 +4,10 @@ import autosaveInstance from '../../store/autosave/autosaveInstance';
 import '../../styles/AutosaveTracking.css';
 
 export default class autosaveTracking extends Component {
-  //overridden using forceUpdate
-  shouldComponentUpdate() {
-    return false;
-  }
-
   componentDidMount() {
     this.interval = setInterval(() => {
       this.forceUpdate();
-    }, 1000);
+    }, 500);
   }
 
   componentWillUnmount() {
@@ -22,13 +17,20 @@ export default class autosaveTracking extends Component {
   render() {
     const lastSaved = autosaveInstance.getLastSaved();
     const saveDelta = +Date.now() - lastSaved;
-    const timeUnsaved = autosaveInstance.getTimeUnsaved();
     const dirty = autosaveInstance.isDirty();
+    const failed = !autosaveInstance.saveSuccessful();
 
-    const finalText = (dirty || saveDelta > 15000) ?
-      '' :
-      (saveDelta > 2000 ? 'Project Saved' : 'Saving...');
+    let text;
+    if (failed) {
+      text = 'Save Failed!';
+    } else if (dirty || saveDelta > 15000) {
+      text = '';
+    } else if (saveDelta <= 500) {
+      text = 'Saving...';
+    } else {
+      text = 'Project Saved';
+    }
 
-    return (<span className="AutosaveTracking">{finalText}</span>);
+    return (<span className="AutosaveTracking">{text}</span>);
   }
 }
