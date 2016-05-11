@@ -6,6 +6,7 @@ import morgan from 'morgan';
 import dataRouter from './data/index';
 import fileRouter from './file/index';
 import extensionsRouter from './extensions/index';
+import bodyParser from 'body-parser';
 
 import computeRouter from '../plugins/compute/api';
 import importRouter from '../plugins/convert/import';
@@ -27,6 +28,11 @@ const pathPublic = createBuildPath('public', '../src/public');
 const pathClientBundle = createBuildPath('client.js', '../build/client.js');
 
 const app = express();
+app.use(bodyParser({
+  limit: '50mb',  // default limit is 100K, not nearly large enough for our projects.
+  strict: false,  // accept anything that JSON.parse will swallow
+}));
+
 
 //error logging middleware
 if (process.env.NODE_ENV !== 'production') {
