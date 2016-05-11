@@ -29,10 +29,10 @@ describe('Model', () => {
 
       it('Block.classless(input) creates unfrozen JSON object, no instance methods', () => {
         const instance = Block.classless({
-          rules: { sbol: 'promoter'},
+          rules: { role: 'promoter'},
         });
         expect(instance.id).to.be.defined;
-        expect(instance.rules.sbol === 'promoter');
+        expect(instance.rules.role === 'promoter');
         expect(instance.merge).to.be.undefined;
         expect(instance.clone).to.be.undefined;
         expect(instance.getName).to.be.undefined;

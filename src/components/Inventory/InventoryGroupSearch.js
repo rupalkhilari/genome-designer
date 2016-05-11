@@ -153,7 +153,7 @@ export class InventoryGroupSearch extends Component {
     if (!searching) return list;
 
     const searchRegex = new RegExp(escapeRegExp(searchTerm), 'gi');
-    return list.filter(item => searchRegex.test(item.metadata.name) || searchRegex.test(item.rules.sbol));
+    return list.filter(item => searchRegex.test(item.metadata.name) || searchRegex.test(item.rules.role));
   };
 
   render() {
@@ -197,7 +197,7 @@ export class InventoryGroupSearch extends Component {
           .map((sourceResults, sourceKey) => sourceResults.map(block => block.merge({ source: sourceKey })))
           .values()
           .flatten()
-          .groupBy('rules.sbol')
+          .groupBy('rules.role')
           .map((items, group) => {
             const listingItems = items;
             return (

@@ -3,9 +3,9 @@ from Bio import SeqIO
 import uuid
 import csv
 
-# This table converts annotation types in genbank to sbol_types in our tool
-# Ex: if genbank says "gene", turn it into an sbol_type of "cds" as we import
-sbol_type_table = {
+# This table converts annotation types in genbank to role_types in our tool
+# Ex: if genbank says "gene", turn it into an role_type of "cds" as we import
+role_type_table = {
     "CDS": "cds",
     "regulatory": "promoter", #promoter is actually a subclass of regulatory
     "promoter": "promoter",
@@ -34,7 +34,7 @@ def line_to_block(line):
     block["metadata"]["name"] = line["Name"]
     block["metadata"]["description"] = line["Description"]
     if "SBOL Type" in line:
-        block["rules"]["sbol"] = line["SBOL Type"]
+        block["rules"]["role"] = line["SBOL Type"]
     if "Background Color" in line:
         block["metadata"]["color"] = line["Background Color"]
     return {"id": block_id, "block": block}

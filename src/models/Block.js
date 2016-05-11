@@ -57,17 +57,17 @@ export default class Block extends Instance {
 
   getName() {
     const { name } = this.metadata;
-    const { sbol } = this.rules;
+    const { role } = this.rules;
     const isConstruct = this.components.length;
 
     if (name) return name;
-    if (!!sbol) return sbol;
+    if (!!role) return role;
     if (isConstruct) return 'New Construct';
     return 'New Block';
   }
 
-  setSbol(sbol) {
-    return this.mutate('rules.sbol', sbol);
+  setRole(role) {
+    return this.mutate('rules.role', role);
   }
 
   setName(newName) {

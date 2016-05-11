@@ -5,7 +5,7 @@ const serializer = navigator.userAgent.indexOf('Node.js') < 0 ? new XMLSerialize
   serializeToString: () => {return '<SVG/>';},
 };
 
-export default class SvgSbol extends Component {
+export default class RoleSvg extends Component {
   static propTypes = {
     symbolName: PropTypes.string,
     color: PropTypes.string,
@@ -19,7 +19,7 @@ export default class SvgSbol extends Component {
       // clone the template
       const templateId = `sbol-svg-${this.props.symbolName}`;
       const template = document.getElementById(templateId);
-      // some sbol symbols may not be supported so ignore the ones without templates
+      // some role symbols may not be supported so ignore the ones without templates
       if (template) {
         const svg = template.cloneNode(true);
         // ensure svg is stroked in black

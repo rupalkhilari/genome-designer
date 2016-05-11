@@ -21,7 +21,7 @@ function parseBasicFields(result) {
       name: name,
     },
     rules: {
-      sbol: partType,
+      role: partType,
     },
     source: {
       source: 'igem',

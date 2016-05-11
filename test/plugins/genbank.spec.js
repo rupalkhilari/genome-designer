@@ -38,9 +38,9 @@ describe('Plugins', () => {
             expect(parentBlock.metadata.genbank.annotations.data_file_division).to.equal('SYN');
             expect(parentBlock.metadata.genbank.annotations.date).to.equal('06-FEB-2009');
             expect(getBlock(output.blocks, parentBlock.components[0]).metadata.type).to.equal('promoter');
-            expect(getBlock(output.blocks, parentBlock.components[0]).rules.sbol).to.equal('promoter');
+            expect(getBlock(output.blocks, parentBlock.components[0]).rules.role).to.equal('promoter');
             expect(getBlock(output.blocks, parentBlock.components[1]).metadata.type).to.equal('CDS');
-            expect(getBlock(output.blocks, parentBlock.components[1]).rules.sbol).to.equal('cds');
+            expect(getBlock(output.blocks, parentBlock.components[1]).rules.role).to.equal('cds');
             expect(getBlock(output.blocks, parentBlock.components[2]).metadata.type).to.equal('terminator');
             expect(getBlock(output.blocks, parentBlock.components[3]).metadata.type).to.equal('rep_origin');
             for (let key in output.blocks) {

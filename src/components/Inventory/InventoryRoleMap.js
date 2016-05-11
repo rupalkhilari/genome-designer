@@ -3,13 +3,13 @@ import { connect } from 'react-redux';
 import { blockStash } from '../../actions/blocks';
 import { block as blockDragType } from '../../constants/DragTypes';
 import { infoQuery } from '../../middleware/api';
-import { symbolMap } from '../../inventory/sbol';
+import { symbolMap } from '../../inventory/roles';
 
 import InventoryListGroup from './InventoryListGroup';
 import InventoryList from './InventoryList';
 import Spinner from '../ui/Spinner';
 
-export class InventorySbolMap extends Component {
+export class InventoryRoleMap extends Component {
   static propTypes = {
     blockStash: PropTypes.func.isRequired,
   };
@@ -21,15 +21,15 @@ export class InventorySbolMap extends Component {
   };
 
   componentDidMount() {
-    //returns a map { <sbolkey> : number }
-    infoQuery('sbol').then(typeMap => this.setState({
+    //returns a map { <rolekey> : number }
+    infoQuery('role').then(typeMap => this.setState({
       typeMap,
       loadingMap: false,
     }));
   }
 
   //null is for loading
-  setSbolType(type, blocks = false) {
+  setRoleType(type, blocks = false) {
     this.setState({
       loadedTypes: Object.assign(this.state.loadedTypes, { [type]: blocks }),
     });
@@ -41,11 +41,11 @@ export class InventorySbolMap extends Component {
     //when update to a cache, this should live update (right now, updates only when change tabs)
 
     //loading
-    this.setSbolType(type, false);
+    this.setRoleType(type, false);
 
     //returns an array of blocks
-    infoQuery('sbol', type)
-      .then(blocks => this.setSbolType(type, blocks));
+    infoQuery('role', type)
+      .then(blocks => this.setRoleType(type, blocks));
   };
 
   onBlockDrop = (item, target) => {
@@ -88,7 +88,7 @@ export class InventorySbolMap extends Component {
       });
 
     return (
-      <div className="InventorySbolMap">
+      <div className="InventoryRoleMap">
         {content}
       </div>
     );
@@ -97,4 +97,4 @@ export class InventorySbolMap extends Component {
 
 export default connect(() => ({}), {
   blockStash,
-})(InventorySbolMap);
+})(InventoryRoleMap);

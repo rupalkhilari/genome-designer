@@ -175,7 +175,7 @@ describe('Server', () => {
         const sequenceFilePath = filePaths.createSequencePath(sequenceMd5);
 
         const projectPatch = {metadata: {description: 'fancy pantsy'}};
-        const blockPatch = {rules: {sbol: 'promoter'}};
+        const blockPatch = {rules: {role: 'promoter'}};
 
         it('projectWrite() creates repo if necessary', () => {
           return persistence.projectWrite(projectId, projectData, userId)

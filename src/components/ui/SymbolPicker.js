@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import symbols from '../../inventory/sbol';
+import symbols from '../../inventory/roles';
 import PickerItem from './PickerItem';
 
 import '../../styles/Picker.css';

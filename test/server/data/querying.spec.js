@@ -20,11 +20,11 @@ describe('Server', () => {
         const rollup = createExampleRollup();
         const promoter = Block.classless({
           metadata: { name: 'promoter' },
-          rules: { sbol: 'promoter' },
+          rules: { role: 'promoter' },
         });
         const terminator = Block.classless({
           metadata: { name: terminatorBlockName },
-          rules: { sbol: 'terminator' },
+          rules: { role: 'terminator' },
         });
         rollup.blocks.push(promoter, terminator);
         rollup.project.components.push(promoter.id, terminator.id);
@@ -110,10 +110,10 @@ describe('Server', () => {
       });
 
       it('getAllBlocksByType() can get all blocks of type', () => {
-        return querying.getAllBlocksWithSbol(myUserId, 'promoter')
+        return querying.getAllBlocksWithRole(myUserId, 'promoter')
           .then(blocks => {
             expect(blocks.length).to.equal(myRolls.length);
-            assert(blocks.every(block => block.rules.sbol === 'promoter'), 'got block with wrong sbol type');
+            assert(blocks.every(block => block.rules.role === 'promoter'), 'got block with wrong role type');
           });
       });
 

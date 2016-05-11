@@ -4,5 +4,5 @@ export const inventoryItem = 'INVENTORY_ITEM';
 //a schema-conforming block
 export const block = 'BLOCK';
 
-//SBOL symbol
-export const sbol = 'SBOL';
+//Role e.g. SBOL symbol
+export const role = 'ROLE';

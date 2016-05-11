@@ -30,12 +30,12 @@ module.exports = {
     // start with a fresh project
     newProject(browser);
 
-    // open the sbol symbols and drag from there to make a new construct with three empty blocks
+    // open the role symbols and drag from there to make a new construct with three empty blocks
     browser.click('.InventoryGroup:nth-of-type(4) .InventoryGroup-heading');
 
-    dragFromTo(browser, '.InventoryItemSbol:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 300, 30);
-    dragFromTo(browser, '.InventoryItemSbol:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 300, 30);
-    dragFromTo(browser, '.InventoryItemSbol:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 300, 30);
+    dragFromTo(browser, '.InventoryItemRole:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 300, 30);
+    dragFromTo(browser, '.InventoryItemRole:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 300, 30);
+    dragFromTo(browser, '.InventoryItemRole:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 300, 30);
 
     // now send some keyboard shortcuts to select all and cut the blocks.
 
@@ -50,7 +50,7 @@ module.exports = {
       .pause(1000)
       // expect all selections and blocks to be removed
       .assert.countelements(".scenegraph-userinterface-selection", 0)
-      .assert.countelements(".sbol-glyph", 0)
+      .assert.countelements(".role-glyph", 0)
       .end();
   }
 };

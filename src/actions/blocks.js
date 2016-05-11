@@ -335,17 +335,17 @@ export const blockSetColor = (blockId, color) => {
 };
 
 /**
- * change the sbol symbol of the block e.g. from the inspector
+ * change the role symbol of the block e.g. from the inspector
  */
-export const blockSetSbol = (blockId, sbol) => {
+export const blockSetRole = (blockId, role) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
 
-    if (oldBlock.rules.sbol === sbol) {
+    if (oldBlock.rules.role === role) {
       return oldBlock;
     }
 
-    const block = oldBlock.setSbol(sbol);
+    const block = oldBlock.setRole(role);
     dispatch({
       type: ActionTypes.BLOCK_SET_SBOL,
       undoable: true,
@@ -355,16 +355,17 @@ export const blockSetSbol = (blockId, sbol) => {
   };
 };
 
+//todo - this should not be an action + unclear name. It is too simply composed of existing atomic actions... prevent API bloat
 /**
- * e.g. when the user drop an sbol symbol on an existing block.
- * Create a new child block and set the given sbol symbol
+ * e.g. when the user drop an role symbol on an existing block.
+ * Create a new child block and set the given role symbol
  */
-export const blockAddSbol = (blockId, sbol) => {
+export const blockAddSbol = (blockId, role) => {
   return (dispatch, getState) => {
     dispatch(undoActions.transact());
     const oldBlock = getState().blocks[blockId];
     const newBlock = dispatch(blockCreate());
-    dispatch(blockSetSbol(newBlock.id, sbol));
+    dispatch(blockSetRole(newBlock.id, role));
     dispatch(blockAddComponent(oldBlock.id, newBlock.id, oldBlock.components.length));
     //end transaction
     dispatch(undoActions.commit());
@@ -373,7 +374,7 @@ export const blockAddSbol = (blockId, sbol) => {
 };
 
 /***************************************
- * Sequence / annotations
+ * annotations
  ***************************************/
 
 export const blockAnnotate = (blockId, annotation) => {
@@ -402,6 +403,11 @@ export const blockRemoveAnnotation = (blockId, annotation) => {
     return block;
   };
 };
+
+
+/***************************************
+ * Sequence
+ ***************************************/
 
 //Non-mutating
 //Promise

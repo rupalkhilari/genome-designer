@@ -36,8 +36,8 @@ module.exports = {
       .click('.InventoryGroup:nth-of-type(2) .InventoryGroup-heading')
       // expect at least one inventory item and one block to drop on
       .waitForElementPresent('.InventoryItem', 5000, 'expected an inventory item');
-      // .waitForElementPresent('.sbol-glyph', 5000, 'expected a block to drop on')
-      // .assert.countelements('.sbol-glyph', 7);
+      // .waitForElementPresent('.role-glyph', 5000, 'expected a block to drop on')
+      // .assert.countelements('.role-glyph', 7);
 
     // drag a block to each construct to start them off
     dragFromTo(browser, '.InventoryItemBlock:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 30, 30);
@@ -50,13 +50,13 @@ module.exports = {
         dragFromTo(
             browser,
             '.InventoryItemBlock:nth-of-type(' + i + ')', 10, 10,
-            '.construct-viewer:nth-of-type(' + j + ') .sceneGraph .sbol-glyph:nth-of-type(1)', 30, 10);
+            '.construct-viewer:nth-of-type(' + j + ') .sceneGraph .role-glyph:nth-of-type(1)', 30, 10);
       }
     }
 
     browser
       .pause(2000)
-      .assert.countelements('.sbol-glyph', 21)
+      .assert.countelements('.role-glyph', 21)
       .end();
   }
 };

@@ -5,7 +5,7 @@ import SchemaDefinition from './SchemaDefinition';
 /**
  @name AnnotationDefinition
  @parent BlockDefinition
- @sbol Annotation (kinda)
+ @role Annotation (kinda)
 
  @description
  An annotation on a sequence.

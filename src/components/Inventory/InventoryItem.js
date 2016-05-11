@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import DnD from '../../containers/graphics/dnd/dnd';
 import MouseTrap from '../../containers/graphics/mousetrap';
-import SvgSbol from '../../components/svgsbol';
+import RoleSvg from '../RoleSvg';
 import BasePairCount from '../ui/BasePairCount';
 
 import { inspectorToggleVisibility } from '../../actions/ui';
@@ -19,6 +19,7 @@ export class InventoryItem extends Component {
         image: PropTypes.string,
       }).isRequired,
     }).isRequired,
+    svg: PropTypes.string, //right now, SBOL SVG ID
     defaultName: PropTypes.string,
     onDrop: PropTypes.func, //can return promise (e.g. update store), value is used for onDrop in DnD registered drop target. Can pass value from promise to use for drop as payload, or undefined
     onDragStart: PropTypes.func, //transact
@@ -94,21 +95,20 @@ export class InventoryItem extends Component {
   };
 
   render() {
-    const item = this.props.item;
-    const imagePath = item.metadata.image;
+    const { item, svg, defaultName } = this.props;
     const isSelected = this.props.forceBlocks.indexOf(item) >= 0;
 
     const hasSequence = item.sequence && item.sequence.length > 0;
-    const itemName = item.metadata.name || this.props.defaultName || 'Unnamed';
+    const itemName = item.metadata.name || defaultName || 'Unnamed';
 
     return (
       <div className={'InventoryItem' +
-        (!!imagePath ? ' hasImage' : '') +
+        (!!svg ? ' hasImage' : '') +
         (!!isSelected ? ' selected' : '')}
            ref={(el) => this.itemElement = el}>
         <a className="InventoryItem-item"
            onClick={this.handleClick}>
-          {item.metadata.isSBOL ? <SvgSbol symbolName={item.id} color="white"/> : null}
+          {svg ? <RoleSvg symbolName={svg} color="white"/> : null}
           <span className="InventoryItem-text">
             {itemName}
           </span>
