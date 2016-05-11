@@ -27,7 +27,7 @@ const wrapBlock = (block, id) => {
   return new Block(merge({}, block, {
     source: {
       source: 'ncbi',
-      id: id,
+      id,
     },
   }));
 };
@@ -44,7 +44,7 @@ const parseSummary = (summary) => {
     },
     source: {
       source: 'ncbi',
-      id: summary.uid,
+      id: summary.accessionversion,
     },
   });
 };
@@ -72,19 +72,23 @@ export const getSummary = (...ids) => {
 
 // http://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.EFetch
 //note that these may be very very large, use getSummary unless you need the whole thing
-export const get = (id) => {
+//!! important - Note that NCBI is moving to accession versions from UIDs
+//   this should be the accessionversion by this point, as it was set as source.id on parseSummary.
+export const get = (accessionVersion) => {
   const parametersMapped = {
     format: 'gb',
   };
 
   const { format } = parametersMapped;
 
-  const url = `http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id=${id}&rettype=${format}&retmode=text`;
+  const url = `http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id=${accessionVersion}&rettype=${format}&retmode=text`;
+
+  //todo - this should use accessionversion
 
   return rejectingFetch(url)
     .then(resp => resp.text())
     .then(genbankToBlock)
-    .then(blocks => blocks.map(block => wrapBlock(block, id)));
+    .then(blocks => blocks.map(block => wrapBlock(block, accessionVersion)));
 };
 
 // http://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.ESearch
