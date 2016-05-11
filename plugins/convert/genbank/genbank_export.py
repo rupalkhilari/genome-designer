@@ -1,6 +1,7 @@
 from Bio import Seq
 from Bio import SeqIO
 from Bio import SeqFeature
+import json
 
 def add_features(block, allblocks, gb, start):
     # Disregard fillers... don't create features for them
@@ -10,7 +11,7 @@ def add_features(block, allblocks, gb, start):
     # Add Myself as a feature
     sf = SeqFeature.SeqFeature()
     # Set the type based on the original type or the sbol type
-    if "type" in block["metadata"] and block["metadata"]["type"] != 'filler':
+    if "type" in block["metadata"]:
         sf.type = block["metadata"]["type"]
     elif "rules" in block and "sbol" in block["rules"] and block["rules"]["sbol"] is not None:
         sf.type = block["rules"]["sbol"]
@@ -21,23 +22,28 @@ def add_features(block, allblocks, gb, start):
     feature_strand = 1
     if "strand" in block["metadata"]:
         feature_strand = block["metadata"]["strand"]
-    end = start + block["sequence"]["length"]
-    sf.location = SeqFeature.FeatureLocation(start, end, strand=feature_strand)
 
     # The name of the feature should go in the label
     if "name" in block["metadata"] and block["metadata"]["name"] != "":
         sf.qualifiers["label"] = block["metadata"]["name"]
 
+    # The color
+    if "color" in block["metadata"] and block["metadata"]["color"] != "":
+        sf.qualifiers["GC_Color"] = block["metadata"]["color"]
+
     # The description in the GD_Description qualifier
     if "description" in block["metadata"] and block["metadata"]["description"] != "":
-        sf.qualifiers["GD_description"] = block["metadata"]["description"]
+        sf.qualifiers["GC_Description"] = block["metadata"]["description"]
+
+    sf.qualifiers["GC_Id"] = block["id"]
+
+    if len(block["components"]) > 0:
+        sf.qualifiers["GC_Children"] = json.dumps(block["components"]).replace("\"", "'")
 
     # And copy all the other qualifiers that came originally from genbank
     if "genbank" in block["metadata"]:
         for annot_key, annot_value in block["metadata"]["genbank"].iteritems():
             sf.qualifiers[annot_key] = annot_value
-
-    gb.features.append(sf)
 
     convert_annotations(block, gb)
 
@@ -47,6 +53,16 @@ def add_features(block, allblocks, gb, start):
         block_id = block["components"][i]
         bl = [b for b in allblocks if b["id"] == block_id][0]
         child_start = add_features(bl, allblocks, gb, child_start)
+
+    if child_start != start:
+        # The end is where the last child ended...
+        end = child_start
+    else:
+        # No children, look at the block's length
+        end = start + block["sequence"]["length"]
+
+    sf.location = SeqFeature.FeatureLocation(start, end, strand=feature_strand)
+    gb.features.append(sf)
 
     return end
 
@@ -111,6 +127,13 @@ def project_to_genbank(filename, project, allblocks):
         sequence = build_sequence(block, allblocks)
         seq_obj = SeqIO.SeqRecord(Seq.Seq(sequence,Seq.Alphabet.DNAAlphabet()), genbank_id)
 
+        # Create a 'source' feature
+        sf = SeqFeature.SeqFeature()
+        sf.type = "source"
+        sf.location = SeqFeature.FeatureLocation(0, len(seq_obj.seq))
+        sf.qualifiers["GC_Id"] = block["id"]
+        sf.qualifiers["GC_Children"] = json.dumps(block["components"]).replace("\"", "'")
+
         if "genbank" in block["metadata"]:
             # Set up all the annotations in the genbank record. These came originally from genbank.
             if "annotations" in block["metadata"]["genbank"]:
@@ -130,14 +153,12 @@ def project_to_genbank(filename, project, allblocks):
                     if "references" not in seq_obj.annotations:
                         seq_obj.annotations["references"] = []
                     seq_obj.annotations["references"].append(genbank_ref)
-            # Create a 'source' feature with all the original features in the source annotation
+            # Add the original annotations to the source feature
             if "feature_annotations" in block["metadata"]["genbank"]:
-                sf = SeqFeature.SeqFeature()
-                sf.type = "source"
-                sf.location = SeqFeature.FeatureLocation(0, len(seq_obj.seq))
                 for annot_key, annot_value in block["metadata"]["genbank"]["feature_annotations"].iteritems():
                     sf.qualifiers[annot_key] = annot_value
-                seq_obj.features.append(sf)
+
+        seq_obj.features.append(sf)
 
         if "description" in block["metadata"]:
             seq_obj.description = block["metadata"]["description"]

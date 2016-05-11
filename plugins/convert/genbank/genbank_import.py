@@ -96,6 +96,7 @@ def create_root_block_from_genbank(gb, sequence):
     root_block["metadata"]["end"] = full_length - 1
     root_block["metadata"]["genbank"]["id"] = gb.id
     root_block["sequence"]["length"] = full_length
+    root_block["version"] = gb.id
     if "references" in gb.annotations:
         for ref in gb.annotations["references"]:
             if "references" not in root_block["metadata"]["genbank"]:
@@ -131,7 +132,14 @@ def create_child_block_from_feature(f, all_blocks, root_block, sequence):
         for key, value in qualifiers.iteritems():
             if "feature_annotations" not in root_block["metadata"]["genbank"]:
                 root_block["metadata"]["genbank"]["feature_annotations"] = {}
-            root_block["metadata"]["genbank"]["feature_annotations"][key] = value[0]
+            if key == "GC_Id":
+                del all_blocks[root_block["id"]]
+                root_block["id"] = value[0]
+                all_blocks[value[0]] = root_block
+            elif key == "GC_Children":
+                root_block["components"] = json.loads(value[0].replace("'", "\""))
+            else:
+                root_block["metadata"]["genbank"]["feature_annotations"][key] = value[0]
     else:
         # It's a regular annotation, create a block
         block_id = str(uuid.uuid4())
@@ -139,6 +147,15 @@ def create_child_block_from_feature(f, all_blocks, root_block, sequence):
         for q in f.qualifiers:
             if q == "name":
                 child_block["name"] = f.qualifiers[q][0]
+            elif q  == "GC_Color":
+                child_block["metadata"]["color"] = f.qualifiers[q][0]
+            elif q  == "GC_Description":
+                child_block["metadata"]["description"] = f.qualifiers[q][0]
+            elif q == "GC_Id":
+                block_id = f.qualifiers[q][0]
+                child_block["id"] = f.qualifiers[q][0]
+            elif q == "GC_Children":
+                child_block["components"] = json.loads(f.qualifiers[q][0].replace("'", "\""))
             else:
                 try:
                     json.dumps(qualifiers[q][0])
@@ -170,11 +187,14 @@ def create_child_block_from_feature(f, all_blocks, root_block, sequence):
                 elif f.type:
                     child_block["metadata"]["name"] = f.type
 
-        # If this is a file that was exported from GD before, bring in the description.
-        if "GD_description" in f.qualifiers:
-            child_block["metadata"]["description"] = f.qualifiers["GD_description"][0]
-
         all_blocks[block_id] = child_block
+
+# Returns true if a block id is a children of any other block
+def has_parent(block_id, all_blocks):
+    for block in all_blocks.values():
+        if block_id in block["components"]:
+            return True
+    return False
 
 # Traverse an array of blocks and build a hierarchy. The hierarchy embeds blocks into other blocks in order,
 # and create filler blocks where needed
@@ -193,7 +213,8 @@ def build_block_hierarchy(all_blocks, root_block, sequence):
 
     for i in range(blocks_count):
         block = sorted_blocks[i]
-        if block == root_block or block["id"] in to_remove:
+        # Don't try to sort out the root block, anything to remove, or anything that we have already determined that it has a parent
+        if block == root_block or block["id"] in to_remove or has_parent(block["id"], all_blocks):
             continue
 
         inserted = False
@@ -293,6 +314,12 @@ def create_filler_blocks_for_holes(all_blocks, sequence):
             all_blocks[block_id] = filler_block
             block["components"].insert(i + 1, block_id)
 
+# If a block has children, remove its sequence
+def remove_sequence_from_parents(all_blocks):
+    for block in all_blocks.values():
+        if len(block["components"]) > 0:
+            block["sequence"]["sequence"] = ""
+            block["sequence"]["length"] = 0
 
 # Takes a BioPython SeqRecord and converts it to our blocks structures,
 # with temporary ids
@@ -310,6 +337,8 @@ def convert_genbank_record_to_blocks(gb):
     build_block_hierarchy(all_blocks, root_block, sequence)
 
     create_filler_blocks_for_holes(all_blocks, sequence)
+
+    remove_sequence_from_parents(all_blocks)
 
     return { "root": all_blocks[root_block["id"]], "blocks": all_blocks }
 

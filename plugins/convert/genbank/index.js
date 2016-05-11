@@ -58,7 +58,8 @@ const createBlockStructureAndSaveSequence = (block) => {
       annotations: block.sequence.annotations, //you will likely have to remap these...
     },
     source: {
-      id: 'genbank',
+      id: block.version ? block.version : '',
+      source: 'genbank',
     },
     rules: block.rules,
   };
@@ -226,16 +227,14 @@ const exportProjectStructure = (project, blocks) => {
 
   const cmd = `python ${path.resolve(__dirname, 'convert.py')} to_genbank ${inputFile} ${outputFile}`;
   return runCommand(cmd, JSON.stringify(input), inputFile, outputFile)
-    .then(resStr => {
-      return Promise.resolve(resStr);
-    })
+    .then(resStr => Promise.resolve(resStr))
     .catch(err => {
       console.log('ERROR IN PYTHON');
       console.log('Command');
       console.log(cmd);
       console.log('Error')
       console.log(err);
-      return Promise.reject(err);
+      Promise.reject(err);
     });
 };
 
@@ -248,9 +247,8 @@ const loadSequences = (blocks) => {
         Promise.resolve();
 
       return sequencePromise
-        .then((seq) => {
-          return merge({}, block, {sequence: {sequence: seq}});
-        });
+        .then((seq) => merge({}, block, {sequence: {sequence: seq}}))
+        .catch((error) => block);
     }));
 };
 
