@@ -1,8 +1,13 @@
 import React, { PropTypes } from 'react';
+import { setAttribute } from '../../containers/graphics/utils';
+
+const serializer = navigator.userAgent.indexOf('Node.js') < 0 ? new XMLSerializer() : {
+  serializeToString: () => {return '<SVG/>';},
+};
 
 import '../../styles/Toggler.css';
 
-export default function Toggler({ onClick, hidden, open, disabled }) {
+export default function Toggler({ onClick, hidden, open, disabled, styles }) {
   if (hidden) {
     //todo - in React v15, can return null
     return <noscript />;
@@ -14,14 +19,31 @@ export default function Toggler({ onClick, hidden, open, disabled }) {
     }
   };
 
-  return (<span className={'Toggler' +
+  const templateId = `disclosure_triangle_closed`;
+  const template = document.getElementById(templateId);
+  const svg = template.cloneNode(true);
+  svg.removeAttribute('id');
+
+  const markup = serializer.serializeToString(svg);
+
+  return (<div className={'Toggler' +
                            (disabled ? ' disabled' : '') +
                            (open ? ' open' : '')}
-                onClick={handleClick}/>);
+              styles={styles}
+              onClick={handleClick}
+              dangerouslySetInnerHTML={{__html: markup}}/>);
+
+  /*
+   return (<span className={'Toggler' +
+   (disabled ? ' disabled' : '') +
+   (open ? ' open' : '')}
+   onClick={handleClick}/>);
+   */
 }
 
 Toggler.propTypes = {
   onClick: PropTypes.func,
+  styles: PropTypes.object,
   open: PropTypes.bool,
   disabled: PropTypes.bool,
   hidden: PropTypes.bool,
@@ -29,6 +51,7 @@ Toggler.propTypes = {
 
 Toggler.defaultProps = {
   onClick: () => {},
+  styles: {},
   hidden: false,
   open: false,
   disabled: false,
