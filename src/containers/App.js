@@ -24,7 +24,7 @@ class App extends Component {
    */
   componentDidMount() {
     document.addEventListener('keydown', this.rejectBackspace);
-    document.addEventListener('keypress', this.rejectBackspace);
+    document.addEventLiqstener('keypress', this.rejectBackspace);
   }
 
   rejectBackspace(evt) {

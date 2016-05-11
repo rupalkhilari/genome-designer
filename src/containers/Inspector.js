@@ -38,11 +38,11 @@ export class Inspector extends Component {
       (readOnly ? ' readOnly' : '')}>
 
         <div className="SidePanel-heading">
-          <button className="button-nostyle SidePanel-heading-trigger Inspector-trigger"
+          <button tabIndex="-1" className="button-nostyle SidePanel-heading-trigger Inspector-trigger"
                   onClick={() => this.toggle()}/>
           <div className="SidePanel-heading-content">
             <span className="SidePanel-heading-title">Inspector</span>
-            <button className="button-nostyle SidePanel-heading-close"
+            <button tabIndex="-1" className="button-nostyle SidePanel-heading-close"
                     onClick={() => this.toggle(false)}/>
           </div>
         </div>
