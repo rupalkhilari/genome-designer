@@ -3,14 +3,14 @@ var manifest = require('json!./package.json');
 function render(container, options) {
   container.innerHTML = 'extension loaded!';
 
-  console.log(options.boundingBox);
+  //console.log(options.boundingBox);
 
   //throw an error for debugging debugging
   //require('./externalFile.js').doBadThing();
 
   var subscriber = window.gd.store.subscribe(function (state, lastAction) {
     var last = [];
-    var current = state.ui.currentBlocks;
+    var current = state.focus.blockIds;
     if (current &&
       current.length &&
         (current.length !== last.length ||

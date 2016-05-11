@@ -1,6 +1,67 @@
 import * as ActionTypes from '../constants/ActionTypes';
 import invariant from 'invariant';
 
+export const inspectorToggleVisibility = (forceState) => {
+  return (dispatch, getState) => {
+    const currentState = getState().ui.inspector.isVisible;
+    const nextState = (forceState !== undefined) ? !!forceState : !currentState;
+    dispatch({
+      type: ActionTypes.INSPECTOR_TOGGLE_VISIBILITY,
+      nextState,
+    });
+    return nextState;
+  };
+};
+
+export const inventoryToggleVisibility = (forceState) => {
+  return (dispatch, getState) => {
+    const currentState = getState().ui.inventory.isVisible;
+    const nextState = (forceState !== undefined) ? !!forceState : !currentState;
+    dispatch({
+      type: ActionTypes.INVENTORY_TOGGLE_VISIBILITY,
+      nextState,
+    });
+    return nextState;
+  };
+};
+
+export const inventorySelectTab = (tab) => {
+  return (dispatch, getState) => {
+    dispatch({
+      type: ActionTypes.INVENTORY_SELECT_TAB,
+      tab,
+    });
+    return tab;
+  };
+};
+
+/* detail view */
+
+export const uiToggleDetailView = (forceState) => {
+  return (dispatch, getState) => {
+    const currentState = getState().ui.detailView.isVisible;
+    const nextState = (forceState !== undefined) ? !!forceState : !currentState;
+    dispatch({
+      type: ActionTypes.DETAIL_VIEW_TOGGLE_VISIBILITY,
+      nextState,
+    });
+    return nextState;
+  };
+};
+
+export const detailViewSelectExtension = (manifest) => {
+  return (dispatch, getState) => {
+    invariant(manifest === null || (manifest.name && typeof manifest.render === 'function'), 'improper formed manifest');
+    dispatch({
+      type: ActionTypes.DETAIL_VIEW_SELECT_EXTENSION,
+      manifest,
+    });
+    return manifest;
+  };
+};
+
+/* modals */
+
 export const uiShowAuthenticationForm = (name) => {
   return (dispatch, getState) => {
     invariant(['signin', 'signup', 'forgot', 'reset', 'account', 'none'].indexOf(name) >= 0, 'attempting to show invalid form name');
@@ -42,16 +103,6 @@ export const uiShowAbout = (bool) => {
   };
 };
 
-export const uiShowMainMenu = (showMainMenu) => {
-  return (dispatch, getState) => {
-    dispatch({
-      type: ActionTypes.UI_SHOW_MAIN_MENU,
-      showMainMenu,
-    });
-    return showMainMenu;
-  };
-};
-
 export const uiShowUserWidget = (userWidgetVisible) => {
   return (dispatch, getState) => {
     dispatch({
@@ -69,17 +120,5 @@ export const uiSetGrunt = (gruntMessage) => {
       gruntMessage,
     });
     return gruntMessage;
-  };
-};
-
-export const uiToggleDetailView = (forceState) => {
-  return (dispatch, getState) => {
-    const currentState = getState().ui.detailViewVisible;
-    const nextState = (forceState !== undefined) ? !!forceState : !currentState;
-    dispatch({
-      type: ActionTypes.UI_TOGGLE_DETAIL_VIEW,
-      nextState,
-    });
-    return nextState;
   };
 };

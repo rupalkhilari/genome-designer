@@ -40,11 +40,9 @@ import {
   uiToggleDetailView,
   uiSetGrunt,
   uiShowAbout,
- } from '../actions/ui';
-import { inspectorToggleVisibility } from '../actions/inspector';
-import { inventoryToggleVisibility } from '../actions/inventory';
-import { uiShowDNAImport } from '../actions/ui';
-
+  inventorySelectTab,
+} from '../actions/ui';
+import { inspectorToggleVisibility, inventoryToggleVisibility, uiShowDNAImport } from '../actions/ui';
 import KeyboardTrap from 'mousetrap';
 import { stringToShortcut } from '../utils/ui/keyboard-translator';
 import {
@@ -66,7 +64,7 @@ class GlobalNav extends Component {
     projectSave: PropTypes.func.isRequired,
     currentProjectId: PropTypes.string,
     blockCreate: PropTypes.func.isRequired,
-    showMainMenu: PropTypes.bool.isRequired,
+    showMenu: PropTypes.bool.isRequired,
     blockGetParents: PropTypes.func.isRequired,
     focusDetailsExist: PropTypes.func.isRequired,
     focusBlocks: PropTypes.func.isRequired,
@@ -81,6 +79,7 @@ class GlobalNav extends Component {
     projectGetVersion: PropTypes.func.isRequired,
     blockClone: PropTypes.func.isRequired,
     clipboardSetData: PropTypes.func.isRequired,
+    inventorySelectTab: PropTypes.func.isRequired,
     uiSetGrunt: PropTypes.func.isRequired,
     blockDetach: PropTypes.func.isRequired,
     clipboard: PropTypes.object.isRequired,
@@ -93,7 +92,7 @@ class GlobalNav extends Component {
     inspectorVisible: PropTypes.bool.isRequired,
     detailViewVisible: PropTypes.bool.isRequired,
     focus: PropTypes.object.isRequired,
-    blocks: PropTypes.array,
+    blocks: PropTypes.object,
   };
 
   constructor(props) {
@@ -106,11 +105,31 @@ class GlobalNav extends Component {
       evt.preventDefault();
       this.saveProject();
     });
-    KeyboardTrap.bind('ctrl+n', (evt) => {
+    KeyboardTrap.bind('mod+o', (evt) => {
+      evt.preventDefault();
+      this.props.inventoryToggleVisibility(true);
+      this.props.inventorySelectTab('projects');
+    });
+    KeyboardTrap.bind('mod+f', (evt) => {
+      evt.preventDefault();
+      this.props.inventoryToggleVisibility(true);
+      this.props.inventorySelectTab('search');
+    });
+    KeyboardTrap.bind('mod+e', (evt) => {
+      evt.preventDefault();
+      this.props.inventoryToggleVisibility(true);
+      this.props.inventorySelectTab('egf');
+    });
+    KeyboardTrap.bind('mod+b', (evt) => {
+      evt.preventDefault();
+      this.props.inventoryToggleVisibility(true);
+      this.props.inventorySelectTab('sbol');
+    });
+    KeyboardTrap.bind('option+n', (evt) => {
       evt.preventDefault();
       this.newProject();
     });
-    KeyboardTrap.bind('shift+ctrl+n', (evt) => {
+    KeyboardTrap.bind('shift+option+n', (evt) => {
       evt.preventDefault();
       this.newConstruct();
     });
@@ -155,6 +174,13 @@ class GlobalNav extends Component {
     });
   }
 
+  /**
+   * unsink all keyboard events on unmount
+   */
+  componentWillUnmount() {
+    KeyboardTrap.reset();
+  }
+
   state = {
     showAddProject: false,
     recentProjects: [],
@@ -171,6 +197,31 @@ class GlobalNav extends Component {
   getBlockParentId(blockId) {
     return this.props.blockGetParents(blockId)[0].id;
   }
+
+  /**
+   * new project and navigate to new project
+   */
+  newProject() {
+    // create project and add a default construct
+    const project = this.props.projectCreate();
+    // add a construct to the new project
+    const block = this.props.blockCreate({ projectId: project.id });
+    this.props.projectAddConstruct(project.id, block.id);
+    this.props.focusConstruct(block.id);
+    this.props.projectOpen(project.id);
+  }
+
+  /**
+   * add a new construct to the current project
+   */
+  newConstruct() {
+    this.props.transact();
+    const block = this.props.blockCreate();
+    this.props.projectAddConstruct(this.props.currentProjectId, block.id);
+    this.props.commit();
+    this.props.focusConstruct(block.id);
+  }
+
   /**
    * download the current file as a genbank file
    * @return {[type]} [description]
@@ -329,38 +380,67 @@ class GlobalNav extends Component {
           text: 'FILE',
           items: [
             {
-              text: 'Open Project',
-              disabled: !this.props.focus.forceProject,
-              action: () => {
-                this.props.projectOpen(this.props.focus.forceProject.id);
-              },
-            },
-            {
-              text: 'Save Project',
+              text: 'Snapshot Project',
               shortcut: stringToShortcut('meta S'),
               action: () => {
                 this.saveProject();
               },
             },
+            {
+              text: 'Open Project',
+              shortcut: stringToShortcut('meta O'),
+              action: () => {
+                this.props.inventoryToggleVisibility(true);
+                this.props.inventorySelectTab('projects');
+              },
+            },
+            {
+              text: 'Search',
+              shortcut: stringToShortcut('meta F'),
+              action: () => {
+                this.props.inventoryToggleVisibility(true);
+                this.props.inventorySelectTab('search');
+              },
+            },
+            {
+              text: 'EGF Library',
+              shortcut: stringToShortcut('meta E'),
+              action: () => {
+                this.props.inventoryToggleVisibility(true);
+                this.props.inventorySelectTab('egf');
+              },
+            },
+            {
+              text: 'SBOL Sketch Library',
+              shortcut: stringToShortcut('meta B'),
+              action: () => {
+                this.props.inventoryToggleVisibility(true);
+                this.props.inventorySelectTab('sbol');
+              },
+            },
             {},
             {
               text: 'New Project',
-              shortcut: stringToShortcut('ctrl N'),
+              shortcut: stringToShortcut('option N'),
               action: () => {
                 this.newProject();
               },
-            }, {
+            },
+            {
               text: 'New Construct',
-              shortcut: stringToShortcut('shift ctrl N'),
+              shortcut: stringToShortcut('shift option N'),
               action: () => {
                 this.newConstruct();
               },
-            }, {}, {
-              text: 'Upload Genbank or CSV File',
+            },
+            {},
+            {
+              text: 'Import Genbank or CSV File...',
               action: () => {
                 this.uploadGenbankFile();
               },
-            }, {
+            },
+            {
               text: 'Download Genbank File',
               action: () => {
                 this.downloadProjectGenbank();
@@ -435,12 +515,16 @@ class GlobalNav extends Component {
             {
               text: 'Inventory',
               checked: this.props.inventoryVisible,
-              action: this.props.inventoryToggleVisibility,
+              action: () => {
+                this.props.inventoryToggleVisibility(!this.props.inventoryVisible);
+              },
               shortcut: stringToShortcut('shift meta i'),
             }, {
               text: 'Inspector',
               checked: this.props.inspectorVisible,
-              action: this.props.inspectorToggleVisibility,
+              action: () => {
+                this.props.inspectorToggleVisibility(!this.props.inspectorVisible);
+              },
               shortcut: stringToShortcut('meta i'),
             }, {
               text: 'Sequence Details',
@@ -507,12 +591,14 @@ class GlobalNav extends Component {
   }
 
   render() {
+    const { showMenu } = this.props;
+
     return (
       <div className="GlobalNav">
         <RibbonGrunt />
         <span className="GlobalNav-title">GD</span>
-        {this.props.showMainMenu ? this.menuBar() : null}
-        <span className="GlobalNav-spacer" />
+        {showMenu ? this.menuBar() : null}
+        <span className="GlobalNav-spacer"/>
         <AutosaveTracking />
         <UserWidget/>
       </div>
@@ -522,13 +608,12 @@ class GlobalNav extends Component {
 
 function mapStateToProps(state) {
   return {
-    showMainMenu: state.ui.showMainMenu,
     focus: state.focus,
     blocks: state.blocks,
     clipboard: state.clipboard,
-    inspectorVisible: state.inspector.isVisible,
-    inventoryVisible: state.inventory.isVisible,
-    detailViewVisible: state.ui.detailViewVisible,
+    inspectorVisible: state.ui.inspector.isVisible,
+    inventoryVisible: state.ui.inventory.isVisible,
+    detailViewVisible: state.ui.detailView.isVisible,
   };
 }
 
@@ -549,6 +634,7 @@ export default connect(mapStateToProps, {
   blockGetParents,
   blockGetChildrenRecursive,
   uiShowDNAImport,
+  inventorySelectTab,
   undo,
   redo,
   transact,

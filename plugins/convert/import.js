@@ -58,7 +58,6 @@ router.post('/:pluginId/:projectId?', jsonParser, (req, resp, next) => {
         .catch(err => next(err));
     });
   } else {
-
       // save incoming file then read back the string data.
       // If these files turn out to be large we could modify the import functions to take
       // file names instead but for now, in memory is fine.

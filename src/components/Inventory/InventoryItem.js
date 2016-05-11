@@ -3,9 +3,9 @@ import { connect } from 'react-redux';
 import DnD from '../../containers/graphics/dnd/dnd';
 import MouseTrap from '../../containers/graphics/mousetrap';
 import SvgSbol from '../../components/svgsbol';
-import BasePairCount from '../../components/Inventory/BasePairCount';
+import BasePairCount from '../ui/BasePairCount';
 
-import { inspectorToggleVisibility } from '../../actions/inspector';
+import { inspectorToggleVisibility } from '../../actions/ui';
 import { focusForceBlocks } from '../../actions/focus';
 
 import '../../styles/InventoryItem.css';

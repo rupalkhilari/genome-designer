@@ -212,6 +212,7 @@ export const loadProject = (projectId) => {
 
 //expects a rollup
 //autosave
+//returns the commit with sha, message
 export const saveProject = (projectId, rollup) => {
   invariant(projectId, 'Project ID required to snapshot');
   invariant(rollup, 'Rollup is required to save');
@@ -220,11 +221,12 @@ export const saveProject = (projectId, rollup) => {
   const url = dataApiPath(`projects/${projectId}`);
   const stringified = JSON.stringify(rollup);
 
-  return rejectingFetch(url, headersPost(stringified));
+  return rejectingFetch(url, headersPost(stringified))
+    .then(resp => resp.json());
 };
 
 //explicit, makes a git commit
-//returns the commit
+//returns the commit wth sha, message
 export const snapshot = (projectId, rollup, message = 'Project Snapshot') => {
   invariant(projectId, 'Project ID required to snapshot');
   invariant(!message || typeof message === 'string', 'optional message for snapshot must be a string');

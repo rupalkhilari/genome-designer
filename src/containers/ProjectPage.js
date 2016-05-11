@@ -7,7 +7,7 @@ import ProjectHeader from '../components/ProjectHeader';
 import Inventory from './Inventory';
 import Inspector from './Inspector';
 import { projectList, projectLoad, projectCreate, projectOpen } from '../actions/projects';
-import { uiShowMainMenu, uiSetGrunt } from '../actions/ui';
+import { uiSetGrunt } from '../actions/ui';
 import { focusProject } from '../actions/focus';
 import autosaveInstance from '../store/autosave/autosaveInstance';
 
@@ -23,7 +23,6 @@ class ProjectPage extends Component {
     projectList: PropTypes.func.isRequired,
     projectLoad: PropTypes.func.isRequired,
     projectOpen: PropTypes.func.isRequired,
-    uiShowMainMenu: PropTypes.func.isRequired,
     uiSetGrunt: PropTypes.func.isRequired,
     focusProject: PropTypes.func.isRequired,
   };
@@ -146,7 +145,6 @@ export default connect(mapStateToProps, {
   projectLoad,
   projectCreate,
   projectOpen,
-  uiShowMainMenu,
   uiSetGrunt,
   focusProject,
 })(ProjectPage);

@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import invariant from 'invariant';
+import Spinner from '../ui/Spinner';
 import Toggler from '../ui/Toggler';
 
 import '../../styles/InventoryListGroup.css';
@@ -10,6 +11,7 @@ export default class InventoryListGroup extends Component {
     children: PropTypes.node.isRequired,
     disabled: PropTypes.bool,
     manual: PropTypes.bool,
+    isLoading: PropTypes.bool,
     isSelectable: PropTypes.bool,
     isExpanded: PropTypes.bool,
     onToggle: PropTypes.func, //click toggle, you are required for maintaining state if manual...
@@ -71,7 +73,7 @@ export default class InventoryListGroup extends Component {
   };
 
   render() {
-    const { isSelectable, hideToggle, title, manual, isExpanded, isActive, children, disabled } = this.props;
+    const { isSelectable, hideToggle, title, manual, isLoading, isExpanded, isActive, children, disabled } = this.props;
     const expanded = manual ? isExpanded : this.state.expanded;
 
     return (
@@ -90,6 +92,7 @@ export default class InventoryListGroup extends Component {
             <span>{title}</span>
           </a>
         </div>
+        {isLoading && !expanded && <Spinner />}
         {expanded && <div className="InventoryListGroup-contents no-vertical-scroll">
           {children}
         </div>}

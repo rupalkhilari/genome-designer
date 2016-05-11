@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import {connect } from 'react-redux';
-import { inspectorToggleVisibility } from '../actions/inspector';
+import { inspectorToggleVisibility } from '../actions/ui';
 import { focusConstruct, focusBlocks } from '../actions/focus';
 import '../styles/ProjectHeader.css';
 

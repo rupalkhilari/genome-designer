@@ -110,7 +110,7 @@ class UserWidget extends Component {
 function mapStateToProps(state) {
   return {
     user: state.user,
-    userWidgetVisible: state.ui.userWidgetVisible,
+    userWidgetVisible: state.ui.modals.userWidgetVisible,
   };
 }
 

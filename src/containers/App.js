@@ -13,6 +13,9 @@ class App extends Component {
     children: PropTypes.node, // Injected by React Router
     user: PropTypes.object,
     currentProjectId: PropTypes.string,
+    location: PropTypes.shape({
+      pathname: PropTypes.string.isRequired,
+    }).isRequired,
   };
 
   /**
@@ -38,10 +41,12 @@ class App extends Component {
 
   render() {
     const DevTools = (!!process.env.DEBUGMODE) ? require('./DevTools') : 'div';
+    const onProjectPage = this.props.location.pathname.indexOf('project/') >= 0;
 
     return (
       <div className="App">
-        <GlobalNav currentProjectId={this.props.currentProjectId}/>
+        <GlobalNav currentProjectId={this.props.currentProjectId}
+                   showMenu={onProjectPage}/>
         <AuthenticationForms />
         <ImportGenBankModal currentProjectId={this.props.currentProjectId}/>
         <ImportDNAForm />
@@ -62,5 +67,4 @@ function mapStateToProps(state, ownProps) {
   };
 }
 
-export default connect(mapStateToProps, {
-})(App);
+export default connect(mapStateToProps, {})(App);
