@@ -2,7 +2,7 @@ import Box2D from '../geometry/box2d';
 import Vector2D from '../geometry/vector2d';
 import Line2D from '../geometry/line2d';
 import Node2D from '../scenegraph2d/node2d';
-import SBOL2D from '../scenegraph2d/sbol2d';
+import Role2D from '../scenegraph2d/role2d';
 import LineNode2D from '../scenegraph2d/line2d';
 import kT from './layoutconstants';
 import objectValues from '../../../utils/object/values';
@@ -10,7 +10,7 @@ import invariant from 'invariant';
 
 // just for internal tracking of what type of block a node represents.
 const blockType = 'block';
-const sbolType = 'sbol';
+const roleType = 'role';
 
 /**
  * layout and scene graph manager for the construct viewer
@@ -90,7 +90,7 @@ export default class Layout {
   map(part, node) {
     this.nodes2parts[node.uuid] = part;
     this.parts2nodes[part] = node;
-    this.partTypes[part] = this.isSBOL(part) ? sbolType : blockType;
+    this.partTypes[part] = this.isSBOL(part) ? roleType : blockType;
   }
   /**
    * flag the part as currently in use i.e. should be rendered.
@@ -177,8 +177,8 @@ export default class Layout {
         dataAttribute: {name: 'nodetype', value: 'block'},
         sg: this.sceneGraph,
       }, appearance);
-      props.sbolName = this.isSBOL(part) ? this.blocks[part].rules.sbol : null;
-      node = new SBOL2D(props);
+      props.roleName = this.isSBOL(part) ? this.blocks[part].rules.role : null;
+      node = new Role2D(props);
       this.sceneGraph.root.appendChild(node);
       this.map(part, node);
     }
@@ -224,7 +224,7 @@ export default class Layout {
    * return true if the block appears to be an SBOL symbol
    */
   isSBOL(part) {
-    return !!this.blocks[part].rules.sbol;
+    return !!this.blocks[part].rules.role;
   }
 
   /**
@@ -538,9 +538,9 @@ export default class Layout {
       const block = this.blocks[part];
       const name = this.partName(part);
 
-      // set sbol part name if any
+      // set role part name if any
       node.set({
-        sbolName: this.isSBOL(part) ? block.rules.sbol : null,
+        roleName: this.isSBOL(part) ? block.rules.role : null,
       });
 
       // measure element text or used condensed spacing

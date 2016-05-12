@@ -189,7 +189,7 @@ export default {
     url: 'http://parts.igem.org/Part:BBa_Q04121',
   },
   rules: {
-    sbol: 'inverter',
+    role: 'inverter',
   },
   components: [],
   options: [],

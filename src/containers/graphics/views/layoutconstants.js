@@ -29,8 +29,8 @@ const titleFontSize = '20px';
 const blockFontSize = '12px';
 // background
 const background = 'rgb(52, 57, 77)';
-// size of sbol icons
-const sbolIcon = 27;
+// size of role icons
+const roleIcon = 27;
 // min size of layout
 const minWidth = blockH * 4;
 const minHeight = blockH + rowBarH + titleH;
@@ -60,7 +60,7 @@ export default {
   nestedInsetX: nestedInsetX,
   nestedInsetY: nestedInsetY,
   bannerHeight: bannerHeight,
-  sbolIcon: sbolIcon,
+  roleIcon: roleIcon,
   minWidth: minWidth,
   minHeight: minHeight,
   bottomPad: bottomPad,

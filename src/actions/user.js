@@ -1,5 +1,5 @@
 import * as ActionTypes from '../constants/ActionTypes';
-import { register, login, logout, updateAccount } from '../middleware/api';
+import { register, login, logout, updateAccount } from '../middleware/auth';
 
 const mapUserFromServer = (serverUser) => ({
   userid: serverUser.uuid,

@@ -10,7 +10,7 @@ export default class SBOL2D extends Node2D {
 
   constructor(props) {
     super(Object.assign({}, props, {
-      glyph: 'sbol',
+      glyph: 'role',
       textAlign: 'left',
       textIndent: kT.textPad,
       color: '#1D222D',
@@ -39,8 +39,8 @@ export default class SBOL2D extends Node2D {
       return new Vector2D(kT.condensedText, kT.blockH);
     }
     // measure actual text plus some padding
-    const sbolWidth = this.sbolName ? kT.sbolIcon + kT.textPad : 0;
-    const size = this.measureText(str).add(new Vector2D(kT.textPad * 2 + sbolWidth + kT.contextDotsW, 0));
+    const roleWidth = this.roleName ? kT.roleIcon + kT.textPad : 0;
+    const size = this.measureText(str).add(new Vector2D(kT.textPad * 2 + roleWidth + kT.contextDotsW, 0));
     return size;
   }
 

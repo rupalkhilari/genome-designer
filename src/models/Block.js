@@ -2,7 +2,7 @@ import Instance from './Instance';
 import invariant from 'invariant';
 import cloneDeep from 'lodash.clonedeep';
 import BlockDefinition from '../schemas/Block';
-import { getSequence, writeSequence } from '../middleware/api';
+import { getSequence, writeSequence } from '../middleware/sequence';
 import AnnotationDefinition from '../schemas/Annotation';
 import md5 from 'md5';
 import color from '../utils/generators/color';
@@ -58,14 +58,14 @@ export default class Block extends Instance {
   getName() {
     // called many K per second, no es6 fluffy stuff in here.
     if (this.metadata.name) return this.metadata.name;
-    if (this.rules.sbol) return this.rules.sbol;
+    if (this.rules.role) return this.rules.role;
     if (this.components.length) return 'New Construct';
     if (this.metadata.initialBases) return this.metadata.initialBases;
     return 'New Block';
   }
 
-  setSbol(sbol) {
-    return this.mutate('rules.sbol', sbol);
+  setRole(role) {
+    return this.mutate('rules.role', role);
   }
 
   setName(newName) {

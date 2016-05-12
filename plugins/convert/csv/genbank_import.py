@@ -67,17 +67,13 @@ def convert_block_to_feature(all_blocks, to_convert, parent, to_remove_list):
         else:
             feature["notes"][key] = value
 
-    #feature["sequence"] = to_convert["sequence"]["sequence"]
+    feature["sequence"] = to_convert["sequence"]["sequence"]
 
     if "annotations" not in parent["sequence"]:
         parent["sequence"]["annotations"] = []
 
     parent["sequence"]["annotations"].append(feature)
     to_remove_list.append(to_convert["id"])
-
-    if "annotations" in to_convert["sequence"]:
-        for annotation in to_convert["sequence"]["annotations"]:
-            parent["sequence"]["annotations"].append(annotation)
 
     # And also convert to features all the components of the removed block, recursively
     for to_convert_child_id in to_convert["components"]:
@@ -94,7 +90,7 @@ def create_root_block_from_genbank(gb, sequence):
     root_block["metadata"]["name"] = gb.name
     root_block["metadata"]["start"] = 0
     root_block["metadata"]["end"] = full_length - 1
-    root_block["metadata"]["genbank"]["id"] = gb.id
+    root_block["metadata"]["genbank"]["original_id"] = gb.id
     root_block["sequence"]["length"] = full_length
     if "references" in gb.annotations:
         for ref in gb.annotations["references"]:
@@ -270,8 +266,9 @@ def create_filler_blocks_for_holes(all_blocks, sequence):
                 block_id = str(uuid.uuid4())
                 filler_block = create_block_json(block_id, sequence[current_position:child["metadata"]["start"]], [])
                 filler_block["metadata"]["type"] = "filler"
-                filler_block["metadata"]["initialBases"] = filler_block["sequence"]["sequence"][:5]
-                filler_block["metadata"]["color"] = None
+                filler_block["metadata"]["name"] = filler_block["sequence"]["sequence"][:3] + '...'
+                filler_block["metadata"]["color"] = "#4B505E"
+                filler_block["metadata"]["fontColor"] = "#6B6F7C"
                 filler_block["metadata"]["start"] = current_position
                 filler_block["metadata"]["end"] = child["metadata"]["start"] - 1
                 filler_block["sequence"]["length"] = filler_block["metadata"]["end"] - filler_block["metadata"]["start"]
@@ -283,8 +280,9 @@ def create_filler_blocks_for_holes(all_blocks, sequence):
             block_id = str(uuid.uuid4())
             filler_block = create_block_json(block_id, sequence[current_position:block["metadata"]["end"] + 1], [])
             filler_block["metadata"]["type"] = "filler"
-            filler_block["metadata"]["initialBases"] = filler_block["sequence"]["sequence"][:5]
-            filler_block["metadata"]["color"] = None
+            filler_block["metadata"]["name"] = filler_block["sequence"]["sequence"][:3] + '...'
+            filler_block["metadata"]["color"] = "#4B505E"
+            filler_block["metadata"]["fontColor"] = "#6B6F7C"
             filler_block["metadata"]["start"] = current_position
             filler_block["metadata"]["end"] = block["metadata"]["end"]
             filler_block["sequence"]["length"] = filler_block["metadata"]["end"] - filler_block["metadata"]["start"]

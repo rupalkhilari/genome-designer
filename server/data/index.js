@@ -123,13 +123,13 @@ router.route('/info/:type/:detail?')
     const { type, detail } = req.params;
 
     switch (type) {
-    case 'sbol' :
+    case 'role' :
       if (detail) {
-        querying.getAllBlocksWithSbol(user.uuid, detail)
+        querying.getAllBlocksWithRole(user.uuid, detail)
           .then(info => res.status(200).json(info))
           .catch(err => next(err));
       } else {
-        querying.getAllBlockSbols(user.uuid)
+        querying.getAllBlockRoles(user.uuid)
           .then(info => res.status(200).json(info))
           .catch(err => next(err));
       }

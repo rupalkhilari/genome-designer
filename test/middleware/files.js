@@ -1,6 +1,6 @@
 import chai from 'chai';
 import fs from 'fs';
-import * as api from '../../src/middleware/api';
+import * as fileApi from '../../src/middleware/file';
 const { assert, expect } = chai;
 import { createFilePath } from '../../server/utils/filePaths';
 
@@ -13,7 +13,7 @@ describe('Middleware', () => {
       const fileContents = 'rawr';
       const storagePath = makeStoragePath(filePath);
 
-      return api.writeFile(filePath, fileContents)
+      return fileApi.writeFile(filePath, fileContents)
         .then((res) => {
           expect(res.status).to.equal(200);
           fs.readFile(storagePath, 'utf8', (err, file) => {
@@ -31,7 +31,7 @@ describe('Middleware', () => {
       const storagePath = makeStoragePath(filePath);
 
       fs.writeFile(storagePath, fileContents, 'utf8', (err, write) => {
-        api.writeFile(filePath, null)
+        fileApi.writeFile(filePath, null)
           .then((res) => {
             expect(res.status).to.equal(200);
             fs.readFile(storagePath, 'utf8', (err, read) => {
@@ -49,7 +49,7 @@ describe('Middleware', () => {
       const storagePath = makeStoragePath(filePath);
 
       fs.writeFile(storagePath, fileContents, 'utf8', (err, write) => {
-        api.readFile(filePath)
+        fileApi.readFile(filePath)
           .then(result => {
             expect(result.status).to.equal(200);
             expect(typeof result.text).to.equal('function');
@@ -77,8 +77,8 @@ describe('Middleware', () => {
 
       Promise
         .all([
-          api.writeFile(file1Path, file1Contents),
-          api.writeFile(file2Path, file2Contents),
+          fileApi.writeFile(file1Path, file1Contents),
+          fileApi.writeFile(file2Path, file2Contents),
         ])
         .then(files => {
           fs.readFile(storage1Path, 'utf8', (err, read) => {
@@ -90,8 +90,8 @@ describe('Middleware', () => {
         })
         .then(() => {
           return Promise.all([
-            api.readFile(file1Path).then(resp => resp.text()),
-            api.readFile(file2Path).then(resp => resp.text()),
+            fileApi.readFile(file1Path).then(resp => resp.text()),
+            fileApi.readFile(file2Path).then(resp => resp.text()),
           ]);
         })
         .then(files => {

@@ -1,5 +1,5 @@
 import { expect, assert } from 'chai';
-import { writeFile } from '../../src/middleware/api';
+import { writeFile } from '../../src/middleware/data';
 import Block from '../../src/models/Block';
 import AnnotationDefinition from '../../src/schemas/Annotation';
 import md5 from 'md5';
@@ -29,10 +29,10 @@ describe('Model', () => {
 
       it('Block.classless(input) creates unfrozen JSON object, no instance methods', () => {
         const instance = Block.classless({
-          rules: { sbol: 'promoter'},
+          rules: { role: 'promoter'},
         });
         expect(instance.id).to.be.defined;
-        expect(instance.rules.sbol === 'promoter');
+        expect(instance.rules.role === 'promoter');
         expect(instance.merge).to.be.undefined;
         expect(instance.clone).to.be.undefined;
         expect(instance.getName).to.be.undefined;

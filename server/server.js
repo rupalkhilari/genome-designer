@@ -8,10 +8,8 @@ import fileRouter from './file/index';
 import extensionsRouter from './extensions/index';
 import bodyParser from 'body-parser';
 
-import computeRouter from '../plugins/compute/api';
 import importRouter from '../plugins/convert/import';
 import exportRouter from '../plugins/convert/export';
-import searchRouter from '../plugins/search/search';
 
 const DEFAULT_PORT = 3000;
 const port = parseInt(process.argv[2], 10) || process.env.PORT || DEFAULT_PORT;
@@ -90,11 +88,9 @@ app.use('/data', dataRouter);
 app.use('/file', fileRouter);
 app.use('/extensions', extensionsRouter);
 
-//hardwired extensions
-app.use('/compute', computeRouter);
+//extensions
 app.use('/import', importRouter);
 app.use('/export', exportRouter);
-app.use('/search', searchRouter);
 
 // Register Client Requests, delegate routing to client
 // ----------------------------------------------------

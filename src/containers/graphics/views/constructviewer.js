@@ -12,7 +12,7 @@ import {
   blockAddComponent,
   blockAddComponents,
   blockClone,
-  blockSetSbol,
+  blockSetRole,
   blockAddSbol,
   blockRename,
   blockRemoveComponent,
@@ -26,7 +26,7 @@ import {
   blockGetParents,
 } from '../../../selectors/blocks';
 
-import { sbol as sbolDragType } from '../../../constants/DragTypes';
+import { role as roleDragType } from '../../../constants/DragTypes';
 import debounce from 'lodash.debounce';
 import UserInterface from './constructvieweruserinterface';
 import {
@@ -57,7 +57,7 @@ export class ConstructViewer extends Component {
     focusBlocksToggle: PropTypes.func.isRequired,
     focusConstruct: PropTypes.func.isRequired,
     currentBlock: PropTypes.array,
-    blockSetSbol: PropTypes.func,
+    blockSetRole: PropTypes.func,
     blockCreate: PropTypes.func,
     blockGetParent: PropTypes.func,
     blockClone: PropTypes.func,
@@ -406,12 +406,12 @@ export class ConstructViewer extends Component {
     let index;
     // get the immediate parent ( which might not be the top level block if this is a nested construct )
     let parent = insertionPoint ? this.getBlockParent(insertionPoint.block) : this.props.construct;
-    if (type === sbolDragType) {
+    if (type === roleDragType) {
       // insert next to block, inject into a block, or add as the first block of an empty construct
       if (insertionPoint) {
         if (insertionPoint.edge) {
           // create new block
-          const block = this.props.blockCreate({ rules: { sbol: item.id } });
+          const block = this.props.blockCreate({ rules: { role: item.id } });
           // get index of insertion allowing for the edge closest to the drop if provided
           index = parent.components.indexOf(insertionPoint.block) + (insertionPoint.edge === 'right' ? 1 : 0);
           // add
@@ -424,7 +424,7 @@ export class ConstructViewer extends Component {
         return [newBlock.id];
       }
       // create new block
-      const block = this.props.blockCreate({ rules: { sbol: item.id } });
+      const block = this.props.blockCreate({ rules: { role: item.id } });
       // the construct must be empty, add as the first child of the construct
       this.props.blockAddComponent(parent.id, block.id, 0);
       return [block.id];
@@ -524,7 +524,7 @@ export default connect(mapStateToProps, {
   blockAddComponents,
   blockRemoveComponent,
   blockGetParents,
-  blockSetSbol,
+  blockSetRole,
   blockAddSbol,
   blockRename,
   focusBlocks,

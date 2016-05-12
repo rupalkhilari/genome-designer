@@ -123,7 +123,7 @@ class GlobalNav extends Component {
     KeyboardTrap.bind('mod+b', (evt) => {
       evt.preventDefault();
       this.props.inventoryToggleVisibility(true);
-      this.props.inventorySelectTab('sbol');
+      this.props.inventorySelectTab('role');
     });
     KeyboardTrap.bind('option+n', (evt) => {
       evt.preventDefault();
@@ -411,11 +411,11 @@ class GlobalNav extends Component {
               },
             },
             {
-              text: 'SBOL Sketch Library',
+              text: 'Sketch Library',
               shortcut: stringToShortcut('meta B'),
               action: () => {
                 this.props.inventoryToggleVisibility(true);
-                this.props.inventorySelectTab('sbol');
+                this.props.inventorySelectTab('role');
               },
             },
             {},

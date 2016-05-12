@@ -5,7 +5,7 @@ import Transform2D from '../geometry/transform2d';
 import invariant from 'invariant';
 import NodeText2D from './nodetext2d';
 import RectangleGlyph2D from './glyphs/html/rectangleglyph2d';
-import SBOLGlyph2D from './glyphs/html/sbolglyph2d';
+import RoleGlyph2D from './glyphs/html/roleglyph2d';
 import LineGlyph2D from './glyphs/html/lineglyph2d';
 import ContextDots2D from './glyphs/html/contextdots2d';
 import ConstructBanner from './glyphs/canvas/constructbanner';
@@ -63,8 +63,8 @@ export default class Node2D {
     case 'construct-banner':
       this.glyphObject = new ConstructBanner(this);
       break;
-    case 'sbol':
-      this.glyphObject = new SBOLGlyph2D(this);
+    case 'role':
+      this.glyphObject = new RoleGlyph2D(this);
       break;
     case 'dots':
       this.glyphObject = new ContextDots2D(this);
