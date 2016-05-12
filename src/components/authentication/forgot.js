@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import {connect} from 'react-redux';
 import { uiShowAuthenticationForm, uiSetGrunt } from '../../actions/ui';
-import { forgot } from '../../middleware/api';
+import { forgot } from '../../middleware/data';
 
 /**
  * default visibility and text for error labels

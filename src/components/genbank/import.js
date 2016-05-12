@@ -6,7 +6,7 @@ import Dropzone from 'react-dropzone';
 import { uiShowGenBankImport } from '../../actions/ui';
 import { projectGet, projectListAllBlocks } from '../../selectors/projects';
 import { projectList, projectLoad, projectOpen } from '../../actions/projects';
-import { importGenbankOrCSV } from '../../middleware/api';
+import { importGenbankOrCSV } from '../../middleware/genbank';
 
 import '../../../src/styles/genbank.css';
 

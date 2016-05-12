@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { blockStash } from '../../actions/blocks';
 import { block as blockDragType } from '../../constants/DragTypes';
-import { infoQuery } from '../../middleware/api';
+import { infoQuery } from '../../middleware/data';
 import { symbolMap } from '../../inventory/roles';
 
 import InventoryListGroup from './InventoryListGroup';

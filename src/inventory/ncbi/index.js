@@ -3,7 +3,7 @@ import queryString from 'query-string';
 import Block from '../../models/Block';
 import merge from 'lodash.merge';
 import debounce from 'lodash.debounce';
-import { convertGenbank } from '../../middleware/api';
+import { convertGenbank } from '../../middleware/genbank';
 
 // NCBI limits number of requests per user/ IP, so better to initate from the client and I support process on client...
 export const name = 'NCBI';

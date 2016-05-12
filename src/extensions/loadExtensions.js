@@ -1,12 +1,10 @@
-import rejectingFetch from '../middleware/rejectingFetch';
 import registry, { validRegion } from './clientRegistry';
 import downloadExtension from './downloadExtension';
+import { getExtensionsInfo } from '../middleware/extensions';
 
 //for now, build the registry using everything registered on the server, and load automatically
 function loadAllExtensions() {
-  const url = `/extensions/list`;
-  rejectingFetch(url)
-    .then(resp => resp.json())
+  getExtensionsInfo()
     .then(manifests => {
       return Promise.all(Object.keys(manifests).map(key => {
         return downloadExtension(key)

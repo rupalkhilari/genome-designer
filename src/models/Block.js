@@ -2,7 +2,7 @@ import Instance from './Instance';
 import invariant from 'invariant';
 import cloneDeep from 'lodash.clonedeep';
 import BlockDefinition from '../schemas/Block';
-import { getSequence, writeSequence } from '../middleware/api';
+import { getSequence, writeSequence } from '../middleware/sequence';
 import AnnotationDefinition from '../schemas/Annotation';
 import md5 from 'md5';
 import color from '../utils/generators/color';

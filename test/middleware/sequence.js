@@ -1,5 +1,5 @@
 import chai from 'chai';
-import * as api from '../../src/middleware/api';
+import * as api from '../../src/middleware/data';
 const { assert, expect } = chai;
 import { createFilePath } from '../../server/utils/filePaths';
 

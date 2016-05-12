@@ -1,5 +1,5 @@
 import { expect, assert } from 'chai';
-import { writeFile } from '../../src/middleware/api';
+import { writeFile } from '../../src/middleware/data';
 import Block from '../../src/models/Block';
 import AnnotationDefinition from '../../src/schemas/Annotation';
 import md5 from 'md5';

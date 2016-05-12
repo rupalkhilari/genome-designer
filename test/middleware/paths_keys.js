@@ -1,23 +1,19 @@
 import chai from 'chai';
-import fs from 'fs';
-import * as api from '../../src/middleware/api';
+import * as pathsApi from '../../src/middleware/paths';
 const { assert, expect } = chai;
-import { createFilePath } from '../../server/utils/filePaths';
-
-const makeStoragePath = (path) => createFilePath(path);
 
 describe('Middleware', () => {
   describe('Paths + Keys', () => {
     //login() is tested in server/REST
 
     it('dataApiPath() returns an absolute URL to hit the server', () => {
-      const fakepath = api.dataApiPath('somepath');
+      const fakepath = pathsApi.dataApiPath('somepath');
       assert(/http/.test(fakepath));
       assert(/somepath/.test(fakepath));
     });
 
     it('dataApiPath() paths are prefixed with /data/', () => {
-      const fakepath = api.dataApiPath('somepath');
+      const fakepath = pathsApi.dataApiPath('somepath');
       assert(/data\/somepath/.test(fakepath));
     });
 
