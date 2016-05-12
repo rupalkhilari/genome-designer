@@ -538,9 +538,9 @@ export default class Layout {
       const block = this.blocks[part];
       const name = this.partName(part);
 
-      // set sbol part name if any
+      // set role part name if any
       node.set({
-        sbolName: this.isSBOL(part) ? block.rules.role : null,
+        roleName: this.isSBOL(part) ? block.rules.role : null,
       });
 
       // measure element text or used condensed spacing
