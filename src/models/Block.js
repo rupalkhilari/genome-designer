@@ -56,13 +56,11 @@ export default class Block extends Instance {
   /* metadata things */
 
   getName() {
-    const { name } = this.metadata;
-    const { role } = this.rules;
-    const isConstruct = this.components.length;
-
-    if (name) return name;
-    if (!!role) return role;
-    if (isConstruct) return 'New Construct';
+    // called many K per second, no es6 fluffy stuff in here.
+    if (this.metadata.name) return this.metadata.name;
+    if (this.rules.role) return this.rules.role;
+    if (this.components.length) return 'New Construct';
+    if (this.isFiller() && this.metadata.initialBases) return this.metadata.initialBases;
     return 'New Block';
   }
 
@@ -167,6 +165,7 @@ export default class Block extends Instance {
         const updatedSequence = {
           md5: sequenceMd5,
           length: sequenceLength,
+          initialBases: sequence.substr(0, 5),
         };
         return this.merge({ sequence: updatedSequence });
       });

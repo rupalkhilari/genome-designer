@@ -197,10 +197,24 @@ export default class Layout {
   }
 
   /**
+   * used specified color, or filler color for filler block or light gray
+   */
+  fillColor(part) {
+    const block = this.blocks[part];
+    if (block.isFiller()) return '#4B505E';
+    return block.metadata.color || 'lightgray';
+  }
+  /**
+   * filler blocks get a special color
+   */
+  fontColor(part) {
+    const block = this.blocks[part];
+    if (block.isFiller()) return '#6B6F7C';
+    return '#1d222d';
+  }
+
+  /**
    * return the property within the rule part of the blocks data
-   * @param  {[type]} part [description]
-   * @param  {[type]} name [description]
-   * @return {[type]}      [description]
    */
   partRule(part, name) {
     return this.blocks[part].rules[name];
@@ -208,8 +222,6 @@ export default class Layout {
 
   /**
    * return true if the block appears to be an SBOL symbol
-   * @param  {[type]}  part [description]
-   * @return {Boolean}      [description]
    */
   isSBOL(part) {
     return !!this.blocks[part].rules.role;
@@ -253,8 +265,7 @@ export default class Layout {
    * If the part is an SBOL symbol then use the symbol name preferentially
    */
   partName(part) {
-    //fixme -  should use block.getName()
-    return this.partMeta(part, 'name') || this.partRule(part, 'role') || 'block';
+    return this.blocks[part].getName();
   }
   /**
    * create the banner / bar for the construct ( contains the triangle )
@@ -299,7 +310,7 @@ export default class Layout {
       }
 
       // update title to current position and text and width
-      const text = this.construct.metadata.name || 'Construct';
+      const text = this.construct.getName();
       const width = this.titleNode.measureText(text).x + kT.textPad + kT.contextDotsW;
 
       this.titleNode.set({
@@ -522,13 +533,17 @@ export default class Layout {
       // create the node representing the part
       this.partFactory(part, kT.partAppearance);
 
+      const node = this.nodeFromElement(part);
+      const block = this.blocks[part];
+      const name = this.partName(part);
+
       // set role part name if any
-      this.nodeFromElement(part).set({
-        roleName: this.isSBOL(part) ? this.blocks[part].rules.role : null,
+      node.set({
+        roleName: this.isSBOL(part) ? block.rules.role : null,
       });
 
       // measure element text or used condensed spacing
-      const td = this.measureText(this.nodeFromElement(part), this.partName(part), layoutOptions.condensed);
+      const td = this.measureText(node, name, layoutOptions.condensed);
 
       // if position would exceed x limit then wrap
       if (xp + td.x > mx) {
@@ -540,15 +555,15 @@ export default class Layout {
       }
 
       // update part, including its text and color
-      this.nodeFromElement(part).set({
+      node.set({
         bounds: new Box2D(xp, yp, td.x, kT.blockH),
-        text: this.partName(part),
-        fill: this.partMeta(part, 'color') || 'lightgray',
-        color: this.partMeta(part, 'fontColor') || '#1D222D',
+        text: name,
+        fill: this.fillColor(part),
+        color: this.fontColor(part),
       });
 
       // render children ( nested constructs )
-      if (this.hasChildren(part) && this.nodeFromElement(part).showChildren) {
+      if (this.hasChildren(part) && node.showChildren) {
         // establish the position
         const nestedX = this.insetX + kT.nestedInsetX;
         const nestedY = yp + nestedVertical + kT.blockH + kT.nestedInsetY;
@@ -565,7 +580,7 @@ export default class Layout {
         }
 
         // update base color of nested construct skeleton
-        nestedLayout.baseColor = this.partMeta(part, 'color');
+        nestedLayout.baseColor = block.metadata.color || this.baseColor;
 
         // update minimum x extend of first rowH
         nestedLayout.initialRowXLimit = this.getConnectionRowLimit(part);

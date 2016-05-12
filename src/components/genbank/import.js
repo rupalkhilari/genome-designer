@@ -139,16 +139,13 @@ class ImportGenBankModal extends Component {
                   this.props.uiShowGenBankImport(false);
                 }}>Cancel
               </button>
-
-
             </form>
           )}
           closeOnClickOutside
           closeModal={buttonText => {
             this.props.uiShowGenBankImport(false);
           }}
-        />);
-
+        />
       </div>
     );
   }
