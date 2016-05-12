@@ -581,7 +581,7 @@ export default class Layout {
         }
 
         // update base color of nested construct skeleton
-        nestedLayout.baseColor = this.fillColor(part);
+        nestedLayout.baseColor = block.metadata.color || this.baseColor;
 
         // update minimum x extend of first rowH
         nestedLayout.initialRowXLimit = this.getConnectionRowLimit(part);
