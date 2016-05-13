@@ -3,17 +3,20 @@ from Bio import SeqIO
 from Bio import SeqFeature
 import json
 
+def is_filler(block):
+    # It's a filler block when it has no name, it has a sequence, and no color
+    return block["metadata"]["name"] == "" and (block["sequence"]["sequence"] and block["sequence"]["sequence"] != "") \
+           and ((not block["metadata"]["color"]) or block["metadata"]["color"] == "")
+
 def add_features(block, allblocks, gb, start):
     # Disregard fillers... don't create features for them
-    if "type" in block["metadata"] and block["metadata"]["type"] == 'filler':
+    if is_filler(block):
         return start + block["sequence"]["length"] + 1
 
     # Add Myself as a feature
     sf = SeqFeature.SeqFeature()
     # Set the type based on the original type or the role type
-    if "type" in block["metadata"] and block["metadata"]["type"] != 'filler':
-        sf.type = block["metadata"]["type"]
-    elif "rules" in block and "role" in block["rules"] and block["rules"]["role"] is not None:
+    if "rules" in block and "role" in block["rules"] and block["rules"]["role"] is not None:
         sf.type = block["rules"]["role"]
     else:
         sf.type = "unknown"

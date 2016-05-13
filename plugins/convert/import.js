@@ -6,6 +6,8 @@ import * as rollup from '../../server/data/rollup';
 import _ from 'lodash';
 import fs from 'fs';
 import formidable from 'formidable';
+import * as fileSystem from '../../server/utils/fileSystem';
+import md5 from 'md5';
 
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
@@ -14,14 +16,14 @@ const jsonParser = bodyParser.json({
 
 const namespace = 'convert';
 
-function callImportFunction(funcName, pluginId, data) {
+function callImportFunction(funcName, pluginId, inputFilePath) {
   return getPlugin(namespace, pluginId)
   .then(mod => {
     return new Promise((resolve, reject) => {
       if (mod && mod[funcName]) {
         try {
           const func = mod[funcName];
-          func(data)
+          func(inputFilePath)
           .then(res => {
             resolve(res);
           })
@@ -38,8 +40,8 @@ function callImportFunction(funcName, pluginId, data) {
   });
 }
 
-function importProject(pluginId, data) {
-  return callImportFunction('importProject', pluginId, data);
+function importProject(pluginId, inputFilePath) {
+  return callImportFunction('importProject', pluginId, inputFilePath);
 }
 
 //can pass :projectId = 'convert' to just convert genbank file directly, and not write to memory
@@ -53,9 +55,16 @@ router.post('/:pluginId/:projectId?', jsonParser, (req, resp, next) => {
       buffer += data;
     });
     req.on('end', () => {
-      return callImportFunction('convert', pluginId, buffer)
-        .then(converted => resp.status(200).json(converted))
-        .catch(err => next(err));
+      const tempFilePath = filePaths.createStorageUrl('temp/' + uuid.v4());
+      fs.writeFile(tempFilePath, buffer, (err) => {
+        return callImportFunction('convert', pluginId, tempFilePath)
+          .then(converted => {
+            fs.unlink(tempFilePath, (err) => {
+              resp.status(200).json(converted);
+            });
+          })
+          .catch(err => next(err));
+      });
     });
   } else {
       // save incoming file then read back the string data.
@@ -64,40 +73,45 @@ router.post('/:pluginId/:projectId?', jsonParser, (req, resp, next) => {
       const form = new formidable.IncomingForm();
       form.parse(req, (err, fields, files) => {
 
-        fs.readFile(files.data.path, 'utf8', (err, data) => {
-
-          return importProject(pluginId, data)
-          .then((roll) => {
-            if (!projectId) {
-              rollup.writeProjectRollup(roll.project.id, roll, req.user.uuid)
-              .then(() => persistence.projectSave(roll.project.id))
-              .then(commit => resp.status(200).json({ProjectId: roll.project.id}))
-              .catch(err => {
-                resp.status(400).send(err);
+        fileSystem.fileRead(files.data.path)
+          .then((data) => {
+            const inputFilePath = filePaths.createStorageUrl('genbank/' + md5(data));
+            fileSystem.fileWrite(inputFilePath, data, false)
+              .then((err) => {
+                if (err) return resp.status(500).send(err);
+                return importProject(pluginId, inputFilePath)
+                  .then((roll) => {
+                    if (!projectId) {
+                      rollup.writeProjectRollup(roll.project.id, roll, req.user.uuid)
+                        .then(() => persistence.projectSave(roll.project.id))
+                        .then(commit => resp.status(200).json({ProjectId: roll.project.id}))
+                        .catch(err => {
+                          resp.status(400).send(err);
+                        });
+                    } else {
+                      rollup.getProjectRollup(projectId)
+                        .then((existingRoll) => {
+                          existingRoll.project.components = existingRoll.project.components.concat(roll.project.components);
+                          existingRoll.blocks = existingRoll.blocks.concat(roll.blocks);
+                          rollup.writeProjectRollup(existingRoll.project.id, existingRoll, req.user.uuid)
+                            .then(() => persistence.projectSave(existingRoll.project.id))
+                            .then(commit => resp.status(200).json({ProjectId: existingRoll.project.id}))
+                            .catch(err => {
+                              resp.status(400).send(err);
+                            });
+                        })
+                        .catch(err => {
+                          resp.status(400).send(err);
+                        });
+                    }
+                  })
+                  .catch(err => {
+                    resp.status(500).send(err);
+                  });
               });
-            } else {
-              rollup.getProjectRollup(projectId)
-              .then((existingRoll) => {
-                existingRoll.project.components = existingRoll.project.components.concat(roll.project.components);
-                existingRoll.blocks = existingRoll.blocks.concat(roll.blocks);
-                rollup.writeProjectRollup(existingRoll.project.id, existingRoll, req.user.uuid)
-                .then(() => persistence.projectSave(existingRoll.project.id))
-                .then(commit => resp.status(200).json({ProjectId: existingRoll.project.id}))
-                .catch(err => {
-                  resp.status(400).send(err);
-                });
-              })
-              .catch(err => {
-                resp.status(400).send(err);
-              });
-            }
-          })
-          .catch(err => {
-            resp.status(500).send(err);
           });
-        });
       });
-    }
+  }
 });
 
 //export these functions for testing purpose

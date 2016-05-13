@@ -290,7 +290,6 @@ def create_filler_blocks_for_holes(all_blocks, sequence):
                 # start and where it actually starts. Add the filler block to the parent.
                 block_id = str(uuid.uuid4())
                 filler_block = create_block_json(block_id, sequence[current_position:child["metadata"]["start"]], [])
-                filler_block["metadata"]["type"] = "filler"
                 filler_block["metadata"]["initialBases"] = filler_block["sequence"]["sequence"][:5]
                 filler_block["metadata"]["color"] = None
                 filler_block["metadata"]["start"] = current_position
@@ -303,7 +302,6 @@ def create_filler_blocks_for_holes(all_blocks, sequence):
         if i > 0 and current_position < block["metadata"]["end"]:
             block_id = str(uuid.uuid4())
             filler_block = create_block_json(block_id, sequence[current_position:block["metadata"]["end"] + 1], [])
-            filler_block["metadata"]["type"] = "filler"
             filler_block["metadata"]["initialBases"] = filler_block["sequence"]["sequence"][:5]
             filler_block["metadata"]["color"] = None
             filler_block["metadata"]["start"] = current_position
