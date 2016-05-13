@@ -214,7 +214,7 @@ export const blockRemoveComponent = (blockId, ...componentIds) => {
   };
 };
 
-export const blockAddComponent = (blockId, componentId, index = -1, forceProjectId = true) => {
+export const blockAddComponent = (blockId, componentId, index = -1, forceProjectId = false) => {
   return (dispatch, getState) => {
     const oldParent = dispatch(selectors.blockGetParents(componentId)).shift();
     const oldBlock = getState().blocks[blockId];
@@ -229,11 +229,15 @@ export const blockAddComponent = (blockId, componentId, index = -1, forceProject
     //verify projectId match, set if appropriate (forceProjectId is true, or not set in component being added)
     if (componentProjectId !== nextParentProjectId) {
       invariant(!componentProjectId || forceProjectId === true, 'cannot add component with different projectId! set forceProjectId = true to overwrite.');
-      const updatedComponent = component.setProjectId(nextParentProjectId);
-      dispatch({
-        type: ActionTypes.BLOCK_STASH,
-        block: updatedComponent,
-      });
+
+      //there may be scenarios where we are adding to a detached block, so lets avoid the error when next parent has no project
+      if (nextParentProjectId) {
+        const updatedComponent = component.setProjectId(nextParentProjectId);
+        dispatch({
+          type: ActionTypes.BLOCK_STASH,
+          block: updatedComponent,
+        });
+      }
     }
 
     //remove component from old parent (should clone first to avoid this, this is to handle just moving)

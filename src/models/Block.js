@@ -45,7 +45,7 @@ export default class Block extends Instance {
   }
 
   setProjectId(projectId) {
-    invariant(idValidator(projectId) || projectId === null, 'project is required, or null to mark unassociated');
+    invariant(idValidator(projectId) || projectId === null, 'project Id is required, or null to mark unassociated');
     return this.mutate('projectId', projectId);
   }
 

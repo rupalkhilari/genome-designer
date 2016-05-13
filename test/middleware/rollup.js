@@ -90,8 +90,7 @@ describe('Middleware', () => {
       const projectId = project.id;
       const commitMessage = 'my fancy message';
 
-      return api.saveProject(projectId, roll)
-        .then(() => api.snapshot(projectId, roll, commitMessage))
+      return api.snapshot(projectId, commitMessage, roll)
         .then(commit => {
           assert(commit.message.indexOf(commitMessages.SNAPSHOT) >= 0, 'wrong commit message type, shoudl be snapshot');
           assert(commit.message.indexOf(commitMessage) >= 0, 'commit message missing');
