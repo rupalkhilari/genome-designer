@@ -27,7 +27,8 @@ If you want to use/test user authentication locally, do the following:
 1) clone the Bio/Nano User Platform repo locally.
 
 ```
-git clone git@git.autodesk.com:bionano/bio-user-platform.git ~/src/bio-user-platform
+git clone https://git.autodesk.com/bionano/bio-user-platform.git ~/src/bio-user-platform
+cd ~/src/bio-user-platform
 git checkout genome-designer
 ```
 
@@ -36,7 +37,7 @@ git checkout genome-designer
 
 ```
 cd ~/src/bio-user-platform
-npn install
+npm install
 ```
 
 4) Start the Authentication Service locally. Choose method:
