@@ -9,6 +9,11 @@ export const inspectorToggleVisibility = (forceState) => {
       type: ActionTypes.INSPECTOR_TOGGLE_VISIBILITY,
       nextState,
     });
+
+    window.setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+    }, 300);
+
     return nextState;
   };
 };
@@ -21,6 +26,11 @@ export const inventoryToggleVisibility = (forceState) => {
       type: ActionTypes.INVENTORY_TOGGLE_VISIBILITY,
       nextState,
     });
+
+    window.setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+    }, 300);
+
     return nextState;
   };
 };

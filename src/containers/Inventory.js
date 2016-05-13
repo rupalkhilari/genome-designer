@@ -18,9 +18,6 @@ export class Inventory extends Component {
 
   toggle = (forceVal) => {
     this.props.inventoryToggleVisibility(forceVal);
-    window.setTimeout(() => {
-      window.dispatchEvent(new Event('resize'));
-    }, 300);
   };
 
   render() {
@@ -78,5 +75,5 @@ function mapStateToProps(state, props) {
 
 export default connect(mapStateToProps, {
   inventoryToggleVisibility,
-  inventorySelectTab
+  inventorySelectTab,
 })(Inventory);

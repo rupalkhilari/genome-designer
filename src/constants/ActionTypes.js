@@ -1,6 +1,5 @@
 export const BLOCK_CREATE = 'BLOCK_CREATE';
 export const BLOCK_STASH = 'BLOCK_STASH';
-export const BLOCK_SAVE = 'BLOCK_SAVE';
 export const BLOCK_LOAD = 'BLOCK_LOAD';
 export const BLOCK_CLONE = 'BLOCK_CLONE';
 export const BLOCK_MERGE = 'BLOCK_MERGE';

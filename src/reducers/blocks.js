@@ -12,8 +12,6 @@ if (process.env.NODE_ENV === 'test') {
 export default function blocks(state = initialState, action) {
   switch (action.type) {
   case ActionTypes.BLOCK_CREATE :
-    //case ActionTypes.BLOCK_SAVE :
-  case ActionTypes.BLOCK_LOAD :
   case ActionTypes.BLOCK_MERGE :
   case ActionTypes.BLOCK_RENAME :
   case ActionTypes.BLOCK_SET_COLOR :
@@ -28,10 +26,14 @@ export default function blocks(state = initialState, action) {
   case ActionTypes.BLOCK_COMPONENT_REMOVE :
     const { block } = action;
     return Object.assign({}, state, { [block.id]: block });
+
+  case ActionTypes.BLOCK_LOAD :
   case ActionTypes.BLOCK_STASH :
+    //expects an array of Block models
     const { blocks } = action;
     const toMerge = blocks.reduce((acc, block) => Object.assign(acc, { [block.id]: block }), {});
     return Object.assign({}, state, toMerge);
+
   case ActionTypes.BLOCK_DELETE :
     const { blockId } = action;
     const nextState = Object.assign({}, state);

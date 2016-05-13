@@ -591,15 +591,15 @@ class GlobalNav extends Component {
   }
 
   render() {
-    const { showMenu } = this.props;
+    const { currentProjectId, showMenu } = this.props;
 
     return (
       <div className="GlobalNav">
         <RibbonGrunt />
         <span className="GlobalNav-title">GD</span>
-        {showMenu ? this.menuBar() : null}
+        {showMenu && this.menuBar()}
         <span className="GlobalNav-spacer"/>
-        <AutosaveTracking />
+        {showMenu && <AutosaveTracking projectId={currentProjectId} />}
         <UserWidget/>
       </div>
     );

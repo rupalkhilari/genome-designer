@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { blockStash } from '../../actions/blocks';
+import { blockLoad, blockStash } from '../../actions/blocks';
 import { block as blockDragType } from '../../constants/DragTypes';
 import { infoQuery } from '../../middleware/data';
 import { symbolMap } from '../../inventory/roles';
@@ -12,6 +12,7 @@ import Spinner from '../ui/Spinner';
 export class InventoryRoleMap extends Component {
   static propTypes = {
     blockStash: PropTypes.func.isRequired,
+    blockLoad: PropTypes.func.isRequired,
   };
 
   state = {
@@ -56,12 +57,7 @@ export class InventoryRoleMap extends Component {
 
     //get components if its a construct and add blocks to the store
     //note - this may be a very large query
-    return infoQuery('components', item.id)
-      .then(componentsObj => {
-        //this object is a map of { <blockId> : <block> }, including the item itself
-        const components = Object.keys(componentsObj).map(key => componentsObj[key]);
-        return this.props.blockStash(...components);
-      })
+    return this.props.blockLoad(item.id, true)
       .then(() => item);
   };
 
@@ -97,4 +93,5 @@ export class InventoryRoleMap extends Component {
 
 export default connect(() => ({}), {
   blockStash,
+  blockLoad
 })(InventoryRoleMap);

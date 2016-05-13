@@ -3,42 +3,24 @@ import { merge } from 'lodash';
 import * as ActionTypes from '../constants/ActionTypes';
 import BlockDefinition from '../schemas/Block';
 import Block from '../models/Block';
-import { saveBlock, loadBlock } from '../middleware/data';
+import { loadBlock } from '../middleware/data';
 import * as selectors from '../selectors/blocks';
 import * as projectSelectors from '../selectors/projects';
 import * as undoActions from '../store/undo/actions';
 import { pauseAction, resumeAction } from '../store/pausableStore';
 
 //Promise
-export const blockSave = (blockId, forceProjectId = false) => {
+//retrieves a block, and its components if specified
+export const blockLoad = (blockId, withComponents = false) => {
   return (dispatch, getState) => {
-    const block = getState().blocks[blockId];
-    const currentProjectId = dispatch(projectSelectors.projectGetCurrentId());
-    const projectId = block.getProjectId() || forceProjectId || currentProjectId;
-    //todo - should save projectId on the block if its different
-
-    invariant(projectId, 'project ID required to save block');
-    return saveBlock(block, projectId)
-      .then(block => {
-        dispatch({
-          type: ActionTypes.BLOCK_SAVE,
-          block,
-        });
-        return block;
-      });
-  };
-};
-
-//Promise
-export const blockLoad = (blockId) => {
-  return (dispatch, getState) => {
-    return loadBlock(blockId)
-      .then(block => {
+    return loadBlock(blockId, withComponents)
+      .then(blockMap => {
+        const blocks = Object.keys(blockMap).map(key => new Block(blockMap[key]));
         dispatch({
           type: ActionTypes.BLOCK_LOAD,
-          block,
+          blocks,
         });
-        return block;
+        return blocks;
       });
   };
 };
@@ -213,7 +195,6 @@ export const blockDetach = (...blockIds) => {
     return blockIds;
   };
 };
-
 
 /***************************************
  * Components
@@ -403,7 +384,6 @@ export const blockRemoveAnnotation = (blockId, annotation) => {
     return block;
   };
 };
-
 
 /***************************************
  * Sequence
