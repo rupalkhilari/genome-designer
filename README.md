@@ -7,6 +7,43 @@
 
 `npm run start`
 
+### Mongo DB
+
+We are using Mongo DB to store and track orders sent to EGF.
+You will need to install Mongo DB locally to do this since there is no
+npm package for actually installing the database.
+
+For OSX: brew install mongodb
+For Windows: https://docs.mongodb.com/v3.0/tutorial/install-mongodb-on-windows/
+
+Currently the app is configured for local development only. It will expect
+the Mongo database to be running before starting the app. To start Mongo
+open a terminal at the root of the project and:
+
+npm run mongo
+
+You can stop the database using Ctrl-C.
+
+Mongo will store its data in a project relative folder: ./mongo-local
+You should create that folder or we can add to post-install later.
+
+Start the app and shortly there after you will the results of attempting to
+connect to the database...either:
+
+Mongo Connection: No error
+
+or...
+
+Mongo Connection: [ some sort of error message ]
+
+Currently there is a very simple order table and associated API for creating an order.
+Assuming you are signed in:
+
+POST /orders/createorder
+
+The body must contain: projectid: 12345678
+
+
 ### user authentication
 User authentication depends on the Bio/Nano User Platform project, which is currently not open source. As a result user
 authentication is NOT enabled by default when running this application locally. Authentication routes and a user object
