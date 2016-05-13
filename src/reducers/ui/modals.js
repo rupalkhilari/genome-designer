@@ -42,7 +42,8 @@ export default function modals(state = initialState, action) {
     return Object.assign({}, state, { gruntMessage });
 
   case LOCATION_CHANGE :
-    return Object.assign({}, initialState);
+    const toKeep = ['gruntMessage'].reduce((acc, field) => Object.assign(acc, { [field]: state[field] }), {});
+    return Object.assign({}, initialState, toKeep);
 
   default :
     return state;
