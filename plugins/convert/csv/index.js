@@ -26,6 +26,7 @@ const runCommand = (command, inputFile, outputFile) => {
   return new Promise((resolve, reject) => {
     exec(command, (err, stdout) => {
       if (err) {
+        console.log('Running command came back with error', err);
         reject(err);
       }
       else resolve(stdout);
@@ -43,7 +44,7 @@ const createBlockStructureAndSaveSequence = (block, sourceId) => {
   // generate a valid block scaffold. This is similar to calling new Block(),
   // but a bit more light weight and easier to work with (models are frozen so you cannot edit them)
   const scaffold = BlockDefinition.scaffold();
-
+  const fileName = /[^/]*$/.exec(sourceId)[0];
   //get the sequence md5
   const sequenceMd5 = block.sequence.sequence ? md5(block.sequence.sequence) : '';
 
@@ -56,7 +57,7 @@ const createBlockStructureAndSaveSequence = (block, sourceId) => {
     },
     source: {
       source: 'csv',
-      id: sourceId,
+      id: fileName,
     },
     rules: block.rules,
   };
@@ -136,13 +137,14 @@ const readCsvFile = (inputFilePath) => {
   const outputFilePath = createRandomStorageFile();
 
   const cmd = `python ${path.resolve(__dirname, 'convert.py')} from_csv ${inputFilePath} ${outputFilePath}`;
-  return runCommand(cmd, inputFilePath, outputFile)
+  return runCommand(cmd, inputFilePath, outputFilePath)
     .then(resStr => {
       try {
         fileSystem.fileDelete(outputFilePath);
         const res = JSON.parse(resStr);
         return Promise.resolve(res);
       } catch (err) {
+        console.log('Error processing the csv result: ', err);
         return Promise.reject(err);
       }
     })
@@ -150,6 +152,7 @@ const readCsvFile = (inputFilePath) => {
       fileSystem.fileDelete(outputFilePath);
       console.log('ERROR IN PYTHON');
       console.log(err);
+      return Promise.reject(err);
     });
 };
 
@@ -169,7 +172,7 @@ const handleBlocks = (inputFilePath) => {
           });
       }
       else {
-        return 'Invalid csv format.';
+        return 'Error in the conversion: ' + result;
       }
     });
 };

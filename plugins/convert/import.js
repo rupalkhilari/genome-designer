@@ -7,7 +7,9 @@ import _ from 'lodash';
 import fs from 'fs';
 import formidable from 'formidable';
 import * as fileSystem from '../../server/utils/fileSystem';
+import * as filePaths from '../../server/utils/filePaths';
 import md5 from 'md5';
+const uuid = require('node-uuid');
 
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
@@ -72,13 +74,11 @@ router.post('/:pluginId/:projectId?', jsonParser, (req, resp, next) => {
       // file names instead but for now, in memory is fine.
       const form = new formidable.IncomingForm();
       form.parse(req, (err, fields, files) => {
-
-        fileSystem.fileRead(files.data.path)
+        fileSystem.fileRead(files.data.path, false)
           .then((data) => {
-            const inputFilePath = filePaths.createStorageUrl('genbank/' + md5(data));
+            const inputFilePath = filePaths.createStorageUrl(pluginId + '/' + md5(data));
             fileSystem.fileWrite(inputFilePath, data, false)
               .then((err) => {
-                if (err) return resp.status(500).send(err);
                 return importProject(pluginId, inputFilePath)
                   .then((roll) => {
                     if (!projectId) {

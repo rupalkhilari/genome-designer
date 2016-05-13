@@ -53,6 +53,7 @@ function exportThenCatch(promise, resp, roll) {
     resp.status(200).send(res);
   })
   .catch(err => {
+    console.log('Error!', err);
     resp.status(500).send(err);
   });
 }

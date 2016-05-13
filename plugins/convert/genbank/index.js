@@ -1,5 +1,5 @@
-import * as filePaths from '../../../server/utils/filePaths';
 import * as fileSystem from '../../../server/utils/fileSystem';
+import * as filePaths from '../../../server/utils/filePaths';
 import path from 'path';
 import Project from '../../../src/models/Project';
 import Block from '../../../src/models/Block';
@@ -8,6 +8,7 @@ import _ from 'lodash';
 import BlockDefinition from '../../../src/schemas/Block';
 import ProjectDefinition from '../../../src/schemas/Project';
 import * as persistence from '../../../server/data/persistence';
+import md5 from 'md5';
 
 import {chunk, cloneDeep} from 'lodash';
 
@@ -24,6 +25,8 @@ const runCommand = (command, inputFile, outputFile) => {
   return new Promise((resolve, reject) => {
     exec(command, (err, stdout) => {
       if (err) {
+        console.log('ERROR!!!!!');
+        console.log(err);
         reject(err);
       }
       else resolve(stdout);
@@ -41,6 +44,7 @@ const createBlockStructureAndSaveSequence = (block, sourceId) => {
   // generate a valid block scaffold. This is similar to calling new Block(),
   // but a bit more light weight and easier to work with (models are frozen so you cannot edit them)
   const scaffold = BlockDefinition.scaffold();
+  const fileName = /[^/]*$/.exec(sourceId)[0];
 
   //get the sequence md5
   const sequenceMd5 = block.sequence.sequence ? md5(block.sequence.sequence) : '';
@@ -54,7 +58,7 @@ const createBlockStructureAndSaveSequence = (block, sourceId) => {
       annotations: block.sequence.annotations, //you will likely have to remap these...
     },
     source: {
-      id: sourceId,
+      id: fileName,
       source: 'genbank',
     },
     rules: block.rules,
@@ -137,22 +141,19 @@ const readGenbankFile = (inputFilePath) => {
 
   return runCommand(cmd, inputFilePath, outputFilePath)
     .then(resStr => {
-      fileSystem.fileDelete(outputFilePath)
-        .then((err) => {
-          try {
-            const res = JSON.parse(resStr);
-            return Promise.resolve(res);
-          } catch (err) {
-            return Promise.reject(err);
-          }
-        });
+      fileSystem.fileDelete(outputFilePath);
+      try {
+        const res = JSON.parse(resStr);
+        return Promise.resolve(res);
+      } catch (err) {
+        return Promise.reject(err);
+      }
     })
     .catch(err => {
-      fileSystem.fileDelete(outputFilePath)
-        .then((err) => {
-          console.log('ERROR IN PYTHON');
-          console.log(err);
-        });
+      console.log('ERROR IN PYTHON');
+      console.log(err);
+      fileSystem.fileDelete(outputFilePath);
+      return Promise.reject(err);
     });
 };
 
@@ -216,8 +217,8 @@ export const convert = (inputFilePath) => {
 //////////////////////////////////////////////////////////////
 // Call Python to generate the genbank output for a project with a set of blocks
 const exportProjectStructure = (project, blocks) => {
-  const inputFile = createTempFilePath();
-  const outputFile = createTempFilePath();
+  const inputFilePath = createTempFilePath();
+  const outputFilePath = createTempFilePath();
   const input = {
     project,
     blocks,
@@ -225,25 +226,23 @@ const exportProjectStructure = (project, blocks) => {
 
   //const outputFile2 = filePaths.createStorageUrl('exported_to_genbank.json');
   //fileSystem.fileWrite(outputFile2, input);
-  fileSystem.fileWrite(inputFile, input)
-    .then((err) => {
-      const cmd = `python ${path.resolve(__dirname, 'convert.py')} to_genbank ${inputFile} ${outputFile}`;
-      return runCommand(cmd, inputFile, outputFile)
-        .then(resStr => {
-          fileSystem.fileDelete(inputFile);
-          fileSystem.fileDelete(outputFile);
-          Promise.resolve(resStr);
-        })
-        .catch(err => {
-          fileSystem.fileDelete(inputFile);
-          fileSystem.fileDelete(outputFile);
-          console.log('ERROR IN PYTHON');
-          console.log('Command');
-          console.log(cmd);
-          console.log('Error')
-          console.log(err);
-          Promise.reject(err);
-        });
+
+  return fileSystem.fileWrite(inputFilePath, input)
+    .then(() => runCommand(`python ${path.resolve(__dirname, 'convert.py')} to_genbank ${inputFilePath} ${outputFilePath}`, inputFilePath, outputFilePath))
+    .then(resStr => {
+      fileSystem.fileDelete(inputFilePath);
+      fileSystem.fileDelete(outputFilePath);
+      return resStr;
+    })
+    .catch(err => {
+      fileSystem.fileDelete(inputFilePath);
+      fileSystem.fileDelete(outputFilePath);
+      console.log('ERROR IN PYTHON');
+      console.log('Command');
+      console.log(`python ${path.resolve(__dirname, 'convert.py')} to_genbank ${inputFilePath} ${outputFilePath}`);
+      console.log('Error');
+      console.log(err);
+      return Promise.reject(err);
     });
 };
 
@@ -265,8 +264,8 @@ const loadSequences = (blocks) => {
 // Given a project and a set of blocks, generate the genbank format
 export const exportProject = (roll) => {
   return loadSequences(roll.blocks)
-    .then(blockWithSequences => exportProjectStructure(roll.project, blockWithSequences))
-    .then(exportStr => Promise.resolve(exportStr));
+    .then((blockWithSequences) => exportProjectStructure(roll.project, blockWithSequences))
+    .then((exportStr) => Promise.resolve(exportStr));
 };
 
 // This is the entry function for construct export

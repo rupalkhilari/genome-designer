@@ -170,8 +170,6 @@ def create_child_block_from_feature(f, all_blocks, root_block, sequence):
         if role_type:
             child_block["rules"]["role"] = role_type
 
-        child_block["metadata"]["type"] = f.type
-
         # Note the rules for the name of the block
         # The name is the string that appears on the UI when visualizing blocks.
         if "name" not in child_block:

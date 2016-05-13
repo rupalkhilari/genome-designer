@@ -73,7 +73,7 @@ def convert_annotations(block, gb):
     # Add My annotations as features
     for annotation in block["sequence"]["annotations"]:
         gb_annot = SeqFeature.SeqFeature()
-        annotation_type = ""
+        annotation_type = "unknown"
         for key, value in annotation.iteritems():
             if key not in ["start", "end", "notes", "strand"]:
                 gb_annot.qualifiers[key] = value

@@ -11,6 +11,9 @@ import bodyParser from 'body-parser';
 import importRouter from '../plugins/convert/import';
 import exportRouter from '../plugins/convert/export';
 
+import { directoryMake } from './utils/fileSystem';
+import { createStorageUrl } from './utils/filePaths';
+
 const DEFAULT_PORT = 3000;
 const port = parseInt(process.argv[2], 10) || process.env.PORT || DEFAULT_PORT;
 const hostname = '0.0.0.0';
@@ -122,6 +125,10 @@ app.get('*', (req, res) => {
     res.render(path.join(pathContent + '/index.jade'), Object.assign({}, req.user, discourse));
   }
 });
+
+directoryMake(createStorageUrl('temp'));
+directoryMake(createStorageUrl('genbank'));
+directoryMake(createStorageUrl('csv'));
 
 //i have no idea why, but sometimes the server tries to build when the port is already in use, so lets just check if port is in use and if it is, then dont try to listen on it.
 const isPortFree = (port, cb) => {
