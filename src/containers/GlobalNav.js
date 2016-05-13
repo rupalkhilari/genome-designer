@@ -596,16 +596,12 @@ class GlobalNav extends Component {
 
     return (
       <div className="GlobalNav">
-        <div className="GlobalNav-bar">
-          <span className="GlobalNav-title">GD</span>
-          {showMenu && this.menuBar()}
-          <span className="GlobalNav-spacer"/>
-          {showMenu && <AutosaveTracking projectId={currentProjectId}/>}
-          <UserWidget/>
-        </div>
-        <div className="GlobalNav-bar">
-          <RibbonGrunt />
-        </div>
+        <RibbonGrunt />
+        <span className="GlobalNav-title">GD</span>
+        {showMenu && this.menuBar()}
+        <span className="GlobalNav-spacer"/>
+        {showMenu && <AutosaveTracking projectId={currentProjectId}/>}
+        <UserWidget/>
       </div>
     );
   }

@@ -3,15 +3,9 @@
 .GlobalNav {
   position: relative;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   flex-shrink: 0;
   background-color: white;
-
-  &-bar {
-    display: flex;
-    flex-direction: row;
-    flex-shrink: 0;
-  }
 
   &-title {
     color: white;
