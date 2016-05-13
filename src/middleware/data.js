@@ -14,16 +14,56 @@ import Project from '../models/Project';
 //track the last versions saved so we aren't saving over and over
 const rollMap = new Map();
 
+//track information about saving e.g. time
+const saveState = new Map();
+
 //compares two rollups for effective changes
-const isRollSame = (oldRoll, newRoll) => {
-  if (!oldRoll || !newRoll) return false;
+const isRollDifferent = (oldRoll, newRoll) => {
+  if (!oldRoll || !newRoll) return true;
+
   //check projects same
-  if (!Project.compare(oldRoll.project, newRoll.project)) return false;
+  if (!Project.compare(oldRoll.project, newRoll.project)) return true;
+
   //check all blocks same
-  return oldRoll.blocks.every(oldBlock => {
+  return oldRoll.blocks.some(oldBlock => {
     const analog = newRoll.blocks.find(newBlock => newBlock.id === oldBlock.id);
-    return analog && analog === oldBlock;
+    return !analog || analog !== oldBlock;
   });
+};
+
+const noteSave = (projectId, rollup, sha = null) => {
+  invariant(projectId, 'must pass project ID');
+  const lastState = saveState.get(projectId) || {};
+
+  saveState.set(projectId, Object.assign(lastState, {
+    lastSaved: +Date.now(),
+    sha,
+  }));
+};
+
+const noteFailure = (projectId, err) => {
+  invariant(projectId, 'must pass project ID');
+  const lastState = saveState.get(projectId) || {};
+
+  saveState.set(projectId, Object.assign(lastState, {
+    lastFailed: +Date.now(),
+    lastErr: err,
+  }));
+};
+
+export const getProjectSaveState = (projectId) => {
+  invariant(projectId, 'must pass project ID');
+  const state = saveState.get(projectId) || {};
+  const { lastSaved = 0, lastFailed = 0, sha = null, lastErr = null } = state;
+
+  return {
+    lastSaved,
+    sha,
+    lastFailed,
+    lastErr,
+    saveDelta: +Date.now() - lastSaved,
+    saveSuccessful: lastFailed <= lastSaved,
+  };
 };
 
 /******
@@ -70,8 +110,8 @@ export const saveProject = (projectId, rollup) => {
   invariant(rollup.project && Array.isArray(rollup.blocks), 'rollup in wrong form');
 
   //check if project is new, and save if it is
-  const oldRoll = rollMap.get(projectId);
-  if (isRollSame(oldRoll, rollup)) {
+  const cached = rollMap.get(projectId);
+  if (!isRollDifferent(cached, rollup)) {
     return Promise.resolve(null);
   }
 
@@ -80,9 +120,14 @@ export const saveProject = (projectId, rollup) => {
 
   return rejectingFetch(url, headersPost(stringified))
     .then(resp => resp.json())
-    .then(commitInfo => {
-      rollMap.set(projectId, rollup);
-      return commitInfo;
+    .then(commit => {
+      const { sha } = commit;
+      noteSave(projectId, rollup, sha);
+      return commit;
+    })
+    .catch(err => {
+      noteFailure(projectId, err);
+      return Promise.reject(err);
     });
 };
 
@@ -98,9 +143,14 @@ export const snapshot = (projectId, message = 'Project Snapshot', rollup = {}) =
 
   return rejectingFetch(url, headersPost(stringified))
     .then(resp => resp.json())
-    .then(commitInfo => {
-      rollMap.set(projectId, rollup);
-      return commitInfo;
+    .then(commit => {
+      const { sha } = commit;
+      noteSave(projectId, rollup, sha);
+      return commit;
+    })
+    .catch(err => {
+      noteFailure(projectId, err);
+      return Promise.reject(err);
     });
 };
 
