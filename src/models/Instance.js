@@ -11,24 +11,16 @@ const versionValidator = (ver, required = false) => safeValidate(version(), requ
  * @description
  * you can pass as argument to the constructor either:
  *  - an object, which will extend the created instance
- *  - a string, to use as a forced ID (todo - deprecate - this is for testing...)
  */
 export default class Instance {
-  constructor(input, subclassBase, moreFields) {
-    let parsedInput;
-    if (!!input && typeof input === 'object') {
-      parsedInput = input;
-    } else if (typeof input === 'string') {
-      parsedInput = { id: input };
-    } else {
-      parsedInput = {};
-    }
+  constructor(input = {}, subclassBase, moreFields) {
+    invariant(typeof input === 'object', 'must pass an object (or leave undefined) to model constructor');
 
     merge(this,
       InstanceDefinition.scaffold(),
       subclassBase,
       moreFields,
-      parsedInput
+      input,
     );
 
     if (process.env.NODE_ENV !== 'production') {
