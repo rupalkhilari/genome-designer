@@ -3,6 +3,7 @@ import fs from 'fs';
 import express from 'express';
 import morgan from 'morgan';
 
+import orderRouter from './orders/orders';
 import dataRouter from './data/index';
 import fileRouter from './file/index';
 import extensionsRouter from './extensions/index';
@@ -30,6 +31,19 @@ app.use(bodyParser({
   limit: '50mb',  // default limit is 100K, not nearly large enough for our projects.
   strict: false,  // accept anything that JSON.parse will swallow
 }));
+
+// connect to the mongo database.
+// NOTE: Mongoose will buffer commands until connection is established
+// so no need to wait for the connection to be made.
+import mongoose from'mongoose';
+const mongoURL = process.env.NODE_ENV === 'production'
+? 'unknown'
+: 'mongodb://localhost/genomedesigner';
+mongoose.connect(mongoURL, {
+  // configuration options as needed here
+},  (err, connection) => {
+  console.log('Mongo Connection Result: ' + (err || 'No Error'));
+});
 
 
 //error logging middleware
@@ -84,6 +98,7 @@ if (process.env.BIO_NANO_AUTH) {
 }
 
 //primary routes
+app.use('/orders', orderRouter);
 app.use('/data', dataRouter);
 app.use('/file', fileRouter);
 app.use('/extensions', extensionsRouter);

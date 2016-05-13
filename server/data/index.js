@@ -17,7 +17,7 @@ import errorHandlingMiddleware from '../utils/errorHandlingMiddleware';
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
   strict: false, //allow values other than arrays and objects,
-  limit: 10 * 1024 * 1024,
+  limit: '50mb',
 });
 
 /***************************
@@ -340,6 +340,7 @@ router.route('/:projectId')
       .then(() => res.status(200).send(projectId))
       .catch(err => next(err));
   });
+
 
 //default catch
 router.use('*', (req, res) => {

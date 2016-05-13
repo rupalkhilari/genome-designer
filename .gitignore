@@ -4,6 +4,7 @@ node_modules
 npm-debug.log
 screenshots
 e2ereports
+mongo-local
 selenium-debug.log
 /redis-stable
 dump.rdb
