@@ -114,7 +114,7 @@ const parts = [
   {
     id: "2f663c8d-7cbb-4d90-83ba-eee792340f92",
     metadata: {
-      name: "UTR-5’",
+      name: "UTR-5'",
       description: "",
     },
     sequence: {
