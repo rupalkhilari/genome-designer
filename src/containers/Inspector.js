@@ -19,9 +19,6 @@ export class Inspector extends Component {
 
   toggle = (forceVal) => {
     this.props.inspectorToggleVisibility(forceVal);
-    window.setTimeout(() => {
-      window.dispatchEvent(new Event('resize'));
-    }, 300);
   };
 
   render() {
