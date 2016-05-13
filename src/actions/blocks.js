@@ -9,6 +9,8 @@ import * as projectSelectors from '../selectors/projects';
 import * as undoActions from '../store/undo/actions';
 import { pauseAction, resumeAction } from '../store/pausableStore';
 
+//todo - helper to wrap dispatch()'s in a paused transaction - make sure dispatch still runs when passed as arg
+
 //Promise
 //retrieves a block, and its components if specified
 export const blockLoad = (blockId, withComponents = false) => {
@@ -53,6 +55,20 @@ export const blockStash = (...inputBlocks) => {
   };
 };
 
+//this is a backup for performing arbitrary mutations. You probably shouldn't use this.
+export const blockMerge = (blockId, toMerge) => {
+  return (dispatch, getState) => {
+    const oldBlock = getState().blocks[blockId];
+    const block = oldBlock.merge(toMerge);
+    dispatch({
+      type: ActionTypes.BLOCK_MERGE,
+      undoable: true,
+      block,
+    });
+    return block;
+  };
+};
+
 /**
  * @description
  * Clones a block (and its children by default)
@@ -79,6 +95,7 @@ export const blockClone = (blockInput, parentObjectInput = {}, shallowOnly = fal
 
     //get the project ID to use for parent, considering the block may be detached from a project (e.g. inventory block)
     const parentProjectId = oldBlock.getProjectId() || null;
+    //will default to null if parentProjectId is undefined
     const parentProjectVersion = dispatch(projectSelectors.projectGetVersion(parentProjectId));
 
     //partial object about project, block ID handled in block.clone()
@@ -111,10 +128,8 @@ export const blockClone = (blockInput, parentObjectInput = {}, shallowOnly = fal
       return clone.mutate('components', newComponents);
     });
 
-    //add clones to the store
-    //note, not using the action BLOCK_CLONE
     dispatch({
-      type: ActionTypes.BLOCK_STASH,
+      type: ActionTypes.BLOCK_CLONE,
       blocks: clones,
     });
 
@@ -125,24 +140,10 @@ export const blockClone = (blockInput, parentObjectInput = {}, shallowOnly = fal
   };
 };
 
-//this is a backup for performing arbitrary mutations. You shouldn't use this.
-export const blockMerge = (blockId, toMerge) => {
-  return (dispatch, getState) => {
-    const oldBlock = getState().blocks[blockId];
-    const block = oldBlock.merge(toMerge);
-    dispatch({
-      type: ActionTypes.BLOCK_MERGE,
-      undoable: true,
-      block,
-    });
-    return block;
-  };
-};
-
 //deletes blocks from store
+//need to run this sequentially
 export const blockDelete = (...blocks) => {
   return (dispatch, getState) => {
-    //transact for all blocks
     dispatch(pauseAction());
     dispatch(undoActions.transact());
 
@@ -163,7 +164,6 @@ export const blockDelete = (...blocks) => {
       });
     });
 
-    //end transaction
     dispatch(undoActions.commit());
     dispatch(resumeAction());
 
@@ -172,10 +172,9 @@ export const blockDelete = (...blocks) => {
 };
 
 //remove blocks from constructs / projects, but leave in the store
-//todo - verify if need to remove children first so store never in bad state
+//need to run this sequentially
 export const blockDetach = (...blockIds) => {
   return (dispatch, getState) => {
-    //transact for all blocks
     dispatch(pauseAction());
     dispatch(undoActions.transact());
 
@@ -188,7 +187,6 @@ export const blockDetach = (...blockIds) => {
       }
     });
 
-    //end transaction
     dispatch(undoActions.commit());
     dispatch(resumeAction());
 
@@ -216,25 +214,43 @@ export const blockRemoveComponent = (blockId, ...componentIds) => {
   };
 };
 
-export const blockAddComponent = (blockId, componentId, index) => {
+export const blockAddComponent = (blockId, componentId, index = -1, forceProjectId = true) => {
   return (dispatch, getState) => {
     const oldParent = dispatch(selectors.blockGetParents(componentId)).shift();
     const oldBlock = getState().blocks[blockId];
+    const component = getState().blocks[componentId];
+
+    const componentProjectId = component.getProjectId();
+    const nextParentProjectId = oldBlock.getProjectId();
+
+    dispatch(pauseAction());
+    dispatch(undoActions.transact());
+
+    //verify projectId match, set if appropriate (forceProjectId is true, or not set in component being added)
+    if (componentProjectId !== nextParentProjectId) {
+      invariant(!componentProjectId || forceProjectId === true, 'cannot add component with different projectId! set forceProjectId = true to overwrite.');
+      const updatedComponent = component.setProjectId(nextParentProjectId);
+      dispatch({
+        type: ActionTypes.BLOCK_STASH,
+        block: updatedComponent,
+      });
+    }
+
+    //remove component from old parent (should clone first to avoid this, this is to handle just moving)
+    if (oldParent) {
+      dispatch(blockRemoveComponent(oldParent.id, componentId));
+    }
+
+    //now update the parent
     const block = oldBlock.addComponent(componentId, index);
-    const actionPayload = {
+    dispatch({
       type: ActionTypes.BLOCK_COMPONENT_ADD,
       undoable: true,
       block,
-    };
+    });
 
-    if (oldParent) {
-      dispatch(undoActions.transact());
-      dispatch(blockRemoveComponent(oldParent.id, componentId));
-      dispatch(actionPayload);
-      dispatch(undoActions.commit());
-    } else {
-      dispatch(actionPayload);
-    }
+    dispatch(undoActions.commit());
+    dispatch(resumeAction());
 
     return block;
   };
@@ -245,7 +261,6 @@ export const blockAddComponent = (blockId, componentId, index) => {
  */
 export const blockAddComponents = (blockId, componentIds, index) => {
   return (dispatch, getState) => {
-    //transact for all blocks
     dispatch(pauseAction());
     dispatch(undoActions.transact());
 
@@ -253,7 +268,6 @@ export const blockAddComponents = (blockId, componentIds, index) => {
       dispatch(blockAddComponent(blockId, componentId, index + subIndex));
     });
 
-    //end transaction
     dispatch(undoActions.commit());
     dispatch(resumeAction());
 
@@ -261,7 +275,7 @@ export const blockAddComponents = (blockId, componentIds, index) => {
   };
 };
 
-//move within same parent, new index
+//move within same parent, new index (pass index to be at after spliced out)
 export const blockMoveComponent = (blockId, componentId, newIndex) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
@@ -328,7 +342,7 @@ export const blockSetRole = (blockId, role) => {
 
     const block = oldBlock.setRole(role);
     dispatch({
-      type: ActionTypes.BLOCK_SET_SBOL,
+      type: ActionTypes.BLOCK_SET_ROLE,
       undoable: true,
       block,
     });

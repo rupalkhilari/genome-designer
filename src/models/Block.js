@@ -26,6 +26,8 @@ export default class Block extends Instance {
     return BlockDefinition.validate(input, throwOnError);
   }
 
+  // note that if you are cloning multiple blocks / blocks with components, you likely need to clone the components as well
+  // need to re-map the IDs outside of this function. see blockClone action.
   clone(parentInfo) {
     const [ firstParent ] = this.parents;
     const parentObject = Object.assign({
@@ -84,7 +86,7 @@ export default class Block extends Instance {
   /* components */
 
   addComponent(componentId, index) {
-    const spliceIndex = Number.isInteger(index) ? index : this.components.length;
+    const spliceIndex = (Number.isInteger(index) && index >= 0) ? index : this.components.length;
     const newComponents = this.components.slice();
     newComponents.splice(spliceIndex, 0, componentId);
     return this.mutate('components', newComponents);

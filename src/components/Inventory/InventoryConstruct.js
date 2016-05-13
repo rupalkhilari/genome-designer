@@ -63,7 +63,7 @@ export class InventoryConstruct extends Component {
     DnD.startDrag(this.makeDnDProxy(), globalPoint, {
       item: block,
       type: blockDragType,
-      source: 'inventory construct',
+      source: 'inventory construct', //todo - why does this exist?
       undoRedoTransaction: true,
     });
   }

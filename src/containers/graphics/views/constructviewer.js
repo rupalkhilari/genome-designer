@@ -463,11 +463,12 @@ export class ConstructViewer extends Component {
       }
     }
 
+    // @duncan - this is not true. We always want to keep the construct.
     // if the source is the inventory and we are dragging a single block with components
     // then we don't want to insert the parent, so replace the payload with just the children
-    if (!Array.isArray(payload.item) && (payload.source === 'inventory' || payload.source === 'inventory construct') && payload.item.components.length) {
-      payload.item = payload.item.components.slice();
-    }
+    //if (!Array.isArray(payload.item) && (payload.source === 'inventory' || payload.source === 'inventory construct') && payload.item.components.length) {
+    //  payload.item = payload.item.components.slice();
+    //}
 
     // add all blocks in the payload
     const blocks = Array.isArray(payload.item) ? payload.item : [payload.item];
@@ -478,8 +479,12 @@ export class ConstructViewer extends Component {
         : this.props.blocks[block];
       newBlocks.push(newBlock.id);
     });
+
+    //if the block is from the inventory, we've cloned it and dont need to worry about forcing the projectId when we add the components
+    const shouldForceProjectId = payload.source.indexOf('inventory') >= 0;
+
     // now insert the blocks in one go
-    return this.props.blockAddComponents(parent.id, newBlocks, index);
+    return this.props.blockAddComponents(parent.id, newBlocks, index, shouldForceProjectId);
   }
 
   /**

@@ -156,6 +156,8 @@ export const snapshot = (projectId, message = 'Project Snapshot', rollup = {}) =
 
 /***** loading / saving - not rollups *****/
 
+//Promise
+//returns object { <blockId> : <block> } including the parent requested
 export const loadBlock = (blockId, withComponents = false, projectId = 'block') => {
   invariant(projectId, 'Project ID is required');
   invariant(blockId, 'Block ID is required');
