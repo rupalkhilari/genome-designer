@@ -28,11 +28,12 @@ const pathPublic = createBuildPath('public', '../src/public');
 const pathClientBundle = createBuildPath('client.js', '../build/client.js');
 
 const app = express();
-app.use(bodyParser({
-  limit: '50mb',  // default limit is 100K, not nearly large enough for our projects.
-  strict: false,  // accept anything that JSON.parse will swallow
-}));
-
+if (process.env.NODE_ENV !== 'test') {
+  app.use(bodyParser({
+    limit: '50mb',  // default limit is 100K, not nearly large enough for our projects.
+    strict: false,  // accept anything that JSON.parse will swallow
+  }));
+}
 
 //error logging middleware
 if (process.env.NODE_ENV !== 'production') {
