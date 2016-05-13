@@ -8,6 +8,14 @@ const makePath = (fsPath) => {
   return path.resolve(fsPath);
 };
 
+const describeCommit = (commit) => ({
+  sha: commit.sha(),
+  author: commit.author().name(),
+  date: commit.date(),
+  message: commit.message(),
+  time: commit.timeMs(),
+});
+
 export const initialize = (path) => {
   const repoPath = makePath(path);
   return nodegit.Repository.init(repoPath, 0)
@@ -79,12 +87,7 @@ export const getCommit = (path, sha) => {
     .then(repo => {
       return repo.getCommit(sha);
     })
-    .then(commit => ({
-      sha: commit.sha(),
-      author: commit.author().name(),
-      date: commit.date(),
-      message: commit.message(),
-    }))
+    .then(commit => describeCommit(commit))
     .catch((err) => {
       console.error(err);
       return Promise.reject(errorVersioningSystem);
@@ -114,12 +117,7 @@ export const log = (path, filter = () => true) => {
         });
 
         history.on('end', () => {
-          resolve(commits.map(commit => ({
-            sha: commit.sha(),
-            author: commit.author().name(),
-            date: commit.date(),
-            message: commit.message(),
-          })));
+          resolve(commits.map(describeCommit));
         });
 
         history.start();

@@ -60,22 +60,21 @@ export default class Block extends Instance {
     if (this.metadata.name) return this.metadata.name;
     if (this.rules.role) return this.rules.role;
     if (this.components.length) return 'New Construct';
-    if (this.metadata.initialBases) return this.metadata.initialBases;
+    if (this.isFiller() && this.metadata.initialBases) return this.metadata.initialBases;
     return 'New Block';
+  }
+
+  setName(newName) {
+    const renamed = this.mutate('metadata.name', newName);
+
+    if (this.isFiller()) {
+      return renamed.setColor();
+    }
+    return renamed;
   }
 
   setRole(role) {
     return this.mutate('rules.role', role);
-  }
-
-  setName(newName) {
-    const filler = this.isFiller();
-    const renamed = this.mutate('metadata.name', newName);
-
-    if (filler) {
-      return this.setColor();
-    }
-    return renamed;
   }
 
   setColor(newColor = color()) {

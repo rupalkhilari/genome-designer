@@ -2,54 +2,83 @@ import rejectingFetch from './rejectingFetch';
 import invariant from 'invariant';
 import { headersGet, headersPost, headersPut, headersDelete } from './headers';
 import { dataApiPath } from './paths';
-import ProjectDefinition from '../schemas/Project';
-import BlockDefinition from '../schemas/Block';
+import Project from '../models/Project';
 
-/*************************
- Data API
- *************************/
+/******
+ caching + checks
+ ******/
 
-export const createBlock = (block, projectId) => {
-  invariant(projectId, 'Project ID is required');
-  invariant(BlockDefinition.validate(block), 'Block does not pass validation: ' + block);
+//unforunately, the reducers run after the promise resolutions in these loading / saving functions, so project.version will increment immediately after the roll is set here, but that is ok - we handle that check below in isRollSame.
 
-  try {
-    const stringified = JSON.stringify(block);
-    const url = dataApiPath(`${projectId}/${block.id}`);
+//project rollup cache
+//track the last versions saved so we aren't saving over and over
+const rollMap = new Map();
 
-    return rejectingFetch(url, headersPut(stringified))
-      .then(resp => resp.json());
-  } catch (err) {
-    return Promise.reject('error stringifying block');
-  }
+//track information about saving e.g. time
+const saveState = new Map();
+
+//compares two rollups for effective changes
+const isRollDifferent = (oldRoll, newRoll) => {
+  if (!oldRoll || !newRoll) return true;
+
+  //check projects same
+  if (!Project.compare(oldRoll.project, newRoll.project)) return true;
+
+  //check all blocks same
+  return oldRoll.blocks.some(oldBlock => {
+    const analog = newRoll.blocks.find(newBlock => newBlock.id === oldBlock.id);
+    return !analog || analog !== oldBlock;
+  });
 };
 
-export const loadBlock = (blockId, projectId = 'block') => {
-  invariant(projectId, 'Project ID is required');
-  invariant(blockId, 'Block ID is required');
+const noteSave = (projectId, rollup, sha = null) => {
+  invariant(projectId, 'must pass project ID');
+  const lastState = saveState.get(projectId) || {};
 
-  const url = dataApiPath(`${projectId}/${blockId}`);
+  saveState.set(projectId, Object.assign(lastState, {
+    lastSaved: +Date.now(),
+    sha,
+  }));
+};
 
+const noteFailure = (projectId, err) => {
+  invariant(projectId, 'must pass project ID');
+  const lastState = saveState.get(projectId) || {};
+
+  saveState.set(projectId, Object.assign(lastState, {
+    lastFailed: +Date.now(),
+    lastErr: err,
+  }));
+};
+
+export const getProjectSaveState = (projectId) => {
+  invariant(projectId, 'must pass project ID');
+  const state = saveState.get(projectId) || {};
+  const { lastSaved = 0, lastFailed = 0, sha = null, lastErr = null } = state;
+
+  return {
+    lastSaved,
+    sha,
+    lastFailed,
+    lastErr,
+    saveDelta: +Date.now() - lastSaved,
+    saveSuccessful: lastFailed <= lastSaved,
+  };
+};
+
+/******
+ API requests
+ ******/
+
+/***** info query - low level API call *****/
+
+export const infoQuery = (type, detail) => {
+  const url = dataApiPath(`info/${type}${detail ? `/${detail}` : ''}`);
   return rejectingFetch(url, headersGet())
     .then(resp => resp.json());
 };
 
-//in general, youll probably want to save the whole project? but maybe not.
-export const saveBlock = (block, projectId, overwrite = false) => {
-  invariant(projectId, 'Project ID is required');
-  invariant(BlockDefinition.validate(block), 'Block does not pass validation: ' + block);
-
-  try {
-    const stringified = JSON.stringify(block);
-    const url = dataApiPath(`${projectId}/${block.id}`);
-    const headers = !!overwrite ? headersPut : headersPost;
-
-    return rejectingFetch(url, headers(stringified))
-      .then(resp => resp.json());
-  } catch (err) {
-    return Promise.reject('error stringifying block');
-  }
-};
+/***** queries *****/
 
 //returns metadata of projects
 export const listProjects = () => {
@@ -59,61 +88,84 @@ export const listProjects = () => {
     .then(projects => projects.filter(project => !!project));
 };
 
-//saves just the project manifest to file system
-export const saveProjectManifest = (project) => {
-  invariant(ProjectDefinition.validate(project), 'Project does not pass validation: ' + project);
-
-  try {
-    const stringified = JSON.stringify(project);
-    const url = dataApiPath(`${project.id}`);
-
-    return rejectingFetch(url, headersPost(stringified))
-      .then(resp => resp.json());
-  } catch (err) {
-    return Promise.reject('error stringifying project');
-  }
-};
+/***** rollups - loading + saving projects *****/
 
 //returns a rollup
 export const loadProject = (projectId) => {
   const url = dataApiPath(`projects/${projectId}`);
   return rejectingFetch(url, headersGet())
-    .then(resp => resp.json());
+    .then(resp => resp.json())
+    .then(rollup => {
+      rollMap.set(projectId, rollup);
+      return rollup;
+    });
 };
 
 //expects a rollup
 //autosave
-//returns the commit with sha, message
+//returns the commit with sha, message, or null if no need to save
 export const saveProject = (projectId, rollup) => {
   invariant(projectId, 'Project ID required to snapshot');
   invariant(rollup, 'Rollup is required to save');
   invariant(rollup.project && Array.isArray(rollup.blocks), 'rollup in wrong form');
 
+  //check if project is new, and save if it is
+  const cached = rollMap.get(projectId);
+  if (!isRollDifferent(cached, rollup)) {
+    return Promise.resolve(null);
+  }
+
   const url = dataApiPath(`projects/${projectId}`);
   const stringified = JSON.stringify(rollup);
 
   return rejectingFetch(url, headersPost(stringified))
-    .then(resp => resp.json());
+    .then(resp => resp.json())
+    .then(commit => {
+      const { sha } = commit;
+      noteSave(projectId, rollup, sha);
+      return commit;
+    })
+    .catch(err => {
+      noteFailure(projectId, err);
+      return Promise.reject(err);
+    });
 };
 
 //expects a rollup
 //explicit, makes a git commit with special message to differentiate
 //returns the commit wth sha, message
-export const snapshot = (projectId, rollup, message = 'Project Snapshot') => {
+export const snapshot = (projectId, message = 'Project Snapshot', rollup = {}) => {
   invariant(projectId, 'Project ID required to snapshot');
   invariant(!message || typeof message === 'string', 'optional message for snapshot must be a string');
 
-  const stringified = JSON.stringify({ message });
+  const stringified = JSON.stringify({ message, rollup });
   const url = dataApiPath(`${projectId}/commit`);
 
   return rejectingFetch(url, headersPost(stringified))
-    .then(resp => resp.json());
+    .then(resp => resp.json())
+    .then(commit => {
+      const { sha } = commit;
+      noteSave(projectId, rollup, sha);
+      return commit;
+    })
+    .catch(err => {
+      noteFailure(projectId, err);
+      return Promise.reject(err);
+    });
 };
 
-//todo - make this more explicit, this is a bit low-level
-export const infoQuery = (type, detail) => {
-  const url = dataApiPath(`info/${type}${detail ? `/${detail}` : ''}`);
+/***** loading / saving - not rollups *****/
+
+export const loadBlock = (blockId, withComponents = false, projectId = 'block') => {
+  invariant(projectId, 'Project ID is required');
+  invariant(blockId, 'Block ID is required');
+
+  if (withComponents === true) {
+    return infoQuery('components', blockId);
+  }
+
+  const url = dataApiPath(`${projectId}/${blockId}`);
+
   return rejectingFetch(url, headersGet())
     .then(resp => resp.json());
 };
-

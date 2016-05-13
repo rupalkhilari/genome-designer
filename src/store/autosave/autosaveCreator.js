@@ -17,26 +17,19 @@ export default function autosavingCreator(config) {
   }, config);
 
   let timeStartOfChanges = 0; //0 means no unsaved changes, otherwise time of start of changes
-  let lastSaved = 0;
-  let lastFailed = 0;
   let dirty = false;
 
   const getTimeUnsaved = () => { return timeStartOfChanges > 0 ? +Date.now() - timeStartOfChanges : 0; };
-  const getLastSaved = () => lastSaved;
   const isDirty = () => dirty;
-  const saveSuccessful = () => lastFailed <= lastSaved;
 
-  //we've saved, update internal state
+  //we've saved, update relevant internal state
   const noteSave = () => {
     timeStartOfChanges = 0;
-    lastSaved = +Date.now();
     dirty = false;
   };
 
-  //fail saved! last save time etc. unchanged...
-  const noteFailure = () => {
-    lastFailed = +Date.now();
-  };
+  //fail saved, will be noted in project saving caching (middleware/data.js)
+  const noteFailure = () => {};
 
   const handleSave = (nextState) => {
     Promise.resolve(options.onSave(nextState))
@@ -96,8 +89,8 @@ export default function autosavingCreator(config) {
         handlePurging();
       }
 
-      //todo - need to handle errors for these simulations.... these just look like they worked
       if (options.simulateOn(action, dirty, nextState, state) === true) {
+        //todo - need to handle errors for these simulations.... these just look like they worked.. only want to mark !dirty on success
         noteSave();
       }
 
@@ -115,8 +108,6 @@ export default function autosavingCreator(config) {
   return {
     autosaveReducerEnhancer,
     getTimeUnsaved,
-    getLastSaved,
     isDirty,
-    saveSuccessful,
   };
 }
