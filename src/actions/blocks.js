@@ -196,7 +196,6 @@ export const blockDetach = (...blockIds) => {
   };
 };
 
-
 /***************************************
  * Components
  ***************************************/
@@ -385,7 +384,6 @@ export const blockRemoveAnnotation = (blockId, annotation) => {
     return block;
   };
 };
-
 
 /***************************************
  * Sequence
