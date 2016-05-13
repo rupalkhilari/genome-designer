@@ -1,7 +1,7 @@
 import chai from 'chai';
 import uuid from 'node-uuid';
 import fs from 'fs';
-import * as api from '../../src/middleware/api';
+import * as api from '../../src/middleware/data';
 const { assert, expect } = chai;
 import { createFilePath } from '../../server/utils/filePaths';
 import { fileExists, fileRead, fileWrite, fileDelete, directoryExists, directoryMake, directoryDelete } from '../../server/utils/fileSystem';

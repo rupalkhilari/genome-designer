@@ -6,7 +6,7 @@ import { exec } from 'child_process';
 import { flatten } from 'lodash';
 import { errorCouldntFindProjectId } from '../utils/errors';
 
-// key for no sbol rule
+// key for no role rule
 const untypedKey = 'none';
 
 //note - expects the project to already exist.
@@ -107,20 +107,20 @@ export const getAllBlocksWithName = (userId, name) => {
   return getAllBlocksFiltered(userId, filter);
 };
 
-export const getAllBlocksWithSbol = (userId, sbol) => {
+export const getAllBlocksWithRole = (userId, role) => {
   const filter = (block, index) => {
-    return (sbol === untypedKey) ?
-      !block.rules.sbol :
-      block.rules.sbol === sbol;
+    return (role === untypedKey) ?
+      !block.rules.role :
+      block.rules.role === role;
   };
   return getAllBlocksFiltered(userId, filter);
 };
 
-export const getAllBlockSbols = (userId) => {
+export const getAllBlockRoles = (userId) => {
   return getAllBlocks(userId)
     .then(blocks => {
       const obj = blocks.reduce((acc, block) => {
-        const rule = block.rules.sbol;
+        const rule = block.rules.role;
         if (!rule) {
           acc[untypedKey] += 1;
           return acc;

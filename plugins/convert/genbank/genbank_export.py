@@ -10,11 +10,11 @@ def add_features(block, allblocks, gb, start):
 
     # Add Myself as a feature
     sf = SeqFeature.SeqFeature()
-    # Set the type based on the original type or the sbol type
-    if "type" in block["metadata"]:
+    # Set the type based on the original type or the role type
+    if "type" in block["metadata"] and block["metadata"]["type"] != 'filler':
         sf.type = block["metadata"]["type"]
-    elif "rules" in block and "sbol" in block["rules"] and block["rules"]["sbol"] is not None:
-        sf.type = block["rules"]["sbol"]
+    elif "rules" in block and "role" in block["rules"] and block["rules"]["role"] is not None:
+        sf.type = block["rules"]["role"]
     else:
         sf.type = "unknown"
 

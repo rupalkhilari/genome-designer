@@ -2,7 +2,7 @@ import Instance from './Instance';
 import invariant from 'invariant';
 import cloneDeep from 'lodash.clonedeep';
 import BlockDefinition from '../schemas/Block';
-import { getSequence, writeSequence } from '../middleware/api';
+import { getSequence, writeSequence } from '../middleware/sequence';
 import AnnotationDefinition from '../schemas/Annotation';
 import md5 from 'md5';
 import color from '../utils/generators/color';
@@ -56,18 +56,16 @@ export default class Block extends Instance {
   /* metadata things */
 
   getName() {
-    const { name } = this.metadata;
-    const { sbol } = this.rules;
-    const isConstruct = this.components.length;
-
-    if (name) return name;
-    if (!!sbol) return sbol;
-    if (isConstruct) return 'New Construct';
+    // called many K per second, no es6 fluffy stuff in here.
+    if (this.metadata.name) return this.metadata.name;
+    if (this.rules.role) return this.rules.role;
+    if (this.components.length) return 'New Construct';
+    if (this.metadata.initialBases) return this.metadata.initialBases;
     return 'New Block';
   }
 
-  setSbol(sbol) {
-    return this.mutate('rules.sbol', sbol);
+  setRole(role) {
+    return this.mutate('rules.role', role);
   }
 
   setName(newName) {
@@ -167,6 +165,7 @@ export default class Block extends Instance {
         const updatedSequence = {
           md5: sequenceMd5,
           length: sequenceLength,
+          initialBases: sequence.substr(0, 5),
         };
         return this.merge({ sequence: updatedSequence });
       });

@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import SvgSbol from '../svgsbol';
+import RoleSvg from '../RoleSvg';
 
 export default function PickerItem(props) {
   const { isCurrent, svg, name, styles, onClick, onMouseEnter } = props;
@@ -10,12 +10,12 @@ export default function PickerItem(props) {
              style={styles}
              onMouseEnter={(evt) => onMouseEnter && onMouseEnter(evt)}
              onClick={(evt) => onClick && onClick(evt)}>
-    {svg && (<SvgSbol stroke={0.5}
-               width="100%"
-               height="100%"
-               color="white"
-               symbolName={svg}
-               key={svg}/>)}
+    {svg && (<RoleSvg stroke={0.5}
+                      width="100%"
+                      height="100%"
+                      color="white"
+                      symbolName={svg}
+                      key={svg}/>)}
     </a>
   );
 }

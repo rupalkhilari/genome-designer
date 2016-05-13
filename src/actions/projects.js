@@ -1,5 +1,5 @@
 import * as ActionTypes from '../constants/ActionTypes';
-import { saveProject, loadProject, snapshot, listProjects } from '../middleware/api';
+import { saveProject, loadProject, snapshot, listProjects } from '../middleware/data';
 import * as projectSelectors from '../selectors/projects';
 import * as undoActions from '../store/undo/actions';
 import { push } from 'react-router-redux';
@@ -86,7 +86,11 @@ export const projectSave = (inputProjectId) => {
           sha,
         });
         return sha;
-      });
+      })
+      .catch(err => {
+        console.log(err);
+        return Promise.reject(err);
+      })
   };
 };
 

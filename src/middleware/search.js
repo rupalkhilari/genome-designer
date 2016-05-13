@@ -1,10 +1,6 @@
 import invariant from 'invariant';
 import { registry, getSources } from '../inventory/registry';
 
-const flatten = list => list.reduce(
-  (one, two) => one.concat(Array.isArray(two) ? flatten(two) : two), []
-);
-
 const zip = (keys, vals) => keys.reduce(
   (acc, key, ind) => Object.assign(acc, { [key]: vals[ind] }), {}
 );

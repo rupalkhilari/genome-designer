@@ -20,10 +20,10 @@ describe('REST', () => {
       const projectId = project.id;
       const [blockP, blockA, blockB, blockC, blockD, blockE] = roll.blocks;
 
-      //add 5 weird sbol type blocks to roll
-      const numberEsotericSbol = 5;
-      const esotericSbol = 'sdlfkjasdlfkjasdf';
-      const blocks = range(numberEsotericSbol).map(() => new Block({ rules: { sbol: esotericSbol } }));
+      //add 5 weird role type blocks to roll
+      const numberEsotericRole = 5;
+      const esotericRole = 'sdlfkjasdlfkjasdf';
+      const blocks = range(numberEsotericRole).map(() => new Block({ rules: { role: esotericRole } }));
       roll.blocks.push(...blocks);
 
       before(() => {
@@ -44,21 +44,21 @@ describe('REST', () => {
           .expect(404, done);
       });
 
-      it('/info/sbol returns map of sbol types present', (done) => {
-        const url = `/data/info/sbol`;
+      it('/info/role returns map of role types present', (done) => {
+        const url = `/data/info/role`;
         request(server)
           .get(url)
           .expect(200)
           .expect(result => {
             const { body } = result;
             expect(typeof body).to.equal('object');
-            expect(body[esotericSbol]).to.equal(5);
+            expect(body[esotericRole]).to.equal(5);
           })
           .end(done);
       });
 
-      it('/info/sbol/type returns matching blocks', (done) => {
-        const url = `/data/info/sbol/${esotericSbol}`;
+      it('/info/role/type returns matching blocks', (done) => {
+        const url = `/data/info/role/${esotericRole}`;
         request(server)
           .get(url)
           .expect(200)

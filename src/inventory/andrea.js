@@ -14,7 +14,7 @@ const parts = [
       md5: "4f258b0b8a3c52b34b26aa34d82b1be2",
     },
     rules: {
-      sbol: "insulator",
+      role: "insulator",
     },
     tags: {
       position: "2",
@@ -32,7 +32,7 @@ const parts = [
       md5: "cea5c653d9a9d059efc906799b83d7c2",
     },
     rules: {
-      sbol: "cds",
+      role: "cds",
     },
     tags: {
       position: "9",
@@ -50,7 +50,7 @@ const parts = [
       md5: "3738256730833453268112b67ec2633e",
     },
     rules: {
-      sbol: "promoter",
+      role: "promoter",
     },
     tags: {
       position: "14",
@@ -68,7 +68,7 @@ const parts = [
       md5: "86c92af1fc161a9bf9981cdaec4cddb5",
     },
     rules: {
-      sbol: "cds",
+      role: "cds",
     },
     tags: {
       position: "7",
@@ -86,7 +86,7 @@ const parts = [
       md5: "5e2d5819ba4ed439518519a0840c90b5",
     },
     rules: {
-      sbol: null,
+      role: null,
     },
     tags: {
       position: "6",
@@ -104,7 +104,7 @@ const parts = [
       md5: "09455435ee55b1c03846759493b97f4b",
     },
     rules: {
-      sbol: null,
+      role: null,
     },
     tags: {
       position: "8",
@@ -122,7 +122,7 @@ const parts = [
       md5: "e4618f004a9e557d4a68da0bcd5548be",
     },
     rules: {
-      sbol: null,
+      role: null,
     },
     tags: {
       position: "5",
@@ -140,7 +140,7 @@ const parts = [
       md5: "be2263139187f27750fb3a3c36017b81",
     },
     rules: {
-      sbol: "cds",
+      role: "cds",
     },
     tags: {
       position: "9",
@@ -158,7 +158,7 @@ const parts = [
       md5: "6cbc5808cc4f0fc0b489753f47743675",
     },
     rules: {
-      sbol: null,
+      role: null,
     },
     tags: {
       position: "1",
@@ -176,7 +176,7 @@ const parts = [
       md5: "66b06a6a0be6985b44d36029643f34bb",
     },
     rules: {
-      sbol: "insulator",
+      role: "insulator",
     },
     tags: {
       position: "2",
@@ -194,7 +194,7 @@ const parts = [
       md5: "9b4cd1a9911ef800564bf6d0c864e154",
     },
     rules: {
-      sbol: "terminator",
+      role: "terminator",
     },
     tags: {
       position: "11",
@@ -212,7 +212,7 @@ const parts = [
       md5: "95da87f1aa57a7102d89fac8b5f5283e",
     },
     rules: {
-      sbol: "rnaStability",
+      role: "rnaStability",
     },
     tags: {
       position: "4",
@@ -230,7 +230,7 @@ const parts = [
       md5: "3a639d1e41a86411e772629dc489bff5",
     },
     rules: {
-      sbol: null,
+      role: null,
     },
     tags: {
       position: "6",
@@ -248,7 +248,7 @@ const parts = [
       md5: "1096eb2200eb786a8127617b6e2b981e",
     },
     rules: {
-      sbol: "cds",
+      role: "cds",
     },
     tags: {
       position: "19",
@@ -266,7 +266,7 @@ const parts = [
       md5: "c0b330c11d0cdcfe89990e51142061b9",
     },
     rules: {
-      sbol: null,
+      role: null,
     },
     tags: {
       position: "8b",
@@ -284,7 +284,7 @@ const parts = [
       md5: "f585e5f6fa811687e1cd623037e37a3b",
     },
     rules: {
-      sbol: "insulator",
+      role: "insulator",
     },
     tags: {
       position: "23",
@@ -302,7 +302,7 @@ const parts = [
       md5: "f8c0736644172fed89a28bace2f6222a",
     },
     rules: {
-      sbol: null,
+      role: null,
     },
     tags: {
       position: "8",
@@ -320,7 +320,7 @@ const parts = [
       md5: "f5fd7f5830d993627fa3f795e257e3b9",
     },
     rules: {
-      sbol: "promoter",
+      role: "promoter",
     },
     tags: {
       position: "3",
@@ -338,7 +338,7 @@ const parts = [
       md5: "c02b4a60b713818aa07099ac2cfb2b75",
     },
     rules: {
-      sbol: "cds",
+      role: "cds",
     },
     tags: {
       position: "9",
@@ -356,7 +356,7 @@ const parts = [
       md5: "281bc8734912cd7e5989833c0fe82306",
     },
     rules: {
-      sbol: null,
+      role: null,
     },
     tags: {
       position: "10",
@@ -374,7 +374,7 @@ const parts = [
       md5: "af6e48afddb054354d26f782fe695543",
     },
     rules: {
-      sbol: "promoter",
+      role: "promoter",
     },
     tags: {
       position: "18",
@@ -392,7 +392,7 @@ const parts = [
       md5: "a7a976597b46fabbeec4a9c5659739d3",
     },
     rules: {
-      sbol: "originReplication",
+      role: "originReplication",
     },
     tags: {
       position: "25",
@@ -410,7 +410,7 @@ const parts = [
       md5: "6cec4b1b41dd1a4837d1ce05d5ef354b",
     },
     rules: {
-      sbol: "terminator",
+      role: "terminator",
     },
     tags: {
       position: "22",
@@ -428,7 +428,7 @@ const parts = [
       md5: "a51fadee25a979575422a1f20fd4c392",
     },
     rules: {
-      sbol: "cds",
+      role: "cds",
     },
     tags: {
       position: "9",
@@ -446,7 +446,7 @@ const parts = [
       md5: "6072cbd207134ecbc5f91f18658b3e97",
     },
     rules: {
-      sbol: null,
+      role: null,
     },
     tags: {
       position: "24",
@@ -464,7 +464,7 @@ const parts = [
       md5: "1235fc072bd9280dc0be32b765520c58",
     },
     rules: {
-      sbol: "promoter",
+      role: "promoter",
     },
     tags: {
       position: "18",
@@ -482,7 +482,7 @@ const parts = [
       md5: "2d0d8c32106c25c1d71aa7230d0ce1f4",
     },
     rules: {
-      sbol: "cds",
+      role: "cds",
     },
     tags: {
       position: "19",
@@ -500,7 +500,7 @@ const parts = [
       md5: "cc50f0dff0b543f940ff9f6c2c2d2b25",
     },
     rules: {
-      sbol: null,
+      role: null,
     },
     tags: {
       position: "6",
@@ -518,7 +518,7 @@ const parts = [
       md5: "90f016b03ca6978def0bd1a497a4b143",
     },
     rules: {
-      sbol: "promoter",
+      role: "promoter",
     },
     tags: {
       position: "3",
@@ -536,7 +536,7 @@ const parts = [
       md5: "9aaaedf8a5d72a70e8fd7adb96bb7f6b",
     },
     rules: {
-      sbol: null,
+      role: null,
     },
     tags: {
       position: "8",
@@ -554,7 +554,7 @@ const parts = [
       md5: "fd6a2acc185ae03021d2b25f49348aed",
     },
     rules: {
-      sbol: "promoter",
+      role: "promoter",
     },
     tags: {
       position: "3",
@@ -572,7 +572,7 @@ const parts = [
       md5: "2df0828c3568851ffba2a658a097f695",
     },
     rules: {
-      sbol: "cds",
+      role: "cds",
     },
     tags: {
       position: "21",
@@ -590,7 +590,7 @@ const parts = [
       md5: "e30810872a149fe02a920ecc715014ab",
     },
     rules: {
-      sbol: "cds",
+      role: "cds",
     },
     tags: {
       position: "9",
@@ -608,7 +608,7 @@ const parts = [
       md5: "9a2f6ceb517e53b8850746ea011caac7",
     },
     rules: {
-      sbol: "insulator",
+      role: "insulator",
     },
     tags: {
       position: "2",
@@ -626,7 +626,7 @@ const parts = [
       md5: "f69f84e5e96437ccbb34343b8e669778",
     },
     rules: {
-      sbol: "rnaStability",
+      role: "rnaStability",
     },
     tags: {
       position: "4",
@@ -644,7 +644,7 @@ const parts = [
       md5: "e73cb9f5f2e6a345726a29ca01288452",
     },
     rules: {
-      sbol: null,
+      role: null,
     },
     tags: {
       position: "20",
@@ -662,7 +662,7 @@ const parts = [
       md5: "325ed8db05cbd0cfe24cd03e8968a80a",
     },
     rules: {
-      sbol: "cds",
+      role: "cds",
     },
     tags: {
       position: "9",
@@ -680,7 +680,7 @@ const parts = [
       md5: "57a9f20987dac8e15bedf989318342bd",
     },
     rules: {
-      sbol: "terminator",
+      role: "terminator",
     },
     tags: {
       position: "16",
@@ -698,7 +698,7 @@ const parts = [
       md5: "4e78bc98d78a3091d5dc7271d2fb49d5",
     },
     rules: {
-      sbol: "cds",
+      role: "cds",
     },
     tags: {
       position: "21",
@@ -716,7 +716,7 @@ const parts = [
       md5: "d749d845d7aeff880f70c90b1e8035c7",
     },
     rules: {
-      sbol: null,
+      role: null,
     },
     tags: {
       position: "8",
@@ -734,7 +734,7 @@ const parts = [
       md5: "75ce29753e6679b536c3d1bf1fa2a1d5",
     },
     rules: {
-      sbol: null,
+      role: null,
     },
     tags: {
       position: "8a",
@@ -752,7 +752,7 @@ const parts = [
       md5: "ff99edbd7e50460932935e629f609645",
     },
     rules: {
-      sbol: "cds",
+      role: "cds",
     },
     tags: {
       position: "7",
@@ -770,7 +770,7 @@ const parts = [
       md5: "e42d09bf740fb9c14a74f42b08038df3",
     },
     rules: {
-      sbol: "cds",
+      role: "cds",
     },
     tags: {
       position: "19",
@@ -788,7 +788,7 @@ const parts = [
       md5: "1490f178b8a304f4d1e80101d672881e",
     },
     rules: {
-      sbol: null,
+      role: null,
     },
     tags: {
       position: "6",
@@ -806,7 +806,7 @@ const parts = [
       md5: "a8bd04300aa591522df5d1b6ae7f618e",
     },
     rules: {
-      sbol: "cds",
+      role: "cds",
     },
     tags: {
       position: "7",
@@ -824,7 +824,7 @@ const parts = [
       md5: "16f0ac7d4a4309315e2835fa941f9d44",
     },
     rules: {
-      sbol: "cds",
+      role: "cds",
     },
     tags: {
       position: "7",
@@ -842,7 +842,7 @@ const parts = [
       md5: "1933d65993c27567ed0e4a89cd322bd7",
     },
     rules: {
-      sbol: null,
+      role: null,
     },
     tags: {
       position: "20-21",
@@ -860,7 +860,7 @@ const parts = [
       md5: "64351238ae7f842ac51213691d8737e3",
     },
     rules: {
-      sbol: null,
+      role: null,
     },
     tags: {
       position: "6",
@@ -878,7 +878,7 @@ const parts = [
       md5: "03e7cd14e2bf0df9cc7e39c11ffa93c4",
     },
     rules: {
-      sbol: "cds",
+      role: "cds",
     },
     tags: {
       position: "15",
@@ -896,7 +896,7 @@ const parts = [
       md5: "b8ccf79e53ef92d00feafaab8f48af86",
     },
     rules: {
-      sbol: "cds",
+      role: "cds",
     },
     tags: {
       position: "7",
@@ -914,7 +914,7 @@ const parts = [
       md5: "37b462bb90992e1a8610833c97d052dc",
     },
     rules: {
-      sbol: "cds",
+      role: "cds",
     },
     tags: {
       position: "19",
@@ -932,7 +932,7 @@ const parts = [
       md5: "2d39ff20eb947e0ad129b204fc5cb2ff",
     },
     rules: {
-      sbol: null,
+      role: null,
     },
     tags: {
       position: "6",

@@ -1,6 +1,6 @@
 import { assert, expect } from 'chai';
 import request from 'supertest';
-import { login, getUser } from '../../../src/middleware/api';
+import { login, getUser } from '../../../src/middleware/auth';
 
 const devServer = require('../../../server/server');
 

@@ -2,7 +2,7 @@ import Box2D from '../geometry/box2d';
 import Vector2D from '../geometry/vector2d';
 import Line2D from '../geometry/line2d';
 import Node2D from '../scenegraph2d/node2d';
-import SBOL2D from '../scenegraph2d/sbol2d';
+import Role2D from '../scenegraph2d/role2d';
 import LineNode2D from '../scenegraph2d/line2d';
 import kT from './layoutconstants';
 import objectValues from '../../../utils/object/values';
@@ -10,7 +10,7 @@ import invariant from 'invariant';
 
 // just for internal tracking of what type of block a node represents.
 const blockType = 'block';
-const sbolType = 'sbol';
+const roleType = 'role';
 
 /**
  * layout and scene graph manager for the construct viewer
@@ -90,7 +90,7 @@ export default class Layout {
   map(part, node) {
     this.nodes2parts[node.uuid] = part;
     this.parts2nodes[part] = node;
-    this.partTypes[part] = this.isSBOL(part) ? sbolType : blockType;
+    this.partTypes[part] = this.isSBOL(part) ? roleType : blockType;
   }
   /**
    * flag the part as currently in use i.e. should be rendered.
@@ -177,8 +177,8 @@ export default class Layout {
         dataAttribute: {name: 'nodetype', value: 'block'},
         sg: this.sceneGraph,
       }, appearance);
-      props.sbolName = this.isSBOL(part) ? this.blocks[part].rules.sbol : null;
-      node = new SBOL2D(props);
+      props.roleName = this.isSBOL(part) ? this.blocks[part].rules.role : null;
+      node = new Role2D(props);
       this.sceneGraph.root.appendChild(node);
       this.map(part, node);
     }
@@ -197,10 +197,24 @@ export default class Layout {
   }
 
   /**
+   * used specified color, or filler color for filler block or light gray
+   */
+  fillColor(part) {
+    const block = this.blocks[part];
+    if (block.isFiller()) return '#4B505E';
+    return block.metadata.color || 'lightgray';
+  }
+  /**
+   * filler blocks get a special color
+   */
+  fontColor(part) {
+    const block = this.blocks[part];
+    if (block.isFiller()) return '#6B6F7C';
+    return '#1d222d';
+  }
+
+  /**
    * return the property within the rule part of the blocks data
-   * @param  {[type]} part [description]
-   * @param  {[type]} name [description]
-   * @return {[type]}      [description]
    */
   partRule(part, name) {
     return this.blocks[part].rules[name];
@@ -208,11 +222,9 @@ export default class Layout {
 
   /**
    * return true if the block appears to be an SBOL symbol
-   * @param  {[type]}  part [description]
-   * @return {Boolean}      [description]
    */
   isSBOL(part) {
-    return !!this.blocks[part].rules.sbol;
+    return !!this.blocks[part].rules.role;
   }
 
   /**
@@ -253,7 +265,7 @@ export default class Layout {
    * If the part is an SBOL symbol then use the symbol name preferentially
    */
   partName(part) {
-    return this.partMeta(part, 'name') || this.partRule(part, 'sbol') || 'block';
+    return this.blocks[part].getName();
   }
   /**
    * create the banner / bar for the construct ( contains the triangle )
@@ -298,7 +310,7 @@ export default class Layout {
       }
 
       // update title to current position and text and width
-      const text = this.construct.metadata.name || 'Construct';
+      const text = this.construct.getName();
       const width = this.titleNode.measureText(text).x + kT.textPad + kT.contextDotsW;
 
       this.titleNode.set({
@@ -521,13 +533,18 @@ export default class Layout {
       // create the node representing the part
       this.partFactory(part, kT.partAppearance);
 
-      // set sbol part name if any
-      this.nodeFromElement(part).set({
-        sbolName: this.isSBOL(part) ? this.blocks[part].rules.sbol : null,
+      // get the node representing this part and the actual block from the part id.
+      const node = this.nodeFromElement(part);
+      const block = this.blocks[part];
+      const name = this.partName(part);
+
+      // set role part name if any
+      node.set({
+        roleName: this.isSBOL(part) ? block.rules.role : null,
       });
 
       // measure element text or used condensed spacing
-      const td = this.measureText(this.nodeFromElement(part), this.partName(part), layoutOptions.condensed);
+      const td = this.measureText(node, name, layoutOptions.condensed);
 
       // if position would exceed x limit then wrap
       if (xp + td.x > mx) {
@@ -539,15 +556,15 @@ export default class Layout {
       }
 
       // update part, including its text and color
-      this.nodeFromElement(part).set({
+      node.set({
         bounds: new Box2D(xp, yp, td.x, kT.blockH),
-        text: this.partName(part),
-        fill: this.partMeta(part, 'color') || 'lightgray',
-        color: this.partMeta(part, 'fontColor') || '#1D222D',
+        text: name,
+        fill: this.fillColor(part),
+        color: this.fontColor(part),
       });
 
       // render children ( nested constructs )
-      if (this.hasChildren(part) && this.nodeFromElement(part).showChildren) {
+      if (this.hasChildren(part) && node.showChildren) {
         // establish the position
         const nestedX = this.insetX + kT.nestedInsetX;
         const nestedY = yp + nestedVertical + kT.blockH + kT.nestedInsetY;
@@ -564,7 +581,7 @@ export default class Layout {
         }
 
         // update base color of nested construct skeleton
-        nestedLayout.baseColor = this.partMeta(part, 'color');
+        nestedLayout.baseColor = block.metadata.color || this.baseColor;
 
         // update minimum x extend of first rowH
         nestedLayout.initialRowXLimit = this.getConnectionRowLimit(part);

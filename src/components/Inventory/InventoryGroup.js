@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 
-import InventoryGroupSbol from './InventoryGroupSbol';
+import InventoryGroupRole from './InventoryGroupRole';
 import InventoryGroupBlocks from './InventoryGroupBlocks';
 import InventoryGroupSearch from './InventoryGroupSearch';
 import InventoryGroupProjects from './InventoryGroupProjects';
@@ -17,8 +17,8 @@ export default class InventoryGroup extends Component {
 
   inventoryGroupTypeToComponent = (type, props) => {
     switch (type) {
-    case 'sbol' :
-      return (<InventoryGroupSbol {...props} />);
+    case 'role' :
+      return (<InventoryGroupRole {...props} />);
     case 'search' :
       return (<InventoryGroupSearch {...props} />);
     case 'projects':

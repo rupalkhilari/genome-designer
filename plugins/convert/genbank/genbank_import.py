@@ -2,9 +2,9 @@ import json
 from Bio import SeqIO
 import uuid
 
-# This table converts annotation types in genbank to sbol_types in our tool
-# Ex: if genbank says "gene", turn it into an sbol_type of "cds" as we import
-sbol_type_table = {
+# This table converts annotation types in genbank to role_types in our tool
+# Ex: if genbank says "gene", turn it into an role_type of "cds" as we import
+role_type_table = {
     "CDS": "cds",
     "regulatory": "promoter", #promoter is actually a subclass of regulatory
     "promoter": "promoter",
@@ -124,7 +124,7 @@ def create_child_block_from_feature(f, all_blocks, root_block, sequence):
     start = f.location.start.position
     end = f.location.end.position
     strand = f.location.strand
-    sbol_type = sbol_type_table.get(f.type)
+    role_type = role_type_table.get(f.type)
 
     if f.type.strip() == 'source':
         # 'source' refers to the root block. So, the root block aggregates information
@@ -167,8 +167,8 @@ def create_child_block_from_feature(f, all_blocks, root_block, sequence):
         child_block["sequence"]["length"] = end - start
         child_block["metadata"]["strand"] = strand
 
-        if sbol_type:
-            child_block["rules"]["sbol"] = sbol_type
+        if role_type:
+            child_block["rules"]["role"] = role_type
 
         child_block["metadata"]["type"] = f.type
 
@@ -179,11 +179,11 @@ def create_child_block_from_feature(f, all_blocks, root_block, sequence):
                 child_block["metadata"]["name"] = f.qualifiers["label"][0]
             elif "product" in f.qualifiers:
                 child_block["metadata"]["name"] = f.qualifiers["product"][0]
-            elif sbol_type == 'cds' and "gene" in f.qualifiers:
+            elif role_type == 'cds' and "gene" in f.qualifiers:
                 child_block["metadata"]["name"] = f.qualifiers["gene"][0]
             else:
-                if sbol_type:
-                    child_block["metadata"]["name"] = sbol_type
+                if role_type:
+                    child_block["metadata"]["name"] = role_type
                 elif f.type:
                     child_block["metadata"]["name"] = f.type
 
@@ -291,9 +291,8 @@ def create_filler_blocks_for_holes(all_blocks, sequence):
                 block_id = str(uuid.uuid4())
                 filler_block = create_block_json(block_id, sequence[current_position:child["metadata"]["start"]], [])
                 filler_block["metadata"]["type"] = "filler"
-                filler_block["metadata"]["name"] = filler_block["sequence"]["sequence"][:3] + '...'
-                filler_block["metadata"]["color"] = "#4B505E"
-                filler_block["metadata"]["fontColor"] = "#6B6F7C"
+                filler_block["metadata"]["initialBases"] = filler_block["sequence"]["sequence"][:5]
+                filler_block["metadata"]["color"] = None
                 filler_block["metadata"]["start"] = current_position
                 filler_block["metadata"]["end"] = child["metadata"]["start"] - 1
                 filler_block["sequence"]["length"] = filler_block["metadata"]["end"] - filler_block["metadata"]["start"]
@@ -305,9 +304,8 @@ def create_filler_blocks_for_holes(all_blocks, sequence):
             block_id = str(uuid.uuid4())
             filler_block = create_block_json(block_id, sequence[current_position:block["metadata"]["end"] + 1], [])
             filler_block["metadata"]["type"] = "filler"
-            filler_block["metadata"]["name"] = filler_block["sequence"]["sequence"][:3] + '...'
-            filler_block["metadata"]["color"] = "#4B505E"
-            filler_block["metadata"]["fontColor"] = "#6B6F7C"
+            filler_block["metadata"]["initialBases"] = filler_block["sequence"]["sequence"][:5]
+            filler_block["metadata"]["color"] = None
             filler_block["metadata"]["start"] = current_position
             filler_block["metadata"]["end"] = block["metadata"]["end"]
             filler_block["sequence"]["length"] = filler_block["metadata"]["end"] - filler_block["metadata"]["start"]

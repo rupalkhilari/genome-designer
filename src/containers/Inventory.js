@@ -57,9 +57,9 @@ export class Inventory extends Component {
                             isActive={currentTab === 'projects'}
                             setActive={() => inventorySelectTab('projects')}/>
             <InventoryGroup title="Sketch Library"
-                            type="sbol"
-                            isActive={currentTab === 'sbol'}
-                            setActive={() => inventorySelectTab('sbol')} />
+                            type="role"
+                            isActive={currentTab === 'role'}
+                            setActive={() => inventorySelectTab('role')} />
           </div>
         </div>
       </div>

@@ -4,7 +4,7 @@ import sha from 'sha1';
 import { isEqual } from 'lodash';
 
 describe('Model', () => {
-  describe.only('Project', () => {
+  describe('Project', () => {
     it('doesnt have version by default', () => {
       const proj = new Project();
       assert(!proj.version, 'shouldnt scaffold version');

@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { transact, commit, abort } from '../../store/undo/actions';
-import { blockMerge, blockSetColor, blockSetSbol, blockRename } from '../../actions/blocks';
+import { blockMerge, blockSetColor, blockSetRole, blockRename } from '../../actions/blocks';
 import InputSimple from './../InputSimple';
 import ColorPicker from './../ui/ColorPicker';
 import SymbolPicker from './../ui/SymbolPicker';
@@ -12,7 +12,7 @@ export class InspectorBlock extends Component {
     readOnly: PropTypes.bool.isRequired,
     instances: PropTypes.array.isRequired,
     blockSetColor: PropTypes.func.isRequired,
-    blockSetSbol: PropTypes.func.isRequired,
+    blockSetRole: PropTypes.func.isRequired,
     blockMerge: PropTypes.func.isRequired,
     blockRename: PropTypes.func.isRequired,
     transact: PropTypes.func.isRequired,
@@ -43,7 +43,7 @@ export class InspectorBlock extends Component {
   selectSymbol = (symbol) => {
     this.startTransaction();
     this.props.instances.forEach((block) => {
-      this.props.blockSetSbol(block.id, symbol);
+      this.props.blockSetRole(block.id, symbol);
     });
     this.endTransaction();
   };
@@ -71,11 +71,11 @@ export class InspectorBlock extends Component {
   }
 
   /**
-   * sbol symbol of selected instance or null if multiple blocks selected
+   * role symbol of selected instance or null if multiple blocks selected
    */
-  currentSbolSymbol() {
+  currentRoleSymbol() {
     if (this.props.instances.length === 1) {
-      return this.props.instances[0].rules.sbol;
+      return this.props.instances[0].rules.role;
     }
     //false is specially handled in symbol picker as blank, and is different than null (no symbol)
     return false;
@@ -86,7 +86,7 @@ export class InspectorBlock extends Component {
    */
   currentName() {
     if (this.props.instances.length === 1) {
-      return this.props.instances[0].metadata.name || this.props.instances[0].rules.sbol || '';
+      return this.props.instances[0].metadata.name || this.props.instances[0].rules.role || '';
     }
     return '';
   }
@@ -172,7 +172,7 @@ export class InspectorBlock extends Component {
                        readOnly={readOnly}
                        onSelect={this.selectColor}/>
 
-          <SymbolPicker current={this.currentSbolSymbol()}
+          <SymbolPicker current={this.currentRoleSymbol()}
                         readOnly={readOnly}
                         onSelect={this.selectSymbol}/>
         </div>
@@ -197,7 +197,7 @@ export class InspectorBlock extends Component {
 
 export default connect(() => ({}), {
   blockSetColor,
-  blockSetSbol,
+  blockSetRole,
   blockRename,
   blockMerge,
   transact,
