@@ -309,6 +309,7 @@ class GlobalNav extends Component {
   saveProject() {
     return this.props.projectSave(this.props.currentProjectId);
   }
+
   /**
    * add a new construct to the current project
    */
@@ -327,7 +328,7 @@ class GlobalNav extends Component {
     // create project and add a default construct
     const project = this.props.projectCreate();
     // add a construct to the new project
-    const block = this.props.blockCreate({projectId: project.id});
+    const block = this.props.blockCreate({ projectId: project.id });
     this.props.projectAddConstruct(project.id, block.id);
     this.props.focusConstruct(block.id);
     this.props.projectOpen(project.id);
@@ -595,12 +596,16 @@ class GlobalNav extends Component {
 
     return (
       <div className="GlobalNav">
-        <RibbonGrunt />
-        <span className="GlobalNav-title">GD</span>
-        {showMenu && this.menuBar()}
-        <span className="GlobalNav-spacer"/>
-        {showMenu && <AutosaveTracking projectId={currentProjectId} />}
-        <UserWidget/>
+        <div className="GlobalNav-bar">
+          <span className="GlobalNav-title">GD</span>
+          {showMenu && this.menuBar()}
+          <span className="GlobalNav-spacer"/>
+          {showMenu && <AutosaveTracking projectId={currentProjectId}/>}
+          <UserWidget/>
+        </div>
+        <div className="GlobalNav-bar">
+          <RibbonGrunt />
+        </div>
       </div>
     );
   }
