@@ -96,7 +96,6 @@ def create_root_block_from_genbank(gb, sequence):
     root_block["metadata"]["end"] = full_length - 1
     root_block["metadata"]["genbank"]["id"] = gb.id
     root_block["sequence"]["length"] = full_length
-    root_block["version"] = gb.id
     if "references" in gb.annotations:
         for ref in gb.annotations["references"]:
             if "references" not in root_block["metadata"]["genbank"]:
