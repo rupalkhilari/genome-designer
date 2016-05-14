@@ -15,7 +15,6 @@ describe('Middleware', () => {
 
       return fileApi.writeFile(filePath, fileContents)
         .then((res) => {
-          console.log(res);
           expect(res.status).to.equal(200);
           fs.readFile(storagePath, 'utf8', (err, file) => {
             expect(err).to.eql(null);

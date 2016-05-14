@@ -27,7 +27,10 @@ const pathClientBundle = createBuildPath('client.js', '../build/client.js');
 
 const app = express();
 
-app.use(bodyParser.json({limit: '50mb'}));
+app.use(bodyParser.json({
+  limit: '50mb',
+  strict: false,
+}));
 
 //error logging middleware
 if (process.env.NODE_ENV !== 'production') {
