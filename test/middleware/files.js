@@ -7,7 +7,7 @@ import { createFilePath } from '../../server/utils/filePaths';
 const makeStoragePath = (path) => createFilePath(path);
 
 describe('Middleware', () => {
-  describe('Files', () => {
+  describe.only('Files', () => {
     it('writeFile() should take path and string, and write file', function writeFileBasic(done) {
       const filePath = 'test/writeMe';
       const fileContents = 'rawr';
@@ -15,6 +15,7 @@ describe('Middleware', () => {
 
       return fileApi.writeFile(filePath, fileContents)
         .then((res) => {
+          console.log(res);
           expect(res.status).to.equal(200);
           fs.readFile(storagePath, 'utf8', (err, file) => {
             expect(err).to.eql(null);
