@@ -67,6 +67,33 @@ export default class Block extends Instance {
   }
 
   /************
+   rules
+   ************/
+
+  setRule(rule, value) {
+    return this.mutate(`rules.${rule}`, value);
+  }
+
+  setRole(role) {
+    return this.setRule('role', role);
+  }
+
+  setListBlock(isList = true) {
+    if (!!isList) {
+      //clear components
+      const cleared = this.merge({
+        components: [],
+      });
+      return cleared.setRule('list', true);
+    }
+
+    const cleared = this.merge({
+      options: [],
+    });
+    return cleared.setRule('list', false);
+  }
+
+  /************
    metadata
    ************/
 
@@ -97,8 +124,8 @@ export default class Block extends Instance {
     return renamed;
   }
 
-  setRole(role) {
-    return this.mutate('rules.role', role);
+  setDescription(desc) {
+    return this.mutate('metadata.description', desc);
   }
 
   setColor(newColor = color()) {
@@ -108,10 +135,11 @@ export default class Block extends Instance {
   /************
    components
    ************/
-  
+
   //todo - account for block.rules.filter
 
   addComponent(componentId, index) {
+    invariant(!this.isList(), 'cannot add components to a list block');
     const spliceIndex = (Number.isInteger(index) && index >= 0) ? index : this.components.length;
     const newComponents = this.components.slice();
     newComponents.splice(spliceIndex, 0, componentId);
@@ -133,6 +161,7 @@ export default class Block extends Instance {
 
   //pass index to be at after spliced out
   moveComponent(componentId, newIndex) {
+    invariant(!this.isList(), 'cannot add components to a list block');
     const spliceFromIndex = this.components.findIndex(compId => compId === componentId);
 
     if (spliceFromIndex < 0) {
@@ -153,7 +182,10 @@ export default class Block extends Instance {
    list block
    ************/
 
+  //todo - account for block.rules.filter
+
   addOption(blockId) {
+    invariant(this.isList(), 'must be a list block to add list options');
     const newOptions = this.options.slice();
     newOptions.push(blockId);
     return this.mutate('options', newOptions);
