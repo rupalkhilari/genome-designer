@@ -10,7 +10,7 @@
   height: calc(100vh - var(--GlobalNav-height-chrome));
 
   &.gruntPushdown {
-    padding-top: 2.5rem;
+    padding-top: var(--grunt-height);
   }
 
   &-content {
