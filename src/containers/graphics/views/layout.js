@@ -36,7 +36,6 @@ export default class Layout {
     this.rows = [];
     this.nodes2parts = {};
     this.parts2nodes = {};
-    this.partTypes = {};
     this.partUsage = {};
     this.nestedLayouts = {};
     this.connectors = {};
@@ -90,7 +89,6 @@ export default class Layout {
   map(part, node) {
     this.nodes2parts[node.uuid] = part;
     this.parts2nodes[part] = node;
-    this.partTypes[part] = this.isSBOL(part) ? roleType : blockType;
   }
   /**
    * flag the part as currently in use i.e. should be rendered.
@@ -113,10 +111,11 @@ export default class Layout {
         if (node) {
           delete this.nodes2parts[node.uuid];
           delete this.parts2nodes[part];
-          delete this.partTypes[part];
           delete this.partUsage[part];
           node.parent.removeChild(node);
         }
+        // drop any associated list items with the part.
+        //this.dropPartListItems(part);
       }
     });
   }
@@ -490,6 +489,8 @@ export default class Layout {
     this.updateReference += 1;
     // shortcut
     const ct = this.construct;
+    // fake some list data
+    this.fakeListBlocks(ct);
     // construct the banner if required
     this.bannerFactory();
     // create and update title
@@ -514,6 +515,9 @@ export default class Layout {
     // additional vertical space consumed on every row for nested constructs
     let nestedVertical = 0;
 
+    // additional height required by the tallest list on the row
+    let maxListHeight = 0;
+
     // width of first row is effected by parent block, so we have to track
     // which row we are on.
     let rowIndex = 0;
@@ -537,6 +541,7 @@ export default class Layout {
       const node = this.nodeFromElement(part);
       const block = this.blocks[part];
       const name = this.partName(part);
+      const listN = block.list ? block.list.length : 0;
 
       // set role part name if any
       node.set({
@@ -546,18 +551,22 @@ export default class Layout {
       // measure element text or used condensed spacing
       const td = this.measureText(node, name, layoutOptions.condensed);
 
+      // update maxListHeight based on how many list items this block has
+      maxListHeight = Math.max(maxListHeight, listN * kT.blockH);
+
       // if position would exceed x limit then wrap
       if (xp + td.x > mx) {
         xp = startX;
-        yp += kT.rowH + nestedVertical;
+        yp += kT.rowH + nestedVertical + maxListHeight;
         nestedVertical = 0;
+        maxListHeight = 0;
         row = this.rowFactory(new Box2D(xp, yp - kT.rowBarH, 0, kT.rowBarH));
         rowIndex += 1;
       }
 
-      // update part, including its text and color
+      // update part, including its text and color and with height to accomodate list items
       node.set({
-        bounds: new Box2D(xp, yp, td.x, kT.blockH),
+        bounds: new Box2D(xp, yp, td.x, (listN + 1) * kT.blockH),
         text: name,
         fill: this.fillColor(part),
         color: this.fontColor(part),
@@ -648,6 +657,28 @@ export default class Layout {
 
     // return the height consumed by the layout
     return heightUsed + nestedVertical + kT.rowBarH;
+  }
+
+  /**
+   * temporary testing, fake some list blocks
+   */
+  fakeListBlocks(construct) {
+    if (!construct.fakeList) {
+      construct.fakeList = true;
+      // get all blocks
+      const blocks = Object.keys(this.blocks).map(blockId => {
+        return this.blocks[blockId];
+      });
+      // add some existing block id's to the .list property of  each block
+      construct.components.forEach(blockId => {
+        const block = this.blocks[blockId];
+        block.list = [];
+        for(var i = 0; i < Math.random() * 10; i += 1) {
+          const listItem = blocks[Math.min(blocks.length-1, Math.floor(Math.random() * blocks.length))];
+          block.list.push(listItem.id);
+        }
+      });
+    }
   }
 
   /**
