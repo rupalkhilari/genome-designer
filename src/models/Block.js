@@ -46,6 +46,10 @@ export default class Block extends Instance {
    type checks
    ************/
 
+  isTemplate() {
+    return this.rules.fixed == true;
+  }
+
   isFiller() {
     return !this.metadata.name && this.hasSequence() && !this.metadata.color;
   }
