@@ -17,6 +17,10 @@ export default class Block extends Instance {
     super(input, BlockDefinition.scaffold(), { metadata: { color: color() } });
   }
 
+  /************
+   constructors etc.
+   ************/
+
   //return an unfrozen JSON, no instance methods
   static classless(input) {
     return Object.assign({}, cloneDeep(new Block(input)));
@@ -38,7 +42,33 @@ export default class Block extends Instance {
     return super.clone(parentObject);
   }
 
-  /* project related */
+  /************
+   type checks
+   ************/
+
+  isFiller() {
+    return !this.metadata.name && this.hasSequence() && !this.metadata.color;
+  }
+
+  isList() {
+    return this.rules.list === true;
+  }
+
+  isHidden() {
+    return this.rules.hidden === true;
+  }
+
+  isFrozen() {
+    return this.rules.frozen === true;
+  }
+
+  isFixed() {
+    return this.rules.fixed === true;
+  }
+
+  /************
+   metadata
+   ************/
 
   getProjectId() {
     return this.projectId;
@@ -48,14 +78,6 @@ export default class Block extends Instance {
     invariant(idValidator(projectId) || projectId === null, 'project Id is required, or null to mark unassociated');
     return this.mutate('projectId', projectId);
   }
-
-  /* checks */
-
-  isFiller() {
-    return !this.metadata.name && this.hasSequence() && !this.metadata.color;
-  }
-
-  /* metadata things */
 
   getName() {
     // called many K per second, no es6 fluffy stuff in here.
@@ -83,7 +105,11 @@ export default class Block extends Instance {
     return this.mutate('metadata.color', newColor);
   }
 
-  /* components */
+  /************
+   components
+   ************/
+  
+  //todo - account for block.rules.filter
 
   addComponent(componentId, index) {
     const spliceIndex = (Number.isInteger(index) && index >= 0) ? index : this.components.length;
@@ -110,7 +136,7 @@ export default class Block extends Instance {
     const spliceFromIndex = this.components.findIndex(compId => compId === componentId);
 
     if (spliceFromIndex < 0) {
-      console.warn('component not found'); // eslint-disable-line
+      console.warn('component not found: ', componentId); // eslint-disable-line
       return this;
     }
 
@@ -123,7 +149,32 @@ export default class Block extends Instance {
     return this.mutate('components', newComponents);
   }
 
-  /* sequence */
+  /************
+   list block
+   ************/
+
+  addOption(blockId) {
+    const newOptions = this.options.slice();
+    newOptions.push(blockId);
+    return this.mutate('options', newOptions);
+  }
+
+  removeOption(blockId) {
+    const spliceIndex = this.options.findIndex(id => id === blockId);
+
+    if (spliceIndex < 0) {
+      console.warn('option not found: ', blockId); // eslint-disable-line
+      return this;
+    }
+
+    const newOptions = this.options.slice();
+    newOptions.splice(spliceIndex, 1);
+    return this.mutate('options', newOptions);
+  }
+
+  /************
+   sequence
+   ************/
 
   hasSequence() {
     return !!this.sequence.md5;
@@ -172,7 +223,7 @@ export default class Block extends Instance {
       });
   }
 
-  /* annotations */
+  //todo - annotations are essentially keyed using name, since we got rid of ID. is that ok?
 
   annotate(annotation) {
     invariant(AnnotationDefinition.validate(annotation), `'annotation is not valid: ${annotation}`);
