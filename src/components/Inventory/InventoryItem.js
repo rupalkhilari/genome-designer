@@ -73,7 +73,7 @@ export class InventoryItem extends Component {
   makeDnDProxy() {
     const proxy = document.createElement('div');
     proxy.className = 'InventoryItemProxy';
-    proxy.innerHTML = this.props.item.metadata.name;
+    proxy.innerHTML = this.props.item.metadata.name || this.props.defaultName;
     const svg = this.itemElement.querySelector('svg');
     if (svg) {
       const svgClone = svg.cloneNode(true);
