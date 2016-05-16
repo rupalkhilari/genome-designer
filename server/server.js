@@ -148,7 +148,7 @@ const startServer = () => app.listen(port, hostname, (err) => {
   }
 
   /* eslint-disable no-console */
-  console.log(`Building, will serve at http://${hostname}:${port}/`);
+  console.log(`Server listening at http://${hostname}:${port}/`);
 });
 
 //start the server by default, if port is not taken
