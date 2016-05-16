@@ -3,7 +3,7 @@ import Glyph2D from '../glyph2d';
 import kT from '../../../views/layoutconstants';
 import { setAttribute } from '../../../utils';
 
-export default class SBOLGlyph2D extends Glyph2D {
+export default class RoleGlyph2D extends Glyph2D {
 
   /**
    * represents a block with, possibly an SBOL symbol and a context menu
@@ -13,11 +13,11 @@ export default class SBOLGlyph2D extends Glyph2D {
     super(node);
     // basic div block
     this.el = document.createElement('div');
-    this.el.className = 'sbol-glyph';
-    // possible sbol symbol, the div is a container for a SVG which we will clone
+    this.el.className = 'role-glyph';
+    // possible role symbol, the div is a container for a SVG which we will clone
     // and style from an in document template
     this.svgContainer = document.createElement('div');
-    this.svgContainer.className = 'sbol-icon';
+    this.svgContainer.className = 'role-icon';
     this.el.appendChild(this.svgContainer);
     // possible child indicator
     this.triangle = document.createElement('div');
@@ -39,16 +39,16 @@ export default class SBOLGlyph2D extends Glyph2D {
     this.el.style.height = (this.node.height + sw) + 'px';
     this.el.style.backgroundColor = this.node.fill;
     this.el.style.border = sw ? `${sw}px solid ${this.node.stroke}` : 'none';
-    if (this.node.sbolName) {
-      if (this.sbolName !== this.node.sbolName) {
-        this.sbolName = this.node.sbolName;
+    if (this.node.roleName) {
+      if (this.roleName !== this.node.roleName) {
+        this.roleName = this.node.roleName;
         // remove existing svg
         while (this.svgContainer.firstChild) {
           this.svgContainer.removeChild(this.svgContainer.firstChild);
         }
         this.svgContainer.style.display = 'none';
         // clone the appropriate template
-        const templateId = `sbol-svg-${this.sbolName}`;
+        const templateId = `sbol-svg-${this.roleName}`;
         const template = document.getElementById(templateId);
         if (template) {
           const svg = template.cloneNode(true);
@@ -61,14 +61,14 @@ export default class SBOLGlyph2D extends Glyph2D {
           // display the svg
           this.svgContainer.style.display = 'block';
         } else {
-          // unrecognised sbol symbol
+          // unrecognised role symbol
           this.svgContainer.style.display = 'none';
         }
       }
       // update geometry of container
-      this.svgContainer.style.left = (this.node.width - kT.sbolIcon - 2 - kT.contextDotsW) + 'px';
-      this.svgContainer.style.top = (this.node.height / 2 - kT.sbolIcon / 2) + 'px';
-      this.svgContainer.style.width = kT.sbolIcon + 'px';
+      this.svgContainer.style.left = (this.node.width - kT.roleIcon - 2 - kT.contextDotsW) + 'px';
+      this.svgContainer.style.top = (this.node.height / 2 - kT.roleIcon / 2) + 'px';
+      this.svgContainer.style.width = kT.roleIcon + 'px';
     } else {
       this.svgContainer.style.display = 'none';
     }

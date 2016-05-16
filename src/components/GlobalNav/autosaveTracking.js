@@ -1,18 +1,18 @@
 import React, { PropTypes, Component } from 'react';
 import autosaveInstance from '../../store/autosave/autosaveInstance';
+import { getProjectSaveState } from '../../middleware/data';
 
 import '../../styles/AutosaveTracking.css';
 
 export default class autosaveTracking extends Component {
-  //overridden using forceUpdate
-  shouldComponentUpdate() {
-    return false;
-  }
+  static propTypes = {
+    projectId: PropTypes.string.isRequired,
+  };
 
   componentDidMount() {
     this.interval = setInterval(() => {
       this.forceUpdate();
-    }, 1000);
+    }, 500);
   }
 
   componentWillUnmount() {
@@ -20,15 +20,24 @@ export default class autosaveTracking extends Component {
   }
 
   render() {
-    const lastSaved = autosaveInstance.getLastSaved();
-    const saveDelta = +Date.now() - lastSaved;
+    const { projectId } = this.props;
+    const saveState = getProjectSaveState(projectId);
+    const { saveDelta, saveSuccessful } = saveState;
     const timeUnsaved = autosaveInstance.getTimeUnsaved();
     const dirty = autosaveInstance.isDirty();
 
-    const finalText = (dirty || saveDelta > 15000) ?
-      '' :
-      (saveDelta > 2000 ? 'Project Saved' : 'Saving...');
+    let text;
+    if (!saveSuccessful) {
+      text = 'Save Failed!';
+    } else if (dirty || saveDelta > 15000) {
+      text = '';
+    } else if (saveDelta <= 500) {
+      //we're not actually saving... we're just faking it...
+      text = 'Saving...';
+    } else {
+      text = 'Project Saved';
+    }
 
-    return (<span className="AutosaveTracking">{finalText}</span>);
+    return (<span className="AutosaveTracking">{text}</span>);
   }
 }

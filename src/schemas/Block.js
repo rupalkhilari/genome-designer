@@ -5,7 +5,7 @@ import SequenceDefinition from './Sequence';
 
 /**
  @name BlockDefinition
- @sbol Component
+ @role Component
  @description A component of a construct, or construct itself.
 
  Blocks are hierarchically composable elements which make up large constructs of DNA. Hierarchy is established with the `components` field, whereby a block references its children.

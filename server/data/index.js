@@ -32,6 +32,7 @@ router.use(errorHandlingMiddleware);
 // not recommended e.g. for POST
 // dependent on param middleware below to assign IDs to req directly
 // does not know about SHA, but shouldn't be an issue, as blocks change IDs moving across projects
+//todo - should be able to look at block.projectId in many cases... likely easiest from the client when already have the block, here we'd have to fetch it
 const blockDeterminatorMiddleware = (req, res, next) => {
   const { projectId, blockId } = req;
 
@@ -123,13 +124,13 @@ router.route('/info/:type/:detail?')
     const { type, detail } = req.params;
 
     switch (type) {
-    case 'sbol' :
+    case 'role' :
       if (detail) {
-        querying.getAllBlocksWithSbol(user.uuid, detail)
+        querying.getAllBlocksWithRole(user.uuid, detail)
           .then(info => res.status(200).json(info))
           .catch(err => next(err));
       } else {
-        querying.getAllBlockSbols(user.uuid)
+        querying.getAllBlockRoles(user.uuid)
           .then(info => res.status(200).json(info))
           .catch(err => next(err));
       }
@@ -166,11 +167,6 @@ router.route('/projects/:projectId')
     const { projectId, user } = req;
     const roll = req.body;
 
-    //todo - remove once get rid of test project
-    if (projectId === 'test') {
-      return res.status(200).send({});
-    }
-
     rollup.writeProjectRollup(projectId, roll, user.uuid)
       .then(() => persistence.projectSave(projectId))
       .then(commit => res.status(200).json(commit))
@@ -204,11 +200,19 @@ router.route('/:projectId/commit/:sha?')
     }
   })
   .post((req, res, next) => {
-    //you can POST a field `message` for the commit, receive the SHA
-    const { projectId } = req;
-    const { message } = req.body;
+    //you can POST a field 'message' for the commit, receive the SHA
+    //can also post a field 'rollup' for save a new rollup for the commit
+    const { user, projectId } = req;
+    const { message, rollup: roll } = req.body;
 
-    persistence.projectSnapshot(projectId, message)
+    const rollupDefined = roll && roll.project && roll.blocks;
+
+    const writePromise = rollupDefined ?
+      rollup.writeProjectRollup(projectId, roll, user.uuid) :
+      Promise.resolve();
+
+    writePromise
+      .then(() => persistence.projectSnapshot(projectId, message))
       .then(commit => res.status(200).json(commit))
       //may want better error handling here
       .catch(err => {
@@ -217,23 +221,6 @@ router.route('/:projectId/commit/:sha?')
         }
         return next(err);
       });
-  });
-
-//pass SHA you want, otherwise get commit log
-router.route('/:projectId/:blockId/commit/:sha?')
-  .all(blockDeterminatorMiddleware, permissionsMiddleware)
-  .get((req, res, next) => {
-    const { blockId, projectId } = req;
-    const { sha } = req.params;
-
-    if (!!sha) {
-      persistence.blockGet(blockId, projectId, sha)
-        .then(project => res.status(200).json(project))
-        .catch(err => next(err));
-    } else {
-      //todo - get block history
-      res.status(501).send('not supported yet');
-    }
   });
 
 router.route('/:projectId/:blockId')

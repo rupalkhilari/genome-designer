@@ -13,7 +13,7 @@ export const symbolMap = {
 };
 
 function makeImagePath(fileName, folder = 'thin') {
-  return '/images/sbolSymbols/' + folder + '/' + fileName + '.svg';
+  return '/images/roleSymbols/' + folder + '/' + fileName + '.svg';
 }
 
 const symbols = Object.keys(symbolMap).map(key => ({

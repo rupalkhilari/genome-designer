@@ -35,17 +35,17 @@ module.exports = {
     // create a new construct with a single block
     dragFromTo(browser, '.InventoryItemBlock:nth-of-type(1)', 10, 10, '.cvc-drop-target', 10, 10);
 
-    // open the sbol symbols and drag from there to make a new construct
+    // open the role symbols and drag from there to make a new construct
     browser.click('.InventoryGroup:nth-of-type(4) .InventoryGroup-heading');
 
     // and again
-    dragFromTo(browser, '.InventoryItemSbol:nth-of-type(1)', 10, 10, '.cvc-drop-target', 10, 10);
+    dragFromTo(browser, '.InventoryItemRole:nth-of-type(1)', 10, 10, '.cvc-drop-target', 10, 10);
 
     browser
       // expect two construct views, two with one block each
       .assert.countelements('.construct-viewer', 2)
-      .assert.countelements('.sbol-glyph', 2)
-      // expect SVG elements for each sbol symbol
+      .assert.countelements('.role-glyph', 2)
+      // expect SVG elements for each role symbol
       .assert.countelements('.construct-viewer svg', 2);
 
     // save project
@@ -71,23 +71,23 @@ module.exports = {
     // drag one of the constructs to the new construct drop target
     dragFromTo(browser, '.InventoryConstruct:nth-of-type(1)', 10, 10, '.cvc-drop-target', 10, 10);
 
-    // should have a new construct with a corresponding increase in numbers of blocks/sbol glyphs
+    // should have a new construct with a corresponding increase in numbers of blocks/role glyphs
     browser
       // expect three constructs and three blocks
       .assert.countelements('.construct-viewer', 3)
-      .assert.countelements('.sbol-glyph', 3)
-      // expect SVG elements for each sbol symbol
+      .assert.countelements('.role-glyph', 3)
+      // expect SVG elements for each role symbol
       .assert.countelements('.construct-viewer svg', 3);
 
     // drag a single block to create a new construct
     dragFromTo(browser, '.InventoryItem-item', 10, 10, '.cvc-drop-target', 10, 10);
 
-    // should have a new construct with a corresponding increase in numbers of blocks/sbol glyphs
+    // should have a new construct with a corresponding increase in numbers of blocks/role glyphs
     browser
       // expect four construct views and 4 blocks
       .assert.countelements('.construct-viewer', 4)
-      .assert.countelements('.sbol-glyph', 4)
-      // expect SVG elements for each sbol symbol
+      .assert.countelements('.role-glyph', 4)
+      // expect SVG elements for each role symbol
       .assert.countelements('.construct-viewer svg', 4)
       .end();
 

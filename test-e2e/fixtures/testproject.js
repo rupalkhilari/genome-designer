@@ -25,14 +25,14 @@ var newproject = function(browser) {
     .pause(500)
     .waitForElementPresent('.InventoryItem', 5000, 'expected an inventory item');
 
-  // drag 3 sbol symbols into construct
-  dragFromTo(browser, '.InventoryItemSbol:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 700, 30);
-  dragFromTo(browser, '.InventoryItemSbol:nth-of-type(2)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 700, 30);
-  dragFromTo(browser, '.InventoryItemSbol:nth-of-type(3)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 700, 30);
+  // drag 3 role symbols into construct
+  dragFromTo(browser, '.InventoryItemRole:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 700, 30);
+  dragFromTo(browser, '.InventoryItemRole:nth-of-type(2)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 700, 30);
+  dragFromTo(browser, '.InventoryItemRole:nth-of-type(3)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 700, 30);
 
   browser
     .pause(250)
-    .assert.countelements('.sbol-glyph', 6);
+    .assert.countelements('.role-glyph', 6);
 };
 
 module.exports = newproject;

@@ -38,12 +38,12 @@ module.exports = {
     browser.assert.countelements('.construct-viewer', 1);
 
     // add block to construct
-    dragFromTo(browser, '.InventoryItemSbol:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 30, 30);
+    dragFromTo(browser, '.InventoryItemRole:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 30, 30);
 
     browser
       // expect one construct view and one block
       .assert.countelements('.construct-viewer', 1)
-      .assert.countelements('.sbol-glyph', 1);
+      .assert.countelements('.role-glyph', 1);
 
 
     var blockBounds = openNthBlockContextMenu(browser, '.sceneGraph', 0);

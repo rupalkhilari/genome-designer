@@ -2,7 +2,7 @@ import Instance from './Instance';
 import invariant from 'invariant';
 import cloneDeep from 'lodash.clonedeep';
 import BlockDefinition from '../schemas/Block';
-import { getSequence, writeSequence } from '../middleware/api';
+import { getSequence, writeSequence } from '../middleware/sequence';
 import AnnotationDefinition from '../schemas/Annotation';
 import md5 from 'md5';
 import color from '../utils/generators/color';
@@ -26,6 +26,8 @@ export default class Block extends Instance {
     return BlockDefinition.validate(input, throwOnError);
   }
 
+  // note that if you are cloning multiple blocks / blocks with components, you likely need to clone the components as well
+  // need to re-map the IDs outside of this function. see blockClone action.
   clone(parentInfo) {
     const [ firstParent ] = this.parents;
     const parentObject = Object.assign({
@@ -43,7 +45,7 @@ export default class Block extends Instance {
   }
 
   setProjectId(projectId) {
-    invariant(idValidator(projectId) || projectId === null, 'project is required, or null to mark unassociated');
+    invariant(idValidator(projectId) || projectId === null, 'project Id is required, or null to mark unassociated');
     return this.mutate('projectId', projectId);
   }
 
@@ -58,24 +60,23 @@ export default class Block extends Instance {
   getName() {
     // called many K per second, no es6 fluffy stuff in here.
     if (this.metadata.name) return this.metadata.name;
-    if (this.rules.sbol) return this.rules.sbol;
+    if (this.rules.role) return this.rules.role;
     if (this.components.length) return 'New Construct';
-    if (this.metadata.initialBases) return this.metadata.initialBases;
+    if (this.isFiller() && this.metadata.initialBases) return this.metadata.initialBases;
     return 'New Block';
   }
 
-  setSbol(sbol) {
-    return this.mutate('rules.sbol', sbol);
-  }
-
   setName(newName) {
-    const filler = this.isFiller();
     const renamed = this.mutate('metadata.name', newName);
 
-    if (filler) {
-      return this.setColor();
+    if (this.isFiller()) {
+      return renamed.setColor();
     }
     return renamed;
+  }
+
+  setRole(role) {
+    return this.mutate('rules.role', role);
   }
 
   setColor(newColor = color()) {
@@ -85,7 +86,7 @@ export default class Block extends Instance {
   /* components */
 
   addComponent(componentId, index) {
-    const spliceIndex = Number.isInteger(index) ? index : this.components.length;
+    const spliceIndex = (Number.isInteger(index) && index >= 0) ? index : this.components.length;
     const newComponents = this.components.slice();
     newComponents.splice(spliceIndex, 0, componentId);
     return this.mutate('components', newComponents);

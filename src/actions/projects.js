@@ -1,32 +1,18 @@
 import * as ActionTypes from '../constants/ActionTypes';
-import { saveProject, loadProject, snapshot, listProjects } from '../middleware/api';
+import { saveProject, loadProject, snapshot, listProjects } from '../middleware/data';
 import * as projectSelectors from '../selectors/projects';
 import * as undoActions from '../store/undo/actions';
 import { push } from 'react-router-redux';
 
 import Block from '../models/Block';
 import Project from '../models/Project';
+import { pauseAction, resumeAction } from '../store/pausableStore';
 
 import { getItem, setItem } from '../middleware/localStorageCache';
 const recentProjectKey = 'mostRecentProject';
 
 //todo - should this go in the reducers (i.e. a cache outside store state)? One for projects, one for blocks? Then compare rollup components to those directly. That way we can track individual resources more easily rather than just whole rollups.
 //note that goal is to track lastSaved versions, and so the cache if in the reducer should handle dirty tracking
-
-//project rollup cache
-//used in saving and loading
-//track the last versions saved so we aren't saving over and over
-const rollMap = new Map();
-const isRollSame = (oldRoll, newRoll) => {
-  if (!oldRoll || !newRoll) return false;
-  //check projects same
-  if (!Project.compare(oldRoll.project, newRoll.project)) return false;
-  //check all blocks same
-  return oldRoll.blocks.every(oldBlock => {
-    const analog = newRoll.blocks.find(newBlock => newBlock.id === oldBlock.id);
-    return analog && analog === oldBlock;
-  });
-};
 
 //Promise
 export const projectList = () => {
@@ -67,19 +53,16 @@ export const projectSave = (inputProjectId) => {
       return Promise.resolve(null);
     }
 
-    const project = getState().projects[projectId];
     const roll = dispatch(projectSelectors.projectCreateRollup(projectId));
     setItem(recentProjectKey, projectId);
 
-    //check if project is new, and save if it is
-    const oldRoll = rollMap.get(projectId);
-    if (isRollSame(oldRoll, roll)) {
-      return Promise.resolve(project);
-    }
-    rollMap.set(projectId, roll);
-
     return saveProject(projectId, roll)
-      .then(({sha}) => {
+      .then(commitInfo => {
+        if (!commitInfo) {
+          return null;
+        }
+
+        const { sha } = commitInfo;
         dispatch({
           type: ActionTypes.PROJECT_SAVE,
           projectId,
@@ -92,11 +75,19 @@ export const projectSave = (inputProjectId) => {
 
 //Promise
 //explicit save e.g. an important point
-export const projectSnapshot = (projectId, message) => {
+export const projectSnapshot = (projectId, message, withRollup = true) => {
   return (dispatch, getState) => {
-    const roll = dispatch(projectSelectors.projectCreateRollup(projectId));
-    return snapshot(projectId, roll, message)
-      .then(({sha}) => {
+    const roll = withRollup ?
+      dispatch(projectSelectors.projectCreateRollup(projectId)) :
+      {};
+
+    return snapshot(projectId, message, roll)
+      .then(commitInfo => {
+        if (!commitInfo) {
+          return null;
+        }
+
+        const { sha } = commitInfo;
         dispatch({
           type: ActionTypes.PROJECT_SNAPSHOT,
           projectId,
@@ -115,6 +106,7 @@ export const projectLoad = (projectId) => {
         const { project, blocks } = rollup;
         const projectModel = new Project(project);
 
+        dispatch(pauseAction());
         dispatch(undoActions.transact());
 
         dispatch({
@@ -128,8 +120,7 @@ export const projectLoad = (projectId) => {
         });
 
         dispatch(undoActions.commit());
-
-        rollMap.set(projectId, rollup);
+        dispatch(resumeAction());
 
         return project;
       });

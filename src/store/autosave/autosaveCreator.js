@@ -7,7 +7,7 @@ export default function autosavingCreator(config) {
 
   const options = Object.assign({
     time: 20 * 1000, //throttle autosave requests, 20 sec
-    wait: 3 * 1000, //debounce wait time, 2.5 sec
+    wait: 3 * 1000, //debounce wait time, 3 sec
     onSave: (nextState) => { throw new Error('onSave is required'); },
     filter: (action, alreadyDirty, nextState, lastState) => nextState !== lastState, //filter for triggering autosave events
     purgeOn: (action, alreadyDirty, nextState, lastState) => false, //will cancel throttled calls if pass function
@@ -17,23 +17,24 @@ export default function autosavingCreator(config) {
   }, config);
 
   let timeStartOfChanges = 0; //0 means no unsaved changes, otherwise time of start of changes
-  let lastSaved = +Date.now();
   let dirty = false;
 
   const getTimeUnsaved = () => { return timeStartOfChanges > 0 ? +Date.now() - timeStartOfChanges : 0; };
-  const getLastSaved = () => lastSaved;
   const isDirty = () => dirty;
 
-  //we've saved, update internal state
+  //we've saved, update relevant internal state
   const noteSave = () => {
     timeStartOfChanges = 0;
-    lastSaved = +Date.now();
+    dirty = false;
   };
 
+  //fail saved, will be noted in project saving caching (middleware/data.js)
+  const noteFailure = () => {};
+
   const handleSave = (nextState) => {
-    noteSave();
-    options.onSave(nextState);
-    dirty = false;
+    Promise.resolve(options.onSave(nextState))
+      .then(() => noteSave())
+      .catch(() => noteFailure());
   };
 
   //trigger at start, and end if more were batched
@@ -60,15 +61,15 @@ export default function autosavingCreator(config) {
     return dirty;
   };
 
-  const purgeDebounced = () => {
+  const handlePurging = () => {
+    timeStartOfChanges = 0;
     throttledSave.cancel();
     debouncedInitiateSave.cancel();
   };
 
   const handleForceSave = (state) => {
-    purgeDebounced();
+    handlePurging();
     handleSave(state);
-    return state;
   };
 
   const autosaveReducerEnhancer = reducer => {
@@ -85,10 +86,11 @@ export default function autosavingCreator(config) {
       const nextState = reducer(state, action);
 
       if (options.purgeOn(action, dirty, nextState, state) === true) {
-        purgeDebounced();
+        handlePurging();
       }
 
       if (options.simulateOn(action, dirty, nextState, state) === true) {
+        //todo - need to handle errors for these simulations.... these just look like they worked.. only want to mark !dirty on success
         noteSave();
       }
 
@@ -106,7 +108,6 @@ export default function autosavingCreator(config) {
   return {
     autosaveReducerEnhancer,
     getTimeUnsaved,
-    getLastSaved,
     isDirty,
   };
 }

@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 
 import InventoryProjectList from './InventoryProjectList';
-import InventorySbolMap from './InventorySbolMap';
+import InventoryRoleMap from './InventoryRoleMap';
 import InventoryTabs from './InventoryTabs';
 
 export default class InventoryGroupProjects extends Component {
@@ -28,7 +28,7 @@ export default class InventoryGroupProjects extends Component {
 
     const currentList = groupBy === 'type'
       ?
-      <InventorySbolMap />
+      <InventoryRoleMap />
       :
       <InventoryProjectList currentProject={currentProject}/>;
 

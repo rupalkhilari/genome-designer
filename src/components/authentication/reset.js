@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { uiShowAuthenticationForm, uiSetGrunt } from '../../actions/ui';
 import { userLogin } from '../../actions/user';
-import { reset } from '../../middleware/api';
+import { reset } from '../../middleware/data';
 import invariant from 'invariant';
 import { projectOpen } from '../../actions/projects';
 

@@ -3,42 +3,26 @@ import { merge } from 'lodash';
 import * as ActionTypes from '../constants/ActionTypes';
 import BlockDefinition from '../schemas/Block';
 import Block from '../models/Block';
-import { saveBlock, loadBlock } from '../middleware/api';
+import { loadBlock } from '../middleware/data';
 import * as selectors from '../selectors/blocks';
 import * as projectSelectors from '../selectors/projects';
 import * as undoActions from '../store/undo/actions';
 import { pauseAction, resumeAction } from '../store/pausableStore';
 
-//Promise
-export const blockSave = (blockId, forceProjectId = false) => {
-  return (dispatch, getState) => {
-    const block = getState().blocks[blockId];
-    const currentProjectId = dispatch(projectSelectors.projectGetCurrentId());
-    const projectId = block.getProjectId() || forceProjectId || currentProjectId;
-    //todo - should save projectId on the block if its different
-
-    invariant(projectId, 'project ID required to save block');
-    return saveBlock(block, projectId)
-      .then(block => {
-        dispatch({
-          type: ActionTypes.BLOCK_SAVE,
-          block,
-        });
-        return block;
-      });
-  };
-};
+//todo - helper to wrap dispatch()'s in a paused transaction - make sure dispatch still runs when passed as arg
 
 //Promise
-export const blockLoad = (blockId) => {
+//retrieves a block, and its components if specified
+export const blockLoad = (blockId, withComponents = false) => {
   return (dispatch, getState) => {
-    return loadBlock(blockId)
-      .then(block => {
+    return loadBlock(blockId, withComponents)
+      .then(blockMap => {
+        const blocks = Object.keys(blockMap).map(key => new Block(blockMap[key]));
         dispatch({
           type: ActionTypes.BLOCK_LOAD,
-          block,
+          blocks,
         });
-        return block;
+        return blocks;
       });
   };
 };
@@ -71,6 +55,20 @@ export const blockStash = (...inputBlocks) => {
   };
 };
 
+//this is a backup for performing arbitrary mutations. You probably shouldn't use this.
+export const blockMerge = (blockId, toMerge) => {
+  return (dispatch, getState) => {
+    const oldBlock = getState().blocks[blockId];
+    const block = oldBlock.merge(toMerge);
+    dispatch({
+      type: ActionTypes.BLOCK_MERGE,
+      undoable: true,
+      block,
+    });
+    return block;
+  };
+};
+
 /**
  * @description
  * Clones a block (and its children by default)
@@ -97,6 +95,7 @@ export const blockClone = (blockInput, parentObjectInput = {}, shallowOnly = fal
 
     //get the project ID to use for parent, considering the block may be detached from a project (e.g. inventory block)
     const parentProjectId = oldBlock.getProjectId() || null;
+    //will default to null if parentProjectId is undefined
     const parentProjectVersion = dispatch(projectSelectors.projectGetVersion(parentProjectId));
 
     //partial object about project, block ID handled in block.clone()
@@ -129,10 +128,8 @@ export const blockClone = (blockInput, parentObjectInput = {}, shallowOnly = fal
       return clone.mutate('components', newComponents);
     });
 
-    //add clones to the store
-    //note, not using the action BLOCK_CLONE
     dispatch({
-      type: ActionTypes.BLOCK_STASH,
+      type: ActionTypes.BLOCK_CLONE,
       blocks: clones,
     });
 
@@ -143,24 +140,10 @@ export const blockClone = (blockInput, parentObjectInput = {}, shallowOnly = fal
   };
 };
 
-//this is a backup for performing arbitrary mutations. You shouldn't use this.
-export const blockMerge = (blockId, toMerge) => {
-  return (dispatch, getState) => {
-    const oldBlock = getState().blocks[blockId];
-    const block = oldBlock.merge(toMerge);
-    dispatch({
-      type: ActionTypes.BLOCK_MERGE,
-      undoable: true,
-      block,
-    });
-    return block;
-  };
-};
-
 //deletes blocks from store
+//need to run this sequentially
 export const blockDelete = (...blocks) => {
   return (dispatch, getState) => {
-    //transact for all blocks
     dispatch(pauseAction());
     dispatch(undoActions.transact());
 
@@ -181,7 +164,6 @@ export const blockDelete = (...blocks) => {
       });
     });
 
-    //end transaction
     dispatch(undoActions.commit());
     dispatch(resumeAction());
 
@@ -190,10 +172,9 @@ export const blockDelete = (...blocks) => {
 };
 
 //remove blocks from constructs / projects, but leave in the store
-//todo - verify if need to remove children first so store never in bad state
+//need to run this sequentially
 export const blockDetach = (...blockIds) => {
   return (dispatch, getState) => {
-    //transact for all blocks
     dispatch(pauseAction());
     dispatch(undoActions.transact());
 
@@ -206,14 +187,12 @@ export const blockDetach = (...blockIds) => {
       }
     });
 
-    //end transaction
     dispatch(undoActions.commit());
     dispatch(resumeAction());
 
     return blockIds;
   };
 };
-
 
 /***************************************
  * Components
@@ -235,25 +214,47 @@ export const blockRemoveComponent = (blockId, ...componentIds) => {
   };
 };
 
-export const blockAddComponent = (blockId, componentId, index) => {
+export const blockAddComponent = (blockId, componentId, index = -1, forceProjectId = false) => {
   return (dispatch, getState) => {
     const oldParent = dispatch(selectors.blockGetParents(componentId)).shift();
     const oldBlock = getState().blocks[blockId];
+    const component = getState().blocks[componentId];
+
+    const componentProjectId = component.getProjectId();
+    const nextParentProjectId = oldBlock.getProjectId();
+
+    dispatch(pauseAction());
+    dispatch(undoActions.transact());
+
+    //verify projectId match, set if appropriate (forceProjectId is true, or not set in component being added)
+    if (componentProjectId !== nextParentProjectId) {
+      invariant(!componentProjectId || forceProjectId === true, 'cannot add component with different projectId! set forceProjectId = true to overwrite.');
+
+      //there may be scenarios where we are adding to a detached block, so lets avoid the error when next parent has no project
+      if (nextParentProjectId) {
+        const updatedComponent = component.setProjectId(nextParentProjectId);
+        dispatch({
+          type: ActionTypes.BLOCK_STASH,
+          block: updatedComponent,
+        });
+      }
+    }
+
+    //remove component from old parent (should clone first to avoid this, this is to handle just moving)
+    if (oldParent) {
+      dispatch(blockRemoveComponent(oldParent.id, componentId));
+    }
+
+    //now update the parent
     const block = oldBlock.addComponent(componentId, index);
-    const actionPayload = {
+    dispatch({
       type: ActionTypes.BLOCK_COMPONENT_ADD,
       undoable: true,
       block,
-    };
+    });
 
-    if (oldParent) {
-      dispatch(undoActions.transact());
-      dispatch(blockRemoveComponent(oldParent.id, componentId));
-      dispatch(actionPayload);
-      dispatch(undoActions.commit());
-    } else {
-      dispatch(actionPayload);
-    }
+    dispatch(undoActions.commit());
+    dispatch(resumeAction());
 
     return block;
   };
@@ -264,7 +265,6 @@ export const blockAddComponent = (blockId, componentId, index) => {
  */
 export const blockAddComponents = (blockId, componentIds, index) => {
   return (dispatch, getState) => {
-    //transact for all blocks
     dispatch(pauseAction());
     dispatch(undoActions.transact());
 
@@ -272,7 +272,6 @@ export const blockAddComponents = (blockId, componentIds, index) => {
       dispatch(blockAddComponent(blockId, componentId, index + subIndex));
     });
 
-    //end transaction
     dispatch(undoActions.commit());
     dispatch(resumeAction());
 
@@ -280,7 +279,7 @@ export const blockAddComponents = (blockId, componentIds, index) => {
   };
 };
 
-//move within same parent, new index
+//move within same parent, new index (pass index to be at after spliced out)
 export const blockMoveComponent = (blockId, componentId, newIndex) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
@@ -335,19 +334,19 @@ export const blockSetColor = (blockId, color) => {
 };
 
 /**
- * change the sbol symbol of the block e.g. from the inspector
+ * change the role symbol of the block e.g. from the inspector
  */
-export const blockSetSbol = (blockId, sbol) => {
+export const blockSetRole = (blockId, role) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
 
-    if (oldBlock.rules.sbol === sbol) {
+    if (oldBlock.rules.role === role) {
       return oldBlock;
     }
 
-    const block = oldBlock.setSbol(sbol);
+    const block = oldBlock.setRole(role);
     dispatch({
-      type: ActionTypes.BLOCK_SET_SBOL,
+      type: ActionTypes.BLOCK_SET_ROLE,
       undoable: true,
       block,
     });
@@ -355,16 +354,17 @@ export const blockSetSbol = (blockId, sbol) => {
   };
 };
 
+//todo - this should not be an action + unclear name. It is too simply composed of existing atomic actions... prevent API bloat
 /**
- * e.g. when the user drop an sbol symbol on an existing block.
- * Create a new child block and set the given sbol symbol
+ * e.g. when the user drop an role symbol on an existing block.
+ * Create a new child block and set the given role symbol
  */
-export const blockAddSbol = (blockId, sbol) => {
+export const blockAddSbol = (blockId, role) => {
   return (dispatch, getState) => {
     dispatch(undoActions.transact());
     const oldBlock = getState().blocks[blockId];
     const newBlock = dispatch(blockCreate());
-    dispatch(blockSetSbol(newBlock.id, sbol));
+    dispatch(blockSetRole(newBlock.id, role));
     dispatch(blockAddComponent(oldBlock.id, newBlock.id, oldBlock.components.length));
     //end transaction
     dispatch(undoActions.commit());
@@ -373,7 +373,7 @@ export const blockAddSbol = (blockId, sbol) => {
 };
 
 /***************************************
- * Sequence / annotations
+ * annotations
  ***************************************/
 
 export const blockAnnotate = (blockId, annotation) => {
@@ -402,6 +402,10 @@ export const blockRemoveAnnotation = (blockId, annotation) => {
     return block;
   };
 };
+
+/***************************************
+ * Sequence
+ ***************************************/
 
 //Non-mutating
 //Promise

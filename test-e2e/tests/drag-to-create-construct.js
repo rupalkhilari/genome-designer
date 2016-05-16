@@ -32,17 +32,17 @@ module.exports = {
     // create a new construct with a single block
     dragFromTo(browser, '.InventoryItemBlock:nth-of-type(1)', 10, 10, '.cvc-drop-target', 10, 10);
 
-    // open the sbol symbols and drag from there to make a new construct
+    // open the role symbols and drag from there to make a new construct
     browser.click('.InventoryGroup:nth-of-type(4) .InventoryGroup-heading');
 
     // and again
-    dragFromTo(browser, '.InventoryItemSbol:nth-of-type(1)', 10, 10, '.cvc-drop-target', 10, 10);
+    dragFromTo(browser, '.InventoryItemRole:nth-of-type(1)', 10, 10, '.cvc-drop-target', 10, 10);
 
     browser
       // expect two construct views, two with one block each
       .assert.countelements('.construct-viewer', 2)
-      .assert.countelements('.sbol-glyph', 2)
-      // expect SVG elements for each sbol symbol
+      .assert.countelements('.role-glyph', 2)
+      // expect SVG elements for each role symbol
       .assert.countelements('.construct-viewer svg', 2)
       .end();
   }

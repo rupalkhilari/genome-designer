@@ -1,14 +1,14 @@
 import React, { Component, PropTypes } from 'react';
-import { sbol as sbolDragType } from '../../constants/DragTypes';
+import { role as roleDragType } from '../../constants/DragTypes';
 import Block from '../../models/Block';
 
 import InventoryItem from './InventoryItem';
 
 //note - if we know we have a (non-construct) block as inventory item, then we dont need to do any transactions / deep cloning - inventory drag + drop is straight forward. Use InventoryConstruct if you have a block that may be a construct (with components) OR a block.
 
-export default class InventoryItemSbol extends Component {
+export default class InventoryItemRole extends Component {
   static propTypes = {
-    sbol: PropTypes.shape({
+    role: PropTypes.shape({
       id: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired,
       images: PropTypes.object.isRequired,
@@ -18,34 +18,32 @@ export default class InventoryItemSbol extends Component {
   constructor(props) {
     super(props);
 
-    const symbol = this.props.sbol;
+    //this comes from inventory/roles.js
+    const symbol = this.props.role;
 
     //make this a block so that it shows up in the inspector properly
-    this.sbol = new Block({
+    this.roleBlock = new Block({
       id: symbol.id,
       metadata: {
         name: symbol.name,
         image: symbol.images.thin,
         color: null,
-        isSBOL: true,
       },
       rules: {
-        sbol: symbol.id,
-      },
-      source: {
-        source: 'SBOL',
+        role: symbol.id,
       },
     });
   }
 
   render() {
-    const { sbol, ...rest } = this.props;
+    const { role, ...rest } = this.props;
 
     return (
-      <div className="InventoryItemSbol">
+      <div className="InventoryItemRole">
         <InventoryItem {...rest}
-          inventoryType={sbolDragType}
-          item={this.sbol}/>
+          inventoryType={roleDragType}
+          svg={role.id}
+          item={this.roleBlock}/>
       </div>
     );
   }

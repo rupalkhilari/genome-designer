@@ -18,9 +18,6 @@ export class Inventory extends Component {
 
   toggle = (forceVal) => {
     this.props.inventoryToggleVisibility(forceVal);
-    window.setTimeout(() => {
-      window.dispatchEvent(new Event('resize'));
-    }, 300);
   };
 
   render() {
@@ -57,9 +54,9 @@ export class Inventory extends Component {
                             isActive={currentTab === 'projects'}
                             setActive={() => inventorySelectTab('projects')}/>
             <InventoryGroup title="Sketch Library"
-                            type="sbol"
-                            isActive={currentTab === 'sbol'}
-                            setActive={() => inventorySelectTab('sbol')} />
+                            type="role"
+                            isActive={currentTab === 'role'}
+                            setActive={() => inventorySelectTab('role')} />
           </div>
         </div>
       </div>
@@ -78,5 +75,5 @@ function mapStateToProps(state, props) {
 
 export default connect(mapStateToProps, {
   inventoryToggleVisibility,
-  inventorySelectTab
+  inventorySelectTab,
 })(Inventory);
