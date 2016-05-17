@@ -11,9 +11,6 @@ import bodyParser from 'body-parser';
 import importRouter from '../plugins/convert/import';
 import exportRouter from '../plugins/convert/export';
 
-import { directoryMake } from './utils/fileSystem';
-import { createStorageUrl } from './utils/filePaths';
-
 const DEFAULT_PORT = 3000;
 const port = parseInt(process.argv[2], 10) || process.env.PORT || DEFAULT_PORT;
 const hostname = '0.0.0.0';
@@ -28,8 +25,10 @@ const pathImages = createBuildPath('images', '../src/images');
 const pathPublic = createBuildPath('public', '../src/public');
 const pathClientBundle = createBuildPath('client.js', '../build/client.js');
 
+//create server app
 const app = express();
 
+//use large body limit at root so that 100kb default doesnt propagate / block downstream
 app.use(bodyParser.json({
   limit: '50mb',
   strict: false,
@@ -125,15 +124,6 @@ app.get('*', (req, res) => {
     res.render(path.join(pathContent + '/index.jade'), Object.assign({}, req.user, discourse));
   }
 });
-
-/*** setup ***/
-directoryMake(createStorageUrl());
-directoryMake(createStorageUrl('projects'));
-directoryMake(createStorageUrl('sequence'));
-directoryMake(createStorageUrl('file'));
-directoryMake(createStorageUrl('temp'));
-directoryMake(createStorageUrl('genbank'));
-directoryMake(createStorageUrl('csv'));
 
 /*** running ***/
 
