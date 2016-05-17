@@ -126,9 +126,16 @@ app.get('*', (req, res) => {
   }
 });
 
+/*** setup ***/
+directoryMake(createStorageUrl());
+directoryMake(createStorageUrl('projects'));
+directoryMake(createStorageUrl('sequence'));
+directoryMake(createStorageUrl('file'));
 directoryMake(createStorageUrl('temp'));
 directoryMake(createStorageUrl('genbank'));
 directoryMake(createStorageUrl('csv'));
+
+/*** running ***/
 
 //i have no idea why, but sometimes the server tries to build when the port is already in use, so lets just check if port is in use and if it is, then dont try to listen on it.
 const isPortFree = (port, cb) => {
