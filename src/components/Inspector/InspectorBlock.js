@@ -126,8 +126,12 @@ export class InspectorBlock extends Component {
   }
 
   currentSource() {
-    if (this.props.instances.length === 1) {
-      return (<BlockSource block={this.props.instances[0]} />);
+    const firstSource = this.props.instances[0].source;
+    const { id: firstId, source: firstName } = firstSource;
+
+    if (this.props.instances.length === 1 ||
+        this.props.instances.every(block => block.source.id === firstId && block.source.source === firstName)) {
+      return (<BlockSource source={firstSource}/>);
     }
     return (<p>Multiple Sources</p>);
   }
