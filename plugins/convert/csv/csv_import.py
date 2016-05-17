@@ -34,7 +34,7 @@ def line_to_block(line):
     block["metadata"]["name"] = line["Name"]
     block["metadata"]["description"] = line["Description"]
     if "SBOL Type" in line:
-        block["rules"]["role"] = line["SBOL Type"]
+        block["rules"]["role"] = line["SBOL Type"].lower()
     if "Background Color" in line:
         block["metadata"]["color"] = line["Background Color"]
     return {"id": block_id, "block": block}
