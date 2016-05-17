@@ -5,7 +5,8 @@
 
 import { importPath } from '../../middleware/paths';
 
+export const name = 'Genbank';
+
 export const sourceUrl = ({ url, id }) => {
-  const url = importPath(`genbank/file/${id}`);
-  return url;
+  return url || importPath(`genbank/file/${id}`);
 };

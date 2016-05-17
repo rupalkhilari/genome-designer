@@ -15,6 +15,7 @@ export const register = (source) => {
   invariant(false, 'not supported yet');
 
   //todo - checks
+  invariant(typeof source.name === 'string', 'name is required');
   invariant(!source.search || typeof source.search === 'function');
   invariant(!source.source || typeof source.get === 'function'); //get is necessary if it is searchable
   invariant(!source.sourceUrl || typeof source.sourceUrl === 'function');

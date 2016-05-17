@@ -45,13 +45,13 @@ function importProject(pluginId, inputFilePath) {
 }
 
 //route to download genbank files
-router.get(':pluginId/file/:fileId', (req, res, next) => {
+router.get('/:pluginId/file/:fileId', (req, res, next) => {
   const { pluginId, fileId } = req.params;
 
   const path = filePaths.createStorageUrl(pluginId, fileId);
 
-  fileSystem.fileRead(path, false)
-    .then(contents => res.status(200).send(contents))
+  fileSystem.fileExists(path)
+    .then(() => res.download(path))
     .catch(err => {
       if (err === errorDoesNotExist) {
         return res.status(404).send();
@@ -62,7 +62,7 @@ router.get(':pluginId/file/:fileId', (req, res, next) => {
 });
 
 // genbank without a project
-router.post(':pluginId/convert', jsonParser, (req, resp, next) => {
+router.post('/:pluginId/convert', jsonParser, (req, resp, next) => {
   const { pluginId } = req.params;
 
   let buffer = '';
