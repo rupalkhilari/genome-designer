@@ -36,7 +36,7 @@ export class InventoryGroupSearch extends Component {
 
   state = {
     searching: false,
-    sourceList: getSources(),
+    sourceList: getSources('search'),
     sourcesVisible: createSourcesVisible(),
     searchResults: defaultSearchResults,
     groupBy: 'source',
