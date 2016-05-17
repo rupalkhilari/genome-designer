@@ -2,11 +2,13 @@ import invariant from 'invariant';
 import * as egf from './egf/index';
 import * as igem from './igem/index';
 import * as ncbi from './ncbi/index';
+import * as genbank from './genbank/index';
 
 export const registry = {
   egf,
   igem,
   ncbi,
+  genbank,
 };
 
 export const register = (source) => {
