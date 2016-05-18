@@ -39,6 +39,7 @@ export default class Layout {
     this.partUsage = {};
     this.nestedLayouts = {};
     this.connectors = {};
+    this.listNodes = {};
 
     // this reference is incremented for each update. Blocks, lines are given
     // the latest reference whenever they are updated. Any elements without
@@ -72,6 +73,11 @@ export default class Layout {
     // we should only autosize the nodes representing parts
     objectValues(this.parts2nodes).forEach(node => {
       aabb = aabb.union(node.getAABB());
+      // add in any part list items for this block
+      const blockId = this.elementFromNode(node);
+      objectValues(this.listNodes[blockId]).forEach(node => {
+        aabb = aabb.union(node.getAABB());
+      });
     });
     // add any nested constructs
     objectValues(this.nestedLayouts).forEach(layout => {
@@ -117,6 +123,51 @@ export default class Layout {
         // drop any associated list items with the part.
         //this.dropPartListItems(part);
       }
+    });
+  }
+
+  /**
+   * create a list part for the block
+   */
+  listBlockFactory(blockId) {
+    const block = this.blocks[blockId];
+    const props = Object.assign({}, {
+      dataAttribute: {name: 'nodetype', value: 'part'},
+      sg: this.sceneGraph,
+    }, kT.partAppearance);
+    return new Role2D(props);
+  }
+  /**
+   * create / update the list items for the block
+   */
+  updateListForBlock(block, width) {
+    this.fakeListBlocks(block);
+
+    console.log('----- Update list for:', block.getName(), ' ', block.list.length);
+
+    const parentNode = this.nodeFromElement(block.id);
+    block.list.forEach((blockId, index) => {
+      // ensure we have a hash of list nodes for this block
+      let nodes = this.listNodes[block.id];
+      if (!nodes) {
+        nodes = this.listNodes[block.id] = {};
+      }
+      // get the block in the list
+      const listBlock = this.blocks[blockId];
+      console.log('List block:', listBlock.getName());
+      // create node as necessary for this block
+      let listNode = nodes[blockId];
+      if (!listNode) {
+        listNode = nodes[blockId] = this.listBlockFactory(blockId);
+        parentNode.appendChild(listNode);
+      }
+      // update position and other visual attributes of list part
+      listNode.set({
+        bounds: new Box2D(0, (index + 1) * kT.blockH, width, kT.blockH),
+        text: listBlock.getName(),
+        fill: this.fillColor(block.id),
+        color: this.fontColor(block.id),
+      });
     });
   }
 
@@ -416,22 +467,17 @@ export default class Layout {
     this.currentBlocks = currentBlocks;
     this.baseColor = this.construct.metadata.color;
 
-    // regardless of layout algorithm we return the height
-    // used to render the construct / nested construct
-
-    let heightUsed = 0;
-
     switch (this.layoutAlgorithm) {
     case kT.layoutWrap:
-      heightUsed = this.layoutWrap();
+      this.layoutWrap();
       break;
 
     case kT.layoutFull:
-      heightUsed = this.layoutFull();
+      his.layoutFull();
       break;
 
     case kT.layoutFit:
-      heightUsed = this.layoutFit();
+      this.layoutFit();
       break;
 
     default: throw new Error('Not a valid layout algorithm');
@@ -441,8 +487,6 @@ export default class Layout {
 
     // auto size scene after layout
     this.autoSizeSceneGraph();
-
-    return heightUsed;
   }
 
   /**
@@ -485,12 +529,11 @@ export default class Layout {
    * @return {[type]} [description]
    */
   layout(layoutOptions) {
+    console.log('**** New Layout ****')
     // set the new reference key
     this.updateReference += 1;
     // shortcut
     const ct = this.construct;
-    // fake some list data
-    this.fakeListBlocks(ct);
     // construct the banner if required
     this.bannerFactory();
     // create and update title
@@ -566,11 +609,14 @@ export default class Layout {
 
       // update part, including its text and color and with height to accomodate list items
       node.set({
-        bounds: new Box2D(xp, yp, td.x, (listN + 1) * kT.blockH),
+        bounds: new Box2D(xp, yp, td.x, kT.blockH),
         text: name,
         fill: this.fillColor(part),
         color: this.fontColor(part),
       });
+
+      // update any list parts for this blocks
+      this.updateListForBlock(block, td.x);
 
       // render children ( nested constructs )
       if (this.hasChildren(part) && node.showChildren) {
@@ -655,29 +701,28 @@ export default class Layout {
     // apply selections to scene graph
     this.sceneGraph.ui.setSelections(selectedNodes);
 
-    // return the height consumed by the layout
-    return heightUsed + nestedVertical + kT.rowBarH;
   }
 
   /**
    * temporary testing, fake some list blocks
    */
-  fakeListBlocks(construct) {
-    if (!construct.fakeList) {
-      construct.fakeList = true;
+  fakeListBlocks(block) {
+
+    if (!block.list || block.list.length === 0) {
       // get all blocks
       const blocks = Object.keys(this.blocks).map(blockId => {
         return this.blocks[blockId];
       });
-      // add some existing block id's to the .list property of  each block
-      construct.components.forEach(blockId => {
-        const block = this.blocks[blockId];
-        block.list = [];
-        for(var i = 0; i < Math.random() * 10; i += 1) {
-          const listItem = blocks[Math.min(blocks.length-1, Math.floor(Math.random() * blocks.length))];
+      block.list = [];
+      const hash = {};
+      for(var i = 0; i < Math.random() * 10; i += 1) {
+        const listItem = blocks[Math.min(blocks.length-1, Math.floor(Math.random() * blocks.length))];
+        // don't duplicate blocks in list
+        if (!hash[listItem.id]) {
           block.list.push(listItem.id);
+          hash[listItem.id] = listItem;
         }
-      });
+      }
     }
   }
 
