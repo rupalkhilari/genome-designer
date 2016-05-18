@@ -83,8 +83,12 @@ export default class SchemaDefinition {
         return scaffold;
       }
 
-      //can opt out of scaffolding a field if not required
-      if (!fieldRequired && field.avoidScaffold === true) {
+      //can opt out of scaffolding a field - note will not be valid if required
+      if (field.avoidScaffold === true) {
+        if (fieldRequired && process.env.NODE_ENV !== 'production') {
+          console.warn(`not scaffolding required field ${fieldName}`, field); //eslint-disable-line
+        }
+
         return scaffold;
       }
 
