@@ -23,7 +23,6 @@ export default class Layout {
     this.sceneGraph = sceneGraph;
     // extend this with options
     Object.assign(this, {
-      layoutAlgorithm: kT.layoutWrap,
       baseColor: 'white',
       showHeader: true,
       insetX: 0,
@@ -140,14 +139,14 @@ export default class Layout {
   /**
    * create / update the list items for the block
    */
-  updateListForBlock(block, width) {
-    this.fakeListBlocks(block);
+  updateListForBlock(block, pW) {
 
     console.log('----- Update list for:', block.getName(), ' ', block.list.length);
 
     const parentNode = this.nodeFromElement(block.id);
+
     block.list.forEach((blockId, index) => {
-      // ensure we have a hash of list nodes for this block
+      // ensure we have a hash of list nodes for this block.
       let nodes = this.listNodes[block.id];
       if (!nodes) {
         nodes = this.listNodes[block.id] = {};
@@ -163,7 +162,7 @@ export default class Layout {
       }
       // update position and other visual attributes of list part
       listNode.set({
-        bounds: new Box2D(0, (index + 1) * kT.blockH, width, kT.blockH),
+        bounds: new Box2D(0, (index + 1) * kT.blockH, pW, kT.blockH),
         text: listBlock.getName(),
         fill: this.fillColor(block.id),
         color: this.fontColor(block.id),
@@ -459,29 +458,16 @@ export default class Layout {
    * display elements as required
    * @return {[type]} [description]
    */
-  update(construct, layoutAlgorithm, blocks, currentBlocks, currentConstructId) {
+  update(construct, blocks, currentBlocks, currentConstructId) {
     this.construct = construct;
     this.currentConstructId = currentConstructId;
-    this.layoutAlgorithm = layoutAlgorithm;
     this.blocks = blocks;
     this.currentBlocks = currentBlocks;
     this.baseColor = this.construct.metadata.color;
 
-    switch (this.layoutAlgorithm) {
-    case kT.layoutWrap:
-      this.layoutWrap();
-      break;
+    // perform layout
+    this.layoutWrap();
 
-    case kT.layoutFull:
-      his.layoutFull();
-      break;
-
-    case kT.layoutFit:
-      this.layoutFit();
-      break;
-
-    default: throw new Error('Not a valid layout algorithm');
-    }
     // update connections etc after layout
     this.postLayout();
 
@@ -499,22 +485,11 @@ export default class Layout {
       condensed: false,
     });
   }
-  layoutFull() {
-    return this.layout({
-      xlimit: Number.MAX_VALUE,
-      condensed: false,
-    });
-  }
-  layoutFit() {
-    return this.layout({
-      xlimit: this.sceneGraph.availableWidth - this.insetX,
-      condensed: true,
-    });
-  }
   /**
    */
-  measureText(node, str, condensed) {
-    return node.getPreferredSize(str, condensed);
+
+  measureText(node, str) {
+    return node.getPreferredSize(str);
   }
   /**
    * return the point where layout of actual blocks begins
@@ -592,7 +567,15 @@ export default class Layout {
       });
 
       // measure element text or used condensed spacing
-      const td = this.measureText(node, name, layoutOptions.condensed);
+      let td = this.measureText(node, name);
+
+      // fake list blocks if not already done
+      this.fakeListBlocks(block);
+
+      // measure the max required width of any list blocks
+      block.list.forEach(blockId => {
+        td.x = Math.max(td.x, this.measureText(node, this.blocks[blockId].getName()).x);
+      });
 
       // update maxListHeight based on how many list items this block has
       maxListHeight = Math.max(maxListHeight, listN * kT.blockH);
@@ -627,7 +610,6 @@ export default class Layout {
         let nestedLayout = this.nestedLayouts[part];
         if (!nestedLayout) {
           nestedLayout = this.nestedLayouts[part] = new Layout(this.constructViewer, this.sceneGraph, {
-            layoutAlgorithm: this.layoutAlgorithm,
             showHeader: false,
             insetX: nestedX,
             insetY: nestedY,
@@ -648,7 +630,6 @@ export default class Layout {
         // layout with same options as ourselves
         nestedVertical += nestedLayout.update(
           this.blocks[part],
-          this.layoutAlgorithm,
           this.blocks,
           this.currentBlocks,
           this.currentConstructId) + kT.nestedInsetY;

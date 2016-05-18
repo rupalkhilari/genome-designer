@@ -50,7 +50,6 @@ export class ConstructViewer extends Component {
     projectId: PropTypes.string.isRequired,
     construct: PropTypes.object.isRequired,
     constructId: PropTypes.string.isRequired,
-    layoutAlgorithm: PropTypes.string.isRequired,
     inspectorToggleVisibility: PropTypes.func.isRequired,
     focusBlocks: PropTypes.func.isRequired,
     focusBlocksAdd: PropTypes.func.isRequired,
@@ -101,9 +100,7 @@ export class ConstructViewer extends Component {
       userInterfaceConstructor: UserInterface,
     });
     // create the layout object
-    this.layout = new Layout(this, this.sg, {
-      layoutAlgorithm: this.props.layoutAlgorithm,
-    });
+    this.layout = new Layout(this, this.sg, {});
     // the user interface will also need access to the layout component
     this.sg.ui.layout = this.layout;
     // getting more ugly, the UI needs access to ourselves, the constructviewer
@@ -281,7 +278,6 @@ export class ConstructViewer extends Component {
     //console.time(`LAYOUT`);
     this.layout.update(
       this.props.construct,
-      this.props.layoutAlgorithm,
       this.props.blocks,
       this.props.focus.blockIds,
       this.props.focus.constructId);
@@ -491,13 +487,6 @@ export class ConstructViewer extends Component {
    * render the component, the scene graph will render later when componentDidUpdate is called
    */
   render() {
-    // TODO, can be conditional when master is fixed and this is merged with construct select PR
-    // let menu = <ConstructViewerMenu
-    //   open={this.props.construct.id === this.props.focus.construct}
-    //   constructId={this.props.constructId}
-    //   layoutAlgorithm={this.props.layoutAlgorithm}
-    //   />;
-
     const rendered = (
       <div className="construct-viewer" key={this.props.construct.id}>
         {/*menu*/}
