@@ -297,7 +297,7 @@ export const blockMoveComponent = (blockId, componentId, newIndex) => {
  Options
  ***************************************/
 
-export const blockAddOptions = (blockId, ...optionIds) => {
+export const blockOptionsAdd = (blockId, ...optionIds) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
     const block = oldBlock.addOptions(...optionIds);
@@ -311,13 +311,27 @@ export const blockAddOptions = (blockId, ...optionIds) => {
   };
 };
 
-export const blockRemoveOptions = (blockId, ...optionIds) => {
+export const blockOptionsRemove = (blockId, ...optionIds) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
     const block = oldBlock.removeOptions(...optionIds);
 
     dispatch({
       type: ActionTypes.BLOCK_OPTION_REMOVE,
+      undoable: true,
+      block,
+    });
+    return block;
+  };
+};
+
+export const blockOptionsToggle = (blockId, optionId) => {
+  return (dispatch, getState) => {
+    const oldBlock = getState().blocks[blockId];
+    const block = oldBlock.toggleOption(optionId);
+
+    dispatch({
+      type: ActionTypes.BLOCK_OPTION_TOGGLE,
       undoable: true,
       block,
     });

@@ -189,15 +189,15 @@ export default class Block extends Instance {
 
   //todo - account for block.rules.filter
 
-  addOptions(...blockIds) {
+  addOptions(...optionId) {
     invariant(this.isList(), 'must be a list block to add list options');
     const newOptions = this.options.slice();
-    newOptions.push(...blockIds);
+    newOptions.push(...optionId);
     return this.mutate('options', newOptions);
   }
 
-  removeOptions(...blockIds) {
-    const blockIdSet = new Set(blockIds);
+  removeOptions(...optionId) {
+    const blockIdSet = new Set(optionId);
     const without =
       [...new Set(this.options.filter(x => !blockIdSet.has(x)))];
 
@@ -206,6 +206,17 @@ export default class Block extends Instance {
     }
 
     return this.mutate('options', without);
+  }
+
+  toggleOption(optionId) {
+    invariant(this.isList(), 'must be a list block to toggle list options');
+    const optionSet = new Set(this.options);
+    if (optionSet.has(optionId)) {
+      optionSet.add(optionId);
+    } else {
+      optionSet.remove(optionId);
+    }
+    return this.mutate('options', [...optionSet]);
   }
 
   /************

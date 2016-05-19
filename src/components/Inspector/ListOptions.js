@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import parts from '../../inventory/andrea/parts';
 import ListOption from './ListOption';
-import { blockAddOptions } from '../../actions/blocks';
+import { blockOptionsToggle } from '../../actions/blocks';
 
 import { get as pathGet } from 'lodash'; //todo - delegate filtering to block model
 
@@ -16,11 +16,11 @@ export class ListOptions extends Component {
         filter: PropTypes.object.isRequired,
       }).isRequired,
     }).isRequired,
-    blockAddOptions: PropTypes.func.isRequired,
+    blockOptionsToggle: PropTypes.func.isRequired,
   };
 
   onSelectOption = (option) => {
-    this.props.blockAddOptions(this.props.block.id, option.id);
+    this.props.blockOptionsToggle(this.props.block.id, option.id);
   };
 
   render() {
@@ -49,6 +49,6 @@ export class ListOptions extends Component {
 }
 
 export default connect(() => ({}), {
-  blockAddOptions,
+  blockOptionsToggle,
 })(ListOptions);
 
