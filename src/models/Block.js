@@ -47,7 +47,7 @@ export default class Block extends Instance {
    ************/
 
   isTemplate() {
-    return this.rules.fixed == true;
+    return this.rules.fixed === true;
   }
 
   isFiller() {
@@ -114,6 +114,7 @@ export default class Block extends Instance {
     // called many K per second, no es6 fluffy stuff in here.
     if (this.metadata.name) return this.metadata.name;
     if (this.rules.role) return this.rules.role;
+    if (this.isTemplate()) return 'New Template';
     if (this.components.length) return 'New Construct';
     if (this.isFiller() && this.metadata.initialBases) return this.metadata.initialBases;
     return defaultName;
