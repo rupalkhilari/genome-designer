@@ -337,6 +337,7 @@ class GlobalNav extends Component {
   // cut focused blocks to the clipboard, no clone required since we are removing them.
   cutFocusedBlocksToClipboard() {
     if (this.props.focus.blockIds.length) {
+      // TODO, cut must be prevents on fixed or frozen blocks
       const blockIds = this.props.blockDetach(...this.props.focus.blockIds);
       this.props.clipboardSetData([clipboardFormats.blocks], [blockIds.map(blockId => this.props.blocks[blockId])]);
       this.props.focusBlocks([]);
@@ -348,6 +349,7 @@ class GlobalNav extends Component {
     // paste blocks into construct if format available
     const index = this.props.clipboard.formats.indexOf(clipboardFormats.blocks);
     if (index >= 0) {
+      // TODO, paste must be prevented on fixed or frozen blocks
       const blocks = this.props.clipboard.data[index];
       invariant(blocks && blocks.length && Array.isArray(blocks), 'expected array of blocks on clipboard for this format');
       // get current construct
