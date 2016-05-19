@@ -28,18 +28,6 @@ export const projectList = () => {
   };
 };
 
-//create a new project
-export const projectCreate = (initialModel) => {
-  return (dispatch, getState) => {
-    const project = new Project(initialModel);
-    dispatch({
-      type: ActionTypes.PROJECT_CREATE,
-      project,
-    });
-    return project;
-  };
-};
-
 //Promise
 export const projectDelete = (projectId) => {
   return (dispatch, getState) => {
@@ -135,6 +123,23 @@ export const projectLoad = (projectId) => {
 
         return project;
       });
+  };
+};
+
+//create a new project
+export const projectCreate = (initialModel) => {
+  return (dispatch, getState) => {
+    const project = new Project(initialModel);
+    dispatch({
+      type: ActionTypes.PROJECT_CREATE,
+      project,
+    });
+
+    //after we've created it, let's save it real quick so it persists + gets a version
+    //we can do this in the background
+    projectSave(project.id);
+
+    return project;
   };
 };
 
