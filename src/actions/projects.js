@@ -1,3 +1,4 @@
+import invariant from 'invariant';
 import * as ActionTypes from '../constants/ActionTypes';
 import { saveProject, loadProject, snapshot, listProjects, deleteProject } from '../middleware/data';
 import * as projectSelectors from '../selectors/projects';
@@ -78,7 +79,7 @@ export const projectSnapshot = (projectId, message, withRollup = true) => {
   return (dispatch, getState) => {
     const roll = withRollup ?
       dispatch(projectSelectors.projectCreateRollup(projectId)) :
-      {};
+    {};
 
     return snapshot(projectId, message, roll)
       .then(commitInfo => {
@@ -171,15 +172,38 @@ export const projectRename = (projectId, newName) => {
 };
 
 //Adds a construct to a project. Does not create the construct. Use blocks.js
-export const projectAddConstruct = (projectId, componentId) => {
+export const projectAddConstruct = (projectId, componentId, forceProjectId = false) => {
   return (dispatch, getState) => {
     const oldProject = getState().projects[projectId];
+    const component = getState().blocks[componentId];
+
+    const componentProjectId = component.getProjectId();
+
+    dispatch(pauseAction());
+    dispatch(undoActions.transact());
+
+    if (componentProjectId !== projectId) {
+      invariant(!componentProjectId || forceProjectId === true, 'cannot add component with different projectId! set forceProjectId = true to overwrite.');
+
+      const updatedComponent = component.setProjectId(projectId);
+      dispatch({
+        type: ActionTypes.BLOCK_STASH,
+        block: updatedComponent,
+      });
+    }
+
+    //todo - should better check + force removal from previous component / project
+
     const project = oldProject.addComponents(componentId);
     dispatch({
       type: ActionTypes.PROJECT_ADD_CONSTRUCT,
       undoable: true,
       project,
     });
+
+    dispatch(undoActions.commit());
+    dispatch(resumeAction());
+
     return project;
   };
 };
