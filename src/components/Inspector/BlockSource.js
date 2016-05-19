@@ -3,8 +3,7 @@ import { registry } from '../../inventory/registry';
 
 import '../../styles/BlockSource.css';
 
-export default function BlockSource({ block, ...rest }) {
-  const { source } = block;
+export default function BlockSource({ source, ...rest }) {
   const sourceKey = source.source;
 
   if (!sourceKey) {
