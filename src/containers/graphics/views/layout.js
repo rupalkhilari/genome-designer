@@ -572,14 +572,6 @@ export default class Layout {
       // fake list blocks if not already done
       this.fakeListBlocks(block);
 
-      // measure the max required width of any list blocks
-      block.list.forEach(blockId => {
-        td.x = Math.max(td.x, this.measureText(node, this.blocks[blockId].getName()).x);
-      });
-
-      // update maxListHeight based on how many list items this block has
-      maxListHeight = Math.max(maxListHeight, listN * kT.blockH);
-
       // if position would exceed x limit then wrap
       if (xp + td.x > mx) {
         xp = startX;
@@ -589,6 +581,14 @@ export default class Layout {
         row = this.rowFactory(new Box2D(xp, yp - kT.rowBarH, 0, kT.rowBarH));
         rowIndex += 1;
       }
+
+      // measure the max required width of any list blocks
+      block.list.forEach(blockId => {
+        td.x = Math.max(td.x, this.measureText(node, this.blocks[blockId].getName()).x);
+      });
+
+      // update maxListHeight based on how many list items this block has
+      maxListHeight = Math.max(maxListHeight, listN * kT.blockH);
 
       // update part, including its text and color and with height to accomodate list items
       node.set({
