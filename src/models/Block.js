@@ -46,6 +46,10 @@ export default class Block extends Instance {
    type checks
    ************/
 
+  isConstruct() {
+    return this.components.length > 0;
+  }
+
   isTemplate() {
     return this.rules.fixed === true;
   }
