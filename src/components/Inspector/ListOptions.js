@@ -3,8 +3,7 @@ import { connect } from 'react-redux';
 import parts from '../../inventory/andrea/parts';
 import ListOption from './ListOption';
 import { blockOptionsToggle } from '../../actions/blocks';
-
-import { get as pathGet } from 'lodash'; //todo - delegate filtering to block model
+import { blockGetFiltered } from '../../selectors/blocks';
 
 import '../../styles/ListOptions.css';
 
@@ -17,6 +16,7 @@ export class ListOptions extends Component {
       }).isRequired,
     }).isRequired,
     blockOptionsToggle: PropTypes.func.isRequired,
+    blockGetFiltered: PropTypes.func.isRequired,
   };
 
   onSelectOption = (option) => {
@@ -28,12 +28,7 @@ export class ListOptions extends Component {
     const { options } = block;
     const { filter } = block.rules;
 
-    const filtered = parts.filter(part => {
-      return Object.keys(filter).every(key => {
-        const value = filter[key];
-        return pathGet(part, key) === value;
-      });
-    });
+    const filtered = this.props.blockGetFiltered(filter);
 
     return (
       <div className="ListOptions">
@@ -52,5 +47,6 @@ export class ListOptions extends Component {
 
 export default connect(() => ({}), {
   blockOptionsToggle,
+  blockGetFiltered,
 })(ListOptions);
 
