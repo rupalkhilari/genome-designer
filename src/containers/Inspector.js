@@ -10,6 +10,7 @@ import '../styles/SidePanel.css';
 
 export class Inspector extends Component {
   static propTypes = {
+    showingGrunt: PropTypes.bool,
     isVisible: PropTypes.bool.isRequired,
     readOnly: PropTypes.bool.isRequired,
     inspectorToggleVisibility: PropTypes.func.isRequired,
@@ -22,7 +23,7 @@ export class Inspector extends Component {
   };
 
   render() {
-    const { isVisible, instances, project, readOnly } = this.props;
+    const { showingGrunt, isVisible, instances, project, readOnly } = this.props;
 
     // inspect instances, or construct if no instance or project if no construct or instances
     const inspect = instances && instances.length
@@ -32,7 +33,8 @@ export class Inspector extends Component {
     return (
       <div className={'SidePanel Inspector no-vertical-scroll' +
       (isVisible ? ' visible' : '') +
-      (readOnly ? ' readOnly' : '')}>
+      (readOnly ? ' readOnly' : '') +
+      (showingGrunt ? ' gruntPushdown' : '')}>
 
         <div className="SidePanel-heading">
           <button tabIndex="-1" className="button-nostyle SidePanel-heading-trigger Inspector-trigger"
@@ -78,7 +80,10 @@ function mapStateToProps(state, props) {
     !!forceBlocks.length :
     !!forceProject;
 
+  const showingGrunt = !!state.ui.modals.gruntMessage;
+
   return {
+    showingGrunt,
     isVisible,
     readOnly,
     instances,

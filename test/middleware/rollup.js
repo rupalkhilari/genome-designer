@@ -1,10 +1,15 @@
 import chai from 'chai';
-import uuid from 'node-uuid';
-import fs from 'fs';
 import * as api from '../../src/middleware/data';
 const { assert, expect } = chai;
-import { createFilePath } from '../../server/utils/filePaths';
-import { fileExists, fileRead, fileWrite, fileDelete, directoryExists, directoryMake, directoryDelete } from '../../server/utils/fileSystem';
+import {
+  fileExists,
+  fileRead,
+  fileWrite,
+  fileDelete,
+  directoryExists,
+  directoryMake,
+  directoryDelete
+} from '../../server/utils/fileSystem';
 
 import * as commitMessages from '../../server/data/commitMessages';
 import * as filePaths from '../../server/utils/filePaths';
@@ -66,7 +71,7 @@ describe('Middleware', () => {
     it('saveProject() creates a commit', () => {
       const a_roll = createExampleRollup();
       const a_projectId = a_roll.project.id;
-      const b_roll = Object.assign(createExampleRollup(), {project: a_roll.project});
+      const b_roll = Object.assign(createExampleRollup(), { project: a_roll.project });
 
       const a_path = filePaths.createProjectDataPath(a_projectId);
       let a_log;
@@ -95,6 +100,15 @@ describe('Middleware', () => {
           assert(commit.message.indexOf(commitMessages.SNAPSHOT) >= 0, 'wrong commit message type, shoudl be snapshot');
           assert(commit.message.indexOf(commitMessage) >= 0, 'commit message missing');
         });
+    });
+
+    it.only('can save a huge project (10mb or so)', () => {
+      const roll = createExampleRollup();
+      const project = roll.project;
+
+      project.metadata.description = 'thisIsSuperLong'.repeat(1024 * 1024);
+
+      return api.saveProject(project.id, roll);
     });
   });
 });

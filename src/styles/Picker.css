@@ -4,6 +4,7 @@
   line-height: 0;
   display: inline-block;
   margin-right: 5px;
+  user-select: none;
 
   &-current {
     display: inline-block;
