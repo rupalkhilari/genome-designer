@@ -2,6 +2,7 @@ import fields from './fields/index';
 import * as validators from './fields/validators';
 import InstanceDefinition from './Instance';
 import SequenceDefinition from './Sequence';
+import RulesDefintion from './Rules';
 
 /**
  @name BlockDefinition
@@ -12,9 +13,10 @@ import SequenceDefinition from './Sequence';
 
  Blocks may have a `sequence`, which is a reference to a file and associated annotations, and if so should reference their source (e.g. foundry, NCBI) whence they came.
 
- Blocks can define `rules`, to which constitutive blocks must adhere. For example, bounds to GC content, or template grammar (e.g. position 0 must be a promoter). The type is the key, the rule is the value (heterogeneous formats)
+ Blocks can define `rules`, to which direct descendent blocks must adhere. For example, bounds to GC content, whether locations are fixed, filters for allowed blocks. The type is the key, the rule is the value (heterogeneous formats)
+ //todo- determine whether rules should inherit
 
- List Blocks allow for combinatorial logic, where multiple blocks can be associated as combinatorial `options` for this block.
+ List Blocks allow for combinatorial logic, where multiple blocks can be associated as combinatorial `options` for this block. A block cannot be both a list block and have components.
 
  In addition to sequence annotations, a block may list `notes`, which are essentially annotations that do not specifically reference the sequence.
  */
@@ -45,7 +47,7 @@ const BlockDefinition = InstanceDefinition.extend({
   ],
 
   rules: [
-    fields.object().required,
+    RulesDefintion,
     `Grammar/rules governing the whole Block`,
   ],
 
@@ -56,7 +58,7 @@ const BlockDefinition = InstanceDefinition.extend({
 
   options: [
     fields.arrayOf(validators.id()).required,
-    `Array of Blocks that form the List Block`,
+    `Array of Blocks that form the List Block, if rules.isList === true `,
   ],
 
   notes: [

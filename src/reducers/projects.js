@@ -33,6 +33,13 @@ export default function projects(state = initialState, action) {
     //prefer state versions to zipped versions
     return Object.assign({}, zippedProjects, state);
 
+  case ActionTypes.PROJECT_DELETE : {
+    const { projectId } = action;
+    const nextState = Object.assign({}, state);
+    delete nextState[projectId];
+    return nextState;
+  }
+
   default :
     return state;
   }
