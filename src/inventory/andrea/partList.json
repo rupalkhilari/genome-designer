@@ -1,0 +1,1822 @@
+[
+  {
+    "id": "block-e4195c04-8c00-4dd5-af92-4ad0dbeb65a7",
+    "parents": [],
+    "metadata": {
+      "name": "5'HA-hAAVS1",
+      "description": "Homology arm for targeting of hAVVS1 locus",
+      "authors": [],
+      "tags": {},
+      "color": "#e7aaa9",
+      "egfPosition": "1"
+    },
+    "sequence": {
+      "md5": "a521fd9aac0532614253ffe6e672e2eb",
+      "length": 917,
+      "annotations": [],
+      "initialBases": "gcacc"
+    },
+    "source": {
+      "source": "egf",
+      "id": "5'HA-hAAVS1"
+    },
+    "rules": {
+      "role": null
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-df29f900-2e27-4b2c-b668-f9c1084028bc",
+    "parents": [],
+    "metadata": {
+      "name": "5'-ITR-PB",
+      "description": "transposon-specific inverted terminal repeat sequences (ITRs) recognized by PiggyBac transposase",
+      "authors": [],
+      "tags": {},
+      "color": "#D28482",
+      "egfPosition": "1"
+    },
+    "sequence": {
+      "md5": "4aba83c61a5d2d74bf689b6f5c153b20",
+      "length": 357,
+      "annotations": [],
+      "initialBases": "ACTAT"
+    },
+    "source": {
+      "source": "egf",
+      "id": "5'-ITR-PB"
+    },
+    "rules": {
+      "role": null
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-352c3d29-c9a8-4df3-9010-064aa9a16b9d",
+    "parents": [],
+    "metadata": {
+      "name": "Insulator_FB",
+      "description": "FII/BEAD-A (FB) element. (STEMCELLS2008;26:3257–3266 ). FII/BEAD-A (FB) contains the minimal enhancer-blocking components of the chicken b-globin 5'HS4 insulator and a homologous region from the human T-cell receptor  BEAD-1 insulator ",
+      "authors": [],
+      "tags": {},
+      "color": "#E9BA9b",
+      "egfPosition": "2"
+    },
+    "sequence": {
+      "md5": "6022516bcfcab87f997af277bcf81ea2",
+      "length": 148,
+      "annotations": [],
+      "initialBases": "GGCCG"
+    },
+    "source": {
+      "source": "egf",
+      "id": "Insulator_FB"
+    },
+    "rules": {
+      "role": "insulator"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-553ebb77-ef9d-4347-9c3d-75c7ad14a8c3",
+    "parents": [],
+    "metadata": {
+      "name": "CAGp",
+      "description": "strong synthetic promoter used to drive high levels of gene expression in mammalian expression vectors. constructed in the lab of Dr Jun-ichi Miyazaki [3][4] from the following sequences: (C) the cytomegalovirus (CMV) early enhancer element + (A) the promoter, the first exon and the first intron of chicken beta-actin gene + (G) the splice acceptor of the rabbit beta-globin gene. ",
+      "authors": [],
+      "tags": {},
+      "color": "#efac7e",
+      "egfPosition": "3"
+    },
+    "sequence": {
+      "md5": "ce32d32024afa675329b309ebed9efe8",
+      "length": 697,
+      "annotations": [],
+      "initialBases": "GGATC"
+    },
+    "source": {
+      "source": "egf",
+      "id": "CAGp"
+    },
+    "rules": {
+      "role": "promoter"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-0a36ec0f-3ac5-409f-bd52-65c4f5df1f79",
+    "parents": [],
+    "metadata": {
+      "name": "CMVp_Tet",
+      "description": "Tetracycline repressible CMV promoter. CMV promoter with downstream operator sequences for TetRepressor.",
+      "authors": [],
+      "tags": {},
+      "color": "#EFD79A",
+      "egfPosition": "3"
+    },
+    "sequence": {
+      "md5": "8a897a360da8dda5ea1b576732821df8",
+      "length": 634,
+      "annotations": [],
+      "initialBases": "GACAT"
+    },
+    "source": {
+      "source": "egf",
+      "id": "CMVp_Tet"
+    },
+    "rules": {
+      "role": "promoter"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-5cf3081f-caeb-4274-b2ee-cdd7c390121a",
+    "parents": [],
+    "metadata": {
+      "name": "EF1ap",
+      "description": "strong constitutive promoter derived from  endogenous promoter of human elongation factor EF-1α . EF-1 alpha is often useful in conditions where other promoters (such as CMV) have diminished activity or have been silenced (as in embryonic stem cells)",
+      "authors": [],
+      "tags": {},
+      "color": "#F1D26C",
+      "egfPosition": "3"
+    },
+    "sequence": {
+      "md5": "dc7200e765f0d609c21487d200b888b2",
+      "length": 1231,
+      "annotations": [],
+      "initialBases": "GGCTC"
+    },
+    "source": {
+      "source": "egf",
+      "id": "EF1ap"
+    },
+    "rules": {
+      "role": "promoter"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-ad155318-fabe-416f-aa94-e67882a65ee8",
+    "parents": [],
+    "metadata": {
+      "name": "TRE3Gp",
+      "description": "3rd-generation Tet-responsive promoter that can be activated by binding of Tet-On® 3G",
+      "authors": [],
+      "tags": {},
+      "color": "#E4E480",
+      "egfPosition": "3"
+    },
+    "sequence": {
+      "md5": "f36b406f10564e9a814c29175b0246ad",
+      "length": 403,
+      "annotations": [],
+      "initialBases": "TTATA"
+    },
+    "source": {
+      "source": "egf",
+      "id": "TRE3Gp"
+    },
+    "rules": {
+      "role": "promoter"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-f559a46f-c355-4fc1-acd9-a8a66de01796",
+    "parents": [],
+    "metadata": {
+      "name": "Kt-L7Ae - Weiss",
+      "description": "L7Ae:K-turn system. K-t = K-turn, recognition sequence for RNA-binding protein L7Ae  . L7Ae then binds the K-turn motifs in the 5′ UTR of RNA and block the ribosome binding to the mRNA.    doi:10.1038/nbt.3301  ",
+      "authors": [],
+      "tags": {},
+      "color": "#D3D34F",
+      "egfPosition": "4"
+    },
+    "sequence": {
+      "md5": "4c68d6803e8e787105fa0fb6101d7844",
+      "length": 39,
+      "annotations": [],
+      "initialBases": "AAGGA"
+    },
+    "source": {
+      "source": "egf",
+      "id": "Kt-L7Ae - Weiss"
+    },
+    "rules": {
+      "role": "regulatory"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-4691d79f-b88c-4b0f-86f9-d9ad886dfa2e",
+    "parents": [],
+    "metadata": {
+      "name": "attB - BxB1",
+      "description": "attB site for BxB1 integrase.",
+      "authors": [],
+      "tags": {},
+      "color": "#9CC6C0",
+      "egfPosition": "5"
+    },
+    "sequence": {
+      "md5": "0dc56cacff2732cca2cd6f7c89bf7824",
+      "length": 49,
+      "annotations": [],
+      "initialBases": "AAGGC"
+    },
+    "source": {
+      "source": "egf",
+      "id": "attB - BxB1"
+    },
+    "rules": {
+      "role": null
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-c519d15d-cc5f-4927-a705-e4e47bd11999",
+    "parents": [],
+    "metadata": {
+      "name": "attP - BxB1",
+      "description": "attP site for BxB1 integrase",
+      "authors": [],
+      "tags": {},
+      "color": "#6DA19C",
+      "egfPosition": "5"
+    },
+    "sequence": {
+      "md5": "494db06f4a124149347d5c8a39af59e5",
+      "length": 63,
+      "annotations": [],
+      "initialBases": "CTGTG"
+    },
+    "source": {
+      "source": "egf",
+      "id": "attP - BxB1"
+    },
+    "rules": {
+      "role": null
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-0d199a27-2c73-4a24-b142-af91783d224b",
+    "parents": [],
+    "metadata": {
+      "name": "K1-K1 -L7Ae",
+      "description": "L7Ae:K-turn system. K = K-turn, recognition sequence for RNA-binding protein L7Ae  . L7Ae then binds the K-turn motifs in the 5′ UTR of RNA and block the ribosome binding to the mRNA.   ",
+      "authors": [],
+      "tags": {},
+      "color": "#B1CED0",
+      "egfPosition": "5"
+    },
+    "sequence": {
+      "md5": "7d1e0a07def2a08d63382da29dcb3128",
+      "length": 78,
+      "annotations": [],
+      "initialBases": "CAAAC"
+    },
+    "source": {
+      "source": "egf",
+      "id": "K1-K1 -L7Ae"
+    },
+    "rules": {
+      "role": "regulatory"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-6da6327f-68e0-42f5-a0f8-ff0ccc1d3909",
+    "parents": [],
+    "metadata": {
+      "name": "Kt-Kt -L7Ae-Weiss",
+      "description": "L7Ae:K-turn system. K-t = K-turn, recognition sequence for RNA-binding protein L7Ae  . L7Ae then binds the K-turn motifs in the 5′ UTR of RNA and block the ribosome binding to the mRNA.    doi:10.1038/nbt.3301  ",
+      "authors": [],
+      "tags": {},
+      "color": "#65AAB1",
+      "egfPosition": "5"
+    },
+    "sequence": {
+      "md5": "e9769079cd3c7470168d70809b746ed6",
+      "length": 90,
+      "annotations": [],
+      "initialBases": "CAAAC"
+    },
+    "source": {
+      "source": "egf",
+      "id": "Kt-Kt -L7Ae-Weiss"
+    },
+    "rules": {
+      "role": "regulatory"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-978b2316-3447-45e2-b43f-13d18801d893",
+    "parents": [],
+    "metadata": {
+      "name": "ATG-BoxC (L7Ae)",
+      "description": "BoxC recognized by RNA binding protein L7Ae.  L7Ae then binds theBoxC motif placed after the ATG and block translation of the CDS. dOI: 10.1038/nCHeMBIO.273",
+      "authors": [],
+      "tags": {},
+      "color": "#8EC78D",
+      "egfPosition": "6"
+    },
+    "sequence": {
+      "md5": "71095ca20ea100c509e3ce515041dc5d",
+      "length": 80,
+      "annotations": [],
+      "initialBases": "AACCG"
+    },
+    "source": {
+      "source": "egf",
+      "id": "ATG-BoxC (L7Ae)"
+    },
+    "rules": {
+      "role": "regulatory"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-5c3620b3-ea18-408c-a5e2-b74112b38a0c",
+    "parents": [],
+    "metadata": {
+      "name": "Nt-IgKL sequence",
+      "description": "N-terminal leader sequence from mouse immunoglobulin κ light chain. Peptide tag that targets the protein to the secretion pathway for protein secretion",
+      "authors": [],
+      "tags": {},
+      "color": "#53B15F",
+      "egfPosition": "6"
+    },
+    "sequence": {
+      "md5": "fa56e0c7fe358704467e74f16c309510",
+      "length": 80,
+      "annotations": [],
+      "initialBases": "CCGCC"
+    },
+    "source": {
+      "source": "egf",
+      "id": "Nt-IgKL sequence"
+    },
+    "rules": {
+      "role": "tag"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-a90a55ca-f72c-4349-8369-213836387244",
+    "parents": [],
+    "metadata": {
+      "name": "Nt-MLS",
+      "description": "N-Terminal mitochondrial leader sequence. Peptide tag that targets the protein to the mitochondria",
+      "authors": [],
+      "tags": {},
+      "color": "#C5C4C1",
+      "egfPosition": "6"
+    },
+    "sequence": {
+      "md5": "5829efca92dbe91ad6f5a6476a9365c3",
+      "length": 104,
+      "annotations": [],
+      "initialBases": "CCGCC"
+    },
+    "source": {
+      "source": "egf",
+      "id": "Nt-MLS"
+    },
+    "rules": {
+      "role": "tag"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-313a20fe-dab2-4e37-8f0c-f40231ec1baa",
+    "parents": [],
+    "metadata": {
+      "name": "Nt-myristoylation signal",
+      "description": "N-Terminal myristoylation signal. N-myristoylation signal from Src Kinase - fusion proteins are targeted to and serve as markers of the plasma membrane. Anchors protein to the membrane ( Genesis. 2006 April ; 44(4): 202–218. doi:10.1002/dvg.20203.)",
+      "authors": [],
+      "tags": {},
+      "color": "#A5A6A2",
+      "egfPosition": "6"
+    },
+    "sequence": {
+      "md5": "ad30e3283e715303f9ceb8fef3433a93",
+      "length": 59,
+      "annotations": [],
+      "initialBases": "CCGCC"
+    },
+    "source": {
+      "source": "egf",
+      "id": "Nt-myristoylation signal"
+    },
+    "rules": {
+      "role": "tag"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-3dfdeb3b-450b-4d2b-b317-9533094a461e",
+    "parents": [],
+    "metadata": {
+      "name": "Nt-Palmytolination sequence",
+      "description": "N-terminal GAP43-palmitoylation sequence. Petide tag for targeting the protein to the plasma membrane ",
+      "authors": [],
+      "tags": {},
+      "color": "#e7aaa9",
+      "egfPosition": "6"
+    },
+    "sequence": {
+      "md5": "1ae72276be98c1469875b45486f6c534",
+      "length": 77,
+      "annotations": [],
+      "initialBases": "CCGCC"
+    },
+    "source": {
+      "source": "egf",
+      "id": "Nt-Palmytolination sequence"
+    },
+    "rules": {
+      "role": "tag"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-fe45e9e0-c246-4238-b26a-a51c62bcb717",
+    "parents": [],
+    "metadata": {
+      "name": "Nt-SV40-NLS",
+      "description": "N-terminal nuclear localization signal of SV40 large T antigen. Peptide tag for targeting the protein to the nucleus ",
+      "authors": [],
+      "tags": {},
+      "color": "#D28482",
+      "egfPosition": "6"
+    },
+    "sequence": {
+      "md5": "387d5d877aa1c1b44c57e2ebbe779990",
+      "length": 41,
+      "annotations": [],
+      "initialBases": "CCGCC"
+    },
+    "source": {
+      "source": "egf",
+      "id": "Nt-SV40-NLS"
+    },
+    "rules": {
+      "role": "tag"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-21e07284-27a3-4766-bf1a-9c3222ea8143",
+    "parents": [],
+    "metadata": {
+      "name": "BxB1",
+      "description": "BxB1 Serine integrase. Phage-encoded serine integrases (Xu et al. BMC Biotechnology 2013, 13:87)",
+      "authors": [],
+      "tags": {},
+      "color": "#E9BA9b",
+      "egfPosition": "7"
+    },
+    "sequence": {
+      "md5": "03d309b77588ec863fe2274d9577b16a",
+      "length": 1506,
+      "annotations": [],
+      "initialBases": "AGAGC"
+    },
+    "source": {
+      "source": "egf",
+      "id": "BxB1"
+    },
+    "rules": {
+      "role": null
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-b86ec338-7700-477f-a081-49bd3aba4306",
+    "parents": [],
+    "metadata": {
+      "name": "L7Ae - Weiss",
+      "description": "ribosomal protein L7Ae of Archaeoglobus fulgidus, which binds tightly to the K-turn RNA motif.  It can be used to inhibit tranlsation when Kt is placed in 5'UTR of a mRNA. doi:10.1038/nbt.3301",
+      "authors": [],
+      "tags": {},
+      "color": "#efac7e",
+      "egfPosition": "7"
+    },
+    "sequence": {
+      "md5": "0fe1fda13d71e6d4a7ec26f5449a40f6",
+      "length": 363,
+      "annotations": [],
+      "initialBases": "TACGT"
+    },
+    "source": {
+      "source": "egf",
+      "id": "L7Ae - Weiss"
+    },
+    "rules": {
+      "role": null
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-be9928d9-04f0-4f99-8971-9c8725e04a53",
+    "parents": [],
+    "metadata": {
+      "name": "L7Ae ",
+      "description": "",
+      "authors": [],
+      "tags": {},
+      "color": "#EFD79A",
+      "egfPosition": "7"
+    },
+    "sequence": {
+      "md5": "8eaeb7a5575d1257c868a962667841ba",
+      "length": 603,
+      "annotations": [],
+      "initialBases": "AGCCC"
+    },
+    "source": {
+      "source": "egf",
+      "id": "L7Ae "
+    },
+    "rules": {
+      "role": null
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-30484780-17f3-44a9-8c0a-2b7d631334ee",
+    "parents": [],
+    "metadata": {
+      "name": "mKate2",
+      "description": "",
+      "authors": [],
+      "tags": {},
+      "color": "#F1D26C",
+      "egfPosition": "7"
+    },
+    "sequence": {
+      "md5": "b100c99a9b6cb7d0a2c058b51c794272",
+      "length": 702,
+      "annotations": [],
+      "initialBases": "gtgag"
+    },
+    "source": {
+      "source": "egf",
+      "id": "mKate2"
+    },
+    "rules": {
+      "role": "reporter"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-2c98e98c-9884-485b-9f50-f65f37707f26",
+    "parents": [],
+    "metadata": {
+      "name": "mNeoGreen",
+      "description": "",
+      "authors": [],
+      "tags": {},
+      "color": "#E4E480",
+      "egfPosition": "7"
+    },
+    "sequence": {
+      "md5": "4c3ab1e61ae33857d6391cc7a5c03d4d",
+      "length": 714,
+      "annotations": [],
+      "initialBases": "GTGAG"
+    },
+    "source": {
+      "source": "egf",
+      "id": "mNeoGreen"
+    },
+    "rules": {
+      "role": "reporter"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-9499024a-f200-49dd-9481-29db772445c4",
+    "parents": [],
+    "metadata": {
+      "name": "mRuby2",
+      "description": "",
+      "authors": [],
+      "tags": {},
+      "color": "#D3D34F",
+      "egfPosition": "7"
+    },
+    "sequence": {
+      "md5": "62075188133a96ff7222c154f74bc282",
+      "length": 717,
+      "annotations": [],
+      "initialBases": "GTGTC"
+    },
+    "source": {
+      "source": "egf",
+      "id": "mRuby2"
+    },
+    "rules": {
+      "role": "reporter"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-d744aff7-c4ca-45c0-a35a-01e84b838aac",
+    "parents": [],
+    "metadata": {
+      "name": "mTagBFP2",
+      "description": "",
+      "authors": [],
+      "tags": {},
+      "color": "#9CC6C0",
+      "egfPosition": "7"
+    },
+    "sequence": {
+      "md5": "5d5cec5bc7f164dc806bb4f3bf323afd",
+      "length": 717,
+      "annotations": [],
+      "initialBases": "GTGTC"
+    },
+    "source": {
+      "source": "egf",
+      "id": "mTagBFP2"
+    },
+    "rules": {
+      "role": "reporter"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-dd28d414-ba4f-42ab-892c-a82e79fbf1ab",
+    "parents": [],
+    "metadata": {
+      "name": "Linker 1",
+      "description": "",
+      "authors": [],
+      "tags": {},
+      "color": "#6DA19C",
+      "egfPosition": "8"
+    },
+    "sequence": {
+      "md5": "dd34fa1d31a073948a261edff9e927c3",
+      "length": 58,
+      "annotations": [],
+      "initialBases": "TCTGG"
+    },
+    "source": {
+      "source": "egf",
+      "id": "Linker 1"
+    },
+    "rules": {
+      "role": "structural"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-4f82b12b-698d-4de6-a74c-c46c83fbd279",
+    "parents": [],
+    "metadata": {
+      "name": "Linker 2",
+      "description": "The linker sequence avoid large hydrophobic residues to maintain good solubility in aque- ous solutions. This linker provided similar performance as a longer (GGGGS)4 linker. One advantage of this linker over the (GGGGS)4 linker is that it did not have high homologous repeats in its DNA coding sequence.   Nat. Biotechnol. 17 (1999) 691–695.",
+      "authors": [],
+      "tags": {},
+      "color": "#B1CED0",
+      "egfPosition": "8"
+    },
+    "sequence": {
+      "md5": "0af8a7e02f60d3e8a456c641da284245",
+      "length": 43,
+      "annotations": [],
+      "initialBases": "GGCAG"
+    },
+    "source": {
+      "source": "egf",
+      "id": "Linker 2"
+    },
+    "rules": {
+      "role": "structural"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-3674674a-b6ec-41c8-a0f6-8bf7431c6478",
+    "parents": [],
+    "metadata": {
+      "name": "p2A-Porcine teschovirus-1 ",
+      "description": "Nat. Biotechnol. (2004) 22, 589–594",
+      "authors": [],
+      "tags": {},
+      "color": "#65AAB1",
+      "egfPosition": "8"
+    },
+    "sequence": {
+      "md5": "4635f79fe1b1d1f5aa35d0754818d0ad",
+      "length": 64,
+      "annotations": [],
+      "initialBases": "GCTAC"
+    },
+    "source": {
+      "source": "egf",
+      "id": "p2A-Porcine teschovirus-1 "
+    },
+    "rules": {
+      "role": null
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-33eb8007-8e79-4a88-91f6-ecf328cba0c2",
+    "parents": [],
+    "metadata": {
+      "name": "Ct-KDEL",
+      "description": "",
+      "authors": [],
+      "tags": {},
+      "color": "#8EC78D",
+      "egfPosition": "8a"
+    },
+    "sequence": {
+      "md5": "e875b204a274a3a7bc03edd68f4d4c94",
+      "length": 57,
+      "annotations": [],
+      "initialBases": "AAGGA"
+    },
+    "source": {
+      "source": "egf",
+      "id": "Ct-KDEL"
+    },
+    "rules": {
+      "role": "tag"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-a9250673-cb55-4611-a756-a128f96ca805",
+    "parents": [],
+    "metadata": {
+      "name": "IRES2",
+      "description": "",
+      "authors": [],
+      "tags": {},
+      "color": "#53B15F",
+      "egfPosition": "8b"
+    },
+    "sequence": {
+      "md5": "592d9273b1dde3974f6e981228f10d10",
+      "length": 621,
+      "annotations": [],
+      "initialBases": "CGCTC"
+    },
+    "source": {
+      "source": "egf",
+      "id": "IRES2"
+    },
+    "rules": {
+      "role": "rbs"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-c44f66a1-9bb6-4651-94de-1749345516ae",
+    "parents": [],
+    "metadata": {
+      "name": "BSDR",
+      "description": "",
+      "authors": [],
+      "tags": {},
+      "color": "#C5C4C1",
+      "egfPosition": "9"
+    },
+    "sequence": {
+      "md5": "613e59d19977125843c5406d71c4f646",
+      "length": 408,
+      "annotations": [],
+      "initialBases": "CCGCC"
+    },
+    "source": {
+      "source": "egf",
+      "id": "BSDR"
+    },
+    "rules": {
+      "role": "selection"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-8f80a174-75ed-43ba-b895-dd5befdece1e",
+    "parents": [],
+    "metadata": {
+      "name": "PuroR",
+      "description": "",
+      "authors": [],
+      "tags": {},
+      "color": "#A5A6A2",
+      "egfPosition": "9"
+    },
+    "sequence": {
+      "md5": "ace4823b166c764fe96d927dcf98dd43",
+      "length": 609,
+      "annotations": [],
+      "initialBases": "CCACC"
+    },
+    "source": {
+      "source": "egf",
+      "id": "PuroR"
+    },
+    "rules": {
+      "role": "selection"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-bf369378-5459-48cd-a62e-110d0c9861fb",
+    "parents": [],
+    "metadata": {
+      "name": "NeoR",
+      "description": "",
+      "authors": [],
+      "tags": {},
+      "color": "#e7aaa9",
+      "egfPosition": "9"
+    },
+    "sequence": {
+      "md5": "66b68012952dc07a3ec1ed9cadc06ced",
+      "length": 822,
+      "annotations": [],
+      "initialBases": "CCAGC"
+    },
+    "source": {
+      "source": "egf",
+      "id": "NeoR"
+    },
+    "rules": {
+      "role": "selection"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-7fcb6c58-61b0-498b-a2aa-3bd0159d9188",
+    "parents": [],
+    "metadata": {
+      "name": "DmrC",
+      "description": "",
+      "authors": [],
+      "tags": {},
+      "color": "#D28482",
+      "egfPosition": "9"
+    },
+    "sequence": {
+      "md5": "e0cd581d4005fde2ce43aee26c753980",
+      "length": 295,
+      "annotations": [],
+      "initialBases": "CCATC"
+    },
+    "source": {
+      "source": "egf",
+      "id": "DmrC"
+    },
+    "rules": {
+      "role": "structural"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-cd836fa2-13bc-401b-87ec-a87c2d6a5434",
+    "parents": [],
+    "metadata": {
+      "name": "Fyrefly Luciferase ",
+      "description": "",
+      "authors": [],
+      "tags": {},
+      "color": "#E9BA9b",
+      "egfPosition": "9"
+    },
+    "sequence": {
+      "md5": "d018081d35c4c57d68d93d62e0427649",
+      "length": 1743,
+      "annotations": [],
+      "initialBases": "CCGAG"
+    },
+    "source": {
+      "source": "egf",
+      "id": "Fyrefly Luciferase "
+    },
+    "rules": {
+      "role": "reporter"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-683aa727-4edc-4cdb-8eff-990536c545e2",
+    "parents": [],
+    "metadata": {
+      "name": "mNeoGreen",
+      "description": "",
+      "authors": [],
+      "tags": {},
+      "color": "#efac7e",
+      "egfPosition": "9"
+    },
+    "sequence": {
+      "md5": "dfa3374150bb7111b46a62d51d0af3af",
+      "length": 720,
+      "annotations": [],
+      "initialBases": "CCGTG"
+    },
+    "source": {
+      "source": "egf",
+      "id": "mNeoGreen"
+    },
+    "rules": {
+      "role": "reporter"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-6ff549b4-7f59-43fd-89c9-fa7e3116472f",
+    "parents": [],
+    "metadata": {
+      "name": "mRuby2",
+      "description": "",
+      "authors": [],
+      "tags": {},
+      "color": "#EFD79A",
+      "egfPosition": "9"
+    },
+    "sequence": {
+      "md5": "3a632bd0391d733bd722a8d90377d31f",
+      "length": 723,
+      "annotations": [],
+      "initialBases": "CCGTG"
+    },
+    "source": {
+      "source": "egf",
+      "id": "mRuby2"
+    },
+    "rules": {
+      "role": "reporter"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-ab998066-c84e-4f1c-880b-b9c2fd44f71e",
+    "parents": [],
+    "metadata": {
+      "name": "mTagBFP2",
+      "description": "",
+      "authors": [],
+      "tags": {},
+      "color": "#F1D26C",
+      "egfPosition": "9"
+    },
+    "sequence": {
+      "md5": "5cba6fd93afd922fa0741d1715a17680",
+      "length": 720,
+      "annotations": [],
+      "initialBases": "CCGTG"
+    },
+    "source": {
+      "source": "egf",
+      "id": "mTagBFP2"
+    },
+    "rules": {
+      "role": "reporter"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-d7c7dbb4-1686-4728-a68c-f5b95720e100",
+    "parents": [],
+    "metadata": {
+      "name": "a-Tubulin",
+      "description": "",
+      "authors": [],
+      "tags": {},
+      "color": "#E4E480",
+      "egfPosition": "9"
+    },
+    "sequence": {
+      "md5": "491fa9f978d83d2301fb264b8f686361",
+      "length": 1369,
+      "annotations": [],
+      "initialBases": "CCGTG"
+    },
+    "source": {
+      "source": "egf",
+      "id": "a-Tubulin"
+    },
+    "rules": {
+      "role": "structural"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-41976554-93bf-45e9-8737-135731df89eb",
+    "parents": [],
+    "metadata": {
+      "name": "Tet-Aptazyme",
+      "description": "",
+      "authors": [],
+      "tags": {},
+      "color": "#D3D34F",
+      "egfPosition": "10"
+    },
+    "sequence": {
+      "md5": "4af55c34b65d71147480841b1696bf48",
+      "length": 178,
+      "annotations": [],
+      "initialBases": "AGACA"
+    },
+    "source": {
+      "source": "egf",
+      "id": "Tet-Aptazyme"
+    },
+    "rules": {
+      "role": "regulatory"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-955c8652-1781-41de-bc03-82b08c4f5ae2",
+    "parents": [],
+    "metadata": {
+      "name": "SV40 polyA",
+      "description": "Simian virus 40 PolyA",
+      "authors": [],
+      "tags": {},
+      "color": "#9CC6C0",
+      "egfPosition": "11"
+    },
+    "sequence": {
+      "md5": "f4998a4286cd872baf0b845c9ae1e4af",
+      "length": 138,
+      "annotations": [],
+      "initialBases": "ACTTG"
+    },
+    "source": {
+      "source": "egf",
+      "id": "SV40 polyA"
+    },
+    "rules": {
+      "role": "terminator"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-04b83c16-3d19-4a47-a7ff-4029d74298b7",
+    "parents": [],
+    "metadata": {
+      "name": "SV40p",
+      "description": "",
+      "authors": [],
+      "tags": {},
+      "color": "#6DA19C",
+      "egfPosition": "14"
+    },
+    "sequence": {
+      "md5": "4f1b778b2df5716f610fe14955743585",
+      "length": 387,
+      "annotations": [],
+      "initialBases": "GTGTG"
+    },
+    "source": {
+      "source": "egf",
+      "id": "SV40p"
+    },
+    "rules": {
+      "role": "promoter"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-8352b833-a626-46ff-b6bc-e9eab1963b03",
+    "parents": [],
+    "metadata": {
+      "name": "PuroR",
+      "description": "",
+      "authors": [],
+      "tags": {},
+      "color": "#B1CED0",
+      "egfPosition": "15"
+    },
+    "sequence": {
+      "md5": "a467075a82ac93b172a37a372952fca8",
+      "length": 618,
+      "annotations": [],
+      "initialBases": "CCGCC"
+    },
+    "source": {
+      "source": "egf",
+      "id": "PuroR"
+    },
+    "rules": {
+      "role": "selection"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-6efec46f-ff11-4c6c-832d-553a4de5bbad",
+    "parents": [],
+    "metadata": {
+      "name": "bGH polyA",
+      "description": "",
+      "authors": [],
+      "tags": {},
+      "color": "#65AAB1",
+      "egfPosition": "16"
+    },
+    "sequence": {
+      "md5": "bebcaa1ae24296633085845d09bbe449",
+      "length": 264,
+      "annotations": [],
+      "initialBases": "CTCTG"
+    },
+    "source": {
+      "source": "egf",
+      "id": "bGH polyA"
+    },
+    "rules": {
+      "role": "terminator"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-21f1f4f3-23fe-43b1-bba6-7aa7b7d32327",
+    "parents": [],
+    "metadata": {
+      "name": "CMVp",
+      "description": "",
+      "authors": [],
+      "tags": {},
+      "color": "#8EC78D",
+      "egfPosition": "18"
+    },
+    "sequence": {
+      "md5": "79c00bcc1e217f3b8184f95efea55c90",
+      "length": 550,
+      "annotations": [],
+      "initialBases": "CGTTA"
+    },
+    "source": {
+      "source": "egf",
+      "id": "CMVp"
+    },
+    "rules": {
+      "role": "promoter"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-59ee498d-bde4-427c-b2cd-76e269afe58b",
+    "parents": [],
+    "metadata": {
+      "name": "EF1ap",
+      "description": "strong constitutive promoter derived from  endogenous promoter of human elongation factor EF-1α . EF-1 alpha is often useful in conditions where other promoters (such as CMV) have diminished activity or have been silenced (as in embryonic stem cells)",
+      "authors": [],
+      "tags": {},
+      "color": "#53B15F",
+      "egfPosition": "18"
+    },
+    "sequence": {
+      "md5": "7f6e96061e8d5c01a2e1d97e7f223d87",
+      "length": 1231,
+      "annotations": [],
+      "initialBases": "GGCTC"
+    },
+    "source": {
+      "source": "egf",
+      "id": "EF1ap"
+    },
+    "rules": {
+      "role": "promoter"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-f29f4149-d097-4079-9779-0635a610fd2b",
+    "parents": [],
+    "metadata": {
+      "name": "mNeoGreen",
+      "description": "",
+      "authors": [],
+      "tags": {},
+      "color": "#C5C4C1",
+      "egfPosition": "19"
+    },
+    "sequence": {
+      "md5": "35c65914c0d96e00f1a2b160226e01de",
+      "length": 723,
+      "annotations": [],
+      "initialBases": "CCGCC"
+    },
+    "source": {
+      "source": "egf",
+      "id": "mNeoGreen"
+    },
+    "rules": {
+      "role": "reporter"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-ffd5ecd2-a99d-4888-b287-a4865a971186",
+    "parents": [],
+    "metadata": {
+      "name": "mRuby2",
+      "description": "",
+      "authors": [],
+      "tags": {},
+      "color": "#A5A6A2",
+      "egfPosition": "19"
+    },
+    "sequence": {
+      "md5": "f1053108ca149809f82dd1b405d52e67",
+      "length": 726,
+      "annotations": [],
+      "initialBases": "CCGCC"
+    },
+    "source": {
+      "source": "egf",
+      "id": "mRuby2"
+    },
+    "rules": {
+      "role": "reporter"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-81738ee4-323b-496a-9b09-272b8c6386af",
+    "parents": [],
+    "metadata": {
+      "name": "mTagBFP2",
+      "description": "",
+      "authors": [],
+      "tags": {},
+      "color": "#e7aaa9",
+      "egfPosition": "19"
+    },
+    "sequence": {
+      "md5": "d8b5928bdab8753182b42692f21f7323",
+      "length": 726,
+      "annotations": [],
+      "initialBases": "CCGCC"
+    },
+    "source": {
+      "source": "egf",
+      "id": "mTagBFP2"
+    },
+    "rules": {
+      "role": "reporter"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-d988d421-0d93-4050-acf4-200a152b9dba",
+    "parents": [],
+    "metadata": {
+      "name": "Tet-ON-3G",
+      "description": "",
+      "authors": [],
+      "tags": {},
+      "color": "#D28482",
+      "egfPosition": "19"
+    },
+    "sequence": {
+      "md5": "8ab23b955147c760d462850016e506b8",
+      "length": 768,
+      "annotations": [],
+      "initialBases": "CCGCC"
+    },
+    "source": {
+      "source": "egf",
+      "id": "Tet-ON-3G"
+    },
+    "rules": {
+      "role": null
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-8941304d-44d5-4777-b869-3bb7657ee5a8",
+    "parents": [],
+    "metadata": {
+      "name": "Ct-minute-NES",
+      "description": "",
+      "authors": [],
+      "tags": {},
+      "color": "#E9BA9b",
+      "egfPosition": "20"
+    },
+    "sequence": {
+      "md5": "d332a12ff25baef79a6b0464f0ecde7a",
+      "length": 42,
+      "annotations": [],
+      "initialBases": "GAATG"
+    },
+    "source": {
+      "source": "egf",
+      "id": "Ct-minute-NES"
+    },
+    "rules": {
+      "role": "tag"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-6da32c76-1bed-4db1-92a9-79b81566df47",
+    "parents": [],
+    "metadata": {
+      "name": "Ct-NES",
+      "description": "",
+      "authors": [],
+      "tags": {},
+      "color": "#efac7e",
+      "egfPosition": "20"
+    },
+    "sequence": {
+      "md5": "d4ed98f07c3da872a69ccbebafa9106f",
+      "length": 51,
+      "annotations": [],
+      "initialBases": "GAGCC"
+    },
+    "source": {
+      "source": "egf",
+      "id": "Ct-NES"
+    },
+    "rules": {
+      "role": "tag"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-444277b2-db9b-4b21-9026-e371b264de0b",
+    "parents": [],
+    "metadata": {
+      "name": "Linker 3",
+      "description": "",
+      "authors": [],
+      "tags": {},
+      "color": "#EFD79A",
+      "egfPosition": "20"
+    },
+    "sequence": {
+      "md5": "c8c80ea1cca471474c7e140e87182159",
+      "length": 44,
+      "annotations": [],
+      "initialBases": "GAGGC"
+    },
+    "source": {
+      "source": "egf",
+      "id": "Linker 3"
+    },
+    "rules": {
+      "role": "structural"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-2fb7f0e9-c77a-4b5d-b276-3884dbae3d44",
+    "parents": [],
+    "metadata": {
+      "name": "p2A-Porcine teschovirus-1 ",
+      "description": "",
+      "authors": [],
+      "tags": {},
+      "color": "#F1D26C",
+      "egfPosition": "20"
+    },
+    "sequence": {
+      "md5": "708f3c0e9f04a242414d834dce7daf16",
+      "length": 68,
+      "annotations": [],
+      "initialBases": "GCGCT"
+    },
+    "source": {
+      "source": "egf",
+      "id": "p2A-Porcine teschovirus-1 "
+    },
+    "rules": {
+      "role": null
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-c25ea6f2-b51d-4c74-a935-695228bbe52a",
+    "parents": [],
+    "metadata": {
+      "name": "DmrA",
+      "description": "",
+      "authors": [],
+      "tags": {},
+      "color": "#E4E480",
+      "egfPosition": "21"
+    },
+    "sequence": {
+      "md5": "e26d5687d3ec99022159ffd36ac75204",
+      "length": 334,
+      "annotations": [],
+      "initialBases": "GGAGT"
+    },
+    "source": {
+      "source": "egf",
+      "id": "DmrA"
+    },
+    "rules": {
+      "role": "structural"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-2b6da02d-2e98-4f0b-ab81-6fbfc73b5a80",
+    "parents": [],
+    "metadata": {
+      "name": "mKate2",
+      "description": "",
+      "authors": [],
+      "tags": {},
+      "color": "#D3D34F",
+      "egfPosition": "21"
+    },
+    "sequence": {
+      "md5": "7266432bdb10cca1245250ac59846fed",
+      "length": 703,
+      "annotations": [],
+      "initialBases": "gtgag"
+    },
+    "source": {
+      "source": "egf",
+      "id": "mKate2"
+    },
+    "rules": {
+      "role": "reporter"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-34b76a1f-482c-477c-add6-10b29987c3f9",
+    "parents": [],
+    "metadata": {
+      "name": "mNeoGreen",
+      "description": "",
+      "authors": [],
+      "tags": {},
+      "color": "#9CC6C0",
+      "egfPosition": "21"
+    },
+    "sequence": {
+      "md5": "b2c997accb7fb1e699e607a4d4a474f5",
+      "length": 715,
+      "annotations": [],
+      "initialBases": "GTGAG"
+    },
+    "source": {
+      "source": "egf",
+      "id": "mNeoGreen"
+    },
+    "rules": {
+      "role": "reporter"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-615bec86-e4b7-4c10-ad7a-1d47cccccd23",
+    "parents": [],
+    "metadata": {
+      "name": "mRuby2",
+      "description": "",
+      "authors": [],
+      "tags": {},
+      "color": "#6DA19C",
+      "egfPosition": "21"
+    },
+    "sequence": {
+      "md5": "ff844cff8db21dfaf8e04568c957248a",
+      "length": 718,
+      "annotations": [],
+      "initialBases": "GTGTC"
+    },
+    "source": {
+      "source": "egf",
+      "id": "mRuby2"
+    },
+    "rules": {
+      "role": "reporter"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-215b6e79-dd2b-42d3-9bd0-160bb8de9b1d",
+    "parents": [],
+    "metadata": {
+      "name": "mTagBFP2",
+      "description": "",
+      "authors": [],
+      "tags": {},
+      "color": "#B1CED0",
+      "egfPosition": "21"
+    },
+    "sequence": {
+      "md5": "c764438bce751eba7ed8fdbb18928cd4",
+      "length": 718,
+      "annotations": [],
+      "initialBases": "GTGTC"
+    },
+    "source": {
+      "source": "egf",
+      "id": "mTagBFP2"
+    },
+    "rules": {
+      "role": "reporter"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-6f7159d1-885a-4480-b76b-7ea1a7f179b0",
+    "parents": [],
+    "metadata": {
+      "name": "PuroR",
+      "description": "",
+      "authors": [],
+      "tags": {},
+      "color": "#65AAB1",
+      "egfPosition": "21"
+    },
+    "sequence": {
+      "md5": "7b515a03b2a042ec36631d82348adc67",
+      "length": 607,
+      "annotations": [],
+      "initialBases": "ACCGA"
+    },
+    "source": {
+      "source": "egf",
+      "id": "PuroR"
+    },
+    "rules": {
+      "role": "selection"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-643d0260-af80-4849-bdcd-8cd4be92415c",
+    "parents": [],
+    "metadata": {
+      "name": "PGK polyA",
+      "description": "",
+      "authors": [],
+      "tags": {},
+      "color": "#8EC78D",
+      "egfPosition": "22"
+    },
+    "sequence": {
+      "md5": "c981996b1c256e220c9b175a24d12197",
+      "length": 236,
+      "annotations": [],
+      "initialBases": "CCTTG"
+    },
+    "source": {
+      "source": "egf",
+      "id": "PGK polyA"
+    },
+    "rules": {
+      "role": "terminator"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-fa5862a2-ada9-43e1-b028-759494386de6",
+    "parents": [],
+    "metadata": {
+      "name": "Insulator_FB",
+      "description": "FII/BEAD-A (FB) element. (STEMCELLS2008;26:3257–3266 ). FII/BEAD-A (FB) contains the minimal enhancer-blocking components of the chicken b-globin 5'HS4 insulator and a homologous region from the human T-cell receptor  BEAD-1 insulator ",
+      "authors": [],
+      "tags": {},
+      "color": "#53B15F",
+      "egfPosition": "23"
+    },
+    "sequence": {
+      "md5": "7579895246ce0e7c50638308f1a9b4f8",
+      "length": 148,
+      "annotations": [],
+      "initialBases": "GGCCG"
+    },
+    "source": {
+      "source": "egf",
+      "id": "Insulator_FB"
+    },
+    "rules": {
+      "role": "insulator"
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-b769f66c-b941-4f81-8561-e57b170b02ca",
+    "parents": [],
+    "metadata": {
+      "name": "3'HA-hAAVS1",
+      "description": "Homology arm for targeting of hAVVS1 locus",
+      "authors": [],
+      "tags": {},
+      "color": "#C5C4C1",
+      "egfPosition": "24"
+    },
+    "sequence": {
+      "md5": "1a798c9a007d9cdf0333a54e9faf75c2",
+      "length": 640,
+      "annotations": [],
+      "initialBases": "CCGCC"
+    },
+    "source": {
+      "source": "egf",
+      "id": "3'HA-hAAVS1"
+    },
+    "rules": {
+      "role": null
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-e966d80e-1e4c-462f-909c-77c4194e0868",
+    "parents": [],
+    "metadata": {
+      "name": "3'-ITR-PB",
+      "description": "transposon-specific inverted terminal repeat sequences (ITRs) recognized by PiggyBac transposase",
+      "authors": [],
+      "tags": {},
+      "color": "#A5A6A2",
+      "egfPosition": "24"
+    },
+    "sequence": {
+      "md5": "4cf3e7f570ff284504a1fe9f22d2b44e",
+      "length": 254,
+      "annotations": [],
+      "initialBases": "TGCAT"
+    },
+    "source": {
+      "source": "egf",
+      "id": "3'-ITR-PB"
+    },
+    "rules": {
+      "role": null
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  },
+  {
+    "id": "block-bbf8c6d6-dcaf-40e3-9981-89fcdda8833a",
+    "parents": [],
+    "metadata": {
+      "name": "SV40-ORI",
+      "description": "",
+      "authors": [],
+      "tags": {},
+      "color": "#e7aaa9",
+      "egfPosition": "25"
+    },
+    "sequence": {
+      "md5": "22b9d8323302ec93c4a0f8e63154d1b0",
+      "length": 143,
+      "annotations": [],
+      "initialBases": "ATCCC"
+    },
+    "source": {
+      "source": "egf",
+      "id": "SV40-ORI"
+    },
+    "rules": {
+      "role": null
+    },
+    "components": [],
+    "options": [],
+    "notes": {}
+  }
+]
