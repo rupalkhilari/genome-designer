@@ -23,6 +23,7 @@ exports.getPlugin = (plugin, func) => {
       pathSet(registry, `[${plugin}][${func}]`, script);
       resolve(script);
     } catch (err) {
+      console.log('Error Loading Plugin:', err);
       reject(err);
     }
   });
