@@ -245,12 +245,21 @@ export const blockMerge = (blockId, block, projectId) => {
 export const projectDelete = (projectId) => {
   return projectExists(projectId)
     .then(() => {
-      const projectPath = filePaths.createProjectPath(projectId);
-      return directoryDelete(projectPath);
+      //const projectPath = filePaths.createProjectPath(projectId);
+      //return directoryDelete(projectPath);
+
+      //dont want to actually delete it.. just delete the permissions (move to a new file)
+      const projectPermissionsPath = filePaths.createProjectPermissionsPath(projectId);
+      const deletedOwnerPath = filePaths.createProjectPath(projectId, 'priorOwner.json');
+      return fileRead(projectPermissionsPath)
+        .then(contents => {
+          return fileDelete(projectPermissionsPath)
+            //but also should track somewhere who used to own it...
+            .then(() => fileWrite(deletedOwnerPath, contents));
+        });
     })
+    //no need to commit... its deleted (and permissions out of scope of data folder)
     .then(() => projectId);
-  //no need to commit... its deleted
-  //todo - do we want to keep it around? Probably want to be able to reference it later...
 };
 
 export const blockDelete = (blockId, projectId) => {

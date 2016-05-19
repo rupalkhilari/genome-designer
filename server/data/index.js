@@ -324,7 +324,7 @@ router.route('/:projectId')
     const { projectId } = req;
 
     persistence.projectDelete(projectId)
-      .then(() => res.status(200).send(projectId))
+      .then(() => res.status(200).json({projectId}))
       .catch(err => next(err));
   });
 

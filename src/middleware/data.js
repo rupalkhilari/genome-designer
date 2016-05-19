@@ -154,6 +154,16 @@ export const snapshot = (projectId, message = 'Project Snapshot', rollup = {}) =
     });
 };
 
+//todo - remove from cache? impact on undo?
+export const deleteProject = (projectId) => {
+  invariant(projectId, 'Project ID required to delete');
+
+  const url = dataApiPath(`${projectId}`);
+
+  return rejectingFetch(url, headersDelete())
+    .then(resp => resp.json());
+};
+
 /***** loading / saving - not rollups *****/
 
 //Promise
