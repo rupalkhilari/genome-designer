@@ -133,7 +133,12 @@ export class InspectorBlock extends Component {
   }
 
   render() {
-    const { readOnly } = this.props;
+    const { instances, readOnly } = this.props;
+    const singleInstance = instances.length === 1;
+
+    if (singleInstance) {
+      console.log(instances[0]);
+    }
 
     const annotations = this.currentAnnotations();
 
