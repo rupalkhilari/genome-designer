@@ -8,15 +8,16 @@
  do not import into client bundle. it will break it.
  */
 
-import * as filePaths from '../../../server/utils/filePaths';
 import * as fileSystem from '../../../server/utils/fileSystem';
+import invariant from 'invariant';
 import Block from '../../models/Block';
 import parse from 'csv-parse';
 import md5 from 'md5';
 import path from 'path';
 
 //edit these dependent on the spreadsheet
-const fields = ['position', 'part', 'category', 'sub-category', 'sequence', 'description'];
+const partFields = ['position', 'part', 'category', 'sub-category', 'sequence', 'description'];
+const connectorFields = ['connector', 'positions', 'sequence'];
 
 const headerRows = 2;
 
@@ -44,38 +45,63 @@ const roleMap = {
   'Episomal elements': '',
 };
 
-const trimSequence = (sequence) => {
-  const front = "5'-CGTCTCgNNNN".length;
-  const back = "NNNN-3'".length;
+const trimSequence = (sequence, front = "5'-CGTCTCnNNNN".length, back = "NNNNnGAGACG-3'".length) => {
   const len = sequence.length;
   return sequence.substring(front, len - back);
-};
-
-const mapFields = (imported) => {
-  return {
-    metadata: {
-      name: imported.part,
-      description: imported.description,
-      egfPosition: imported.position,
-    },
-    source: {
-      source: 'egf',
-      id: imported.part, //todo - need EGF part ID
-    },
-    rules: {
-      role: imported.role,
-    },
-    sequence: imported.sequence, //this field is removed later to conform to schema
-  };
 };
 
 const zip = (keys, vals) => keys.reduce(
   (acc, key, ind) => Object.assign(acc, { [key]: vals[ind] }), {}
 );
 
-const defaultOutput = path.join(__dirname, './partList.json');
+const mapPartFields = (imported) => {
+  //fields based on array at top
+  const { part, description, position, role, sequence, ...rest } = imported;
 
-export default function convertCsv(csvPath, outputPath = defaultOutput) {
+  return {
+    metadata: {
+      name: part,
+      description: description,
+      egfPosition: position,
+      ...rest,
+    },
+    source: {
+      source: 'egf',
+      id: part, //todo - need EGF part ID
+    },
+    rules: {
+      role: role,
+    },
+    sequence: sequence, //this field is removed later to conform to schema
+  };
+};
+
+const mapConnectorFields = (imported) => {
+  //fields based on array at top
+  const { connector, positions, sequence} = imported;
+
+  return {
+    metadata: {
+      name: connector,
+      egfPosition: positions,
+    },
+    source: {
+      source: 'egf',
+      id: connector, //todo - need EGF part ID
+    },
+    rules: {
+      role: 'connector',
+    },
+    sequence: sequence, //this field is removed later to conform to schema
+  };
+};
+
+const defaultOutputPath = path.join(__dirname, './partList.json');
+const connectorOutputPath = path.join(__dirname, './connectorList.json');
+
+export default function convertCsv(csvPath, isPart = true, outputPath) {
+  invariant(csvPath, 'need a csv path as command line arg');
+
   return fileSystem.fileRead(csvPath, false)
     .then(contents => {
       return new Promise((resolve, reject) => {
@@ -85,10 +111,15 @@ export default function convertCsv(csvPath, outputPath = defaultOutput) {
         });
       });
     })
+    //remove top rows
     .then(lines => lines.slice(headerRows))
-    .then(lines => lines.map(line => zip(fields, line)))
+    //make object with appropriate keys
+    .then(lines => lines.map(line => zip(isPart ? partFields : connectorFields, line)))
+    //assign role
     .then(parts => parts.map(part => Object.assign(part, { role: roleMap[part.category] || null })))
-    .then(parts => parts.map(part => mapFields(part)))
+    //map fields to block fields
+    .then(parts => parts.map(part => isPart ? mapPartFields(part) : mapConnectorFields(part)))
+    //write sequences to /data/, update sequence field
     .then(parts => Promise.all(parts.map(part => {
       const untrimmed = part.sequence;
       const sequence = trimSequence(untrimmed);
@@ -106,8 +137,13 @@ export default function convertCsv(csvPath, outputPath = defaultOutput) {
           });
         });
     })))
+    //make blocks
     .then(parts => parts.map(part => new Block(part)))
-    .then(blocks => fileSystem.fileWrite(outputPath, blocks));
+    //write the JSON
+    .then(blocks => {
+      const path = outputPath || (isPart ? defaultOutputPath : connectorOutputPath);
+      return fileSystem.fileWrite(path, blocks);
+    });
 }
 
 convertCsv.apply(null, process.argv.slice(2));

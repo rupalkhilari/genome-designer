@@ -15,6 +15,7 @@ export const symbolMap = {
 /*
  proposed roles:
 
+ connector
  reporter
  regulatory
  selection

@@ -1,6 +1,6 @@
 [
   {
-    "id": "block-e4195c04-8c00-4dd5-af92-4ad0dbeb65a7",
+    "id": "block-1fc7416b-6b52-4f77-81de-b5828f28750b",
     "parents": [],
     "metadata": {
       "name": "5'HA-hAAVS1",
@@ -8,11 +8,13 @@
       "authors": [],
       "tags": {},
       "color": "#e7aaa9",
-      "egfPosition": "1"
+      "egfPosition": "1",
+      "category": "Homology Arm",
+      "sub-category": "Human genomic locus"
     },
     "sequence": {
-      "md5": "a521fd9aac0532614253ffe6e672e2eb",
-      "length": 917,
+      "md5": "448ef159d7280f71ffb2b2910b5c2ec5",
+      "length": 910,
       "annotations": [],
       "initialBases": "gcacc"
     },
@@ -28,7 +30,7 @@
     "notes": {}
   },
   {
-    "id": "block-df29f900-2e27-4b2c-b668-f9c1084028bc",
+    "id": "block-e0d21415-160a-4367-9e8e-c76474729434",
     "parents": [],
     "metadata": {
       "name": "5'-ITR-PB",
@@ -36,11 +38,13 @@
       "authors": [],
       "tags": {},
       "color": "#D28482",
-      "egfPosition": "1"
+      "egfPosition": "1",
+      "category": "inverted terminal repeat sequences (ITRs)",
+      "sub-category": "transposon-specific inverted terminal repeat sequences (ITRs)"
     },
     "sequence": {
-      "md5": "4aba83c61a5d2d74bf689b6f5c153b20",
-      "length": 357,
+      "md5": "de85e26aee9edc4f6033c5e7249fea9b",
+      "length": 350,
       "annotations": [],
       "initialBases": "ACTAT"
     },
@@ -56,7 +60,7 @@
     "notes": {}
   },
   {
-    "id": "block-352c3d29-c9a8-4df3-9010-064aa9a16b9d",
+    "id": "block-169ee8cb-05b7-4f52-8c3e-0fcf24863138",
     "parents": [],
     "metadata": {
       "name": "Insulator_FB",
@@ -64,11 +68,13 @@
       "authors": [],
       "tags": {},
       "color": "#E9BA9b",
-      "egfPosition": "2"
+      "egfPosition": "2",
+      "category": "Insulators",
+      "sub-category": "endogenous elements"
     },
     "sequence": {
-      "md5": "6022516bcfcab87f997af277bcf81ea2",
-      "length": 148,
+      "md5": "29c089067c1d3baf030143274e69d2d1",
+      "length": 141,
       "annotations": [],
       "initialBases": "GGCCG"
     },
@@ -84,7 +90,7 @@
     "notes": {}
   },
   {
-    "id": "block-553ebb77-ef9d-4347-9c3d-75c7ad14a8c3",
+    "id": "block-f124bd62-3d48-4323-a43e-8a5332f69481",
     "parents": [],
     "metadata": {
       "name": "CAGp",
@@ -92,11 +98,13 @@
       "authors": [],
       "tags": {},
       "color": "#efac7e",
-      "egfPosition": "3"
+      "egfPosition": "3",
+      "category": "Promoters",
+      "sub-category": "Constitutional Promoter"
     },
     "sequence": {
-      "md5": "ce32d32024afa675329b309ebed9efe8",
-      "length": 697,
+      "md5": "37e79e60986bfc41a253c0c63467da0a",
+      "length": 690,
       "annotations": [],
       "initialBases": "GGATC"
     },
@@ -112,7 +120,7 @@
     "notes": {}
   },
   {
-    "id": "block-0a36ec0f-3ac5-409f-bd52-65c4f5df1f79",
+    "id": "block-bf849eb3-edd4-4ef3-b986-f43599915d71",
     "parents": [],
     "metadata": {
       "name": "CMVp_Tet",
@@ -120,11 +128,13 @@
       "authors": [],
       "tags": {},
       "color": "#EFD79A",
-      "egfPosition": "3"
+      "egfPosition": "3",
+      "category": "Promoters",
+      "sub-category": "Repressible promoter"
     },
     "sequence": {
-      "md5": "8a897a360da8dda5ea1b576732821df8",
-      "length": 634,
+      "md5": "f6b4bc5ed816895e82b55f4445ade240",
+      "length": 627,
       "annotations": [],
       "initialBases": "GACAT"
     },
@@ -140,7 +150,7 @@
     "notes": {}
   },
   {
-    "id": "block-5cf3081f-caeb-4274-b2ee-cdd7c390121a",
+    "id": "block-66928e8b-9d56-4150-a473-7c4d8567a1ba",
     "parents": [],
     "metadata": {
       "name": "EF1ap",
@@ -148,11 +158,13 @@
       "authors": [],
       "tags": {},
       "color": "#F1D26C",
-      "egfPosition": "3"
+      "egfPosition": "3",
+      "category": "Promoters",
+      "sub-category": "Constitutional Promoter"
     },
     "sequence": {
-      "md5": "dc7200e765f0d609c21487d200b888b2",
-      "length": 1231,
+      "md5": "5fa85522433d4cc8a68d6b6377131bdf",
+      "length": 1224,
       "annotations": [],
       "initialBases": "GGCTC"
     },
@@ -168,7 +180,7 @@
     "notes": {}
   },
   {
-    "id": "block-ad155318-fabe-416f-aa94-e67882a65ee8",
+    "id": "block-f0183a56-dfcc-4385-862c-d1b4dc698344",
     "parents": [],
     "metadata": {
       "name": "TRE3Gp",
@@ -176,11 +188,13 @@
       "authors": [],
       "tags": {},
       "color": "#E4E480",
-      "egfPosition": "3"
+      "egfPosition": "3",
+      "category": "Promoters",
+      "sub-category": "Inducible Promoter"
     },
     "sequence": {
-      "md5": "f36b406f10564e9a814c29175b0246ad",
-      "length": 403,
+      "md5": "eda2e401ecde95233b2250c932d6de9b",
+      "length": 396,
       "annotations": [],
       "initialBases": "TTATA"
     },
@@ -196,7 +210,7 @@
     "notes": {}
   },
   {
-    "id": "block-f559a46f-c355-4fc1-acd9-a8a66de01796",
+    "id": "block-6ca3b908-3f53-4c30-9f07-a34d75ef0767",
     "parents": [],
     "metadata": {
       "name": "Kt-L7Ae - Weiss",
@@ -204,11 +218,13 @@
       "authors": [],
       "tags": {},
       "color": "#D3D34F",
-      "egfPosition": "4"
+      "egfPosition": "4",
+      "category": "RNA regulatory sequences",
+      "sub-category": "Translational regulatory sequences"
     },
     "sequence": {
-      "md5": "4c68d6803e8e787105fa0fb6101d7844",
-      "length": 39,
+      "md5": "5236e8a0c708dbbce191925b189f4251",
+      "length": 32,
       "annotations": [],
       "initialBases": "AAGGA"
     },
@@ -224,7 +240,7 @@
     "notes": {}
   },
   {
-    "id": "block-4691d79f-b88c-4b0f-86f9-d9ad886dfa2e",
+    "id": "block-8754a7b7-116a-4e9c-a3f2-68a895e43e07",
     "parents": [],
     "metadata": {
       "name": "attB - BxB1",
@@ -232,11 +248,13 @@
       "authors": [],
       "tags": {},
       "color": "#9CC6C0",
-      "egfPosition": "5"
+      "egfPosition": "5",
+      "category": "Site-specific recombinases recognition sites",
+      "sub-category": "Serine integrase recognition sequences"
     },
     "sequence": {
-      "md5": "0dc56cacff2732cca2cd6f7c89bf7824",
-      "length": 49,
+      "md5": "f917b6194e890923693fc45231068f5a",
+      "length": 42,
       "annotations": [],
       "initialBases": "AAGGC"
     },
@@ -252,7 +270,7 @@
     "notes": {}
   },
   {
-    "id": "block-c519d15d-cc5f-4927-a705-e4e47bd11999",
+    "id": "block-81217962-41b7-4d36-bdd5-e4c5d47fdbb2",
     "parents": [],
     "metadata": {
       "name": "attP - BxB1",
@@ -260,11 +278,13 @@
       "authors": [],
       "tags": {},
       "color": "#6DA19C",
-      "egfPosition": "5"
+      "egfPosition": "5",
+      "category": "Site-specific recombinases recognition sites",
+      "sub-category": "Serine integrase recognition sequences"
     },
     "sequence": {
-      "md5": "494db06f4a124149347d5c8a39af59e5",
-      "length": 63,
+      "md5": "19e9faf646684e7e6bf4948a7971483e",
+      "length": 56,
       "annotations": [],
       "initialBases": "CTGTG"
     },
@@ -280,7 +300,7 @@
     "notes": {}
   },
   {
-    "id": "block-0d199a27-2c73-4a24-b142-af91783d224b",
+    "id": "block-5df5e5ae-5236-4836-a628-f0f3b1965b32",
     "parents": [],
     "metadata": {
       "name": "K1-K1 -L7Ae",
@@ -288,11 +308,13 @@
       "authors": [],
       "tags": {},
       "color": "#B1CED0",
-      "egfPosition": "5"
+      "egfPosition": "5",
+      "category": "RNA regulatory sequences",
+      "sub-category": "Translational regulatory sequences"
     },
     "sequence": {
-      "md5": "7d1e0a07def2a08d63382da29dcb3128",
-      "length": 78,
+      "md5": "c6c155263ed9438f3d806b12991f856f",
+      "length": 71,
       "annotations": [],
       "initialBases": "CAAAC"
     },
@@ -308,7 +330,7 @@
     "notes": {}
   },
   {
-    "id": "block-6da6327f-68e0-42f5-a0f8-ff0ccc1d3909",
+    "id": "block-64827e7b-4e23-416e-89d4-75ff6601bf64",
     "parents": [],
     "metadata": {
       "name": "Kt-Kt -L7Ae-Weiss",
@@ -316,11 +338,13 @@
       "authors": [],
       "tags": {},
       "color": "#65AAB1",
-      "egfPosition": "5"
+      "egfPosition": "5",
+      "category": "RNA regulatory sequences",
+      "sub-category": "Translational regulatory sequences"
     },
     "sequence": {
-      "md5": "e9769079cd3c7470168d70809b746ed6",
-      "length": 90,
+      "md5": "c6f2208c6ff5201c10c791c2d31ca300",
+      "length": 83,
       "annotations": [],
       "initialBases": "CAAAC"
     },
@@ -336,7 +360,7 @@
     "notes": {}
   },
   {
-    "id": "block-978b2316-3447-45e2-b43f-13d18801d893",
+    "id": "block-400e171d-dc2a-4ab8-a88d-6aade068dec9",
     "parents": [],
     "metadata": {
       "name": "ATG-BoxC (L7Ae)",
@@ -344,11 +368,13 @@
       "authors": [],
       "tags": {},
       "color": "#8EC78D",
-      "egfPosition": "6"
+      "egfPosition": "6",
+      "category": "RNA regulatory sequences",
+      "sub-category": "Translational regulatory sequences"
     },
     "sequence": {
-      "md5": "71095ca20ea100c509e3ce515041dc5d",
-      "length": 80,
+      "md5": "b16ab31d4a7454f057dbee7ba73108f6",
+      "length": 73,
       "annotations": [],
       "initialBases": "AACCG"
     },
@@ -364,7 +390,7 @@
     "notes": {}
   },
   {
-    "id": "block-5c3620b3-ea18-408c-a5e2-b74112b38a0c",
+    "id": "block-f7a76688-7237-4fc7-9db6-6ecbb18631ca",
     "parents": [],
     "metadata": {
       "name": "Nt-IgKL sequence",
@@ -372,11 +398,13 @@
       "authors": [],
       "tags": {},
       "color": "#53B15F",
-      "egfPosition": "6"
+      "egfPosition": "6",
+      "category": "Peptide Tags",
+      "sub-category": "Protein Tags for Subcellular targeting"
     },
     "sequence": {
-      "md5": "fa56e0c7fe358704467e74f16c309510",
-      "length": 80,
+      "md5": "bca44fc45cfe313bbaaa783d7b281e56",
+      "length": 73,
       "annotations": [],
       "initialBases": "CCGCC"
     },
@@ -392,7 +420,7 @@
     "notes": {}
   },
   {
-    "id": "block-a90a55ca-f72c-4349-8369-213836387244",
+    "id": "block-b54390e5-4d19-4d37-9980-0b9c8ebdf0eb",
     "parents": [],
     "metadata": {
       "name": "Nt-MLS",
@@ -400,11 +428,13 @@
       "authors": [],
       "tags": {},
       "color": "#C5C4C1",
-      "egfPosition": "6"
+      "egfPosition": "6",
+      "category": "Peptide Tags",
+      "sub-category": "Protein Tags for Subcellular targeting"
     },
     "sequence": {
-      "md5": "5829efca92dbe91ad6f5a6476a9365c3",
-      "length": 104,
+      "md5": "1f807b6e6e39ebb2ebdbfaff3ab6aff9",
+      "length": 97,
       "annotations": [],
       "initialBases": "CCGCC"
     },
@@ -420,7 +450,7 @@
     "notes": {}
   },
   {
-    "id": "block-313a20fe-dab2-4e37-8f0c-f40231ec1baa",
+    "id": "block-acf15ed8-82c1-4ef6-b7a6-45bb0c6cb3a2",
     "parents": [],
     "metadata": {
       "name": "Nt-myristoylation signal",
@@ -428,11 +458,13 @@
       "authors": [],
       "tags": {},
       "color": "#A5A6A2",
-      "egfPosition": "6"
+      "egfPosition": "6",
+      "category": "Peptide Tags",
+      "sub-category": "Protein Tags for Subcellular targeting"
     },
     "sequence": {
-      "md5": "ad30e3283e715303f9ceb8fef3433a93",
-      "length": 59,
+      "md5": "713932335ac562b4417c065ae0fc8859",
+      "length": 52,
       "annotations": [],
       "initialBases": "CCGCC"
     },
@@ -448,7 +480,7 @@
     "notes": {}
   },
   {
-    "id": "block-3dfdeb3b-450b-4d2b-b317-9533094a461e",
+    "id": "block-bd10618e-86e1-494e-ae1d-016869a249ba",
     "parents": [],
     "metadata": {
       "name": "Nt-Palmytolination sequence",
@@ -456,11 +488,13 @@
       "authors": [],
       "tags": {},
       "color": "#e7aaa9",
-      "egfPosition": "6"
+      "egfPosition": "6",
+      "category": "Peptide Tags",
+      "sub-category": "Protein Tags for Subcellular targeting"
     },
     "sequence": {
-      "md5": "1ae72276be98c1469875b45486f6c534",
-      "length": 77,
+      "md5": "6541c46ea9604f37b6d9150f08a98650",
+      "length": 70,
       "annotations": [],
       "initialBases": "CCGCC"
     },
@@ -476,7 +510,7 @@
     "notes": {}
   },
   {
-    "id": "block-fe45e9e0-c246-4238-b26a-a51c62bcb717",
+    "id": "block-93b2f31f-8248-4c5e-bb92-9a581fd3c724",
     "parents": [],
     "metadata": {
       "name": "Nt-SV40-NLS",
@@ -484,11 +518,13 @@
       "authors": [],
       "tags": {},
       "color": "#D28482",
-      "egfPosition": "6"
+      "egfPosition": "6",
+      "category": "Peptide Tags",
+      "sub-category": "Protein Tags for Subcellular targeting"
     },
     "sequence": {
-      "md5": "387d5d877aa1c1b44c57e2ebbe779990",
-      "length": 41,
+      "md5": "db0702badb02a63b1b19da15a1261403",
+      "length": 34,
       "annotations": [],
       "initialBases": "CCGCC"
     },
@@ -504,7 +540,7 @@
     "notes": {}
   },
   {
-    "id": "block-21e07284-27a3-4766-bf1a-9c3222ea8143",
+    "id": "block-710fb304-d7ee-4010-b00e-fff703c7ca50",
     "parents": [],
     "metadata": {
       "name": "BxB1",
@@ -512,11 +548,13 @@
       "authors": [],
       "tags": {},
       "color": "#E9BA9b",
-      "egfPosition": "7"
+      "egfPosition": "7",
+      "category": "Site-specific recombinases",
+      "sub-category": "Serine Integrases"
     },
     "sequence": {
-      "md5": "03d309b77588ec863fe2274d9577b16a",
-      "length": 1506,
+      "md5": "30dfda0c8d0722536397e65c79c2863c",
+      "length": 1499,
       "annotations": [],
       "initialBases": "AGAGC"
     },
@@ -532,7 +570,7 @@
     "notes": {}
   },
   {
-    "id": "block-b86ec338-7700-477f-a081-49bd3aba4306",
+    "id": "block-6297a5e4-550d-45b2-b11d-fc501e82b632",
     "parents": [],
     "metadata": {
       "name": "L7Ae - Weiss",
@@ -540,11 +578,13 @@
       "authors": [],
       "tags": {},
       "color": "#efac7e",
-      "egfPosition": "7"
+      "egfPosition": "7",
+      "category": "RNA-Binding proteins",
+      "sub-category": "RNA-Binding proteins"
     },
     "sequence": {
-      "md5": "0fe1fda13d71e6d4a7ec26f5449a40f6",
-      "length": 363,
+      "md5": "d986ca08309abc03888ff03dd72931ee",
+      "length": 356,
       "annotations": [],
       "initialBases": "TACGT"
     },
@@ -560,7 +600,7 @@
     "notes": {}
   },
   {
-    "id": "block-be9928d9-04f0-4f99-8971-9c8725e04a53",
+    "id": "block-21a77a96-8267-4bc7-ac13-d13b633a8219",
     "parents": [],
     "metadata": {
       "name": "L7Ae ",
@@ -568,11 +608,13 @@
       "authors": [],
       "tags": {},
       "color": "#EFD79A",
-      "egfPosition": "7"
+      "egfPosition": "7",
+      "category": "RNA-Binding proteins",
+      "sub-category": "RNA-Binding proteins"
     },
     "sequence": {
-      "md5": "8eaeb7a5575d1257c868a962667841ba",
-      "length": 603,
+      "md5": "bfab01e0f3b129b9a5839978d044e196",
+      "length": 596,
       "annotations": [],
       "initialBases": "AGCCC"
     },
@@ -588,7 +630,7 @@
     "notes": {}
   },
   {
-    "id": "block-30484780-17f3-44a9-8c0a-2b7d631334ee",
+    "id": "block-9aa1c53e-7454-429a-be0d-10ed4318b7e7",
     "parents": [],
     "metadata": {
       "name": "mKate2",
@@ -596,11 +638,13 @@
       "authors": [],
       "tags": {},
       "color": "#F1D26C",
-      "egfPosition": "7"
+      "egfPosition": "7",
+      "category": "Fluorescent Reporter",
+      "sub-category": "Far-red Fluorescent Reporter"
     },
     "sequence": {
-      "md5": "b100c99a9b6cb7d0a2c058b51c794272",
-      "length": 702,
+      "md5": "e3cfbc17fcb822d5aa4096c43cb8c2ba",
+      "length": 695,
       "annotations": [],
       "initialBases": "gtgag"
     },
@@ -616,7 +660,7 @@
     "notes": {}
   },
   {
-    "id": "block-2c98e98c-9884-485b-9f50-f65f37707f26",
+    "id": "block-c7466c80-dd24-435c-9289-0f43425581bf",
     "parents": [],
     "metadata": {
       "name": "mNeoGreen",
@@ -624,11 +668,13 @@
       "authors": [],
       "tags": {},
       "color": "#E4E480",
-      "egfPosition": "7"
+      "egfPosition": "7",
+      "category": "Fluorescent Reporter",
+      "sub-category": "Green Fluorescent Reporter"
     },
     "sequence": {
-      "md5": "4c3ab1e61ae33857d6391cc7a5c03d4d",
-      "length": 714,
+      "md5": "a4ed866adbe252629cabf886e7ac2bb1",
+      "length": 707,
       "annotations": [],
       "initialBases": "GTGAG"
     },
@@ -644,7 +690,7 @@
     "notes": {}
   },
   {
-    "id": "block-9499024a-f200-49dd-9481-29db772445c4",
+    "id": "block-7dd4d449-ff11-4332-9eed-72b049f53a2e",
     "parents": [],
     "metadata": {
       "name": "mRuby2",
@@ -652,11 +698,13 @@
       "authors": [],
       "tags": {},
       "color": "#D3D34F",
-      "egfPosition": "7"
+      "egfPosition": "7",
+      "category": "Fluorescent Reporter",
+      "sub-category": "Red Fluorescent Reporter"
     },
     "sequence": {
-      "md5": "62075188133a96ff7222c154f74bc282",
-      "length": 717,
+      "md5": "0cb8424ff9169cb5aa57c62f6f306b85",
+      "length": 710,
       "annotations": [],
       "initialBases": "GTGTC"
     },
@@ -672,7 +720,7 @@
     "notes": {}
   },
   {
-    "id": "block-d744aff7-c4ca-45c0-a35a-01e84b838aac",
+    "id": "block-e7328ad9-bd3d-473f-b3b2-00f53e02ca9f",
     "parents": [],
     "metadata": {
       "name": "mTagBFP2",
@@ -680,11 +728,13 @@
       "authors": [],
       "tags": {},
       "color": "#9CC6C0",
-      "egfPosition": "7"
+      "egfPosition": "7",
+      "category": "Fluorescent Reporter",
+      "sub-category": "Blue Fluorescent Reporter"
     },
     "sequence": {
-      "md5": "5d5cec5bc7f164dc806bb4f3bf323afd",
-      "length": 717,
+      "md5": "c5c01775c9ad2d93e78e64ee87fe6e0e",
+      "length": 710,
       "annotations": [],
       "initialBases": "GTGTC"
     },
@@ -700,7 +750,7 @@
     "notes": {}
   },
   {
-    "id": "block-dd28d414-ba4f-42ab-892c-a82e79fbf1ab",
+    "id": "block-1d1ff92f-50ea-44ad-b238-676a1c751a5f",
     "parents": [],
     "metadata": {
       "name": "Linker 1",
@@ -708,11 +758,13 @@
       "authors": [],
       "tags": {},
       "color": "#6DA19C",
-      "egfPosition": "8"
+      "egfPosition": "8",
+      "category": "Peptide Linker",
+      "sub-category": "Flexible Peptide Linker"
     },
     "sequence": {
-      "md5": "dd34fa1d31a073948a261edff9e927c3",
-      "length": 58,
+      "md5": "0f9ce0a38e72603bef4d9747a7df9f1c",
+      "length": 51,
       "annotations": [],
       "initialBases": "TCTGG"
     },
@@ -728,7 +780,7 @@
     "notes": {}
   },
   {
-    "id": "block-4f82b12b-698d-4de6-a74c-c46c83fbd279",
+    "id": "block-03cda8be-4b63-4f86-80e9-687a80fb44af",
     "parents": [],
     "metadata": {
       "name": "Linker 2",
@@ -736,11 +788,13 @@
       "authors": [],
       "tags": {},
       "color": "#B1CED0",
-      "egfPosition": "8"
+      "egfPosition": "8",
+      "category": "Peptide Linker",
+      "sub-category": "Flexible Peptide Linker"
     },
     "sequence": {
-      "md5": "0af8a7e02f60d3e8a456c641da284245",
-      "length": 43,
+      "md5": "2eae97c75ac6f79d27ce7bbf0bfbf347",
+      "length": 36,
       "annotations": [],
       "initialBases": "GGCAG"
     },
@@ -756,7 +810,7 @@
     "notes": {}
   },
   {
-    "id": "block-3674674a-b6ec-41c8-a0f6-8bf7431c6478",
+    "id": "block-70dfd2e0-7ecd-4e5e-abda-952ac80a0dcb",
     "parents": [],
     "metadata": {
       "name": "p2A-Porcine teschovirus-1 ",
@@ -764,11 +818,13 @@
       "authors": [],
       "tags": {},
       "color": "#65AAB1",
-      "egfPosition": "8"
+      "egfPosition": "8",
+      "category": "2A-like peptide sequences ",
+      "sub-category": "2A peptide "
     },
     "sequence": {
-      "md5": "4635f79fe1b1d1f5aa35d0754818d0ad",
-      "length": 64,
+      "md5": "a3eee2c4d1ccfcfeff0264b998fa4bda",
+      "length": 57,
       "annotations": [],
       "initialBases": "GCTAC"
     },
@@ -784,7 +840,7 @@
     "notes": {}
   },
   {
-    "id": "block-33eb8007-8e79-4a88-91f6-ecf328cba0c2",
+    "id": "block-a1fe4252-9e71-4498-87d1-7904707f64b7",
     "parents": [],
     "metadata": {
       "name": "Ct-KDEL",
@@ -792,11 +848,13 @@
       "authors": [],
       "tags": {},
       "color": "#8EC78D",
-      "egfPosition": "8a"
+      "egfPosition": "8a",
+      "category": "Peptide Tags",
+      "sub-category": "Protein Tags for Subcellular targeting"
     },
     "sequence": {
-      "md5": "e875b204a274a3a7bc03edd68f4d4c94",
-      "length": 57,
+      "md5": "44468f0e7cd2fb33e2b8d9c87ea51b8d",
+      "length": 50,
       "annotations": [],
       "initialBases": "AAGGA"
     },
@@ -812,7 +870,7 @@
     "notes": {}
   },
   {
-    "id": "block-a9250673-cb55-4611-a756-a128f96ca805",
+    "id": "block-912b2f8d-fbf8-42bd-aada-0365b69286e9",
     "parents": [],
     "metadata": {
       "name": "IRES2",
@@ -820,11 +878,13 @@
       "authors": [],
       "tags": {},
       "color": "#53B15F",
-      "egfPosition": "8b"
+      "egfPosition": "8b",
+      "category": "IRES (Internal Ribosome Entry Sequence)",
+      "sub-category": ""
     },
     "sequence": {
-      "md5": "592d9273b1dde3974f6e981228f10d10",
-      "length": 621,
+      "md5": "e9cb8a2dd3ced2f2e01982f714fe7a34",
+      "length": 614,
       "annotations": [],
       "initialBases": "CGCTC"
     },
@@ -840,7 +900,7 @@
     "notes": {}
   },
   {
-    "id": "block-c44f66a1-9bb6-4651-94de-1749345516ae",
+    "id": "block-023c5f93-2e90-492d-9c4d-964969f67deb",
     "parents": [],
     "metadata": {
       "name": "BSDR",
@@ -848,11 +908,13 @@
       "authors": [],
       "tags": {},
       "color": "#C5C4C1",
-      "egfPosition": "9"
+      "egfPosition": "9",
+      "category": "Selection Markers",
+      "sub-category": "Antibiotic Resistance"
     },
     "sequence": {
-      "md5": "613e59d19977125843c5406d71c4f646",
-      "length": 408,
+      "md5": "ebee7a29a7e98b7e733affc4e77ec5e4",
+      "length": 401,
       "annotations": [],
       "initialBases": "CCGCC"
     },
@@ -868,7 +930,7 @@
     "notes": {}
   },
   {
-    "id": "block-8f80a174-75ed-43ba-b895-dd5befdece1e",
+    "id": "block-8fca04cf-93a2-4141-8a7a-ecd977fac50a",
     "parents": [],
     "metadata": {
       "name": "PuroR",
@@ -876,11 +938,13 @@
       "authors": [],
       "tags": {},
       "color": "#A5A6A2",
-      "egfPosition": "9"
+      "egfPosition": "9",
+      "category": "Selection Markers",
+      "sub-category": "Antibiotic Resistance"
     },
     "sequence": {
-      "md5": "ace4823b166c764fe96d927dcf98dd43",
-      "length": 609,
+      "md5": "26d9eb092fc78588d0189fa297897e02",
+      "length": 602,
       "annotations": [],
       "initialBases": "CCACC"
     },
@@ -896,7 +960,7 @@
     "notes": {}
   },
   {
-    "id": "block-bf369378-5459-48cd-a62e-110d0c9861fb",
+    "id": "block-ec8f160d-d3c0-451a-a756-d3061de2ef5d",
     "parents": [],
     "metadata": {
       "name": "NeoR",
@@ -904,11 +968,13 @@
       "authors": [],
       "tags": {},
       "color": "#e7aaa9",
-      "egfPosition": "9"
+      "egfPosition": "9",
+      "category": "Selection Markers",
+      "sub-category": "Antibiotic Resistance"
     },
     "sequence": {
-      "md5": "66b68012952dc07a3ec1ed9cadc06ced",
-      "length": 822,
+      "md5": "a635613fd2f1951cddbc136ddd365380",
+      "length": 815,
       "annotations": [],
       "initialBases": "CCAGC"
     },
@@ -924,7 +990,7 @@
     "notes": {}
   },
   {
-    "id": "block-7fcb6c58-61b0-498b-a2aa-3bd0159d9188",
+    "id": "block-1216f30a-6450-4f9a-8d00-081c1f87422e",
     "parents": [],
     "metadata": {
       "name": "DmrC",
@@ -932,11 +998,13 @@
       "authors": [],
       "tags": {},
       "color": "#D28482",
-      "egfPosition": "9"
+      "egfPosition": "9",
+      "category": "Dimerization domain",
+      "sub-category": "Chemically induced dimerization domain"
     },
     "sequence": {
-      "md5": "e0cd581d4005fde2ce43aee26c753980",
-      "length": 295,
+      "md5": "240db578bc90c118b9e246502cb8acd6",
+      "length": 288,
       "annotations": [],
       "initialBases": "CCATC"
     },
@@ -952,7 +1020,7 @@
     "notes": {}
   },
   {
-    "id": "block-cd836fa2-13bc-401b-87ec-a87c2d6a5434",
+    "id": "block-2ca106d1-1abf-4afd-95fd-eb04315830ff",
     "parents": [],
     "metadata": {
       "name": "Fyrefly Luciferase ",
@@ -960,11 +1028,13 @@
       "authors": [],
       "tags": {},
       "color": "#E9BA9b",
-      "egfPosition": "9"
+      "egfPosition": "9",
+      "category": "Bioluminescent Reporters",
+      "sub-category": "Luciferases"
     },
     "sequence": {
-      "md5": "d018081d35c4c57d68d93d62e0427649",
-      "length": 1743,
+      "md5": "491416c64265a27ae2105441c1285f8c",
+      "length": 1736,
       "annotations": [],
       "initialBases": "CCGAG"
     },
@@ -980,7 +1050,7 @@
     "notes": {}
   },
   {
-    "id": "block-683aa727-4edc-4cdb-8eff-990536c545e2",
+    "id": "block-d19b0af3-b424-420e-8ab4-64003f0e3150",
     "parents": [],
     "metadata": {
       "name": "mNeoGreen",
@@ -988,11 +1058,13 @@
       "authors": [],
       "tags": {},
       "color": "#efac7e",
-      "egfPosition": "9"
+      "egfPosition": "9",
+      "category": "Fluorescent Reporter",
+      "sub-category": "Green Fluorescent Reporter"
     },
     "sequence": {
-      "md5": "dfa3374150bb7111b46a62d51d0af3af",
-      "length": 720,
+      "md5": "8fbcce109859f03770c4a0f458f1fcd3",
+      "length": 713,
       "annotations": [],
       "initialBases": "CCGTG"
     },
@@ -1008,7 +1080,7 @@
     "notes": {}
   },
   {
-    "id": "block-6ff549b4-7f59-43fd-89c9-fa7e3116472f",
+    "id": "block-0814abab-8a29-4f72-83c4-4e94305ce73a",
     "parents": [],
     "metadata": {
       "name": "mRuby2",
@@ -1016,11 +1088,13 @@
       "authors": [],
       "tags": {},
       "color": "#EFD79A",
-      "egfPosition": "9"
+      "egfPosition": "9",
+      "category": "Fluorescent Reporter",
+      "sub-category": "Red Fluorescent Reporter"
     },
     "sequence": {
-      "md5": "3a632bd0391d733bd722a8d90377d31f",
-      "length": 723,
+      "md5": "53098628e8bcdc569dbd69d51aed89cc",
+      "length": 716,
       "annotations": [],
       "initialBases": "CCGTG"
     },
@@ -1036,7 +1110,7 @@
     "notes": {}
   },
   {
-    "id": "block-ab998066-c84e-4f1c-880b-b9c2fd44f71e",
+    "id": "block-bf9aa384-4fd2-4a66-8449-af2dd1725a02",
     "parents": [],
     "metadata": {
       "name": "mTagBFP2",
@@ -1044,11 +1118,13 @@
       "authors": [],
       "tags": {},
       "color": "#F1D26C",
-      "egfPosition": "9"
+      "egfPosition": "9",
+      "category": "Fluorescent Reporter",
+      "sub-category": "Blue Fluorescent Reporter"
     },
     "sequence": {
-      "md5": "5cba6fd93afd922fa0741d1715a17680",
-      "length": 720,
+      "md5": "27980cc4eb41877d74dd1e20dbed7437",
+      "length": 713,
       "annotations": [],
       "initialBases": "CCGTG"
     },
@@ -1064,7 +1140,7 @@
     "notes": {}
   },
   {
-    "id": "block-d7c7dbb4-1686-4728-a68c-f5b95720e100",
+    "id": "block-6e2dfd0b-b263-4619-8275-cc8eedb7bb93",
     "parents": [],
     "metadata": {
       "name": "a-Tubulin",
@@ -1072,11 +1148,13 @@
       "authors": [],
       "tags": {},
       "color": "#E4E480",
-      "egfPosition": "9"
+      "egfPosition": "9",
+      "category": "Structural proteins",
+      "sub-category": "Cytoskeleton proteins"
     },
     "sequence": {
-      "md5": "491fa9f978d83d2301fb264b8f686361",
-      "length": 1369,
+      "md5": "fdea1cf19093ae3857198691d13c2299",
+      "length": 1362,
       "annotations": [],
       "initialBases": "CCGTG"
     },
@@ -1092,7 +1170,7 @@
     "notes": {}
   },
   {
-    "id": "block-41976554-93bf-45e9-8737-135731df89eb",
+    "id": "block-0fe4d009-22cd-4635-9098-9877feafc3a4",
     "parents": [],
     "metadata": {
       "name": "Tet-Aptazyme",
@@ -1100,11 +1178,13 @@
       "authors": [],
       "tags": {},
       "color": "#D3D34F",
-      "egfPosition": "10"
+      "egfPosition": "10",
+      "category": "RNA regulatory sequences",
+      "sub-category": "Chemically induced Aptazyme"
     },
     "sequence": {
-      "md5": "4af55c34b65d71147480841b1696bf48",
-      "length": 178,
+      "md5": "7fdda928c1cfef4d5e2e84b7daad69a5",
+      "length": 171,
       "annotations": [],
       "initialBases": "AGACA"
     },
@@ -1120,7 +1200,7 @@
     "notes": {}
   },
   {
-    "id": "block-955c8652-1781-41de-bc03-82b08c4f5ae2",
+    "id": "block-c749dbcb-a2e7-4be8-a21e-2818e8199313",
     "parents": [],
     "metadata": {
       "name": "SV40 polyA",
@@ -1128,11 +1208,13 @@
       "authors": [],
       "tags": {},
       "color": "#9CC6C0",
-      "egfPosition": "11"
+      "egfPosition": "11",
+      "category": "PolyA transcription terminators",
+      "sub-category": "Virus derived polyA"
     },
     "sequence": {
-      "md5": "f4998a4286cd872baf0b845c9ae1e4af",
-      "length": 138,
+      "md5": "d1a66a599fc97130a3eb0e184c1507a7",
+      "length": 131,
       "annotations": [],
       "initialBases": "ACTTG"
     },
@@ -1148,7 +1230,7 @@
     "notes": {}
   },
   {
-    "id": "block-04b83c16-3d19-4a47-a7ff-4029d74298b7",
+    "id": "block-b487a5c9-d8ff-4712-9ee3-4a94ad860f31",
     "parents": [],
     "metadata": {
       "name": "SV40p",
@@ -1156,11 +1238,13 @@
       "authors": [],
       "tags": {},
       "color": "#6DA19C",
-      "egfPosition": "14"
+      "egfPosition": "14",
+      "category": "Promoters",
+      "sub-category": "Constitutional Promoter"
     },
     "sequence": {
-      "md5": "4f1b778b2df5716f610fe14955743585",
-      "length": 387,
+      "md5": "49443df9621ffbe4a19da24aabf3e7d7",
+      "length": 380,
       "annotations": [],
       "initialBases": "GTGTG"
     },
@@ -1176,7 +1260,7 @@
     "notes": {}
   },
   {
-    "id": "block-8352b833-a626-46ff-b6bc-e9eab1963b03",
+    "id": "block-7b7b74df-aa66-492c-a443-7d5b0ad36247",
     "parents": [],
     "metadata": {
       "name": "PuroR",
@@ -1184,11 +1268,13 @@
       "authors": [],
       "tags": {},
       "color": "#B1CED0",
-      "egfPosition": "15"
+      "egfPosition": "15",
+      "category": "Selection Markers",
+      "sub-category": "Antibiotic Resistance"
     },
     "sequence": {
-      "md5": "a467075a82ac93b172a37a372952fca8",
-      "length": 618,
+      "md5": "0141b325074c7188eeb093c0a1e8d8d7",
+      "length": 611,
       "annotations": [],
       "initialBases": "CCGCC"
     },
@@ -1204,7 +1290,7 @@
     "notes": {}
   },
   {
-    "id": "block-6efec46f-ff11-4c6c-832d-553a4de5bbad",
+    "id": "block-0f879d60-1ec0-4cd3-b77e-c2996e80ad83",
     "parents": [],
     "metadata": {
       "name": "bGH polyA",
@@ -1212,11 +1298,13 @@
       "authors": [],
       "tags": {},
       "color": "#65AAB1",
-      "egfPosition": "16"
+      "egfPosition": "16",
+      "category": "PolyA transcription terminators",
+      "sub-category": "Endogenous  derived polyA"
     },
     "sequence": {
-      "md5": "bebcaa1ae24296633085845d09bbe449",
-      "length": 264,
+      "md5": "d19666635d5468cf52ba1e071312731c",
+      "length": 257,
       "annotations": [],
       "initialBases": "CTCTG"
     },
@@ -1232,7 +1320,7 @@
     "notes": {}
   },
   {
-    "id": "block-21f1f4f3-23fe-43b1-bba6-7aa7b7d32327",
+    "id": "block-7f04c3fa-1fea-4859-b798-f001064caf8a",
     "parents": [],
     "metadata": {
       "name": "CMVp",
@@ -1240,11 +1328,13 @@
       "authors": [],
       "tags": {},
       "color": "#8EC78D",
-      "egfPosition": "18"
+      "egfPosition": "18",
+      "category": "Promoters",
+      "sub-category": "Constitutional Promoter"
     },
     "sequence": {
-      "md5": "79c00bcc1e217f3b8184f95efea55c90",
-      "length": 550,
+      "md5": "8f283ca5fc89f7ecdf75c83a73494dd8",
+      "length": 543,
       "annotations": [],
       "initialBases": "CGTTA"
     },
@@ -1260,7 +1350,7 @@
     "notes": {}
   },
   {
-    "id": "block-59ee498d-bde4-427c-b2cd-76e269afe58b",
+    "id": "block-db51890d-d42a-4b6b-8d4c-f814f2b69db7",
     "parents": [],
     "metadata": {
       "name": "EF1ap",
@@ -1268,11 +1358,13 @@
       "authors": [],
       "tags": {},
       "color": "#53B15F",
-      "egfPosition": "18"
+      "egfPosition": "18",
+      "category": "Promoters",
+      "sub-category": "Constitutional Promoter"
     },
     "sequence": {
-      "md5": "7f6e96061e8d5c01a2e1d97e7f223d87",
-      "length": 1231,
+      "md5": "5fa85522433d4cc8a68d6b6377131bdf",
+      "length": 1224,
       "annotations": [],
       "initialBases": "GGCTC"
     },
@@ -1288,7 +1380,7 @@
     "notes": {}
   },
   {
-    "id": "block-f29f4149-d097-4079-9779-0635a610fd2b",
+    "id": "block-05469aea-f20f-4004-afa0-23a4595d1f1a",
     "parents": [],
     "metadata": {
       "name": "mNeoGreen",
@@ -1296,11 +1388,13 @@
       "authors": [],
       "tags": {},
       "color": "#C5C4C1",
-      "egfPosition": "19"
+      "egfPosition": "19",
+      "category": "Fluorescent Reporter",
+      "sub-category": "Green Fluorescent Reporter"
     },
     "sequence": {
-      "md5": "35c65914c0d96e00f1a2b160226e01de",
-      "length": 723,
+      "md5": "398aebce8bfea8e72cbfe595aab48e14",
+      "length": 716,
       "annotations": [],
       "initialBases": "CCGCC"
     },
@@ -1316,7 +1410,7 @@
     "notes": {}
   },
   {
-    "id": "block-ffd5ecd2-a99d-4888-b287-a4865a971186",
+    "id": "block-a9217dc4-8a72-4344-bb02-860a409d5957",
     "parents": [],
     "metadata": {
       "name": "mRuby2",
@@ -1324,11 +1418,13 @@
       "authors": [],
       "tags": {},
       "color": "#A5A6A2",
-      "egfPosition": "19"
+      "egfPosition": "19",
+      "category": "Fluorescent Reporter",
+      "sub-category": "Red Fluorescent Reporter"
     },
     "sequence": {
-      "md5": "f1053108ca149809f82dd1b405d52e67",
-      "length": 726,
+      "md5": "575ccb3a58390b429ae42854a4d23560",
+      "length": 719,
       "annotations": [],
       "initialBases": "CCGCC"
     },
@@ -1344,7 +1440,7 @@
     "notes": {}
   },
   {
-    "id": "block-81738ee4-323b-496a-9b09-272b8c6386af",
+    "id": "block-bb89b1ec-a61c-4376-affb-172e92f55a64",
     "parents": [],
     "metadata": {
       "name": "mTagBFP2",
@@ -1352,11 +1448,13 @@
       "authors": [],
       "tags": {},
       "color": "#e7aaa9",
-      "egfPosition": "19"
+      "egfPosition": "19",
+      "category": "Fluorescent Reporter",
+      "sub-category": "Blue Fluorescent Reporter"
     },
     "sequence": {
-      "md5": "d8b5928bdab8753182b42692f21f7323",
-      "length": 726,
+      "md5": "49f8cc602ebbe8b58d35d31c6e9238c6",
+      "length": 719,
       "annotations": [],
       "initialBases": "CCGCC"
     },
@@ -1372,7 +1470,7 @@
     "notes": {}
   },
   {
-    "id": "block-d988d421-0d93-4050-acf4-200a152b9dba",
+    "id": "block-41594cd9-cb2d-4abf-a7c4-7dde43ea7826",
     "parents": [],
     "metadata": {
       "name": "Tet-ON-3G",
@@ -1380,11 +1478,13 @@
       "authors": [],
       "tags": {},
       "color": "#D28482",
-      "egfPosition": "19"
+      "egfPosition": "19",
+      "category": "Transcription Factor ",
+      "sub-category": "Inducible transcriptional activator"
     },
     "sequence": {
-      "md5": "8ab23b955147c760d462850016e506b8",
-      "length": 768,
+      "md5": "bf9ed9f9934d323f9e23e5e416c82958",
+      "length": 761,
       "annotations": [],
       "initialBases": "CCGCC"
     },
@@ -1400,7 +1500,7 @@
     "notes": {}
   },
   {
-    "id": "block-8941304d-44d5-4777-b869-3bb7657ee5a8",
+    "id": "block-6b468c76-c489-4027-b9d7-de21159341e9",
     "parents": [],
     "metadata": {
       "name": "Ct-minute-NES",
@@ -1408,11 +1508,13 @@
       "authors": [],
       "tags": {},
       "color": "#E9BA9b",
-      "egfPosition": "20"
+      "egfPosition": "20",
+      "category": "Peptide Tags",
+      "sub-category": "Protein Tags for Subcellular targeting"
     },
     "sequence": {
-      "md5": "d332a12ff25baef79a6b0464f0ecde7a",
-      "length": 42,
+      "md5": "34e0cbb8dea9528d05e73b6d0f6a0d46",
+      "length": 35,
       "annotations": [],
       "initialBases": "GAATG"
     },
@@ -1428,7 +1530,7 @@
     "notes": {}
   },
   {
-    "id": "block-6da32c76-1bed-4db1-92a9-79b81566df47",
+    "id": "block-59f345b4-cd4c-4a2f-8693-b46ec7b86a25",
     "parents": [],
     "metadata": {
       "name": "Ct-NES",
@@ -1436,11 +1538,13 @@
       "authors": [],
       "tags": {},
       "color": "#efac7e",
-      "egfPosition": "20"
+      "egfPosition": "20",
+      "category": "Peptide Tags",
+      "sub-category": "Protein Tags for Subcellular targeting"
     },
     "sequence": {
-      "md5": "d4ed98f07c3da872a69ccbebafa9106f",
-      "length": 51,
+      "md5": "6014a8fe371e7512fb553f58fc66358e",
+      "length": 44,
       "annotations": [],
       "initialBases": "GAGCC"
     },
@@ -1456,7 +1560,7 @@
     "notes": {}
   },
   {
-    "id": "block-444277b2-db9b-4b21-9026-e371b264de0b",
+    "id": "block-24eebc8e-c15e-4621-a654-d0ddb8343fb3",
     "parents": [],
     "metadata": {
       "name": "Linker 3",
@@ -1464,11 +1568,13 @@
       "authors": [],
       "tags": {},
       "color": "#EFD79A",
-      "egfPosition": "20"
+      "egfPosition": "20",
+      "category": "Peptide Linker",
+      "sub-category": "Flexible Peptide Linker"
     },
     "sequence": {
-      "md5": "c8c80ea1cca471474c7e140e87182159",
-      "length": 44,
+      "md5": "df8ff54f03f5b683888c1317951444c2",
+      "length": 37,
       "annotations": [],
       "initialBases": "GAGGC"
     },
@@ -1484,7 +1590,7 @@
     "notes": {}
   },
   {
-    "id": "block-2fb7f0e9-c77a-4b5d-b276-3884dbae3d44",
+    "id": "block-d6075fe1-b5b7-4295-9a6f-dc0c512477fa",
     "parents": [],
     "metadata": {
       "name": "p2A-Porcine teschovirus-1 ",
@@ -1492,11 +1598,13 @@
       "authors": [],
       "tags": {},
       "color": "#F1D26C",
-      "egfPosition": "20"
+      "egfPosition": "20",
+      "category": "2A-like peptide sequences ",
+      "sub-category": "2A peptide "
     },
     "sequence": {
-      "md5": "708f3c0e9f04a242414d834dce7daf16",
-      "length": 68,
+      "md5": "7bc1e2a20c151872fb69bc02145d48b6",
+      "length": 61,
       "annotations": [],
       "initialBases": "GCGCT"
     },
@@ -1512,7 +1620,7 @@
     "notes": {}
   },
   {
-    "id": "block-c25ea6f2-b51d-4c74-a935-695228bbe52a",
+    "id": "block-b6bb0dd1-93fe-4d0d-88a1-9894a3c76a0f",
     "parents": [],
     "metadata": {
       "name": "DmrA",
@@ -1520,11 +1628,13 @@
       "authors": [],
       "tags": {},
       "color": "#E4E480",
-      "egfPosition": "21"
+      "egfPosition": "21",
+      "category": "Dimerization domain",
+      "sub-category": "Chemically induced dimerization domain"
     },
     "sequence": {
-      "md5": "e26d5687d3ec99022159ffd36ac75204",
-      "length": 334,
+      "md5": "4389356649feb4316f9a0e0fd3f5c31c",
+      "length": 327,
       "annotations": [],
       "initialBases": "GGAGT"
     },
@@ -1540,7 +1650,7 @@
     "notes": {}
   },
   {
-    "id": "block-2b6da02d-2e98-4f0b-ab81-6fbfc73b5a80",
+    "id": "block-715d3929-d03f-4c64-a744-0e41cb5cfbb6",
     "parents": [],
     "metadata": {
       "name": "mKate2",
@@ -1548,11 +1658,13 @@
       "authors": [],
       "tags": {},
       "color": "#D3D34F",
-      "egfPosition": "21"
+      "egfPosition": "21",
+      "category": "Fluorescent Reporter",
+      "sub-category": "Far-red Fluorescent Reporter"
     },
     "sequence": {
-      "md5": "7266432bdb10cca1245250ac59846fed",
-      "length": 703,
+      "md5": "3b0097d953e54f5430d1daf986e0da43",
+      "length": 696,
       "annotations": [],
       "initialBases": "gtgag"
     },
@@ -1568,7 +1680,7 @@
     "notes": {}
   },
   {
-    "id": "block-34b76a1f-482c-477c-add6-10b29987c3f9",
+    "id": "block-62dbf8ea-9b4c-480b-b2bc-22b2edc40fdb",
     "parents": [],
     "metadata": {
       "name": "mNeoGreen",
@@ -1576,11 +1688,13 @@
       "authors": [],
       "tags": {},
       "color": "#9CC6C0",
-      "egfPosition": "21"
+      "egfPosition": "21",
+      "category": "Fluorescent Reporter",
+      "sub-category": "Green Fluorescent Reporter"
     },
     "sequence": {
-      "md5": "b2c997accb7fb1e699e607a4d4a474f5",
-      "length": 715,
+      "md5": "5fc002897bf2f590de38ee87259b53ad",
+      "length": 708,
       "annotations": [],
       "initialBases": "GTGAG"
     },
@@ -1596,7 +1710,7 @@
     "notes": {}
   },
   {
-    "id": "block-615bec86-e4b7-4c10-ad7a-1d47cccccd23",
+    "id": "block-adffd350-9ad7-4fce-96ed-6093e99d719c",
     "parents": [],
     "metadata": {
       "name": "mRuby2",
@@ -1604,11 +1718,13 @@
       "authors": [],
       "tags": {},
       "color": "#6DA19C",
-      "egfPosition": "21"
+      "egfPosition": "21",
+      "category": "Fluorescent Reporter",
+      "sub-category": "Red Fluorescent Reporter"
     },
     "sequence": {
-      "md5": "ff844cff8db21dfaf8e04568c957248a",
-      "length": 718,
+      "md5": "cc48e2aa1d228f42d918b286d5fca6fd",
+      "length": 711,
       "annotations": [],
       "initialBases": "GTGTC"
     },
@@ -1624,7 +1740,7 @@
     "notes": {}
   },
   {
-    "id": "block-215b6e79-dd2b-42d3-9bd0-160bb8de9b1d",
+    "id": "block-c46c975c-8388-4098-bce1-df9c4d8b3ddf",
     "parents": [],
     "metadata": {
       "name": "mTagBFP2",
@@ -1632,11 +1748,13 @@
       "authors": [],
       "tags": {},
       "color": "#B1CED0",
-      "egfPosition": "21"
+      "egfPosition": "21",
+      "category": "Fluorescent Reporter",
+      "sub-category": "Blue Fluorescent Reporter"
     },
     "sequence": {
-      "md5": "c764438bce751eba7ed8fdbb18928cd4",
-      "length": 718,
+      "md5": "50c31c00646abd4cf75fbc96a3df6255",
+      "length": 711,
       "annotations": [],
       "initialBases": "GTGTC"
     },
@@ -1652,7 +1770,7 @@
     "notes": {}
   },
   {
-    "id": "block-6f7159d1-885a-4480-b76b-7ea1a7f179b0",
+    "id": "block-b91538fe-294e-4864-9844-a7a6c158879f",
     "parents": [],
     "metadata": {
       "name": "PuroR",
@@ -1660,11 +1778,13 @@
       "authors": [],
       "tags": {},
       "color": "#65AAB1",
-      "egfPosition": "21"
+      "egfPosition": "21",
+      "category": "Selection Markers",
+      "sub-category": "Antibiotic Resistance"
     },
     "sequence": {
-      "md5": "7b515a03b2a042ec36631d82348adc67",
-      "length": 607,
+      "md5": "dba93610c5a03a915216dabab29b4971",
+      "length": 600,
       "annotations": [],
       "initialBases": "ACCGA"
     },
@@ -1680,7 +1800,7 @@
     "notes": {}
   },
   {
-    "id": "block-643d0260-af80-4849-bdcd-8cd4be92415c",
+    "id": "block-43d4eab2-cb58-4bda-9ba6-6aeefad646cb",
     "parents": [],
     "metadata": {
       "name": "PGK polyA",
@@ -1688,11 +1808,13 @@
       "authors": [],
       "tags": {},
       "color": "#8EC78D",
-      "egfPosition": "22"
+      "egfPosition": "22",
+      "category": "PolyA transcription terminators",
+      "sub-category": "Endogenous  derived polyA"
     },
     "sequence": {
-      "md5": "c981996b1c256e220c9b175a24d12197",
-      "length": 236,
+      "md5": "a96b3c3932dc15416811d2d67e0bb9a3",
+      "length": 229,
       "annotations": [],
       "initialBases": "CCTTG"
     },
@@ -1708,7 +1830,7 @@
     "notes": {}
   },
   {
-    "id": "block-fa5862a2-ada9-43e1-b028-759494386de6",
+    "id": "block-d374edbc-e3ed-4b9f-a82c-7307caa1aff2",
     "parents": [],
     "metadata": {
       "name": "Insulator_FB",
@@ -1716,11 +1838,13 @@
       "authors": [],
       "tags": {},
       "color": "#53B15F",
-      "egfPosition": "23"
+      "egfPosition": "23",
+      "category": "Insulators",
+      "sub-category": "endogenous elements"
     },
     "sequence": {
-      "md5": "7579895246ce0e7c50638308f1a9b4f8",
-      "length": 148,
+      "md5": "29c089067c1d3baf030143274e69d2d1",
+      "length": 141,
       "annotations": [],
       "initialBases": "GGCCG"
     },
@@ -1736,7 +1860,7 @@
     "notes": {}
   },
   {
-    "id": "block-b769f66c-b941-4f81-8561-e57b170b02ca",
+    "id": "block-cf56b078-8979-44d3-ad72-2dd950e02519",
     "parents": [],
     "metadata": {
       "name": "3'HA-hAAVS1",
@@ -1744,11 +1868,13 @@
       "authors": [],
       "tags": {},
       "color": "#C5C4C1",
-      "egfPosition": "24"
+      "egfPosition": "24",
+      "category": "Homology Arm",
+      "sub-category": "Human genomic locus"
     },
     "sequence": {
-      "md5": "1a798c9a007d9cdf0333a54e9faf75c2",
-      "length": 640,
+      "md5": "c5a0682845deab5c47253dc11e2db50f",
+      "length": 633,
       "annotations": [],
       "initialBases": "CCGCC"
     },
@@ -1764,7 +1890,7 @@
     "notes": {}
   },
   {
-    "id": "block-e966d80e-1e4c-462f-909c-77c4194e0868",
+    "id": "block-18183513-3d3b-466a-b457-3177da52a5ab",
     "parents": [],
     "metadata": {
       "name": "3'-ITR-PB",
@@ -1772,11 +1898,13 @@
       "authors": [],
       "tags": {},
       "color": "#A5A6A2",
-      "egfPosition": "24"
+      "egfPosition": "24",
+      "category": "inverted terminal repeat sequences (ITRs)",
+      "sub-category": "transposon-specific inverted terminal repeat sequences (ITRs)"
     },
     "sequence": {
-      "md5": "4cf3e7f570ff284504a1fe9f22d2b44e",
-      "length": 254,
+      "md5": "427fa75b9c85fc7f41c52f87f990c979",
+      "length": 247,
       "annotations": [],
       "initialBases": "TGCAT"
     },
@@ -1792,7 +1920,7 @@
     "notes": {}
   },
   {
-    "id": "block-bbf8c6d6-dcaf-40e3-9981-89fcdda8833a",
+    "id": "block-9c740e27-dd2a-464c-86b7-477e04bced21",
     "parents": [],
     "metadata": {
       "name": "SV40-ORI",
@@ -1800,11 +1928,13 @@
       "authors": [],
       "tags": {},
       "color": "#e7aaa9",
-      "egfPosition": "25"
+      "egfPosition": "25",
+      "category": "Episomal elements",
+      "sub-category": "Viral"
     },
     "sequence": {
-      "md5": "22b9d8323302ec93c4a0f8e63154d1b0",
-      "length": 143,
+      "md5": "e1f70fd6d6a612271136c281c231f6cf",
+      "length": 136,
       "annotations": [],
       "initialBases": "ATCCC"
     },
