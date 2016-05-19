@@ -6,6 +6,7 @@ import InputSimple from './../InputSimple';
 import ColorPicker from './../ui/ColorPicker';
 import SymbolPicker from './../ui/SymbolPicker';
 import BlockSource from './BlockSource';
+import ListOptions from './ListOptions';
 
 export class InspectorBlock extends Component {
   static propTypes = {
@@ -137,7 +138,9 @@ export class InspectorBlock extends Component {
   }
 
   render() {
-    const { readOnly } = this.props;
+    const { instances, readOnly } = this.props;
+    const singleInstance = instances.length === 1;
+    const isList = singleInstance && instances[0].isList();
 
     const annotations = this.currentAnnotations();
 
@@ -194,6 +197,9 @@ export class InspectorBlock extends Component {
             })}
           </div>
         )}
+
+        {isList && (<h4 className="InspectorContent-heading">List Options</h4>)}
+        {isList && (<ListOptions block={instances[0]}/>)}
       </div>
     );
   }
