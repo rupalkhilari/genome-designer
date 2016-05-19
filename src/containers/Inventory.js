@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { inventoryToggleVisibility, inventorySelectTab } from '../actions/ui';
-import inventoryAndrea from '../inventory/andrea/partsOld';
 import InventoryGroup from '../components/Inventory/InventoryGroup';
 
 import '../styles/Inventory.css';
@@ -46,11 +45,6 @@ export class Inventory extends Component {
                             type="search"
                             isActive={currentTab === 'search' || !currentTab}
                             setActive={() => inventorySelectTab('search')}/>
-            <InventoryGroup title="EGF Parts"
-                            type="block"
-                            isActive={currentTab === 'egf'}
-                            setActive={() => inventorySelectTab('egf')}
-                            items={inventoryAndrea}/>
             <InventoryGroup title="My Projects"
                             type="projects"
                             currentProject={projectId}
