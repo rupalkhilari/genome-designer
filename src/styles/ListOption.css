@@ -1,0 +1,8 @@
+/* should look like inventory item basically */
+
+.ListOption {
+
+  &.selected {
+
+  }
+}
