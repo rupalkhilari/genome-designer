@@ -310,7 +310,7 @@ export default class Layout {
       }
 
       // update title to current position and text and width
-      const text = this.construct.getName();
+      const text = this.construct.getName('New Construct');
       const width = this.titleNode.measureText(text).x + kT.textPad + kT.contextDotsW;
 
       this.titleNode.set({

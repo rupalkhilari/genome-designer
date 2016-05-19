@@ -110,13 +110,13 @@ export default class Block extends Instance {
     return this.mutate('projectId', projectId);
   }
 
-  getName() {
+  getName(defaultName = 'New Block') {
     // called many K per second, no es6 fluffy stuff in here.
     if (this.metadata.name) return this.metadata.name;
     if (this.rules.role) return this.rules.role;
     if (this.components.length) return 'New Construct';
     if (this.isFiller() && this.metadata.initialBases) return this.metadata.initialBases;
-    return 'New Block';
+    return defaultName;
   }
 
   setName(newName) {
