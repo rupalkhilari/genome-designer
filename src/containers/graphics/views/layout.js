@@ -2097,19 +2097,19 @@ export default class Layout {
    */
   updateListForBlock(block, pW) {
 
-    console.log('----- Update list for:', block.getName(), ' ', block.list.length);
+    console.log('----- Update list for:', block.getName(), ' ', block.options.length);
 
     const parentNode = this.nodeFromElement(block.id);
 
-    block.list.forEach((blockId, index) => {
+    block.options.forEach((blockId, index) => {
       // ensure we have a hash of list nodes for this block.
       let nodes = this.listNodes[block.id];
       if (!nodes) {
         nodes = this.listNodes[block.id] = {};
       }
       // get the block in the list
-      const listBlock = this.blocks[blockId];
-      console.log('List block:', listBlock.getName());
+      const listBlock = this.getListBlock(blockId);
+      console.log('List block:', listBlock.metadata.name);
       // create node as necessary for this block
       let listNode = nodes[blockId];
       if (!listNode) {
@@ -2119,9 +2119,27 @@ export default class Layout {
       // update position and other visual attributes of list part
       listNode.set({
         bounds: new Box2D(0, (index + 1) * kT.blockH, pW, kT.blockH),
-        text: listBlock.getName(),
+        text: listBlock.metadata.name,
         fill: this.fillColor(block.id),
         color: this.fontColor(block.id),
+        updateReference: this.updateReference,
+      });
+    });
+  }
+
+  /**
+   * drop any list nodes that are not up tp date with the updateReference
+   */
+  dropListItems() {
+    // outer loop will iterate over a hash of list node each block with list items
+    Object.keys(this.listNodes).forEach(blockId => {
+      const nodeHash = this.listNodes[blockId];
+      Object.keys(nodeHash).forEach(key => {
+        const node = nodeHash[key];
+        if (node.updateReference !== this.updateReference) {
+          node.parent.removeChild(node);
+          delete nodeHash[key];
+        }
       });
     });
   }
@@ -2461,6 +2479,7 @@ export default class Layout {
   getListBlock(id) {
     const item = listStore[id];
     invariant(item, 'list item not found');
+    return item;
   }
   /**
    * layout, configured with various options:
@@ -2523,7 +2542,7 @@ export default class Layout {
       const node = this.nodeFromElement(part);
       const block = this.blocks[part];
       const name = this.partName(part);
-      const listN = block.list ? block.list.length : 0;
+      const listN = block.options ? block.options.length : 0;
 
       // set role part name if any
       node.set({
@@ -2532,9 +2551,6 @@ export default class Layout {
 
       // measure element text or used condensed spacing
       let td = this.measureText(node, name);
-
-      // fake list blocks if not already done
-      this.fakeListBlocks(block);
 
       // if position would exceed x limit then wrap
       if (xp + td.x > mx) {
@@ -2547,8 +2563,8 @@ export default class Layout {
       }
 
       // measure the max required width of any list blocks
-      block.list.forEach(blockId => {
-        td.x = Math.max(td.x, this.measureText(node, this.blocks[blockId].getName()).x);
+      block.options.forEach(blockId => {
+        td.x = Math.max(td.x, this.measureText(node, this.getListBlock(blockId).metadata.name).x);
       });
 
       // update maxListHeight based on how many list items this block has
@@ -2624,6 +2640,9 @@ export default class Layout {
     // drop unused parts and nodes
     this.dropParts();
 
+    // drop unused list items
+    this.dropListItems();
+
     // create/show vertical bar
     this.verticalFactory();
 
@@ -2646,29 +2665,6 @@ export default class Layout {
     // apply selections to scene graph
     this.sceneGraph.ui.setSelections(selectedNodes);
 
-  }
-
-  /**
-   * temporary testing, fake some list blocks
-   */
-  fakeListBlocks(block) {
-
-    if (!block.list || block.list.length === 0) {
-      // get all blocks
-      const blocks = Object.keys(this.blocks).map(blockId => {
-        return this.blocks[blockId];
-      });
-      block.list = [];
-      const hash = {};
-      for(var i = 0; i < Math.random() * 10; i += 1) {
-        const listItem = blocks[Math.min(blocks.length-1, Math.floor(Math.random() * blocks.length))];
-        // don't duplicate blocks in list
-        if (!hash[listItem.id]) {
-          block.list.push(listItem.id);
-          hash[listItem.id] = listItem;
-        }
-      }
-    }
   }
 
   /**
