@@ -1,17 +1,17 @@
 import Block from '../models/Block';
 import Project from '../models/Project';
 
-const list = new Block({
+const lists = ['1', '2', '3', '4,', '5', '6', '7'].map(pos => new Block({
   metadata: {
-    name: 'List Block',
+    name: `Position ${pos}`,
   },
   rules: {
     list: true,
     filter: {
-      'metadata.egfPosition': '1',
+      'metadata.egfPosition': pos,
     },
   },
-});
+}));
 
 const construct = new Block({
   metadata: {
@@ -20,7 +20,7 @@ const construct = new Block({
   rules: {
     fixed: true,
   },
-  components: [list.id],
+  components: lists.map(list => list.id),
 });
 
 const proj = new Project({
@@ -30,7 +30,7 @@ const proj = new Project({
 
 export const blocks = [
   construct,
-  list,
+  ...lists,
 ];
 
 export const project = proj;
