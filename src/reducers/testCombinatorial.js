@@ -2,12 +2,21 @@ import Block from '../models/Block';
 import Project from '../models/Project';
 
 const list = new Block({
+  metadata: {
+    name: 'List Block',
+  },
   rules: {
-    isList: true,
+    list: true,
+    filter: {
+      'metadata.egfPosition': '1',
+    },
   },
 });
 
 const construct = new Block({
+  metadata: {
+    name: 'My Template',
+  },
   rules: {
     fixed: true,
   },
