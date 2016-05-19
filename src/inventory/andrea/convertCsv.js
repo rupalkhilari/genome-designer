@@ -99,8 +99,10 @@ const mapConnectorFields = (imported) => {
 const defaultOutputPath = path.join(__dirname, './partList.json');
 const connectorOutputPath = path.join(__dirname, './connectorList.json');
 
-export default function convertCsv(csvPath, isPart = true, outputPath) {
+export default function convertCsv(csvPath, isPartInput = 'true', outputPath) {
   invariant(csvPath, 'need a csv path as command line arg');
+
+  const isPart = !(/^false$/i).test(isPartInput);
 
   return fileSystem.fileRead(csvPath, false)
     .then(contents => {
