@@ -212,9 +212,9 @@ export default class Block extends Instance {
     invariant(this.isList(), 'must be a list block to toggle list options');
     const optionSet = new Set(this.options);
     if (optionSet.has(optionId)) {
-      optionSet.add(optionId);
+      optionSet.delete(optionId);
     } else {
-      optionSet.remove(optionId);
+      optionSet.add(optionId);
     }
     return this.mutate('options', [...optionSet]);
   }

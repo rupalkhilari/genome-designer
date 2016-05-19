@@ -39,8 +39,10 @@ export class ListOptions extends Component {
       <div className="ListOptions">
         {filtered.map(item => {
           return (
-            <ListOption selected={options.includes(item.id)}
-                        onClick={(option) => this.onSelectOption(option)}/>
+            <ListOption
+              option={item}
+              selected={options.includes(item.id)}
+              onClick={(option) => this.onSelectOption(option)}/>
           );
         })}
       </div>
