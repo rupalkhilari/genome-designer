@@ -1,5 +1,5 @@
 import merge from 'lodash.merge';
-import Block from '../models/Block';
+import Block from '../../models/Block';
 /* eslint-disable quotes */
 
 //todo - need to include source.source = egf and source.id for all of these so tracked properly

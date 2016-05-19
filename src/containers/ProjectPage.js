@@ -42,7 +42,7 @@ class ProjectPage extends Component {
 
   componentWillReceiveProps(nextProps) {
     //set state.focus.project -- might be a better way to do this, but hard otuside components with react-router
-    if (!this.lastProjectId || nextProps.projectId !== this.props.projectId) {
+    if (nextProps.project && nextProps.project.metadata && (!this.lastProjectId || nextProps.projectId !== this.props.projectId)) {
       this.lastProjectId = nextProps.projectId;
       this.props.focusProject(nextProps.projectId);
     }

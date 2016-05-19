@@ -1,5 +1,5 @@
 import * as ActionTypes from '../constants/ActionTypes';
-import { saveProject, loadProject, snapshot, listProjects } from '../middleware/data';
+import { saveProject, loadProject, snapshot, listProjects, deleteProject } from '../middleware/data';
 import * as projectSelectors from '../selectors/projects';
 import * as undoActions from '../store/undo/actions';
 import { push } from 'react-router-redux';
@@ -10,9 +10,6 @@ import { pauseAction, resumeAction } from '../store/pausableStore';
 
 import { getItem, setItem } from '../middleware/localStorageCache';
 const recentProjectKey = 'mostRecentProject';
-
-//todo - should this go in the reducers (i.e. a cache outside store state)? One for projects, one for blocks? Then compare rollup components to those directly. That way we can track individual resources more easily rather than just whole rollups.
-//note that goal is to track lastSaved versions, and so the cache if in the reducer should handle dirty tracking
 
 //Promise
 export const projectList = () => {
@@ -31,15 +28,17 @@ export const projectList = () => {
   };
 };
 
-//create a new project
-export const projectCreate = (initialModel) => {
+//Promise
+export const projectDelete = (projectId) => {
   return (dispatch, getState) => {
-    const project = new Project(initialModel);
-    dispatch({
-      type: ActionTypes.PROJECT_CREATE,
-      project,
-    });
-    return project;
+    return deleteProject(projectId)
+      .then(() => {
+        dispatch({
+          type: ActionTypes.PROJECT_DELETE,
+          projectId,
+        });
+        return projectId;
+      });
   };
 };
 
@@ -124,6 +123,23 @@ export const projectLoad = (projectId) => {
 
         return project;
       });
+  };
+};
+
+//create a new project
+export const projectCreate = (initialModel) => {
+  return (dispatch, getState) => {
+    const project = new Project(initialModel);
+    dispatch({
+      type: ActionTypes.PROJECT_CREATE,
+      project,
+    });
+
+    //after we've created it, let's save it real quick so it persists + gets a version
+    //we can do this in the background
+    projectSave(project.id);
+
+    return project;
   };
 };
 

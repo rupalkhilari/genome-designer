@@ -11,15 +11,16 @@ import InstanceDefinition from './Instance';
 
 const ProjectDefinition = InstanceDefinition.extend({
   id: [
-    fields.id({prefix: 'project'}).required,
+    fields.id({ prefix: 'project' }).required,
     'Project UUID',
   ],
 
   version: [
     fields.version(),
     'SHA1 version of project',
-    {avoidScaffold: true},
+    { avoidScaffold: true },
   ],
+
   components: [
     fields.arrayOf(validators.id()).required,
     `Constructs associated with this project`,
@@ -27,6 +28,11 @@ const ProjectDefinition = InstanceDefinition.extend({
   settings: [
     fields.object().required,
     `Settings associated with this project`,
+  ],
+
+  orders: [
+    fields.arrayOf(validators.id()).required,
+    `List of IDs of orders initiated by this project`,
   ],
 });
 

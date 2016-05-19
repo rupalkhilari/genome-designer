@@ -25,8 +25,10 @@ const pathImages = createBuildPath('images', '../src/images');
 const pathPublic = createBuildPath('public', '../src/public');
 const pathClientBundle = createBuildPath('client.js', '../build/client.js');
 
+//create server app
 const app = express();
 
+//use large body limit at root so that 100kb default doesnt propagate / block downstream
 app.use(bodyParser.json({
   limit: '50mb',
   strict: false,
@@ -122,6 +124,8 @@ app.get('*', (req, res) => {
     res.render(path.join(pathContent + '/index.jade'), Object.assign({}, req.user, discourse));
   }
 });
+
+/*** running ***/
 
 //i have no idea why, but sometimes the server tries to build when the port is already in use, so lets just check if port is in use and if it is, then dont try to listen on it.
 const isPortFree = (port, cb) => {

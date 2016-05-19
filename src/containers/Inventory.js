@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { inventoryToggleVisibility, inventorySelectTab } from '../actions/ui';
-import inventoryAndrea from '../inventory/andrea';
+import inventoryAndrea from '../inventory/andrea/partsOld';
 import InventoryGroup from '../components/Inventory/InventoryGroup';
 
 import '../styles/Inventory.css';
@@ -9,6 +9,7 @@ import '../styles/SidePanel.css';
 
 export class Inventory extends Component {
   static propTypes = {
+    showingGrunt: PropTypes.bool,
     projectId: PropTypes.string,
     isVisible: PropTypes.bool.isRequired,
     currentTab: PropTypes.string,
@@ -22,10 +23,12 @@ export class Inventory extends Component {
 
   render() {
     //may be better way to pass in projectId
-    const { isVisible, projectId, currentTab, inventorySelectTab } = this.props;
+    const { showingGrunt, isVisible, projectId, currentTab, inventorySelectTab } = this.props;
 
     return (
-      <div className={'SidePanel Inventory' + (isVisible ? ' visible' : '')}>
+      <div className={'SidePanel Inventory' +
+      (isVisible ? ' visible' : '') +
+      (showingGrunt ? ' gruntPushdown' : '')}>
         <div className="SidePanel-heading">
           <span className="SidePanel-heading-trigger Inventory-trigger"
                 onClick={() => this.toggle()}/>
@@ -66,8 +69,10 @@ export class Inventory extends Component {
 
 function mapStateToProps(state, props) {
   const { isVisible, currentTab } = state.ui.inventory;
+  const showingGrunt = !!state.ui.modals.gruntMessage;
 
   return {
+    showingGrunt,
     isVisible,
     currentTab,
   };
