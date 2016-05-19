@@ -1,6 +1,6 @@
 [
   {
-    "id": "block-ebb2776f-b9be-40a4-a6c5-f7d3e4b9f762",
+    "id": "block-7b6bd283-5b83-4fae-b0ff-3800c600d243",
     "parents": [],
     "metadata": {
       "name": "conn A-B",
@@ -28,7 +28,7 @@
     "notes": {}
   },
   {
-    "id": "block-82e43562-8130-4d61-af1a-0d4242ac5bba",
+    "id": "block-76804749-3e94-44ea-b8cc-27ca6106459a",
     "parents": [],
     "metadata": {
       "name": "conn A-C",
@@ -56,7 +56,7 @@
     "notes": {}
   },
   {
-    "id": "block-b29b99c5-d54a-4772-b9eb-99d5d709949b",
+    "id": "block-ec75528a-f205-4478-a039-3b668992d54a",
     "parents": [],
     "metadata": {
       "name": "conn B-C",
@@ -84,7 +84,7 @@
     "notes": {}
   },
   {
-    "id": "block-dad8923b-af62-4a22-97ee-55f0dd8123f8",
+    "id": "block-979e9d60-c3de-4b6a-8491-a2d64bcce032",
     "parents": [],
     "metadata": {
       "name": "conn B-F",
@@ -112,7 +112,7 @@
     "notes": {}
   },
   {
-    "id": "block-06d35772-0409-4bd3-9230-5486e7a253db",
+    "id": "block-c6ca4436-02f6-4f94-af15-748142fe3e67",
     "parents": [],
     "metadata": {
       "name": "conn B-L",
@@ -140,7 +140,7 @@
     "notes": {}
   },
   {
-    "id": "block-6e143f2e-a8ac-40d8-a2d2-7fb561167e44",
+    "id": "block-4f2fc8ca-cce5-4366-b077-59511b9b663a",
     "parents": [],
     "metadata": {
       "name": "conn D-E",
@@ -168,7 +168,7 @@
     "notes": {}
   },
   {
-    "id": "block-07544eea-2264-4cb1-9121-c463cd2193cd",
+    "id": "block-9b10d3b4-bf0b-44b6-8451-7d2f5c8a297e",
     "parents": [],
     "metadata": {
       "name": "conn D-F",
@@ -196,7 +196,7 @@
     "notes": {}
   },
   {
-    "id": "block-2100f47c-dea8-4cc8-9d1a-d037a2ea41a4",
+    "id": "block-a7f51f32-6793-403f-b3a3-1d6a6cfa58ae",
     "parents": [],
     "metadata": {
       "name": "conn E-F",
@@ -224,7 +224,7 @@
     "notes": {}
   },
   {
-    "id": "block-93e0c691-9ce9-40ca-a32e-215ffece3417",
+    "id": "block-89c868e7-fd27-4b2e-b00e-71d8013df7b9",
     "parents": [],
     "metadata": {
       "name": "conn H-Ha",
@@ -252,7 +252,7 @@
     "notes": {}
   },
   {
-    "id": "block-ffb58865-3a6e-456b-a68d-f0f40f09a46a",
+    "id": "block-5cdc1711-7550-491e-ae0c-06f1b0aece77",
     "parents": [],
     "metadata": {
       "name": "conn H-J",
@@ -280,7 +280,7 @@
     "notes": {}
   },
   {
-    "id": "block-0b7f070f-f6ba-4bfd-9d40-151db43c1145",
+    "id": "block-03d753ae-709a-47f7-8630-a0edae1274bc",
     "parents": [],
     "metadata": {
       "name": "conn H-K",
@@ -308,7 +308,7 @@
     "notes": {}
   },
   {
-    "id": "block-5fb1611c-620d-4aab-a989-48e308c01861",
+    "id": "block-69a24816-fb3d-4d1c-b54f-5caa6e3e9d76",
     "parents": [],
     "metadata": {
       "name": "conn Ha-J",
@@ -336,7 +336,7 @@
     "notes": {}
   },
   {
-    "id": "block-5a3fdd56-d41f-46a0-970d-5af2606b137b",
+    "id": "block-fb89d3a5-6eaf-4bf7-a53b-db18b5f8597d",
     "parents": [],
     "metadata": {
       "name": "conn Ha-K",
@@ -364,7 +364,7 @@
     "notes": {}
   },
   {
-    "id": "block-829564fa-9168-419d-a555-1a3f5e60626f",
+    "id": "block-ba5c44e6-13f9-40cb-9f22-235350386b06",
     "parents": [],
     "metadata": {
       "name": "conn J-K",
@@ -392,7 +392,7 @@
     "notes": {}
   },
   {
-    "id": "block-9b6d9e97-ac4f-4c87-ad88-2745b0a67d76",
+    "id": "block-4f986ceb-6063-4404-b3ce-127f65fb3d48",
     "parents": [],
     "metadata": {
       "name": "conn L-M",
@@ -420,7 +420,7 @@
     "notes": {}
   },
   {
-    "id": "block-d32ec002-a3d2-4041-ac21-2d7b181c4e35",
+    "id": "block-646e1ff9-13f8-4d43-9ff6-199288383fc8",
     "parents": [],
     "metadata": {
       "name": "conn L-N",
@@ -448,7 +448,7 @@
     "notes": {}
   },
   {
-    "id": "block-00043cff-079e-4e5f-9f33-2aa09c5fbe33",
+    "id": "block-8f187e94-18fa-404b-b3ad-73c17d7c9a15",
     "parents": [],
     "metadata": {
       "name": "conn L-R",
@@ -476,7 +476,7 @@
     "notes": {}
   },
   {
-    "id": "block-b20933b7-2741-47d6-bb43-d87b1d8ccf7a",
+    "id": "block-06324bd0-f685-42ed-b3e1-335fec1cc1f2",
     "parents": [],
     "metadata": {
       "name": "conn L-W",
@@ -504,7 +504,7 @@
     "notes": {}
   },
   {
-    "id": "block-b667fc61-430d-457a-b72a-b93d9f04d059",
+    "id": "block-123ee5d4-c690-40dc-a61f-939b93aeace0",
     "parents": [],
     "metadata": {
       "name": "conn L-Y",
@@ -532,7 +532,7 @@
     "notes": {}
   },
   {
-    "id": "block-136a2131-71e2-4de5-b3bc-c56928958f35",
+    "id": "block-303f83b6-be54-4161-bf21-b6e280b5c0a4",
     "parents": [],
     "metadata": {
       "name": "conn M-R",
@@ -560,7 +560,7 @@
     "notes": {}
   },
   {
-    "id": "block-d218db63-7fd7-4444-8bbb-f9acb905564d",
+    "id": "block-2875778d-963d-4cf2-bb7f-11997e49e892",
     "parents": [],
     "metadata": {
       "name": "conn N-R",
@@ -588,7 +588,7 @@
     "notes": {}
   },
   {
-    "id": "block-6db7486a-47b4-40ec-b3c0-1987a2a5e7a5",
+    "id": "block-66a01506-6f3f-4388-873f-0940e16621c4",
     "parents": [],
     "metadata": {
       "name": "conn Q-R",
@@ -616,7 +616,7 @@
     "notes": {}
   },
   {
-    "id": "block-64eed979-a395-4083-aa1e-0a61e3147fc0",
+    "id": "block-a10a4295-4576-451c-bc67-7f1db4725cb6",
     "parents": [],
     "metadata": {
       "name": "conn Q-W",
@@ -644,7 +644,7 @@
     "notes": {}
   },
   {
-    "id": "block-76b00825-b840-49f6-9ae9-f884dcd95f50",
+    "id": "block-c3944194-d70b-4a19-b331-1cd4d227cfd9",
     "parents": [],
     "metadata": {
       "name": "conn R-W",
@@ -672,7 +672,7 @@
     "notes": {}
   },
   {
-    "id": "block-51ef0a71-b358-4dbf-91fc-bfa9e71c9f54",
+    "id": "block-3c7bd9fe-c0ab-41f0-9314-6d7f4f120e6d",
     "parents": [],
     "metadata": {
       "name": "conn T-V",
@@ -700,7 +700,7 @@
     "notes": {}
   },
   {
-    "id": "block-90d303e7-f600-4008-b245-b63943e32d32",
+    "id": "block-aae5028b-80c3-4ecc-8b98-15f040090d6a",
     "parents": [],
     "metadata": {
       "name": "conn U-V",
@@ -728,7 +728,7 @@
     "notes": {}
   },
   {
-    "id": "block-3c5b24a2-5b1b-4028-83d4-367e528555ad",
+    "id": "block-ac04ee94-5d6c-48c6-a770-5044d3817b4e",
     "parents": [],
     "metadata": {
       "name": "conn W-X",
@@ -756,7 +756,7 @@
     "notes": {}
   },
   {
-    "id": "block-69137165-13bd-4d9c-bb10-756f9207b80e",
+    "id": "block-153a6acb-2eb1-4366-9c95-7a3123683c33",
     "parents": [],
     "metadata": {
       "name": "conn W-Y",
@@ -784,7 +784,7 @@
     "notes": {}
   },
   {
-    "id": "block-7d1f2d5c-9f26-4f1b-85ce-4433e765d753",
+    "id": "block-765fe6bc-a1a9-4d80-babe-e1ae2d5e2327",
     "parents": [],
     "metadata": {
       "name": "conn W-Z",
@@ -812,7 +812,7 @@
     "notes": {}
   },
   {
-    "id": "block-e2f23766-6c32-4358-8a8e-107d46f96937",
+    "id": "block-c6bcf515-eadf-4b1d-8f0a-8e42c97b7618",
     "parents": [],
     "metadata": {
       "name": "conn Y-Z",
@@ -840,42 +840,14 @@
     "notes": {}
   },
   {
-    "id": "block-14582c49-0cd5-451d-bba9-c6a268fb8b28",
-    "parents": [],
-    "metadata": {
-      "name": "",
-      "description": "",
-      "authors": [],
-      "tags": {},
-      "color": "#C5C4C1",
-      "egfPosition": ""
-    },
-    "sequence": {
-      "md5": "d41d8cd98f00b204e9800998ecf8427e",
-      "length": 0,
-      "annotations": [],
-      "initialBases": ""
-    },
-    "source": {
-      "source": "egf",
-      "id": ""
-    },
-    "rules": {
-      "role": "connector"
-    },
-    "components": [],
-    "options": [],
-    "notes": {}
-  },
-  {
-    "id": "block-47c960f7-2b33-4e21-b7cb-2dd9ee93789f",
+    "id": "block-db828f60-454a-492d-9e66-87cd95627a69",
     "parents": [],
     "metadata": {
       "name": "conn A-B BsaI-1",
       "description": "",
       "authors": [],
       "tags": {},
-      "color": "#A5A6A2",
+      "color": "#C5C4C1",
       "egfPosition": "1"
     },
     "sequence": {
@@ -896,14 +868,14 @@
     "notes": {}
   },
   {
-    "id": "block-8b623200-783d-4ac6-963d-fa063c3c3759",
+    "id": "block-5b57fbfd-310c-4faf-a28b-dedfde24eba7",
     "parents": [],
     "metadata": {
       "name": "conn A-B BsaI-3",
       "description": "",
       "authors": [],
       "tags": {},
-      "color": "#e7aaa9",
+      "color": "#A5A6A2",
       "egfPosition": "1"
     },
     "sequence": {
@@ -924,14 +896,14 @@
     "notes": {}
   },
   {
-    "id": "block-3eb23f58-39e6-4e09-9fcf-16e5c83a8a14",
+    "id": "block-d404b62e-d47f-45b4-8293-193c0747e7ea",
     "parents": [],
     "metadata": {
       "name": "conn Y-Z BsaI-2",
       "description": "",
       "authors": [],
       "tags": {},
-      "color": "#D28482",
+      "color": "#e7aaa9",
       "egfPosition": "25"
     },
     "sequence": {
@@ -952,14 +924,14 @@
     "notes": {}
   },
   {
-    "id": "block-eeea7a37-512b-4d17-a197-2e2e54389c19",
+    "id": "block-994a8523-1e96-4210-9cf2-6476485079b4",
     "parents": [],
     "metadata": {
       "name": "conn Y-Z BsaI-4",
       "description": "",
       "authors": [],
       "tags": {},
-      "color": "#E9BA9b",
+      "color": "#D28482",
       "egfPosition": "25"
     },
     "sequence": {

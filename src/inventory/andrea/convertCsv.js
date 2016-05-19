@@ -3,7 +3,8 @@
 
  call like this (from project root):
 
- babel-node ./src/inventory/andrea/convertCsv.js /path/to/file.csv /path/to/output.json
+ babel-node ./src/inventory/andrea/convertCsv.js /path/to/parts.csv true /path/to/output.json
+ babel-node ./src/inventory/andrea/convertCsv.js /path/to/connectors.csv false /path/to/output.json
 
  do not import into client bundle. it will break it.
  */
@@ -115,6 +116,8 @@ export default function convertCsv(csvPath, isPartInput = 'true', outputPath) {
     })
     //remove top rows
     .then(lines => lines.slice(headerRows))
+    //remove empty lines
+    .then(lines => lines.filter(line => line.some(field => !!field)))
     //make object with appropriate keys
     .then(lines => lines.map(line => zip(isPart ? partFields : connectorFields, line)))
     //assign role
