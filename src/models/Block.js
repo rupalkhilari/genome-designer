@@ -47,7 +47,7 @@ export default class Block extends Instance {
    ************/
 
   isTemplate() {
-    return this.rules.fixed == true;
+    return this.rules.fixed === true;
   }
 
   isFiller() {
@@ -114,6 +114,7 @@ export default class Block extends Instance {
     // called many K per second, no es6 fluffy stuff in here.
     if (this.metadata.name) return this.metadata.name;
     if (this.rules.role) return this.rules.role;
+    if (this.isTemplate()) return 'New Template';
     if (this.components.length) return 'New Construct';
     if (this.isFiller() && this.metadata.initialBases) return this.metadata.initialBases;
     return defaultName;
@@ -188,24 +189,34 @@ export default class Block extends Instance {
 
   //todo - account for block.rules.filter
 
-  addOption(blockId) {
+  addOptions(...optionId) {
     invariant(this.isList(), 'must be a list block to add list options');
     const newOptions = this.options.slice();
-    newOptions.push(blockId);
+    newOptions.push(...optionId);
     return this.mutate('options', newOptions);
   }
 
-  removeOption(blockId) {
-    const spliceIndex = this.options.findIndex(id => id === blockId);
+  removeOptions(...optionId) {
+    const blockIdSet = new Set(optionId);
+    const without =
+      [...new Set(this.options.filter(x => !blockIdSet.has(x)))];
 
-    if (spliceIndex < 0) {
-      console.warn('option not found: ', blockId); // eslint-disable-line
+    if (without.length === this.options.length) {
       return this;
     }
 
-    const newOptions = this.options.slice();
-    newOptions.splice(spliceIndex, 1);
-    return this.mutate('options', newOptions);
+    return this.mutate('options', without);
+  }
+
+  toggleOption(optionId) {
+    invariant(this.isList(), 'must be a list block to toggle list options');
+    const optionSet = new Set(this.options);
+    if (optionSet.has(optionId)) {
+      optionSet.delete(optionId);
+    } else {
+      optionSet.add(optionId);
+    }
+    return this.mutate('options', [...optionSet]);
   }
 
   /************
