@@ -189,24 +189,23 @@ export default class Block extends Instance {
 
   //todo - account for block.rules.filter
 
-  addOption(blockId) {
+  addOptions(...blockIds) {
     invariant(this.isList(), 'must be a list block to add list options');
     const newOptions = this.options.slice();
-    newOptions.push(blockId);
+    newOptions.push(...blockIds);
     return this.mutate('options', newOptions);
   }
 
-  removeOption(blockId) {
-    const spliceIndex = this.options.findIndex(id => id === blockId);
+  removeOptions(...blockIds) {
+    const blockIdSet = new Set(blockIds);
+    const without =
+      [...new Set(this.options.filter(x => !blockIdSet.has(x)))];
 
-    if (spliceIndex < 0) {
-      console.warn('option not found: ', blockId); // eslint-disable-line
+    if (without.length === this.options.length) {
       return this;
     }
 
-    const newOptions = this.options.slice();
-    newOptions.splice(spliceIndex, 1);
-    return this.mutate('options', newOptions);
+    return this.mutate('options', without);
   }
 
   /************

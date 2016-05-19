@@ -294,6 +294,38 @@ export const blockMoveComponent = (blockId, componentId, newIndex) => {
 };
 
 /***************************************
+ Options
+ ***************************************/
+
+export const blockAddOptions = (blockId, ...optionIds) => {
+  return (dispatch, getState) => {
+    const oldBlock = getState().blocks[blockId];
+    const block = oldBlock.addOptions(...optionIds);
+
+    dispatch({
+      type: ActionTypes.BLOCK_OPTION_ADD,
+      undoable: true,
+      block,
+    });
+    return block;
+  };
+};
+
+export const blockRemoveOptions = (blockId, ...optionIds) => {
+  return (dispatch, getState) => {
+    const oldBlock = getState().blocks[blockId];
+    const block = oldBlock.removeOptions(...optionIds);
+
+    dispatch({
+      type: ActionTypes.BLOCK_OPTION_REMOVE,
+      undoable: true,
+      block,
+    });
+    return block;
+  };
+};
+
+/***************************************
  * Metadata things
  ***************************************/
 
