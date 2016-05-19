@@ -5,7 +5,7 @@ import { uiSetGrunt } from '../actions/ui';
 import '../../src/styles/ribbongrunt.css';
 
 // MS display time for grunt messages
-const DISPLAY_TIME = 500000;
+const DISPLAY_TIME = 5000;
 
 class RibbonGrunt extends Component {
 
