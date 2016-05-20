@@ -499,7 +499,7 @@ class GlobalNav extends Component {
             }, {
               text: 'Paste',
               shortcut: stringToShortcut('meta V'),
-              disabled: !this.props.clipboard.formats.includes(clipboardFormats.blocks) || !this.focusedConstruct() || this.focusedConstruct().isFixed() || this.focusedConstruct().isFrozen(),fir c
+              disabled: !this.props.clipboard.formats.includes(clipboardFormats.blocks) || !this.focusedConstruct() || this.focusedConstruct().isFixed() || this.focusedConstruct().isFrozen(),
               action: () => {
                 this.pasteBlocksToConstruct();
               },
