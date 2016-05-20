@@ -115,16 +115,6 @@ class GlobalNav extends Component {
       this.props.inventoryToggleVisibility(true);
       this.props.inventorySelectTab('search');
     });
-    KeyboardTrap.bind('mod+e', (evt) => {
-      evt.preventDefault();
-      this.props.inventoryToggleVisibility(true);
-      this.props.inventorySelectTab('egf');
-    });
-    KeyboardTrap.bind('mod+b', (evt) => {
-      evt.preventDefault();
-      this.props.inventoryToggleVisibility(true);
-      this.props.inventorySelectTab('role');
-    });
     KeyboardTrap.bind('option+n', (evt) => {
       evt.preventDefault();
       this.newProject();
@@ -171,6 +161,11 @@ class GlobalNav extends Component {
     KeyboardTrap.bind('mod+u', (evt) => {
       evt.preventDefault();
       this.props.uiToggleDetailView();
+    });
+    KeyboardTrap.bind('mod+b', (evt) => {
+      evt.preventDefault();
+      this.props.inventoryToggleVisibility(true);
+      this.props.inventorySelectTab('role');
     });
   }
 
@@ -403,22 +398,6 @@ class GlobalNav extends Component {
                 this.props.inventorySelectTab('search');
               },
             },
-            {
-              text: 'EGF Library',
-              shortcut: stringToShortcut('meta E'),
-              action: () => {
-                this.props.inventoryToggleVisibility(true);
-                this.props.inventorySelectTab('egf');
-              },
-            },
-            {
-              text: 'Sketch Library',
-              shortcut: stringToShortcut('meta B'),
-              action: () => {
-                this.props.inventoryToggleVisibility(true);
-                this.props.inventorySelectTab('role');
-              },
-            },
             {},
             {
               text: 'New Project',
@@ -535,11 +514,13 @@ class GlobalNav extends Component {
               },
               checked: this.props.detailViewVisible,
               shortcut: stringToShortcut('meta u'),
-            }, {}, {
-              text: 'Select Empty Blocks',
-              disabled: !this.props.focus.constructId,
+            }, {},
+            {
+              text: 'Sketch Library',
+              shortcut: stringToShortcut('meta B'),
               action: () => {
-                this.selectEmptyBlocks();
+                this.props.inventoryToggleVisibility(true);
+                this.props.inventorySelectTab('role');
               },
             },
           ],
