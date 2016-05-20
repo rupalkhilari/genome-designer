@@ -151,7 +151,12 @@ export class InspectorBlock extends Component {
                      readOnly={readOnly}
                      onChange={this.setBlockName}
                      onFocus={this.startTransaction}
-                     onBlur={this.endTransaction}
+                     onBlur={(evt) => {
+                       if (!this.props.readOnly) {
+                         this.setBlockName(evt.target.value);
+                       }
+                       this.endTransaction();
+                     }}
                      onEscape={() => this.endTransaction(true)}
                      updateOnBlur
                      value={this.currentName()}/>
@@ -162,7 +167,12 @@ export class InspectorBlock extends Component {
                      readOnly={readOnly}
                      onChange={this.setBlockDescription}
                      onFocus={this.startTransaction}
-                     onBlur={this.endTransaction}
+                     onBlur={(evt) => {
+                       if (!this.props.readOnly) {
+                         this.setBlockDescription(evt.target.value);
+                       }
+                       this.endTransaction();
+                     }}
                      onEscape={() => this.endTransaction(true)}
                      updateOnBlur
                      value={this.currentDescription()}/>
