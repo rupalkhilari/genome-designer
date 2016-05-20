@@ -1,5 +1,6 @@
 import invariant from 'invariant';
 import BlockDefinition from '../schemas/Block';
+import { get as pathGet } from 'lodash';
 
 /***************************************
  * Parent accessing / store knowledge-requiring
@@ -182,5 +183,22 @@ export const blockHasSequence = blockId => {
   return (dispatch, getState) => {
     const block = getState().blocks[blockId];
     return !!block && block.hasSequence();
+  };
+};
+
+//expects object block.rules.filter
+export const blockGetFiltered = filters => {
+  return (dispatch, getState) => {
+    invariant(typeof filters === 'object', 'must pass ovject of filters');
+    const blockState = getState().blocks;
+
+    return Object.keys(blockState)
+      .map(id => blockState[id])
+      .filter(block => {
+        return Object.keys(filters).every(key => {
+          const value = filters[key];
+          return pathGet(block, key) === value;
+        });
+      });
   };
 };

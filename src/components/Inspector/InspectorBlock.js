@@ -127,21 +127,28 @@ export class InspectorBlock extends Component {
   }
 
   currentSource() {
+    const lenInstances = this.props.instances.length;
     const firstSource = this.props.instances[0].source;
     const { id: firstId, source: firstName } = firstSource;
+    const firstHasSource = !!firstName;
 
-    if (this.props.instances.length === 1 ||
-        this.props.instances.every(block => block.source.id === firstId && block.source.source === firstName)) {
+    if (firstHasSource && (lenInstances === 1 ||
+      this.props.instances.every(block => block.source.id === firstId && block.source.source === firstName))) {
       return (<BlockSource source={firstSource}/>);
     }
-    return (<p>Multiple Sources</p>);
+    if (lenInstances > 1) {
+      return (<p>Multiple Sources</p>);
+    }
+    return null;
   }
 
   render() {
     const { instances, readOnly } = this.props;
     const singleInstance = instances.length === 1;
     const isList = singleInstance && instances[0].isList();
+    const isConstruct = singleInstance && instances[0].isConstruct();
 
+    const currentSourceElement = this.currentSource();
     const annotations = this.currentAnnotations();
 
     return (
@@ -167,21 +174,21 @@ export class InspectorBlock extends Component {
                      updateOnBlur
                      value={this.currentDescription()}/>
 
-        <h4 className="InspectorContent-heading">Source</h4>
-        {this.currentSource()}
+        {currentSourceElement && <h4 className="InspectorContent-heading">Source</h4>}
+        {currentSourceElement}
 
         <h4 className="InspectorContent-heading">Sequence Length</h4>
         <p><strong>{this.currentSequenceLength()}</strong></p>
 
-        <h4 className="InspectorContent-heading">Color & Symbol</h4>
+        <h4 className="InspectorContent-heading">{'Color' + (!isConstruct ? '& Symbol' : '')}</h4>
         <div className="InspectorContent-pickerWrap">
           <ColorPicker current={this.currentColor()}
                        readOnly={readOnly}
                        onSelect={this.selectColor}/>
 
-          <SymbolPicker current={this.currentRoleSymbol()}
+          {!isConstruct && (<SymbolPicker current={this.currentRoleSymbol()}
                         readOnly={readOnly}
-                        onSelect={this.selectSymbol}/>
+                        onSelect={this.selectSymbol}/>)}
         </div>
 
 

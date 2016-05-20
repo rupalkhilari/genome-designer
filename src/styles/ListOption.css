@@ -21,6 +21,8 @@
   }
 
   &.selected {
+    color: var(--colors-selected);
+    font-weight: bold;
 
     .ListOption-check {
       opacity: 1;
