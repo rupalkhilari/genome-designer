@@ -3,6 +3,7 @@ import Vector2D from '../geometry/vector2d';
 import Line2D from '../geometry/line2d';
 import Node2D from '../scenegraph2d/node2d';
 import Role2D from '../scenegraph2d/role2d';
+import ListItem2D from '../scenegraph2d/listitem2d';
 import LineNode2D from '../scenegraph2d/line2d';
 import kT from './layoutconstants';
 import objectValues from '../../../utils/object/values';
@@ -2087,7 +2088,7 @@ export default class Layout {
       dataAttribute: {name: 'nodetype', value: 'part'},
       sg: this.sceneGraph,
     }, kT.partAppearance);
-    return new Role2D(props);
+    return new ListItem2D(props);
   }
   /**
    * create / update the list items for the block
