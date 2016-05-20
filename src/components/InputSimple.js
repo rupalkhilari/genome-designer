@@ -14,6 +14,7 @@ export default class InputSimple extends Component {
     onFocus: PropTypes.func,
     onBlur: PropTypes.func,
     onEscape: PropTypes.func,
+    maxLength: PropTypes.number,
   };
 
   componentWillReceiveProps(nextProps) {
@@ -36,7 +37,7 @@ export default class InputSimple extends Component {
   handleFocus = (event) => {
     this.props.onFocus && this.props.onFocus(event);
   };
-  
+
   handleBlur = (event) => {
     if (this.props.updateOnBlur) {
       this.handleSubmission();
@@ -76,6 +77,7 @@ export default class InputSimple extends Component {
         <textarea
           ref="input"
           rows="5"
+          maxLength={this.props.maxLength || 4096}
           className="InputSimple-input"
           disabled={this.props.readOnly}
           placeholder={this.props.placeholder}
@@ -88,6 +90,7 @@ export default class InputSimple extends Component {
         <input
           size="30"
           ref="input"
+          maxLength={this.props.maxLength || 4096}
           disabled={this.props.readOnly}
           className="InputSimple-input"
           placeholder={this.props.placeholder}

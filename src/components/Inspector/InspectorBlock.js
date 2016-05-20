@@ -154,6 +154,7 @@ export class InspectorBlock extends Component {
                      onBlur={this.endTransaction}
                      onEscape={() => this.endTransaction(true)}
                      updateOnBlur
+                     maxLength="64"
                      value={this.currentName()}/>
 
         <h4 className="InspectorContent-heading">Description</h4>
@@ -165,6 +166,7 @@ export class InspectorBlock extends Component {
                      onBlur={this.endTransaction}
                      onEscape={() => this.endTransaction(true)}
                      updateOnBlur
+                     maxLength="1024"
                      value={this.currentDescription()}/>
 
         <h4 className="InspectorContent-heading">Source</h4>
