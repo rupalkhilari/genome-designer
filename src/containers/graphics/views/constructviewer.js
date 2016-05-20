@@ -332,7 +332,7 @@ export class ConstructViewer extends Component {
         },
       },
       {
-        text: 'Delete Blocks',
+        text: 'Delete Block',
         action: () => {
           this.removePartsList(this.sg.ui.selectedElements);
         },
