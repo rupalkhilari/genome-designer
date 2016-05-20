@@ -2096,9 +2096,6 @@ export default class Layout {
    * create / update the list items for the block
    */
   updateListForBlock(block, pW) {
-
-    console.log('----- Update list for:', block.getName(), ' ', block.options.length);
-
     const parentNode = this.nodeFromElement(block.id);
 
     block.options.forEach((blockId, index) => {
@@ -2109,7 +2106,7 @@ export default class Layout {
       }
       // get the block in the list
       const listBlock = this.getListBlock(blockId);
-      console.log('List block:', listBlock.metadata.name);
+
       // create node as necessary for this block
       let listNode = nodes[blockId];
       if (!listNode) {
@@ -2487,7 +2484,6 @@ export default class Layout {
    * @return {[type]} [description]
    */
   layout(layoutOptions) {
-    console.log('**** New Layout ****')
     // set the new reference key
     this.updateReference += 1;
     // shortcut

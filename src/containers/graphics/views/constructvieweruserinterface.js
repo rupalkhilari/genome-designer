@@ -461,7 +461,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
         // cancel our own mouse operations for now
         this.mouseTrap.cancelDrag();
         // no mutation of frozen or fixed constructs
-        if (this.frozen || this.fixed) {
+        if (this.construct.isFrozen() || this.construct.isFixed()) {
           return;
         }
         // open an undo/redo transaction
@@ -577,7 +577,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
     // select construct on drag over
     this.selectConstruct();
     // no drop on frozen or fixed constructs
-    if (this.frozen || this.fixed) {
+    if (this.construct.isFrozen() || this.construct.isFixed()) {
       return;
     }
     // convert global point to local space via our mousetrap
@@ -600,7 +600,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
    */
   onDrop(globalPosition, payload, event) {
     // no drop on frozen or fixed constructs
-    if (this.frozen || this.fixed) {
+    if (this.construct.isFrozen() || this.construct.isFixed()) {
       return;
     }
 

@@ -105,12 +105,6 @@ export class ConstructViewer extends Component {
     this.sg.ui.layout = this.layout;
     // getting more ugly, the UI needs access to ourselves, the constructviewer
     this.sg.ui.constructViewer = this;
-
-    // TODO, real properties
-    // fake frozen and fixed on user interface
-    this.sg.ui.frozen = this.sg.ui.fixed = this.frozen = this.fixed = true;
-
-
     // initial render won't call componentDidUpdate so force an update to the layout/scenegraph
     this.update();
     // handle window resize to reflow the layout
@@ -335,14 +329,14 @@ export class ConstructViewer extends Component {
       },
       {
         text: 'Delete Blocks',
-        disabled: this.frozen || this.fixed,
+        disabled: this.props.construct.isFixed() || this.props.construct.isFrozen(),
         action: () => {
           this.removePartsList(this.sg.ui.selectedElements);
         },
       },
       {
         text: 'Import DNA Sequence',
-        disabled: this.props.focus.blockIds.length !== 1 || this.frozen || this.fixed,
+        disabled: this.props.focus.blockIds.length !== 1 || (this.props.construct.isFixed() || this.props.construct.isFrozen()),
         action: () => {
           this.props.uiShowDNAImport(true);
         },
@@ -466,13 +460,6 @@ export class ConstructViewer extends Component {
       }
     }
 
-    // @duncan - this is not true. We always want to keep the construct.
-    // if the source is the inventory and we are dragging a single block with components
-    // then we don't want to insert the parent, so replace the payload with just the children
-    //if (!Array.isArray(payload.item) && (payload.source === 'inventory' || payload.source === 'inventory construct') && payload.item.components.length) {
-    //  payload.item = payload.item.components.slice();
-    //}
-
     // add all blocks in the payload
     const blocks = Array.isArray(payload.item) ? payload.item : [payload.item];
     // return the list of newly added blocks so we can select them for example
@@ -496,7 +483,6 @@ export class ConstructViewer extends Component {
   render() {
     const rendered = (
       <div className="construct-viewer" key={this.props.construct.id}>
-        {/*menu*/}
         <div className="sceneGraphContainer">
           <div className="sceneGraph"/>
         </div>

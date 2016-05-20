@@ -276,7 +276,6 @@ class GlobalNav extends Component {
       // sort selected blocks so they are pasted in the same order as they exist now.
       // NOTE: we don't copy the children of any selected parents since they will
       // be cloned along with their parent
-      //const sorted = sortBlocksByIndexAndDepth(this.props.focus.blocks);
       const sorted = sortBlocksByIndexAndDepthExclude(this.props.focus.blockIds);
       // sorted is an array of array, flatten while retaining order
       const currentProjectVersion = this.props.projectGetVersion(this.props.currentProjectId);
@@ -334,9 +333,20 @@ class GlobalNav extends Component {
     this.props.projectOpen(project.id);
   }
 
+  /**
+   * return true if the focused construct is fixrf
+   * @return {Boolean} [description]
+   */
+  focusedConstruct() {
+    if (this.props.focus.constructId) {
+      return this.props.blocks[this.props.focus.constructId];
+    }
+    return null;
+  }
+
   // cut focused blocks to the clipboard, no clone required since we are removing them.
   cutFocusedBlocksToClipboard() {
-    if (this.props.focus.blockIds.length) {
+    if (this.props.focus.blockIds.length && !this.focusedConstruct().isFixed() && this.focusedConstruct().isFrozen()) {
       // TODO, cut must be prevents on fixed or frozen blocks
       const blockIds = this.props.blockDetach(...this.props.focus.blockIds);
       this.props.clipboardSetData([clipboardFormats.blocks], [blockIds.map(blockId => this.props.blocks[blockId])]);
@@ -352,17 +362,16 @@ class GlobalNav extends Component {
       // TODO, paste must be prevented on fixed or frozen blocks
       const blocks = this.props.clipboard.data[index];
       invariant(blocks && blocks.length && Array.isArray(blocks), 'expected array of blocks on clipboard for this format');
-      // get current construct
-      const construct = this.props.blocks[this.props.focus.constructId];
-      invariant(construct, 'expected a construct');
+      // verify current construct
+      invariant(this.focusedConstruct(), 'expected a construct');
       // we have to clone the blocks currently on the clipboard since they
       // can't be pasted twice
       const clones = blocks.map(block => {
         return this.props.blockClone(block.id);
       });
       // insert at end of construct if no blocks selected
-      let insertIndex = construct.components.length;
-      let parentId = construct.id;
+      let insertIndex = this.focusedConstruct().components.length;
+      let parentId = this.focusedConstruct().id;
       if (this.props.focus.blockIds.length) {
         const insertInfo = this.findInsertBlock();
         insertIndex = insertInfo.index;
@@ -476,7 +485,7 @@ class GlobalNav extends Component {
             }, {
               text: 'Cut',
               shortcut: stringToShortcut('meta X'),
-              disabled: !this.props.focus.blockIds.length,
+              disabled: !this.props.focus.blockIds.length || !this.focusedConstruct() || this.focusedConstruct().isFixed() || this.focusedConstruct().isFrozen(),
               action: () => {
                 this.cutFocusedBlocksToClipboard();
               },
@@ -490,7 +499,7 @@ class GlobalNav extends Component {
             }, {
               text: 'Paste',
               shortcut: stringToShortcut('meta V'),
-              disabled: !this.props.clipboard.formats.includes(clipboardFormats.blocks),
+              disabled: !this.props.clipboard.formats.includes(clipboardFormats.blocks) || !this.focusedConstruct() || this.focusedConstruct().isFixed() || this.focusedConstruct().isFrozen(),fir c
               action: () => {
                 this.pasteBlocksToConstruct();
               },
