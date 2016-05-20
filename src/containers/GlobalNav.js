@@ -356,14 +356,18 @@ class GlobalNav extends Component {
 
   // paste from clipboard to current construct
   pasteBlocksToConstruct() {
+    // verify current construct
+    invariant(this.focusedConstruct(), 'expected a construct');
+    // ignore if construct is immutable
+    if (this.focusedConstruct().isFixed() && this.focusedConstruct().isFrozen()) {
+      return;
+    }
     // paste blocks into construct if format available
     const index = this.props.clipboard.formats.indexOf(clipboardFormats.blocks);
     if (index >= 0) {
       // TODO, paste must be prevented on fixed or frozen blocks
       const blocks = this.props.clipboard.data[index];
       invariant(blocks && blocks.length && Array.isArray(blocks), 'expected array of blocks on clipboard for this format');
-      // verify current construct
-      invariant(this.focusedConstruct(), 'expected a construct');
       // we have to clone the blocks currently on the clipboard since they
       // can't be pasted twice
       const clones = blocks.map(block => {

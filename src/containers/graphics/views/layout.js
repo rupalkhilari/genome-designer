@@ -2043,9 +2043,6 @@ export default class Layout {
 
   /**
    * setup the bi drectional mapping between nodes / elements
-   * @param  {[type]} part    [description]
-   * @param  {[type]} node [description]
-   * @return {[type]}      [description]
    */
   map(part, node) {
     this.nodes2parts[node.uuid] = part;
@@ -2436,14 +2433,17 @@ export default class Layout {
     this.currentBlocks = currentBlocks;
     this.baseColor = this.construct.metadata.color;
 
-    // perform layout
-    this.layoutWrap();
+    // perform layout and remember how much vertical was required
+    const heightUsed = this.layoutWrap();
 
     // update connections etc after layout
     this.postLayout();
 
     // auto size scene after layout
     this.autoSizeSceneGraph();
+
+    // nest layouts need to the vertical space required
+    return heightUsed;
   }
 
   /**
@@ -2565,6 +2565,7 @@ export default class Layout {
 
       // update maxListHeight based on how many list items this block has
       maxListHeight = Math.max(maxListHeight, listN * kT.blockH);
+      invariant(isFinite(maxListHeight) && maxListHeight >= 0, 'expected a valid number');
 
       // update part, including its text and color and with height to accomodate list items
       node.set({
@@ -2661,6 +2662,8 @@ export default class Layout {
     // apply selections to scene graph
     this.sceneGraph.ui.setSelections(selectedNodes);
 
+    // for nesting return the height consumed by the layout
+    return heightUsed + nestedVertical + kT.rowBarH;
   }
 
   /**
