@@ -9,7 +9,7 @@ export default class InputSimple extends Component {
     placeholder: PropTypes.string,
     readOnly: PropTypes.bool,
     default: PropTypes.string,
-    updateOnBlur: PropTypes.bool,
+    updateOnBlur: PropTypes.bool, //its probably best to not update on blur... see midupdate caveat below
     useTextarea: PropTypes.bool,
     onFocus: PropTypes.func,
     onBlur: PropTypes.func,
@@ -31,10 +31,22 @@ export default class InputSimple extends Component {
     this.state = {
       value: props.value,
     };
+
+    // annoyingly, props can update before document click listeners are registered
+    // won't always trigger a blur event, e.g. if click outside and props change
+    // want to make sure blur is always called even if click outside, so register our own listener
+    // this likely will call the new function passed as onBlur, but for us for now, this is ok (ends transaction)
+    // want to always ensure that blur function is called
+    this.midupdate = null;
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.value !== this.props.value) {
+      if (this.midupdate) {
+        this.midupdate();
+        this.midupdate = null;
+      }
+
       this.setState({ value: nextProps.value });
     }
   }
@@ -78,6 +90,8 @@ export default class InputSimple extends Component {
 
     if (!this.props.updateOnBlur) {
       this.handleSubmission(event.target.value);
+    } else {
+      this.midupdate = this.props.onBlur;
     }
   };
 
