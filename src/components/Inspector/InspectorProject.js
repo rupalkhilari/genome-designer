@@ -62,7 +62,6 @@ export class InspectorProject extends Component {
                      onBlur={this.endTransaction}
                      onEscape={() => this.endTransaction(true)}
                      readOnly={readOnly}
-                     updateOnBlur
                      maxLength={2048}
                      value={instance.metadata.description}/>
       </div>
