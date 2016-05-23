@@ -46,6 +46,8 @@ export default class Block extends Instance {
    type checks
    ************/
 
+  //isSpec() can't exist here, since dependent on children. use selector blockIsSpec instead.
+
   isConstruct() {
     return this.components.length > 0;
   }
@@ -149,6 +151,7 @@ export default class Block extends Instance {
 
   addComponent(componentId, index) {
     invariant(!this.isList(), 'cannot add components to a list block');
+    invariant(idValidator(componentId), 'must pass valid component ID');
     const spliceIndex = (Number.isInteger(index) && index >= 0) ? index : this.components.length;
     const newComponents = this.components.slice();
     newComponents.splice(spliceIndex, 0, componentId);
@@ -195,6 +198,7 @@ export default class Block extends Instance {
 
   addOptions(...optionId) {
     invariant(this.isList(), 'must be a list block to add list options');
+    invariant(optionId.every(option => idValidator(option)), 'must pass component IDs');
     const newOptions = this.options.slice();
     newOptions.push(...optionId);
     return this.mutate('options', newOptions);
@@ -214,6 +218,7 @@ export default class Block extends Instance {
 
   toggleOption(optionId) {
     invariant(this.isList(), 'must be a list block to toggle list options');
+    invariant(idValidator(optionId), 'must pass valid option ID');
     const optionSet = new Set(this.options);
     if (optionSet.has(optionId)) {
       optionSet.delete(optionId);
