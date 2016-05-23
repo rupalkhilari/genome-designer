@@ -328,7 +328,7 @@ export class ConstructViewer extends Component {
         },
       },
       {
-        text: 'Delete Blocks',
+        text: 'Delete Block',
         disabled: this.props.construct.isFixed() || this.props.construct.isFrozen(),
         action: () => {
           this.removePartsList(this.sg.ui.selectedElements);
