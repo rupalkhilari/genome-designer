@@ -22,7 +22,7 @@ const lists = ['1', '2', '3', '4', '5', '6', '7', '8'].map(pos => {
   });
 });
 
-lists.splice(4, 0, new Block({
+lists.splice(0, 0, new Block({
   metadata: {
     name: `Hidden Block`,
   },

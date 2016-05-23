@@ -570,9 +570,11 @@ export default class Layout {
     // width of first row is effected by parent block, so we have to track
     // which row we are on.
     let rowIndex = 0;
+    // display only non hidden blocks
+    const components = ct.components.filter(part => !this.partRule(part, 'hidden'));
+    // layout all non hidden blocks
+    components.forEach(part => {
 
-    // update / make all the parts
-    ct.components.forEach(part => {
       // create a row bar as neccessary
       if (!row) {
         row = this.rowFactory(new Box2D(this.insetX, yp - kT.rowBarH, 0, kT.rowBarH));
