@@ -263,13 +263,13 @@ export const blockAddComponent = (blockId, componentId, index = -1, forceProject
 /**
  * add the array of componentIds into the given part at the given starting index. Rather than adding them all at once, dispatch an event for each to ensure we remove from previous parents and stay in a valid state.
  */
-export const blockAddComponents = (blockId, componentIds, index) => {
+export const blockAddComponents = (blockId, componentIds, index, forceProjectId = false) => {
   return (dispatch, getState) => {
     dispatch(pauseAction());
     dispatch(undoActions.transact());
 
     componentIds.forEach((componentId, subIndex) => {
-      dispatch(blockAddComponent(blockId, componentId, index + subIndex));
+      dispatch(blockAddComponent(blockId, componentId, index + subIndex, forceProjectId));
     });
 
     dispatch(undoActions.commit());
