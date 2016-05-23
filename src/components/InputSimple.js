@@ -34,7 +34,6 @@ export default class InputSimple extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log(nextProps);
     if (nextProps.value !== this.props.value) {
       this.setState({ value: nextProps.value });
     }
@@ -44,11 +43,9 @@ export default class InputSimple extends Component {
     this.props.onFocus(event);
   };
 
-  //todo - should probably handle window blur e.g. so transactions dont hang
   handleBlur = (event) => {
-    console.log('blur!!', event.target.value);
     if (this.props.updateOnBlur) {
-      this.handleSubmission(event);
+      this.handleSubmission(event.target.value);
     }
     this.props.onBlur(event);
   };
@@ -66,13 +63,13 @@ export default class InputSimple extends Component {
     }
     //enter
     if (event.keyCode === 13 || !this.props.updateOnBlur) {
-      this.handleSubmission(event);
+      this.handleSubmission(event.target.value);
     }
   };
 
-  handleSubmission = (event) => {
+  handleSubmission = (value) => {
     if (!this.props.readOnly) {
-      this.props.onChange(event.target.value);
+      this.props.onChange(value);
     }
   };
 
@@ -80,7 +77,7 @@ export default class InputSimple extends Component {
     this.setState({ value: event.target.value });
 
     if (!this.props.updateOnBlur) {
-      this.handleSubmission(event);
+      this.handleSubmission(event.target.value);
     }
   };
 
