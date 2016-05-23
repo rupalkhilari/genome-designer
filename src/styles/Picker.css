@@ -110,7 +110,7 @@
 
     &.active svg {
       opacity: 1;
-    }    
+    }
   }
 
   &.readOnly {
@@ -118,7 +118,11 @@
       cursor: default;
 
       &:hover {
-        border-color: inherit;
+        border-color: transparent;
+
+        svg {
+          opacity: 0.5;
+        }
       }
     }
   }
