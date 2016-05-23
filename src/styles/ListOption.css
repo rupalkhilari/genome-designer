@@ -9,6 +9,7 @@
   cursor: pointer;
   padding: 2px 5px;
   margin: 1px 0;
+  user-select: none;
 
   &-check {
     display: inline-block;

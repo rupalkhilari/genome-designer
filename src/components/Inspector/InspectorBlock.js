@@ -147,6 +147,7 @@ export class InspectorBlock extends Component {
     const { instances, readOnly } = this.props;
     const singleInstance = instances.length === 1;
     const isList = singleInstance && instances[0].isList();
+    const isTemplate = singleInstance && instances[0].isTemplate();
     const isConstruct = singleInstance && instances[0].isConstruct();
 
     const currentSourceElement = this.currentSource();
@@ -181,15 +182,15 @@ export class InspectorBlock extends Component {
         <h4 className="InspectorContent-heading">Sequence Length</h4>
         <p><strong>{this.currentSequenceLength()}</strong></p>
 
-        <h4 className="InspectorContent-heading">{'Color' + (!isConstruct ? '& Symbol' : '')}</h4>
+        <h4 className="InspectorContent-heading">Color & Symbol</h4>
         <div className="InspectorContent-pickerWrap">
           <ColorPicker current={this.currentColor()}
                        readOnly={readOnly}
                        onSelect={this.selectColor}/>
 
-          {!isConstruct && (<SymbolPicker current={this.currentRoleSymbol()}
-                        readOnly={readOnly}
-                        onSelect={this.selectSymbol}/>)}
+          <SymbolPicker current={this.currentRoleSymbol()}
+                        readOnly={readOnly || isConstruct || isTemplate || isList}
+                        onSelect={this.selectSymbol}/>
         </div>
 
 
