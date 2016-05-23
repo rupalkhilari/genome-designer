@@ -158,13 +158,18 @@ export const blockGetIndex = (blockId) => {
 };
 
 const _checkSingleBlockIsSpec = (block) => {
-  return (!block.options.length) && (block.sequence.length > 0);
+  return block.isList ? (block.options.length > 0) : (block.sequence.length > 0);
 };
 
 export const blockIsSpec = (blockId) => {
   return (dispatch, getState) => {
     const store = getState();
     const block = _getBlockFromStore(blockId, store);
+
+    if (block.isList()) {
+      return block.options.length > 0;
+    }
+
     if (block.components.length) {
       return _filterToLeafNodes(_getAllChildren(blockId, store))
         .every(_checkSingleBlockIsSpec);

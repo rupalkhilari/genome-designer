@@ -236,3 +236,16 @@ export const projectRemoveConstruct = (projectId, componentId) => {
     return project;
   };
 };
+
+export const projectAddOrder = (projectId, orderId) => {
+  return (dispatch, getState) => {
+    const oldProject = getState().projects[projectId];
+    const project = oldProject.orderAdd(orderId);
+    dispatch({
+      type: ActionTypes.PROJECT_ADD_ORDER,
+      undoable: false,
+      project,
+    });
+    return project;
+  };
+};
