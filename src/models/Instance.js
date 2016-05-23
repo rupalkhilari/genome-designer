@@ -24,8 +24,7 @@ export default class Instance {
     );
 
     if (process.env.NODE_ENV !== 'production') {
-      console.warn();('Objects are not frozen for temporary testing.');
-      //require('deep-freeze')(this);
+      require('deep-freeze')(this);
     }
   }
 
