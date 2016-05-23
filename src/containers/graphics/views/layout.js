@@ -8,17 +8,10 @@ import LineNode2D from '../scenegraph2d/line2d';
 import kT from './layoutconstants';
 import objectValues from '../../../utils/object/values';
 import invariant from 'invariant';
-import partList from '../../../inventory/andrea/partList.json';
 
 // just for internal tracking of what type of block a node represents.
 const blockType = 'block';
 const roleType = 'role';
-
-// map the parts to a hash by part ID
-const listStore = partList.reduce((hash, part) => {
-      hash[part.id] = part;
-      return hash;
-    }, {});
 
 /**
  * layout and scene graph manager for the construct viewer
@@ -526,7 +519,7 @@ export default class Layout {
    * get list block from ether
    */
   getListBlock(id) {
-    const item = listStore[id];
+    const item = this.blocks[id];
     invariant(item, 'list item not found');
     return item;
   }
