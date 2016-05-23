@@ -154,7 +154,6 @@ export class InspectorBlock extends Component {
                      onFocus={this.startTransaction}
                      onBlur={this.endTransaction}
                      onEscape={() => this.endTransaction(true)}
-                     updateOnBlur
                      maxLength={64}
                      value={this.currentName()}/>
 
@@ -166,7 +165,6 @@ export class InspectorBlock extends Component {
                      onFocus={this.startTransaction}
                      onBlur={this.endTransaction}
                      onEscape={() => this.endTransaction(true)}
-                     updateOnBlur
                      maxLength={1024}
                      value={this.currentDescription()}/>
 
