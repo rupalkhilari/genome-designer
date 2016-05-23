@@ -136,7 +136,7 @@ export class ConstructViewerCanvas extends Component {
   autoScrollUpdate() {
     invariant(this.autoScrollDirection === -1 || this.autoScrollDirection === 1, 'bad direction for autoscroll');
     const el = ReactDOM.findDOMNode(this);
-    el.scrollTop += this.autoScrollDirection * 20;
+    el.scrollTop += this.autoScrollDirection * 8;
     // start a new request unless the direction has changed to zero
     this.autoScrollRequest = this.autoScrollDirection ? window.requestAnimationFrame(this.autoScrollBound) : 0;
   }
@@ -147,7 +147,9 @@ export class ConstructViewerCanvas extends Component {
   mouseScroll(globalPosition) {
     const local = this.mouseTrap.globalToLocal(globalPosition, ReactDOM.findDOMNode(this));
     const box = this.mouseTrap.element.getBoundingClientRect();
-    const edge = 100;
+    // autoscroll threshold is clamped at a percentage of height otherwise when the window is short
+    // it can become impossible to target a specific element
+    const edge = Math.max(0, Math.min(100, box.height * 0.25));
     if (local.y < edge) {
       this.autoScroll(-1);
     } else {
