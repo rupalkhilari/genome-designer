@@ -571,7 +571,7 @@ export default class Layout {
     // which row we are on.
     let rowIndex = 0;
     // display only non hidden blocks
-    const components = ct.components.filter(part => !this.partRule(part, 'hidden'));
+    const components = ct.components.filter(part => !this.blocks[part].isHidden());
     // layout all non hidden blocks
     components.forEach(part => {
 
