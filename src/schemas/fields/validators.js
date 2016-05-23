@@ -23,7 +23,7 @@ export const id = params => input => {
   }
 };
 
-export const string = ({ max, min }) => input => {
+export const string = ({ max, min } = {}) => input => {
   if (!isString(input)) {
     return new Error(`${input} is not a string`);
   }
@@ -35,7 +35,7 @@ export const string = ({ max, min }) => input => {
   }
 };
 
-export const number = ({ reals, min, max }) => input => {
+export const number = ({ reals, min, max } = {}) => input => {
   if (!isNumber(input)) {
     return new Error(`input ${input} is not a number`);
   }
