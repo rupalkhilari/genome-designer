@@ -127,12 +127,13 @@ export class InspectorBlock extends Component {
   }
 
   currentSource() {
-    const firstSource = this.props.instances[0].source;
+    const firstBlock = this.props.instances[0];
+    const firstSource = firstBlock.source;
     const { id: firstId, source: firstName } = firstSource;
 
     if (this.props.instances.length === 1 ||
-        this.props.instances.every(block => block.source.id === firstId && block.source.source === firstName)) {
-      return (<BlockSource source={firstSource}/>);
+      this.props.instances.every(block => block.source.id === firstId && block.source.source === firstName)) {
+      return (<BlockSource block={firstBlock}/>);
     }
     return (<p>Multiple Sources</p>);
   }
@@ -154,7 +155,7 @@ export class InspectorBlock extends Component {
                      onBlur={this.endTransaction}
                      onEscape={() => this.endTransaction(true)}
                      updateOnBlur
-                     maxLength="64"
+                     maxLength={64}
                      value={this.currentName()}/>
 
         <h4 className="InspectorContent-heading">Description</h4>
@@ -166,7 +167,7 @@ export class InspectorBlock extends Component {
                      onBlur={this.endTransaction}
                      onEscape={() => this.endTransaction(true)}
                      updateOnBlur
-                     maxLength="1024"
+                     maxLength={1024}
                      value={this.currentDescription()}/>
 
         <h4 className="InspectorContent-heading">Source</h4>
