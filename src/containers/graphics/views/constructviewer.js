@@ -50,7 +50,6 @@ export class ConstructViewer extends Component {
     projectId: PropTypes.string.isRequired,
     construct: PropTypes.object.isRequired,
     constructId: PropTypes.string.isRequired,
-    layoutAlgorithm: PropTypes.string.isRequired,
     inspectorToggleVisibility: PropTypes.func.isRequired,
     focusBlocks: PropTypes.func.isRequired,
     focusBlocksAdd: PropTypes.func.isRequired,
@@ -101,9 +100,7 @@ export class ConstructViewer extends Component {
       userInterfaceConstructor: UserInterface,
     });
     // create the layout object
-    this.layout = new Layout(this, this.sg, {
-      layoutAlgorithm: this.props.layoutAlgorithm,
-    });
+    this.layout = new Layout(this, this.sg, {});
     // the user interface will also need access to the layout component
     this.sg.ui.layout = this.layout;
     // getting more ugly, the UI needs access to ourselves, the constructviewer
@@ -281,7 +278,6 @@ export class ConstructViewer extends Component {
     //console.time(`LAYOUT`);
     this.layout.update(
       this.props.construct,
-      this.props.layoutAlgorithm,
       this.props.blocks,
       this.props.focus.blockIds,
       this.props.focus.constructId);
@@ -333,13 +329,14 @@ export class ConstructViewer extends Component {
       },
       {
         text: 'Delete Block',
+        disabled: this.props.construct.isFixed() || this.props.construct.isFrozen(),
         action: () => {
           this.removePartsList(this.sg.ui.selectedElements);
         },
       },
       {
         text: 'Import DNA Sequence',
-        disabled: this.props.focus.blockIds.length !== 1,
+        disabled: this.props.focus.blockIds.length !== 1 || (this.props.construct.isFixed() || this.props.construct.isFrozen()),
         action: () => {
           this.props.uiShowDNAImport(true);
         },
@@ -463,13 +460,6 @@ export class ConstructViewer extends Component {
       }
     }
 
-    // @duncan - this is not true. We always want to keep the construct.
-    // if the source is the inventory and we are dragging a single block with components
-    // then we don't want to insert the parent, so replace the payload with just the children
-    //if (!Array.isArray(payload.item) && (payload.source === 'inventory' || payload.source === 'inventory construct') && payload.item.components.length) {
-    //  payload.item = payload.item.components.slice();
-    //}
-
     // add all blocks in the payload
     const blocks = Array.isArray(payload.item) ? payload.item : [payload.item];
     // return the list of newly added blocks so we can select them for example
@@ -491,16 +481,8 @@ export class ConstructViewer extends Component {
    * render the component, the scene graph will render later when componentDidUpdate is called
    */
   render() {
-    // TODO, can be conditional when master is fixed and this is merged with construct select PR
-    // let menu = <ConstructViewerMenu
-    //   open={this.props.construct.id === this.props.focus.construct}
-    //   constructId={this.props.constructId}
-    //   layoutAlgorithm={this.props.layoutAlgorithm}
-    //   />;
-
     const rendered = (
       <div className="construct-viewer" key={this.props.construct.id}>
-        {/*menu*/}
         <div className="sceneGraphContainer">
           <div className="sceneGraph"/>
         </div>
