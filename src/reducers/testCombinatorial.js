@@ -42,6 +42,9 @@ const construct = new Block({
 
 const proj = new Project({
   id: 'combinatorial',
+  metadata: {
+    name: 'Combinatorial Demo',
+  },
   components: [construct.id],
 });
 

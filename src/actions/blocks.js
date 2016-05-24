@@ -12,11 +12,12 @@ import { pauseAction, resumeAction } from '../store/pausableStore';
 //todo - helper to wrap dispatch()'s in a paused transaction - make sure dispatch still runs when passed as arg
 
 //Promise
-//retrieves a block, and its components if specified
-export const blockLoad = (blockId, withComponents = false) => {
+//retrieves a block, and its options and components if specified
+export const blockLoad = (blockId, withContents = false, onlyComponents = false) => {
   return (dispatch, getState) => {
-    return loadBlock(blockId, withComponents)
-      .then(blockMap => {
+    return loadBlock(blockId, withContents, onlyComponents)
+      .then(({components, options}) => {
+        const blockMap = Object.assign({}, options, components);
         const blocks = Object.keys(blockMap).map(key => new Block(blockMap[key]));
         dispatch({
           type: ActionTypes.BLOCK_LOAD,
@@ -92,6 +93,11 @@ export const blockClone = (blockInput, parentObjectInput = {}, shallowOnly = fal
     } else {
       throw new Error('invalid input to blockClone', blockInput);
     }
+
+    //note - Block.options
+    // we dont need to do anything in cloning for block.options, since these are just copied over from project to project
+    // the assumption is that options will be fetched and stashed (not cloned) in the project as needed, but separate from cloning.
+    // this is so the option IDs remain consistent, and projects are not huge with duplicate blocks that are just options (since they are static)
 
     //get the project ID to use for parent, considering the block may be detached from a project (e.g. inventory block)
     const parentProjectId = oldBlock.getProjectId() || null;

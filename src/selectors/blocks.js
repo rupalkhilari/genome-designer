@@ -1,6 +1,5 @@
 import invariant from 'invariant';
 import BlockDefinition from '../schemas/Block';
-import { get as pathGet } from 'lodash';
 
 /***************************************
  * Parent accessing / store knowledge-requiring
