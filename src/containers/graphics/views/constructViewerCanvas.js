@@ -21,6 +21,7 @@ export class ConstructViewerCanvas extends Component {
 
   static propTypes = {
     blockCreate: PropTypes.func.isRequired,
+    blockClone: PropTypes.func.isRequired,
     blockRename: PropTypes.func.isRequired,
     projectAddConstruct: PropTypes.func.isRequired,
     focusConstruct: PropTypes.func.isRequired,
@@ -39,13 +40,16 @@ export class ConstructViewerCanvas extends Component {
   onDrop(globalPosition, payload, event) {
     // clone construct and add to project if a construct from inventory otherwise
     // treat as a list of one or more blocks
+    //if the block is from the inventory, we've cloned it and dont need to worry about forcing the projectId when we add the components
+    const shouldForceProjectId = payload.source.indexOf('inventory') >= 0;
+
     if (payload.source === 'inventory construct') {
       const construct = this.props.blockClone(payload.item.id);
-      this.props.projectAddConstruct(this.props.currentProjectId, construct.id)
+      this.props.projectAddConstruct(this.props.currentProjectId, construct.id, shouldForceProjectId);
       this.props.focusConstruct(construct.id);
     } else {
       const construct = this.props.blockCreate();
-      this.props.projectAddConstruct(this.props.currentProjectId, construct.id);
+      this.props.projectAddConstruct(this.props.currentProjectId, construct.id, shouldForceProjectId);
       const constructViewer = ConstructViewer.getViewerForConstruct(construct.id);
       invariant(constructViewer, 'expect to find a viewer for the new construct');
       constructViewer.addItemAtInsertionPoint(payload, null, null);
