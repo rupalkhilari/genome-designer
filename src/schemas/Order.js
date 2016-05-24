@@ -30,7 +30,13 @@ const OrderDefinition = new SchemaDefinition({
 
   constructIds: [
     fields.arrayOf(validators.id()).required,
-    `IDs of constructs to order`,
+    `IDs of constructs in project involved in order`,
+  ],
+
+  //todo - determine this shape
+  constructs: [
+    fields.array().required,
+    `Array of arrays to order - all the constructs with a parts list`,
   ],
 
   parameters: [

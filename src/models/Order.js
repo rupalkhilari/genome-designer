@@ -50,6 +50,18 @@ export default class Order extends Instance {
   }
 
   /************
+   constructs + filtering
+   ************/
+
+  constructsAdd(...constructs) {
+    //todo
+  }
+
+  constructsRemove(...constructs) {
+    //todo
+  }
+
+  /************
    quote + submit
    ************/
 
@@ -59,6 +71,7 @@ export default class Order extends Instance {
 
   submit(foundry) {
     //set foundry + remote ID in status
+    //return the updated order
   }
 
 }
