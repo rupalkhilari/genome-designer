@@ -168,7 +168,9 @@ export const blockIsSpec = (blockId) => {
     const block = _getBlockFromStore(blockId, store);
 
     if (block.isList()) {
-      return block.options.length > 0 && block.options.every(_checkSingleBlockIsSpec);
+      const selectedIds = block.getSelectedOptions();
+      //future - if allow constructs as options, need to better check options
+      return selectedIds.length > 0 && selectedIds.map(id => _getBlockFromStore(id, store)).every(_checkSingleBlockIsSpec);
     }
 
     if (block.components.length) {
@@ -193,6 +195,7 @@ export const blockHasSequence = blockId => {
   };
 };
 
+//todo - deprecate filters
 //expects object block.rules.filter
 export const blockGetFiltered = filters => {
   return (dispatch, getState) => {

@@ -197,10 +197,14 @@ export default class Block extends Instance {
   //future  - account for block.rules.filter
 
   //for template usage i.e. the options have already been set
-  toggleOption(optionId) {
+  toggleOptions(...optionIds) {
     invariant(this.isList(), 'must be a list block to toggle list options');
-    invariant(Object.prototype.hasOwnProperty.call(this.options, optionId), 'Option ID must be present to toggle it');
-    const options = Object.assign({}, cloneDeep(this.options), { [optionId]: !this.options[optionId] });
+    invariant(optionIds.every(optionId => Object.prototype.hasOwnProperty.call(this.options, optionId), 'Option ID must be present to toggle it'));
+
+    const options = cloneDeep(this.options);
+    optionIds.forEach(optionId => {
+      Object.assign(options, { [optionId]: !this.options[optionId] });
+    });
     return this.mutate('options', options);
   }
 
@@ -230,6 +234,10 @@ export default class Block extends Instance {
     }
 
     return this.mutate('options', cloned);
+  }
+
+  getSelectedOptions() {
+    return Object.keys(this.options).filter(id => this.options[id]);
   }
 
   /************
