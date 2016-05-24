@@ -26,7 +26,7 @@
       "role": null
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -56,7 +56,7 @@
       "role": null
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -86,7 +86,7 @@
       "role": "insulator"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -116,7 +116,7 @@
       "role": "promoter"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -146,7 +146,7 @@
       "role": "promoter"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -176,7 +176,7 @@
       "role": "promoter"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -206,7 +206,7 @@
       "role": "promoter"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -236,7 +236,7 @@
       "role": "regulatory"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -266,7 +266,7 @@
       "role": null
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -296,7 +296,7 @@
       "role": null
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -326,7 +326,7 @@
       "role": "regulatory"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -356,7 +356,7 @@
       "role": "regulatory"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -386,7 +386,7 @@
       "role": "regulatory"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -416,7 +416,7 @@
       "role": "tag"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -446,7 +446,7 @@
       "role": "tag"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -476,7 +476,7 @@
       "role": "tag"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -506,7 +506,7 @@
       "role": "tag"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -536,7 +536,7 @@
       "role": "tag"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -566,7 +566,7 @@
       "role": null
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -596,7 +596,7 @@
       "role": null
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -626,7 +626,7 @@
       "role": null
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -656,7 +656,7 @@
       "role": "reporter"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -686,7 +686,7 @@
       "role": "reporter"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -716,7 +716,7 @@
       "role": "reporter"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -746,7 +746,7 @@
       "role": "reporter"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -776,7 +776,7 @@
       "role": "structural"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -806,7 +806,7 @@
       "role": "structural"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -836,7 +836,7 @@
       "role": null
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -866,7 +866,7 @@
       "role": "tag"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -896,7 +896,7 @@
       "role": "rbs"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -926,7 +926,7 @@
       "role": "selection"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -956,7 +956,7 @@
       "role": "selection"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -986,7 +986,7 @@
       "role": "selection"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -1016,7 +1016,7 @@
       "role": "structural"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -1046,7 +1046,7 @@
       "role": "reporter"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -1076,7 +1076,7 @@
       "role": "reporter"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -1106,7 +1106,7 @@
       "role": "reporter"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -1136,7 +1136,7 @@
       "role": "reporter"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -1166,7 +1166,7 @@
       "role": "structural"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -1196,7 +1196,7 @@
       "role": "regulatory"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -1226,7 +1226,7 @@
       "role": "terminator"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -1256,7 +1256,7 @@
       "role": "promoter"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -1286,7 +1286,7 @@
       "role": "selection"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -1316,7 +1316,7 @@
       "role": "terminator"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -1346,7 +1346,7 @@
       "role": "promoter"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -1376,7 +1376,7 @@
       "role": "promoter"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -1406,7 +1406,7 @@
       "role": "reporter"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -1436,7 +1436,7 @@
       "role": "reporter"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -1466,7 +1466,7 @@
       "role": "reporter"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -1496,7 +1496,7 @@
       "role": null
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -1526,7 +1526,7 @@
       "role": "tag"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -1556,7 +1556,7 @@
       "role": "tag"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -1586,7 +1586,7 @@
       "role": "structural"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -1616,7 +1616,7 @@
       "role": null
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -1646,7 +1646,7 @@
       "role": "structural"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -1676,7 +1676,7 @@
       "role": "reporter"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -1706,7 +1706,7 @@
       "role": "reporter"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -1736,7 +1736,7 @@
       "role": "reporter"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -1766,7 +1766,7 @@
       "role": "reporter"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -1796,7 +1796,7 @@
       "role": "selection"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -1826,7 +1826,7 @@
       "role": "terminator"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -1856,7 +1856,7 @@
       "role": "insulator"
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -1886,7 +1886,7 @@
       "role": null
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -1916,7 +1916,7 @@
       "role": null
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   },
   {
@@ -1946,7 +1946,7 @@
       "role": null
     },
     "components": [],
-    "options": [],
+    "options": {},
     "notes": {}
   }
 ]

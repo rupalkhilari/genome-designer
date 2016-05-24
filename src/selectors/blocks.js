@@ -195,7 +195,8 @@ export const blockHasSequence = blockId => {
   };
 };
 
-//todo - deprecate filters
+/*
+deprecated filters for now
 //expects object block.rules.filter
 export const blockGetFiltered = filters => {
   return (dispatch, getState) => {
@@ -212,3 +213,4 @@ export const blockGetFiltered = filters => {
       });
   };
 };
+*/

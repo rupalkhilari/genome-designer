@@ -199,7 +199,7 @@ export default class Block extends Instance {
   //for template usage i.e. the options have already been set
   toggleOptions(...optionIds) {
     invariant(this.isList(), 'must be a list block to toggle list options');
-    invariant(optionIds.every(optionId => Object.prototype.hasOwnProperty.call(this.options, optionId), 'Option ID must be present to toggle it'));
+    invariant(optionIds.every(optionId => Object.prototype.hasOwnProperty.call(this.options, optionId)), 'Option ID must be present to toggle it');
 
     const options = cloneDeep(this.options);
     optionIds.forEach(optionId => {

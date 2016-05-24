@@ -4,15 +4,14 @@ import Project from '../models/Project';
 import parts from '../inventory/andrea/parts';
 
 const lists = ['1', '2', '3', '4', '5', '6', '7', '8'].map(pos => {
-  const firstpart = parts.find(part => part.metadata.egfPosition === pos);
+  const filtered = parts.filter(part => part.metadata.egfPosition === pos);
+  const options = filtered.reduce((acc, part, index) => Object.assign(acc, { [part.id]: !!(index % 2) }), {});
 
   return new Block({
     metadata: {
       name: `Position ${pos}`,
     },
-    options: [
-      firstpart.id,
-    ],
+    options,
     rules: {
       list: true,
       filter: {
