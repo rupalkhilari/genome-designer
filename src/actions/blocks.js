@@ -325,10 +325,10 @@ export const blockOptionsRemove = (blockId, ...optionIds) => {
   };
 };
 
-export const blockOptionsToggle = (blockId, optionId) => {
+export const blockOptionsToggle = (blockId, ...optionIds) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
-    const block = oldBlock.toggleOptions(optionId);
+    const block = oldBlock.toggleOptions(...optionIds);
 
     dispatch({
       type: ActionTypes.BLOCK_OPTION_TOGGLE,
