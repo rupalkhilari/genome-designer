@@ -57,3 +57,7 @@ export const USER_SET_USER = 'USER_SET_USER';
 export const USER_LOGIN = 'USER_LOGIN';
 
 export const CLIPBOARD_SET_DATA = 'CLIPBOARD-SET-DATA';
+
+export const ORDER_CREATE = 'ORDER_CREATE';
+export const ORDER_STASH = 'ORDER_STASH';
+export const ORDER_SUBMIT = 'ORDER_SUBMIT';
