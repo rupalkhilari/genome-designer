@@ -71,6 +71,7 @@ export default class Order extends Instance {
 
   submit(foundry) {
     //set foundry + remote ID in status
+    //write it to the server
     //return the updated order
   }
 

@@ -135,6 +135,7 @@ router.route('/order/:projectId/:orderId?')
 
     //todo
     // validate order
+    // this should only be called when it is submitted... dont want incomplete ones saved
     // add to project folder
     res.status(402).send();
   });

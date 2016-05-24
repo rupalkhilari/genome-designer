@@ -9,6 +9,7 @@ import * as blockSelectors from '../selectors/blocks';
 
 //todo - determine where order is created, where its saved, etc... clean up this flow
 
+//create an order, without saving it.
 export const orderCreate = (projectId, parameters = {}, constructIds = []) => {
   return (dispatch, getState) => {
     invariant(projectId, 'must pass project ID');
@@ -20,6 +21,7 @@ export const orderCreate = (projectId, parameters = {}, constructIds = []) => {
     invariant(typeof parameters === 'object', 'paramters must be object');
     invariant(Order.validateParameters(parameters), 'parameters must pass validation');
 
+    //todo - should only snapshot when the order actually goes through
     //snapshot project with message noting order
     return dispatch(projectActions.projectSnapshot(projectId, 'order'))
     //get new project version
@@ -30,26 +32,26 @@ export const orderCreate = (projectId, parameters = {}, constructIds = []) => {
           parameters,
         });
 
-        //todo - should this be order model function?
-        return createOrder(projectId, order)
-          .then(resp => {
-            //add order to the store
-            dispatch({
-              type: ActionTypes.ORDER_CREATE,
-              order,
-            });
+        //add order to the store
+        dispatch({
+          type: ActionTypes.ORDER_CREATE,
+          order,
+        });
 
-            return order;
-          });
+        return order;
       });
   };
 };
 
+//submit the order, foundry information is required
+//actually saves the order to the server
 export const orderSubmit = (orderId, foundry) => {
   return (dispatch, getState) => {
     const order = getState().orders[orderId];
     invariant(order, 'order not in the store...');
     invariant(!order.isSubmitted(), 'Cant submit an order twice');
+
+    //todo - should snapshot project here
 
     return order.submit(foundry)
       .then(order => {
@@ -58,6 +60,6 @@ export const orderSubmit = (orderId, foundry) => {
           type: ActionTypes.ORDER_SUBMIT,
           order,
         });
-      })
+      });
   };
 };
