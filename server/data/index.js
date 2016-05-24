@@ -117,6 +117,28 @@ router.route('/sequence/:md5/:blockId?')
     res.status(403).send('Not allowed to delete sequence');
   });
 
+router.route('/order/:projectId/:orderId?')
+  .all(jsonParser)
+  .get((req, res, next) => {
+    const { user, projectId } = req;
+    const { orderId } = req.params;
+
+    //todo - if no order ID, get list of orders
+
+    //todo - get the order and return it
+    res.status(402).send();
+  })
+  .post((req, res, next) => {
+    const { user, projectId } = req;
+    const { orderId } = req.params;
+    const order = req.body;
+
+    //todo
+    // validate order
+    // add to project folder
+    res.status(402).send();
+  });
+
 router.route('/info/:type/:detail?')
   .all(jsonParser)
   .get((req, res, next) => {
