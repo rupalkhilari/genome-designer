@@ -51,13 +51,4 @@ export default class Project extends Instance {
   removeComponents(...components) {
     return this.mutate('components', [...new Set(this.components.filter(comp => !components.includes(comp)))]);
   }
-
-  orderAdd(orderId) {
-    invariant(idValidator(orderId), 'must pass valid order ID');
-    return this.mutate('orders', this.orders.concat(orderId));
-  }
-
-  orderDelete(orderId) {
-    return this.mutate('orders', [...new Set(this.orders.filter(order => order !== orderId))]);
-  }
 }
