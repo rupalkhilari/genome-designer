@@ -3,6 +3,8 @@ import { connect } from 'react-redux';
 import parts from '../../inventory/andrea/parts';
 import ListOption from './ListOption';
 import { blockOptionsToggle } from '../../actions/blocks';
+
+//todo - deprecate filtering
 import { blockGetFiltered } from '../../selectors/blocks';
 
 import '../../styles/ListOptions.css';

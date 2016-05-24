@@ -22,10 +22,6 @@ const RulesDefinition = new SchemaDefinition({
     fields.bool(),
     'Block Ids of components are fixed - no movement, insertions, deletions, substitutions',
   ],
-  filter: [
-    fields.object(),
-    'Map of fields to allowed values for constituents (options / components)',
-  ],
 });
 
 export default RulesDefinition;
