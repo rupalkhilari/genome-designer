@@ -94,7 +94,9 @@ export const getContents = (rootId, forceProjectId) => {
     .then(rollup => {
       const components = getComponentsRecursivelyGivenRollup(rootId, rollup);
 
-      const options = components.filter(comp => comp.rules.list === true)
+      const options = Object.keys(components)
+        .map(compId => components[compId])
+        .filter(comp => comp.rules.list === true)
         .reduce((acc, component) => acc.concat(getOptionsGivenRollup(component.id, rollup)), []);
 
       return {
