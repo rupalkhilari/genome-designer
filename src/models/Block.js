@@ -266,7 +266,13 @@ export default class Block extends Instance {
           length: sequenceLength,
           initialBases: sequence.substr(0, 5),
         };
-        return this.merge({ sequence: updatedSequence });
+        return this.merge({
+          sequence: updatedSequence,
+          source: {
+            source: 'user',
+            id: null,
+          },
+         });
       });
   }
 
