@@ -145,7 +145,7 @@ export default class Block extends Instance {
    components
    ************/
 
-  //todo - account for block.rules.filter
+  //future - account for block.rules.filter
 
   addComponent(componentId, index) {
     invariant(!this.isList(), 'cannot add components to a list block');
@@ -191,36 +191,41 @@ export default class Block extends Instance {
    list block
    ************/
 
-  //todo - account for block.rules.filter
+  //future  - account for block.rules.filter
 
-  addOptions(...optionId) {
-    invariant(this.isList(), 'must be a list block to add list options');
-    const newOptions = this.options.slice();
-    newOptions.push(...optionId);
-    return this.mutate('options', newOptions);
+  //for template usage i.e. the options have already been set
+  toggleOption(optionId) {
+    invariant(this.isList(), 'must be a list block to toggle list options');
+    invariant(Object.prototype.hasOwnProperty.call(this.options, optionId), 'Option ID must be present to toggle it');
+    const options = Object.assign({}, cloneDeep(this.options), { [optionId]: !this.options[optionId] });
+    return this.mutate('options', options);
   }
 
-  removeOptions(...optionId) {
-    const blockIdSet = new Set(optionId);
-    const without =
-      [...new Set(this.options.filter(x => !blockIdSet.has(x)))];
+  //for list block authoring
+  addOptions(...optionIds) {
+    invariant(this.isList(), 'must be a list block to add list options');
+    const toAdd = optionIds.reduce((acc, id) => Object.assign(acc, { [id]: false }));
+    const newOptions = Object.assign(cloneDeep(this.options), toAdd);
 
-    if (without.length === this.options.length) {
+    if (Object.keys(newOptions).length === Object.keys(this.options).length) {
       return this;
     }
 
-    return this.mutate('options', without);
+    return this.mutate('options', newOptions);
   }
 
-  toggleOption(optionId) {
-    invariant(this.isList(), 'must be a list block to toggle list options');
-    const optionSet = new Set(this.options);
-    if (optionSet.has(optionId)) {
-      optionSet.delete(optionId);
-    } else {
-      optionSet.add(optionId);
+  //for list block authoring
+  removeOptions(...optionIds) {
+    const cloned = cloneDeep(this.options);
+    optionIds.forEach(id => {
+      delete cloned[id];
+    });
+
+    if (Object.keys(cloned).length === Object.keys(this.options).length) {
+      return this;
     }
-    return this.mutate('options', [...optionSet]);
+
+    return this.mutate('options', cloned);
   }
 
   /************
