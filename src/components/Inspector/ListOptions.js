@@ -22,7 +22,7 @@ export class ListOptions extends Component {
   render() {
     const { block, optionBlocks } = this.props;
     const { options } = block;
-    
+
     return (
       <div className="ListOptions">
         {optionBlocks.map(item => {
