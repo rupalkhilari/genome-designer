@@ -297,6 +297,7 @@ export const blockMoveComponent = (blockId, componentId, newIndex) => {
  Options
  ***************************************/
 
+//for authoring template
 export const blockOptionsAdd = (blockId, ...optionIds) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
@@ -311,6 +312,7 @@ export const blockOptionsAdd = (blockId, ...optionIds) => {
   };
 };
 
+//for authoring template
 export const blockOptionsRemove = (blockId, ...optionIds) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];

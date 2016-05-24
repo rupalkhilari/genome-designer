@@ -150,6 +150,7 @@ export default class Block extends Instance {
   //future - account for block.rules.filter
 
   addComponent(componentId, index) {
+    invariant(!this.isFixed(), 'Block is fixed - cannot add/remove/move components');
     invariant(!this.isList(), 'cannot add components to a list block');
     invariant(idValidator(componentId), 'must pass valid component ID');
     const spliceIndex = (Number.isInteger(index) && index >= 0) ? index : this.components.length;
@@ -159,6 +160,7 @@ export default class Block extends Instance {
   }
 
   removeComponent(componentId) {
+    invariant(!this.isFixed(), 'Block is fixed - cannot add/remove/move components');
     const spliceIndex = this.components.findIndex(compId => compId === componentId);
 
     if (spliceIndex < 0) {
@@ -173,6 +175,7 @@ export default class Block extends Instance {
 
   //pass index to be at after spliced out
   moveComponent(componentId, newIndex) {
+    invariant(!this.isFixed(), 'Block is fixed - cannot add/remove/move components');
     invariant(!this.isList(), 'cannot add components to a list block');
     const spliceFromIndex = this.components.findIndex(compId => compId === componentId);
 
