@@ -1,3 +1,4 @@
+import invariant from 'invariant';
 import * as blockSelectors from './blocks';
 
 const _getProjectFromStore = (projectId, store) => {
@@ -62,6 +63,24 @@ export const projectHasComponent = (projectId, blockId) => {
   return (dispatch, getState) => {
     const components = dispatch(projectListAllComponents(projectId));
     return components.map(comp => comp.id).includes(blockId);
+  };
+};
+
+export const projectHasOption = (projectId, blockId) => {
+  return (dispatch, getState) => {
+    const options = dispatch(projectListAllOptions(projectId));
+    return options.map(option => option.id).includes(blockId);
+  };
+};
+
+//check if a block with { source: { source: sourceKey, id: sourceId } } is present in the project (e.g. so dont clone it in more than once)
+//only checks options, since if its a component we should clone it
+//returns block if exists, or null
+export const projectGetOptionWithSource = (projectId, sourceKey, sourceId) => {
+  return (dispatch, getState) => {
+    invariant(sourceKey && sourceId, 'source key and ID are required');
+    const options = dispatch(projectListAllOptions(projectId));
+    return options.find(option => option.source.source === sourceKey && option.source.id === sourceId) || null;
   };
 };
 
