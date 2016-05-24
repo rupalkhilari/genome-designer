@@ -5,7 +5,7 @@ import ProjectDefinition from '../schemas/Project';
 import safeValidate from '../schemas/fields/safeValidate';
 import { id, version } from '../schemas/fields/validators';
 
-const idValidator = (id, required = false) => safeValidate(id(), required, id);
+const idValidator = (input, required = false) => safeValidate(id(), required, input);
 const versionValidator = (ver, required = false) => safeValidate(version(), required, ver);
 
 export default class Project extends Instance {
