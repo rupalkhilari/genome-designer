@@ -54,6 +54,10 @@ class OrderModal extends Component {
     if (!this.props.open) {
       return null;
     }
+    const leftText = ['', 'Change Settings', 'Review Assemblies'][this.state.page - 1];
+    const rightText = ['Review Assemblies', 'Order Details', ''][this.state.page - 1];
+    const titleText = ['Order DNA', 'Review Assemblies', 'Order Details'][this.state.page -1];
+
     return (<ModalWindow
       open={this.props.open}
       title="Order DNA"
@@ -63,14 +67,14 @@ class OrderModal extends Component {
       }}
       payload={
           <form className="gd-form order-form" onSubmit={this.onSubmit.bind(this)}>
-            <div className="title">Order DNA</div>
+            <div className="title">{titleText}</div>
             <div>
               <Page1 open={this.state.page === 1}/>
               <Page2 open={this.state.page === 2}/>
               <Page3 open={this.state.page === 3}/>
             </div>
             <div className="actions">
-              <NavLeftRight onClick={this.nav.bind(this, -1)} left={true} text="Nav Left" visible={this.state.page > 1}/>
+              <NavLeftRight onClick={this.nav.bind(this, -1)} left={true} text={leftText} visible={this.state.page > 1}/>
               <div className="buttons">
                 <button type="submit">Order</button>
                 <button
@@ -80,7 +84,7 @@ class OrderModal extends Component {
                   }}>Cancel
                 </button>
               </div>
-              <NavLeftRight onClick={this.nav.bind(this, 1)} left={false} text="Nav Right" visible={this.state.page < 3}/>
+              <NavLeftRight onClick={this.nav.bind(this, 1)} left={false} text={rightText} visible={this.state.page < 3}/>
             </div>
           </form>}
 
