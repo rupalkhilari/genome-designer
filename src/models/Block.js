@@ -42,6 +42,16 @@ export default class Block extends Instance {
     return super.clone(parentObject);
   }
 
+  mutate(...args) {
+    invariant(!this.isFixed(), 'cannot mutate a fixed block');
+    return super.mutate(...args);
+  }
+
+  merge(...args) {
+    invariant(!this.isFixed(), 'cannot mutate a fixed block');
+    return super.merge(...args);
+  }
+
   /************
    type checks
    ************/
