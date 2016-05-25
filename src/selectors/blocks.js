@@ -301,6 +301,7 @@ export const blockGetCombinations = (blockId, parameters = {}) => {
   return (dispatch, getState) => {
     const positions = dispatch(blockGetPositionalCombinations(blockId, false));
 
+    //guarantee both accumulator (and positions) array have at least one item to map over
     const first = positions.shift();
 
     //iterate through positions, essentially generating tree with * N branches for N options at position
