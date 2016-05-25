@@ -43,12 +43,12 @@ export default class Block extends Instance {
   }
 
   mutate(...args) {
-    invariant(!this.isFixed(), 'cannot mutate a fixed block');
+    invariant(!this.isFrozen(), 'cannot mutate a frozen block');
     return super.mutate(...args);
   }
 
   merge(...args) {
-    invariant(!this.isFixed(), 'cannot mutate a fixed block');
+    invariant(!this.isFrozen(), 'cannot mutate a frozen block');
     return super.merge(...args);
   }
 
