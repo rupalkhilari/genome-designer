@@ -43,6 +43,7 @@ const c = (term) => { //eslint-disable-line id-length
   const connector = new Block(merge({
     metadata: {
       name: `Connector ${term.toUpperCase()}`,
+      color: '#bababa',
     },
     rules: {
       frozen: true,
@@ -55,6 +56,7 @@ const c = (term) => { //eslint-disable-line id-length
 
 //pass strings for connectors, and numbers for parts
 //todo - need to handle hidden blocks (linkers)
+//todo - seems need to handle allowing specific parts, not only lists
 const makeComponents = (terms) => {
   return terms
     .map(term => Number.isInteger(term) ? p(term) : c(term))
