@@ -1,14 +1,14 @@
 import connectors from './connectors';
 import parts from './parts';
 import Block from '../../models/Block';
-import { flatten, merge } from 'lodash';
+import { merge } from 'lodash';
 
 const blocksCreated = [];
 
 // number
 const getOptionParts = (pos) => {
   return parts.filter(part => part.metadata.egfPosition === `${pos}`)
-    .reduce((acc, part, index) => Object.assign(acc, { [part.id]: false }), {});
+    .reduce((acc, part, index) => Object.assign(acc, { [part.id]: index === 0 }), {});
 };
 
 // string
