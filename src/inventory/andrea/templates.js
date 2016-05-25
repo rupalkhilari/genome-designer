@@ -45,7 +45,7 @@ const c = (term) => { //eslint-disable-line id-length
       name: `Connector ${term.toUpperCase()}`,
     },
     rules: {
-      fixed: true,
+      frozen: true,
     },
   }, getConnector(term)));
 
