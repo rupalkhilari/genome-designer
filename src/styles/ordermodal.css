@@ -4,14 +4,53 @@
 .order-form {
   width: 70rem;
 
+  .order-page {
+    width: 100%;
+    padding: 0;
+    margin: 0;
+  }
+
+  .row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--fontsize);
+    width: 100%;
+    padding: 0;
+    margin: 0;
+
+    /*remove default padding / margin from form css*/
+    * {
+       margin: 0;
+       padding: 0;
+    }
+  }
+  .row-left {
+    text-align: right;
+    color: var(--textcolor);
+    margin: 0 1rem 0 0;
+  }
+  .row-right {
+    text-align: left;
+    color: var(--textcolor);
+  }
+
+  .page1 .row {
+    margin-bottom: 1rem;
+  }
+  .page3 .row {
+    margin-bottom: 0.5rem;
+  }
+
   .actions {
     display: flex;
     justify-content: space-between;
   }
+
   .buttons {
     text-align: center;
   }
-  
+
   .disabled {
     pointer-events: none;
   }
@@ -38,7 +77,7 @@
       text-align: right;
     }
     .text {
-      font-size: 1rem;
+      font-size: var(--fontsize);
       text-align: center;
       line-height: 1rem;
       margin: 0;

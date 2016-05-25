@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import Row from './row';
 
 import '../../../src/styles/form.css';
 import '../../../src/styles/ordermodal.css';
@@ -24,12 +25,13 @@ class Page1 extends Component {
     }
 
     return (
-      <div className="order-page">
-        <p>Page 1</p>
-        <br/>
-        <br/>
-        <br/>
-        <br/>
+      <div className="order-page page1">
+        <Row text="Label:" widget={(<input/>)}/>
+        <Row text="Contact Email" widget={(<input/>)}/>
+        <Row text="Assembly Containers:" widget={(<div>Value of item 1</div>)}/>
+        <Row text="Number of assemblies:" widget={(<div>Value of item 1</div>)}/>
+        <Row text="Combinatorial method:" widget={(<div>Value of item 1</div>)}/>
+        <Row text="After fabrication:" widget={(<input type="checkbox"/>)}/>
         <br/>
       </div>
     )
