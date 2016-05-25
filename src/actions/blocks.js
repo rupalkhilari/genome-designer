@@ -408,24 +408,6 @@ export const blockSetRole = (blockId, role) => {
   };
 };
 
-//todo - this should not be an action + unclear name. It is too simply composed of existing atomic actions... prevent API bloat
-/**
- * e.g. when the user drop an role symbol on an existing block.
- * Create a new child block and set the given role symbol
- */
-export const blockAddSbol = (blockId, role) => {
-  return (dispatch, getState) => {
-    dispatch(undoActions.transact());
-    const oldBlock = getState().blocks[blockId];
-    const newBlock = dispatch(blockCreate());
-    dispatch(blockSetRole(newBlock.id, role));
-    dispatch(blockAddComponent(oldBlock.id, newBlock.id, oldBlock.components.length));
-    //end transaction
-    dispatch(undoActions.commit());
-    return newBlock;
-  };
-};
-
 /***************************************
  * annotations
  ***************************************/

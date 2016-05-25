@@ -13,7 +13,6 @@ import {
   blockAddComponents,
   blockClone,
   blockSetRole,
-  blockAddSbol,
   blockRename,
   blockRemoveComponent,
 } from '../../../actions/blocks';
@@ -66,7 +65,6 @@ export class ConstructViewer extends Component {
     uiShowDNAImport: PropTypes.func,
     blockRemoveComponent: PropTypes.func,
     blockGetParents: PropTypes.func,
-    blockAddSbol: PropTypes.func,
     projectGetVersion: PropTypes.func,
     projectRemoveConstruct: PropTypes.func,
     blocks: PropTypes.object,
@@ -523,7 +521,6 @@ export default connect(mapStateToProps, {
   blockRemoveComponent,
   blockGetParents,
   blockSetRole,
-  blockAddSbol,
   blockRename,
   focusBlocks,
   focusBlocksAdd,
