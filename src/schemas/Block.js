@@ -13,8 +13,7 @@ import RulesDefintion from './Rules';
 
  Blocks may have a `sequence`, which is a reference to a file and associated annotations, and if so should reference their source (e.g. foundry, NCBI) whence they came.
 
- Blocks can define `rules`, to which direct descendent blocks must adhere. For example, bounds to GC content, whether locations are fixed, filters for allowed blocks. The type is the key, the rule is the value (heterogeneous formats)
- //todo- determine whether rules should inherit
+ Blocks can define `rules`, to which direct descendent blocks must adhere. For example, bounds to GC content, whether locations are fixed, filters for allowed blocks. The type is the key, the rule is the value (heterogeneous formats). Currently, rules only apply to direct descendents in the design canvas.
 
  List Blocks allow for combinatorial logic, where multiple blocks can be associated as combinatorial `options` for this block. A block cannot be both a list block and have components.
 
@@ -23,14 +22,14 @@ import RulesDefintion from './Rules';
 
 const BlockDefinition = InstanceDefinition.extend({
   id: [
-    fields.id({prefix: 'block'}).required,
+    fields.id({ prefix: 'block' }).required,
     'Block UUID',
   ],
 
   projectId: [
-    fields.id({prefix: 'project'}),
+    fields.id({ prefix: 'project' }),
     'Project UUID',
-    {avoidScaffold: true},
+    { avoidScaffold: true },
   ],
 
   sequence: [
@@ -48,7 +47,7 @@ const BlockDefinition = InstanceDefinition.extend({
 
   rules: [
     RulesDefintion,
-    `Grammar/rules governing the whole Block`,
+    `Grammar/rules governing the whole Block and direct descendants`,
   ],
 
   components: [
@@ -57,8 +56,8 @@ const BlockDefinition = InstanceDefinition.extend({
   ],
 
   options: [
-    fields.arrayOf(validators.id()).required,
-    `Array of Blocks that form the List Block, if rules.isList === true `,
+    fields.object().required,
+    `Map of Blocks that form the List Block, if rules.isList === true, where keys are block IDs possible and key is boolean whether selected`,
   ],
 
   notes: [

@@ -51,7 +51,7 @@ export default class SchemaDefinition {
       const isValid = validator(instanceFieldValue);
 
       if (!isValid) {
-        const errorMessage = `Invalid: Field ${field.name} of type ${field.type}. Got ${instanceFieldValue}. [${field.description || field.typeDescription}]`;
+        const errorMessage = `Invalid: Field ${field.name} of type ${field.type}. Got ${instanceFieldValue} (${typeof instanceFieldValue}). [${field.description || field.typeDescription}]`;
 
         if (shouldThrow) {
           throw Error(errorMessage);

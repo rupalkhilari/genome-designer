@@ -46,6 +46,8 @@ export default class Block extends Instance {
    type checks
    ************/
 
+  //isSpec() can't exist here, since dependent on children. use selector blockIsSpec instead.
+
   isConstruct() {
     return this.components.length > 0;
   }
@@ -145,10 +147,12 @@ export default class Block extends Instance {
    components
    ************/
 
-  //todo - account for block.rules.filter
+  //future - account for block.rules.filter
 
   addComponent(componentId, index) {
+    invariant(!this.isFixed(), 'Block is fixed - cannot add/remove/move components');
     invariant(!this.isList(), 'cannot add components to a list block');
+    invariant(idValidator(componentId), 'must pass valid component ID');
     const spliceIndex = (Number.isInteger(index) && index >= 0) ? index : this.components.length;
     const newComponents = this.components.slice();
     newComponents.splice(spliceIndex, 0, componentId);
@@ -156,6 +160,7 @@ export default class Block extends Instance {
   }
 
   removeComponent(componentId) {
+    invariant(!this.isFixed(), 'Block is fixed - cannot add/remove/move components');
     const spliceIndex = this.components.findIndex(compId => compId === componentId);
 
     if (spliceIndex < 0) {
@@ -170,6 +175,7 @@ export default class Block extends Instance {
 
   //pass index to be at after spliced out
   moveComponent(componentId, newIndex) {
+    invariant(!this.isFixed(), 'Block is fixed - cannot add/remove/move components');
     invariant(!this.isList(), 'cannot add components to a list block');
     const spliceFromIndex = this.components.findIndex(compId => compId === componentId);
 
@@ -191,36 +197,50 @@ export default class Block extends Instance {
    list block
    ************/
 
-  //todo - account for block.rules.filter
+  //future  - account for block.rules.filter
 
-  addOptions(...optionId) {
-    invariant(this.isList(), 'must be a list block to add list options');
-    const newOptions = this.options.slice();
-    newOptions.push(...optionId);
-    return this.mutate('options', newOptions);
+  //for template usage i.e. the options have already been set
+  toggleOptions(...optionIds) {
+    invariant(this.isList(), 'must be a list block to toggle list options');
+    invariant(optionIds.every(optionId => Object.prototype.hasOwnProperty.call(this.options, optionId)), 'Option ID must be present to toggle it');
+
+    const options = cloneDeep(this.options);
+    optionIds.forEach(optionId => {
+      Object.assign(options, { [optionId]: !this.options[optionId] });
+    });
+    return this.mutate('options', options);
   }
 
-  removeOptions(...optionId) {
-    const blockIdSet = new Set(optionId);
-    const without =
-      [...new Set(this.options.filter(x => !blockIdSet.has(x)))];
+  //for list block authoring
+  addOptions(...optionIds) {
+    invariant(this.isList(), 'must be a list block to add list options');
+    invariant(optionId.every(option => idValidator(option)), 'must pass component IDs');
+    const toAdd = optionIds.reduce((acc, id) => Object.assign(acc, { [id]: false }));
+    const newOptions = Object.assign(cloneDeep(this.options), toAdd);
 
-    if (without.length === this.options.length) {
+    if (Object.keys(newOptions).length === Object.keys(this.options).length) {
       return this;
     }
 
-    return this.mutate('options', without);
+    return this.mutate('options', newOptions);
   }
 
-  toggleOption(optionId) {
-    invariant(this.isList(), 'must be a list block to toggle list options');
-    const optionSet = new Set(this.options);
-    if (optionSet.has(optionId)) {
-      optionSet.delete(optionId);
-    } else {
-      optionSet.add(optionId);
+  //for list block authoring
+  removeOptions(...optionIds) {
+    const cloned = cloneDeep(this.options);
+    optionIds.forEach(id => {
+      delete cloned[id];
+    });
+
+    if (Object.keys(cloned).length === Object.keys(this.options).length) {
+      return this;
     }
-    return this.mutate('options', [...optionSet]);
+
+    return this.mutate('options', cloned);
+  }
+
+  getSelectedOptions() {
+    return Object.keys(this.options).filter(id => this.options[id]);
   }
 
   /************
@@ -270,7 +290,13 @@ export default class Block extends Instance {
           length: sequenceLength,
           initialBases: sequence.substr(0, 5),
         };
-        return this.merge({ sequence: updatedSequence });
+        return this.merge({
+          sequence: updatedSequence,
+          source: {
+            source: 'user',
+            id: null,
+          },
+         });
       });
   }
 

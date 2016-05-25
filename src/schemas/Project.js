@@ -29,11 +29,6 @@ const ProjectDefinition = InstanceDefinition.extend({
     fields.object().required,
     `Settings associated with this project`,
   ],
-
-  orders: [
-    fields.arrayOf(validators.id()).required,
-    `List of IDs of orders initiated by this project`,
-  ],
 });
 
 export default ProjectDefinition;
