@@ -1,3 +1,49 @@
+@import './variables.css';
+@import './form.css';
+
 .order-form {
-  width: 600px;
+  width: 70rem;
+
+  .actions {
+    display: flex;
+    justify-content: space-between;
+  }
+  .buttons {
+    text-align: center;
+  }
+  
+  .disabled {
+    pointer-events: none;
+  }
+
+  .nav-left-right {
+    width: 22rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--textcolor);
+    cursor: pointer;
+
+    &:hover {
+      background-color: whitesmoke;
+    }
+
+    .chevron {
+      font-size: 4rem;
+      font-family: Arial;
+      width:2rem;
+    }
+    .right {
+      text-align: right;
+    }
+    .text {
+      font-size: 1rem;
+      text-align: center;
+      line-height: 1rem;
+      margin: 0;
+      padding: 0;
+    }
+  }
+
 }
