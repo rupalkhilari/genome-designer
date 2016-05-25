@@ -13,7 +13,6 @@ import {
   blockAddComponents,
   blockClone,
   blockSetRole,
-  blockAddSbol,
   blockRename,
   blockRemoveComponent,
 } from '../../../actions/blocks';
@@ -66,7 +65,6 @@ export class ConstructViewer extends Component {
     uiShowDNAImport: PropTypes.func,
     blockRemoveComponent: PropTypes.func,
     blockGetParents: PropTypes.func,
-    blockAddSbol: PropTypes.func,
     projectGetVersion: PropTypes.func,
     projectRemoveConstruct: PropTypes.func,
     blocks: PropTypes.object,
@@ -404,27 +402,38 @@ export class ConstructViewer extends Component {
     // get the immediate parent ( which might not be the top level block if this is a nested construct )
     let parent = insertionPoint ? this.getBlockParent(insertionPoint.block) : this.props.construct;
     if (type === roleDragType) {
+      // create new block with correct type of sbol symbo
+      const droppedBlock = this.props.blockCreate({ rules: { role: item.id } });
       // insert next to block, inject into a block, or add as the first block of an empty construct
       if (insertionPoint) {
         if (insertionPoint.edge) {
-          // create new block
-          const block = this.props.blockCreate({ rules: { role: item.id } });
           // get index of insertion allowing for the edge closest to the drop if provided
           index = parent.components.indexOf(insertionPoint.block) + (insertionPoint.edge === 'right' ? 1 : 0);
-          // add
-          this.props.blockAddComponent(parent.id, block.id, index);
-          // return the newly created block or the block dropped on
-          return [block.id];
+          this.props.blockAddComponent(parent.id, droppedBlock.id, index);
+        } else {
+          // if the dropped block has sequence data then push down that block and the dropped block
+          // ( if the block has sequence its components should currently be empty )
+          const oldParent = parent;
+          parent = this.props.blocks[insertionPoint.block];
+          if (parent.hasSequence()) {
+            // create a new parent for the old parent and the dropped item
+            const block = this.props.blockCreate();
+            const replaceIndex = oldParent.components.indexOf(parent.id);
+            this.props.blockRemoveComponent(oldParent.id, parent.id);
+            this.props.blockAddComponent(oldParent.id, block.id, replaceIndex);
+            // now add the two blocks to the new parent
+            this.props.blockAddComponents(block.id, [parent.id, droppedBlock.id]);
+          } else {
+            // we can just add the dropped item into the components of the parent
+            this.props.blockAddComponent(parent.id, droppedBlock.id, parent.components.length);
+          }
         }
-        // drop on existing block
-        const newBlock = this.props.blockAddSbol(insertionPoint.block, item.id);
-        return [newBlock.id];
+        // return the dropped block for selection
+        return [droppedBlock.id];
       }
-      // create new block
-      const block = this.props.blockCreate({ rules: { role: item.id } });
       // the construct must be empty, add as the first child of the construct
-      this.props.blockAddComponent(parent.id, block.id, 0);
-      return [block.id];
+      this.props.blockAddComponent(parent.id, droppedBlock.id, 0);
+      return [droppedBlock.id];
     }
 
     // this will become the new blocks we are going to insert, declare here first
@@ -512,7 +521,6 @@ export default connect(mapStateToProps, {
   blockRemoveComponent,
   blockGetParents,
   blockSetRole,
-  blockAddSbol,
   blockRename,
   focusBlocks,
   focusBlocksAdd,
