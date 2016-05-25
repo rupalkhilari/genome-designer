@@ -252,25 +252,63 @@ export const blockFlattenConstruct = (blockId) => {
 };
 
 /*
-returns 2D array of block combinations (omitting hidden blocks), e.g.
-[
-  [block], // a single part with sequence
-  [block, block, block], // a block with 3 options
-]
+ returns 2D array - based on position - of block combinations (omitting hidden blocks), e.g.
+
+ given:
+ A: { sequence }                                        //single part
+ B: { options: {2: true, 3: true, 4: true, 5: false } } //list block with 3 selected options
+ C: { options: { 6: true } }                            //list block, one option
+
+ generates:
+ [
+   [A],
+   [block2, block3, block4],
+   [block6],
+ ]
  */
-export const blockGetCombinations = (blockId, includeUnselected) => {
+export const blockGetPositionalCombinations = (blockId, includeUnselected = false) => {
   return (dispatch, getState) => {
     invariant(dispatch(blockIsSpec(blockId)), 'block must be a spec to get combinations');
 
     const state = getState();
 
-    //first, flatten construct so just parts + list blocks
-    const flattened = _flattenConstruct(blockId, state);
-
     //generate 2D array, outer array for positions, inner array with lists of parts
-    return flattened.map(block => block.isList() ?
-      values(_getOptions(block.id, state, includeUnselected)) :
-      [block]
-    );
+    return _flattenConstruct(blockId, state)
+      .map(block => block.isList() ?
+        values(_getOptions(block.id, state, includeUnselected)) :
+        [block]
+      );
   };
 };
+
+/*
+ returns 2D array - based on position - of block combinations (omitting hidden blocks), e.g.
+
+ given:
+ A: { sequence }                                        //single part
+ B: { options: {2: true, 3: true, 4: true, 5: false } } //list block with 3 selected options
+ C: { options: { 6: true } }                            //list block, one option
+
+ generates:
+ [
+   [A, block2, block6],
+   [A, block3, block6],
+   [A, block4, block6],
+ ]
+ */
+//todo - parameters for limiting number combinations, how to select them
+export const blockGetCombinations = (blockId, parameters = {}) => {
+  return (dispatch, getState) => {
+    const positions = dispatch(blockGetPositionalCombinations(blockId, false));
+
+    const first = positions.shift();
+
+    //iterate through positions, essentially generating tree with * N branches for N options at position
+    return positions.reduce((acc, position) => {
+      // for each extant construct, create one variant which adds each part respectively
+      // flatten them for return and repeat!
+      return flatten(position.map(option => acc.map(partialConstruct => partialConstruct.concat(option))));
+    }, [first]);
+  };
+};
+
