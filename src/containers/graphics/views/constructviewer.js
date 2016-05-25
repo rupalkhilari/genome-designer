@@ -473,7 +473,7 @@ export class ConstructViewer extends Component {
     const blocks = Array.isArray(payload.item) ? payload.item : [payload.item];
     // return the list of newly added blocks so we can select them for example
     blocks.forEach(block => {
-      const newBlock = (payload.source === 'inventory' || payload.source === 'inventory construct' || payload.copying)
+      const newBlock = (payload.source === 'inventory' || payload.copying)
         ? this.props.blockClone(block)
         : this.props.blocks[block];
       newBlocks.push(newBlock.id);

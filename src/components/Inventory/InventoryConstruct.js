@@ -26,20 +26,25 @@ export class InventoryConstruct extends Component {
     focusForceBlocks: PropTypes.func.isRequired,
   };
 
+  shouldRenderAsConstruct(props = this.props) {
+    const { isConstruct, isTemplate } = props;
+    return isConstruct && !isTemplate;
+  }
+
   componentDidMount() {
-    if (this.props.isConstruct) {
+    if (this.shouldRenderAsConstruct()) {
       this.registerMouseTrap();
     }
   }
 
   componentDidUpdate(prevProps) {
     //dispose if no longer construct
-    if (prevProps.isConstruct && !this.props.isConstruct) {
+    if (this.shouldRenderAsConstruct(prevProps) && !this.shouldRenderAsConstruct()) {
       this.mouseTrap.dispose();
     }
 
     //register if construct now
-    if (!prevProps.isConstruct && this.props.isConstruct) {
+    if (!this.shouldRenderAsConstruct(prevProps) && this.shouldRenderAsConstruct()) {
       this.registerMouseTrap();
     }
   }
@@ -64,7 +69,7 @@ export class InventoryConstruct extends Component {
     DnD.startDrag(this.makeDnDProxy(), globalPoint, {
       item: block,
       type: blockDragType,
-      source: 'inventory construct', //todo - why does this exist?
+      source: 'inventory',
       undoRedoTransaction: true,
     });
   }
@@ -84,7 +89,7 @@ export class InventoryConstruct extends Component {
     const { blockId, block, isConstruct, isTemplate, isActive, focusForceBlocks, ...rest } = this.props;
 
     //use !isConstruct so short circuit, to avoid calling ref in InventoryListGroup (will be null if never mounted, cause errors)
-    const innerContent = (!isConstruct || isTemplate)
+    const innerContent = !this.shouldRenderAsConstruct()
       ?
       <InventoryItemBlock block={block}
                           isTemplate={isTemplate}
