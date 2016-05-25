@@ -2,6 +2,7 @@ import Block from '../models/Block';
 import Project from '../models/Project';
 
 import parts from '../inventory/andrea/parts';
+import { templates, allBlocks } from '../inventory/andrea/templates';
 
 const lists = ['1', '2', '3', '4', '5', '6', '7', '8'].map(pos => {
   const filtered = parts.filter(part => part.metadata.egfPosition === pos);
@@ -47,12 +48,13 @@ const proj = new Project({
   metadata: {
     name: 'Combinatorial Demo',
   },
-  components: [construct.id],
+  components: [construct.id, ...templates.map(template => template.id)],
 });
 
 export const blocks = [
   construct,
   ...lists,
+  ...allBlocks,
 ];
 
 export const project = proj;
