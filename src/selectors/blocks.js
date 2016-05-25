@@ -282,7 +282,7 @@ export const blockGetPositionalCombinations = (blockId, includeUnselected = fals
 };
 
 /*
- returns 2D array - based on position - of block combinations (omitting hidden blocks), e.g.
+ returns 2D array of all possible constructs, flattened, and with options unfurled
 
  given:
  A: { sequence }                                        //single part
