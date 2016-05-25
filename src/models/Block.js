@@ -239,8 +239,8 @@ export default class Block extends Instance {
     return this.mutate('options', cloned);
   }
 
-  getSelectedOptions() {
-    return Object.keys(this.options).filter(id => this.options[id]);
+  getOptions(includeUnselected = false) {
+    return Object.keys(this.options).filter(id => this.options[id] || (includeUnselected === true));
   }
 
   /************

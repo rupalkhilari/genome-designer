@@ -21,14 +21,16 @@ const lists = ['1', '2', '3', '4', '5', '6', '7', '8'].map(pos => {
   });
 });
 
-lists.splice(0, 0, new Block({
-  metadata: {
-    name: `Hidden Block`,
-  },
-  rules: {
-    hidden: true,
-  },
-}));
+[0, 2, 4].forEach(index => {
+  lists.splice(index, 0, new Block({
+    metadata: {
+      name: `Hidden Block`,
+    },
+    rules: {
+      hidden: true,
+    },
+  }));
+});
 
 const construct = new Block({
   metadata: {
