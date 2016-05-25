@@ -154,7 +154,7 @@ export const snapshot = (projectId, message = 'Project Snapshot', rollup = {}) =
     });
 };
 
-//todo - remove from cache? impact on undo?
+//todo - remove from cache? impact on undo? this should probably change the route, which would kill undo stack, which is probably not ok.
 export const deleteProject = (projectId) => {
   invariant(projectId, 'Project ID required to delete');
 
@@ -167,13 +167,23 @@ export const deleteProject = (projectId) => {
 /***** loading / saving - not rollups *****/
 
 //Promise
-//returns object { <blockId> : <block> } including the parent requested
-export const loadBlock = (blockId, withComponents = false, projectId = 'block') => {
+// returns object {
+//   components : { <blockId> : <block> } //including the parent requested
+//   options: { <blockId> : <block> }
+// }
+export const loadBlock = (blockId, withContents = false, onlyComponents = false, projectId = 'block') => {
   invariant(projectId, 'Project ID is required');
   invariant(blockId, 'Block ID is required');
 
-  if (withComponents === true) {
-    return infoQuery('components', blockId);
+  if (withContents === true) {
+    if (onlyComponents === true) {
+      return infoQuery('components', blockId)
+        .then(components => ({
+          components,
+          options: {},
+        }));
+    }
+    return infoQuery('contents', blockId);
   }
 
   const url = dataApiPath(`${projectId}/${blockId}`);

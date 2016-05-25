@@ -117,11 +117,37 @@ router.route('/sequence/:md5/:blockId?')
     res.status(403).send('Not allowed to delete sequence');
   });
 
+router.route('/order/:projectId/:orderId?')
+  .all(jsonParser)
+  .get((req, res, next) => {
+    const { user, projectId } = req;
+    const { orderId } = req.params;
+
+    //todo - if no order ID, get list of orders
+
+    //todo - get the order and return it
+    res.status(402).send();
+  })
+  .post((req, res, next) => {
+    const { user, projectId } = req;
+    const { orderId } = req.params;
+    const order = req.body;
+
+    //todo
+    // validate order
+    // this should only be called when it is submitted... dont want incomplete ones saved
+    // add to project folder
+    res.status(402).send();
+  });
+
 router.route('/info/:type/:detail?')
   .all(jsonParser)
   .get((req, res, next) => {
     const { user } = req;
     const { type, detail } = req.params;
+
+    //expect blockIds, not projectId
+    //todo - ideally would pass in the project on all of these so dont need to look it up each time... should have it when make the reuqest anyway
 
     switch (type) {
     case 'role' :
@@ -135,10 +161,18 @@ router.route('/info/:type/:detail?')
           .catch(err => next(err));
       }
       break;
+    case 'contents' :
+      rollup.getContents(detail)
+        .then(info => res.status(200).json(info))
+        .catch(err => next(err));
+      break;
     case 'components' :
-      //todo - support a project, but for now expect this to be a block (and not validating)
-      //todo - permissions check
-      rollup.getComponentsRecursively(detail)
+      rollup.getComponents(detail)
+        .then(info => res.status(200).json(info))
+        .catch(err => next(err));
+      break;
+    case 'options' :
+      rollup.getOptions(detail)
         .then(info => res.status(200).json(info))
         .catch(err => next(err));
       break;
@@ -148,7 +182,7 @@ router.route('/info/:type/:detail?')
   });
 
 // routes for non-atomic operations
-// response/request with data in format {project: {}, blocks: [], ...}
+// response/request with data in rollup format {project: {}, blocks: [], ...}
 // e.g. used in autosave, loading / saving whole project
 router.route('/projects/:projectId')
   .all(jsonParser, permissionsMiddleware)
@@ -275,6 +309,8 @@ router.route('/:projectId/:blockId')
       .catch(err => next(err));
   });
 
+//todo - should probably validate message body is project / param is actually an ID (or use a regex) for this catch-all route
+
 router.route('/:projectId')
   .all(permissionsMiddleware)
   .get((req, res, next) => {
@@ -324,7 +360,7 @@ router.route('/:projectId')
     const { projectId } = req;
 
     persistence.projectDelete(projectId)
-      .then(() => res.status(200).json({projectId}))
+      .then(() => res.status(200).json({ projectId }))
       .catch(err => next(err));
   });
 

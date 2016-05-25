@@ -140,7 +140,7 @@ export default class Layout {
   updateListForBlock(block, pW) {
     const parentNode = this.nodeFromElement(block.id);
 
-    block.options.forEach((blockId, index) => {
+    Object.keys(block.options).filter(opt => block.options[opt]).forEach((blockId, index) => {
       // ensure we have a hash of list nodes for this block.
       let nodes = this.listNodes[block.id];
       if (!nodes) {
@@ -585,7 +585,7 @@ export default class Layout {
       const node = this.nodeFromElement(part);
       const block = this.blocks[part];
       const name = this.partName(part);
-      const listN = block.options ? block.options.length : 0;
+      const listN = Object.keys(block.options).filter(opt => block.options[opt]).length;
 
       // set role part name if any
       node.set({
@@ -606,7 +606,7 @@ export default class Layout {
       }
 
       // measure the max required width of any list blocks
-      block.options.forEach(blockId => {
+      Object.keys(block.options).filter(opt => block.options[opt]).forEach(blockId => {
         td.x = Math.max(td.x, this.measureText(node, this.getListBlock(blockId).metadata.name).x);
       });
 

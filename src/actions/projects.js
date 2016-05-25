@@ -127,6 +127,21 @@ export const projectLoad = (projectId) => {
   };
 };
 
+//Promise
+//default to most recent project if falsy
+export const projectOpen = (inputProjectId) => {
+  return (dispatch, getState) => {
+    //save the current project
+    return dispatch(projectSave())
+      .then(() => {
+        //dont need to load the project, projectPage will handle that
+        const projectId = !!inputProjectId ? inputProjectId : getItem(recentProjectKey);
+        //alternatively, we can just call react-router's browserHistory.push() directly
+        dispatch(push(`/project/${projectId}`));
+      });
+  };
+};
+
 //create a new project
 export const projectCreate = (initialModel) => {
   return (dispatch, getState) => {
@@ -208,22 +223,7 @@ export const projectAddConstruct = (projectId, componentId, forceProjectId = fal
   };
 };
 
-//Promise
-//default to most recent project if falsy
-export const projectOpen = (inputProjectId) => {
-  return (dispatch, getState) => {
-    //save the current project
-    return dispatch(projectSave())
-      .then(() => {
-        //dont need to load the project, projectPage will handle that
-        const projectId = !!inputProjectId ? inputProjectId : getItem(recentProjectKey);
-        //alternatively, we can just call react-router's browserHistory.push() directly
-        dispatch(push(`/project/${projectId}`));
-      });
-  };
-};
-
-//Adds a construct to a project. Does not create the construct. Use blocks.js
+//Removes a construct from a project.
 export const projectRemoveConstruct = (projectId, componentId) => {
   return (dispatch, getState) => {
     const oldProject = getState().projects[projectId];

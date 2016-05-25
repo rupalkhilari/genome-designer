@@ -1,6 +1,5 @@
 import invariant from 'invariant';
 import BlockDefinition from '../schemas/Block';
-import { get as pathGet } from 'lodash';
 
 /***************************************
  * Parent accessing / store knowledge-requiring
@@ -158,17 +157,26 @@ export const blockGetIndex = (blockId) => {
 };
 
 const _checkSingleBlockIsSpec = (block) => {
-  return (!block.options.length) && (block.sequence.length > 0);
+  invariant(!block.isList() && !block.isConstruct(), 'list blocks + constructs are not specs');
+  return block.sequence.length > 0;
 };
 
 export const blockIsSpec = (blockId) => {
   return (dispatch, getState) => {
     const store = getState();
     const block = _getBlockFromStore(blockId, store);
+
+    if (block.isList()) {
+      const selectedIds = block.getSelectedOptions();
+      //future - if allow constructs as options, need to better check options
+      return selectedIds.length > 0 && selectedIds.map(id => _getBlockFromStore(id, store)).every(_checkSingleBlockIsSpec);
+    }
+
     if (block.components.length) {
       return _filterToLeafNodes(_getAllChildren(blockId, store))
         .every(_checkSingleBlockIsSpec);
     }
+
     return _checkSingleBlockIsSpec(block);
   };
 };
@@ -186,6 +194,8 @@ export const blockHasSequence = blockId => {
   };
 };
 
+/*
+deprecated filters for now
 //expects object block.rules.filter
 export const blockGetFiltered = filters => {
   return (dispatch, getState) => {
@@ -202,3 +212,4 @@ export const blockGetFiltered = filters => {
       });
   };
 };
+*/
