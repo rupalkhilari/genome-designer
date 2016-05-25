@@ -25,6 +25,10 @@ export default function modals(state = initialState, action) {
     const { showDNAImport } = action;
     return Object.assign({}, state, { showDNAImport });
 
+  case ActionTypes.UI_SHOW_ORDER_FORM:
+    const { showOrderForm } = action;
+    return Object.assign({}, state, { showOrderForm });
+
   case ActionTypes.UI_SHOW_ABOUT:
     const { showAbout } = action;
     return Object.assign({}, state, { showAbout });
