@@ -9,6 +9,7 @@ import InventoryItem from './InventoryItem';
 
 export default class InventoryItemBlock extends Component {
   static propTypes = {
+    isTemplate: PropTypes.bool,
     block: (props, propName) => {
       if (!(Block.validate(props[propName]) && props[propName] instanceof Block)) {
         return new Error('must pass a real block (Block model) to InventoryItemBlock');
@@ -21,13 +22,14 @@ export default class InventoryItemBlock extends Component {
   }
 
   render() {
-    const { block, ...rest } = this.props;
+    const { block, isTemplate, ...rest } = this.props;
 
     return (
       <div className="InventoryItemBlock">
         <InventoryItem {...rest}
           inventoryType={blockDragType}
           defaultName={block.getName()}
+          glyph={isTemplate ? '🔒' : null}
           item={block}/>
       </div>
     );
