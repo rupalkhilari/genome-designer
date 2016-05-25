@@ -201,13 +201,12 @@ export const blockIsSpec = (blockId) => {
     const flattened = _flattenConstruct(blockId, store);
 
     return flattened.every(block => {
-      return block.isList()
-        ?
-        //pass true, since all list block options should be a spec anyway
-        values(_getOptions(block.id, store, true))
-          .every(selectedBlock => _checkSingleBlockIsSpec(selectedBlock))
-        :
-        _checkSingleBlockIsSpec(block);
+      if (block.isList()) {
+        //only want selected options
+        const options = values(_getOptions(block.id, store, false));
+        return options.length > 0 && options.every(selectedBlock => _checkSingleBlockIsSpec(selectedBlock));
+      }
+      return _checkSingleBlockIsSpec(block);
     });
   };
 };
