@@ -18,7 +18,7 @@ const getConnector = (term) => {
   const isPos = !isNaN(parseInt(term[0], 10));
   return connectors.find(conn => isPos ?
     conn.metadata.egfPosition === `${term}` :
-    conn.metadata.name === `conn ${term.toUpperCase}`
+    conn.metadata.name === `conn ${term.toUpperCase()}`
   );
 };
 
@@ -39,16 +39,19 @@ const p = (pos) => { //eslint-disable-line id-length
 };
 
 // create block which is connector
+// todo - should update connectors themselves to be frozen
 const c = (term) => { //eslint-disable-line id-length
-  const connector = new Block(merge({
-    metadata: {
-      name: `Connector ${term.toUpperCase()}`,
-      color: '#bababa',
+  const connector = new Block(merge({},
+    getConnector(term),
+    {
+      metadata: {
+        color: '#bababa',
+      },
+      rules: {
+        frozen: true,
+      },
     },
-    rules: {
-      frozen: true,
-    },
-  }, getConnector(term)));
+  ));
 
   blocksCreated.push(connector);
   return connector;
