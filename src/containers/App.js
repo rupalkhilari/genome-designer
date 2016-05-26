@@ -52,7 +52,7 @@ class App extends Component {
         <ImportGenBankModal currentProjectId={this.props.currentProjectId}/>
         <ImportDNAForm />
         <AboutForm />
-        <OrderModal />
+        <OrderModal projectId={this.props.currentProjectId} />
         <div className="App-pageContent">
           {this.props.children}
         </div>

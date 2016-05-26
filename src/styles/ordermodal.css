@@ -8,6 +8,7 @@
     width: 100%;
     padding: 0;
     margin: 0;
+    height: 24rem;
   }
 
   .row {
@@ -25,6 +26,14 @@
        padding: 0;
     }
   }
+  .row .row-checkbox {
+    display: flex;
+    align-items: center;
+
+    input {
+      width: 2rem;
+    }
+  }
   .row-left {
     text-align: right;
     color: var(--textcolor);
@@ -36,7 +45,7 @@
   }
 
   .page1 .row {
-    margin-bottom: 1rem;
+    height: 3.5rem;
   }
   .page3 .row {
     margin-bottom: 0.5rem;

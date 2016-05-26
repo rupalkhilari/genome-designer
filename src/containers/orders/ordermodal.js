@@ -9,6 +9,8 @@ import Page1 from './page1';
 import Page2 from './page2';
 import Page3 from './page3';
 import NavLeftRight from './nav-left-right';
+import Order from '../../models/Order';
+import { projectGetVersion } from '../../selectors/projects';
 
 import '../../../src/styles/form.css';
 import '../../../src/styles/ordermodal.css';
@@ -19,6 +21,8 @@ class OrderModal extends Component {
     uiShowOrderForm: PropTypes.func.isRequired,
     open: PropTypes.bool.isRequired,
     uiSetGrunt: PropTypes.func.isRequired,
+    projectId: PropTypes.string.isRequired,
+    projectGetVersion: PropTypes.func.isRequired,
   };
 
   constructor() {
@@ -41,11 +45,15 @@ class OrderModal extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    // page 1 on opening
+    // page 1 on opening and create order
     if (!this.props.open && nextProps.open) {
       this.setState({
         page: 1,
       });
+      // we are given the project but we also need the project version
+      const pVersion = this.props.projectGetVersion(this.props.projectId);
+      // this.order = new Order(this.props.projectId, pVersion);
+      // debugger;
     }
   }
 
@@ -101,4 +109,5 @@ function mapStateToProps(state) {
 export default connect(mapStateToProps, {
   uiShowOrderForm,
   uiSetGrunt,
+  projectGetVersion,
 })(OrderModal);
