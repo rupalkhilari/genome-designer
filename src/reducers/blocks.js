@@ -5,11 +5,6 @@ import andreaParts from '../inventory/andrea/parts';
 
 const initialState = {};
 
-//temp - load all EGF blocks into the store
-andreaParts.forEach(part => Object.assign(initialState, {
-  [part.id] : part,
-}));
-
 //testing = combinatorial
 combiBlocks.forEach(block => Object.assign(initialState,
   { [block.id]: block }

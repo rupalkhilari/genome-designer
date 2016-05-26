@@ -57,7 +57,7 @@ const BlockDefinition = InstanceDefinition.extend({
 
   options: [
     fields.object().required,
-    `Map of Blocks that form the List Block, if rules.isList === true, where keys are block IDs possible and key is boolean whether selected`,
+    `Map of Blocks that form the List Block, if rules.isList === true, where keys are block IDs possible and key is boolean whether selected. Each block MUST be a spec.`,
   ],
 
   notes: [
