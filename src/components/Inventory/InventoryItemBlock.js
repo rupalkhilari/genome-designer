@@ -5,7 +5,8 @@ import { block as blockDragType } from '../../constants/DragTypes';
 
 import InventoryItem from './InventoryItem';
 
-//note - if we know we have a (non-construct) block as inventory item, then we dont need to do any transactions / deep cloning - inventory drag + drop is straight forward. Use InventoryConstruct if you have a block that may be a construct (with components) OR a block.
+//note - Supports templates - assumes that no additional work is needed when cloning templates than just blocks. Right now, this assumption is true because the whole project is loaded when you toggle it (and therefore all template options + components will be in the store)
+// Use InventoryConstruct if you have a block that may be a construct (with components) OR a block, and it will delegate properly (and show construct with toggler if it is indeed a construct)
 
 export default class InventoryItemBlock extends Component {
   static propTypes = {
@@ -18,7 +19,7 @@ export default class InventoryItemBlock extends Component {
   };
 
   componentDidMount() {
-    invariant(!this.props.block.components.length, 'Do not use InventoryItemBlock on blocks with components');
+    invariant(this.props.block.isTemplate || !this.props.block.isConstruct(), 'Do not use InventoryItemBlock when you want to show components, use InventoryConstruct');
   }
 
   render() {

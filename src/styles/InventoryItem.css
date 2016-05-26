@@ -45,6 +45,9 @@
     padding: 2px 5px;
     margin: 1px 0;
     width: 100%;
+  }
+
+  &-text {
     user-select: none;
   }
 
