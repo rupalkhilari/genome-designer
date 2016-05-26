@@ -8,13 +8,18 @@
   flex-direction: column;
   width: var(--width-SidePanel-closed);
   overflow-x: hidden;
+  height: calc(100vh - var(--GlobalNav-height-chrome));
   top: 0;
   bottom: 0;
-  background: var(--colors-bluegreyDark);
-  color: var(--colors-white);
+  background: var(--colors-blueBlack);
+  color: var(--colors-greyLight);
   transition-property: width, opacity;
   transition-duration: var(--timing-fast);
   will-change: width;
+
+  &.gruntPushdown {
+    padding-bottom: var(--grunt-height);
+  }
 
   &.visible {
     width: var(--width-SidePanel-open);
@@ -25,8 +30,10 @@
     padding: var(--SidePanel-width-padding-heading);;
     position: relative;
     display: flex;
+    flex-shrink: 0;
     align-items: center;
     justify-content: center;
+    user-select: none;
 
     &-content {
       display: none;
@@ -44,6 +51,7 @@
       width: var(--SidePanel-trigger-width);
       height: var(--SidePanel-trigger-width);
       min-width: var(--SidePanel-trigger-width);
+      cursor: pointer;
       /* temp */
       text-align: center;
       margin: 0;
@@ -59,9 +67,10 @@
     }
 
     &-title {
-      font-size: var(--font-size-heading);
+      font-size: var(--font-size-text);
       text-transform: uppercase;
       font-weight: 200;
+      display: inline-block; /* hack ish - ensure height */
     }
 
     &-close {
@@ -74,8 +83,9 @@
   &-content {
     display: flex;
     flex-grow: 1;
+    flex-shrink: 0;
     width: var(--width-SidePanel-open);
-    padding: 0 var(--SidePanel-width-padding-content) var(--SidePanel-width-padding-heading);
+    padding: 0 var(--SidePanel-width-padding-content);
     opacity: 0;
 
     .visible & {

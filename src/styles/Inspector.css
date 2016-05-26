@@ -13,9 +13,35 @@
   color: var(--colors-greyLight);
 
   &-heading {
-    font-size: var(--font-size-heading);
-    color: var(--colors-greyMedLight);
+    font-size: var(--font-size-text);
+    color: var(--colors-grey);
     font-weight: 500;
     margin: 1.25em 0 0.4em;
+    user-select: none;
+  }
+
+  &Block {
+
+    &-Annotations {
+      display: block;
+    }
+
+    &-Annotation {
+      display: inline-block;
+      padding: 2px 4px;
+      margin: 2px;
+      border-radius: 2px;
+      color: var(--colors-grey);
+      background-color: var(--colors-white);
+
+      &:hover {
+
+      }
+    }
+  }
+
+  &-pickerWrap {
+    display: flex;
+    flex-direction: row;
   }
 }

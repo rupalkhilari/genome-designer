@@ -8,7 +8,7 @@ const createStubNode = (childField = 'components',
     [childField]: [],
   };
   if (parent.id) {
-    Object.assign(obj, {parent: parent.id});
+    Object.assign(obj, { parent: parent.id });
   }
   return obj;
 };
@@ -63,7 +63,7 @@ const generateTree = (depth = 5,
 export const flattenTree = (node = {},
                             field = 'components',
                             idField = 'id',
-                            result = {leaves: []}) => {
+                            result = { leaves: [] }) => {
   const nextAccessor = (typeof field === 'function') ?
     field :
     (instance) => instance[field];

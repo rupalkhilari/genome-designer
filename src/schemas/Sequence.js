@@ -9,9 +9,14 @@ import AnnotationDefinition from './Annotation';
 */
 
 const SequenceDefinition = new SchemaDefinition({
-  id: [
-    fields.id(),
-    `ID corresponding to file for associated sequence`,
+  md5: [
+    fields.string(),
+    `md5 hash of the sequence, used for lookup`,
+  ],
+
+  length: [
+    fields.number(),
+    `Length of the sequence (calculated on the server)`,
   ],
 
   annotations: [
@@ -19,9 +24,9 @@ const SequenceDefinition = new SchemaDefinition({
     `List of Annotations associated with the sequence`,
   ],
 
-  length: [
-    fields.number(),
-    `Length of the sequence (calculated on the server)`,
+  initialBases: [
+    fields.sequence({loose: true}),
+    `Initial 5 bases of the block, which can be displayed e.g. if a filler block`,
   ],
 });
 

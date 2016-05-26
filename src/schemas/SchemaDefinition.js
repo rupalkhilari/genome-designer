@@ -51,7 +51,7 @@ export default class SchemaDefinition {
       const isValid = validator(instanceFieldValue);
 
       if (!isValid) {
-        const errorMessage = `Invalid: Field ${field.name} of type ${field.type}. Got ${instanceFieldValue}. [${field.description || field.typeDescription}]`;
+        const errorMessage = `Invalid: Field ${field.name} of type ${field.type}. Got ${instanceFieldValue} (${typeof instanceFieldValue}). [${field.description || field.typeDescription}]`;
 
         if (shouldThrow) {
           throw Error(errorMessage);
@@ -72,14 +72,31 @@ export default class SchemaDefinition {
     ));
   }
 
-  scaffold() {
+  scaffold(onlyRequiredFields = false) {
     const defaultScaffoldValue = null;
 
-    return mapValues(this.fields, field => (
-      typeof field.scaffold === 'function' ?
-        field.scaffold() :
-        defaultScaffoldValue
-    ));
+    return Object.keys(this.fields).reduce((scaffold, fieldName) => {
+      const field = this.fields[fieldName];
+      const fieldRequired = (field instanceof SchemaDefinition) || field.isRequired;
+
+      if (onlyRequiredFields && !fieldRequired) {
+        return scaffold;
+      }
+
+      //can opt out of scaffolding a field - note will not be valid if required
+      if (field.avoidScaffold === true) {
+        if (fieldRequired && process.env.NODE_ENV !== 'production') {
+          console.warn(`not scaffolding required field ${fieldName}`, field); //eslint-disable-line
+        }
+
+        return scaffold;
+      }
+
+      const fieldValue = (typeof field.scaffold === 'function') ?
+        field.scaffold(field.params) :
+        defaultScaffoldValue;
+      return Object.assign(scaffold, { [fieldName]: fieldValue });
+    }, {});
   }
 }
 
@@ -89,7 +106,7 @@ function createFields(fieldDefinitions) {
       //note - assign to field to maintain prototype, i.e. validate() function if instanceof SchemaDefinition
       return Object.assign(
         createSchemaField(...fieldDefinition),
-        {name: fieldName}
+        { name: fieldName }
       );
     }
   );
@@ -110,7 +127,7 @@ function createSchemaField(inputField, description = '', additional) {
   delete field.required;
 
   return Object.assign(field,
-    {description},
+    { description },
     additional
   );
 }

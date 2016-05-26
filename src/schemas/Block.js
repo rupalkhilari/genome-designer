@@ -2,42 +2,52 @@ import fields from './fields/index';
 import * as validators from './fields/validators';
 import InstanceDefinition from './Instance';
 import SequenceDefinition from './Sequence';
+import RulesDefintion from './Rules';
 
 /**
  @name BlockDefinition
- @sbol Component
+ @role Component
  @description A component of a construct, or construct itself.
 
  Blocks are hierarchically composable elements which make up large constructs of DNA. Hierarchy is established with the `components` field, whereby a block references its children.
 
  Blocks may have a `sequence`, which is a reference to a file and associated annotations, and if so should reference their source (e.g. foundry, NCBI) whence they came.
 
- Blocks can define `rules`, to which constitutive blocks must adhere. For example, bounds to GC content, or template grammar (e.g. position 0 must be a promoter). The type is the key, the rule is the value (heterogeneous formats)
+ Blocks can define `rules`, to which direct descendent blocks must adhere. For example, bounds to GC content, whether locations are fixed, filters for allowed blocks. The type is the key, the rule is the value (heterogeneous formats). Currently, rules only apply to direct descendents in the design canvas.
 
- List Blocks allow for combinatorial logic, where multiple blocks can be associated as combinatorial `options` for this block.
+ List Blocks allow for combinatorial logic, where multiple blocks can be associated as combinatorial `options` for this block. A block cannot be both a list block and have components.
 
  In addition to sequence annotations, a block may list `notes`, which are essentially annotations that do not specifically reference the sequence.
  */
 
 const BlockDefinition = InstanceDefinition.extend({
-  /*
-   Part-like fields for sequence and sequence annotations, inventory source
-   */
+  id: [
+    fields.id({ prefix: 'block' }).required,
+    'Block UUID',
+  ],
+
+  projectId: [
+    fields.id({ prefix: 'project' }),
+    'Project UUID',
+    { avoidScaffold: true },
+  ],
+
   sequence: [
     SequenceDefinition,
-    `Associated Sequence (url, not the sequence itself), and Annotations etc. associated`,
+    `Associated Sequence (link, not the sequence itself), and Annotations etc. associated`,
   ],
+
   source: [
     fields.shape({
-      id: validators.id(),
-      existsAsPart: validators.bool(),
-    }),
+      source: validators.string(),
+      id: validators.string(),
+    }).required,
     `Source (Inventory) ID of the Part`,
   ],
 
   rules: [
-    fields.object().required,
-    `Grammar/rules governing the whole Block`,
+    RulesDefintion,
+    `Grammar/rules governing the whole Block and direct descendants`,
   ],
 
   components: [
@@ -46,8 +56,8 @@ const BlockDefinition = InstanceDefinition.extend({
   ],
 
   options: [
-    fields.arrayOf(validators.id()).required,
-    `Array of Blocks that form the List Block`,
+    fields.object().required,
+    `Map of Blocks that form the List Block, if rules.isList === true, where keys are block IDs possible and key is boolean whether selected. Each block MUST be a spec.`,
   ],
 
   notes: [

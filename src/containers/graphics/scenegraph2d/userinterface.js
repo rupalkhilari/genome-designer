@@ -1,7 +1,5 @@
-import uuid from 'node-uuid';
-import Node2D from './node2d';
-import Vector2D from '../geometry/vector2d';
-import invariant from '../../../utils/environment/invariant';
+import MouseTrap from '../mousetrap';
+import invariant from 'invariant';
 
 export default class UserInterface {
 
@@ -14,14 +12,22 @@ export default class UserInterface {
     this.el.className = 'scenegraph-userinterface';
     // append after our scenegraph
     this.sg.parent.parentNode.insertBefore(this.el, this.sg.parent.nextSibiling);
-    // sink mouse events
-    this.el.addEventListener('mousedown', this.onMouseDown);
-    this.el.addEventListener('mousemove', this.onMouseMove);
-    this.el.addEventListener('mouseup', this.onMouseUp);
     // base class can handle simple selections based on the AABB of nodes
     this.selections = [];
     // maps selected node UUID's to their display glyph
     this.selectionMap = {};
+    // mouse tracker
+    this.mouseTrap = new MouseTrap({
+      element: this.el,
+      mouseEnter: this.mouseEnter.bind(this),
+      mouseLeave: this.mouseLeave.bind(this),
+      mouseDown: this.mouseDown.bind(this),
+      mouseMove: this.mouseMove.bind(this),
+      mouseDrag: this.mouseDrag.bind(this),
+      mouseUp: this.mouseUp.bind(this),
+      doubleClick: this.doubleClick.bind(this),
+      contextMenu: this.contextMenu.bind(this),
+    });
   }
   /**
    * replace current selections, call with falsey to reset selections
@@ -35,10 +41,15 @@ export default class UserInterface {
    * add to selections, ignores if already present
    * @param {[type]} node [description]
    */
-  addToSelections(node) {
-    invariant(node.sg === this.sg, 'node is not in our scenegraph');
-    if (!this.isSelected(node)) {
-      this.selections.push(node);
+  addToSelections(nodes) {
+    let added = 0;
+    (nodes || []).forEach(node => {
+      if (!this.isSelected(node)) {
+        this.selections.push(node);
+        added += 1;
+      }
+    });
+    if (added) {
       this.updateSelections();
     }
   }
@@ -69,12 +80,28 @@ export default class UserInterface {
    * @return {[type]} [description]
    */
   updateSelections() {
+    // bucket any items are don't need anymore, we will try to reuse them
+    // before removing them from the DOM
+    const bucket = [];
+    Object.keys(this.selectionMap).forEach(nodeUUID => {
+      if (!this.selections.find(node => nodeUUID === node.uuid)) {
+        const element = this.selectionMap[nodeUUID];
+        delete this.selectionMap[nodeUUID];
+        bucket.push(element);
+      }
+    });
+
     this.selections.forEach(node => {
       // create an element if we need one
       let sel = this.selectionMap[node.uuid];
       if (!sel) {
-        sel = this.selectionMap[node.uuid] = this.createSelectionElement(node);
-        this.el.appendChild(sel);
+        if (bucket.length) {
+          sel = bucket.pop();
+        } else {
+          sel = this.createSelectionElement(node);
+          this.el.appendChild(sel);
+        }
+        this.selectionMap[node.uuid] = sel;
       }
       // update to current node bounds
       const bounds = node.getAABB();
@@ -83,14 +110,10 @@ export default class UserInterface {
       sel.style.width = bounds.width + 'px';
       sel.style.height = bounds.height + 'px';
     });
-    // remove any elements no longer required.
-    const keys = Object.keys(this.selectionMap);
-    keys.forEach(nodeUUID => {
-      if (!this.selections.find(node => nodeUUID === node.uuid)) {
-        const element = this.selectionMap[nodeUUID];
-        delete this.selectionMap[nodeUUID];
-        this.el.removeChild(element);
-      }
+
+    // now we have to say goodbye to items left in the bucket
+    bucket.forEach(element => {
+      this.el.removeChild(element);
     });
   }
 
@@ -100,64 +123,43 @@ export default class UserInterface {
    * @param  {Node2D} node
    */
   createSelectionElement(node) {
-    const d = document.createElement('div');
-    d.className = 'scenegraph-userinterface-selection';
-    return d;
+    const div = document.createElement('div');
+    div.className = 'scenegraph-userinterface-selection';
+    return div;
   }
 
-  /**
-   * mousedown event binding
-   */
-  onMouseDown = (e) => {
-    this.mouseDown(this.eventToLocal(e.clientX, e.clientY, e.currentTarget), e);
-  }
   /**
    * this is the actual mouse down event you should override in descendant classes
    */
-  mouseDown(point, e) {}
+  mouseEnter(event) {}
   /**
-   * mousemove event binding
+   * this is the actual mouse down event you should override in descendant classes
    */
-  onMouseMove = (e) => {
-    this.mouseMove(this.eventToLocal(e.clientX, e.clientY, e.currentTarget), e);
-  }
+  mouseLeave(event) {}
+  /**
+   * this is the actual mouse down event you should override in descendant classes
+   */
+  mouseDown(point, event) {}
   /**
    * this is the actual mouse move event you should override in descendant classes
    */
-  mouseMove(point, e) {}
+  mouseMove(point, event) {}
   /**
-   * mouseup event binding
+   * this is the actual mouse drag event you should override in descendant classes
    */
-  onMouseUp = (e) => {
-    this.mouseUp(this.eventToLocal(e.clientX, e.clientY, e.currentTarget), e);
-  }
+  mouseDrag(point, event) {}
   /**
    * this is the actual mouse up event you should override in descendant classes
    */
-  mouseUp(point, e) {}
-
+  mouseUp(point, event) {}
   /**
-   * [eventToLocal description]
-   * @param  {Number} clientX
-   * @param  {Number} clientY
-   * @param  {Node} target
-   * @return {Vector2D}
+   * this is the actual mouse up event you should override in descendant classes
    */
-  eventToLocal(clientX, clientY, target) {
-    function getPosition(element) {
-      let xPosition = 0;
-      let yPosition = 0;
-      let el = element;
-      while (el) {
-        xPosition += (el.offsetLeft - el.scrollLeft + el.clientLeft);
-        yPosition += (el.offsetTop - el.scrollTop + el.clientTop);
-        el = el.offsetParent;
-      }
-      return new Vector2D(xPosition, yPosition);
-    }
-    const parentPosition = getPosition(target);
-    return new Vector2D(clientX, clientY).sub(parentPosition);
-  }
+  doubleClick(point, event) {}
+  /**
+   * mouse down with right button
+   */
+  contextMenu(point, event) {}
 
   /**
    * general update, called whenever our scenegraph updates

@@ -1,21 +1,19 @@
 @import 'variables.css';
 
-:root {
-  /* component variable declarations */
-}
-
 .GlobalNav {
-
+  position: relative;
   display: flex;
+  flex-direction: row;
+  flex-shrink: 0;
   background-color: white;
 
   &-title {
     color: white;
-    background-color: rgb(189, 130, 113);
+    background-color: var(--colors-logo);
     text-align: center;
-    height: var(--GlobalNav-width-chrome);
-    width: var(--GlobalNav-width-chrome);
-    line-height: var(--GlobalNav-width-chrome + 4px);
+    height: var(--GlobalNav-height-chrome);
+    width: var(--GlobalNav-height-chrome);
+    line-height: var(--GlobalNav-height-chrome + 4px);
     text-decoration: none;
     font-size: 1.5rem;
     font-weight: 100;
@@ -23,10 +21,14 @@
 
   &-action {
     padding: 0 1rem 0 1rem;
-    line-height: var(--GlobalNav-width-chrome);
+    line-height: var(--GlobalNav-height-chrome);
     &:not([disabled]):hover {
       cursor: pointer;
       background-color: var(--colors-selected);
     }
+  }
+
+  &-spacer {
+    flex-grow: 1;
   }
 }

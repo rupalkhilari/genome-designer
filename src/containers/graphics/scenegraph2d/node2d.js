@@ -2,16 +2,19 @@ import uuid from 'node-uuid';
 import Vector2D from '../geometry/vector2d';
 import Box2D from '../geometry/box2d';
 import Transform2D from '../geometry/transform2d';
-import invariant from '../../../utils/environment/invariant';
+import invariant from 'invariant';
 import NodeText2D from './nodetext2d';
 import RectangleGlyph2D from './glyphs/html/rectangleglyph2d';
-import SBOLGlyph2D from './glyphs/html/sbolglyph2d';
+import RoleGlyph2D from './glyphs/html/roleglyph2d';
+import ListItemGlyph2D from './glyphs/html/listitemglyph2d';
+import LineGlyph2D from './glyphs/html/lineglyph2d';
+import ContextDots2D from './glyphs/html/contextdots2d';
 import ConstructBanner from './glyphs/canvas/constructbanner';
 /**
  * shared DIV for measuring text,
  */
 let textDIV;
-let textCache = {};
+const textCache = {};
 
 /**
  * basic rectangular node
@@ -29,6 +32,8 @@ export default class Node2D {
     this.children = [];
     // extend default options with the given options
     this.set(Object.assign({
+      visible: true,
+      hover: false,
       stroke: 'black',
       strokeWidth: 0,
       fill: 'dodgerblue',
@@ -59,9 +64,19 @@ export default class Node2D {
     case 'construct-banner':
       this.glyphObject = new ConstructBanner(this);
       break;
-    case 'sbol':
-      this.glyphObject = new SBOLGlyph2D(this);
+    case 'role':
+      this.glyphObject = new RoleGlyph2D(this);
       break;
+    case 'dots':
+      this.glyphObject = new ContextDots2D(this);
+      break;
+    case 'line':
+      this.glyphObject = new LineGlyph2D(this);
+      break;
+    case 'listitem':
+      this.glyphObject = new ListItemGlyph2D(this);
+      break;
+
     case 'none':
       break;
     default:
@@ -77,33 +92,6 @@ export default class Node2D {
    */
   toString() {
     return `Node = glyph:${this.glyph || 'NONE'} text:${this.text || ''}`;
-  }
-
-  /**
-   * append the given child to us. It will be top most until another child is added
-   * @param  {[type]} child [description]
-   * @return {[type]}       [description]
-   */
-  appendChild(child) {
-    invariant(child && !child.parent, 'cannot append nothing or a parented node');
-    child.parent = this;
-    this.children.push(child);
-    this.el.appendChild(child.el);
-    return child;
-  }
-
-
-  /**
-   * remove the given child from our children
-   * @param  {[type]} child [description]
-   * @return {[type]}       [description]
-   */
-  removeChild(child) {
-    invariant(child && this.children.indexOf(child) >= 0, 'node is not our child');
-    child.parent = null;
-    this.children.splice(this.children.indexOf(child), 1);
-    this.el.removeChild(child.el);
-    return child;
   }
 
   /**
@@ -131,6 +119,14 @@ export default class Node2D {
       case 'glyph':
         invariant(!this.glyph, 'nodes do not expect their glyph type to change after construction');
         this.glyph = value;
+        break;
+
+      // apply a data-??? attribute with the given value to our element
+      // value should be {name:'xyz', value:'123'} which would appear in
+      // the dom as data-xyz="123"
+      case 'dataAttribute':
+        this.dataAttribute = value;
+        this.el.setAttribute(`data-${value.name}`, value.value);
         break;
 
         // default behaviour is to just set the property
@@ -175,6 +171,21 @@ export default class Node2D {
    */
   get inverseTransformationMatrix() {
     return this.transformationMatrix.inverse();
+  }
+
+  /**
+   * return true if we are any kind of distance descendant of the given node
+   */
+  isNodeOrChildOf(otherNode) {
+    let current = this;
+    while (current) {
+      if (current === otherNode) {
+        return true;
+      } else {
+        current = current.parent;
+      }
+    }
+    return false;
   }
 
   /**
@@ -234,6 +245,7 @@ export default class Node2D {
       textDIV = document.createElement('DIV');
       textDIV.style.display = 'inline-block';
       textDIV.style.position = 'absolute';
+      textDIV.style.left = '-100000px';
       textDIV.style.padding = 0;
       textDIV.style.visibility = 'hidden';
       document.body.appendChild(textDIV);
@@ -277,11 +289,81 @@ export default class Node2D {
   }
 
   /**
+   * send to back of z order
+   * @return {[type]} [description]
+   */
+  sendToBack() {
+    invariant(this.parent, 'Not attached!');
+    const par = this.parent;
+    // ignore if we are already the lowest child
+    if (par.children[0] === this) {
+      return;
+    }
+    this.detach();
+    this.insertBack(par);
+  }
+
+  /**
+ * remove from our current parent.
+ */
+  detach() {
+    invariant(this.parent, 'Node is not parented');
+    this.parent.children.splice(this.parent.children.indexOf(this), 1);
+    this.parent.el.removeChild(this.el);
+    this.parent = null;
+  }
+
+  /**
+   * add to the back ( lowest z ) of the parent
+   */
+  insertBack(parent) {
+    invariant(!this.parent, 'Node is already parented');
+    invariant(parent, 'Bad parameter');
+    // if parent has no children then append is necessary
+    if (parent.children.length === 0) {
+      parent.appendChild(this);
+    } else {
+      // update child list of parent and this nodes parent reference
+      parent.children.splice(0, 0, this);
+      this.parent = parent;
+      // update the DOM
+      this.parent.el.insertBefore(this.el, this.parent.el.firstChild);
+    }
+  }
+
+  /**
+   * append the given child to us. It will be top most until another child is added
+   * @param  {[type]} child [description]
+   * @return {[type]}       [description]
+   */
+  appendChild(child) {
+    invariant(child && !child.parent, 'cannot append nothing or a parented node');
+    child.parent = this;
+    this.children.push(child);
+    this.el.appendChild(child.el);
+    return child;
+  }
+
+  /**
+   * remove the given child from our children
+   * @param  {[type]} child [description]
+   * @return {[type]}       [description]
+   */
+  removeChild(child) {
+    invariant(child && this.children.indexOf(child) >= 0, 'node is not our child');
+    child.parent = null;
+    this.children.splice(this.children.indexOf(child), 1);
+    this.el.removeChild(child.el);
+    return child;
+  }
+
+
+  /**
    * Updating all display properties of the node and returning our element.
    * @return {[type]} [description]
    */
   update() {
-    // if we have additional CSS classes to apply do that
+    //if we have additional CSS classes to apply do that
     if (this.classes) {
       this.el.className = `node ${this.classes}`;
     }
@@ -290,6 +372,9 @@ export default class Node2D {
     this.el.style.width = this.width + 'px';
     this.el.style.height = this.height + 'px';
     this.el.style.transform = this.localTransform.toCSSString();
+
+    // visibility is controlled with opacity
+    this.el.style.opacity = this.visible ? 1 : 0;
 
     // now update our glyph
     if (this.glyphObject) {

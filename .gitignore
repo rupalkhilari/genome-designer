@@ -2,8 +2,16 @@
 .idea
 node_modules
 npm-debug.log
+screenshots
 e2ereports
 selenium-debug.log
 /redis-stable
 dump.rdb
-storage/test
+storage/test/*
+temp.*
+*.pyc
+*__pycache__*
+plugins/*/*/inputs
+plugins/*/*/outputs
+storage/
+build/

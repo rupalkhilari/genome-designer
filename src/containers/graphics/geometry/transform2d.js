@@ -1,4 +1,4 @@
-import invariant from '../../../utils/environment/invariant';
+import invariant from 'invariant';
 import {isRealNumber} from '../utils';
 import Vector2D from './vector2d';
 import Matrix2D from './matrix2d';
@@ -154,15 +154,18 @@ export default class Transform2D {
     if (key === this.cacheKey) {
       return new Matrix2D(this.cache._v);
     }
-    const _m1 = Matrix2D.translate(-(w / 2), -(h / 2));
-    const _m2 = Matrix2D.scale(this.scale.x * this.flip.x, this.scale.y * this.flip.y);
-    const _m3 = Matrix2D.rotate(this.rotate);
-    const _m4 = Matrix2D.translate(this.translate.x, this.translate.y);
-    const _t = _m4.multiplyMatrix(_m3).multiplyMatrix(_m2).multiplyMatrix(_m1);
-
-    this.cache = new Matrix2D(_t._v);
+    if (this.scale.x === 1 && this.scale.y === 1 && this.flip.x === 1 && this.flip.y === 1 && this.rotate === 0) {
+      // shorter version without scale / rotate
+      this.cache = Matrix2D.translate(-(w / 2) + this.translate.x, -(h / 2) + this.translate.y);
+    } else {
+      // full multiply
+      const _m1 = Matrix2D.translate(-(w / 2), -(h / 2));
+      const _m2 = Matrix2D.scale(this.scale.x * this.flip.x, this.scale.y * this.flip.y);
+      const _m3 = Matrix2D.rotate(this.rotate);
+      const _m4 = Matrix2D.translate(this.translate.x, this.translate.y);
+      this.cache = _m4.multiplyMatrix(_m3).multiplyMatrix(_m2).multiplyMatrix(_m1);
+    }
     this.cacheKey = key;
-
-    return _t;
+    return this.cache;
   }
 }

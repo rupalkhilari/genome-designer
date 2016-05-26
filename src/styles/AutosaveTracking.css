@@ -1,0 +1,7 @@
+@import './variables.css';
+
+.AutosaveTracking {
+  color: var(--colors-greyMedLight);
+  align-self: center;
+  padding: 0 1em;
+}

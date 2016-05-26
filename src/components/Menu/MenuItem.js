@@ -12,13 +12,31 @@ export default class MenuItem extends Component {
   static propTypes = {
     text: PropTypes.string.isRequired,
     action: PropTypes.func.isRequired,
-  }
+    disabled: PropTypes.bool,
+    checked: PropTypes.bool,
+    shortcut: PropTypes.string,
+    classes: PropTypes.string,
+  };
 
   render() {
+    // indent if checkable regardless of checked state
+    const indent = this.props.checked === true || this.props.checked === false;
+    let check = null;
+    if (indent) {
+      check = <div className={this.props.checked ? 'menu-item-checked' : 'menu-item-unchecked'}></div>;
+    }
+
+    let classes = 'menu-item' + (this.props.disabled ? ' disabled' : '');
+    if (this.props.classes) {
+      classes += ` ${this.props.classes}`;
+    }
+
     return (
-      <div className="menu-item"
-           onClick={this.props.action}>
+      <div className={classes}
+           onClick={() => !this.props.disabled && this.props.action()}>
+        {check}
         {this.props.text}
+        <div className="menu-item-shortcut" disabled={this.props.disabled}>{this.props.shortcut}</div>
       </div>
     );
   }

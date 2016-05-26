@@ -1,4 +1,3 @@
-import * as ActionTypes from '../constants/ActionTypes';
-import makeActionCreator from './makeActionCreator';
+//import * as ActionTypes from '../constants/ActionTypes';
 
-export const inspectorToggleVisibility = makeActionCreator(ActionTypes.INSPECTOR_TOGGLE_VISIBILITY, 'forceState');
+//no actions :(

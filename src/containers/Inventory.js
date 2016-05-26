@@ -1,60 +1,60 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { inventoryToggleVisibility } from '../actions/inventory';
-import andreaBlocks from '../inventory/andrea';
-import inventorySbol from '../inventory/sbol';
-
-import InventoryGroups from '../components/Inventory/InventoryGroups';
+import { inventoryToggleVisibility, inventorySelectTab } from '../actions/ui';
+import InventoryGroup from '../components/Inventory/InventoryGroup';
 
 import '../styles/Inventory.css';
 import '../styles/SidePanel.css';
 
-// find a new home for this when dynamic, consider Plug-in friendly
-// should also better enumerate types...
-const inventoryData = [
-  {
-    name: 'Foundry',
-    type: 'block',
-    items: andreaBlocks,
-  },
-  {
-    name: 'Symbols',
-    type: 'sbol',
-    items: inventorySbol,
-  },
-];
-
 export class Inventory extends Component {
   static propTypes = {
+    showingGrunt: PropTypes.bool,
+    projectId: PropTypes.string,
     isVisible: PropTypes.bool.isRequired,
+    currentTab: PropTypes.string,
     inventoryToggleVisibility: PropTypes.func.isRequired,
-  }
+    inventorySelectTab: PropTypes.func.isRequired,
+  };
 
   toggle = (forceVal) => {
     this.props.inventoryToggleVisibility(forceVal);
-    window.setTimeout(() => {
-      window.dispatchEvent(new Event('resize'));
-    }, 300);
-  }
+  };
 
   render() {
-    const { isVisible, inventoryToggleVisibility } = this.props;
+    //may be better way to pass in projectId
+    const { showingGrunt, isVisible, projectId, currentTab, inventorySelectTab } = this.props;
 
     return (
-      <div className={'SidePanel Inventory' + (isVisible ? ' visible' : '')}>
+      <div className={'SidePanel Inventory' +
+      (isVisible ? ' visible' : '') +
+      (showingGrunt ? ' gruntPushdown' : '')}>
         <div className="SidePanel-heading">
           <span className="SidePanel-heading-trigger Inventory-trigger"
-                onClick={() => this.toggle()} />
+                onClick={() => this.toggle()}/>
           <div className="SidePanel-heading-content">
             <span className="SidePanel-heading-title">Inventory</span>
             <a className="SidePanel-heading-close"
                ref="close"
-               onClick={() => this.toggle(false)} />
+               onClick={() => this.toggle(false)}/>
           </div>
         </div>
 
         <div className="SidePanel-content">
-          <InventoryGroups groups={inventoryData}/>
+          <div className="Inventory-groups">
+            <InventoryGroup title="Search"
+                            type="search"
+                            isActive={currentTab === 'search' || !currentTab}
+                            setActive={() => inventorySelectTab('search')}/>
+            <InventoryGroup title="My Projects"
+                            type="projects"
+                            currentProject={projectId}
+                            isActive={currentTab === 'projects'}
+                            setActive={() => inventorySelectTab('projects')}/>
+            <InventoryGroup title="Sketch Library"
+                            type="role"
+                            isActive={currentTab === 'role'}
+                            setActive={() => inventorySelectTab('role')} />
+          </div>
         </div>
       </div>
     );
@@ -62,13 +62,17 @@ export class Inventory extends Component {
 }
 
 function mapStateToProps(state, props) {
-  const { isVisible } = state.inventory;
+  const { isVisible, currentTab } = state.ui.inventory;
+  const showingGrunt = !!state.ui.modals.gruntMessage;
 
   return {
+    showingGrunt,
     isVisible,
+    currentTab,
   };
 }
 
 export default connect(mapStateToProps, {
   inventoryToggleVisibility,
+  inventorySelectTab,
 })(Inventory);

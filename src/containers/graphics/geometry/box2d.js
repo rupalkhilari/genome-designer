@@ -1,4 +1,4 @@
-import invariant from '../../../utils/environment/invariant';
+import invariant from 'invariant';
 import Vector2D from './vector2d';
 import Line2D from './line2d';
 
@@ -57,7 +57,8 @@ export default class Box2D {
    */
   extend(from, props) {
     for (const key in props) {
-      if (from.hasOwnProperty(key)) {
+      // hasOwnProperty fails on ClientRect, plus this ensures its a number
+      if (from[key] === +from[key]) {
         this[props[key]] = from[key];
       }
     }
@@ -341,6 +342,17 @@ export default class Box2D {
       return new Box2D(x, y, w, h);
     }
     return null;
+  }
+
+  /**
+   * shortest orthogonal distance between the x/y extents of the boxes.
+   * Basically compares left/right edges and top/bottom edges to find the closest.
+   */
+  proximityX(other) {
+    return Math.abs(this.center.x - other.center.x);
+  }
+  proximityY(other) {
+    return Math.abs(this.center.y - other.center.y);
   }
 
   /**

@@ -1,60 +1,54 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { inspectorToggleVisibility } from '../actions/inspector';
+import invariant from 'invariant';
+import { inspectorToggleVisibility } from '../actions/ui';
 
-import InspectorBlock from '../components/InspectorBlock';
-import InspectorProject from '../components/InspectorProject';
+import InspectorBlock from '../components/Inspector/InspectorBlock';
+import InspectorProject from '../components/Inspector/InspectorProject';
 
 import '../styles/Inspector.css';
 import '../styles/SidePanel.css';
 
 export class Inspector extends Component {
   static propTypes = {
+    showingGrunt: PropTypes.bool,
     isVisible: PropTypes.bool.isRequired,
+    readOnly: PropTypes.bool.isRequired,
     inspectorToggleVisibility: PropTypes.func.isRequired,
-    forceBlock: PropTypes.object,
-    currentBlock: PropTypes.string,
+    blocks: PropTypes.array,
     project: PropTypes.object,
-    block: PropTypes.object,
-  }
+  };
 
   toggle = (forceVal) => {
     this.props.inspectorToggleVisibility(forceVal);
-    window.setTimeout(() => {
-      window.dispatchEvent(new Event('resize'));
-    }, 300);
-  }
+  };
 
   render() {
-    const { isVisible, forceBlock, currentBlock, block, project } = this.props;
+    const { showingGrunt, isVisible, blocks, project, readOnly } = this.props;
 
-    let content = null;
-    if (!!forceBlock) {
-      content = <InspectorBlock instance={forceBlock}/>;
-    } else {
-      if (!!currentBlock) {
-        content = (<InspectorBlock instance={block}/>);
-      } else if (!!project) {
-        content = (<InspectorProject instance={project}/>);
-      }
-    }
+    // inspect instances, or construct if no instance or project if no construct or instances
+    const inspect = blocks && blocks.length
+      ? <InspectorBlock instances={blocks} readOnly={readOnly}/>
+      : <InspectorProject instance={project} readOnly={readOnly}/>;
 
     return (
-      <div className={'SidePanel Inspector' + (isVisible ? ' visible' : '')}>
+      <div className={'SidePanel Inspector no-vertical-scroll' +
+      (isVisible ? ' visible' : '') +
+      (readOnly ? ' readOnly' : '') +
+      (showingGrunt ? ' gruntPushdown' : '')}>
 
         <div className="SidePanel-heading">
-          <span className="SidePanel-heading-trigger Inspector-trigger"
-                onClick={() => this.toggle()}/>
+          <button tabIndex="-1" className="button-nostyle SidePanel-heading-trigger Inspector-trigger"
+                  onClick={() => this.toggle()}/>
           <div className="SidePanel-heading-content">
             <span className="SidePanel-heading-title">Inspector</span>
-            <a ref="close"
-               className="SidePanel-heading-close"
-               onClick={() => this.toggle(false)}/>
+            <button tabIndex="-1" className="button-nostyle SidePanel-heading-close"
+                    onClick={() => this.toggle(false)}/>
           </div>
         </div>
 
         <div className="SidePanel-content">
-          {content}
+          {inspect}
         </div>
       </div>
     );
@@ -62,17 +56,37 @@ export class Inspector extends Component {
 }
 
 function mapStateToProps(state, props) {
-  const { isVisible } = state.inspector;
-  const { currentBlock } = state.ui;
-  const block = state.blocks[currentBlock];
+  const { isVisible } = state.ui.inspector;
+  const { forceBlocks, blockIds, forceProject, constructId } = state.focus;
+  const { projectId } = props; //from routing
 
-  const { projectId } = state.router.params;
-  const project = state.projects[projectId];
+  //blocks
+  let blocks = [];
+  if (forceBlocks.length) {
+    blocks = forceBlocks;
+  } else if (blockIds && blockIds.length) {
+    blocks = blockIds.map(blockId => state.blocks[blockId]);
+  } else if (!!constructId) {
+    blocks = [state.blocks[constructId]];
+  }
+  invariant(blocks.every(el => !!el), 'cannot pass empty instances to inspector');
+
+  //project
+  const project = forceProject || state.projects[projectId];
+
+  //readonly
+  const readOnly = blocks.length ?
+  !!forceBlocks.length || blocks.some(instance => instance.isFrozen()) :
+    !!forceProject;
+
+  //UI adjustment
+  const showingGrunt = !!state.ui.modals.gruntMessage;
 
   return {
+    showingGrunt,
     isVisible,
-    currentBlock,
-    block,
+    readOnly,
+    blocks,
     project,
   };
 }

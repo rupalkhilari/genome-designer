@@ -89,7 +89,7 @@ describe('Matrix2D', () => {
 
   it('should format to a CSS matrix', () => {
     const m = new Matrix2D();
-    chai.expect(m.toCSSString()).to.equal('matrix(1, 0, 0, 1, 0, 0)');
+    chai.expect(m.toCSSString()).to.equal('matrix(1.00000000, 0.00000000, 0.00000000, 1.00000000, 0.00000000, 0.00000000)');
   });
 
   it('should importable from a css matrix', () => {
@@ -102,7 +102,7 @@ describe('Matrix2D', () => {
       e: 5,
       f: 6
     });
-    chai.expect(m.toCSSString()).to.equal('matrix(1, 2, 3, 4, 5, 6)');
+    chai.expect(m.toCSSString()).to.equal('matrix(1.00000000, 2.00000000, 3.00000000, 4.00000000, 5.00000000, 6.00000000)');
   });
 
 

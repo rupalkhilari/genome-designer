@@ -1,5 +1,6 @@
 import Instance from '../../src/models/Instance';
 import chai from 'chai';
+import sha1 from 'sha1';
 
 const { assert, expect } = chai;
 
@@ -46,7 +47,7 @@ describe('Model', () => {
       });
     });
 
-    it('should return a new object when mutated', () => {
+    it('should return a new object when mutated, not mutate the prior instance', () => {
       const inst = new Instance();
       const newInst = inst.mutate('meaning.oflife', 42);
 
@@ -55,8 +56,51 @@ describe('Model', () => {
       expect(newInst.meaning.oflife).to.equal(42);
     });
 
-    it('should not mutate the prior instance', () => {
-      //todo
+    it('should be immutable', () => {
+      const inst = new Instance({
+        prior: 'field',
+      });
+
+      const mutator = () => {
+        inst.prior = 'newvalue';
+      };
+
+      const adder = () => {
+        inst.newfield = 'value';
+      };
+
+      expect(adder).to.throw;
+      expect(mutator).to.throw;
+    });
+
+    it('can be cloned, and update the parents array, with newest first', () => {
+      const parentSha = sha1('someversion');
+      const inst = new Instance({
+        version: parentSha,
+        prior: 'field',
+      });
+      expect(inst.parents.length).to.equal(0);
+
+      const clone = inst.clone();
+      expect(clone.parents.length).to.equal(1);
+      expect(clone.parents[0]).to.eql({ id: inst.id, version: parentSha });
+
+      const second = clone.clone();
+      expect(second.parents.length).to.equal(2);
+      expect(second.parents).to.eql([
+        { id: clone.id, version: parentSha },
+        { id: inst.id, version: parentSha },
+      ]);
+    });
+
+    it('clone() validates a version is passed in', () => {
+      const badVersion = 'bad!';
+      const goodVersion = sha1('bleepboop');
+
+      const inst = new Instance();
+
+      expect(inst.clone.bind(inst, badVersion)).to.throw();
+      expect(inst.clone.bind(inst, goodVersion)).to.not.throw();
     });
   });
 });

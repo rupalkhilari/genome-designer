@@ -1,29 +1,57 @@
 @import 'variables.css';
 
+/**
+ * proxy item for DND operations
+ */
+.InventoryItemProxy {
+  height: 30px;
+  line-height: 30px;
+  font-size: 12px;
+  font-weight: bolder;
+  border: 2px solid white;
+  background-color: black;
+  color: white;
+  padding: 0 1rem 0 1rem;
+  cursor: pointer;
+}
+
 .InventoryItem {
   display: block;
   font-size: 12px;
+  cursor: default;
+  border-radius: 3px;
+  /* transition: background-color var(--timing-fast) ease-out; */
 
   &.hasImage {
     white-space: nowrap;
     text-overflow: ellipsis;
+
+    .InventoryItem-text {
+      margin-left: 0.5em;
+    }
+  }
+
+  &.selected {
+    background-color: var(--listItem-background);
+  }
+
+  &:hover{
+    background-color: var(--listItem-backgroundHover);
   }
 
   &-item {
     display: inline-block;
-    padding: 1px 5px;
-    border-radius: 3px;
-
-    &:hover,
-    .isDragging & {
-      background-color: var(--colors-selected);
-    }
+    cursor: pointer;
+    padding: 2px 5px;
+    margin: 1px 0;
+    width: 100%;
   }
 
-  &-image {
-    width: 27px;
-    height: 27px;
-    margin-right: 0.5em;
-    background: transparent;
+  &-text {
+    user-select: none;
+  }
+
+  &-glyph:not(:empty) {
+    padding-right: 0.5em;
   }
 }

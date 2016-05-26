@@ -1,0 +1,6 @@
+@import 'variables.css';
+
+.BasePairCount {
+  padding-left: 0.75em;
+  color: var(--colors-grey);
+}

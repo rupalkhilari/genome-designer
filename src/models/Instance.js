@@ -1,40 +1,26 @@
 import uuid from 'node-uuid';
-import pathSet from 'lodash.set';
-import merge from 'lodash.merge';
-import cloneDeep from 'lodash.clonedeep';
+import { set as pathSet, unset as pathUnset, cloneDeep, merge } from 'lodash';
+import invariant from 'invariant';
+import InstanceDefinition from '../schemas/Instance';
+import safeValidate from '../schemas/fields/safeValidate';
+import { version } from '../schemas/fields/validators';
+
+const versionValidator = (ver, required = false) => safeValidate(version(), required, ver);
 
 /**
  * @description
  * you can pass as argument to the constructor either:
  *  - an object, which will extend the created instance
- *  - a string, to use as a forced ID (todo - deprecate)
  */
 export default class Instance {
-  constructor(input = uuid.v4(), subclassBase) {
-    let parsedInput;
-    if (!!input && typeof input === 'object') {
-      parsedInput = input;
-    } else if (typeof input === 'string') {
-      parsedInput = {id: input};
-    } else {
-      parsedInput = {};
-    }
-
-    //todo - do we want to force a new ID?
+  constructor(input = {}, subclassBase, moreFields) {
+    invariant(typeof input === 'object', 'must pass an object (or leave undefined) to model constructor');
 
     merge(this,
+      InstanceDefinition.scaffold(),
       subclassBase,
-      {
-        id: uuid.v4(),
-        metadata: {
-          name: '',
-          description: '',
-          version: '1.0.0',
-          authors: [],
-          tags: {},
-        },
-      },
-      parsedInput
+      moreFields,
+      input,
     );
 
     if (process.env.NODE_ENV !== 'production') {
@@ -60,5 +46,24 @@ export default class Instance {
     return new this.constructor(base);
   }
 
+  //clone can accept just an ID (e.g. project), but likely want to pass an object (e.g. block, which also has field projectId in parent)
+  clone(parentInfo = {}) {
+    const self = cloneDeep(this);
+    const inputObject = (typeof parentInfo === 'string') ?
+    { version: parentInfo } :
+      parentInfo;
 
+    const parentObject = Object.assign({
+      id: self.id,
+      version: self.version,
+    }, inputObject);
+
+    invariant(versionValidator(parentObject.version), 'must pass a valid version (SHA), got ' + parentObject.version);
+
+    const clone = Object.assign(self, {
+      id: uuid.v4(),
+      parents: [parentObject].concat(self.parents),
+    });
+    return new this.constructor(clone);
+  }
 }

@@ -1,51 +1,33 @@
 import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
-import { ReduxRouter } from 'redux-router';
+import reduxRouter from './routes/reduxRouter';
 import * as actionTypes from './constants/ActionTypes';
-import actions from './actions/_expose';
 import store, { lastAction } from './store/index';
-import * as api from './middleware/api';
-import { registerExtension } from './extensions/index';
+import orchestrator from './store/orchestrator';
+import registerExtension from './extensions/registerExtension';
 
 render(
   <Provider store={store}>
-    <ReduxRouter />
+    {reduxRouter}
   </Provider>,
   document.getElementById('root')
 );
-
-if (process.env.USER === 'maxwellbates') {
-  // Use require because imports can't be conditional.
-  // In production, you should ensure process.env.NODE_ENV
-  // is envified so that Uglify can eliminate this
-  // module and its dependencies as dead code.
-  require('./createDevToolsWindow')(store);
-}
-
-// login on app start by default for all subsequent API requests...
-// need to handle this much better. this is so lame.
-// really, this isnt necessary yet, as there is a testingStub Key in middleware/api.js for now
-api.login();
 
 //expose various things on the window, e.g. for extensions
 const exposed = global.gd = {};
 Object.assign(exposed, {
   registerExtension,
   actionTypes,
-  actions,
+  api: orchestrator,
   store: {
-    dispatch: store.dispatch,
-    getState: store.getState,
+    ...store,
     lastAction: lastAction,
     subscribe: (callback) => {
       return store.subscribe(() => {
         callback(store.getState(), lastAction());
       });
     },
+    replaceReducer: () => {}, //hide from 3rd party
   },
-  api,
 });
-
-//testing - how do we async trigger this?
-require('./onionExtension.js');

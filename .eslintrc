@@ -5,8 +5,7 @@
   },
   "env": {
     "browser": true,
-    "node": true,
-    "mocha": true //todo - specify this only for test folder
+    "node": true
   },
   "parser": "babel-eslint",
   "extends": "airbnb",

@@ -1,6 +1,6 @@
 import safeValidate from './safeValidate';
 import urlRegex from 'url-regex';
-import semverRegex from 'semver-regex';
+import { dnaStrictRegexp, dnaLooseRegexp } from '../../utils/dna/dna';
 
 /**
  * note that everything exported in this file is tested - so only export real validators
@@ -16,36 +16,40 @@ import semverRegex from 'semver-regex';
  */
 
 export const id = params => input => {
-  //todo - real validation
-  const regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  const regex = /^(\w+-)?[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
   if (!regex.test(input)) {
     return new Error(`${input} is not a RFC4122-compliant UUID`);
   }
 };
 
-export const string = params => input => {
+export const string = ({ max, min } = {}) => input => {
   if (!isString(input)) {
     return new Error(`${input} is not a string`);
   }
+  if (isNumber(max) && input.length > max) {
+    return new Error(`${input} is longer than max length ${max}`);
+  }
+  if (isNumber(min) && input.length < min) {
+    return new Error(`${input} is shorter than min length ${min}`);
+  }
 };
 
-export const number = params => input => {
+export const number = ({ reals, min, max } = {}) => input => {
   if (!isNumber(input)) {
     return new Error(`input ${input} is not a number`);
   }
 
-  if (isRealObject(params)) {
-    if (params.reals && !isRealNumber(input)) {
-      return new Error(`input ${input} is not a real number`);
-    }
+  if (reals && !isRealNumber(input)) {
+    return new Error(`input ${input} is not a real number`);
+  }
 
-    if (params.min && input < params.min) {
-      return new Error(`input ${input} is less than minimum ${params.min}`);
-    }
+  if (isNumber(min) && input < min) {
+    return new Error(`input ${input} is less than minimum ${params.min}`);
+  }
 
-    if (params.max && input > params.max) {
-      return new Error(`input ${input} is greater than maximum ${params.max}`);
-    }
+  if (isNumber(max) && input > max) {
+    return new Error(`input ${input} is greater than maximum ${params.max}`);
   }
 };
 
@@ -83,15 +87,15 @@ export const undef = params => input => {
  string subtypes
  *******/
 
-//todo - should support all IUPAC with option to limit
-export const sequence = params => input => {
+export const sequence = (params = {}) => input => {
   if (!isString(input)) {
     return new Error(`${input} is not a string`);
   }
 
-  const sequenceRegex = /^[acgt]*$/ig;
+  const sequenceRegex = params.loose === true ? dnaLooseRegexp() : dnaStrictRegexp();
 
-  if (!sequenceRegex.test(input)) {
+  if (sequenceRegex.test(input) !== true) {
+    console.log('got error');
     return new Error(`${input} is not a valid sequence`);
   }
 };
@@ -115,8 +119,10 @@ export const version = params => input => {
     return new Error(`${input} is not a string`);
   }
 
-  if (!semverRegex().test(input)) {
-    return new Error(`${input} is not a valid version`);
+  const shaRegex = /^[0-9a-f]{40}$/;
+
+  if (!shaRegex.test(input)) {
+    return new Error(`${input} is not a valid SHA1 version`);
   }
 };
 
@@ -126,7 +132,7 @@ export const url = params => input => {
     return new Error(`${input} is not a string`);
   }
 
-  if (!urlRegex({exact: true}).test(input)) {
+  if (!urlRegex({ exact: true }).test(input)) {
     return new Error(`${input} is not a valid url`);
   }
 };
@@ -154,7 +160,7 @@ export const equal = checker => input => {
   }
 };
 
-export const shape = (fields, {required = false} = {}) => input => {
+export const shape = (fields, { required = false } = {}) => input => {
   if (!isRealObject(fields)) {
     return new Error(`shape ${fields} is not an object`);
   }
@@ -179,7 +185,7 @@ export const oneOf = possible => input => {
 };
 
 //can pass either function to validate, or an object to check instanceof
-export const oneOfType = (types, {required = false} = {}) => input => {
+export const oneOfType = (types, { required = false } = {}) => input => {
   if (!Array.isArray(types)) {
     return new Error(`possible types ${types} for oneOfType not an array`);
   }
@@ -187,7 +193,7 @@ export const oneOfType = (types, {required = false} = {}) => input => {
   const checker = type => {
     return isFunction(type) ?
       safeValidate(type, required, input) :
-      input instanceof type;
+    input instanceof type;
   };
 
   if (!types.some(checker)) {
@@ -195,7 +201,7 @@ export const oneOfType = (types, {required = false} = {}) => input => {
   }
 };
 
-export const arrayOf = (validator, {required = false} = {}) => input => {
+export const arrayOf = (validator, { required = false } = {}) => input => {
   if (!isFunction(validator)) {
     return new Error(`validator ${validator} passed to arrayOf is not a function`);
   }

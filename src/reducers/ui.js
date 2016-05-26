@@ -1,23 +1,13 @@
-import * as ActionTypes from '../constants/ActionTypes';
+import { combineReducers } from 'redux';
 
-export const initialState = {
-  currentBlock: null,
-  detailViewVisible: false,
-};
+import modals from './ui/modals';
+import inspector from './ui/inspector';
+import inventory from './ui/inventory';
+import detailView from './ui/detailView';
 
-export default function inventory(state = initialState, action) {
-  switch (action.type) {
-  case ActionTypes.UI_SET_CURRENT : {
-    const { blockId } = action;
-    return Object.assign({}, state, {currentBlock: blockId});
-  }
-  case ActionTypes.UI_TOGGLE_DETAIL_VIEW : {
-    const { forceState } = action;
-    const nextState = (forceState !== undefined) ? !!forceState : !state.detailViewVisible;
-    return Object.assign({}, state, {detailViewVisible: nextState});
-  }
-  default : {
-    return state;
-  }
-  }
-}
+export default combineReducers({
+  modals,
+  detailView,
+  inspector,
+  inventory,
+});

@@ -1,4 +1,4 @@
-import invariant from '../../../utils/environment/invariant';
+import invariant from 'invariant';
 import Vector2D from './vector2d';
 import Intersection2D from './intersection2d';
 

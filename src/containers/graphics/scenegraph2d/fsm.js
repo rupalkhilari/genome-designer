@@ -1,5 +1,5 @@
 
-import invariant from '../../../utils/environment/invariant';
+import invariant from 'invariant';
 export default class FiniteStateMachine {
 
   constructor(fsm) {

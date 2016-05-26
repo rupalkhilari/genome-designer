@@ -1,5 +1,5 @@
-import invariant from '../../../utils/environment/invariant';
-import {isRealNumber, isOne, isZero, deg2rad, rad2deg} from '../utils';
+import invariant from 'invariant';
+import {isOne, isZero, deg2rad, rad2deg} from '../utils';
 import Vector2D from './vector2d';
 
 export default class Matrix2D {
@@ -48,20 +48,21 @@ export default class Matrix2D {
    * ensure all the numbers in the matrix are reasonable
    */
   validate() {
-    if (this._v && this._v.length === 9) {
-      for (let i = 0; i < 9; i += 1) {
-        // all 9 elements should be numbers and not NaN or Infinity or -Infinity
-        if (!isRealNumber(this._v[i])) {
-          return false;
-        }
-      }
-      // bottom row should always be identity, or very close
-      if (!isZero(this._v[6]) || !isZero(this._v[7]) || !isOne(this._v[8])) {
-        return false;
-      }
-      return true;
-    }
-    return false;
+    return true;
+    // if (this._v && this._v.length === 9) {
+    //   for (let i = 0; i < 9; i += 1) {
+    //     // all 9 elements should be numbers and not NaN or Infinity or -Infinity
+    //     if (!isRealNumber(this._v[i])) {
+    //       return false;
+    //     }
+    //   }
+    //   // bottom row should always be identity, or very close
+    //   if (!isZero(this._v[6]) || !isZero(this._v[7]) || !isOne(this._v[8])) {
+    //     return false;
+    //   }
+    //   return true;
+    // }
+    // return false;
   }
 
   /**
@@ -234,6 +235,7 @@ export default class Matrix2D {
    */
   toCSSString() {
     const _v = this._v;
-    return `matrix(${_v[0]}, ${_v[3]}, ${_v[1]}, ${_v[4]}, ${_v[2]}, ${_v[5]})`;
+    // using limited notation since Safari doesn't like a matrix with values like 6.123233995736766e-17
+    return `matrix(${_v[0].toFixed(8)}, ${_v[3].toFixed(8)}, ${_v[1].toFixed(8)}, ${_v[4].toFixed(8)}, ${_v[2].toFixed(8)}, ${_v[5].toFixed(8)})`;
   }
 }

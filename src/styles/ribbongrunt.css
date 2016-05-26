@@ -1,0 +1,36 @@
+@import 'variables.css';
+
+:root {
+--background: #FFFA81;
+--color: #67654D;
+--fontsize: 1rem;
+--close-size: 20px;
+}
+
+.ribbongrunt {
+  height: var(--grunt-height);
+  line-height: var(--grunt-height);
+  font-size: var(--fontsize);
+  background-color: var(--background);
+  color: var(--color);
+  text-align: center;
+  position: absolute;
+  bottom: 0;
+  transform: translateY(100%);
+  z-index: 1;
+  width: 100%;
+}
+.ribbongrunt button {
+  float: right;
+  width: var(--close-size);
+  height: var(--grunt-height);
+  padding: 0;
+  margin: 0;
+  font-size: 1em;
+  font-size: var(--close-size);
+  line-height: var(--close-size);
+  background-color: transparent;
+  border: none;
+  outline: none;
+  margin-right: 15px;
+}

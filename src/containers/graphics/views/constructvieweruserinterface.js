@@ -1,8 +1,19 @@
-import Vector2D from '../geometry/vector2d';
-import Line2D from '../geometry/line2d';
-import Box2D from '../geometry/box2d';
 import UserInterface from '../scenegraph2d/userinterface';
-import invariant from '../../../utils/environment/invariant';
+import DnD from '../dnd/dnd';
+import Vector2D from '../geometry/vector2d';
+import Box2D from '../geometry/box2d';
+import { transact } from '../../../store/undo/actions';
+import kT from './layoutconstants';
+import Fence from './fence';
+import { dispatch } from '../../../store/index';
+import { sortBlocksByIndexAndDepthExclude } from '../../../utils/ui/uiapi';
+
+
+// # of pixels of mouse movement before a drag is triggered.
+const dragThreshold = 8;
+// if within this threshold of a block edge the edge is selected versus
+// the entire blocks
+const edgeThreshold = 20;
 
 /**
  * user interface overlay for construct viewer
@@ -10,6 +21,32 @@ import invariant from '../../../utils/environment/invariant';
 export default class ConstructViewerUserInterface extends UserInterface {
   constructor(sg) {
     super(sg);
+    // register ourselves as a drop target
+    DnD.registerTarget(this.el, {
+      dragEnter: this.onDragEnter.bind(this),
+      dragLeave: this.onDragLeave.bind(this),
+      dragOver: this.onDragOver.bind(this),
+      drop: this.onDrop.bind(this),
+      zorder: 0,
+    });
+
+    this.osType = this.checkOS();
+  }
+
+  /**
+   * select all blocks within the given rectangle
+   */
+  selectNodesByRectangle(box) {
+    const hits = this.sg.findNodesWithin(box);
+    const parts = [];
+    hits.forEach(node => {
+      const element = this.layout.elementFromNode(node);
+      if (element) {
+        parts.push(element);
+      }
+    });
+    // combine with existing selection
+    this.constructViewer.blockSelected(parts.concat(this.constructViewer.props.focus.blockIds));
   }
 
   /**
@@ -19,7 +56,16 @@ export default class ConstructViewerUserInterface extends UserInterface {
    */
   topNodeAt(point) {
     const hits = this.sg.findNodesAt(point);
-    return hits.length ? hits.pop() : null;
+    // nodes might include anything added to the scenegraph
+    // so work backwards in the list and return the first
+    // block found
+    for (let i = hits.length - 1; i >= 0; i--) {
+      if (this.layout.elementFromNode(hits[i])) {
+        return hits[i];
+      }
+    }
+    // no hits or no blocks in the hits
+    return null;
   }
   /**
    * return the top most block at a given location
@@ -30,134 +76,605 @@ export default class ConstructViewerUserInterface extends UserInterface {
     const top = this.topNodeAt(point);
     return top ? this.layout.elementFromNode(top) : null;
   }
+
   /**
-   * return the top most block at the given location and whether the point
-   * is closer to the left or right edges
-   * @param  {Vector2D} point [description]
-   * @return {[type]}       [description]
+   * true if the node is the title node for the construct
    */
-  topBlockAndVerticalEdgeAt(point) {
-    const block = this.topBlockAt(point);
-    if (block) {
-      // get the AABB of the node representing the block
-      const node = this.layout.nodeFromElement(block);
-      const AABB = node.getAABB();
-      return {
-        block: block,
-        edge: point.x < AABB.cx ? 'left' : 'right',
+  isConstructTitleNode(node) {
+    return !!(node && node.isNodeOrChildOf(this.layout.titleNode));
+  }
+
+  /**
+   * return the nearest block to the given location and an indication if the point is nearest the left, right or body of block.
+   */
+  nearestBlockAndOptionalVerticalEdgeAt(point, proxySize) {
+    // get bounds of dragged object, clamp the proxy size since dragging two many blocks will create a very large hit area
+    const maxProxyWidth = 100;
+    const pwidth = Math.min(proxySize.x, maxProxyWidth);
+    const pheight = Math.min(proxySize.y, maxProxyWidth);
+    const pbox = new Box2D(point.x - pwidth / 2, point.y - pheight / 2, pwidth, pheight);
+    // initial test is an intersection test between draggable and blocks...
+    let bestItem = null;
+    const allNodesAndBlocks = this.layout.allNodesAndBlocks();
+    allNodesAndBlocks.forEach(item => {
+      // bounds of node...
+      item.AABB = item.node.getAABB();
+      // intersection with dragged object
+      const intersection = item.AABB.intersectWithBox(pbox);
+      if (intersection) {
+        // area of intersection
+        const area = intersection.width * intersection.height;
+        if (!bestItem || area > bestItem.area) {
+          // decorate item with distance/bounds for comparison with other items
+          item.area = area;
+          bestItem = item;
+        }
       }
+    });
+    // if no intersections then try a proximity test
+    if (!bestItem) {
+      allNodesAndBlocks.forEach(item => {
+        // intersection with dragged object
+        item.proximityX = item.AABB.proximityX(pbox);
+        item.proximityY = item.AABB.proximityY(pbox);
+        if (!bestItem) {
+          bestItem = item;
+        } else {
+          // items that match in y are tested against x
+          if (item.proximityY <= bestItem.proximityY) {
+            if (item.proximityY === bestItem.proximityY && item.proximityX < bestItem.proximityX) {
+              bestItem = item;
+            } else {
+              bestItem = item;
+            }
+          }
+        }
+      });
     }
-    // if here no hit
+
+    if (bestItem) {
+      let edge = null;
+      if (point.x <= bestItem.AABB.x + edgeThreshold) {
+        edge = 'left';
+      }
+      if (point.x >= bestItem.AABB.right - edgeThreshold) {
+        edge = 'right';
+      }
+      return {block: bestItem.block, edge};
+    }
+    // the construct must be empty
     return null;
   }
   /**
-   * mouse down handler
+   * accessor for the construct in our constructviewer owner
    */
-  mouseDown(point, e) {
-    e.preventDefault();
-    const block = this.topBlockAt(point);
+  get construct() {
+    return this.constructViewer.props.construct;
+  }
+  /**
+   * mouse enter/leave are used to ensure no block is in the hover state
+   */
+  mouseEnter(event) {
+    this.setBlockHover();
+  }
+  mouseLeave(event) {
+    this.setBlockHover();
+  }
+  /**
+   * set the given block to the hover state
+   */
+  setBlockHover(block) {
+    if (this.hover) {
+      this.hover.node.set({
+        hover: false,
+      });
+      this.hover.node.updateBranch();
+      this.hover = null;
+    }
     if (block) {
-      const node = this.layout.nodeFromElement(block);
-      if (e.shiftKey) {
-        this.setSelections();
-        this.constructViewer.removePart(block);
-      } else {
-        // single select the node and track the mouse
-        this.setSelections([node]);
-        this.constructViewer.blockSelected(block);
-        this.drag = {
-          dragStart: point.clone(),
-          block: block,
-        }
-      }
+      this.hover = {
+        block: block,
+        node: this.layout.nodeFromElement(block),
+      };
+      this.hover.node.set({
+        hover: true,
+      });
+      this.hover.node.updateBranch();
     }
   }
   /**
-   * move handler
+   * set hover state for title node
    */
-  mouseMove(point, e) {
-    if (this.drag) {
-      // get delta to start position to determine if the user started a drag
-      const line = new Line2D(this.drag.dragStart, point);
-      if (line.len() > 8) {
-        // drag off started
-        this.setSelections();
-        const node = this.constructViewer.removePart(this.drag.block);
-        this.sg.simulateDrag(node);
-        this.localBlock = this.drag.block;
-        this.drag = null;
+  setTitleHover(bool) {
+    if (bool !== this.titleHover) {
+      this.titleHover = bool;
+      if (this.layout.titleNode) {
+        this.layout.titleNode.children[0].set({visible: this.titleHover});
+        this.layout.titleNode.children[0].updateBranch();
       }
-    }
-    // for now the scenegraph also does dragging
-    this.sg.dragMove(point);
-    if (this.sg.sdrag) {
-      const hit = this.topBlockAndVerticalEdgeAt(point);
-      if (hit) {
-        this.showInsertionPoint(hit.block, hit.edge);
-      } else {
-        this.hideInsertionPoint();
-      }
-    }
-  }
-  /**
-   * mouse up handler
-   */
-  mouseUp(point, e) {
-    this.drag = null;
-    if (this.sg.sdrag) {
-      this.constructViewer.localDrop(this.localBlock);
-      this.sg.dragUp(point);
-      this.hideInsertionPoint();
     }
   }
 
   /**
-   * drag events
+   * double click handler
+   */
+  doubleClick(evt, point) {
+    const block = this.topBlockAt(point);
+    if (block) {
+      this.constructViewer.openInspector();
+    }
+  }
+
+  /**
+   * mouse move handler ( note, not the same as drag which is with a button held down )
+   */
+  mouseMove(evt, point) {
+    const hits = this.sg.findNodesAt(point);
+    this.setTitleHover(this.isConstructTitleNode(hits.length ? hits.pop() : null));
+    this.setBlockHover(this.topBlockAt(point));
+  }
+  /**
+   * mouse down handler, selection occurs on up since we have to wait to
+   * see if a drag occurs first.
+   */
+  mouseDown(evt, point) {
+  }
+
+  /**
+   * Might signal the end of fence drag or just a normal click
+   */
+  mouseUp(evt, point) {
+    if (this.fence) {
+      // select blocks within the fence then dispose it
+      this.selectNodesByRectangle(this.fence.getBox());
+      this.fence.dispose();
+      this.fence = null;
+      this.constructViewer.props.endMouseScroll();
+    } else {
+      this.mouseSelect(evt, point);
+    }
+  }
+  /**
+   * mouse section can occur by click or when a drag is started so it gets
+   * its own method.
+   */
+
+  checkOS() {
+    let osType = 'unknown';
+    if (navigator.userAgent.indexOf('Windows', 0) >= 0) osType = 'win';
+    else if (navigator.userAgent.indexOf('Mac', 0) >= 0) osType = 'mac';
+    else if (navigator.userAgent.indexOf('Linux', 0) >= 0) osType = 'linux';
+    else if (navigator.userAgent.indexOf('X11', 0) >= 0) osType = 'unix';
+
+    return osType;
+  }
+
+  metaKey(evt) {
+    return this.osType === 'mac' ? evt.metaKey : evt.ctrlKey;
+  }
+
+  /**
+   * context menu for blocks and constructs
+   */
+  contextMenu(evt, point) {
+    evt.preventDefault();
+    // select construct regardless of where click occurred.
+    this.selectConstruct();
+    // open construct menu for title according to position
+    if (this.titleContextMenu(evt, point)) {
+      return;
+    }
+
+    // show context menu for blocks if there are selections of the user is over a block
+    const showMenu = () => {
+      this.constructViewer.openPopup({
+        blockPopupMenuOpen: true,
+        menuPosition: this.mouseTrap.mouseToGlobal(evt),
+      });
+    };
+    // if there are no selections try to select the block at the cursor
+    if (!this.selections.length) {
+      const block = this.topBlockAt(point);
+      if (block) {
+        this.constructViewer.blockSelected([block]);
+        showMenu();
+      }
+    } else {
+      showMenu();
+    }
+  }
+
+  /**
+   * run the title context menu if the point is over the title block, or only
+   * over the context menu dots if onlyDots is specified
+   */
+  titleContextMenu(evt, point, onlyDots) {
+    const hits = this.sg.findNodesAt(point);
+    if (this.isConstructTitleNode(hits.length ? hits.pop() : null)) {
+      // over the entire block, refine test as required
+      if (onlyDots) {
+        const AABB = this.layout.titleNode.getAABB();
+        if (point.x < AABB.right - kT.contextDotsW) {
+          return false;
+        }
+      }
+      this.constructViewer.openPopup({
+        constructPopupMenuOpen: true,
+        menuPosition: this.mouseTrap.mouseToGlobal(evt),
+      });
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * select with mouse including handling ancillary actions like opening the context menu and toggle nested construct
+   */
+  mouseSelect(evt, point) {
+    evt.preventDefault();
+    // select construct whenever a selection occcurs regardless of blocks hit etc
+    this.selectConstruct();
+    // open construct menu for title according to position
+    if (this.titleContextMenu(evt, point, true)) {
+      return;
+    }
+    // check for block select
+    const block = this.topBlockAt(point);
+    if (block) {
+      // if the user clicks a sub component ( ... menu accessor or expand / collapse for example )
+      // the clicked block is just added to the selections, otherwise it replaces the selection.
+      // Also, if the shift key is used the block is added and does not replace the selection
+      let action = 'replace';
+      if (evt.shiftKey || (window.__gde2e && window.__gde2e.shiftKey)) {
+        action = 'add';
+      }
+      if (this.metaKey(evt) || evt.altKey || (window.__gde2e && window.__gde2e.metaKey)) {
+        action = 'toggle';
+      }
+      // if they clicked the context menu area, open it
+      // for now, open a context menu
+      const globalPoint = this.mouseTrap.mouseToGlobal(evt);
+      const region = this.getBlockRegion(block, globalPoint);
+      switch (region) {
+
+      case 'dots':
+        this.constructViewer.openPopup({
+          blockPopupMenuOpen: true,
+          menuPosition: globalPoint,
+        });
+        // change replace to add if opening the menu
+        if (action === 'replace') {
+          action = 'add';
+        }
+        break;
+
+      case 'triangle':
+        const node = this.layout.nodeFromElement(block);
+        node.showChildren = !node.showChildren;
+        this.constructViewer.update();
+        // change replace to add if opening the menu
+        if (action === 'replace') {
+          action = 'add';
+        }
+        break;
+
+      default: break;
+      }
+      // perform the final selection action using block
+      switch (action) {
+      case 'toggle' : this.constructViewer.blockToggleSelected([block]); break;
+      case 'add': this.constructViewer.blockAddToSelectionsRange(block, this.selectedElements); break;
+      default: this.constructViewer.blockSelected([block]); break;
+      }
+    } else {
+      // clear block selections
+      this.constructViewer.blockSelected([]);
+      // if they clicked the title node then select the construct
+      if (this.isConstructTitleNode(this.topNodeAt(point))) {
+        this.selectConstruct();
+      }
+    }
+  }
+
+  /**
+   * selected construct is lighter than unselected constructs
    * @return {[type]} [description]
    */
-  dragEnter() {
-    // reset insertion point
-    this.insertion = null;
-  }
-  /**
-   * drag over comes with viewport/document relative point. We must convert
-   * to our local client coordinates, just like a mouse event
-   */
-  dragOver(point) {
-    const local = this.eventToLocal(point.x, point.y, this.el);
-    const hit = this.topBlockAndVerticalEdgeAt(local);
-    if (hit) {
-      this.showInsertionPoint(hit.block, hit.edge);
+  update() {
+    super.update();
+    if (this.isSelectedConstruct()) {
+      this.lighten();
     } else {
-      this.hideInsertionPoint();
+      this.darken();
     }
   }
   /**
-   * user dragged out of the viewer
+   * true if we are the selected construct
    */
-  dragLeave() {
-    this.hideInsertionPoint();
+  isSelectedConstruct() {
+    return this.constructViewer.props.construct.id === this.constructViewer.props.focus.constructId;
   }
   /**
-   * show the insertion point at the given edge of the given block
+   * select the construct if not already selected
    */
-  showInsertionPoint(block, edge) {
-    // create insertion point as necessary
-    if (!this.insertionEl) {
-      this.insertionEl = document.createElement('div');
-      this.insertionEl.className = 'block-insertion-point';
-      this.el.appendChild(this.insertionEl);
+  selectConstruct() {
+    // select the construct if not already the selected construct ( changing
+    // the construct will remove blocks that are not part of the construct from the selections )
+    if (this.constructViewer.props.construct.id !== this.constructViewer.props.focus.constructId) {
+      this.constructViewer.constructSelected(this.constructViewer.props.construct.id);
     }
+  }
+  /**
+   * return an indication of where in the block this point lies.
+   * One of ['none', 'main, 'dots']
+   */
+  getBlockRegion(block, globalPoint) {
+    // substract window scrolling from global point to get viewport coordinates
+    const vpt = globalPoint.sub(new Vector2D(window.scrollX, window.scrollY));
+    // compare against viewport bounds of node representing the block
+    const node = this.layout.nodeFromElement(block);
+    const box = node.el.getBoundingClientRect();
+    // compare to bounds
+    if (vpt.x < box.left || vpt.x > box.right || vpt.y < box.top || vpt.y > box.bottom) {
+      return 'none';
+    }
+    // context menu area?
+    if (vpt.x >= box.right - kT.contextDotsW) {
+      return 'dots';
+    }
+    // child expander, if present
+    if (node.hasChildren) {
+      const triSize = 18;     // width / height equilateral triangle, slightly larger than css but makes for a better feel
+      const insetX = vpt.x - box.left;
+      const insetY = vpt.y - box.top;
+      if (insetX < triSize && insetY < triSize) {
+        // whatever the x position is ( 0..triSize ), y must be less than trisize - x
+        if (insetY <= (triSize - insetX)) {
+          return 'triangle';
+        }
+      }
+    }
+    // in block but nowhere special
+    return 'main';
+  }
+  /**
+   * list of all selected blocks, based on our selected scenegraph blocks
+   * @return {[type]} [description]
+   */
+  get selectedElements() {
+    return this.selections.map((node) => {
+      return this.layout.elementFromNode(node);
+    });
+  }
+  /**
+   * move drag handler, if the user initiates a drag of a block hand over
+   * to the DND manager to handle
+   */
+  mouseDrag(evt, point, startPoint, distance) {
+
+    // ignore drags until they reach a certain vector threshold
+    if (distance > dragThreshold && !this.fence) {
+      // start a block drag if we have one
+      const block = this.topBlockAt(startPoint);
+      // must be dragging a selected block
+      if (block) {
+        // cancel our own mouse operations for now
+        this.mouseTrap.cancelDrag();
+        // no mutation of frozen or fixed constructs
+        if (this.construct.isFrozen() || this.construct.isFixed()) {
+          return;
+        }
+        // open an undo/redo transaction
+        dispatch(transact());
+        // if the block being dragging is one of the selections then single select it
+        let draggables = this.selectedElements;
+        if (!this.constructViewer.props.focus.blockIds.includes(block)) {
+          draggables = [block];
+          this.constructViewer.blockSelected(draggables);
+        }
+        //this.constructViewer.blockAddToSelections([block]);
+        // get global point as starting point for drag
+        const globalPoint = this.mouseTrap.mouseToGlobal(evt);
+        // proxy representing 1 ore more blocks
+        const proxy = this.makeDragProxy(draggables);
+        // remove the blocks, unless meta key pressed
+        const copying = evt.altKey;
+        // filter our selected elements so they are in natural order
+        // and with children of selected parents excluded.
+        const blockIds = sortBlocksByIndexAndDepthExclude(draggables).map(info => info.blockId);
+        if (!copying) {
+          this.constructViewer.removePartsList(blockIds);
+        }
+        // start the drag with the proxy and the removed block as the payload
+        // and indicate that the source of the drag is another construct viewer
+        DnD.startDrag(proxy, globalPoint, {
+          item: blockIds,
+          source: 'construct-viewer',
+          copying: copying,
+        }, {
+          undoRedoTransaction: true,
+        });
+      } else {
+        // start a fence drag if not over a part
+        if (!this.fence) {
+          this.constructViewer.constructSelected(this.constructViewer.props.constructId);
+          // clear current selections unless shift pressed
+          if (!evt.shiftKey) {
+            this.constructViewer.blockSelected([]);
+          }
+          this.fence = new Fence(this, point);
+        }
+      }
+    } else {
+      if (this.fence) {
+        // mousetrap sends local mouse position but we want the global one for
+        // autoscrolling in the canvas
+        this.constructViewer.props.mouseScroll(this.mouseTrap.mouseToGlobal(evt));
+        this.fence.update(point);
+      }
+    }
+  }
+
+  /**
+   * make a drag proxy by gathering all the selected blocks into a group ( up to
+   * a limit )
+   */
+  makeDragProxy(draggables) {
+    // create a div to hold the first five blocks at most
+    const div = document.createElement('div');
+    div.style.display = 'inline-block';
+    div.style.position = 'relative';
+    const nodes = draggables.map(elem => this.layout.nodeFromElement(elem));
+    const limit = Math.min(5, nodes.length);
+    let x = 0;
+    let width = 0;
+    let height = 0;
+    for (let i = 0; i < limit; i += 1) {
+      const node = nodes[i].el;
+      const clone = node.cloneNode(true);
+      clone.style.position = 'absolute';
+      clone.style.left = `${x}px`;
+      clone.style.top = `0px`;
+      clone.style.transform = null;
+      clone.style.opacity = (1 / limit) * (limit - i);
+      div.appendChild(clone);
+      width += node.clientWidth;
+      height = Math.max(height, node.clientHeight);
+      x += node.clientWidth;
+    }
+    div.style.width = `${width}px`;
+    div.style.height = `${height}px`;
+    return div;
+  }
+
+  /**
+   * a drag entered the construct viewer
+   */
+  onDragEnter(globalPoint, payload) {
+    this.hideEdgeInsertionPoint();
+    this.hideBlockInsertionPoint();
+    this.selectConstruct();
+  }
+  /**
+   * drag left the construct viewer
+   */
+  onDragLeave() {
+    this.hideEdgeInsertionPoint();
+    this.hideBlockInsertionPoint();
+  }
+
+  darken() {
+    this.sg.darken();
+  }
+
+  lighten() {
+    this.sg.lighten();
+  }
+  /**
+   * drag over event
+   */
+  onDragOver(globalPosition, payload, proxySize) {
+    // select construct on drag over
+    this.selectConstruct();
+    // no drop on frozen or fixed constructs
+    if (this.construct.isFrozen() || this.construct.isFixed()) {
+      return;
+    }
+    // convert global point to local space via our mousetrap
+    const localPosition = this.mouseTrap.globalToLocal(globalPosition, this.el);
+    // user might be targeting the edge or center of block, or no block at all
+    const hit = this.nearestBlockAndOptionalVerticalEdgeAt(localPosition, proxySize);
+    if (hit) {
+      if (hit.edge) {
+        this.showInsertionPointForEdge(hit.block, hit.edge);
+      } else {
+        this.showInsertionPointForBlock(hit.block);
+      }
+    } else {
+      this.showDefaultInsertPoint();
+    }
+  }
+  /**
+   * user dropped the payload on us at the given position. Defer the insertion
+   * to our actual constructViewer which has all the necessary props
+   */
+  onDrop(globalPosition, payload, event) {
+    // no drop on frozen or fixed constructs
+    if (this.construct.isFrozen() || this.construct.isFixed()) {
+      return;
+    }
+
+    // flatten dropped object and treats as new construct if we are empty.
+    const blockids = this.constructViewer.addItemAtInsertionPoint(payload, this.insertion, event);
+    this.constructViewer.blockSelected(blockids);
+    this.constructViewer.constructSelected(this.constructViewer.props.constructId);
+  }
+  /**
+   * show the insertion point at the top left of an empty construct.
+   */
+  showDefaultInsertPoint() {
+    // insertion point may alternate so ensure we remove the block cursor
+    this.hideBlockInsertionPoint();
+    const point = this.layout.getInitialLayoutPoint();
+    this.showInsertionPointForEdgeAt(point.x, point.y);
+  }
+  /**
+   * show the insertion point at the given edge of the given block...usually
+   * used when dropping a new block(s) into the construct
+   */
+  showInsertionPointForEdge(block, edge) {
+    // insertion point may alternate so ensure we remove the block cursor
+    this.hideBlockInsertionPoint();
+
     // get node representing this part and its AABB
     const node = this.layout.nodeFromElement(block);
     const AABB = node.getAABB();
     const xposition = edge === 'left' ? AABB.x : AABB.right;
-    // position insertion element at the appropriate edge
-    this.insertionEl.style.left = (xposition - 1) + 'px';
-    this.insertionEl.style.top = (AABB.y - 2) + 'px';
+    this.showInsertionPointForEdgeAt(xposition - 4, AABB.y + 1);
 
     // save the current insertion point
     this.insertion = {block, node, edge};
+  }
+  /**
+   * create and show insertion point for edge at the given position
+   */
+  showInsertionPointForEdgeAt(x, y) {
+    // create insertion point as necessary
+    if (!this.insertionEdgeEl) {
+      this.insertionEdgeEl = document.createElement('div');
+      this.insertionEdgeEl.className = 'edge-insertion-point';
+      this.el.appendChild(this.insertionEdgeEl);
+    }
+    this.insertionEdgeEl.style.display = 'block';
+    this.insertionEdgeEl.style.left = x + 'px';
+    this.insertionEdgeEl.style.top = y - 12 + 'px';
+  }
+ /**
+  * show the insertion point over the given block, usually used when dropping
+  * an SBOL symbol onto an existing block.
+  */
+  showInsertionPointForBlock(block, edge) {
+    // insertion point may alternate so ensure we remove the block cursor
+    this.hideEdgeInsertionPoint();
+    // create insertion point as necessary
+    if (!this.insertionBlockEl) {
+      this.insertionBlockEl = document.createElement('div');
+      this.insertionBlockEl.className = 'block-insertion-point';
+      this.el.appendChild(this.insertionBlockEl);
+    }
+    this.insertionBlockEl.style.display = 'block';
+
+    // get node representing this part and its AABB
+    const node = this.layout.nodeFromElement(block);
+    const AABB = node.getAABB();
+    // position insertion element at the appropriate edge
+    this.insertionBlockEl.style.left = AABB.x - 8 + 'px';
+    this.insertionBlockEl.style.top = AABB.y - 8 + 'px';
+    this.insertionBlockEl.style.width = AABB.w + 1 + 'px';
+    this.insertionBlockEl.style.height = AABB.h + 1 + 'px';
+
+    // save the current insertion point
+    this.insertion = {block, node};
   }
   /**
    * return the current insertion point if any
@@ -169,10 +686,19 @@ export default class ConstructViewerUserInterface extends UserInterface {
   /**
    * hide / deletion insertion point element
    */
-  hideInsertionPoint() {
-    if (this.insertionEl) {
-      this.el.removeChild(this.insertionEl);
-      this.insertionEl = null;
+  hideBlockInsertionPoint() {
+    if (this.insertionBlockEl) {
+      // this.el.removeChild(this.insertionBlockEl);
+      // this.insertionBlockEl = null;
+      this.insertionBlockEl.style.display = 'none';
+    }
+    this.insertion = null;
+  }
+  hideEdgeInsertionPoint() {
+    if (this.insertionEdgeEl) {
+      // this.el.removeChild(this.insertionEdgeEl);
+      // this.insertionEdgeEl = null;
+      this.insertionEdgeEl.style.display = 'none';
     }
     this.insertion = null;
   }

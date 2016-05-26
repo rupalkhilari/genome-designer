@@ -1,8 +1,0 @@
-inputs:
-    - id: DNA
-      type: string
-
-outputs:
-    - id: Protein
-      type: string
-

@@ -1,105 +1,154 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { pushState } from 'redux-router';
-import HTML5Backend from 'react-dnd-html5-backend';
-import { DragDropContext } from 'react-dnd';
-
 import ConstructViewer from './graphics/views/constructviewer';
+import ConstructViewerCanvas from './graphics/views/constructViewerCanvas';
 import ProjectDetail from '../components/ProjectDetail';
 import ProjectHeader from '../components/ProjectHeader';
 import Inventory from './Inventory';
 import Inspector from './Inspector';
+import { projectList, projectLoad, projectCreate, projectOpen } from '../actions/projects';
+import { uiSetGrunt } from '../actions/ui';
+import { focusProject } from '../actions/focus';
+import autosaveInstance from '../store/autosave/autosaveInstance';
 
 import '../styles/ProjectPage.css';
 import '../styles/SceneGraphPage.css';
 
-//todo - should abstract away component which has dragDropContext, inventory, inspector
-
-@DragDropContext(HTML5Backend)
-class DnD extends Component {
-
+class ProjectPage extends Component {
   static propTypes = {
-    project: PropTypes.object.isRequired,
+    showingGrunt: PropTypes.bool,
     projectId: PropTypes.string.isRequired,
-    constructs: PropTypes.array.isRequired,
-
-    pushState: PropTypes.func.isRequired,
-  }
+    project: PropTypes.object, //if have a project (not fetching)
+    constructs: PropTypes.array, //if have a project (not fetching)
+    projectCreate: PropTypes.func.isRequired,
+    projectList: PropTypes.func.isRequired,
+    projectLoad: PropTypes.func.isRequired,
+    projectOpen: PropTypes.func.isRequired,
+    uiSetGrunt: PropTypes.func.isRequired,
+    focusProject: PropTypes.func.isRequired,
+  };
 
   constructor(props) {
     super(props);
+    this.lastProjectId = null;
     this.layoutAlgorithm = 'wrap';
+  }
+
+  componentDidMount() {
+    // todo - use react router History to do this:
+    // https://github.com/mjackson/history/blob/master/docs/ConfirmingNavigation.md
+    window.onbeforeunload = window.onunload = this.onWindowUnload;
+  }
+
+  componentWillReceiveProps(nextProps) {
+    //set state.focus.project -- might be a better way to do this, but hard otuside components with react-router
+    if (nextProps.project && nextProps.project.metadata && (!this.lastProjectId || nextProps.projectId !== this.props.projectId)) {
+      this.lastProjectId = nextProps.projectId;
+      this.props.focusProject(nextProps.projectId);
+    }
+  }
+
+  componentWillUnmount() {
+    window.onbeforeunload = window.onunload = () => {};
+  }
+
+  onWindowUnload(evt) {
+    if (autosaveInstance.isDirty() && process.env.NODE_ENV === 'production') {
+      return 'Project has unsaved work! Please save before leaving this page';
+    }
   }
 
   onLayoutChanged = () => {
     this.layoutAlgorithm = this.refs.layoutSelector.value;
     this.forceUpdate();
-  }
+  };
 
   render() {
-    const { project, constructs } = this.props;
+    const { showingGrunt, project, projectId, constructs } = this.props;
 
-    //todo - need error handling here. Should be in route transition probably?
-    //right now there is some handling in GlobalNav when using ProjectSelect. Doesn't handle request of the URL.
+    //handle project not loaded
     if (!project || !project.metadata) {
-      return <p>todo - need to handle this (direct request)</p>;
+      this.props.projectLoad(projectId)
+        .catch(err => {
+          //if couldnt load project, load manifests and display the first one, or create a new project
+          this.props.uiSetGrunt(`Project with ID ${projectId} could not be loaded, loading another instead...`);
+
+          this.props.projectList().then(manifests => {
+            if (manifests.length) {
+              const nextId = manifests[0].id;
+              //need to fully load the project, as we just have the manifest right now...
+              //otherwise no blocks will show
+              //ideally, this would just get ids
+              this.props.projectLoad(nextId)
+                .then(() => this.props.projectOpen(nextId));
+            } else {
+              //if no manifests, create a new project
+              const newProject = this.props.projectCreate();
+              this.props.projectOpen(newProject.id);
+            }
+          });
+        });
+      return (<p>loading project...</p>);
     }
 
-    const constructViewers = constructs.map(construct => {
+    // build a list of construct viewers
+    const constructViewers = constructs.filter(construct => construct).map(construct => {
       return (
         <ConstructViewer key={construct.id}
+                         projectId={projectId}
                          constructId={construct.id}
                          layoutAlgorithm={this.layoutAlgorithm}/>
       );
     });
 
     return (
-      <div className="ProjectPage">
-        <Inventory />
+      <div className={'ProjectPage' + (showingGrunt ? ' gruntPushdown' : '')}>
+        <Inventory projectId={projectId}/>
 
         <div className="ProjectPage-content">
-          <div
-            style={{margin: '1rem 0 1rem 1rem',
-            paddingRight: '1rem',
-            textAlign: 'right',
-            position: 'absolute',
-            top: '0',
-            right: '0'}}>
-            <select ref="layoutSelector" onChange={this.onLayoutChanged}>
-              <option value="wrap">Wrap</option>
-              <option value="full">Full</option>
-              <option value="fit">Fit</option>
-            </select>
-          </div>
 
           <ProjectHeader project={project}/>
 
-          <div className="ProjectPage-constructs">
+          <ConstructViewerCanvas
+            currentProjectId={this.props.projectId}>
             {constructViewers}
-          </div>
+          </ConstructViewerCanvas>
 
           <ProjectDetail project={project}/>
         </div>
 
-        <Inspector />
+        <Inspector projectId={projectId}/>
       </div>
     );
   }
 }
 
-function mapStateToProps(state) {
-  const { projectId, constructId } = state.router.params;
+function mapStateToProps(state, ownProps) {
+  const projectId = ownProps.params.projectId;
   const project = state.projects[projectId];
-  const constructs = project.components.map(componentId => state.blocks[componentId]);
+  const showingGrunt = !!state.ui.modals.gruntMessage;
 
+  if (!project) {
+    return {
+      showingGrunt,
+      projectId,
+    };
+  }
+
+  const constructs = project.components.map(componentId => state.blocks[componentId]);
   return {
+    showingGrunt,
     projectId,
-    constructId,
     project,
     constructs,
   };
 }
 
 export default connect(mapStateToProps, {
-  pushState,
-})(DnD);
+  projectList,
+  projectLoad,
+  projectCreate,
+  projectOpen,
+  uiSetGrunt,
+  focusProject,
+})(ProjectPage);

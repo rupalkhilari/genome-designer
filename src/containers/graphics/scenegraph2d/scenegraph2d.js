@@ -1,9 +1,7 @@
 import uuid from 'node-uuid';
 import Node2D from './node2d';
-import UserInterface from './userinterface';
-import invariant from '../../../utils/environment/invariant';
-import debounce from 'lodash.debounce';
-import Box2D from '../geometry/box2d';
+import invariant from 'invariant';
+import Vector2D from '../geometry/vector2d';
 
 export default class SceneGraph2D {
 
@@ -28,24 +26,32 @@ export default class SceneGraph2D {
 
     // create our root node, which represents the view matrix and to which
     // all other nodes in the graph are ultimately attached.
-    this.root = new Node2D({sg: this});
+    this.root = new Node2D({
+      sg: this,
+      isRoot: true,
+    });
 
     // root is appended directly to the scene graph BUT without setting a parent node.
     this.parent.appendChild(this.root.el);
 
     // create the user interface layer as required
     if (this.userInterfaceConstructor) {
-      this.ui = new this.userInterfaceConstructor(this);
+      this.ui = new this.userInterfaceConstructor(this); //eslint-disable-line new-cap
     }
 
     // size our element to initial scene graph size
     this.updateSize();
-
-    // if you want an immediate update call this._update(). The this.update()
-    // method is debounced since React tends to over send updates.
-    this.updateDebounced = debounce(this._update, 15);
   }
 
+  /**
+   * darken by changing opacity on parent el
+   */
+  darken() {
+    this.parent.classList.add('sceneGraph-dark');
+  }
+  lighten() {
+    this.parent.classList.remove('sceneGraph-dark');
+  }
 
   /**
    * update our element to the current scene graph size
@@ -57,6 +63,13 @@ export default class SceneGraph2D {
     if (this.ui) {
       this.ui.updateSize();
     }
+  }
+
+  /**
+   * current size of the graph, unscaled
+   */
+  getSize() {
+    return new Vector2D(this.width, this.height);
   }
 
   /**
@@ -80,9 +93,22 @@ export default class SceneGraph2D {
    * @return {[Node2D]}
    */
   findNodesAt(point) {
-    let hits = [];
+    const hits = [];
     this.traverse( node => {
       if (node.parent && node.containsGlobalPoint(point)) {
+        hits.push(node);
+      }
+    }, this);
+    return hits;
+  }
+
+  /**
+   * find nodes that intersect the given box
+   */
+  findNodesWithin(box) {
+    const hits = [];
+    this.traverse( node => {
+      if (node.parent && node.getAABB().intersectWithBox(box)) {
         hits.push(node);
       }
     }, this);
@@ -111,41 +137,6 @@ export default class SceneGraph2D {
    * @return {[type]} [description]
    */
   update() {
-    this.updateDebounced();
-  }
-  _update() {
     this.root.updateBranch();
-    if (this.ui) {
-      this.ui.update();
-    }
-  }
-
-  /**
-   * start a drag using the detached node at its last position / size
-   */
-  simulateDrag(node) {
-    this.sdrag = {
-      node: node,
-      translateX: node.translateX,
-      translateY: node.translateY,
-    }
-    this.root.appendChild(node);
-    node.update();
-  }
-  dragMove(point) {
-    console.log('drag move ', point.toString());
-    if (this.sdrag) {
-      this.sdrag.node.set({
-        translateX: point.x,
-        translateY: point.y,
-      });
-      this.sdrag.node.update();
-    }
-  }
-  dragUp(point) {
-    if (this.sdrag) {
-      this.sdrag.node.parent.removeChild(this.sdrag.node);
-      this.sdrag = null;
-    }
   }
 }

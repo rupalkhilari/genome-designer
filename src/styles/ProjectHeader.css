@@ -2,9 +2,12 @@
 
 .ProjectHeader {
   display: flex;
+  flex-shrink: 0;
   margin: 10px;
   flex-direction: row;
   justify-content: space-between;
+  color: var(--colors-blueGreyLighter);
+  cursor: default;
 
   /* left side */
   &-info {
@@ -19,7 +22,6 @@
 
   &-breadcrumb {
     text-decoration: none;
-    color: var(--colors-greyMedLight);
   }
 
   &-lead {
@@ -29,7 +31,6 @@
   &-breadcrumb-separator {
     margin: 0 0.5em;
     font-weight: 100;
-    color: var(--colors-grey);
   }
 
   &-title {
@@ -37,7 +38,6 @@
   }
 
   &-description {
-    color: var(--colors-greyMedLight);
   }
 
   /* right side */

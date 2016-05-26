@@ -14,10 +14,8 @@ import { getLastAction as lastAction } from './saveLastActionMiddleware';
 
 const store = configureStore();
 
-//in general, you will want to use redux's connect() where possible. This is for 3rd party etc.
-const { dispatch, subscribe, getState } = store;
-export { dispatch, subscribe, getState };
-
-export { lastAction };
+//in general, you will want to use redux's connect() where possible. This is in the event you need direct access
+const { dispatch, subscribe, getState, pause, resume, isPaused } = store;
+export { lastAction, dispatch, subscribe, getState, pause, resume, isPaused };
 
 export default store;

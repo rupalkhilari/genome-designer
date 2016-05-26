@@ -1,0 +1,56 @@
+@import './variables.css';
+
+.InventoryGroup {
+  display: flex;
+  flex-direction: column;
+
+  .InventoryGroup-heading {
+    height: 2.5em;
+    padding: 0.5em 1em;
+    margin: 0 -var(--SidePanel-width-padding-content);
+    font-size: var(--font-size-sectionLabel);
+    font-weight: 100;
+    background-color: var(--colors-blueGreyMed);
+    flex-shrink: 0;
+    cursor: pointer;
+    user-select: none;
+    border-top: 1px solid var(--colors-grey);
+
+    &:hover {
+      background-color: var(--colors-blueGreyDark);
+    }
+  }
+
+  &.active {
+    flex-grow: 1;
+    flex-basis: 0;
+
+    .InventoryGroup-heading {
+      background-color: transparent;
+      border-top-color: transparent;
+    }
+  }
+
+  &.active + & .InventoryGroup-heading,
+  &:first-child .InventoryGroup-heading {
+    border-color: transparent;
+  }
+
+  &-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 0 0 0.75em;
+    position: relative;
+
+    &Inner {
+      overflow-y: scroll;
+    }
+  }
+
+  &-placeholderContent {
+    color: var(--colors-greyMedLight);
+    text-align: center;
+    margin: 10px auto;
+  }
+}

@@ -9,18 +9,20 @@ export default class InventoryTabs extends Component {
     })).isRequired,
     onTabSelect: PropTypes.func.isRequired,
     activeTabIndex: PropTypes.number,
-  }
+    activeTabKey: PropTypes.string,
+  };
 
   render() {
-    const { tabs, onTabSelect, activeTabIndex } = this.props;
+    const { tabs, onTabSelect, activeTabKey, activeTabIndex } = this.props;
 
     return (
       <div className="InventoryTabs">
         {tabs.map((tab, index) => {
+          const isActive = activeTabKey === tab.key || activeTabIndex === index;
           return (
-            <a className={'InventoryTabs-tab' + (activeTabIndex === index ? ' active' : '')}
+            <a className={'InventoryTabs-tab' + (isActive ? ' active' : '')}
                key={tab.name}
-               onClick={onTabSelect.bind(null, index)}>
+               onClick={() => onTabSelect(tab, index)}>
               {tab.name}
             </a>
           );

@@ -3,25 +3,26 @@
   /* Typography
   ==================== */
 
+  --colors-black: #000000;
+  --colors-blueBlack: #1D222D;
+  --colors-blueGreyDark: #292D40; /*canvas*/
+  --colors-blueGreyMed: #4B505E;
+  --colors-grey: #6B6F7C;
+  --colors-greyMedLight: #C2C5D2;
+  --colors-blueGreyLighter: #DFE2EC;
+  --colors-greyLight: #EEEFF3;
   --colors-white: #ffffff;
-  --colors-greyDark: #666666;
-  --colors-grey-duncan: #cccccc;
-  --colors-greyLight-duncan: rgb(55,57,77);
-  --colors-grey: #808080;
-  --colors-greyMedLight: #999999;
-  --colors-greyLight: #e6e6e6;
-  --colors-bluegrey: #292D40; /*canvas*/
-  --colors-bluegreyLight: #444753; /*detail*/
-  --colors-bluegreyDark: #181B26; /*sides*/
-  --colors-selected: #88aaff;
+  --colors-selected: #3F82FF;
 
-  --colors-text: #222;
-
-  --font-size-text: 12px;
-  --font-size-heading: 11px;
+  --colors-logo: rgb(189, 130, 113);
+  --colors-text: var(--colors-blueBlack);
+  --colors-bluetext: var(--colors-selected);
 
   /* Typography
   ==================== */
+  --font-size-text: 12px;
+  --font-size-heading: 11px;
+  --font-size-sectionLabel: 16px;
 
   --font-family-base: Helvetica, sans-serif;
 
@@ -42,7 +43,9 @@
   --width-SidePanel-closed: 50px;
   --width-SidePanel-open: 300px;
 
-  --GlobalNav-width-chrome: 50px;
+  --GlobalNav-height-chrome: 50px;
+
+  --grunt-height: 2.5rem;
 
   /* Backgrounds
  ==================== */
@@ -52,5 +55,28 @@
   /* Timing
   ==================== */
 
+  --timing-extrafast: 0.05s;
   --timing-fast: 0.15s;
+
+  /* Z Order
+  =================== */
+  --zMenu: 100000;
+  --zMenuContainer: 1000;
+  --zModal:90000;
+  --zFence:200000;
+
+  /* Modal windows
+  ==================== */
+  --modal-radius: 3px;
+  --modal-element-height: 3rem;
+  --modal-inputcolor: #E1E2E5;
+  --modal-textcolor: #747784;
+  --modal-primarycolor: #343A4D;
+  --modal-errorcolor: #FF6A5E;
+  --modal-fontsize: 1.25rem;
+
+  /* List Items
+  ===================== */
+  --listItem-background: rgba(255,255,255,0.2);
+  --listItem-backgroundHover: var(--colors-selected);
 }
