@@ -3,6 +3,7 @@ import * as validators from './fields/validators';
 import InstanceDefinition from './Instance';
 import SequenceDefinition from './Sequence';
 import RulesDefintion from './Rules';
+import BlockSourceDefinition from './BlockSource';
 
 /**
  @name BlockDefinition
@@ -38,10 +39,7 @@ const BlockDefinition = InstanceDefinition.extend({
   ],
 
   source: [
-    fields.shape({
-      source: validators.string(),
-      id: validators.string(),
-    }).required,
+    BlockSourceDefinition,
     `Source (Inventory) ID of the Part`,
   ],
 
