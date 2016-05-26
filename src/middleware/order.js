@@ -12,7 +12,7 @@ export const submitOrder = (foundry, order) => {
 
   //todo - validate foundry
 
-  const url = dataApiPath(`order/submit`);
+  const url = dataApiPath(`order/${order.projectId}`);
   const stringified = JSON.stringify({
     foundry,
     order,
