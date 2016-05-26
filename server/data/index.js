@@ -139,7 +139,10 @@ router.route('/order/:projectId/:orderId?')
 
     //todo
     // setup validation
-    // this should only be called when it is submitted... dont want incomplete ones saved
+    // attempt to send the order...
+    // convert constructs to part lists
+    // if successful...
+    // set user ID based on request
     // snapshot project
     // set project version
     // validate order

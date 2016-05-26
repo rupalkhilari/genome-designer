@@ -3,12 +3,12 @@ import SchemaDefinition from './SchemaDefinition';
 
 const BlockSourceDefinition = new SchemaDefinition({
   source: [
-    fields.string().isRequired,
+    fields.string(),
     `key of foundry the Order has been submitted to`,
   ],
 
   id: [
-    fields.string().isRequired,
+    fields.string(),
     `ID at remote foundry`,
   ],
 });

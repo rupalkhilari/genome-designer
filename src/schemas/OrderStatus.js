@@ -1,6 +1,5 @@
 import fields from './fields/index';
 import SchemaDefinition from './SchemaDefinition';
-import * as validators from './fields/validators';
 
 const OrderStatusDefinition = new SchemaDefinition({
   foundry: [
