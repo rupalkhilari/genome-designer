@@ -35,7 +35,7 @@ const OrderDefinition = new SchemaDefinition({
   ],
 
   constructs: [
-    fields.arrayOf(OrderConstructDefinition.validate.bind(OrderConstructDefinition)).isRequired,
+    fields.arrayOf(construct => OrderConstructDefinition.validate(construct)).required,
     `Array of arrays to order - all the constructs with a parts list`,
   ],
 
@@ -45,8 +45,9 @@ const OrderDefinition = new SchemaDefinition({
   ],
 
   user: [
-    fields.id({prefix: 'user'}),
+    fields.id({ prefix: 'user' }),
     'User ID',
+    { avoidScaffold: true },
   ],
 
   status: [
