@@ -45,10 +45,8 @@ const OrderDefinition = new SchemaDefinition({
   ],
 
   user: [
-    fields.shape({
-      email: validators.email(),
-    }).required,
-    'User information',
+    fields.id({prefix: 'user'}),
+    'User ID',
   ],
 
   status: [
