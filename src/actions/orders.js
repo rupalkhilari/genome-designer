@@ -46,7 +46,8 @@ export const orderCreate = (projectId, constructIds = [], parameters = {}) => {
 
     invariant(typeof parameters === 'object', 'paramters must be object');
 
-    const order = new Order(projectId, {
+    const order = new Order({
+      projectId,
       constructIds,
       parameters,
     });
@@ -98,7 +99,7 @@ export const orderGenerateConstructs = (orderId) => {
         });
       });
 
-    const order = oldOrder.merge({ constructs });
+    const order = oldOrder.setConstructs(constructs);
 
     dispatch({
       type: ActionTypes.ORDER_STASH,

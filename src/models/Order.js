@@ -3,6 +3,7 @@ import invariant from 'invariant';
 import { merge, cloneDeep } from 'lodash';
 import OrderDefinition from '../schemas/Order';
 import OrderParametersDefinition from '../schemas/OrderParameters';
+import OrderConstructDefinition from '../schemas/OrderConstruct';
 import * as validators from '../schemas/fields/validators';
 import safeValidate from '../schemas/fields/safeValidate';
 import { submitOrder, getQuote } from '../middleware/order';
@@ -10,12 +11,10 @@ import { submitOrder, getQuote } from '../middleware/order';
 const idValidator = (id) => safeValidate(validators.id(), true, id);
 
 export default class Order extends Instance {
-  constructor(projectId, input = {}) {
-    invariant(projectId, 'project is required to make an order');
+  constructor(input = {}) {
+    invariant(input.projectId, 'project Id is required to make an order');
 
-    super(input, OrderDefinition.scaffold(), {
-      projectId,
-    });
+    super(input, OrderDefinition.scaffold());
   }
 
   /************
@@ -38,7 +37,7 @@ export default class Order extends Instance {
       input.constructIds.length > 0 &&
       input.constructIds.every(id => idValidator(id)) &&
       input.constructs.length > 0 &&
-      input.constructs.every(construct => Array.isArray(construct) && construct.every(part => typeof part === 'string')) &&
+      input.constructs.every(construct => OrderConstructDefinition.validate(construct)) &&
       OrderParametersDefinition.validate(input.parameters, throwOnError);
   }
 
@@ -76,6 +75,13 @@ export default class Order extends Instance {
   /************
    constructs + filtering
    ************/
+
+  setConstructs(constructs = []) {
+    invariant(Array.isArray(constructs), 'must pass an array of constructs');
+    invariant(constructs.every(construct => OrderConstructDefinition.validate(construct)), 'must pass valid constructs. See OrderConstruct schema');
+
+    return this.merge({ constructs });
+  }
 
   constructsAdd(...constructs) {
     //todo - update to expect ID
