@@ -48,22 +48,22 @@ export default class Instance {
 
   //clone can accept just an ID (e.g. project), but likely want to pass an object (e.g. block, which also has field projectId in parent)
   clone(parentInfo = {}) {
-    const self = cloneDeep(this);
+    const cloned = cloneDeep(this);
     const inputObject = (typeof parentInfo === 'string') ?
     { version: parentInfo } :
       parentInfo;
 
     const parentObject = Object.assign({
-      id: self.id,
-      version: self.version,
+      id: cloned.id,
+      version: cloned.version,
     }, inputObject);
 
     invariant(versionValidator(parentObject.version), 'must pass a valid version (SHA), got ' + parentObject.version);
 
-    const clone = Object.assign(self, {
-      id: uuid.v4(),
-      parents: [parentObject].concat(self.parents),
+    const clone = Object.assign(cloned, {
+      parents: [parentObject].concat(cloned.parents),
     });
+    delete clone.id;
     return new this.constructor(clone);
   }
 }
