@@ -275,8 +275,8 @@ export const blockGetPositionalCombinations = (blockId, includeUnselected = fals
     //generate 2D array, outer array for positions, inner array with lists of parts
     return _flattenConstruct(blockId, state)
       .map(block => block.isList() ?
-        Object.keys(_getOptions(block.id, state, includeUnselected)) :
-        [block.id]
+        values(_getOptions(block.id, state, includeUnselected)) :
+        [block]
       );
   };
 };

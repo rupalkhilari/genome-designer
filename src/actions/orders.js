@@ -1,14 +1,43 @@
 import invariant from 'invariant';
 import Order from '../models/Order';
-import { createOrder } from '../middleware/order';
+import { getOrder, getOrders } from '../middleware/order';
 import * as ActionTypes from '../constants/ActionTypes';
 import * as projectActions from './projects';
 import * as blockActions from './blocks';
 import * as projectSelectors from '../selectors/projects';
 import * as blockSelectors from '../selectors/blocks';
-import { flatten } from 'lodash';
+import { merge, flatten } from 'lodash';
+import OrderConstructDefinition from '../schemas/OrderConstruct';
+import OrderConstructComponentDefinition from '../schemas/OrderConstructComponent';
 
-//create an order, without saving it.
+
+export const orderList = (projectId) => {
+  return (dispatch, getState) => {
+    return getOrders(projectId)
+      .then(orders => {
+        dispatch({
+          type: ActionTypes.ORDER_STASH,
+          orders,
+        });
+        return orders;
+      });
+  };
+};
+
+export const orderGet = (projectId, orderId) => {
+  return (dispatch, getState) => {
+    return getOrder(projectId, orderId)
+      .then(order => {
+        dispatch({
+          type: ActionTypes.ORDER_STASH,
+          order,
+        });
+        return order;
+      });
+  };
+};
+
+//create an order with basic fields
 export const orderCreate = (projectId, constructIds = [], parameters = {}) => {
   return (dispatch, getState) => {
     invariant(projectId, 'must pass project ID');
@@ -33,7 +62,7 @@ export const orderCreate = (projectId, constructIds = [], parameters = {}) => {
   };
 };
 
-export const orderSetParameters = (orderId, parameters = {}, shouldMerge) => {
+export const orderSetParameters = (orderId, parameters = {}, shouldMerge = false) => {
   return (dispatch, getState) => {
     invariant(Order.validateParameters(parameters), 'parameters must pass validation');
 
@@ -48,15 +77,26 @@ export const orderSetParameters = (orderId, parameters = {}, shouldMerge) => {
   };
 };
 
-//todo - should be able to just get parameters form the order itself
+//should only call after parameters have been set
 export const orderGenerateConstructs = (orderId) => {
   return (dispatch, getState) => {
     const order = getState().orders[orderId];
-
     const { constructIds, parameters } = order;
 
-    //for each constructId, get constructs
-    return flatten(constructIds.map()); //todo
+    //todo - validate parameters
+
+    //for each constructId, get construct combinations as blocks
+    //flatten all combinations into a single list of combinations
+    return flatten(constructIds.map(constructId => dispatch(blockSelectors.blockGetCombinations(constructId, parameters))))
+    //convert each combination construct (currently blocks) into schema-conforming form
+      .map(construct => {
+        return merge(OrderConstructDefinition.scaffold(), {
+          components: construct.map(component => ({
+            componentId: component.id,
+            source: component.source,
+          })),
+        });
+      });
   };
 };
 
@@ -70,11 +110,11 @@ export const orderSubmit = (orderId, foundry) => {
 
     return order.submit(foundry)
       .then(order => {
-        //update store
         dispatch({
           type: ActionTypes.ORDER_SUBMIT,
           order,
         });
+        return order;
       });
   };
 };
