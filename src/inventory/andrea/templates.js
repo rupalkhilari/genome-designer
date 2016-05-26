@@ -41,7 +41,7 @@ const p = (pos) => { //eslint-disable-line id-length
 // create block which is connector
 // todo - should update connectors themselves to be frozen
 const c = (term) => { //eslint-disable-line id-length
-  const connector = new Block(merge({},
+  const merged = merge({},
     getConnector(term),
     {
       metadata: {
@@ -51,7 +51,9 @@ const c = (term) => { //eslint-disable-line id-length
         frozen: true,
       },
     },
-  ));
+  );
+  delete merged.id;
+  const connector = new Block(merged);
 
   blocksCreated.push(connector);
   return connector;
