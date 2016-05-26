@@ -36,6 +36,7 @@ export default function createFieldType(baseFieldDefinition, type) {
 
     const opt = createFieldFromValidator(fieldDef, baseValidator, validationParams, false);
     opt.required = createFieldFromValidator(fieldDef, baseValidator, validationParams, true);
+    opt.isRequired = () => { throw new Error('use required, not isRequired'); };
 
     return opt;
   };

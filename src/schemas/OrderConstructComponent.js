@@ -4,13 +4,13 @@ import BlockSourceDefinition from './BlockSource';
 
 const OrderConstructComponentDefinition = new SchemaDefinition({
   componentId: [
-    fields.id({ prefix: 'block' }).isRequired,
-    `ID of block for this part`,
+    fields.id({ prefix: 'block' }).required,
+    `ID of block for this component`,
   ],
 
   source: [
     BlockSourceDefinition,
-    `Source of part`,
+    `Source of component`,
   ],
 });
 
