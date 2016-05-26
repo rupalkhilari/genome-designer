@@ -42,6 +42,16 @@ export default class Block extends Instance {
     return super.clone(parentObject);
   }
 
+  mutate(...args) {
+    invariant(!this.isFrozen(), 'cannot mutate a frozen block');
+    return super.mutate(...args);
+  }
+
+  merge(...args) {
+    invariant(!this.isFrozen(), 'cannot mutate a frozen block');
+    return super.merge(...args);
+  }
+
   /************
    type checks
    ************/
@@ -214,7 +224,7 @@ export default class Block extends Instance {
   //for list block authoring
   addOptions(...optionIds) {
     invariant(this.isList(), 'must be a list block to add list options');
-    invariant(optionId.every(option => idValidator(option)), 'must pass component IDs');
+    invariant(optionIds.every(option => idValidator(option)), 'must pass component IDs');
     const toAdd = optionIds.reduce((acc, id) => Object.assign(acc, { [id]: false }));
     const newOptions = Object.assign(cloneDeep(this.options), toAdd);
 
@@ -239,8 +249,8 @@ export default class Block extends Instance {
     return this.mutate('options', cloned);
   }
 
-  getSelectedOptions() {
-    return Object.keys(this.options).filter(id => this.options[id]);
+  getOptions(includeUnselected = false) {
+    return Object.keys(this.options).filter(id => this.options[id] || (includeUnselected === true));
   }
 
   /************

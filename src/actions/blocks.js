@@ -130,6 +130,9 @@ export const blockClone = (blockInput, parentObjectInput = {}, shallowOnly = fal
       return acc;
     }, {});
     const clones = unmappedClones.map(clone => {
+      if (!clone.isConstruct()) {
+        return clone;
+      }
       const newComponents = clone.components.map(componentId => cloneIdMap[componentId]);
       return clone.mutate('components', newComponents);
     });
