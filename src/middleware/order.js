@@ -2,15 +2,28 @@ import rejectingFetch from './rejectingFetch';
 import invariant from 'invariant';
 import { dataApiPath } from './paths';
 import { headersGet, headersPost, headersPut, headersDelete } from './headers';
+import Order from '../models/Order';
 
-// likely want a registry like for inventory and hit their respective functions
+// likely want a registry like for inventory and hit their respective functions for each foundry
 
-export const createOrder = (projectId, order) => {
-  const url = dataApiPath(`order/${projectId}`);
-  const stringified = JSON.stringify(order);
+// todo - handle errors, make consistent
+export const submitOrder = (foundry, order) => {
+  invariant(Order.validateSetup(order), 'order be valid partial order (prior to ID + foundry data)');
+
+  //todo - validate foundry
+
+  const url = dataApiPath(`order/submit`);
+  const stringified = JSON.stringify({
+    foundry,
+    order,
+  });
 
   return rejectingFetch(url, headersPost(stringified))
     .then(resp => resp.json());
+};
+
+const getQuote = (foundry, order) => {
+  invariant(false, 'not implemented');
 };
 
 export const getOrder = (projectId, orderId) => {
@@ -25,14 +38,4 @@ export const getOrders = (projectId) => {
 
   return rejectingFetch(url, headersGet())
     .then(resp => resp.json());
-};
-
-// todo - should this hit our server? Or just go straight to the foudnry
-// todo - handle errors, make consistent
-export const sendOrder = (foundry, order) => {
-  invariant(false, 'not implemented');
-};
-
-const getQuote = (foundry, order) => {
-  invariant(false, 'not implemented');
 };
