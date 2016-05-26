@@ -6,11 +6,10 @@ import * as projectActions from './projects';
 import * as blockActions from './blocks';
 import * as projectSelectors from '../selectors/projects';
 import * as blockSelectors from '../selectors/blocks';
-
-//todo - determine where order is created, where its saved, etc... clean up this flow
+import { flatten } from 'lodash';
 
 //create an order, without saving it.
-export const orderCreate = (projectId, parameters = {}, constructIds = []) => {
+export const orderCreate = (projectId, constructIds = [], parameters = {}) => {
   return (dispatch, getState) => {
     invariant(projectId, 'must pass project ID');
 
@@ -19,27 +18,45 @@ export const orderCreate = (projectId, parameters = {}, constructIds = []) => {
     invariant(constructIds.every(id => dispatch(blockSelectors.blockIsSpec(id))), 'all constructs must be specs (no empty option lists, and each leaf node must have a sequence)');
 
     invariant(typeof parameters === 'object', 'paramters must be object');
+
+    const order = new Order(projectId, {
+      constructIds,
+      parameters,
+    });
+
+    //add order to the store
+    dispatch({
+      type: ActionTypes.ORDER_CREATE,
+      order,
+    });
+    return order;
+  };
+};
+
+export const orderSetParameters = (orderId, parameters = {}, shouldMerge) => {
+  return (dispatch, getState) => {
     invariant(Order.validateParameters(parameters), 'parameters must pass validation');
 
-    //todo - should only snapshot when the order actually goes through
-    //snapshot project with message noting order
-    return dispatch(projectActions.projectSnapshot(projectId, 'order'))
-    //get new project version
-      .then(sha => {
-        //create order with ID + version
-        const order = new Order(projectId, sha, {
-          constructIds,
-          parameters,
-        });
+    const oldOrder = getState().orders[orderId];
+    const order = oldOrder.setParameters(parameters, shouldMerge);
 
-        //add order to the store
-        dispatch({
-          type: ActionTypes.ORDER_CREATE,
-          order,
-        });
+    dispatch({
+      type: ActionTypes.ORDER_STASH,
+      order,
+    });
+    return order;
+  };
+};
 
-        return order;
-      });
+//todo - should be able to just get parameters form the order itself
+export const orderGenerateConstructs = (orderId) => {
+  return (dispatch, getState) => {
+    const order = getState().orders[orderId];
+
+    const { constructIds, parameters } = order;
+
+    //for each constructId, get constructs
+    return flatten(constructIds.map()); //todo
   };
 };
 
@@ -50,8 +67,6 @@ export const orderSubmit = (orderId, foundry) => {
     const order = getState().orders[orderId];
     invariant(order, 'order not in the store...');
     invariant(!order.isSubmitted(), 'Cant submit an order twice');
-
-    //todo - should snapshot project here
 
     return order.submit(foundry)
       .then(order => {
