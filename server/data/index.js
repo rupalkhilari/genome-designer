@@ -124,9 +124,13 @@ router.route('/order/:projectId/:orderId?')
     const { orderId } = req.params;
 
     //todo - if no order ID, get list of orders
+    if (!orderId) {
+      res.status(402).send([]);
+      return;
+    }
 
     //todo - get the order and return it
-    res.status(402).send();
+    res.status(402).send({});
   })
   .post((req, res, next) => {
     const { user, projectId } = req;
@@ -134,10 +138,14 @@ router.route('/order/:projectId/:orderId?')
     const order = req.body;
 
     //todo
-    // validate order
+    // setup validation
     // this should only be called when it is submitted... dont want incomplete ones saved
+    // snapshot project
+    // set project version
+    // validate order
     // add to project folder
-    res.status(402).send();
+    // return the order
+    res.status(402).send({});
   });
 
 router.route('/info/:type/:detail?')
