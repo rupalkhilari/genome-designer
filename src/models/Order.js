@@ -5,6 +5,7 @@ import OrderDefinition from '../schemas/Order';
 import OrderParametersDefinition from '../schemas/OrderParameters';
 import * as validators from '../schemas/fields/validators';
 import safeValidate from '../schemas/fields/safeValidate';
+import { submitOrder, getQuote } from '../middleware/order';
 
 const idValidator = (id) => safeValidate(validators.id(), true, id);
 
@@ -38,8 +39,7 @@ export default class Order extends Instance {
       input.constructIds.every(id => idValidator(id)) &&
       input.constructs.length > 0 &&
       input.constructs.every(construct => Array.isArray(construct) && construct.every(part => typeof part === 'string')) &&
-      OrderParametersDefinition.validate(input.parameters, throwOnError) &&
-      typeof input.user === 'string';
+      OrderParametersDefinition.validate(input.parameters, throwOnError);
   }
 
   static validateParameters(input, throwOnError = false) {
@@ -90,13 +90,15 @@ export default class Order extends Instance {
    ************/
 
   quote(foundry) {
-
+    return getQuote(foundry, this);
   }
 
   submit(foundry) {
-    //set foundry + remote ID in status
+    //todo
+    // set foundry + remote ID in status
     //write it to the server
     //return the updated order
+    return submitOrder(foundry, this);
   }
 
 }

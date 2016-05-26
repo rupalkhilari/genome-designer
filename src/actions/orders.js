@@ -8,8 +8,6 @@ import * as projectSelectors from '../selectors/projects';
 import * as blockSelectors from '../selectors/blocks';
 import { merge, flatten } from 'lodash';
 import OrderConstructDefinition from '../schemas/OrderConstruct';
-import OrderConstructComponentDefinition from '../schemas/OrderConstructComponent';
-
 
 export const orderList = (projectId) => {
   return (dispatch, getState) => {
@@ -80,23 +78,33 @@ export const orderSetParameters = (orderId, parameters = {}, shouldMerge = false
 //should only call after parameters have been set
 export const orderGenerateConstructs = (orderId) => {
   return (dispatch, getState) => {
-    const order = getState().orders[orderId];
-    const { constructIds, parameters } = order;
+    const oldOrder = getState().orders[orderId];
+    const { constructIds, parameters } = oldOrder;
 
     //todo - validate parameters
 
     //for each constructId, get construct combinations as blocks
     //flatten all combinations into a single list of combinations
-    return flatten(constructIds.map(constructId => dispatch(blockSelectors.blockGetCombinations(constructId, parameters))))
+    const constructs = flatten(constructIds.map(constructId => dispatch(blockSelectors.blockGetCombinations(constructId, parameters))))
     //convert each combination construct (currently blocks) into schema-conforming form
       .map(construct => {
+        //each construct comforms ot OrderConstruct
         return merge(OrderConstructDefinition.scaffold(), {
+          //each construct component conforms to OrderConstructComponent
           components: construct.map(component => ({
             componentId: component.id,
             source: component.source,
           })),
         });
       });
+
+    const order = oldOrder.merge({ constructs });
+
+    dispatch({
+      type: ActionTypes.ORDER_STASH,
+      order,
+    });
+    return order;
   };
 };
 
