@@ -4,7 +4,7 @@ import { Block as exampleBlock } from './_examples';
 
 describe('Schema', () => {
   describe('Block', () => {
-    it('should validate the example', () => {
+    it.only('should validate the example', () => {
       expect(BlockDefinition.validate(exampleBlock)).to.equal(true);
     });
 
