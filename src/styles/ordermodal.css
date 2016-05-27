@@ -109,11 +109,11 @@
     }
 
     .angle {
-      border-left: 4px solid var(--colors-greyMedLight);
-      border-top: 4px solid var(--colors-greyMedLight);
+      border-left: 2px solid var(--colors-greyMedLight);
+      border-top: 2px solid var(--colors-greyMedLight);
       transform: rotateZ(-45deg);
-      width: 20px;
-      height: 20px;
+      width: 18px;
+      height: 18px;
       border-radius: 0px;
       margin: 0;
       padding: 0;
@@ -127,7 +127,7 @@
     }
 
     .text {
-      font-size: 1.1rem; 
+      font-size: 1.1rem;
       color: var(--colors-greyMedLight);
       text-align: center;
       line-height: 1rem;

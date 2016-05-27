@@ -4,6 +4,7 @@ import Row from './row';
 import Selector from './selector';
 import Input from './input';
 import Checkbox from './checkbox';
+import Link from './link';
 
 import '../../../src/styles/form.css';
 import '../../../src/styles/ordermodal.css';
@@ -55,7 +56,7 @@ class Page1 extends Component {
         <Row text="Contact Email" widget={(<Input onChange={this.contactEmailChanged} value="duncanmeech@gmail.com"/>)}/>
         <Row text="Assembly Containers:" widget={<Selector options={this.assemblyOptions()} onChange={this.assemblyContainerChanged}/>}/>
         <Row text="Number of assemblies:" widget={(<div>Some text with a <b>bold</b> word</div>)}/>
-        <Row text="Combinatorial method:" widget={(<div>Value of item 1</div>)}/>
+        <Row text="Combinatorial method:" widget={(<Link href="http://www.autodesk.com" text="Genome Foundry"/>)}/>
         <Row text="After fabrication:" widget={(<Checkbox onChange={this.postFabricationChanged} label="Sequence Assemblies" value={true}/>)}/>
         <br/>
       </div>
