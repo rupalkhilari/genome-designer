@@ -49,6 +49,7 @@ const c = (term) => { //eslint-disable-line id-length
       },
       rules: {
         frozen: true,
+        hidden: true,
       },
     },
   );
