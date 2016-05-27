@@ -59,11 +59,7 @@ router.route('/:projectId/:orderId?')
     const { user, projectId } = req;
     const { foundry, order } = req.body;
 
-    console.log(projectId);
-    console.log(user);
-    console.log(foundry);
-    console.log(order);
-
+    //note - this expects order.id to be defined
     if (!Order.validateSetup(order)) {
       next(errorInvalidModel);
     }
@@ -82,12 +78,17 @@ router.route('/:projectId/:orderId?')
             },
           });
 
-          //todo - validate + save the project
-
-          res.status(200).send(order);
+          return persistence.orderWrite(order.id, order, projectId);
         });
     })
+    .then(order => {
+      res.status(200).send({
+        order,
+      });
+    })
     .catch(err => {
+      console.log(err.stack);
+
       //todo - handle errors more intelligently
       res.status(400).send(errorInvalidModel);
     });

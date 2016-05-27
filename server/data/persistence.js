@@ -70,7 +70,7 @@ const _blockRead = (blockId, projectId, sha) => {
 };
 
 export const _orderRead = (orderId, projectId) => {
-  const manifestPath = filePaths.createBlockManifestPath(orderId, projectId);
+  const manifestPath = filePaths.createOrderManifestPath(orderId, projectId);
   return fileRead(manifestPath);
 };
 
@@ -108,7 +108,7 @@ const _blockWrite = (blockId, block = {}, projectId) => {
 };
 
 const _orderWrite = (orderId, order = {}, projectId) => {
-  const manifestPath = filePaths.createBlockManifestPath(orderId, projectId);
+  const manifestPath = filePaths.createOrderManifestPath(orderId, projectId);
   return fileWrite(manifestPath, order);
 };
 
