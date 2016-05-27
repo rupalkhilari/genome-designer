@@ -1,17 +1,14 @@
 import fields from './fields/index';
 import SchemaDefinition from './SchemaDefinition';
-import * as validators from './fields/validators';
 
 const OrderStatusDefinition = new SchemaDefinition({
   foundry: [
-    fields.shape({
-      id: validators.string(),
-    }).isRequired,
+    fields.string().isRequired,
     `key of foundry the Order has been submitted to`,
   ],
 
   remoteId: [
-    fields.string(),
+    fields.string().isRequired,
     `ID at remote foundry`,
   ],
 

@@ -1,18 +1,20 @@
 import Instance from './Instance';
 import invariant from 'invariant';
-import cloneDeep from 'lodash.clonedeep';
+import { merge, cloneDeep } from 'lodash';
 import OrderDefinition from '../schemas/Order';
 import OrderParametersDefinition from '../schemas/OrderParameters';
+import OrderConstructDefinition from '../schemas/OrderConstruct';
+import * as validators from '../schemas/fields/validators';
+import safeValidate from '../schemas/fields/safeValidate';
+import { submitOrder, getQuote } from '../middleware/order';
+
+const idValidator = (id) => safeValidate(validators.id(), true, id);
 
 export default class Order extends Instance {
-  constructor(projectId, projectVersion, input = {}) {
-    invariant(projectId, 'project is required to make an order');
-    invariant(projectVersion, 'project version required to make an order');
+  constructor(input = {}) {
+    invariant(input.projectId, 'project Id is required to make an order');
 
-    super(input, OrderDefinition.scaffold(), {
-      projectId,
-      projectVersion,
-    });
+    super(input, OrderDefinition.scaffold());
   }
 
   /************
@@ -24,8 +26,19 @@ export default class Order extends Instance {
     return Object.assign({}, cloneDeep(new Order(input)));
   }
 
+  //validate a complete order (with a project ID, which is after submission)
   static validate(input, throwOnError = false) {
     return OrderDefinition.validate(input, throwOnError);
+  }
+
+  //validate order prior to submission - should have parameters, constructs, user, projectId
+  static validateSetup(input, throwOnError = false) {
+    return idValidator(input.project) &&
+      input.constructIds.length > 0 &&
+      input.constructIds.every(id => idValidator(id)) &&
+      input.constructs.length > 0 &&
+      input.constructs.every(construct => OrderConstructDefinition.validate(construct)) &&
+      OrderParametersDefinition.validate(input.parameters, throwOnError);
   }
 
   static validateParameters(input, throwOnError = false) {
@@ -50,15 +63,32 @@ export default class Order extends Instance {
   }
 
   /************
+   parameters, user, other information
+   ************/
+
+  setParameters(parameters = {}, shouldMerge = false) {
+    const nextParameters = merge({}, (shouldMerge === true ? this.parameters : {}), parameters);
+    invariant(OrderParametersDefinition.validate(parameters, false), 'parameters must pass validation');
+    return this.merge({ parameters: nextParameters });
+  }
+
+  /************
    constructs + filtering
    ************/
 
+  setConstructs(constructs = []) {
+    invariant(Array.isArray(constructs), 'must pass an array of constructs');
+    invariant(constructs.every(construct => OrderConstructDefinition.validate(construct)), 'must pass valid constructs. See OrderConstruct schema');
+
+    return this.merge({ constructs });
+  }
+
   constructsAdd(...constructs) {
-    //todo
+    //todo - update to expect ID
   }
 
   constructsRemove(...constructs) {
-    //todo
+    //todo - update to expect ID
   }
 
   /************
@@ -66,13 +96,15 @@ export default class Order extends Instance {
    ************/
 
   quote(foundry) {
-
+    return getQuote(foundry, this);
   }
 
   submit(foundry) {
-    //set foundry + remote ID in status
+    //todo
+    // set foundry + remote ID in status
     //write it to the server
     //return the updated order
+    return submitOrder(foundry, this);
   }
 
 }

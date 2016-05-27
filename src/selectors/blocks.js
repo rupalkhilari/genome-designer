@@ -74,7 +74,7 @@ const _getOptions = (blockId, state, includeUnselected = false) => {
 };
 
 // flattens component hierarchy
-// returns flat array of blocks, ignoring hidden blocks, but not touching list blocks
+// returns flat array of blocks, not touching list blocks
 const _flattenConstruct = (blockId, state) => {
   const block = _getBlockFromStore(blockId, state);
   if (!block.components.length) {
@@ -82,8 +82,7 @@ const _flattenConstruct = (blockId, state) => {
   }
 
   const components = block.components
-    .map(compId => _getBlockFromStore(compId, state))
-    .filter(component => !component.isHidden());
+    .map(compId => _getBlockFromStore(compId, state));
 
   return flatten(components.map(component => component.isConstruct() ?
     _flattenConstruct(component.id, state) :
@@ -244,7 +243,7 @@ export const blockGetFiltered = filters => {
 };
 */
 
-//given a construct, returns an array of parts that have sequence / are list blocks, and are not hidden
+//given a construct, returns an array of parts that have sequence / are list blocks, including hidden blocks
 export const blockFlattenConstruct = (blockId) => {
   return (dispatch, getState) => {
     return _flattenConstruct(blockId, getState());
@@ -252,7 +251,7 @@ export const blockFlattenConstruct = (blockId) => {
 };
 
 /*
- returns 2D array - based on position - of block combinations (omitting hidden blocks), e.g.
+ returns 2D array - based on position - of block combinations (including hidden blocks), e.g.
 
  given:
  A: { sequence }                                        //single part
@@ -275,14 +274,14 @@ export const blockGetPositionalCombinations = (blockId, includeUnselected = fals
     //generate 2D array, outer array for positions, inner array with lists of parts
     return _flattenConstruct(blockId, state)
       .map(block => block.isList() ?
-        Object.keys(_getOptions(block.id, state, includeUnselected)) :
-        [block.id]
+        values(_getOptions(block.id, state, includeUnselected)) :
+        [block]
       );
   };
 };
 
 /*
- returns 2D array of all possible constructs, flattened, and with options unfurled
+ returns 2D array of all possible constructs, flattened, and with options unfurled, including hidden blocks
 
  given:
  A: { sequence }                                        //single part

@@ -3,6 +3,7 @@ import * as validators from './fields/validators';
 import SchemaDefinition from './SchemaDefinition';
 import MetadataDefinition from './Metadata';
 import OrderParametersDefinition from './OrderParameters';
+import OrderConstructDefinition from './OrderConstruct';
 import OrderStatusDefinition from './OrderStatus';
 
 const OrderDefinition = new SchemaDefinition({
@@ -24,7 +25,7 @@ const OrderDefinition = new SchemaDefinition({
 
   projectVersion: [
     fields.version().required,
-    'SHA1 version of project when order is made',
+    'SHA1 version of project when order is submitted',
     { avoidScaffold: true },
   ],
 
@@ -33,9 +34,8 @@ const OrderDefinition = new SchemaDefinition({
     `IDs of constructs in project involved in order`,
   ],
 
-  //todo - determine this shape
   constructs: [
-    fields.array().required,
+    fields.arrayOf(construct => OrderConstructDefinition.validate(construct)).required,
     `Array of arrays to order - all the constructs with a parts list`,
   ],
 
@@ -45,8 +45,9 @@ const OrderDefinition = new SchemaDefinition({
   ],
 
   user: [
-    fields.object().required,
-    'User information',
+    fields.id({ prefix: 'user' }),
+    'User ID',
+    { avoidScaffold: true },
   ],
 
   status: [
