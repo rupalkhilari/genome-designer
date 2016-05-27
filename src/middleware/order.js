@@ -7,10 +7,9 @@ import Order from '../models/Order';
 // likely want a registry like for inventory and hit their respective functions for each foundry
 
 // todo - handle errors, make consistent
-export const submitOrder = (foundry, order) => {
+export const submitOrder = (order, foundry = 'egf') => {
+  invariant(foundry === 'egf', 'must submit a foundry (right now, only egf works');
   invariant(Order.validateSetup(order), 'order be valid partial order (prior to ID + foundry data)');
-
-  //todo - validate foundry
 
   const url = dataApiPath(`order/${order.projectId}`);
   const stringified = JSON.stringify({
