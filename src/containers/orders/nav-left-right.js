@@ -28,9 +28,9 @@ class Page1 extends Component {
 
     return (
       <div className="nav-left-right" onClick={this.props.onClick}>
-        {this.props.left ? <div className="chevron">‹</div> : null}
+        {this.props.left ? <div className="angle left"/> : null}
         <div className="text">{this.props.text}</div>
-        {!this.props.left ? <div className="chevron right">›</div> : null}
+        {!this.props.left ? <div className="angle right"/> : null}
       </div>
     )
   }

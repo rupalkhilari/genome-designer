@@ -25,6 +25,9 @@ class ConstructPreview extends Component {
   get sceneGraphEl() {
     return this.dom.querySelector('.scenegraph');
   }
+  get containerEl() {
+    return this.dom.querySelector('.container');
+  }
   /**
    * construct scene graph and layout once mounted
    * @return {[type]} [description]
@@ -48,6 +51,7 @@ class ConstructPreview extends Component {
 
   componentDidUpdate() {
     if (this.props.constructs.length) {
+      this.containerEl.scrollTop = 0;
       this.layout.update({
         construct: this.props.constructs[this.state.index-1],
         blocks: this.props.blocks,
@@ -66,6 +70,7 @@ class ConstructPreview extends Component {
     const label = `of ${this.props.constructs.length} combinations`;
     return (
       <div className="preview">
+        <label>Reviewing assembly</label>
         <input
           className="input-updown"
           type="number"

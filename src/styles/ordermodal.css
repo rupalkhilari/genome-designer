@@ -55,9 +55,7 @@
   }
   .page2 .input-updown {
     width: 10rem;
-  }
-  .page2 .input-updown + label {
-    margin-left: 1rem;
+    margin: 0 1rem 1rem 1rem;
   }
   .page2 .container {
     overflow: hidden;
@@ -110,16 +108,27 @@
       background-color: whitesmoke;
     }
 
-    .chevron {
-      font-size: 4rem;
-      font-family: Arial;
-      width:2rem;
+    .angle {
+      border-left: 4px solid var(--colors-greyMedLight);
+      border-top: 4px solid var(--colors-greyMedLight);
+      transform: rotateZ(-45deg);
+      width: 20px;
+      height: 20px;
+      border-radius: 0px;
+      margin: 0;
+      padding: 0;
+    }
+    .left {
+      transform: rotateZ(-45deg);
     }
     .right {
+      transform: rotateZ(135deg);
       text-align: right;
     }
+
     .text {
-      font-size: var(--fontsize);
+      font-size: 1.1rem; 
+      color: var(--colors-greyMedLight);
       text-align: center;
       line-height: 1rem;
       margin: 0;
