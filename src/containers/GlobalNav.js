@@ -391,7 +391,7 @@ class GlobalNav extends Component {
           text: 'FILE',
           items: [
             {
-              text: 'Snapshot Project',
+              text: 'Save Project',
               shortcut: stringToShortcut('meta S'),
               action: () => {
                 this.saveProject();
