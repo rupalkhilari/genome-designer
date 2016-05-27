@@ -47,10 +47,22 @@
   .page1 .row {
     height: 3.5rem;
   }
+  .page2 .preview {
+    overflow: hidden;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .page2 .input-updown {
+    width: 10rem;
+  }
+  .page2 .input-updown + label {
+    margin-left: 1rem;
+  }
   .page2 .container {
     overflow: hidden;
     position: relative;
-    height: 20rem;
+    height: 19rem;
     width: 100%;
     margin: 0;
     padding: 0;

@@ -15,6 +15,9 @@ class ConstructPreview extends Component {
 
   constructor() {
     super();
+    this.state = {
+      index: 1,
+    };
   }
   get dom() {
     return ReactDOM.findDOMNode(this);
@@ -46,19 +49,35 @@ class ConstructPreview extends Component {
   componentDidUpdate() {
     if (this.props.constructs.length) {
       this.layout.update({
-        construct: this.props.constructs[0],
+        construct: this.props.constructs[this.state.index-1],
         blocks: this.props.blocks,
         currentBlocks: [],
-        currentConstructId: this.props.constructs[0],
+        currentConstructId: this.props.constructs[this.state.index-1],
       });
       this.sg.update();
     }
   }
+  onChangeConstruct = (evt) => {
+    const index = parseInt(evt.target.value);
+    this.setState({index});
+  }
 
   render() {
+    const label = `of ${this.props.constructs.length} combinations`;
     return (
-      <div className="container">
-        <div className="scenegraph"></div>
+      <div className="preview">
+        <input
+          className="input-updown"
+          type="number"
+          defaultValue="1"
+          min="1"
+          max={this.props.constructs.length}
+          onChange={this.onChangeConstruct}
+          />
+        <label>{label}</label>
+        <div className="container">
+          <div className="scenegraph"></div>
+        </div>
       </div>
     )
   }
