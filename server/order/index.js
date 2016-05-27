@@ -2,30 +2,18 @@ import express from 'express';
 import {
   errorNoIdProvided,
   errorInvalidModel,
-  errorInvalidRoute,
   errorDoesNotExist,
-  errorCouldntFindProjectId,
   errorVersioningSystem,
 } from './../utils/errors';
 import { merge } from 'lodash';
 import * as querying from './../data/querying';
 import * as persistence from './../data/persistence';
-import * as rollup from './../data/rollup';
 import { permissionsMiddleware } from './../data/permissions';
 
 import Order from '../../src/models/Order';
+import { submit } from './egf';
 
 const router = express.Router(); //eslint-disable-line new-cap
-
-
-
-//TODO - TESTING
-//should come from a registry of foundries we can submit to
-const submitOrder = () => {
-  
-};
-
-
 
 //in theory, we could get rid of this part of the route, and just assign the projectID basic on the project that is posted
 router.param('projectId', (req, res, next, id) => {
@@ -45,7 +33,6 @@ router.route('/:projectId/:orderId?')
         .catch(err => next(err));
     }
 
-    //todo
     return querying.getOrders(projectId)
       .then(orders => res.status(200).json(orders))
       .catch(err => next(err));
@@ -59,34 +46,42 @@ router.route('/:projectId/:orderId?')
       next(errorInvalidModel);
     }
 
-    submitOrder(foundry, order)
-    .then(response => {
-      return persistence.projectSnapshot(projectId, `ORDER`)
-        .then(({sha}) => {
-          merge(order, {
-            projectVersion: sha,
-            user: user.uuid,
-            status: {
-              foundry,
-              remoteId: response.jobId,
-              price: response.cost,
-            },
+    if (foundry !== 'egf') {
+      return res.status(501).send('foundry must be EGF');
+    }
+
+    //future - this should be dynamic, based on the foundry, pulling from a registry
+    submit(order)
+      .then(response => {
+        return persistence.projectSnapshot(projectId, `ORDER`)
+          .then(({ sha }) => {
+            merge(order, {
+              projectVersion: sha,
+              user: {
+                id: user.uuid,
+                email: user.email,
+              },
+              status: {
+                foundry,
+                remoteId: response.jobId,
+                price: response.cost,
+              },
+            });
+
+            return persistence.orderWrite(order.id, order, projectId);
           });
-
-          return persistence.orderWrite(order.id, order, projectId);
+      })
+      .then(order => {
+        res.status(200).send({
+          order,
         });
-    })
-    .then(order => {
-      res.status(200).send({
-        order,
-      });
-    })
-    .catch(err => {
-      console.log(err.stack);
+      })
+      .catch(err => {
+        console.log(err.stack);
 
-      //todo - handle errors more intelligently
-      res.status(400).send(errorInvalidModel);
-    });
+        //todo - handle errors more intelligently
+        res.status(400).send(errorInvalidModel);
+      });
   });
 
 export default router;
