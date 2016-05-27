@@ -22,14 +22,7 @@ const router = express.Router(); //eslint-disable-line new-cap
 //TODO - TESTING
 //should come from a registry of foundries we can submit to
 const submitOrder = () => {
-  // convert constructs to part lists, perhaps this is EGF specific
-  // attempt to send the order...
-  // verify the response, reject if invalid
-  // convert repsonse to this format
-  return Promise.resolve({
-    jobId: 'somejob',
-    cost: 100.45,
-  });
+  
 };
 
 
@@ -46,14 +39,16 @@ router.route('/:projectId/:orderId?')
     const { user, projectId } = req;
     const { orderId } = req.params;
 
-    //todo - if no order ID, get list of orders
     if (!orderId) {
-      res.status(501).send([]);
-      return;
+      return persistence.orderGet(orderId, projectId)
+        .then(order => res.status(200).json(order))
+        .catch(err => next(err));
     }
 
-    //todo - get the order and return it
-    res.status(501).send({});
+    //todo
+    return querying.getOrders(projectId)
+      .then(orders => res.status(200).json(orders))
+      .catch(err => next(err));
   })
   .post((req, res, next) => {
     const { user, projectId } = req;
