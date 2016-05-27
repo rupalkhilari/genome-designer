@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import ConstructPreview from './constructpreview'
 
 import '../../../src/styles/form.css';
 import '../../../src/styles/ordermodal.css';
@@ -24,13 +25,8 @@ class Page2 extends Component {
     }
 
     return (
-      <div className="order-page">
-      <p>Page 2</p>
-      <br/>
-      <br/>
-      <br/>
-      <br/>
-      <br/>
+      <div className="order-page page2">
+      <ConstructPreview />
       </div>
     )
   }

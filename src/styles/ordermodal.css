@@ -47,6 +47,27 @@
   .page1 .row {
     height: 3.5rem;
   }
+  .page2 .container {
+    overflow: hidden;
+    position: relative;
+    height: 20rem;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+    overflow-y: auto;
+    background-color: var(--colors-blueGreyDark);
+    * {
+      border-radius: 0;
+    }
+  }
+  .page2 .scenegraph {
+    position: relative;
+    display: inline-block;
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+  }
   .page3 .row {
     margin-bottom: 0.5rem;
   }

@@ -52,8 +52,7 @@ class OrderModal extends Component {
       });
       // we are given the project but we also need the project version
       const pVersion = this.props.projectGetVersion(this.props.projectId);
-      // this.order = new Order(this.props.projectId, pVersion);
-      // debugger;
+      this.order = new Order(this.props.projectId, pVersion);
     }
   }
 
