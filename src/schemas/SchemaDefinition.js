@@ -44,6 +44,11 @@ export default class SchemaDefinition {
       const instanceFieldValue = instance[fieldName];
       const field = this.fields[fieldName];
 
+      //check for improperly bound fields
+      if (process.env.NODE_ENV !== 'production' && !field.validate) {
+        console.error(field);
+      }
+
       //need to bind field in case it's a schema
       const validator = field.validate.bind(field);
 
