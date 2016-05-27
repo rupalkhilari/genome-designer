@@ -33,7 +33,7 @@ export default class Order extends Instance {
 
   //validate order prior to submission - should have parameters, constructs, user, projectId
   static validateSetup(input, throwOnError = false) {
-    return idValidator(input.project) &&
+    return idValidator(input.projectId) &&
       input.constructIds.length > 0 &&
       input.constructIds.every(id => idValidator(id)) &&
       input.constructs.length > 0 &&
@@ -100,11 +100,7 @@ export default class Order extends Instance {
   }
 
   submit(foundry) {
-    //todo
-    // set foundry + remote ID in status
-    //write it to the server
-    //return the updated order
-    return submitOrder(foundry, this);
+    //may want to just set the foundry on the order directly?
+    return submitOrder(this, foundry);
   }
-
 }

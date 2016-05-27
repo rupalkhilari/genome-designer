@@ -6,7 +6,7 @@ import {
   errorInvalidRoute,
   errorDoesNotExist,
   errorCouldntFindProjectId,
-  errorVersioningSystem
+  errorVersioningSystem,
 } from './../utils/errors';
 import * as querying from './querying';
 import * as persistence from './persistence';
@@ -17,7 +17,7 @@ import errorHandlingMiddleware from '../utils/errorHandlingMiddleware';
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
   strict: false, //allow values other than arrays and objects,
-  limit: 10 * 1024 * 1024,
+  limit: 20 * 1024 * 1024,
 });
 
 /***************************
@@ -115,40 +115,6 @@ router.route('/sequence/:md5/:blockId?')
   })
   .delete((req, res) => {
     res.status(403).send('Not allowed to delete sequence');
-  });
-
-router.route('/order/:projectId/:orderId?')
-  .all(jsonParser)
-  .get((req, res, next) => {
-    const { user, projectId } = req;
-    const { orderId } = req.params;
-
-    //todo - if no order ID, get list of orders
-    if (!orderId) {
-      res.status(402).send([]);
-      return;
-    }
-
-    //todo - get the order and return it
-    res.status(402).send({});
-  })
-  .post((req, res, next) => {
-    const { user, projectId } = req;
-    const { orderId } = req.params;
-    const order = req.body;
-
-    //todo
-    // setup validation
-    // attempt to send the order...
-    // convert constructs to part lists
-    // if successful...
-    // set user ID based on request
-    // snapshot project
-    // set project version
-    // validate order
-    // add to project folder
-    // return the order
-    res.status(402).send({});
   });
 
 router.route('/info/:type/:detail?')

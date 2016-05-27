@@ -4,6 +4,7 @@ import express from 'express';
 import morgan from 'morgan';
 
 import dataRouter from './data/index';
+import orderRouter from './order/index';
 import fileRouter from './file/index';
 import extensionsRouter from './extensions/index';
 import bodyParser from 'body-parser';
@@ -87,6 +88,7 @@ if (process.env.BIO_NANO_AUTH) {
 
 //primary routes
 app.use('/data', dataRouter);
+app.use('/order', orderRouter);
 app.use('/file', fileRouter);
 app.use('/extensions', extensionsRouter);
 
