@@ -120,6 +120,12 @@ export const orderSubmit = (orderId, foundry) => {
     return order.submit(foundry)
       .then(order => {
         dispatch({
+          type: ActionTypes.PROJECT_SNAPSHOT,
+          projectId: order.projectId,
+          sha: order.projectVersion,
+        });
+
+        dispatch({
           type: ActionTypes.ORDER_SUBMIT,
           order,
         });
