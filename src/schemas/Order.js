@@ -45,7 +45,7 @@ const OrderDefinition = new SchemaDefinition({
   ],
 
   user: [
-    fields.id({ prefix: 'user' }),
+    fields.string().required,
     'User ID',
     { avoidScaffold: true },
   ],

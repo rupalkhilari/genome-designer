@@ -14,8 +14,6 @@ import * as rollup from './rollup';
 import { permissionsMiddleware } from './permissions';
 import errorHandlingMiddleware from '../utils/errorHandlingMiddleware';
 
-import orderRouter from './order';
-
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
   strict: false, //allow values other than arrays and objects,
@@ -84,8 +82,6 @@ router.param('blockId', (req, res, next, id) => {
  */
 
 //expect that a well-formed md5 is sent. however, not yet checking. So you really could just call it whatever you wanted...
-
-router.use('/order', orderRouter);
 
 // future - url + `?format=${format}`;
 router.route('/sequence/:md5/:blockId?')
