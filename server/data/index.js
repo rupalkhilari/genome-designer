@@ -14,6 +14,8 @@ import * as rollup from './rollup';
 import { permissionsMiddleware } from './permissions';
 import errorHandlingMiddleware from '../utils/errorHandlingMiddleware';
 
+import orderRouter from './order';
+
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
   strict: false, //allow values other than arrays and objects,
@@ -83,44 +85,7 @@ router.param('blockId', (req, res, next, id) => {
 
 //expect that a well-formed md5 is sent. however, not yet checking. So you really could just call it whatever you wanted...
 
-router.route('/order/:projectId/:orderId?')
-  .all(permissionsMiddleware)
-  .get((req, res, next) => {
-    const { user, projectId } = req;
-    const { orderId } = req.params;
-
-    //todo - if no order ID, get list of orders
-    if (!orderId) {
-      res.status(501).send([]);
-      return;
-    }
-
-    //todo - get the order and return it
-    res.status(501).send({});
-  })
-  .post((req, res, next) => {
-    const { user, projectId } = req;
-    const { foundry, order } = req.body;
-
-    console.log(projectId);
-    console.log(user);
-    console.log(foundry);
-    console.log(order);
-
-    // todo
-    // setup validation
-    // attempt to send the order...
-    // convert constructs to part lists
-    // if successful...
-    // set foundry and remote ID
-    // set user ID based on request
-    // snapshot project
-    // set project version
-    // validate order
-    // add to project folder
-    // return the order
-    res.status(200).send(order);
-  });
+router.use('/order', orderRouter);
 
 // future - url + `?format=${format}`;
 router.route('/sequence/:md5/:blockId?')
