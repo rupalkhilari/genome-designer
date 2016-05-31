@@ -1,6 +1,6 @@
 import Block from '../../src/models/Block';
 import Project from '../../src/models/Project';
-import Order from '../../src/models/order';
+import Order from '../../src/models/Order';
 import * as validators from '../../src/schemas/fields/validators';
 
 import { errorNoIdProvided, errorIdInvalid } from './errors';
