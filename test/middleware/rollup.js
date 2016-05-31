@@ -1,5 +1,6 @@
 import chai from 'chai';
 import * as api from '../../src/middleware/data';
+import { range } from 'lodash';
 const { assert, expect } = chai;
 import {
   fileExists,
@@ -10,6 +11,7 @@ import {
   directoryMake,
   directoryDelete
 } from '../../server/utils/fileSystem';
+import Block from '../../src/models/Block';
 
 import * as commitMessages from '../../server/data/commitMessages';
 import * as filePaths from '../../server/utils/filePaths';
@@ -102,11 +104,13 @@ describe('Middleware', () => {
         });
     });
 
-    it.only('can save a huge project (10mb or so)', () => {
+    it('can save a huge project (10mb or so)', () => {
       const roll = createExampleRollup();
       const project = roll.project;
 
-      project.metadata.description = 'thisIsSuperLong'.repeat(1024 * 1024);
+      const newBlocks = range(1000).map(() => new Block());
+
+      roll.blocks = roll.blocks.concat(newBlocks);
 
       return api.saveProject(project.id, roll);
     });
