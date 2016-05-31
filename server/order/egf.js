@@ -2,6 +2,9 @@ import { errorInvalidPart, errorOrderRejected } from '../utils/errors';
 import rejectingFetch from '../../src/middleware/rejectingFetch';
 import { headersPost } from '../../src/middleware/headers';
 
+//testing
+import { fileWrite } from '../utils/fileSystem';
+
 const url = 'http://synnp.org:8010/';
 
 export const submit = (order) => {
@@ -18,7 +21,11 @@ export const submit = (order) => {
     email: order.user.email,
   };
 
+  //testing
+  fileWrite('storage/test/lastOrder.json', payload);
+
   const stringified = JSON.stringify(payload);
+
 
   return rejectingFetch(url, headersPost(stringified))
     .then(resp => resp.json())
