@@ -2,7 +2,7 @@ import * as BlockSelector from './blocks';
 
 //primary way to get focused things for the inspector
 //todo - should share code there
-export const focusGetFocused = () => {
+export const focusGetFocused = (defaultToConstruct = true) => {
   return (dispatch, getState) => {
     const state = getState();
     const { level, forceProject, forceBlocks, projectId, constructId, blockIds } = state.focus;
@@ -16,7 +16,7 @@ export const focusGetFocused = () => {
       } else {
         focused = state.projects[projectId];
       }
-    } else if (level === 'construct') {
+    } else if (level === 'construct' || (defaultToConstruct === true && !forceBlocks.length && !blockIds.length)) {
       focused = state.blocks[constructId];
     } else {
       if (forceBlocks.length) {

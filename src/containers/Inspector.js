@@ -79,7 +79,7 @@ function mapStateToProps(state) {
     } else {
       focused = state.projects[projectId];
     }
-  } else if (level === 'construct') {
+  } else if (level === 'construct' || (!forceBlocks.length && !blockIds.length)) {
     const construct = state.blocks[constructId];
     focused = [construct];
     readOnly = construct.isFrozen();

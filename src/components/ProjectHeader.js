@@ -13,17 +13,6 @@ class ProjectHeader extends Component {
     focusPrioritize: PropTypes.func.isRequired,
   };
 
-  //because we dont need to persist this state, it can exist in the component
-  state = {
-    detailVisible: false,
-  };
-
-  handleToggleDetail = (event) => {
-    this.setState({
-      detailVisible: !this.state.detailVisible,
-    });
-  };
-
   onClick = () => {
     this.props.inspectorToggleVisibility(true);
     this.props.focusPrioritize('project');
