@@ -577,7 +577,7 @@ export default class Layout {
       }
       // resize row bar to current row width
       const rowStart = this.insetX;
-      const rowEnd = row === 0 ? Math.max(xp, this.initialRowXLimit) : xp;
+      const rowEnd = rowIndex === 0 ? Math.max(xp, this.initialRowXLimit) : xp;
       const rowWidth = rowEnd - rowStart;
       row.set({translateX: rowStart + rowWidth / 2, width: rowWidth});
 
@@ -647,7 +647,7 @@ export default class Layout {
         // update base color of nested construct skeleton
         nestedLayout.baseColor = block.metadata.color || this.baseColor;
 
-        // update minimum x extend of first rowH
+        // update minimum x extent of first rowH
         nestedLayout.initialRowXLimit = this.getConnectionRowLimit(part);
 
         // ensure layout has the latest position ( parent may have moved )
