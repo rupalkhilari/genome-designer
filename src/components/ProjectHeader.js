@@ -1,12 +1,16 @@
 import React, { Component, PropTypes } from 'react';
 import {connect } from 'react-redux';
 import { inspectorToggleVisibility } from '../actions/ui';
-import { focusConstruct, focusBlocks } from '../actions/focus';
+import { focusPrioritize } from '../actions/focus';
+
 import '../styles/ProjectHeader.css';
 
 class ProjectHeader extends Component {
   static propTypes = {
     project: PropTypes.object.isRequired,
+    isFocused: PropTypes.bool.isRequired,
+    inspectorToggleVisibility: PropTypes.func.isRequired,
+    focusPrioritize: PropTypes.func.isRequired,
   };
 
   //because we dont need to persist this state, it can exist in the component
@@ -22,21 +26,17 @@ class ProjectHeader extends Component {
 
   onClick = () => {
     this.props.inspectorToggleVisibility(true);
-    this.props.focusConstruct();
-    this.props.focusBlocks([]);
+    this.props.focusPrioritize('project');
   };
 
   render() {
-    const { project } = this.props;
+    const { project, isFocused } = this.props;
 
     return (
-      <div className="ProjectHeader" onClick={this.onClick}>
+      <div className={'ProjectHeader' + (isFocused ? ' focused' : '')}
+           onClick={this.onClick}>
         <div className="ProjectHeader-info">
-          <div className="ProjectHeader-breadcrumbs">
-            <span className="ProjectHeader-breadcrumb ProjectHeader-lead">Projects</span>
-            <span className="ProjectHeader-breadcrumb-separator">&#10095;</span>
-            <span className="ProjectHeader-breadcrumb ProjectHeader-title">{project.metadata.name || 'Untitled Project'}</span>
-          </div>
+          <div className="ProjectHeader-title">{project.metadata.name || 'Untitled Project'}</div>
           <div className="ProjectHeader-description">{project.metadata.description}</div>
         </div>
 
@@ -48,11 +48,11 @@ class ProjectHeader extends Component {
 
 function mapStateToProps(state, props) {
   return {
+    isFocused: state.focus.level === 'project' && !state.focus.forceProject,
   };
 }
 
 export default connect(mapStateToProps, {
   inspectorToggleVisibility,
-  focusConstruct,
-  focusBlocks,
+  focusPrioritize,
 })(ProjectHeader);

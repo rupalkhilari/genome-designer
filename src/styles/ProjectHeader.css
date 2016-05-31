@@ -3,7 +3,7 @@
 .ProjectHeader {
   display: flex;
   flex-shrink: 0;
-  margin: 10px;
+  padding: 10px;
   flex-direction: row;
   justify-content: space-between;
   color: var(--colors-blueGreyLighter);
@@ -16,29 +16,11 @@
     flex-direction: column;
   }
 
-  &-breadcrumbs {
-    padding-bottom: 10px;
-  }
-
-  &-breadcrumb {
-    text-decoration: none;
-  }
-
-  &-lead {
-    text-transform: uppercase;
-  }
-
-  &-breadcrumb-separator {
-    margin: 0 0.5em;
-    font-weight: 100;
-  }
-
   &-title {
-
+    font-size: 16px;
   }
 
-  &-description {
-  }
+  &-description {}
 
   /* right side */
   &-actions {
@@ -48,5 +30,9 @@
   &-detailToggle {
     padding: 1em;
     cursor: pointer;
+  }
+
+  &.focused {
+    background-color: var(--colors-grey);
   }
 }

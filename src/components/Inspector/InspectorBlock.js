@@ -144,6 +144,7 @@ export class InspectorBlock extends Component {
   }
 
   render() {
+    debugger;
     const { instances, readOnly } = this.props;
     const singleInstance = instances.length === 1;
     const isList = singleInstance && instances[0].isList();
