@@ -53,6 +53,7 @@ import {
   privacy,
 } from '../utils/ui/uiapi';
 import AutosaveTracking from '../components/GlobalNav/autosaveTracking';
+import { orderCreate, orderGenerateConstructs } from '../actions/orders';
 
 import '../styles/GlobalNav.css';
 
@@ -447,7 +448,9 @@ class GlobalNav extends Component {
             {
               text: 'Order DNA',
               action: () => {
-                this.props.uiShowOrderForm(true);
+                const order = this.props.orderCreate( this.props.project.id, [this.props.project.components[1]]);
+                this.props.orderGenerateConstructs( order.id );
+                this.props.uiShowOrderForm(true, order.id);
               },
             }
           ],
@@ -612,7 +615,7 @@ class GlobalNav extends Component {
   }
 }
 
-function mapStateToProps(state) {
+function mapStateToProps(state, props) {
   return {
     focus: state.focus,
     blocks: state.blocks,
@@ -620,6 +623,7 @@ function mapStateToProps(state) {
     inspectorVisible: state.ui.inspector.isVisible,
     inventoryVisible: state.ui.inventory.isVisible,
     detailViewVisible: state.ui.detailView.isVisible,
+    project: state.projects[props.currentProjectId],
   };
 }
 
@@ -658,4 +662,6 @@ export default connect(mapStateToProps, {
   clipboardSetData,
   blockAddComponent,
   blockAddComponents,
+  orderCreate,
+  orderGenerateConstructs,
 })(GlobalNav);

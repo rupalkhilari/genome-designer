@@ -419,6 +419,7 @@ export default class Layout {
     } else {
       row = new Node2D(Object.assign({
         sg: this.sceneGraph,
+        strokeWidth: 0,
       }, kT.rowAppearance));
       this.sceneGraph.root.appendChild(row);
     }
@@ -426,6 +427,7 @@ export default class Layout {
     row.set({
       bounds: bounds,
       fill: this.baseColor,
+      strokeWidth: 0,
     });
 
     // save into new rows so we know this row is in use

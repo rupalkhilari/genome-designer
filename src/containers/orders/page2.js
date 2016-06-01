@@ -26,7 +26,7 @@ class Page2 extends Component {
 
     return (
       <div className="order-page page2">
-      <ConstructPreview />
+      <ConstructPreview order={this.props.order} />
       </div>
     )
   }

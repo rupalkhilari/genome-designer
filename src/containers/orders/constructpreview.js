@@ -46,6 +46,7 @@ class ConstructPreview extends Component {
       showHeader: false,
       insetX: 10,
       insetY: 10,
+      baseColor: 'lightgray',
     });
   }
 
@@ -53,7 +54,12 @@ class ConstructPreview extends Component {
     if (this.props.constructs.length) {
       this.containerEl.scrollTop = 0;
       this.layout.update({
-        construct: this.props.constructs[this.state.index-1],
+        construct: {
+          metadata: {
+            color: 'lightgray',
+          },
+          components: this.props.constructs[this.state.index-1].map(block => block.id),
+        },
         blocks: this.props.blocks,
         currentBlocks: [],
         currentConstructId: this.props.constructs[this.state.index-1],
@@ -63,7 +69,7 @@ class ConstructPreview extends Component {
   }
   onChangeConstruct = (evt) => {
     const index = parseInt(evt.target.value);
-    this.setState({index});
+    this.setState({index: Number.isInteger(index) ? Math.min(this.props.constructs.length, Math.max(1, index)) : 1});
   }
 
   render() {
@@ -88,28 +94,14 @@ class ConstructPreview extends Component {
   }
 }
 
-function mapStateToProps(state, ownProps) {
-  // get first project for now and its constructs
-  let project = null;
-  Object.keys(state.projects).forEach(key => {
-    if (key.startsWith('project-') && !project) {
-      project = state.projects[key];
-    }
-  });
-  if (project) {
-    // get constructs from project
-    const constructs = project.components.map(componentId => state.blocks[componentId]);
-    return {
+function mapStateToProps(state, props) {
+  return {
+      constructs: props.order.constructs.map(construct => construct.components
+                      .map(component => component.componentId)
+                      .map(componentId => state.blocks[componentId])),
       blocks: state.blocks,
-      project,
-      constructs,
-    };
-  } else {
-    return {
-      blocks: state.blocks,
-      constructs: [],
-    }
   }
+
 }
 export default connect(mapStateToProps, {
 })(ConstructPreview);

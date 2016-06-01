@@ -11,6 +11,16 @@
     height: 24rem;
   }
 
+  select {
+    font-size: var(--fontsize);
+    height: 3rem;
+    color: var(--primarycolor);
+  }
+
+  .permutations-input {
+    width: 8rem;
+  }
+
   .row {
     display: flex;
     align-items: center;
@@ -29,10 +39,12 @@
   .row .row-checkbox {
     display: flex;
     align-items: center;
-
     input {
       width: 2rem;
     }
+  }
+  .row .row-checkbox span {
+    color: var(--primarycolor);
   }
   .row-left {
     text-align: right;

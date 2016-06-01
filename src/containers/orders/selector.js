@@ -12,9 +12,12 @@ class Selector extends Component {
 
   render() {
     return (
-      <select onChange={evt => {
-        this.props.onChange(evt.target.value);
-      }}>
+      <select
+        onChange={evt => {
+          this.props.onChange(evt.target.value);
+        }}
+        defaultValue={this.props.value}
+      >
         {this.props.options.map(option => {
           return <option value={option.value}>{option.label}</option>
         })}

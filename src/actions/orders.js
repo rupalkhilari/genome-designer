@@ -75,6 +75,19 @@ export const orderSetParameters = (orderId, parameters = {}, shouldMerge = false
     return order;
   };
 };
+export const orderSetName = (orderId, name) => {
+  return (dispatch, getState) => {
+
+    const oldOrder = getState().orders[orderId];
+    const order = oldOrder.setName(name);
+
+    dispatch({
+      type: ActionTypes.ORDER_SET_NAME,
+      order,
+    });
+    return order;
+  };
+};
 
 //should only call after parameters have been set
 export const orderGenerateConstructs = (orderId) => {

@@ -10,6 +10,10 @@ import Page2 from './page2';
 import Page3 from './page3';
 import NavLeftRight from './nav-left-right';
 import Order from '../../models/Order';
+import {
+  orderGenerateConstructs,
+  orderCreate,
+} from '../../actions/orders';
 import { projectGetVersion } from '../../selectors/projects';
 
 import '../../../src/styles/form.css';
@@ -50,9 +54,6 @@ class OrderModal extends Component {
       this.setState({
         page: 1,
       });
-      // we are given the project but we also need the project version
-      const pVersion = this.props.projectGetVersion(this.props.projectId);
-      this.order = new Order(this.props.projectId, pVersion);
     }
   }
 
@@ -76,9 +77,9 @@ class OrderModal extends Component {
           <form className="gd-form order-form" onSubmit={this.onSubmit.bind(this)}>
             <div className="title">{titleText}</div>
             <div>
-              <Page1 open={this.state.page === 1}/>
-              <Page2 open={this.state.page === 2}/>
-              <Page3 open={this.state.page === 3}/>
+              <Page1 open={this.state.page === 1} order={this.props.order}/>
+              <Page2 open={this.state.page === 2} order={this.props.order}/>
+              <Page3 open={this.state.page === 3} order={this.props.order}/>
             </div>
             <div className="actions">
               <NavLeftRight onClick={this.nav.bind(this, -1)} left={true} text={leftText} visible={this.state.page > 1}/>
@@ -99,9 +100,11 @@ class OrderModal extends Component {
   }
 }
 
-function mapStateToProps(state) {
+function mapStateToProps(state, props) {
   return {
     open: state.ui.modals.showOrderForm,
+    project: state.projects[props.projectId],
+    order: state.orders[state.ui.modals.orderId],
   };
 }
 
@@ -109,4 +112,15 @@ export default connect(mapStateToProps, {
   uiShowOrderForm,
   uiSetGrunt,
   projectGetVersion,
+  orderGenerateConstructs,
+  orderCreate,
 })(OrderModal);
+
+/*
+  label, order.setName
+  remove email
+  Assembly Method: orderParameters.onePot[true/false] Single ...
+  Number of assemblies set via OrderParameters new property ( update schema )
+  Combinatorial Method: [ 'randomSubset', 'maximumUniqueSet'] ( disabled if # of assemblies === order.constructs.length)
+  After Fabrication: check with Joe, ...possibly always checked
+ */
