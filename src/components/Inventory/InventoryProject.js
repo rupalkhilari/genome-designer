@@ -85,13 +85,14 @@ export class InventoryProject extends Component {
     const { project, isActive } = this.props;
     const { isLoading, isExpanded } = this.state;
     const projectId = project.id;
+    const canToggle = project.components.length > 0;
 
     return (
       <InventoryListGroup title={project.getName()}
                           manual
-                          canToggle={project.components.length}
+                          canToggle={canToggle}
                           isLoading={isLoading}
-                          isExpanded={isExpanded}
+                          isExpanded={isExpanded && canToggle}
                           onToggle={(nextState) => this.handleToggleProject(nextState, projectId)}
                           onSelect={(nextState) => this.onToggleProject(nextState, projectId)}
                           isActive={isActive}>

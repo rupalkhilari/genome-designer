@@ -47,11 +47,11 @@ export default class InventoryListGroup extends Component {
   }
 
   handleToggle = (evt) => {
-    const { disabled, manual, isExpanded, onToggle } = this.props;
+    const { disabled, manual, isExpanded, onToggle, canToggle } = this.props;
 
     evt.stopPropagation();
 
-    if (disabled) {
+    if (disabled || !canToggle) {
       return;
     }
 
@@ -64,9 +64,9 @@ export default class InventoryListGroup extends Component {
   };
 
   handleSelect = (evt) => {
-    const { onSelect, toggleOnSelect, disabled, canToggle } = this.props;
+    const { onSelect, toggleOnSelect, disabled } = this.props;
 
-    if (disabled || !canToggle) {
+    if (disabled) {
       return;
     }
 
@@ -96,7 +96,7 @@ export default class InventoryListGroup extends Component {
             <span>{title}</span>
           </a>
         </div>
-        {isLoading && !expanded && <Spinner />}
+        {(isLoading && !expanded) && <Spinner />}
         {expanded && <div className="InventoryListGroup-contents no-vertical-scroll">
           {children}
         </div>}
