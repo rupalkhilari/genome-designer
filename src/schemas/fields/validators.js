@@ -7,7 +7,7 @@ import { dnaStrictRegexp, dnaLooseRegexp } from '../../utils/dna/dna';
  *
  * @description
  * these validators are used by fields/index.js
- * when defining a SchemaClass you should use the fieldType objects exported from that file instead of these directly. However, you may want to use these when just running validation. Note that they expect parameters.
+ * when defining a Schema you should use the fieldType objects exported from that file instead of these directly. However, you may want to use these when just running validation. Note that they expect parameters.
  *
  * @example
  * let validator = number({min:5});

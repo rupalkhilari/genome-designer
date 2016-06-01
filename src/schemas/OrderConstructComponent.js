@@ -14,11 +14,11 @@ const fieldDefs = {
   ],
 };
 
-export class OrderConstructComponentSchema extends Schema {
+export class OrderConstructComponentSchemaClass extends Schema {
   constructor(fieldDefinitions) {
     super(Object.assign({}, fieldDefs, fieldDefinitions));
   }
 }
 
-export default new OrderConstructComponentSchema();
+export default new OrderConstructComponentSchemaClass();
 

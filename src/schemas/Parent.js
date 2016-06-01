@@ -18,7 +18,7 @@ const fieldDefs = {
 
 export class ParentSchemaClass extends Schema {
   constructor(fieldDefinitions) {
-    super(Object.assign({}, fieldDefinitions, fieldDefs));
+    super(Object.assign({}, fieldDefs, fieldDefinitions));
   }
 }
 

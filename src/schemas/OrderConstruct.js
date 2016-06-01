@@ -2,7 +2,7 @@ import fields from './fields/index';
 import Schema from './SchemaClass';
 import OrderConstructComponentDefinition from './OrderConstructComponent';
 
-const OrderConstructDefinition = new Schema({
+const fieldDefs = {
   id: [
     fields.id({prefix: 'oc'}).required,
     'ID of order construct',
@@ -18,6 +18,12 @@ const OrderConstructDefinition = new Schema({
     'Construct is selected and will be ordered',
     { scaffold: () => true },
   ],
-});
+};
 
-export default OrderConstructDefinition;
+export class OrderConstructSchemaClass extends Schema {
+  constructor(fieldDefinitions) {
+    super(Object.assign({}, fieldDefs, fieldDefinitions));
+  }
+}
+
+export default new OrderConstructSchemaClass();

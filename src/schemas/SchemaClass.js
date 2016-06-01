@@ -1,18 +1,18 @@
 import mapValues from '../utils/object/mapValues';
 
 /**
- * @class SchemaClass
+ * @class Schema
  * @param fieldDefinitions {Object} dictionary of field names to definitions. Definitions take the form:
  * [
  *   parameterizedFieldType {function} Parameterized field type (e.g. fields.id().required)
  *   description {string} description of the field in this schema
  *   additional {Object} object to assign to the field
  * ]
- * @returns {SchemaClass} SchemaClass instance, which can validate(), describe(), etc.
+ * @returns {Schema} Schema instance, which can validate(), describe(), etc.
  * @example
 
  import fields from './fields';
- import Schema from './SchemaClass';
+ import Schema from './Schema';
 
  const simpleFields = {
    id : [
@@ -32,23 +32,27 @@ import mapValues from '../utils/object/mapValues';
  export default SimpleSchema;
 
  */
-export default class SchemaClass {
+export default class Schema {
   constructor(fieldDefinitions) {
     this.definitions = fieldDefinitions;
+    console.log('\n\n\n' + this.constructor.name + '\n\n\n');
     this.fields = createFields(fieldDefinitions);
     this.type = this.constructor.name; //to mirror fields, in validation
   }
 
-  //should you be able to extend the class directly, rather than calling extend()????
   extend(childDefinitions) {
-    return new SchemaClass(Object.assign({},
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('it is recommedned you extend Schemas using ES6 classes, not the extend() method');
+    }
+
+    return new Schema(Object.assign({},
       this.definitions,
       childDefinitions
     ));
   }
 
   clone() {
-    return new SchemaClass(this.definitions);
+    return new this.constructor(this.definitions);
   }
 
   validateFields(instance = {}, shouldThrow) {
@@ -99,7 +103,7 @@ export default class SchemaClass {
 
     return Object.keys(this.fields).reduce((scaffold, fieldName) => {
       const field = this.fields[fieldName];
-      const fieldRequired = (field instanceof SchemaClass) || field.fieldRequired;
+      const fieldRequired = (field instanceof Schema) || field.fieldRequired;
 
       if (onlyRequiredFields && !fieldRequired) {
         return scaffold;
@@ -123,9 +127,11 @@ export default class SchemaClass {
 }
 
 function createFields(fieldDefinitions) {
+  console.log(fieldDefinitions);
+
   return mapValues(fieldDefinitions,
     (fieldDefinition, fieldName) => {
-      //note - assign to field to maintain prototype, i.e. validate() function if instanceof SchemaClass
+      //note - assign to field to maintain prototype, i.e. validate() function if instanceof Schema
       return Object.assign(
         createSchemaField(...fieldDefinition),
         { name: fieldName }
@@ -137,9 +143,9 @@ function createFields(fieldDefinitions) {
 function createSchemaField(inputField, description = '', additional) {
   //todo - can probably handle this more intelligently...
   //because each field is a new FieldType instance (since it is parameterized), we can overwrite it
-  //However, if its a SchemaClass, we dont want to assign to it, so clone it
+  //However, if its a Schema, we dont want to assign to it, so clone it
   let field;
-  if (inputField instanceof SchemaClass) {
+  if (inputField instanceof Schema) {
     field = inputField.clone();
   } else {
     field = Object.assign({}, inputField);

@@ -4,7 +4,7 @@ import Schema from '../../src/schemas/SchemaClass';
 import InstanceSchema from '../../src/schemas/Instance';
 
 describe('Schema', () => {
-  describe('SchemaClass', () => {
+  describe('Schema', () => {
     const simpleFieldDescription = `String named field`;
     const simpleDefinition = new Schema({
       field: [

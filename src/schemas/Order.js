@@ -2,13 +2,9 @@ import fields from './fields/index';
 import * as validators from './fields/validators';
 import Schema from './SchemaClass';
 import MetadataSchema from './Metadata';
-import OrderParametersDefinition from './OrderParameters';
-import OrderConstructDefinition from './OrderConstruct';
-import OrderStatusDefinition from './OrderStatus';
-
-const OrderDefinition = new Schema();
-
-export default OrderDefinition;
+import OrderParametersSchema from './OrderParameters';
+import OrderConstructSchema from './OrderConstruct';
+import OrderStatusSchema from './OrderStatus';
 
 const orderFields = {
   id: [
@@ -39,12 +35,12 @@ const orderFields = {
   ],
 
   constructs: [
-    fields.arrayOf(construct => OrderConstructDefinition.validate(construct)).required,
+    fields.arrayOf(construct => OrderConstructSchema.validate(construct)).required,
     `Array of arrays to order - all the constructs with a parts list`,
   ],
 
   parameters: [
-    OrderParametersDefinition,
+    OrderParametersSchema,
     `Parameters associated with this order`,
   ],
 
@@ -57,7 +53,7 @@ const orderFields = {
   ],
 
   status: [
-    OrderStatusDefinition,
+    OrderStatusSchema,
     'Information about foundry + remote order ID',
   ],
 
