@@ -1,10 +1,10 @@
 import fields from './fields/index';
-import SchemaDefinition from './SchemaDefinition';
+import Schema from './SchemaClass';
 
 import ParentDefinition from './Parent';
 import MetadataDefinition from './Metadata';
 
-const InstanceDefinition = new SchemaDefinition({
+const instanceFields = {
   id: [
     fields.id().required,
     'ID of the instance',
@@ -17,6 +17,12 @@ const InstanceDefinition = new SchemaDefinition({
     MetadataDefinition,
     'Metadata for the object',
   ],
-});
+};
 
-export default InstanceDefinition;
+export class InstanceSchemaClass extends Schema {
+  constructor(fieldDefinitions) {
+    super(Object.assign({}, instanceFields, fieldDefinitions));
+  }
+}
+
+export default new InstanceSchemaClass();

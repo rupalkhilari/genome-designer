@@ -1,12 +1,12 @@
 import fields from './fields/index';
 import * as validators from './fields/validators';
-import InstanceDefinition from './Instance';
+import { InstanceSchemaClass } from './Instance';
 import SequenceDefinition from './Sequence';
 import RulesDefintion from './Rules';
 import BlockSourceDefinition from './BlockSource';
 
 /**
- @name BlockDefinition
+ @name BlockSchema
  @role Component
  @description A component of a construct, or construct itself.
 
@@ -21,7 +21,7 @@ import BlockSourceDefinition from './BlockSource';
  In addition to sequence annotations, a block may list `notes`, which are essentially annotations that do not specifically reference the sequence.
  */
 
-const BlockDefinition = InstanceDefinition.extend({
+const blockFields = {
   id: [
     fields.id({ prefix: 'block' }).required,
     'Block UUID',
@@ -62,9 +62,15 @@ const BlockDefinition = InstanceDefinition.extend({
     fields.object().required,
     `Notes about the whole Block`,
   ],
-});
+};
 
-export default BlockDefinition;
+export class BlockSchemaClass extends InstanceSchemaClass {
+  constructor(fieldDefinitions) {
+    super(Object.assign({}, blockFields, fieldDefinitions));
+  }
+}
+
+export default new BlockSchemaClass();
 
 /*
  //SBOL has a field called role, particularly in defining modules. We may want to add this later. For now, this annotation can be a role per-component.

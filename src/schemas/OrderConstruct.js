@@ -1,8 +1,8 @@
 import fields from './fields/index';
-import SchemaDefinition from './SchemaDefinition';
+import Schema from './SchemaClass';
 import OrderConstructComponentDefinition from './OrderConstructComponent';
 
-const OrderConstructDefinition = new SchemaDefinition({
+const OrderConstructDefinition = new Schema({
   id: [
     fields.id({prefix: 'oc'}).required,
     'ID of order construct',

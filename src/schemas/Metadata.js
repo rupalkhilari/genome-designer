@@ -1,8 +1,8 @@
 import fields from './fields/index';
 import * as validators from './fields/validators';
-import SchemaDefinition from './SchemaDefinition';
+import Schema from './SchemaClass';
 
-const MetadataDefinition = new SchemaDefinition({
+const MetadataDefinition = new Schema({
   name: [
     fields.string({ max: 256 }),
     'Name of the instance',

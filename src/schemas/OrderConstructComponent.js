@@ -1,8 +1,8 @@
 import fields from './fields/index';
-import SchemaDefinition from './SchemaDefinition';
+import Schema from './SchemaClass';
 import BlockSourceDefinition from './BlockSource';
 
-const OrderConstructComponentDefinition = new SchemaDefinition({
+const OrderConstructComponentDefinition = new Schema({
   componentId: [
     fields.id({ prefix: 'block' }).required,
     `ID of block for this component`,

@@ -1,5 +1,5 @@
 import fields from './fields/index';
-import SchemaDefinition from './SchemaDefinition';
+import Schema from './SchemaClass';
 import AnnotationDefinition from './Annotation';
 
 /**
@@ -8,7 +8,7 @@ import AnnotationDefinition from './Annotation';
  A sequence, typically of a part and a large string. Sequences are references because they are not usually loaded in the applicaiton, and may be very large, so can be loaded with their own API for defining desired regions.
 */
 
-const SequenceDefinition = new SchemaDefinition({
+const fieldDefs = {
   md5: [
     fields.string(),
     `md5 hash of the sequence, used for lookup`,
@@ -28,6 +28,12 @@ const SequenceDefinition = new SchemaDefinition({
     fields.sequence({loose: true}),
     `Initial 5 bases of the block, which can be displayed e.g. if a filler block`,
   ],
-});
+};
 
-export default SequenceDefinition;
+export class SequenceSchemaClass extends Schema {
+  constructor(fieldDefinitions) {
+    super(Object.assign({}, fieldDefs, fieldDefinitions));
+  }
+}
+
+export default new SequenceSchemaClass();

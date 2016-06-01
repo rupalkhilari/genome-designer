@@ -1,7 +1,7 @@
 import fields from './fields/index';
-import SchemaDefinition from './SchemaDefinition';
+import Schema from './SchemaClass';
 
-const OrderParametersDefinition = new SchemaDefinition({
+const OrderParametersDefinition = new Schema({
   method: [
     fields.string(),
     `Assembly method to be used`,

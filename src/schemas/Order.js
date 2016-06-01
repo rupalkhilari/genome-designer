@@ -1,12 +1,12 @@
 import fields from './fields/index';
 import * as validators from './fields/validators';
-import SchemaDefinition from './SchemaDefinition';
+import Schema from './SchemaClass';
 import MetadataDefinition from './Metadata';
 import OrderParametersDefinition from './OrderParameters';
 import OrderConstructDefinition from './OrderConstruct';
 import OrderStatusDefinition from './OrderStatus';
 
-const OrderDefinition = new SchemaDefinition({
+const OrderDefinition = new Schema({
   id: [
     fields.id({ prefix: 'order' }).required,
     'Order UUID',
