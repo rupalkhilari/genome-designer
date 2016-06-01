@@ -52,14 +52,11 @@ router.route('/:projectId/:orderId?')
 
     //assign user to the order
     merge(order, {
-      user: {
-        id: user.uuid,
-        email: user.email,
-      },
+      user: user.uuid,
     });
 
     //future - this should be dynamic, based on the foundry, pulling from a registry
-    submit(order)
+    submit(order, user)
       .then(response => {
         return persistence.projectSnapshot(projectId, `ORDER`)
           .then(({ sha, time }) => {

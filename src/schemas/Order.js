@@ -45,11 +45,9 @@ const orderFields = {
   ],
 
   user: [
-    fields.shape({
-      id: validators.string(),
-      email: validators.string(),
-    }).required,
-    'User ID and email',
+    fields.id({ prefix: 'user' }).required,
+    'User ID',
+    { avoidScaffold: true },
   ],
 
   status: [
