@@ -196,7 +196,7 @@ export class InspectorBlock extends Component {
         </div>
 
 
-        {!!annotations.length && (<h4 className="InspectorContent-heading">Contents</h4>)}
+        {!!annotations.length && (<h4 className="InspectorContent-heading">Annotations</h4>)}
         {!!annotations.length && (<div className="InspectorContentBlock-Annotations">
             {annotations.map((annotation, idx) => {
               return (
