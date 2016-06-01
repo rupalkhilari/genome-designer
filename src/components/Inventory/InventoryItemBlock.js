@@ -30,7 +30,8 @@ export default class InventoryItemBlock extends Component {
         <InventoryItem {...rest}
           inventoryType={blockDragType}
           defaultName={block.getName()}
-          glyph={isTemplate ? '🔒' : null}
+          svg={isTemplate ? 'lock' : null}
+          svgProps={{width: '1em', height: '1em', fill: 'rgba(255,255,255,0.75)'}}
           item={block}/>
       </div>
     );

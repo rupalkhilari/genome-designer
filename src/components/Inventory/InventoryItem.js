@@ -19,8 +19,8 @@ export class InventoryItem extends Component {
         image: PropTypes.string,
       }).isRequired,
     }).isRequired,
-    glyph: PropTypes.string, //e.g. lock icon for templates
     svg: PropTypes.string, //right now, SBOL SVG ID
+    svgProps: PropTypes.object,
     defaultName: PropTypes.string,
     onDrop: PropTypes.func, //can return promise (e.g. update store), value is used for onDrop in DnD registered drop target. Can pass value from promise to use for drop as payload, or undefined
     onDragStart: PropTypes.func, //transact
@@ -29,6 +29,10 @@ export class InventoryItem extends Component {
     forceBlocks: PropTypes.array.isRequired,
     inspectorToggleVisibility: PropTypes.func.isRequired,
     focusForceBlocks: PropTypes.func.isRequired,
+  };
+
+  static defaultProps = {
+    svgProps: {},
   };
 
   componentDidMount() {
@@ -96,7 +100,7 @@ export class InventoryItem extends Component {
   };
 
   render() {
-    const { item, svg, glyph, defaultName } = this.props;
+    const { item, svg, svgProps, defaultName } = this.props;
     const isSelected = this.props.forceBlocks.indexOf(item) >= 0;
 
     const hasSequence = item.sequence && item.sequence.length > 0;
@@ -109,8 +113,7 @@ export class InventoryItem extends Component {
            ref={(el) => this.itemElement = el}>
         <a className="InventoryItem-item"
            onClick={this.handleClick}>
-          {svg ? <RoleSvg symbolName={svg} color="white"/> : null}
-          {!!glyph ? <span className="InventoryItem-glyph">{glyph}</span> : null}
+          {svg ? <RoleSvg symbolName={svg} color="white" {...svgProps}/> : null}
           <span className="InventoryItem-text">
             {itemName}
           </span>
