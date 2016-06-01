@@ -107,9 +107,7 @@ export default class Block extends Instance {
       return cleared.setRule('list', true);
     }
 
-    const cleared = this.merge({
-      options: [],
-    });
+    const cleared = this.merge(Object.keys(this.options).reduce((acc, key) => Object.assign(acc, { [key]: false })));
     return cleared.setRule('list', false);
   }
 
