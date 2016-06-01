@@ -68,6 +68,22 @@ export class BlockSchemaClass extends InstanceSchemaClass {
   constructor(fieldDefinitions) {
     super(Object.assign({}, blockFields, fieldDefinitions));
   }
+
+  validate(instance, shouldThrow) {
+    const fieldsValid = super.validateFields(instance, shouldThrow);
+    const optionsComponentsExclusive = Object.keys(instance.options).filter(opt => instance.options[opt]).length === 0 || instance.components.length === 0;
+
+    if (!optionsComponentsExclusive) {
+      const errorMessage = 'Components and Options fields are mutually exlusive';
+      if (shouldThrow) {
+        throw Error(errorMessage, instance);
+      } else if (process.env.NODE_ENV !== 'production') {
+        console.error(errorMessage); //eslint-disable-line
+      }
+    }
+
+    return fieldsValid && optionsComponentsExclusive;
+  }
 }
 
 export default new BlockSchemaClass();

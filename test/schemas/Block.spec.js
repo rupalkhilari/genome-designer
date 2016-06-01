@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import BlockSchema from '../../src/schemas/Block';
+import uuid from 'node-uuid';
 import { Block as exampleBlock } from './_examples';
 
 describe('Schema', () => {
@@ -20,6 +21,17 @@ describe('Schema', () => {
       const regex = /^block/;
       //console.log(scaffold);
       expect(regex.test(scaffold.id)).to.equal(true);
+    });
+
+    it.only('components and options are mutually exclusive', () => {
+      const scaffold = BlockSchema.scaffold();
+
+      scaffold.components.push(uuid.v4());
+      scaffold.components.push(uuid.v4());
+      scaffold.options[uuid.v4()] = true;
+      scaffold.options[uuid.v4()] = true;
+
+      expect(BlockSchema.validate(scaffold)).to.equal(false);
     });
   });
 });

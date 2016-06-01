@@ -35,7 +35,6 @@ import mapValues from '../utils/object/mapValues';
 export default class Schema {
   constructor(fieldDefinitions) {
     this.definitions = fieldDefinitions;
-    console.log('\n\n\n' + this.constructor.name + '\n\n\n');
     this.fields = createFields(fieldDefinitions);
     this.type = this.constructor.name; //to mirror fields, in validation
   }
@@ -127,8 +126,6 @@ export default class Schema {
 }
 
 function createFields(fieldDefinitions) {
-  console.log(fieldDefinitions);
-
   return mapValues(fieldDefinitions,
     (fieldDefinition, fieldName) => {
       //note - assign to field to maintain prototype, i.e. validate() function if instanceof Schema
