@@ -46,13 +46,7 @@
     }
   }
 
-  &-menu {
-    position: absolute;
-    top: 0; left: 0;
-    max-width: 240px;
-
-    &-source {
-
-    }
+  .menu-popup-container {
+    width: calc(var(--width-SidePanel-open) - (2 * var(--SidePanel-width-padding-content)));
   }
 }

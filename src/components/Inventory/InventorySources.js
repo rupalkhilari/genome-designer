@@ -1,38 +1,55 @@
 import React, { PropTypes } from 'react';
-
+import PopupMenu from '../Menu/PopupMenu';
 import '../../styles/InventorySources.css';
+
+//note - this is reset on hot-reloads, but shouldnt matter in production
+let position = {};
 
 export default function InventorySources({ toggling, sourceList, registry, onSourceToggle, onToggleVisible }) {
   const menu = (<div className="InventorySources-menu menu-popup-container">
     <div className="InventorySources-menu-heading menu-item disabled">Search Sources:</div>
-    {Object.keys(registry)
+    {}
+  </div>);
+
+  const menuItems = [
+    {
+      text: 'Search Sources:',
+      disabled: true,
+      action: () => {},
+    },
+    ...(Object.keys(registry)
       .filter(key => typeof registry[key].search === 'function')
       .map(key => {
         const source = registry[key];
-        return (
-          <div key={key}
-               onClick={(evt) => {
-                 evt.stopPropagation();
-                 onSourceToggle(key);
-               }}
-               className={'InventorySources-menu-source menu-item'}>
-            <div className={(sourceList.includes(key) ? 'menu-item-checked' : 'menu-item-unchecked')}></div>
-            {source.name}
-          </div>
-        );
-      })}
-  </div>);
+        return {
+          text: source.name,
+          action: () => onSourceToggle(key),
+          checked: sourceList.includes(key),
+        };
+      })),
+  ];
+
+  console.log(menuItems);
 
   return (
     <div className={'InventorySources' + (toggling ? ' expanded' : '')}
-         onClick={() => onToggleVisible()}>
+         onClick={() => onToggleVisible()}
+         ref={(el) => {
+           if (el) {
+             const {top: y, left: x} = el.getBoundingClientRect();
+             position = {x, y};
+           }
+         }}>
       <div className="InventorySources-back">
         <div className="InventorySources-back-cog"></div>
         <div className="InventorySources-back-sources">
           <span>{`Sources: ${sourceList.map(source => registry[source].name).join(', ')}`}</span>
         </div>
       </div>
-      {toggling && menu}
+      <PopupMenu open={toggling}
+                 closePopup={() => onToggleVisible()}
+                 position={position}
+                 menuItems={menuItems}/>
     </div>
   );
 }
