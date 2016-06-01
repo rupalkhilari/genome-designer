@@ -1,19 +1,23 @@
 import fields from './fields/index';
 import * as validators from './fields/validators';
 import Schema from './SchemaClass';
-import MetadataDefinition from './Metadata';
+import MetadataSchema from './Metadata';
 import OrderParametersDefinition from './OrderParameters';
 import OrderConstructDefinition from './OrderConstruct';
 import OrderStatusDefinition from './OrderStatus';
 
-const OrderDefinition = new Schema({
+const OrderDefinition = new Schema();
+
+export default OrderDefinition;
+
+const orderFields = {
   id: [
     fields.id({ prefix: 'order' }).required,
     'Order UUID',
   ],
 
   metadata: [
-    MetadataDefinition,
+    MetadataSchema,
     'Metadata for the order',
   ],
 
@@ -61,6 +65,12 @@ const OrderDefinition = new Schema({
     fields.object().required,
     `Notes about the Order`,
   ],
-});
+};
 
-export default OrderDefinition;
+export class OrderSchemaClass extends Schema {
+  constructor(fieldDefinitions) {
+    super(Object.assign({}, orderFields, fieldDefinitions));
+  }
+}
+
+export default new OrderSchemaClass();

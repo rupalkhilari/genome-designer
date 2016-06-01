@@ -1,17 +1,24 @@
 import fields from './fields/index';
 import Schema from './SchemaClass';
-import BlockSourceDefinition from './BlockSource';
+import BlockSourceSchema from './BlockSource';
 
-const OrderConstructComponentDefinition = new Schema({
+const fieldDefs = {
   componentId: [
     fields.id({ prefix: 'block' }).required,
     `ID of block for this component`,
   ],
 
   source: [
-    BlockSourceDefinition,
+    BlockSourceSchema,
     `Source of component`,
   ],
-});
+};
 
-export default OrderConstructComponentDefinition;
+export class OrderConstructComponentSchema extends Schema {
+  constructor(fieldDefinitions) {
+    super(Object.assign({}, fieldDefs, fieldDefinitions));
+  }
+}
+
+export default new OrderConstructComponentSchema();
+

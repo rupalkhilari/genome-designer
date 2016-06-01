@@ -1,8 +1,8 @@
 import fields from './fields/index';
 import Schema from './SchemaClass';
 
-import ParentDefinition from './Parent';
-import MetadataDefinition from './Metadata';
+import ParentSchema from './Parent';
+import MetadataSchema from './Metadata';
 
 const instanceFields = {
   id: [
@@ -10,11 +10,11 @@ const instanceFields = {
     'ID of the instance',
   ],
   parents: [
-    fields.arrayOf(ParentDefinition.validate.bind(ParentDefinition)).required,
+    fields.arrayOf(ParentSchema.validate.bind(ParentSchema)).required,
     'Ancestral parents from which object is derived, with newest first',
   ],
   metadata: [
-    MetadataDefinition,
+    MetadataSchema,
     'Metadata for the object',
   ],
 };

@@ -3,8 +3,8 @@ import fields from './fields/index';
 import Schema from './SchemaClass';
 
 /**
- @name AnnotationDefinition
- @parent BlockDefinition
+ @name AnnotationSchema
+ @parent BlockSchema
  @role Annotation (kinda)
 
  @description

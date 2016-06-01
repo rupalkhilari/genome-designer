@@ -1,9 +1,9 @@
 import fields from './fields/index';
 import Schema from './SchemaClass';
-import AnnotationDefinition from './Annotation';
+import AnnotationSchema from './Annotation';
 
 /**
- @name SequenceDefinition
+ @name SequenceSchema
  @description
  A sequence, typically of a part and a large string. Sequences are references because they are not usually loaded in the applicaiton, and may be very large, so can be loaded with their own API for defining desired regions.
 */
@@ -20,7 +20,7 @@ const fieldDefs = {
   ],
 
   annotations: [
-    fields.arrayOf(AnnotationDefinition.validate.bind(AnnotationDefinition)),
+    fields.arrayOf(AnnotationSchema.validate.bind(AnnotationSchema)),
     `List of Annotations associated with the sequence`,
   ],
 

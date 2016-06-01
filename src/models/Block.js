@@ -1,9 +1,9 @@
 import Instance from './Instance';
 import invariant from 'invariant';
 import cloneDeep from 'lodash.clonedeep';
-import BlockDefinition from '../schemas/Block';
+import BlockSchema from '../schemas/Block';
 import { getSequence, writeSequence } from '../middleware/sequence';
-import AnnotationDefinition from '../schemas/Annotation';
+import AnnotationSchema from '../schemas/Annotation';
 import md5 from 'md5';
 import color from '../utils/generators/color';
 import { dnaStrict, dnaLoose } from '../utils/dna/dna';
@@ -14,7 +14,7 @@ const idValidator = (id) => safeValidate(validators.id(), true, id);
 
 export default class Block extends Instance {
   constructor(input) {
-    super(input, BlockDefinition.scaffold(), { metadata: { color: color() } });
+    super(input, BlockSchema.scaffold(), { metadata: { color: color() } });
   }
 
   /************
@@ -27,7 +27,7 @@ export default class Block extends Instance {
   }
 
   static validate(input, throwOnError = false) {
-    return BlockDefinition.validate(input, throwOnError);
+    return BlockSchema.validate(input, throwOnError);
   }
 
   // note that if you are cloning multiple blocks / blocks with components, you likely need to clone the components as well
@@ -313,7 +313,7 @@ export default class Block extends Instance {
   //todo - annotations are essentially keyed using name, since we got rid of ID. is that ok?
 
   annotate(annotation) {
-    invariant(AnnotationDefinition.validate(annotation), `'annotation is not valid: ${annotation}`);
+    invariant(AnnotationSchema.validate(annotation), `'annotation is not valid: ${annotation}`);
     return this.mutate('sequence.annotations', this.sequence.annotations.concat(annotation));
   }
 

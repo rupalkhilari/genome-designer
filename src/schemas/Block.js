@@ -1,9 +1,9 @@
 import fields from './fields/index';
 import * as validators from './fields/validators';
 import { InstanceSchemaClass } from './Instance';
-import SequenceDefinition from './Sequence';
-import RulesDefintion from './Rules';
-import BlockSourceDefinition from './BlockSource';
+import SequenceSchema from './Sequence';
+import RulesSchema from './Rules';
+import BlockSourceSchema from './BlockSource';
 
 /**
  @name BlockSchema
@@ -34,17 +34,17 @@ const blockFields = {
   ],
 
   sequence: [
-    SequenceDefinition,
+    SequenceSchema,
     `Associated Sequence (link, not the sequence itself), and Annotations etc. associated`,
   ],
 
   source: [
-    BlockSourceDefinition,
+    BlockSourceSchema,
     `Source (Inventory) ID of the Part`,
   ],
 
   rules: [
-    RulesDefintion,
+    RulesSchema,
     `Grammar/rules governing the whole Block and direct descendants`,
   ],
 

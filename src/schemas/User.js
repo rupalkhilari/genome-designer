@@ -3,7 +3,7 @@ import * as validators from './fields/validators';
 import Schema from './SchemaClass';
 
 /**
- @name UserDefinition
+ @name UserSchema
  @description A user account
 */
 
