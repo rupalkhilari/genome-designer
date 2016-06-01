@@ -1,19 +1,19 @@
 import fields from './fields/index';
 import * as validators from './fields/validators';
-import SchemaDefinition from './SchemaDefinition';
-import MetadataDefinition from './Metadata';
-import OrderParametersDefinition from './OrderParameters';
-import OrderConstructDefinition from './OrderConstruct';
-import OrderStatusDefinition from './OrderStatus';
+import Schema from './SchemaClass';
+import MetadataSchema from './Metadata';
+import OrderParametersSchema from './OrderParameters';
+import OrderConstructSchema from './OrderConstruct';
+import OrderStatusSchema from './OrderStatus';
 
-const OrderDefinition = new SchemaDefinition({
+const orderFields = {
   id: [
     fields.id({ prefix: 'order' }).required,
     'Order UUID',
   ],
 
   metadata: [
-    MetadataDefinition,
+    MetadataSchema,
     'Metadata for the order',
   ],
 
@@ -35,12 +35,12 @@ const OrderDefinition = new SchemaDefinition({
   ],
 
   constructs: [
-    fields.arrayOf(construct => OrderConstructDefinition.validate(construct)).required,
+    fields.arrayOf(construct => OrderConstructSchema.validate(construct)).required,
     `Array of arrays to order - all the constructs with a parts list`,
   ],
 
   parameters: [
-    OrderParametersDefinition,
+    OrderParametersSchema,
     `Parameters associated with this order`,
   ],
 
@@ -53,7 +53,7 @@ const OrderDefinition = new SchemaDefinition({
   ],
 
   status: [
-    OrderStatusDefinition,
+    OrderStatusSchema,
     'Information about foundry + remote order ID',
   ],
 
@@ -61,6 +61,12 @@ const OrderDefinition = new SchemaDefinition({
     fields.object().required,
     `Notes about the Order`,
   ],
-});
+};
 
-export default OrderDefinition;
+export class OrderSchemaClass extends Schema {
+  constructor(fieldDefinitions) {
+    super(Object.assign({}, orderFields, fieldDefinitions));
+  }
+}
+
+export default new OrderSchemaClass();

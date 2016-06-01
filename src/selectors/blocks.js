@@ -1,5 +1,5 @@
 import invariant from 'invariant';
-import BlockDefinition from '../schemas/Block';
+import BlockSchema from '../schemas/Block';
 import { values, flatten } from 'lodash';
 
 /***************************************
@@ -212,7 +212,7 @@ export const blockIsSpec = (blockId) => {
 
 export const blockIsValid = (model) => {
   return (dispatch, getState) => {
-    return BlockDefinition.validate(model);
+    return BlockSchema.validate(model);
   };
 };
 
