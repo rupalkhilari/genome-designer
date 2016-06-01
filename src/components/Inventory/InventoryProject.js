@@ -89,7 +89,7 @@ export class InventoryProject extends Component {
     return (
       <InventoryListGroup title={project.getName()}
                           manual
-                          hideToggle={!project.components.length}
+                          canToggle={project.components.length}
                           isLoading={isLoading}
                           isExpanded={isExpanded}
                           onToggle={(nextState) => this.handleToggleProject(nextState, projectId)}
