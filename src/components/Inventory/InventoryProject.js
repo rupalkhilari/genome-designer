@@ -30,6 +30,7 @@ export class InventoryProject extends Component {
   state = {
     isLoading: false,
     isExpanded: false,
+    errorLoading: false,
   };
 
   //handle double-click to open
@@ -73,6 +74,11 @@ export class InventoryProject extends Component {
         .then(() => this.setState({
           isLoading: false,
           isExpanded: true,
+        }))
+        .catch(() => this.setState({
+          isLoading: false,
+          isExpanded: false,
+          errorLoading: true,
         }));
     }
 
@@ -83,14 +89,14 @@ export class InventoryProject extends Component {
 
   render() {
     const { project, isActive } = this.props;
-    const { isLoading, isExpanded } = this.state;
+    const { isLoading, isExpanded, errorLoading } = this.state;
     const projectId = project.id;
     const canToggle = project.components.length > 0;
 
     return (
       <InventoryListGroup title={project.getName()}
                           manual
-                          canToggle={canToggle}
+                          canToggle={canToggle && !errorLoading}
                           isLoading={isLoading}
                           isExpanded={isExpanded && canToggle}
                           onToggle={(nextState) => this.handleToggleProject(nextState, projectId)}
