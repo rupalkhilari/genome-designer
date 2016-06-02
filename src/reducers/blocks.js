@@ -40,12 +40,12 @@ export default function blocks(state = initialState, action) {
     const { block, blocks } = action;
 
     if (Array.isArray(blocks)) {
-      instanceCache.save(...blocks);
+      instanceCache.saveBlock(...blocks);
       const toMerge = blocks.reduce((acc, block) => Object.assign(acc, { [block.id]: block }), {});
       return Object.assign({}, state, toMerge);
     }
 
-    instanceCache.save(block);
+    instanceCache.saveBlock(block);
     return Object.assign({}, state, { [block.id]: block });
 
   case ActionTypes.BLOCK_DELETE :
