@@ -71,7 +71,13 @@ export const listProjects = () => {
 /***** rollups - loading + saving projects *****/
 
 //returns a rollup
-export const loadProject = (projectId) => {
+export const loadProject = (projectId, avoidCache = false) => {
+  const isCached = instanceCache.projectLoaded(projectId);
+
+  if (isCached && avoidCache !== true) {
+    return Promise.resolve(instanceCache.getRollup(projectId));
+  }
+
   const url = dataApiPath(`projects/${projectId}`);
   return rejectingFetch(url, headersGet())
     .then(resp => resp.json())
