@@ -2,36 +2,16 @@ import rejectingFetch from './rejectingFetch';
 import invariant from 'invariant';
 import { headersGet, headersPost, headersPut, headersDelete } from './headers';
 import { dataApiPath } from './paths';
-import Project from '../models/Project';
+import * as instanceCache from '../store/instanceCache';
 
 /******
- caching + checks
+ save state
  ******/
-
-//unforunately, the reducers run after the promise resolutions in these loading / saving functions, so project.version will increment immediately after the roll is set here, but that is ok - we handle that check below in isRollSame.
-
-//project rollup cache
-//track the last versions saved so we aren't saving over and over
-const rollMap = new Map();
 
 //track information about saving e.g. time
 const saveState = new Map();
 
-//compares two rollups for effective changes
-const isRollDifferent = (oldRoll, newRoll) => {
-  if (!oldRoll || !newRoll) return true;
-
-  //check projects same
-  if (!Project.compare(oldRoll.project, newRoll.project)) return true;
-
-  //check all blocks same
-  return oldRoll.blocks.some(oldBlock => {
-    const analog = newRoll.blocks.find(newBlock => newBlock.id === oldBlock.id);
-    return !analog || analog !== oldBlock;
-  });
-};
-
-const noteSave = (projectId, rollup, sha = null) => {
+const noteSave = (projectId, sha = null) => {
   invariant(projectId, 'must pass project ID');
   const lastState = saveState.get(projectId) || {};
 
@@ -96,7 +76,7 @@ export const loadProject = (projectId) => {
   return rejectingFetch(url, headersGet())
     .then(resp => resp.json())
     .then(rollup => {
-      rollMap.set(projectId, rollup);
+      instanceCache.saveRollup(rollup);
       return rollup;
     });
 };
@@ -110,10 +90,11 @@ export const saveProject = (projectId, rollup) => {
   invariant(rollup.project && Array.isArray(rollup.blocks), 'rollup in wrong form');
 
   //check if project is new, and save if it is
-  const cached = rollMap.get(projectId);
-  if (!isRollDifferent(cached, rollup)) {
+  if (!instanceCache.isRollupNew(rollup)) {
     return Promise.resolve(null);
   }
+
+  instanceCache.saveRollup(rollup);
 
   const url = dataApiPath(`projects/${projectId}`);
   const stringified = JSON.stringify(rollup);
@@ -122,7 +103,7 @@ export const saveProject = (projectId, rollup) => {
     .then(resp => resp.json())
     .then(commit => {
       const { sha } = commit;
-      noteSave(projectId, rollup, sha);
+      noteSave(projectId, sha);
       return commit;
     })
     .catch(err => {
@@ -131,12 +112,16 @@ export const saveProject = (projectId, rollup) => {
     });
 };
 
-//expects a rollup
+//rollup is optional, will be saved if provided
 //explicit, makes a git commit with special message to differentiate
 //returns the commit wth sha, message
 export const snapshot = (projectId, message = 'Project Snapshot', rollup = {}) => {
   invariant(projectId, 'Project ID required to snapshot');
   invariant(!message || typeof message === 'string', 'optional message for snapshot must be a string');
+
+  if (rollup.project && rollup.blocks) {
+    instanceCache.saveRollup(rollup);
+  }
 
   const stringified = JSON.stringify({ message, rollup });
   const url = dataApiPath(`${projectId}/commit`);
@@ -145,7 +130,7 @@ export const snapshot = (projectId, message = 'Project Snapshot', rollup = {}) =
     .then(resp => resp.json())
     .then(commit => {
       const { sha } = commit;
-      noteSave(projectId, rollup, sha);
+      noteSave(projectId, sha);
       return commit;
     })
     .catch(err => {
