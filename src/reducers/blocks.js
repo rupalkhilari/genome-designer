@@ -49,9 +49,16 @@ export default function blocks(state = initialState, action) {
     instanceMap.saveBlock(block);
     return Object.assign({}, state, { [block.id]: block });
 
+  case ActionTypes.BLOCK_DETACH :
   case ActionTypes.BLOCK_DELETE :
-    const { blockId } = action;
+    const { blockId, blockIds } = action;
     const nextState = Object.assign({}, state);
+
+    if (Array.isArray(blockIds)) {
+      blockIds.forEach(blockId => { delete nextState[blockId]; });
+      return nextState;
+    }
+
     delete nextState[blockId];
     return nextState;
 

@@ -14,7 +14,8 @@ export const projectGet = (projectId) => {
   };
 };
 
-//bit of a hack - expects focus section of store, and projectPage to have set it
+//expects focus section of store, and projectPage to have set it
+//alternatively, support we could query react-router directly
 export const projectGetCurrentId = () => {
   return (dispatch, getState) => {
     const { focus } = getState();
@@ -29,6 +30,7 @@ export const projectGetVersion = (projectId) => {
   };
 };
 
+//note - does not include options
 export const projectListAllComponents = (projectId) => {
   return (dispatch, getState) => {
     const project = _getProjectFromStore(projectId, getState());
@@ -42,6 +44,7 @@ export const projectListAllComponents = (projectId) => {
   };
 };
 
+//note - does not include components
 export const projectListAllOptions = (projectId) => {
   return (dispatch, getState) => {
     const components = dispatch(projectListAllComponents(projectId));
@@ -50,7 +53,6 @@ export const projectListAllOptions = (projectId) => {
   };
 };
 
-//returns constructs first, then all blocks afterwards, order not guaranteed
 export const projectListAllBlocks = (projectId) => {
   return (dispatch, getState) => {
     const components = dispatch(projectListAllComponents(projectId));

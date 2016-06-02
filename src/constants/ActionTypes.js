@@ -3,6 +3,7 @@ export const BLOCK_STASH = 'BLOCK_STASH';
 export const BLOCK_LOAD = 'BLOCK_LOAD';
 export const BLOCK_CLONE = 'BLOCK_CLONE';
 export const BLOCK_MERGE = 'BLOCK_MERGE';
+export const BLOCK_DETACH = 'BLOCK_DETACH';
 export const BLOCK_DELETE = 'BLOCK_DELETE';
 export const BLOCK_RENAME = 'BLOCK_RENAME';
 export const BLOCK_SET_COLOR = 'BLOCK_SET_COLOR';

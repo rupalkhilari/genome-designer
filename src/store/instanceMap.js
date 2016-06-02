@@ -121,6 +121,17 @@ export const saveBlock = (...blocks) => {
   blocks.forEach(block => blockMap.set(block.id, block));
 };
 
+/* remove */
+//likely dont need to do this, unless truly temporary (e.g. search results)
+
+export const removeProject = (...projectIds) => {
+  projectIds.forEach(projectId => projectMap.delete(projectId));
+};
+
+export const removeBlock = (...blockIds) => {
+  blockIds.forEach(blockId => blockMap.delete(blockId));
+};
+
 /* rollups */
 
 export const getRollup = (projectId) => ({

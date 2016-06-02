@@ -47,8 +47,8 @@ export const projectDelete = (projectId) => {
 //this is a background save (e.g. autosave)
 export const projectSave = (inputProjectId) => {
   return (dispatch, getState) => {
-    //if dont pass project id, get the currently viewed one
-    const projectId = !!inputProjectId ? inputProjectId : getState().focus.projectId;
+    const currentProjectId = dispatch(projectSelectors.projectGetCurrentId());
+    const projectId = !!inputProjectId ? inputProjectId : currentProjectId;
     if (!projectId) {
       return Promise.resolve(null);
     }
@@ -131,12 +131,39 @@ export const projectLoad = (projectId) => {
 //default to most recent project if falsy
 export const projectOpen = (inputProjectId) => {
   return (dispatch, getState) => {
-    //save the current project
-    return dispatch(projectSave())
+    const currentProjectId = dispatch(projectSelectors.projectGetCurrentId());
+    const projectId = inputProjectId || getItem(recentProjectKey);
+
+    if (currentProjectId === projectId) {
+      return Promise.resolve();
+    }
+
+    return dispatch(projectSave(currentProjectId))
       .then(() => {
-        //dont need to load the project, projectPage will handle that
-        const projectId = !!inputProjectId ? inputProjectId : getItem(recentProjectKey);
-        //alternatively, we can just call react-router's browserHistory.push() directly
+        /*
+        future - clear the store of blocks from the old project.
+        need to consider blocks in the inventory - loaded projects, search results, shown in onion etc. Probably means committing to using the instanceMap for mapping state to props in inventory.
+
+        const blockIds = dispatch(projectSelectors.projectListAllBlocks(currentProjectId)).map(block => block.id);
+
+        // pause action e.g. so dont get accidental redraws with blocks missing
+        dispatch(pauseAction());
+
+        //remove prior projects blocks from the store
+        dispatch({
+          type: ActionTypes.BLOCK_DETACH,
+          blockIds,
+        });
+
+        //projectPage will load the project + its blocks
+        //change the route
+        dispatch(push(`/project/${projectId}`));
+
+        //dispatch(resumeAction());
+         */
+
+        //projectPage will load the project + its blocks
+        //change the route
         dispatch(push(`/project/${projectId}`));
       });
   };

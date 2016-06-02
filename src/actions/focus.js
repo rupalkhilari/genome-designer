@@ -6,9 +6,11 @@ import {id as idValidatorCreator} from '../schemas/fields/validators';
 
 const idValidator = (id) => safeValidate(idValidatorCreator(), true, id);
 
-export const focusProject = (inputProjectId) => {
+export const focusProject = (inputProjectId = null) => {
   return (dispatch, getState) => {
-    const projectId = idValidator(inputProjectId) ? inputProjectId : null;
+    //testing - can re-enable when remove 'combinatorial' project
+    //const projectId = idValidator(inputProjectId) ? inputProjectId : null;
+    const projectId = inputProjectId;
 
     dispatch({
       type: ActionTypes.FOCUS_PROJECT,
