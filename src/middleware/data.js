@@ -2,7 +2,7 @@ import rejectingFetch from './rejectingFetch';
 import invariant from 'invariant';
 import { headersGet, headersPost, headersPut, headersDelete } from './headers';
 import { dataApiPath } from './paths';
-import * as instanceCache from '../store/instanceCache';
+import * as instanceMap from '../store/instanceMap';
 
 /******
  save state
@@ -72,17 +72,17 @@ export const listProjects = () => {
 
 //returns a rollup
 export const loadProject = (projectId, avoidCache = false) => {
-  const isCached = instanceCache.projectLoaded(projectId);
+  const isCached = instanceMap.projectLoaded(projectId);
 
   if (isCached && avoidCache !== true) {
-    return Promise.resolve(instanceCache.getRollup(projectId));
+    return Promise.resolve(instanceMap.getRollup(projectId));
   }
 
   const url = dataApiPath(`projects/${projectId}`);
   return rejectingFetch(url, headersGet())
     .then(resp => resp.json())
     .then(rollup => {
-      instanceCache.saveRollup(rollup);
+      instanceMap.saveRollup(rollup);
       return rollup;
     });
 };
@@ -96,11 +96,11 @@ export const saveProject = (projectId, rollup) => {
   invariant(rollup.project && Array.isArray(rollup.blocks), 'rollup in wrong form');
 
   //check if project is new, and save if it is
-  if (!instanceCache.isRollupNew(rollup)) {
+  if (!instanceMap.isRollupNew(rollup)) {
     return Promise.resolve(null);
   }
 
-  instanceCache.saveRollup(rollup);
+  instanceMap.saveRollup(rollup);
 
   const url = dataApiPath(`projects/${projectId}`);
   const stringified = JSON.stringify(rollup);
@@ -126,7 +126,7 @@ export const snapshot = (projectId, message = 'Project Snapshot', rollup = {}) =
   invariant(!message || typeof message === 'string', 'optional message for snapshot must be a string');
 
   if (rollup.project && rollup.blocks) {
-    instanceCache.saveRollup(rollup);
+    instanceMap.saveRollup(rollup);
   }
 
   const stringified = JSON.stringify({ message, rollup });

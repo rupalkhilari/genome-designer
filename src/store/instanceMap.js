@@ -2,9 +2,13 @@ import invariant from 'invariant';
 import Project from '../models/Project';
 import Block from '../models/Block';
 
-//project rollup cache
-//track the last versions saved so we aren't saving over and over
-const rollMap = new Map();
+/*
+ Tracks a map of blocks / projects which have been loaded. Only contains the latest version. Serves as a place to store blocks / projects which do not need to be in the store.
+
+ Works in concert with the store. Autosave relies on the store, for tracking versions of each instance. Other middlewares rely on the store as well.
+
+ However, as long as the undo stack is erased on location change, the store only needs to contain the blocks / project that is open and being edited.
+ */
 
 //map of blocks
 const blockMap = new Map();

@@ -1,5 +1,5 @@
 import * as ActionTypes from '../constants/ActionTypes';
-import * as instanceCache from '../store/instanceCache';
+import * as instanceMap from '../store/instanceMap';
 import { blocks as testBlocks } from './testProject';
 import { blocks as combiBlocks } from './testCombinatorial';
 
@@ -9,7 +9,7 @@ const initialState = {};
 combiBlocks.forEach(block => Object.assign(initialState,
   { [block.id]: block }
 ));
-instanceCache.saveBlock(...combiBlocks);
+instanceMap.saveBlock(...combiBlocks);
 
 if (process.env.NODE_ENV === 'test') {
   testBlocks.forEach(block => Object.assign(initialState,
@@ -41,12 +41,12 @@ export default function blocks(state = initialState, action) {
     const { block, blocks } = action;
 
     if (Array.isArray(blocks)) {
-      instanceCache.saveBlock(...blocks);
+      instanceMap.saveBlock(...blocks);
       const toMerge = blocks.reduce((acc, block) => Object.assign(acc, { [block.id]: block }), {});
       return Object.assign({}, state, toMerge);
     }
 
-    instanceCache.saveBlock(block);
+    instanceMap.saveBlock(block);
     return Object.assign({}, state, { [block.id]: block });
 
   case ActionTypes.BLOCK_DELETE :

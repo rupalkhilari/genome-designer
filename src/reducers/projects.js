@@ -1,5 +1,5 @@
 import * as ActionTypes from '../constants/ActionTypes';
-import * as instanceCache from '../store/instanceCache';
+import * as instanceMap from '../store/instanceMap';
 import { project as testProject } from './testProject';
 import { project as combiProject } from './testCombinatorial';
 
@@ -9,7 +9,7 @@ const initialState = {};
 Object.assign(initialState, {
   combinatorial: combiProject,
 });
-instanceCache.saveProject(combiProject);
+instanceMap.saveProject(combiProject);
 
 if (process.env.NODE_ENV === 'test') {
   Object.assign(initialState, {
@@ -26,7 +26,7 @@ export default function projects(state = initialState, action) {
   case ActionTypes.PROJECT_REMOVE_CONSTRUCT:
   case ActionTypes.PROJECT_ADD_CONSTRUCT :
     const { project } = action;
-    instanceCache.saveProject(project);
+    instanceMap.saveProject(project);
     return Object.assign({}, state, { [project.id]: project });
 
   case ActionTypes.PROJECT_SNAPSHOT :
@@ -34,12 +34,12 @@ export default function projects(state = initialState, action) {
     const { projectId, sha } = action;
     const gotProject = state[projectId];
     const updatedProject = gotProject.updateVersion(sha);
-    instanceCache.saveProject(updatedProject);
+    instanceMap.saveProject(updatedProject);
     return Object.assign({}, state, { [projectId]: updatedProject });
 
   case ActionTypes.PROJECT_LIST :
     const { projects } = action;
-    instanceCache.saveProject(...projects);
+    instanceMap.saveProject(...projects);
     const zippedProjects = projects.reduce((acc, project) => Object.assign(acc, { [project.id]: project }), {});
     //prefer state versions to zipped versions
     return Object.assign({}, zippedProjects, state);
