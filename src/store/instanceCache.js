@@ -26,6 +26,8 @@ const isRollDifferent = (oldRollup, newRollup) => {
   });
 };
 
+/* save / get */
+
 export const saveProject = (...projects) => {
   projects.forEach(project => projectMap.set(project.id, project));
 };
@@ -42,6 +44,8 @@ export const getBlock = (blockId) => {
   return blockMap.get(blockId);
 };
 
+/* rollups */
+
 export const getRollup = (projectId) => {
   return rollMap.get(projectId);
 };
@@ -53,4 +57,39 @@ export const saveRollup = (rollup) => {
 
 export const isRollupNew = (rollup) => {
   return isRollDifferent(getRollup(rollup.project.id), rollup);
+};
+
+/* checks for presense */
+
+//recursively check blocks' presence + their components / options
+const blockLoaded = (...blockIds) => {
+  return blockIds.every(blockId => {
+    const block = blockMap.get(blockId);
+    if (!block) {
+      return false;
+    }
+
+    //check options
+    const optionsArray = Object.keys(block.options);
+    if (optionsArray.length) {
+      return blockLoaded(...optionsArray);
+    }
+
+    //check components
+    if (block.components.length) {
+      return blockLoaded(...block.components);
+    }
+
+    //otherwise we're good at the leaf
+    return true;
+  });
+};
+
+//check if whole project is loaded
+export const projectLoaded = (projectId) => {
+  const project = getProject(projectId);
+  if (!project) {
+    return false;
+  }
+  return blockLoaded(...project.components);
 };
