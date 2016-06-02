@@ -126,3 +126,14 @@ export const focusForceProject = (project) => {
     return project;
   };
 };
+
+export const focusPrioritize = (level = 'project') => {
+  return (dispatch, getState) => {
+    invariant(['project', 'construct', 'block'].indexOf(level) >= 0, 'must pass a valid type to give priority to');
+    dispatch({
+      type: ActionTypes.FOCUS_PRIORITIZE,
+      level,
+    });
+    return level;
+  };
+};

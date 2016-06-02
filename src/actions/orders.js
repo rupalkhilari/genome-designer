@@ -7,7 +7,7 @@ import * as blockActions from './blocks';
 import * as projectSelectors from '../selectors/projects';
 import * as blockSelectors from '../selectors/blocks';
 import { merge, flatten } from 'lodash';
-import OrderConstructDefinition from '../schemas/OrderConstruct';
+import OrderConstructSchema from '../schemas/OrderConstruct';
 
 export const orderList = (projectId) => {
   return (dispatch, getState) => {
@@ -103,7 +103,7 @@ export const orderGenerateConstructs = (orderId) => {
     //convert each combination construct (currently blocks) into schema-conforming form
       .map(construct => {
         //each construct comforms ot OrderConstruct
-        return merge(OrderConstructDefinition.scaffold(), {
+        return merge(OrderConstructSchema.scaffold(), {
           //each construct component conforms to OrderConstructComponent
           components: construct.map(component => ({
             componentId: component.id,

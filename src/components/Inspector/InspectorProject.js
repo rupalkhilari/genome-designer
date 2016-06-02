@@ -44,7 +44,7 @@ export class InspectorProject extends Component {
 
     return (
       <div className="InspectorContent InspectorContentProject">
-        <h4 className="InspectorContent-heading">Name</h4>
+        <h4 className="InspectorContent-heading">Project</h4>
         <InputSimple placeholder="Project Name"
                      onChange={this.setProjectName}
                      onFocus={this.startTransaction}

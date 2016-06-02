@@ -1,7 +1,7 @@
 import uuid from 'node-uuid';
 import { set as pathSet, unset as pathUnset, cloneDeep, merge } from 'lodash';
 import invariant from 'invariant';
-import InstanceDefinition from '../schemas/Instance';
+import InstanceSchema from '../schemas/Instance';
 import safeValidate from '../schemas/fields/safeValidate';
 import { version } from '../schemas/fields/validators';
 
@@ -17,7 +17,7 @@ export default class Instance {
     invariant(typeof input === 'object', 'must pass an object (or leave undefined) to model constructor');
 
     merge(this,
-      InstanceDefinition.scaffold(),
+      InstanceSchema.scaffold(),
       subclassBase,
       moreFields,
       input,
