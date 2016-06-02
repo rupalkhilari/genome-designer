@@ -1,9 +1,6 @@
 import React, { Component, PropTypes } from 'react';
-import { connect } from 'react-redux';
 
-import '../../../src/styles/ordermodal.css';
-
-class Permutations extends Component {
+export default class Permutations extends Component {
 
   static propTypes = {
     total: PropTypes.number.isRequired,
@@ -40,11 +37,3 @@ class Permutations extends Component {
     }
   }
 }
-
-function mapStateToProps(state) {
-  return {
-  };
-}
-
-export default connect(mapStateToProps, {
-})(Permutations);

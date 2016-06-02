@@ -1,10 +1,6 @@
 import React, { Component, PropTypes } from 'react';
-import { connect } from 'react-redux';
 
-import '../../../src/styles/form.css';
-import '../../../src/styles/ordermodal.css';
-
-class Page1 extends Component {
+export default class Page1 extends Component {
 
   static propTypes = {
     left: PropTypes.bool.isRequired,
@@ -18,7 +14,6 @@ class Page1 extends Component {
     this.state = {
     };
   }
-
 
   render() {
 
@@ -35,11 +30,3 @@ class Page1 extends Component {
     )
   }
 }
-
-function mapStateToProps(state) {
-  return {
-  };
-}
-
-export default connect(mapStateToProps, {
-})(Page1);

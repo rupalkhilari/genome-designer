@@ -1,22 +1,11 @@
 import React, { Component, PropTypes } from 'react';
-import { connect } from 'react-redux';
 import ConstructPreview from './constructpreview'
 
-import '../../../src/styles/form.css';
-import '../../../src/styles/ordermodal.css';
-
-class Page2 extends Component {
+export default class Page2 extends Component {
 
   static propTypes = {
     open: PropTypes.bool.isRequired,
   };
-
-  constructor() {
-    super();
-    this.state = {
-    };
-  }
-
 
   render() {
     // no render when not open
@@ -31,11 +20,3 @@ class Page2 extends Component {
     )
   }
 }
-
-function mapStateToProps(state) {
-  return {
-  };
-}
-
-export default connect(mapStateToProps, {
-})(Page2);

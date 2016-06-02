@@ -1,9 +1,6 @@
 import React, { Component, PropTypes } from 'react';
-import { connect } from 'react-redux';
 
-import '../../../src/styles/ordermodal.css';
-
-class Input extends Component {
+export default class Input extends Component {
 
   static propTypes = {
     value: PropTypes.string.isRequired,
@@ -18,11 +15,3 @@ class Input extends Component {
     )
   }
 }
-
-function mapStateToProps(state) {
-  return {
-  };
-}
-
-export default connect(mapStateToProps, {
-})(Input);

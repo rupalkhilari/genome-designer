@@ -2,7 +2,6 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import {
   uiShowOrderForm,
-  uiSetGrunt,
 } from '../../actions/ui';
 import ModalWindow from '../../components/modal/modalwindow';
 import Page1 from './page1';
@@ -10,11 +9,6 @@ import Page2 from './page2';
 import Page3 from './page3';
 import NavLeftRight from './nav-left-right';
 import Order from '../../models/Order';
-import {
-  orderGenerateConstructs,
-  orderCreate,
-} from '../../actions/orders';
-import { projectGetVersion } from '../../selectors/projects';
 
 import '../../../src/styles/form.css';
 import '../../../src/styles/ordermodal.css';
@@ -24,17 +18,12 @@ class OrderModal extends Component {
   static propTypes = {
     uiShowOrderForm: PropTypes.func.isRequired,
     open: PropTypes.bool.isRequired,
-    uiSetGrunt: PropTypes.func.isRequired,
     projectId: PropTypes.string.isRequired,
-    projectGetVersion: PropTypes.func.isRequired,
   };
 
-  constructor() {
-    super();
-    this.state = {
-      page: 1,
-    };
-  }
+  state = {
+    page: 1,
+  };
 
   onSubmit(evt) {
     evt.preventDefault();
@@ -110,17 +99,4 @@ function mapStateToProps(state, props) {
 
 export default connect(mapStateToProps, {
   uiShowOrderForm,
-  uiSetGrunt,
-  projectGetVersion,
-  orderGenerateConstructs,
-  orderCreate,
 })(OrderModal);
-
-/*
-  label, order.setName
-  remove email
-  Assembly Method: orderParameters.onePot[true/false] Single ...
-  Number of assemblies set via OrderParameters new property ( update schema )
-  Combinatorial Method: [ 'randomSubset', 'maximumUniqueSet'] ( disabled if # of assemblies === order.constructs.length)
-  After Fabrication: check with Joe, ...possibly always checked
- */

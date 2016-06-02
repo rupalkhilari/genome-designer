@@ -22,6 +22,8 @@ class Page1 extends Component {
     open: PropTypes.bool.isRequired,
     orderSetName: PropTypes.func.isRequired,
     orderSetParameters: PropTypes.func.isRequired,
+    project: PropTypes.object.isRequired,
+    constructs: PropTypes.array.isRequired,
   };
 
   constructor() {
@@ -82,31 +84,41 @@ class Page1 extends Component {
 
     return (
       <div className="order-page page1">
-        <Row text="Label:"
-          widget={(<Input
+        <Row text="Label:">
+          <Input
             onChange={this.labelChanged}
-            value={this.props.order.metadata.name}/>)}/>
-        <Row text="Assembly Containers:"
-          widget={<Selector
+            value={this.props.order.metadata.name}
+          />
+        </Row>
+        <Row text="Assembly Containers:">
+          <Selector
             value={this.props.order.parameters.onePot}
             options={this.assemblyOptions()}
-            onChange={this.assemblyContainerChanged}/>}/>
-        <Row text="Number of assemblies:"
-          widget={<Permutations
+            onChange={this.assemblyContainerChanged}
+          />
+        </Row>
+        <Row text="Number of assemblies:">
+          <Permutations
             total={this.props.constructs.length}
             value={this.props.order.parameters.permutations || 1}
             editable={!this.props.order.parameters.onePot}
-            onChange={this.numberOfAssembliesChanged}/>}/>
-        <Row text="Combinatorial method:"
-          widget={<Selector
+            onChange={this.numberOfAssembliesChanged}
+          />
+        </Row>
+        <Row text="Combinatorial method:">
+          <Selector
             value={this.props.order.parameters.combinatorialMethod}
             options={this.methodOptions()}
-            onChange={this.methodChanged}/>}/>
-        <Row text="After fabrication:"
-          widget={<Checkbox
+            onChange={this.methodChanged}
+          />
+        </Row>
+        <Row text="After fabrication:">
+          <Checkbox
             onChange={this.sequenceAssemblies}
             label="Sequence Assemblies"
-            value={this.props.order.parameters.sequenceAssemblies}/>}/>
+            value={this.props.order.parameters.sequenceAssemblies}
+          />
+        </Row>
         <br/>
       </div>
     )
