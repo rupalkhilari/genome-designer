@@ -26,12 +26,12 @@ const isRollDifferent = (oldRollup, newRollup) => {
   });
 };
 
-export const saveProject = (project) => {
-  projectMap.set(project.id, project);
+export const saveProject = (...projects) => {
+  projects.forEach(project => projectMap.set(project.id, project));
 };
 
-export const saveBlock = (block) => {
-  blockMap.set(block.id, block);
+export const saveBlock = (...blocks) => {
+  blocks.forEach(block => blockMap.set(block.id, block));
 };
 
 export const getProject = (projectId) => {

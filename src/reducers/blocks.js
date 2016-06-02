@@ -1,7 +1,7 @@
 import * as ActionTypes from '../constants/ActionTypes';
+import * as instanceCache from '../store/instanceCache';
 import { blocks as testBlocks } from './testProject';
 import { blocks as combiBlocks } from './testCombinatorial';
-import andreaParts from '../inventory/andrea/parts';
 
 const initialState = {};
 
@@ -40,9 +40,12 @@ export default function blocks(state = initialState, action) {
     const { block, blocks } = action;
 
     if (Array.isArray(blocks)) {
+      instanceCache.save(...blocks);
       const toMerge = blocks.reduce((acc, block) => Object.assign(acc, { [block.id]: block }), {});
       return Object.assign({}, state, toMerge);
     }
+
+    instanceCache.save(block);
     return Object.assign({}, state, { [block.id]: block });
 
   case ActionTypes.BLOCK_DELETE :
