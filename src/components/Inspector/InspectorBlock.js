@@ -155,12 +155,14 @@ export class InspectorBlock extends Component {
     const isTemplate = singleInstance && instances[0].isTemplate();
     const isConstruct = singleInstance && instances[0].isConstruct();
 
+    const name = isConstruct ? 'Construct' : (isTemplate ? 'Template' : 'Block'); //eslint-disable-line no-nested-ternary
+
     const currentSourceElement = this.currentSource();
     const annotations = this.currentAnnotations();
 
     return (
       <div className="InspectorContent InspectorContentBlock">
-        <h4 className="InspectorContent-heading">Name</h4>
+        <h4 className="InspectorContent-heading">{name}</h4>
         <InputSimple placeholder="Enter a name"
                      readOnly={readOnly}
                      onChange={this.setBlockName}
@@ -199,7 +201,7 @@ export class InspectorBlock extends Component {
         </div>
 
 
-        {!!annotations.length && (<h4 className="InspectorContent-heading">Contents</h4>)}
+        {!!annotations.length && (<h4 className="InspectorContent-heading">Annotations</h4>)}
         {!!annotations.length && (<div className="InspectorContentBlock-Annotations">
             {annotations.map((annotation, idx) => {
               return (
