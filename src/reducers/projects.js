@@ -9,6 +9,7 @@ const initialState = {};
 Object.assign(initialState, {
   combinatorial: combiProject,
 });
+instanceCache.saveProject(combiProject);
 
 if (process.env.NODE_ENV === 'test') {
   Object.assign(initialState, {

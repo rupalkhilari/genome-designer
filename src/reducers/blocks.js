@@ -9,6 +9,7 @@ const initialState = {};
 combiBlocks.forEach(block => Object.assign(initialState,
   { [block.id]: block }
 ));
+instanceCache.saveBlock(...combiBlocks);
 
 if (process.env.NODE_ENV === 'test') {
   testBlocks.forEach(block => Object.assign(initialState,
