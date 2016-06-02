@@ -15,7 +15,7 @@ export class InventoryProject extends Component {
   static propTypes = {
     project: (props, propName) => {
       if (!(Project.validate(props[propName]) && props[propName] instanceof Project)) {
-        return new Error('must pass a project (Block model) to InventoryProject');
+        return new Error('must pass a project (Project model) to InventoryProject');
       }
     },
     isActive: PropTypes.bool.isRequired,
