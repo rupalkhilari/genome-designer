@@ -3,12 +3,15 @@ import { connect } from 'react-redux';
 import { transact, commit, abort } from '../../store/undo/actions';
 import { projectRename, projectMerge } from '../../actions/projects';
 import InputSimple from './../InputSimple';
-
-//for now, assumes only blocks. Later, may need to pass a type as well
+import Project from '../../models/Project';
 
 export class InspectorProject extends Component {
   static propTypes = {
-    instance: PropTypes.object.isRequired,
+    instance: (props, propName) => {
+      if (!(props[propName] instanceof Project)) {
+        return new Error('must pass a project (Project model) to InspectorProject');
+      }
+    },
     projectRename: PropTypes.func.isRequired,
     projectMerge: PropTypes.func.isRequired,
     readOnly: PropTypes.bool.isRequired,
@@ -44,7 +47,7 @@ export class InspectorProject extends Component {
 
     return (
       <div className="InspectorContent InspectorContentProject">
-        <h4 className="InspectorContent-heading">Name</h4>
+        <h4 className="InspectorContent-heading">Project</h4>
         <InputSimple placeholder="Project Name"
                      onChange={this.setProjectName}
                      onFocus={this.startTransaction}

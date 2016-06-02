@@ -15,7 +15,7 @@ export class InventoryProject extends Component {
   static propTypes = {
     project: (props, propName) => {
       if (!(Project.validate(props[propName]) && props[propName] instanceof Project)) {
-        return new Error('must pass a project (Block model) to InventoryProject');
+        return new Error('must pass a project (Project model) to InventoryProject');
       }
     },
     isActive: PropTypes.bool.isRequired,
@@ -30,6 +30,7 @@ export class InventoryProject extends Component {
   state = {
     isLoading: false,
     isExpanded: false,
+    errorLoading: false,
   };
 
   //handle double-click to open
@@ -73,6 +74,11 @@ export class InventoryProject extends Component {
         .then(() => this.setState({
           isLoading: false,
           isExpanded: true,
+        }))
+        .catch(() => this.setState({
+          isLoading: false,
+          isExpanded: false,
+          errorLoading: true,
         }));
     }
 
@@ -83,15 +89,16 @@ export class InventoryProject extends Component {
 
   render() {
     const { project, isActive } = this.props;
-    const { isLoading, isExpanded } = this.state;
+    const { isLoading, isExpanded, errorLoading } = this.state;
     const projectId = project.id;
+    const canToggle = project.components.length > 0;
 
     return (
       <InventoryListGroup title={project.getName()}
                           manual
-                          hideToggle={!project.components.length}
+                          canToggle={canToggle && !errorLoading}
                           isLoading={isLoading}
-                          isExpanded={isExpanded}
+                          isExpanded={isExpanded && canToggle}
                           onToggle={(nextState) => this.handleToggleProject(nextState, projectId)}
                           onSelect={(nextState) => this.onToggleProject(nextState, projectId)}
                           isActive={isActive}>

@@ -19,6 +19,11 @@ export class InspectorBlock extends Component {
     transact: PropTypes.func.isRequired,
     commit: PropTypes.func.isRequired,
     abort: PropTypes.func.isRequired,
+    forceIsConstruct: PropTypes.bool,
+  };
+
+  static defaultProps = {
+    forceIsConstruct: false,
   };
 
   setBlockName = (name) => {
@@ -144,18 +149,20 @@ export class InspectorBlock extends Component {
   }
 
   render() {
-    const { instances, readOnly } = this.props;
+    const { instances, readOnly, forceIsConstruct } = this.props;
     const singleInstance = instances.length === 1;
     const isList = singleInstance && instances[0].isList();
     const isTemplate = singleInstance && instances[0].isTemplate();
     const isConstruct = singleInstance && instances[0].isConstruct();
+
+    const name = isConstruct ? 'Construct' : (isTemplate ? 'Template' : 'Block'); //eslint-disable-line no-nested-ternary
 
     const currentSourceElement = this.currentSource();
     const annotations = this.currentAnnotations();
 
     return (
       <div className="InspectorContent InspectorContentBlock">
-        <h4 className="InspectorContent-heading">Name</h4>
+        <h4 className="InspectorContent-heading">{name}</h4>
         <InputSimple placeholder="Enter a name"
                      readOnly={readOnly}
                      onChange={this.setBlockName}
@@ -189,12 +196,12 @@ export class InspectorBlock extends Component {
                        onSelect={this.selectColor}/>
 
           <SymbolPicker current={this.currentRoleSymbol()}
-                        readOnly={readOnly || isConstruct || isTemplate || isList}
+                        readOnly={readOnly || isConstruct || isTemplate || isList || forceIsConstruct}
                         onSelect={this.selectSymbol}/>
         </div>
 
 
-        {!!annotations.length && (<h4 className="InspectorContent-heading">Contents</h4>)}
+        {!!annotations.length && (<h4 className="InspectorContent-heading">Annotations</h4>)}
         {!!annotations.length && (<div className="InspectorContentBlock-Annotations">
             {annotations.map((annotation, idx) => {
               return (

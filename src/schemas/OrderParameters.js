@@ -1,7 +1,7 @@
 import fields from './fields/index';
-import SchemaDefinition from './SchemaDefinition';
+import Schema from './SchemaClass';
 
-const OrderParametersDefinition = new SchemaDefinition({
+const fieldDefs = {
   method: [
     fields.string(),
     `Assembly method to be used`,
@@ -12,6 +12,12 @@ const OrderParametersDefinition = new SchemaDefinition({
     'Reaction is combinatorial and all parts will be combined in one tube, resulting in many combinatorial assemblies mixed together.',
     { scaffold: () => true },
   ],
-});
+};
 
-export default OrderParametersDefinition;
+export class OrderParametersSchemaClass extends Schema {
+  constructor(fieldDefinitions) {
+    super(Object.assign({}, fieldDefs, fieldDefinitions));
+  }
+}
+
+export default new OrderParametersSchemaClass();
