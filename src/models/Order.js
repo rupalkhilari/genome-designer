@@ -2,8 +2,8 @@ import Instance from './Instance';
 import invariant from 'invariant';
 import { merge, cloneDeep } from 'lodash';
 import OrderDefinition from '../schemas/Order';
-import OrderParametersDefinition from '../schemas/OrderParameters';
-import OrderConstructDefinition from '../schemas/OrderConstruct';
+import OrderParametersSchema from '../schemas/OrderParameters';
+import OrderConstructSchema from '../schemas/OrderConstruct';
 import * as validators from '../schemas/fields/validators';
 import safeValidate from '../schemas/fields/safeValidate';
 import { submitOrder, getQuote } from '../middleware/order';
@@ -37,12 +37,12 @@ export default class Order extends Instance {
       input.constructIds.length > 0 &&
       input.constructIds.every(id => idValidator(id)) &&
       input.constructs.length > 0 &&
-      input.constructs.every(construct => OrderConstructDefinition.validate(construct)) &&
-      OrderParametersDefinition.validate(input.parameters, throwOnError);
+      input.constructs.every(construct => OrderConstructSchema.validate(construct)) &&
+      OrderParametersSchema.validate(input.parameters, throwOnError);
   }
 
   static validateParameters(input, throwOnError = false) {
-    return OrderParametersDefinition.validate(input, throwOnError);
+    return OrderParametersSchema.validate(input, throwOnError);
   }
 
   clone() {
@@ -68,7 +68,7 @@ export default class Order extends Instance {
 
   setParameters(parameters = {}, shouldMerge = false) {
     const nextParameters = merge({}, (shouldMerge === true ? this.parameters : {}), parameters);
-    invariant(OrderParametersDefinition.validate(parameters, false), 'parameters must pass validation');
+    invariant(OrderParametersSchema.validate(parameters, false), 'parameters must pass validation');
     return this.merge({ parameters: nextParameters });
   }
 
@@ -78,7 +78,7 @@ export default class Order extends Instance {
 
   setConstructs(constructs = []) {
     invariant(Array.isArray(constructs), 'must pass an array of constructs');
-    invariant(constructs.every(construct => OrderConstructDefinition.validate(construct)), 'must pass valid constructs. See OrderConstruct schema');
+    invariant(constructs.every(construct => OrderConstructSchema.validate(construct)), 'must pass valid constructs. See OrderConstruct schema');
 
     return this.merge({ constructs });
   }

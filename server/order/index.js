@@ -50,21 +50,23 @@ router.route('/:projectId/:orderId?')
       return res.status(501).send('foundry must be EGF');
     }
 
+    //assign user to the order
+    merge(order, {
+      user: user.uuid,
+    });
+
     //future - this should be dynamic, based on the foundry, pulling from a registry
-    submit(order)
+    submit(order, user)
       .then(response => {
         return persistence.projectSnapshot(projectId, `ORDER`)
-          .then(({ sha }) => {
+          .then(({ sha, time }) => {
             merge(order, {
               projectVersion: sha,
-              user: {
-                id: user.uuid,
-                email: user.email,
-              },
               status: {
                 foundry,
                 remoteId: response.jobId,
                 price: response.cost,
+                timeSent: time,
               },
             });
 
