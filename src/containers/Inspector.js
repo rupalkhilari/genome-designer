@@ -64,7 +64,7 @@ export class Inspector extends Component {
   }
 }
 
-function mapStateToProps(state) {
+function mapStateToProps(state, props) {
   const { isVisible } = state.ui.inspector;
   //UI adjustment
   const showingGrunt = !!state.ui.modals.gruntMessage;
@@ -72,7 +72,8 @@ function mapStateToProps(state) {
   const { level, forceProject, forceBlocks, projectId, constructId, blockIds } = state.focus;
   let focused;
   let readOnly = false;
-  const currentProject = state.projects[projectId];
+  //if projectId is not set in store, ProjectPage is passing it in, so lets default to it
+  const currentProject = state.projects[projectId || props.projectId];
 
   if (level === 'project') {
     if (forceProject) {
