@@ -24,7 +24,7 @@
     "create-ecoli-db": "python extensions/foundry/ecoli/generate_db.py jdon extensions/foundry/ecoli/ecoli.genes.json extensions/foundry/ecoli.json",
     "auth": "./bin/local-auth.sh",
     "auth-test": "COMMAND=\"mocha --compilers js:babel-register,css:test/css-null-compiler.js --require ./test/setup.js --timeout=10000 test/server/auth/REST.spec.js\" ./bin/server-auth.sh",
-    "server-auth": "EMAIL=1 COMMAND='npm run start-instance' ./bin/server-auth.sh"
+    "server-auth": "EMAIL=1 COMMAND='npm run start-instance -- --release' ./bin/server-auth.sh"
   },
   "repository": {
     "type": "git",
