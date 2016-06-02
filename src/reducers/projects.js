@@ -38,7 +38,7 @@ export default function projects(state = initialState, action) {
 
   case ActionTypes.PROJECT_LIST :
     const { projects } = action;
-    instanceCache.saveProject(projects);
+    instanceCache.saveProject(...projects);
     const zippedProjects = projects.reduce((acc, project) => Object.assign(acc, { [project.id]: project }), {});
     //prefer state versions to zipped versions
     return Object.assign({}, zippedProjects, state);
