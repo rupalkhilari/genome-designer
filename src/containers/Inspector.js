@@ -14,6 +14,7 @@ export class Inspector extends Component {
     isVisible: PropTypes.bool.isRequired,
     inspectorToggleVisibility: PropTypes.func.isRequired,
     readOnly: PropTypes.bool.isRequired,
+    forceIsConstruct: PropTypes.bool.isRequired,
     type: PropTypes.string.isRequired,
     focused: PropTypes.any.isRequired,
   };
@@ -23,7 +24,7 @@ export class Inspector extends Component {
   };
 
   render() {
-    const { showingGrunt, isVisible, focused, type, readOnly } = this.props;
+    const { showingGrunt, isVisible, focused, type, readOnly, forceIsConstruct } = this.props;
 
     // inspect instances, or construct if no instance or project if no construct or instances
     let inspect;
@@ -35,7 +36,7 @@ export class Inspector extends Component {
       inspect = <InspectorBlock instances={focused} readOnly={readOnly}/>;
       break;
     default:
-      inspect = <InspectorBlock instances={focused} readOnly={readOnly}/>;
+      inspect = <InspectorBlock instances={focused} readOnly={readOnly} forceIsConstruct={forceIsConstruct} />;
       break;
     }
 
@@ -71,13 +72,14 @@ function mapStateToProps(state) {
   const { level, forceProject, forceBlocks, projectId, constructId, blockIds } = state.focus;
   let focused;
   let readOnly = false;
+  const currentProject = state.projects[projectId];
 
   if (level === 'project') {
     if (forceProject) {
       focused = forceProject;
       readOnly = true;
     } else {
-      focused = state.projects[projectId];
+      focused = currentProject;
     }
   } else if (level === 'construct' || (!forceBlocks.length && !blockIds.length)) {
     const construct = state.blocks[constructId];
@@ -93,12 +95,16 @@ function mapStateToProps(state) {
     }
   }
 
+  const forceIsConstruct = (level === 'construct') ||
+    blockIds.some(blockId => currentProject.components.indexOf(blockId) >= 0);
+
   return {
     showingGrunt,
     isVisible,
     type: level,
     readOnly,
     focused,
+    forceIsConstruct,
   };
 }
 
