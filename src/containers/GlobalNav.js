@@ -593,7 +593,7 @@ class GlobalNav extends Component {
     return (
       <div className="GlobalNav">
         <RibbonGrunt />
-        <span className="GlobalNav-title">GD</span>
+        <img className="GlobalNav-logo" src="/images/homepage/app-logo.png"/>
         {showMenu && this.menuBar()}
         <span className="GlobalNav-spacer"/>
         {showMenu && <AutosaveTracking projectId={currentProjectId}/>}
