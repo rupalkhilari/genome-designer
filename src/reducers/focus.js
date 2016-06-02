@@ -8,6 +8,7 @@ export const initialState = {
   projectId: null, //current project. Set by projectPage. preferred over route query.
   blockIds: [], //ids of selection
   constructId: null, //id of current
+  level: 'project', //what to give priority to (when defined)
 };
 
 export default function inventory(state = initialState, action) {
@@ -19,6 +20,7 @@ export default function inventory(state = initialState, action) {
       blockIds: [],
       constructId: null,
       forceProject: project,
+      level: 'project',
     });
   }
   case ActionTypes.FOCUS_FORCE_BLOCKS: {
@@ -29,6 +31,7 @@ export default function inventory(state = initialState, action) {
       forceProject: null,
       blockIds: [],
       constructId: null,
+      level: 'block',
     });
   }
   case ActionTypes.FOCUS_PROJECT: {
@@ -37,6 +40,7 @@ export default function inventory(state = initialState, action) {
       forceProject: null,
       forceBlocks: [],
       projectId: projectId,
+      level: 'project',
     });
   }
   case ActionTypes.FOCUS_CONSTRUCT: {
@@ -45,6 +49,7 @@ export default function inventory(state = initialState, action) {
       forceProject: null,
       forceBlocks: [],
       constructId: constructId,
+      level: 'construct',
     });
   }
   case ActionTypes.FOCUS_BLOCKS : {
@@ -54,6 +59,13 @@ export default function inventory(state = initialState, action) {
       forceProject: null,
       forceBlocks: [],
       blockIds: blockIds,
+      level: 'block',
+    });
+  }
+  case ActionTypes.FOCUS_PRIORITIZE : {
+    const { level } = action;
+    return Object.assign({}, state, {
+      level,
     });
   }
   case LOCATION_CHANGE: {

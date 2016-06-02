@@ -19,6 +19,11 @@ export class InspectorBlock extends Component {
     transact: PropTypes.func.isRequired,
     commit: PropTypes.func.isRequired,
     abort: PropTypes.func.isRequired,
+    forceIsConstruct: PropTypes.bool,
+  };
+
+  static defaultProps = {
+    forceIsConstruct: false,
   };
 
   setBlockName = (name) => {
@@ -144,7 +149,7 @@ export class InspectorBlock extends Component {
   }
 
   render() {
-    const { instances, readOnly } = this.props;
+    const { instances, readOnly, forceIsConstruct } = this.props;
     const singleInstance = instances.length === 1;
     const isList = singleInstance && instances[0].isList();
     const isTemplate = singleInstance && instances[0].isTemplate();
@@ -191,7 +196,7 @@ export class InspectorBlock extends Component {
                        onSelect={this.selectColor}/>
 
           <SymbolPicker current={this.currentRoleSymbol()}
-                        readOnly={readOnly || isConstruct || isTemplate || isList}
+                        readOnly={readOnly || isConstruct || isTemplate || isList || forceIsConstruct}
                         onSelect={this.selectSymbol}/>
         </div>
 

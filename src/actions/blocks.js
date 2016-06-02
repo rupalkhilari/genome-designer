@@ -1,7 +1,7 @@
 import invariant from 'invariant';
 import { merge } from 'lodash';
 import * as ActionTypes from '../constants/ActionTypes';
-import BlockDefinition from '../schemas/Block';
+import BlockSchema from '../schemas/Block';
 import Block from '../models/Block';
 import { loadBlock } from '../middleware/data';
 import * as selectors from '../selectors/blocks';
@@ -88,7 +88,7 @@ export const blockClone = (blockInput, parentObjectInput = {}, shallowOnly = fal
     let oldBlock;
     if (typeof blockInput === 'string') {
       oldBlock = getState().blocks[blockInput];
-    } else if (BlockDefinition.validate(blockInput)) {
+    } else if (BlockSchema.validate(blockInput)) {
       oldBlock = new Block(blockInput);
     } else {
       throw new Error('invalid input to blockClone', blockInput);
