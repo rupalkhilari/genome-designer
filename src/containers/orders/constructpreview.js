@@ -9,9 +9,7 @@ import '../../../src/styles/SceneGraphPage.css';
 
 class ConstructPreview extends Component {
 
-  static propTypes = {
-
-  };
+  static propTypes = {};
 
   constructor() {
     super();
@@ -19,15 +17,19 @@ class ConstructPreview extends Component {
       index: 1,
     };
   }
+
   get dom() {
     return ReactDOM.findDOMNode(this);
   }
+
   get sceneGraphEl() {
     return this.dom.querySelector('.scenegraph');
   }
+
   get containerEl() {
     return this.dom.querySelector('.container');
   }
+
   /**
    * construct scene graph and layout once mounted
    * @return {[type]} [description]
@@ -58,19 +60,20 @@ class ConstructPreview extends Component {
           metadata: {
             color: 'lightgray',
           },
-          components: this.props.constructs[this.state.index-1].map(block => block.id),
+          components: this.props.constructs[this.state.index - 1].map(block => block.id),
         },
         blocks: this.props.blocks,
         currentBlocks: [],
-        currentConstructId: this.props.constructs[this.state.index-1],
+        currentConstructId: this.props.constructs[this.state.index - 1],
       });
       this.sg.update();
     }
   }
+
   onChangeConstruct = (evt) => {
     const index = parseInt(evt.target.value);
-    this.setState({index: Number.isInteger(index) ? Math.min(this.props.constructs.length, Math.max(1, index)) : 1});
-  }
+    this.setState({ index: Number.isInteger(index) ? Math.min(this.props.constructs.length, Math.max(1, index)) : 1 });
+  };
 
   render() {
     const label = `of ${this.props.constructs.length} combinations`;
@@ -84,24 +87,23 @@ class ConstructPreview extends Component {
           min="1"
           max={this.props.constructs.length}
           onChange={this.onChangeConstruct}
-          />
+        />
         <label>{label}</label>
         <div className="container">
           <div className="scenegraph"></div>
         </div>
       </div>
-    )
+    );
   }
 }
 
 function mapStateToProps(state, props) {
   return {
-      constructs: props.order.constructs.map(construct => construct.components
-                      .map(component => component.componentId)
-                      .map(componentId => state.blocks[componentId])),
-      blocks: state.blocks,
-  }
-
+    constructs: props.order.constructs.map(construct => construct.components
+      .map(component => component.componentId)
+      .map(componentId => state.blocks[componentId])),
+    blocks: state.blocks,
+  };
 }
-export default connect(mapStateToProps, {
-})(ConstructPreview);
+
+export default connect(mapStateToProps)(ConstructPreview);
