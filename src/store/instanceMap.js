@@ -10,6 +10,9 @@ import Block from '../models/Block';
  However, as long as the undo stack is erased on location change, the store only needs to contain the blocks / project that is open and being edited.
  */
 
+//tracks rolls, so keep blocks at their state when last saved
+const rollMap = new Map();
+
 //map of blocks
 const blockMap = new Map();
 
@@ -35,13 +38,9 @@ const isRollDifferent = (oldRollup, newRollup) => {
 
 /* get */
 
-export const getProject = (projectId) => {
-  return projectMap.get(projectId);
-};
+export const getProject = (projectId) => projectMap.get(projectId);
 
-export const getBlock = (blockId) => {
-  return blockMap.get(blockId);
-};
+export const getBlock = (blockId) => blockMap.get(blockId);
 
 /* recursing */
 
@@ -134,16 +133,19 @@ export const removeBlock = (...blockIds) => {
 
 /* rollups */
 
+const getSavedRollup = (projectId) => rollMap.get(projectId);
+
 export const getRollup = (projectId) => ({
   project: getProject(projectId),
   blocks: getProjectComponents(projectId),
 });
 
 export const saveRollup = (rollup) => {
+  rollMap.set(rollup.project.id, rollup);
   saveProject(rollup.project);
   rollup.blocks.forEach(block => saveBlock(block));
 };
 
 export const isRollupNew = (rollup) => {
-  return isRollDifferent(getRollup(rollup.project.id), rollup);
+  return isRollDifferent(getSavedRollup(rollup.project.id), rollup);
 };
