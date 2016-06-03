@@ -162,6 +162,8 @@ export default class Layout {
         fill: this.fillColor(block.id),
         color: this.fontColor(block.id),
         updateReference: this.updateReference,
+        listParentBlock: block,
+        listParentNode: this.nodeFromElement(block.id),
       });
     });
   }

@@ -43,6 +43,11 @@ export default class ConstructViewerUserInterface extends UserInterface {
       const element = this.layout.elementFromNode(node);
       if (element) {
         parts.push(element);
+      } else {
+        // check for list blocks as well, but ensure we only add the block once
+        if (node.listParentBlock && parts.indexOf(node.listParentBlock.id) < 0) {
+          parts.push(node.listParentBlock.id);
+        }
       }
     });
     // combine with existing selection
@@ -62,6 +67,11 @@ export default class ConstructViewerUserInterface extends UserInterface {
     for (let i = hits.length - 1; i >= 0; i--) {
       if (this.layout.elementFromNode(hits[i])) {
         return hits[i];
+      }
+      // if the node has a listParentBlock/Node property it is a list
+      // child of another block i.e. from a template
+      if (hits[i].listParentNode) {
+        return hits[i].listParentNode;
       }
     }
     // no hits or no blocks in the hits
