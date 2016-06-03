@@ -489,11 +489,7 @@ class GlobalNav extends Component {
             }, {}, {
               text: 'Add Sequence',
               action: () => {
-                if (!this.props.focus.blockIds.length) {
-                  this.props.uiSetGrunt('Sequence data must be added to or before a selected block. Please select a block and try again.');
-                } else {
-                  this.props.uiShowDNAImport(true);
-                }
+                this.props.uiShowDNAImport(true);
               },
             }, {
               text: 'Select Empty Blocks',
