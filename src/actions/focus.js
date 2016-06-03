@@ -2,7 +2,9 @@ import * as ActionTypes from '../constants/ActionTypes';
 import * as BlockSelector from '../selectors/blocks';
 import invariant from 'invariant';
 import safeValidate from '../schemas/fields/safeValidate';
-import {id as idValidatorCreator} from '../schemas/fields/validators';
+import { id as idValidatorCreator } from '../schemas/fields/validators';
+import Block from '../models/Block';
+import Project from '../models/Project';
 
 const idValidator = (id) => safeValidate(idValidatorCreator(), true, id);
 
@@ -108,7 +110,8 @@ export const focusBlocksToggle = (blocksToToggle) => {
 //pass model, takes precedence
 export const focusForceBlocks = (blocks) => {
   return (dispatch, getState) => {
-    //todo - check valid
+    invariant(blocks.every(block => Block.validate(block, false)), 'each block must pass validation to focus it');
+
     dispatch({
       type: ActionTypes.FOCUS_FORCE_BLOCKS,
       blocks,
@@ -120,7 +123,8 @@ export const focusForceBlocks = (blocks) => {
 //pass model, takes precedence
 export const focusForceProject = (project) => {
   return (dispatch, getState) => {
-    //todo - check valid
+    invariant(Project.validate(project, false), 'must pass a valid project');
+
     dispatch({
       type: ActionTypes.FOCUS_FORCE_PROJECT,
       project,
@@ -132,10 +136,26 @@ export const focusForceProject = (project) => {
 export const focusPrioritize = (level = 'project') => {
   return (dispatch, getState) => {
     invariant(['project', 'construct', 'block'].indexOf(level) >= 0, 'must pass a valid type to give priority to');
+
     dispatch({
       type: ActionTypes.FOCUS_PRIORITIZE,
       level,
     });
     return level;
+  };
+};
+
+export const focusBlockOption = (blockId, optionId) => {
+  return (dispatch, getState) => {
+    invariant(idValidator(blockId) && idValidator(optionId), 'must pass valid block ID and optionId');
+
+    const oldOptions = getState().focus.options;
+    const options = Object.assign({}, oldOptions, { [blockId]: optionId });
+
+    dispatch({
+      type: ActionTypes.FOCUS_BLOCK_OPTION,
+      options,
+    });
+    return options;
   };
 };
