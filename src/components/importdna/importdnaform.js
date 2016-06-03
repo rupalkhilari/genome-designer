@@ -42,7 +42,6 @@ class DNAImportForm extends Component {
         this.props.uiSetGrunt(`Sequence data must be added to a selected block. Please select a block and try again.`);
         return;
       }
-      debugger;
       if (nextProps.currentConstruct.isFrozen() || nextProps.currentConstruct.isFixed()) {
         this.props.uiShowDNAImport(false);
         this.props.uiSetGrunt(`You cannot add sequence to a template block.`);
