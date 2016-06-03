@@ -235,6 +235,7 @@ export const projectAddConstruct = (projectId, componentId, forceProjectId = fal
     }
 
     //todo - should better check + force removal from previous component / project
+    //would want to check across other projects as well (but you would for constructs too)
 
     const project = oldProject.addComponents(componentId);
     dispatch({

@@ -6,11 +6,6 @@ import '../../styles/InventorySources.css';
 let position = {};
 
 export default function InventorySources({ toggling, sourceList, registry, onSourceToggle, onToggleVisible }) {
-  const menu = (<div className="InventorySources-menu menu-popup-container">
-    <div className="InventorySources-menu-heading menu-item disabled">Search Sources:</div>
-    {}
-  </div>);
-
   const menuItems = [
     {
       text: 'Search Sources:',
@@ -28,8 +23,6 @@ export default function InventorySources({ toggling, sourceList, registry, onSou
         };
       })),
   ];
-
-  console.log(menuItems);
 
   return (
     <div className={'InventorySources' + (toggling ? ' expanded' : '')}

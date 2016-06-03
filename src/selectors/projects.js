@@ -53,6 +53,7 @@ export const projectListAllOptions = (projectId) => {
   };
 };
 
+//all contents
 export const projectListAllBlocks = (projectId) => {
   return (dispatch, getState) => {
     const components = dispatch(projectListAllComponents(projectId));

@@ -5,6 +5,7 @@ import MouseTrap from '../../containers/graphics/mousetrap';
 import { focusForceBlocks } from '../../actions/focus';
 import InventoryListGroup from './InventoryListGroup';
 import InventoryItemBlock from './InventoryItemBlock';
+import * as instanceMap from '../../store/instanceMap';
 
 import { block as blockDragType } from '../../constants/DragTypes';
 
@@ -88,7 +89,7 @@ export class InventoryConstruct extends Component {
   render() {
     const { blockId, block, isConstruct, isTemplate, isActive, focusForceBlocks, ...rest } = this.props;
 
-    //use !isConstruct so short circuit, to avoid calling ref in InventoryListGroup (will be null if never mounted, cause errors)
+    //use !shouldRenderAsConstruct so short circuit, to avoid calling ref in InventoryListGroup (will be null if never mounted, cause errors when ref clause is called)
     const innerContent = !this.shouldRenderAsConstruct()
       ?
       <InventoryItemBlock block={block}
@@ -122,7 +123,7 @@ export class InventoryConstruct extends Component {
 
 const InventoryConstructConnected = connect((state, props) => {
   const { blockId } = props;
-  const block = state.blocks[blockId];
+  const block = instanceMap.getBlock(blockId);
   const isActive = state.focus.forceBlocks.some(block => block.id === blockId);
   const isConstruct = block.isConstruct();
   const isTemplate = block.isTemplate();
