@@ -557,22 +557,22 @@ class GlobalNav extends Component {
           items: [
             {
               text: 'User Guide',
-              action: this.disgorgeDiscourse.bind(this, '/c/genome-designer/user-guide'),
+              action: this.disgorgeDiscourse.bind(this, '/c/genetic-constructor/user-guide'),
             }, {
               text: 'Tutorials',
-              action: this.disgorgeDiscourse.bind(this, '/c/genome-designer/tutorials'),
+              action: this.disgorgeDiscourse.bind(this, '/c/genetic-constructor/tutorials'),
             }, {
               text: 'Forums',
-              action: this.disgorgeDiscourse.bind(this, '/c/genome-designer'),
+              action: this.disgorgeDiscourse.bind(this, '/c/genetic-constructor'),
             }, {
               text: 'Get Support',
-              action: this.disgorgeDiscourse.bind(this, '/c/genome-designer/support'),
+              action: this.disgorgeDiscourse.bind(this, '/c/genetic-constructor/support'),
             }, {
               text: 'Keyboard Shortcuts',
               action: () => {},
             }, {
               text: 'Give Us Feedback',
-              action: this.disgorgeDiscourse.bind(this, '/c/genome-designer/feedback'),
+              action: this.disgorgeDiscourse.bind(this, '/c/genetic-constructor/feedback'),
             }, {}, {
               text: 'About Genome Designer',
               action: () => {
