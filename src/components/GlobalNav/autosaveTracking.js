@@ -1,6 +1,6 @@
 import React, { PropTypes, Component } from 'react';
 import autosaveInstance from '../../store/autosave/autosaveInstance';
-import { getProjectSaveState } from '../../middleware/data';
+import { getProjectSaveState } from '../../store/saveState';
 
 import '../../styles/AutosaveTracking.css';
 

@@ -16,3 +16,4 @@ plugins/*/*/inputs
 plugins/*/*/outputs
 storage/
 build/
+screenshots/
