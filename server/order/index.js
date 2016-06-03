@@ -67,7 +67,7 @@ router.route('/:projectId/:orderId?')
                 response,
                 remoteId: response.jobId,
                 price: response.cost,
-                timeSent: new Date(time).toJSON(),
+                timeSent: time,
               },
             });
 

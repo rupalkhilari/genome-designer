@@ -18,8 +18,8 @@ const fieldDefs = {
   ],
 
   timeSent: [
-    fields.string(),
-    `Time when the order was sent`,
+    fields.number(),
+    `Time when the order was sent, in MS`,
   ],
 };
 
