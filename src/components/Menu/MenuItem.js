@@ -29,7 +29,6 @@ export default class MenuItem extends Component {
     if (indent) {
       check = <div className={this.props.checked ? 'menu-item-checked' : 'menu-item-unchecked'}></div>;
     }
-
     let classes = 'menu-item' + (this.props.disabled ? ' disabled' : '');
     if (this.props.classes) {
       classes += ` ${this.props.classes}`;

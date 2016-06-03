@@ -37,6 +37,7 @@ import { focusDetailsExist } from '../selectors/focus';
 import { undo, redo, transact, commit } from '../store/undo/actions';
 import {
   uiShowGenBankImport,
+  uiShowOrderForm,
   uiToggleDetailView,
   uiSetGrunt,
   uiShowAbout,
@@ -52,6 +53,7 @@ import {
   privacy,
 } from '../utils/ui/uiapi';
 import AutosaveTracking from '../components/GlobalNav/autosaveTracking';
+import { orderCreate, orderGenerateConstructs } from '../actions/orders';
 
 import '../styles/GlobalNav.css';
 
@@ -76,6 +78,7 @@ class GlobalNav extends Component {
     transact: PropTypes.func.isRequired,
     commit: PropTypes.func.isRequired,
     uiShowGenBankImport: PropTypes.func.isRequired,
+    uiShowOrderForm: PropTypes.func.isRequired,
     projectGetVersion: PropTypes.func.isRequired,
     blockClone: PropTypes.func.isRequired,
     clipboardSetData: PropTypes.func.isRequired,
@@ -441,6 +444,15 @@ class GlobalNav extends Component {
                 this.downloadProjectGenbank();
               },
             },
+            {},
+            {
+              text: 'Order DNA',
+              action: () => {
+                const order = this.props.orderCreate( this.props.project.id, [this.props.project.components[1]]);
+                this.props.orderGenerateConstructs( order.id );
+                this.props.uiShowOrderForm(true, order.id);
+              },
+            }
           ],
         },
         {
@@ -603,7 +615,7 @@ class GlobalNav extends Component {
   }
 }
 
-function mapStateToProps(state) {
+function mapStateToProps(state, props) {
   return {
     focus: state.focus,
     blocks: state.blocks,
@@ -611,6 +623,7 @@ function mapStateToProps(state) {
     inspectorVisible: state.ui.inspector.isVisible,
     inventoryVisible: state.ui.inventory.isVisible,
     detailViewVisible: state.ui.detailView.isVisible,
+    project: state.projects[props.currentProjectId],
   };
 }
 
@@ -637,6 +650,7 @@ export default connect(mapStateToProps, {
   transact,
   commit,
   uiShowGenBankImport,
+  uiShowOrderForm,
   uiToggleDetailView,
   uiShowAbout,
   uiSetGrunt,
@@ -648,4 +662,6 @@ export default connect(mapStateToProps, {
   clipboardSetData,
   blockAddComponent,
   blockAddComponents,
+  orderCreate,
+  orderGenerateConstructs,
 })(GlobalNav);

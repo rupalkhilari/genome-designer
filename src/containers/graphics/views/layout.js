@@ -419,6 +419,7 @@ export default class Layout {
     } else {
       row = new Node2D(Object.assign({
         sg: this.sceneGraph,
+        strokeWidth: 0,
       }, kT.rowAppearance));
       this.sceneGraph.root.appendChild(row);
     }
@@ -426,6 +427,7 @@ export default class Layout {
     row.set({
       bounds: bounds,
       fill: this.baseColor,
+      strokeWidth: 0,
     });
 
     // save into new rows so we know this row is in use
@@ -471,11 +473,14 @@ export default class Layout {
    * display elements as required
    * @return {[type]} [description]
    */
-  update(construct, blocks, currentBlocks, currentConstructId) {
-    this.construct = construct;
-    this.currentConstructId = currentConstructId;
-    this.blocks = blocks;
-    this.currentBlocks = currentBlocks;
+  update(options) {
+    this.options = options;
+    this.construct = options.construct;
+    this.blocks = options.blocks;
+    this.currentConstructId = options.currentConstructId;
+    this.currentBlocks = options.currentBlocks;
+    invariant(this.construct && this.blocks && this.currentConstructId && this.currentBlocks, 'missing required options');
+
     this.baseColor = this.construct.metadata.color;
 
     // perform layout and remember how much vertical was required
@@ -574,7 +579,7 @@ export default class Layout {
       }
       // resize row bar to current row width
       const rowStart = this.insetX;
-      const rowEnd = row === 0 ? Math.max(xp, this.initialRowXLimit) : xp;
+      const rowEnd = rowIndex === 0 ? Math.max(xp, this.initialRowXLimit) : xp;
       const rowWidth = rowEnd - rowStart;
       row.set({translateX: rowStart + rowWidth / 2, width: rowWidth});
 
@@ -644,7 +649,7 @@ export default class Layout {
         // update base color of nested construct skeleton
         nestedLayout.baseColor = block.metadata.color || this.baseColor;
 
-        // update minimum x extend of first rowH
+        // update minimum x extent of first rowH
         nestedLayout.initialRowXLimit = this.getConnectionRowLimit(part);
 
         // ensure layout has the latest position ( parent may have moved )
@@ -652,11 +657,11 @@ export default class Layout {
         nestedLayout.insetY = nestedY;
 
         // layout with same options as ourselves
-        nestedVertical += nestedLayout.update(
-          this.blocks[part],
-          this.blocks,
-          this.currentBlocks,
-          this.currentConstructId) + kT.nestedInsetY;
+        nestedVertical += nestedLayout.update({
+          construct: this.blocks[part],
+          blocks: this.blocks,
+          currentBlocks: this.currentBlocks,
+          currentConstructId: this.currentConstructId}) + kT.nestedInsetY;
 
         // remove from old collection so the layout won't get disposed
         // and add to the new set of layouts
@@ -707,7 +712,9 @@ export default class Layout {
       });
     }
     // apply selections to scene graph
-    this.sceneGraph.ui.setSelections(selectedNodes);
+    if (this.sceneGraph.ui) {
+      this.sceneGraph.ui.setSelections(selectedNodes);
+    }
 
     // for nesting return the height consumed by the layout
     return heightUsed + nestedVertical + kT.rowBarH;
