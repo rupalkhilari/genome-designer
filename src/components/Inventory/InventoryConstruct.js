@@ -123,7 +123,8 @@ export class InventoryConstruct extends Component {
 
 const InventoryConstructConnected = connect((state, props) => {
   const { blockId } = props;
-  const block = instanceMap.getBlock(blockId);
+  //prefer state version, which is correct if you've undo-ed something
+  const block = state.blocks[blockId] || instanceMap.getBlock(blockId);
   const isActive = state.focus.forceBlocks.some(block => block.id === blockId);
   const isConstruct = block.isConstruct();
   const isTemplate = block.isTemplate();
