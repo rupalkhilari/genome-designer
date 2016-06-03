@@ -17,9 +17,9 @@ import '../../../src/styles/form.css';
 import '../../../src/styles/ordermodal.css';
 
 class Page1 extends Component {
-
   static propTypes = {
     open: PropTypes.bool.isRequired,
+    order: PropTypes.object.isRequired,
     orderSetName: PropTypes.func.isRequired,
     orderSetParameters: PropTypes.func.isRequired,
     project: PropTypes.object.isRequired,
@@ -28,15 +28,13 @@ class Page1 extends Component {
 
   constructor() {
     super();
-    this.state = {
-    };
     this.labelChanged = debounce(value => this._labelChanged(value), 500, {leading: false, trailing: true});
   }
 
   assemblyOptions() {
     return [
-      {value: true, label: "All in a single container"},
-      {value: false, label: "Each in an individual container"}
+      {value: true, label: 'All in a single container'},
+      {value: false, label: 'Each in an individual container'},
     ];
   }
 
@@ -45,22 +43,22 @@ class Page1 extends Component {
     this.props.orderSetParameters(this.props.order.id, {
       onePot: newValue === 'true',
     });
-  }
+  };
 
   _labelChanged = (newLabel) => {
     this.props.orderSetName(this.props.order.id, newLabel);
-  }
+  };
 
   numberOfAssembliesChanged = (newValue) => {
     const total = parseInt(newValue);
     this.props.orderSetParameters(this.props.order.id, {
       permutations: Number.isInteger(total) ? Math.min(this.props.constructs.length, Math.max(0, total)) : 1,
     });
-  }
+  };
 
   methodOptions() {
     return ['Random Subset', 'Maximum Unique Set', 'All Combinations'].map(item => {
-      return {value: item, label: item}
+      return {value: item, label: item};
     });
   }
 
@@ -68,13 +66,13 @@ class Page1 extends Component {
     this.props.orderSetParameters(this.props.order.id, {
       combinatorialMethod: newMethod,
     });
-  }
+  };
 
   sequenceAssemblies = (state) => {
     this.props.orderSetParameters(this.props.order.id, {
       sequenceAssemblies: state,
     });
-  }
+  };
 
   render() {
     // no render when not open
@@ -121,7 +119,7 @@ class Page1 extends Component {
         </Row>
         <br/>
       </div>
-    )
+    );
   }
 }
 
@@ -132,7 +130,7 @@ function mapStateToProps(state, props) {
                     .map(component => component.componentId)
                     .map(componentId => state.blocks[componentId])),
 
-  }
+  };
 }
 
 export default connect(mapStateToProps, {

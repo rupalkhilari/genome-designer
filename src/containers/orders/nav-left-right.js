@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 
 export default class Page1 extends Component {
-
   static propTypes = {
     left: PropTypes.bool.isRequired,
     text: PropTypes.string.isRequired,
@@ -9,16 +8,9 @@ export default class Page1 extends Component {
     onClick: PropTypes.func.isRequired,
   };
 
-  constructor() {
-    super();
-    this.state = {
-    };
-  }
-
   render() {
-
     if (!this.props.visible) {
-      return <div className="nav-left-right disabled"/>
+      return (<div className="nav-left-right disabled"/>);
     }
 
     return (
@@ -27,6 +19,6 @@ export default class Page1 extends Component {
         <div className="text">{this.props.text}</div>
         {!this.props.left ? <div className="angle right"/> : null}
       </div>
-    )
+    );
   }
 }
