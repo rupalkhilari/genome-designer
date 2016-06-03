@@ -27,7 +27,9 @@ export default class autosaveTracking extends Component {
     const dirty = autosaveInstance.isDirty();
 
     let text;
+    const classNames = ['AutosaveTracking'];
     if (!saveSuccessful) {
+      classNames.push('failure');
       text = 'Save Failed!';
     } else if (dirty || saveDelta > 15000) {
       text = '';
@@ -38,6 +40,6 @@ export default class autosaveTracking extends Component {
       text = 'Project Saved';
     }
 
-    return (<span className="AutosaveTracking">{text}</span>);
+    return (<span className={classNames.join(' ')}>{text}</span>);
   }
 }
