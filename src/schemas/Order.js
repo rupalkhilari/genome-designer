@@ -45,7 +45,7 @@ const orderFields = {
   ],
 
   user: [
-    fields.id({ prefix: 'user' }).required,
+    fields.string().required,
     'User ID',
     { avoidScaffold: true },
   ],

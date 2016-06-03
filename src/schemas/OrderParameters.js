@@ -20,7 +20,7 @@ const fieldDefs = {
     'For multi pot combinatorial this is number of random constructs to assemble',
   ],
   combinatorialMethod: [
-    fields.oneOf(['Random Subset', 'Maximum Unique Set', 'All Combinations']).required,
+    fields.oneOf(['Random Subset', 'Maximum Unique Set', 'All Combinations']),
     'Combinatorial Method',
   ],
 };
@@ -28,6 +28,22 @@ const fieldDefs = {
 export class OrderParametersSchemaClass extends Schema {
   constructor(fieldDefinitions) {
     super(Object.assign({}, fieldDefs, fieldDefinitions));
+  }
+
+  validate(instance, shouldThrow) {
+    const fieldsValid = super.validateFields(instance, shouldThrow);
+    const hasFieldsIfNotOnePot = instance.onePot || (instance.combinatorialMethod && instance.permutations);
+
+    if (!hasFieldsIfNotOnePot) {
+      const errorMessage = 'Combinatorial method and # permutations required if not one pot';
+      if (shouldThrow) {
+        throw Error(errorMessage, instance);
+      } else if (process.env.NODE_ENV !== 'production') {
+        console.error(errorMessage); //eslint-disable-line
+      }
+    }
+
+    return fieldsValid && hasFieldsIfNotOnePot;
   }
 }
 
