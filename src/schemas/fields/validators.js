@@ -15,6 +15,8 @@ import { dnaStrictRegexp, dnaLooseRegexp } from '../../utils/dna/dna';
  * validator(40); //true
  */
 
+export const any = params => input => {};
+
 export const id = params => input => {
   const regex = /^(\w+-)?[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -180,7 +182,7 @@ export const oneOf = possible => input => {
   }
 
   if (possible.indexOf(input) < 0) {
-    return new Error(input + ' not found in ' + possible.join(','));
+    return new Error(input + ' not found in ' + possible.join(', '));
   }
 };
 

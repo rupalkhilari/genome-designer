@@ -64,9 +64,10 @@ router.route('/:projectId/:orderId?')
               projectVersion: sha,
               status: {
                 foundry,
+                response,
                 remoteId: response.jobId,
                 price: response.cost,
-                timeSent: time,
+                timeSent: new Date(time).toJSON(),
               },
             });
 
@@ -74,12 +75,10 @@ router.route('/:projectId/:orderId?')
           });
       })
       .then(order => {
-        res.status(200).send({
-          order,
-        });
+        res.status(200).send(order);
       })
       .catch(err => {
-        console.log(err.stack);
+        console.log('Order failed', err, err.stack);
 
         //todo - handle errors more intelligently
         res.status(400).send(errorInvalidModel);

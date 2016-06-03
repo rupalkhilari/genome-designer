@@ -13,7 +13,7 @@ const fieldDefs = {
   ],
 
   price: [
-    fields.number(),
+    fields.any(),
     `Quote for the order`,
   ],
 

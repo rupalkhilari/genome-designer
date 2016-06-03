@@ -31,6 +31,11 @@ const fields = mapValues({
 
   //primitives
 
+  any: {
+    baseValidator: validatorFunctions.any,
+    typeDescription: 'Any value acceptable',
+    scaffold: () => null,
+  },
   id: {
     baseValidator: validatorFunctions.id,
     typeDescription: 'A UUID',
