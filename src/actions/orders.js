@@ -44,7 +44,8 @@ export const orderCreate = (projectId, constructIds = [], parameters = {}) => {
     //make sure we have specs
     invariant(constructIds.every(id => dispatch(blockSelectors.blockIsSpec(id))), 'all constructs must be specs (no empty option lists, and each leaf node must have a sequence)');
 
-    invariant(typeof parameters === 'object', 'paramters must be object');
+    invariant(typeof parameters === 'object', 'paramaters must be object');
+    invariant(!Object.keys(parameters).length || Order.validateParameters(parameters), 'parameters must pass validation if you pass them in on creation');
 
     const order = new Order({
       projectId,
@@ -61,41 +62,12 @@ export const orderCreate = (projectId, constructIds = [], parameters = {}) => {
   };
 };
 
-export const orderSetParameters = (orderId, parameters = {}, shouldMerge = false) => {
-  return (dispatch, getState) => {
-    invariant(Order.validateParameters(parameters), 'parameters must pass validation');
-
-    const oldOrder = getState().orders[orderId];
-    const order = oldOrder.setParameters(parameters, shouldMerge);
-
-    dispatch({
-      type: ActionTypes.ORDER_STASH,
-      order,
-    });
-    return order;
-  };
-};
-export const orderSetName = (orderId, name) => {
-  return (dispatch, getState) => {
-
-    const oldOrder = getState().orders[orderId];
-    const order = oldOrder.setName(name);
-
-    dispatch({
-      type: ActionTypes.ORDER_SET_NAME,
-      order,
-    });
-    return order;
-  };
-};
-
 //should only call after parameters have been set
 export const orderGenerateConstructs = (orderId) => {
   return (dispatch, getState) => {
     const oldOrder = getState().orders[orderId];
     const { constructIds, parameters } = oldOrder;
-
-    //todo - validate parameters
+    invariant(Order.validateParameters(parameters), 'parameters must pass validation');
 
     //for each constructId, get construct combinations as blocks
     //flatten all combinations into a single list of combinations
@@ -122,6 +94,35 @@ export const orderGenerateConstructs = (orderId) => {
   };
 };
 
+export const orderSetParameters = (orderId, parameters = {}, shouldMerge = false) => {
+  return (dispatch, getState) => {
+    invariant(Order.validateParameters(parameters), 'parameters must pass validation');
+
+    const oldOrder = getState().orders[orderId];
+    const order = oldOrder.setParameters(parameters, shouldMerge);
+
+    dispatch({
+      type: ActionTypes.ORDER_STASH,
+      order,
+    });
+
+    return dispatch(orderGenerateConstructs(orderId));
+  };
+};
+
+export const orderSetName = (orderId, name) => {
+  return (dispatch, getState) => {
+    const oldOrder = getState().orders[orderId];
+    const order = oldOrder.setName(name);
+
+    dispatch({
+      type: ActionTypes.ORDER_SET_NAME,
+      order,
+    });
+    return order;
+  };
+};
+
 //submit the order, foundry information is required
 //actually saves the order to the server
 export const orderSubmit = (orderId, foundry) => {
@@ -142,6 +143,7 @@ export const orderSubmit = (orderId, foundry) => {
           type: ActionTypes.ORDER_SUBMIT,
           order,
         });
+
         return order;
       });
   };
