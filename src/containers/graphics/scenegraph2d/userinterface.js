@@ -104,7 +104,7 @@ export default class UserInterface {
         this.selectionMap[node.uuid] = sel;
       }
       // update to current node bounds
-      const bounds = node.getAABB();
+      const bounds = node.getAABBWithChildren();
       sel.style.left = bounds.x + 'px';
       sel.style.top = bounds.y + 'px';
       sel.style.width = bounds.width + 'px';
