@@ -426,6 +426,17 @@ export default class ConstructViewerUserInterface extends UserInterface {
     const box = node.el.getBoundingClientRect();
     // compare to bounds
     if (vpt.x < box.left || vpt.x > box.right || vpt.y < box.top || vpt.y > box.bottom) {
+      // check list blocks which are outside the bounds of the parent
+      node.children.forEach(child => {
+        if (child.listParentBlock) {
+          // node represents a list block
+          const childBox = child.el.getBoundingClientRect();
+          if (vpt.x >= childBox.left && vpt.x < childBox.right && vpt.y >= childBox.top && vpt.y < childBox.bottom) {
+            console.log('List Item Clicked:', child.text);
+            console.log('List Item Id:', child.listBlock.id)
+          }
+        }
+      });
       return 'none';
     }
     // context menu area?

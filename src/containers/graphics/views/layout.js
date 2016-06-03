@@ -164,6 +164,7 @@ export default class Layout {
         updateReference: this.updateReference,
         listParentBlock: block,
         listParentNode: this.nodeFromElement(block.id),
+        listBlock,
       });
     });
   }
