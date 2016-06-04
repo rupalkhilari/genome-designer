@@ -20,7 +20,12 @@ export const blockLoad = (blockId, withContents = false, skipIfContentsEmpty = f
       return Promise.resolve([retrieved]);
     }
 
-    return loadBlock(blockId, withContents)
+    let projectId;
+    if (retrieved && retrieved.projectId) {
+      projectId = retrieved.projectId;
+    }
+
+    return loadBlock(blockId, withContents, projectId)
       .then(({ components, options }) => {
         const blockMap = Object.assign({}, options, components);
         const blocks = Object.keys(blockMap).map(key => new Block(blockMap[key]));
