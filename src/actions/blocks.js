@@ -13,10 +13,15 @@ import { pauseAction, resumeAction } from '../store/pausableStore';
 
 //Promise
 //retrieves a block, and its options and components if specified
-export const blockLoad = (blockId, withContents = false, onlyComponents = false) => {
+export const blockLoad = (blockId, withContents = false, skipIfContentsEmpty = false) => {
   return (dispatch, getState) => {
-    return loadBlock(blockId, withContents, onlyComponents)
-      .then(({components, options}) => {
+    const retrieved = getState().blocks[blockId];
+    if (skipIfContentsEmpty === true && retrieved && !retrieved.components.length && !Object.keys(retrieved.options).length) {
+      return Promise.resolve([retrieved]);
+    }
+
+    return loadBlock(blockId, withContents)
+      .then(({ components, options }) => {
         const blockMap = Object.assign({}, options, components);
         const blocks = Object.keys(blockMap).map(key => new Block(blockMap[key]));
         dispatch({
@@ -396,8 +401,9 @@ export const blockSetColor = (blockId, color) => {
 export const blockSetRole = (blockId, role) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
+    const oldRole = oldBlock.rules.role;
 
-    if (oldBlock.rules.role === role) {
+    if (oldRole === role) {
       return oldBlock;
     }
 
@@ -405,6 +411,7 @@ export const blockSetRole = (blockId, role) => {
     dispatch({
       type: ActionTypes.BLOCK_SET_ROLE,
       undoable: true,
+      oldRole,
       block,
     });
     return block;

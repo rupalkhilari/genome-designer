@@ -50,14 +50,9 @@ export class InventoryRoleMap extends Component {
   };
 
   onBlockDrop = (item, target) => {
-    //if no components, dont need to worry about fetching them
-    if (!item.components.length) {
-      return Promise.resolve(item);
-    }
-
     //get components if its a construct and add blocks to the store
     //note - this may be a very large query
-    return this.props.blockLoad(item.id, true)
+    return this.props.blockLoad(item.id, true, true)
       .then(() => item);
   };
 
