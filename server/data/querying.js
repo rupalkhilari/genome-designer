@@ -94,7 +94,9 @@ export const getAllBlocks = (userId) => {
     .then(projectIds => Promise.all(
       projectIds.map(projectId => getAllBlocksInProject(projectId))
     ))
-    .then(nested => flatten(nested));
+    .then(nested => flatten(nested))
+    //we need to make this a Set because multiple projects may have blocks with the same ID
+    .then(array => [...new Set(array)]);
 };
 
 export const getAllBlocksFiltered = (userId, blockFilter = () => true) => {
