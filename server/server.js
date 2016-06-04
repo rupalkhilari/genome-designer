@@ -120,7 +120,7 @@ app.get('*', (req, res) => {
   } else {
     // setup user properties and discourse base url to flash to client
     const discourse = {
-      discourseDomain: `http://discourse${process.env.BNR_ENV_URL_SUFFIX || ''}.bionano.autodesk.com`,
+      discourseDomain: process.env.BNR_ENV_URL_SUFFIX || `https://forum.bionano.autodesk.com`,
     };
     //so that any routing is delegated to the client
     res.render(path.join(pathContent + '/index.jade'), Object.assign({}, req.user, discourse));
