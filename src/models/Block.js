@@ -12,6 +12,8 @@ import safeValidate from '../schemas/fields/safeValidate';
 
 const idValidator = (id) => safeValidate(validators.id(), true, id);
 
+//note - when blocks are frozen, they are just copied between projects. When a block becomes unfrozen, it needs to be cloned. This is in part becuase blocks that are frozen are shared between proejcts, and when two projects share a block with the same ID, it is assumed (and should be guaranteed) that they are completely identical.
+
 export default class Block extends Instance {
   constructor(input) {
     super(input, BlockSchema.scaffold(), { metadata: { color: color() } });

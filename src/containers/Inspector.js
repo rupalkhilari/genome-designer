@@ -36,7 +36,7 @@ export class Inspector extends Component {
       inspect = <InspectorBlock instances={focused} readOnly={readOnly}/>;
       break;
     default:
-      inspect = <InspectorBlock instances={focused} readOnly={readOnly} forceIsConstruct={forceIsConstruct} />;
+      inspect = <InspectorBlock instances={focused} readOnly={readOnly} forceIsConstruct={forceIsConstruct}/>;
       break;
     }
 
@@ -72,17 +72,19 @@ function mapStateToProps(state, props) {
   const { level, forceProject, forceBlocks, projectId, constructId, blockIds } = state.focus;
   let focused;
   let readOnly = false;
+  let type = level;
   //if projectId is not set in store, ProjectPage is passing it in, so lets default to it
   const currentProject = state.projects[projectId || props.projectId];
 
-  if (level === 'project') {
+  if (level === 'project' || (!constructId && !forceBlocks.length && !blockIds.length)) {
     if (forceProject) {
       focused = forceProject;
       readOnly = true;
     } else {
       focused = currentProject;
     }
-  } else if (level === 'construct' || (!forceBlocks.length && !blockIds.length)) {
+    type = 'project'; //need to override so dont try to show block inspector
+  } else if (level === 'construct' || (constructId && !forceBlocks.length && !blockIds.length)) {
     const construct = state.blocks[constructId];
     focused = [construct];
     readOnly = construct.isFrozen();
@@ -102,7 +104,7 @@ function mapStateToProps(state, props) {
   return {
     showingGrunt,
     isVisible,
-    type: level,
+    type,
     readOnly,
     focused,
     forceIsConstruct,
