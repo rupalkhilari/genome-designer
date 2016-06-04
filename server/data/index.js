@@ -286,8 +286,6 @@ router.route('/:projectId/:blockId')
       .catch(err => next(err));
   });
 
-//todo - should probably validate message body is project / param is actually an ID (or use a regex) for this catch-all route
-
 router.route('/:projectId')
   .all(permissionsMiddleware)
   .get((req, res, next) => {
