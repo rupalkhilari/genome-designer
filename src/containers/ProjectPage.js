@@ -46,7 +46,9 @@ class ProjectPage extends Component {
     if (!!nextProps.project && Array.isArray(nextProps.project.components) && (!this.lastProjectId || nextProps.projectId !== this.props.projectId)) {
       this.lastProjectId = nextProps.projectId;
       this.props.focusProject(nextProps.projectId);
-      this.props.focusConstruct(nextProps.project.components[0]);
+      if (nextProps.project.components.length) {
+        this.props.focusConstruct(nextProps.project.components[0]);
+      }
     }
   }
 
