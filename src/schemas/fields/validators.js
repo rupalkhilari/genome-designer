@@ -1,6 +1,7 @@
 import safeValidate from './safeValidate';
 import urlRegex from 'url-regex';
 import { dnaStrictRegexp, dnaLooseRegexp } from '../../utils/dna/dna';
+import { id as idRegex } from '../../utils/regex';
 
 /**
  * note that everything exported in this file is tested - so only export real validators
@@ -18,9 +19,7 @@ import { dnaStrictRegexp, dnaLooseRegexp } from '../../utils/dna/dna';
 export const any = params => input => {};
 
 export const id = params => input => {
-  const regex = /^(\w+-)?[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-
-  if (!regex.test(input)) {
+  if (!idRegex().test(input)) {
     return new Error(`${input} is not a RFC4122-compliant UUID`);
   }
 };
