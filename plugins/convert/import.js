@@ -74,10 +74,10 @@ router.post('/:pluginId/convert', jsonParser, (req, resp, next) => {
   req.on('end', () => {
     const inputFilePath = filePaths.createStorageUrl(pluginId, md5(buffer));
     return fileSystem.fileWrite(inputFilePath, buffer, false)
-      .then(() => callImportFunction('convert', pluginId, inputFilePath));
-  })
-    .then(converted => resp.status(200).json(converted))
-    .catch(err => next(err));
+      .then(() => callImportFunction('convert', pluginId, inputFilePath))
+      .then(converted => resp.status(200).json(converted))
+      .catch(err => next(err));
+  });
 });
 
 //can pass :projectId = 'convert' to just convert genbank file directly, and not write to memory
