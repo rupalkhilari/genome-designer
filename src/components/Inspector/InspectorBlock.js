@@ -59,6 +59,8 @@ export class InspectorBlock extends Component {
   };
 
   endTransaction = (shouldAbort = false) => {
+    console.log('ending transaction', this.currentName());
+
     if (shouldAbort === true) {
       this.props.abort();
       return;
@@ -154,6 +156,7 @@ export class InspectorBlock extends Component {
     const isList = singleInstance && instances[0].isList();
     const isTemplate = singleInstance && instances[0].isTemplate();
     const isConstruct = singleInstance && instances[0].isConstruct();
+    const inputKey = instances.map(inst => inst.id).join(',');
 
     const name = isConstruct ? 'Construct' : (isTemplate ? 'Template' : 'Block'); //eslint-disable-line no-nested-ternary
 
@@ -163,7 +166,8 @@ export class InspectorBlock extends Component {
     return (
       <div className="InspectorContent InspectorContentBlock">
         <h4 className="InspectorContent-heading">{name}</h4>
-        <InputSimple placeholder="Enter a name"
+        <InputSimple refKey={inputKey}
+                     placeholder="Enter a name"
                      readOnly={readOnly}
                      onChange={this.setBlockName}
                      onFocus={this.startTransaction}
@@ -173,7 +177,8 @@ export class InspectorBlock extends Component {
                      value={this.currentName()}/>
 
         <h4 className="InspectorContent-heading">Description</h4>
-        <InputSimple placeholder="Enter a description"
+        <InputSimple refKey={inputKey + 'desc'}
+                     placeholder="Enter a description"
                      useTextarea
                      readOnly={readOnly}
                      onChange={this.setBlockDescription}
