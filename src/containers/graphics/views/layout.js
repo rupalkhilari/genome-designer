@@ -160,7 +160,7 @@ export default class Layout {
       }
       // update position and other visual attributes of list part
       listNode.set({
-        bounds: new Box2D(0, kT.blockH + index * kT.optionH, pW, kT.optionH),
+        bounds: new Box2D(0, kT.blockH + 1 + index * kT.optionH, pW, kT.optionH),
         text: listBlock.metadata.name,
         fill: this.fillColor(block.id),
         color: this.fontColor(block.id),
