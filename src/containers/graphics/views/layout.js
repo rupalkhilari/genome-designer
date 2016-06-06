@@ -4,6 +4,7 @@ import Line2D from '../geometry/line2d';
 import Node2D from '../scenegraph2d/node2d';
 import Role2D from '../scenegraph2d/role2d';
 import ListItem2D from '../scenegraph2d/listitem2d';
+import EmptyListItem2D from '../scenegraph2d/emptylistitem2d';
 import LineNode2D from '../scenegraph2d/line2d';
 import kT from './layoutconstants';
 import objectValues from '../../../utils/object/values';
@@ -40,6 +41,7 @@ export default class Layout {
     this.nestedLayouts = {};
     this.connectors = {};
     this.listNodes = {};
+    this.emptyMap = {};
 
     // this reference is incremented for each update. Blocks, lines are given
     // the latest reference whenever they are updated. Any elements without
@@ -135,6 +137,34 @@ export default class Layout {
     return new ListItem2D(props);
   }
   /**
+   * create an empty list block
+   */
+  emptyListBlockFactory(blockId, parentNode) {
+    let node = this.emptyMap[blockId];
+    if (!node) {
+      const props = Object.assign({}, {
+        parent: parentNode,
+        strokeWidth: 0,
+        sg: this.sceneGraph,
+      }, kT.partAppearance);
+      node = this.emptyMap[blockId] = new EmptyListItem2D(props);
+    }
+    return node;
+  }
+  /**
+   * drop nodes allocated with emptyListBlockFactory that are no longer needed
+   * @return {[type]} [description]
+   */
+  dropEmptyBlocks() {
+    Object.keys(this.emptyMap).forEach((parentBlockId) => {
+      const node = this.emptyMap[parentBlockId];
+      if (node.updateReference !== this.updateReference) {
+        node.parent.removeChild(node);
+        delete this.emptyMap[parentBlockId];
+      }
+    });
+  }
+  /**
    * create / update the list items for the block
    */
   updateListForBlock(block, pW) {
@@ -142,35 +172,49 @@ export default class Layout {
     const parentNode = this.nodeFromElement(block.id);
     // get the focused list for this block, if any
     const focusedOptionId = this.focusedOptions[block.id];
+    // get only the options that are enabled for this block
+    const enabled = Object.keys(block.options).filter(opt => block.options[opt]);
+    // if this is a template construct and the options are empty add a single empty options block
+    if (enabled.length === 0) {
+        const node = this.emptyListBlockFactory(block.id, parentNode);
+        node.set({
+          bounds: new Box2D(0, kT.blockH + 1, pW, kT.optionH),
+          fill: this.fillColor(block.id),
+          updateReference: this.updateReference,
+          listParentBlock: block,
+          listParentNode: parentNode,
+        });
+    } else {
+      // update all the list items
+      enabled.forEach((blockId, index) => {
+        // ensure we have a hash of list nodes for this block.
+        let nodes = this.listNodes[block.id];
+        if (!nodes) {
+          nodes = this.listNodes[block.id] = {};
+        }
+        // get the block in the list
+        const listBlock = this.getListBlock(blockId);
 
-    Object.keys(block.options).filter(opt => block.options[opt]).forEach((blockId, index) => {
-      // ensure we have a hash of list nodes for this block.
-      let nodes = this.listNodes[block.id];
-      if (!nodes) {
-        nodes = this.listNodes[block.id] = {};
-      }
-      // get the block in the list
-      const listBlock = this.getListBlock(blockId);
-
-      // create node as necessary for this block
-      let listNode = nodes[blockId];
-      if (!listNode) {
-        listNode = nodes[blockId] = this.listBlockFactory(blockId);
-        parentNode.appendChild(listNode);
-      }
-      // update position and other visual attributes of list part
-      listNode.set({
-        bounds: new Box2D(0, kT.blockH + 1 + index * kT.optionH, pW, kT.optionH),
-        text: listBlock.metadata.name,
-        fill: this.fillColor(block.id),
-        color: this.fontColor(block.id),
-        updateReference: this.updateReference,
-        listParentBlock: block,
-        listParentNode: this.nodeFromElement(block.id),
-        listBlock,
-        optionSelected: focusedOptionId === blockId,
+        // create node as necessary for this block
+        let listNode = nodes[blockId];
+        if (!listNode) {
+          listNode = nodes[blockId] = this.listBlockFactory(blockId);
+          parentNode.appendChild(listNode);
+        }
+        // update position and other visual attributes of list part
+        listNode.set({
+          bounds: new Box2D(0, kT.blockH + 1 + index * kT.optionH, pW, kT.optionH),
+          text: listBlock.metadata.name,
+          fill: this.fillColor(block.id),
+          color: this.fontColor(block.id),
+          updateReference: this.updateReference,
+          listParentBlock: block,
+          listParentNode: this.nodeFromElement(block.id),
+          listBlock,
+          optionSelected: focusedOptionId === blockId,
+        });
       });
-    });
+    }
   }
 
   /**
@@ -701,6 +745,9 @@ export default class Layout {
 
     // drop unused list items
     this.dropListItems();
+
+    // drop unused empty block placeholders
+    this.dropEmptyBlocks();
 
     // create/show vertical bar
     this.verticalFactory();

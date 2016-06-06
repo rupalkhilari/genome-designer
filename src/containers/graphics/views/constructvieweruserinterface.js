@@ -368,7 +368,10 @@ export default class ConstructViewerUserInterface extends UserInterface {
         break;
 
       case 'option':
+        // user might have clicked an 'empty list' placeholder, otherwise select the option
+        if (region.optionId) {
           this.constructViewer.optionSelected(region.blockId, region.optionId);
+        }
         break;
 
       default: break;
@@ -443,7 +446,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
             return {
               where: 'option',
               blockId: child.listParentBlock.id,
-              optionId: child.listBlock.id
+              optionId: child.listBlock ? child.listBlock.id : null,
             };
           }
         }
