@@ -121,18 +121,11 @@ export const deleteProject = (projectId) => {
 //   components : { <blockId> : <block> } //including the parent requested
 //   options: { <blockId> : <block> }
 // }
-export const loadBlock = (blockId, withContents = false, onlyComponents = false, projectId = 'block') => {
+export const loadBlock = (blockId, withContents = false, projectId = 'block') => {
   invariant(projectId, 'Project ID is required');
   invariant(blockId, 'Block ID is required');
 
   if (withContents === true) {
-    if (onlyComponents === true) {
-      return infoQuery('components', blockId)
-        .then(components => ({
-          components,
-          options: {},
-        }));
-    }
     return infoQuery('contents', blockId);
   }
 

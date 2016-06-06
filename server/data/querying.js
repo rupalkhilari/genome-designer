@@ -9,6 +9,8 @@ import { errorCouldntFindProjectId } from '../utils/errors';
 // key for no role rule
 const untypedKey = 'none';
 
+//todo - these would be simplified if all were using maps. Update when convert blocks rollups to maps.
+
 //note - expects the project to already exist.
 export const getAllBlockIdsInProject = (projectId) => {
   const directory = filePaths.createBlockDirectoryPath(projectId);
@@ -94,7 +96,13 @@ export const getAllBlocks = (userId) => {
     .then(projectIds => Promise.all(
       projectIds.map(projectId => getAllBlocksInProject(projectId))
     ))
-    .then(nested => flatten(nested));
+    .then(nested => flatten(nested))
+    //we need to make this a set because multiple projects may have blocks with the same ID... this is only the case when blocks are locked, so they will be identical.
+    //this is a shitty way of doing it, but cant just use a Set because instances are unique, just need to check the IDs
+    .then(array => {
+      const map = array.reduce((acc, block) => Object.assign(acc, { [block.id]: block}), {});
+      return Object.keys(map).map(key => map[key]);
+    });
 };
 
 export const getAllBlocksFiltered = (userId, blockFilter = () => true) => {
