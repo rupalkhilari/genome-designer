@@ -175,7 +175,7 @@ export default class Layout {
     // get only the options that are enabled for this block
     const enabled = Object.keys(block.options).filter(opt => block.options[opt]);
     // if this is a template construct and the options are empty add a single empty options block
-    if (enabled.length === 0) {
+    if (enabled.length === 0 && this.construct.isTemplate()) {
         const node = this.emptyListBlockFactory(block.id, parentNode);
         node.set({
           bounds: new Box2D(0, kT.blockH + 1, pW, kT.optionH),
