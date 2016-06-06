@@ -368,7 +368,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
         break;
 
       case 'option':
-          console.log('option clicked:', region.optionId);
+          this.constructViewer.optionSelected(region.blockId, region.optionId);
         break;
 
       default: break;
@@ -440,7 +440,11 @@ export default class ConstructViewerUserInterface extends UserInterface {
           // node represents a list block
           const childBox = child.el.getBoundingClientRect();
           if (vpt.x >= childBox.left && vpt.x < childBox.right && vpt.y >= childBox.top && vpt.y < childBox.bottom) {
-            return {where: 'option', optionId: child.listBlock.id};
+            return {
+              where: 'option',
+              blockId: child.listParentBlock.id,
+              optionId: child.listBlock.id
+            };
           }
         }
       };

@@ -138,7 +138,10 @@ export default class Layout {
    * create / update the list items for the block
    */
   updateListForBlock(block, pW) {
+    // the node representing the parent block
     const parentNode = this.nodeFromElement(block.id);
+    // get the focused list for this block, if any
+    const focusedOptionId = this.focusedOptions[block.id];
 
     Object.keys(block.options).filter(opt => block.options[opt]).forEach((blockId, index) => {
       // ensure we have a hash of list nodes for this block.
@@ -157,7 +160,7 @@ export default class Layout {
       }
       // update position and other visual attributes of list part
       listNode.set({
-        bounds: new Box2D(0, (index + 1) * kT.blockH, pW, kT.blockH),
+        bounds: new Box2D(0, kT.blockH + index * kT.optionH, pW, kT.optionH),
         text: listBlock.metadata.name,
         fill: this.fillColor(block.id),
         color: this.fontColor(block.id),
@@ -165,6 +168,7 @@ export default class Layout {
         listParentBlock: block,
         listParentNode: this.nodeFromElement(block.id),
         listBlock,
+        optionSelected: focusedOptionId === blockId,
       });
     });
   }
@@ -482,7 +486,8 @@ export default class Layout {
     this.blocks = options.blocks;
     this.currentConstructId = options.currentConstructId;
     this.currentBlocks = options.currentBlocks;
-    invariant(this.construct && this.blocks && this.currentConstructId && this.currentBlocks, 'missing required options');
+    this.focusedOptions = options.focusedOptions || {};
+    invariant(this.construct && this.blocks && this.currentConstructId && this.currentBlocks && this.focusedOptions, 'missing required options');
 
     this.baseColor = this.construct.metadata.color;
 
@@ -613,9 +618,11 @@ export default class Layout {
         rowIndex += 1;
       }
 
-      // measure the max required width of any list blocks
+      // measure the max required width of all list blocks
       Object.keys(block.options).filter(opt => block.options[opt]).forEach(blockId => {
-        td.x = Math.max(td.x, this.measureText(node, this.getListBlock(blockId).metadata.name).x);
+        let width = this.measureText(node, this.getListBlock(blockId).metadata.name).x;
+        width += kT.optionDotW;
+        td.x = Math.max(td.x, width);
       });
 
       // update maxListHeight based on how many list items this block has

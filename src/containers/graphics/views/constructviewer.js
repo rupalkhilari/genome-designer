@@ -33,6 +33,7 @@ import {
   focusBlocksAdd,
   focusBlocksToggle,
   focusConstruct,
+  focusBlockOption,
 } from '../../../actions/focus';
 import invariant from 'invariant';
 import {
@@ -54,6 +55,7 @@ export class ConstructViewer extends Component {
     focusBlocksAdd: PropTypes.func.isRequired,
     focusBlocksToggle: PropTypes.func.isRequired,
     focusConstruct: PropTypes.func.isRequired,
+    focusBlockOption: PropTypes.func.isRequired,
     currentBlock: PropTypes.array,
     blockSetRole: PropTypes.func,
     blockCreate: PropTypes.func,
@@ -209,6 +211,14 @@ export class ConstructViewer extends Component {
   }
 
   /**
+   * focus an option
+   */
+  optionSelected(blockId, optionId) {
+    console.log('OPTION SELECTED:---->', blockId, optionId);
+    this.props.focusBlockOption(blockId, optionId);
+  }
+
+  /**
    * select the given block
    */
   blockToggleSelected(partIds) {
@@ -278,6 +288,7 @@ export class ConstructViewer extends Component {
       blocks: this.props.blocks,
       currentBlocks: this.props.focus.blockIds,
       currentConstructId: this.props.focus.constructId,
+      focusedOptions: this.props.focus.options,
     });
     this.sg.update();
     this.sg.ui.update();
@@ -520,6 +531,7 @@ export default connect(mapStateToProps, {
   focusBlocks,
   focusBlocksAdd,
   focusBlocksToggle,
+  focusBlockOption,
   focusConstruct,
   projectGetVersion,
   projectRemoveConstruct,
