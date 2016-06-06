@@ -2,6 +2,7 @@ import { exec } from 'child_process';
 import * as filePaths from '../utils/filePaths';
 import * as fileSystem from '../utils/fileSystem';
 import { errorNoPermission, errorDoesNotExist } from '../utils/errors';
+import { id as idRegex } from '../../src/utils/regex';
 
 export const createProjectPermissions = (projectId, userId) => {
   const projectPermissionsPath = filePaths.createProjectPermissionsPath(projectId);
@@ -39,6 +40,7 @@ export const permissionsMiddleware = (req, res, next) => {
 
   if (!user.uuid) next('no user.uuid present on request object');
   if (!projectId) next('projectId not found on route request');
+  if (!idRegex().test(projectId)) next('projectId is not valid, got ' + projectId);
 
   checkProjectAccess(projectId, user.uuid)
     .then(() => next())

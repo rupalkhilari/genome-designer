@@ -13,13 +13,13 @@ const fieldDefs = {
   ],
 
   price: [
-    fields.number(),
+    fields.any(),
     `Quote for the order`,
   ],
 
   timeSent: [
-    fields.string(),
-    `Time when the order was sent`,
+    fields.number(),
+    `Time when the order was sent, in MS`,
   ],
 };
 

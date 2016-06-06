@@ -5,7 +5,7 @@ import { headersPost } from '../../src/middleware/headers';
 //testing
 import { fileWrite } from '../utils/fileSystem';
 
-const url = 'http://synnp.org:8010/';
+const url = 'http://ec2-52-30-192-126.eu-west-1.compute.amazonaws.com:8010/api/order/';
 
 export const submit = (order, user) => {
   //for now, only accept EGF Parts -- need to relay this to the client
@@ -18,6 +18,7 @@ export const submit = (order, user) => {
   const payload = {
     orderId: order.id,
     constructs: constructs2d,
+    isCombinatorialMix: order.parameters.onePot,
     customer: {
       firstName: user.firstName,
       lastName: user.lastName,
@@ -41,10 +42,9 @@ export const submit = (order, user) => {
       console.log('got response from EGF:');
       console.log(response);
 
-      // todo - convert response to this format minimally
       return Promise.resolve({
-        jobId: 'somejob',
-        cost: 100.45,
+        jobId: response.egf_order_id,
+        cost: response.estimated_price,
       });
     });
 };
