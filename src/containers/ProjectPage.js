@@ -8,7 +8,7 @@ import Inventory from './Inventory';
 import Inspector from './Inspector';
 import { projectList, projectLoad, projectCreate, projectOpen } from '../actions/projects';
 import { uiSetGrunt } from '../actions/ui';
-import { focusProject } from '../actions/focus';
+import { focusProject, focusConstruct } from '../actions/focus';
 import autosaveInstance from '../store/autosave/autosaveInstance';
 
 import '../styles/ProjectPage.css';
@@ -26,6 +26,7 @@ class ProjectPage extends Component {
     projectOpen: PropTypes.func.isRequired,
     uiSetGrunt: PropTypes.func.isRequired,
     focusProject: PropTypes.func.isRequired,
+    focusConstruct: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -42,9 +43,12 @@ class ProjectPage extends Component {
 
   componentWillReceiveProps(nextProps) {
     //set state.focus.project -- might be a better way to do this, but hard otuside components with react-router
-    if (nextProps.project && nextProps.project.metadata && (!this.lastProjectId || nextProps.projectId !== this.props.projectId)) {
+    if (!!nextProps.project && Array.isArray(nextProps.project.components) && (!this.lastProjectId || nextProps.projectId !== this.props.projectId)) {
       this.lastProjectId = nextProps.projectId;
       this.props.focusProject(nextProps.projectId);
+      if (nextProps.project.components.length) {
+        this.props.focusConstruct(nextProps.project.components[0]);
+      }
     }
   }
 
@@ -151,4 +155,5 @@ export default connect(mapStateToProps, {
   projectOpen,
   uiSetGrunt,
   focusProject,
+  focusConstruct,
 })(ProjectPage);

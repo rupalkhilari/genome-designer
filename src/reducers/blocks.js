@@ -1,7 +1,15 @@
 import * as ActionTypes from '../constants/ActionTypes';
+import * as instanceMap from '../store/instanceMap';
 import { blocks as testBlocks } from './testProject';
+import { blocks as combiBlocks } from './testCombinatorial';
 
 const initialState = {};
+
+//testing = combinatorial
+combiBlocks.forEach(block => Object.assign(initialState,
+  { [block.id]: block }
+));
+instanceMap.saveBlock(...combiBlocks);
 
 if (process.env.NODE_ENV === 'test') {
   testBlocks.forEach(block => Object.assign(initialState,
@@ -23,6 +31,9 @@ export default function blocks(state = initialState, action) {
   case ActionTypes.BLOCK_ANNOTATE :
   case ActionTypes.BLOCK_REMOVE_ANNOTATION :
   case ActionTypes.BLOCK_SET_SEQUENCE :
+  case ActionTypes.BLOCK_OPTION_ADD :
+  case ActionTypes.BLOCK_OPTION_REMOVE :
+  case ActionTypes.BLOCK_OPTION_TOGGLE :
   case ActionTypes.BLOCK_COMPONENT_ADD :
   case ActionTypes.BLOCK_COMPONENT_MOVE :
   case ActionTypes.BLOCK_COMPONENT_REMOVE :
@@ -30,14 +41,24 @@ export default function blocks(state = initialState, action) {
     const { block, blocks } = action;
 
     if (Array.isArray(blocks)) {
+      instanceMap.saveBlock(...blocks);
       const toMerge = blocks.reduce((acc, block) => Object.assign(acc, { [block.id]: block }), {});
       return Object.assign({}, state, toMerge);
     }
+
+    instanceMap.saveBlock(block);
     return Object.assign({}, state, { [block.id]: block });
 
+  case ActionTypes.BLOCK_DETACH :
   case ActionTypes.BLOCK_DELETE :
-    const { blockId } = action;
+    const { blockId, blockIds } = action;
     const nextState = Object.assign({}, state);
+
+    if (Array.isArray(blockIds)) {
+      blockIds.forEach(blockId => { delete nextState[blockId]; });
+      return nextState;
+    }
+
     delete nextState[blockId];
     return nextState;
 

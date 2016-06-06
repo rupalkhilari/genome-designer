@@ -10,11 +10,13 @@ import '../styles/SidePanel.css';
 
 export class Inspector extends Component {
   static propTypes = {
+    showingGrunt: PropTypes.bool,
     isVisible: PropTypes.bool.isRequired,
-    readOnly: PropTypes.bool.isRequired,
     inspectorToggleVisibility: PropTypes.func.isRequired,
-    instances: PropTypes.array,
-    project: PropTypes.object,
+    readOnly: PropTypes.bool.isRequired,
+    forceIsConstruct: PropTypes.bool.isRequired,
+    type: PropTypes.string.isRequired,
+    focused: PropTypes.any.isRequired,
   };
 
   toggle = (forceVal) => {
@@ -22,17 +24,27 @@ export class Inspector extends Component {
   };
 
   render() {
-    const { isVisible, instances, project, readOnly } = this.props;
+    const { showingGrunt, isVisible, focused, type, readOnly, forceIsConstruct } = this.props;
 
     // inspect instances, or construct if no instance or project if no construct or instances
-    const inspect = instances && instances.length
-      ? <InspectorBlock instances={instances} readOnly={readOnly}/>
-      : <InspectorProject instance={project} readOnly={readOnly}/>;
+    let inspect;
+    switch (type) {
+    case 'project':
+      inspect = <InspectorProject instance={focused} readOnly={readOnly}/>;
+      break;
+    case 'construct':
+      inspect = <InspectorBlock instances={focused} readOnly={readOnly}/>;
+      break;
+    default:
+      inspect = <InspectorBlock instances={focused} readOnly={readOnly} forceIsConstruct={forceIsConstruct}/>;
+      break;
+    }
 
     return (
       <div className={'SidePanel Inspector no-vertical-scroll' +
       (isVisible ? ' visible' : '') +
-      (readOnly ? ' readOnly' : '')}>
+      (readOnly ? ' readOnly' : '') +
+      (showingGrunt ? ' gruntPushdown' : '')}>
 
         <div className="SidePanel-heading">
           <button tabIndex="-1" className="button-nostyle SidePanel-heading-trigger Inspector-trigger"
@@ -54,35 +66,48 @@ export class Inspector extends Component {
 
 function mapStateToProps(state, props) {
   const { isVisible } = state.ui.inspector;
-  const { forceBlocks, blockIds, forceProject, constructId } = state.focus;
+  //UI adjustment
+  const showingGrunt = !!state.ui.modals.gruntMessage;
 
-  //use forceBlock if available, otherwise use selected blocks
-  const unfilteredInstances = forceBlocks.length ?
-    forceBlocks :
-    (blockIds && blockIds.length) ?
-      blockIds.map(blockId => state.blocks[blockId]) :
-      [];
-  //ensure that blocks removed from store dont error / don't pass empty instances
-  let instances = unfilteredInstances.filter(el => !!el);
-  if (!instances.length && !!constructId) {
-    instances = [state.blocks[constructId]];
+  const { level, forceProject, forceBlocks, projectId, constructId, blockIds } = state.focus;
+  let focused;
+  let readOnly = false;
+  let type = level;
+  //if projectId is not set in store, ProjectPage is passing it in, so lets default to it
+  const currentProject = state.projects[projectId || props.projectId];
+
+  if (level === 'project' || (!constructId && !forceBlocks.length && !blockIds.length)) {
+    if (forceProject) {
+      focused = forceProject;
+      readOnly = true;
+    } else {
+      focused = currentProject;
+    }
+    type = 'project'; //need to override so dont try to show block inspector
+  } else if (level === 'construct' || (constructId && !forceBlocks.length && !blockIds.length)) {
+    const construct = state.blocks[constructId];
+    focused = [construct];
+    readOnly = construct.isFrozen();
+  } else {
+    if (forceBlocks.length) {
+      focused = forceBlocks;
+      readOnly = true;
+    } else {
+      focused = blockIds.map(blockId => state.blocks[blockId]);
+      readOnly = focused.some(instance => instance.isFrozen());
+    }
   }
 
-  const { projectId } = props; //from routing
-  const project = !!forceProject ?
-    forceProject :
-    state.projects[projectId];
-
-  //readonly if forceBlocks / forceProject
-  const readOnly = instances.length ?
-    !!forceBlocks.length :
-    !!forceProject;
+  const forceIsConstruct = (level === 'construct') ||
+    blockIds.some(blockId => currentProject.components.indexOf(blockId) >= 0);
 
   return {
+    showingGrunt,
     isVisible,
+    type,
     readOnly,
-    instances,
-    project,
+    focused,
+    forceIsConstruct,
   };
 }
 

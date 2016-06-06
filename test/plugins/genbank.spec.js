@@ -2,8 +2,8 @@ import {expect} from 'chai';
 import path from 'path';
 import {importProject} from '../../plugins/convert/import';
 import {exportProject, exportConstruct} from '../../plugins/convert/export';
-import BlockDefinition from '../../src/schemas/Block';
-import ProjectDefinition from '../../src/schemas/Project';
+import BlockSchema from '../../src/schemas/Block';
+import ProjectSchema from '../../src/schemas/Project';
 
 const fs = require('fs');
 
@@ -21,7 +21,7 @@ describe('Plugins', () => {
       importProject('genbank', path.resolve(__dirname, '../res/sampleGenbankContiguous.gb'))
         .then(output => {
           expect(output.project).not.to.equal(undefined);
-          expect(ProjectDefinition.validate(output.project)).to.equal(true);
+          expect(ProjectSchema.validate(output.project)).to.equal(true);
           expect(output.project.metadata.name).to.equal('EU912544');
           expect(output.project.metadata.description).to.equal('Cloning vector pDM313, complete sequence.');
           expect(output.project.components.length).to.equal(1);
@@ -43,7 +43,7 @@ describe('Plugins', () => {
           expect(getBlock(output.blocks, parentBlock.components[2]).rules.role).to.equal('terminator');
           expect(getBlock(output.blocks, parentBlock.components[3]).metadata.name).to.equal('rep_origin');
           for (let key in output.blocks) {
-            expect(BlockDefinition.validate(output.blocks[key])).to.equal(true);
+            expect(BlockSchema.validate(output.blocks[key])).to.equal(true);
           }
           done();
         })
@@ -65,7 +65,7 @@ describe('Plugins', () => {
           expect(getBlock(output.blocks, parentBlock.components[5]).rules.role).to.equal('terminator');
           expect(getBlock(output.blocks, parentBlock.components[6]).metadata.name).to.equal('rep_origin');
           for (let key in output.blocks) {
-            expect(BlockDefinition.validate(output.blocks[key])).to.equal(true);
+            expect(BlockSchema.validate(output.blocks[key])).to.equal(true);
           }
           done();
         })
@@ -91,7 +91,7 @@ describe('Plugins', () => {
           expect(getBlock(output.blocks, secondBlock.components[2]).rules.role).to.equal('terminator');
           expect(getBlock(output.blocks, secondBlock.components[3]).metadata.name).to.equal('rep_origin');
           for (let key in output.blocks) {
-            expect(BlockDefinition.validate(output.blocks[key])).to.equal(true);
+            expect(BlockSchema.validate(output.blocks[key])).to.equal(true);
           }
           done();
         })
@@ -102,7 +102,7 @@ describe('Plugins', () => {
       importProject('genbank', path.resolve(__dirname, '../res/sampleMultiGenbank.gb'))
         .then(output => {
           expect(output.project).not.to.equal(undefined);
-          expect(ProjectDefinition.validate(output.project)).to.equal(true);
+          expect(ProjectSchema.validate(output.project)).to.equal(true);
           expect(output.project.metadata.name).to.equal('EU912543');
           expect(output.project.metadata.description).to.equal('Cloning vector pDM313, complete sequence.')
           expect(output.project.components.length).to.equal(3);
@@ -127,7 +127,7 @@ describe('Plugins', () => {
       importProject('genbank', path.resolve(__dirname, '../res/sampleGenbankContiguous.gb'))
         .then(output => {
           expect(output.project).not.to.equal(undefined);
-          expect(ProjectDefinition.validate(output.project)).to.equal(true);
+          expect(ProjectSchema.validate(output.project)).to.equal(true);
           expect(output.project.metadata.name).to.equal('EU912544');
           expect(output.project.metadata.description).to.equal('Cloning vector pDM313, complete sequence.')
           exportProject('genbank', output)
@@ -157,7 +157,7 @@ describe('Plugins', () => {
       importProject('genbank', path.resolve(__dirname, '../res/sampleGenbankContiguous.gb'))
         .then(output => {
           expect(output.project).not.to.equal(undefined);
-          expect(ProjectDefinition.validate(output.project)).to.equal(true);
+          expect(ProjectSchema.validate(output.project)).to.equal(true);
           expect(output.project.metadata.name).to.equal('EU912544');
           expect(output.project.metadata.description).to.equal('Cloning vector pDM313, complete sequence.')
           exportConstruct('genbank', output, output.project.components[0])

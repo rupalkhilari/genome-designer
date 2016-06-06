@@ -6,6 +6,7 @@ import InputSimple from './../InputSimple';
 import ColorPicker from './../ui/ColorPicker';
 import SymbolPicker from './../ui/SymbolPicker';
 import BlockSource from './BlockSource';
+import ListOptions from './ListOptions';
 
 export class InspectorBlock extends Component {
   static propTypes = {
@@ -18,6 +19,11 @@ export class InspectorBlock extends Component {
     transact: PropTypes.func.isRequired,
     commit: PropTypes.func.isRequired,
     abort: PropTypes.func.isRequired,
+    forceIsConstruct: PropTypes.bool,
+  };
+
+  static defaultProps = {
+    forceIsConstruct: false,
   };
 
   setBlockName = (name) => {
@@ -126,27 +132,44 @@ export class InspectorBlock extends Component {
   }
 
   currentSource() {
-    if (this.props.instances.length === 1) {
-      return (<BlockSource block={this.props.instances[0]} />);
+    const lenInstances = this.props.instances.length;
+    const firstBlock = this.props.instances[0];
+    const firstSource = firstBlock.source;
+    const { id: firstId, source: firstName } = firstSource;
+    const firstHasSource = !!firstName;
+
+    if (firstHasSource && (lenInstances === 1 ||
+      this.props.instances.every(block => block.source.id === firstId && block.source.source === firstName))) {
+      return (<BlockSource block={firstBlock}/>);
     }
-    return (<p>Multiple Sources</p>);
+    if (lenInstances > 1) {
+      return (<p>Multiple Sources</p>);
+    }
+    return null;
   }
 
   render() {
-    const { readOnly } = this.props;
+    const { instances, readOnly, forceIsConstruct } = this.props;
+    const singleInstance = instances.length === 1;
+    const isList = singleInstance && instances[0].isList();
+    const isTemplate = singleInstance && instances[0].isTemplate();
+    const isConstruct = singleInstance && instances[0].isConstruct();
 
+    const name = isConstruct ? 'Construct' : (isTemplate ? 'Template' : 'Block'); //eslint-disable-line no-nested-ternary
+
+    const currentSourceElement = this.currentSource();
     const annotations = this.currentAnnotations();
 
     return (
       <div className="InspectorContent InspectorContentBlock">
-        <h4 className="InspectorContent-heading">Name</h4>
+        <h4 className="InspectorContent-heading">{name}</h4>
         <InputSimple placeholder="Enter a name"
                      readOnly={readOnly}
                      onChange={this.setBlockName}
                      onFocus={this.startTransaction}
                      onBlur={this.endTransaction}
                      onEscape={() => this.endTransaction(true)}
-                     updateOnBlur
+                     maxLength={64}
                      value={this.currentName()}/>
 
         <h4 className="InspectorContent-heading">Description</h4>
@@ -157,11 +180,11 @@ export class InspectorBlock extends Component {
                      onFocus={this.startTransaction}
                      onBlur={this.endTransaction}
                      onEscape={() => this.endTransaction(true)}
-                     updateOnBlur
+                     maxLength={1024}
                      value={this.currentDescription()}/>
 
-        <h4 className="InspectorContent-heading">Source</h4>
-        {this.currentSource()}
+        {currentSourceElement && <h4 className="InspectorContent-heading">Source</h4>}
+        {currentSourceElement}
 
         <h4 className="InspectorContent-heading">Sequence Length</h4>
         <p><strong>{this.currentSequenceLength()}</strong></p>
@@ -173,12 +196,12 @@ export class InspectorBlock extends Component {
                        onSelect={this.selectColor}/>
 
           <SymbolPicker current={this.currentRoleSymbol()}
-                        readOnly={readOnly}
+                        readOnly={readOnly || isConstruct || isTemplate || isList || forceIsConstruct}
                         onSelect={this.selectSymbol}/>
         </div>
 
 
-        {!!annotations.length && (<h4 className="InspectorContent-heading">Contents</h4>)}
+        {!!annotations.length && (<h4 className="InspectorContent-heading">Annotations</h4>)}
         {!!annotations.length && (<div className="InspectorContentBlock-Annotations">
             {annotations.map((annotation, idx) => {
               return (
@@ -190,6 +213,9 @@ export class InspectorBlock extends Component {
             })}
           </div>
         )}
+
+        {isList && (<h4 className="InspectorContent-heading">List Options</h4>)}
+        {isList && (<ListOptions block={instances[0]}/>)}
       </div>
     );
   }

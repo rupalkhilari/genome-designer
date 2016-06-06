@@ -1,13 +1,14 @@
 import safeValidate from './safeValidate';
 import urlRegex from 'url-regex';
 import { dnaStrictRegexp, dnaLooseRegexp } from '../../utils/dna/dna';
+import { id as idRegex } from '../../utils/regex';
 
 /**
  * note that everything exported in this file is tested - so only export real validators
  *
  * @description
  * these validators are used by fields/index.js
- * when defining a SchemaDefinition you should use the fieldType objects exported from that file instead of these directly. However, you may want to use these when just running validation. Note that they expect parameters.
+ * when defining a Schema you should use the fieldType objects exported from that file instead of these directly. However, you may want to use these when just running validation. Note that they expect parameters.
  *
  * @example
  * let validator = number({min:5});
@@ -15,37 +16,41 @@ import { dnaStrictRegexp, dnaLooseRegexp } from '../../utils/dna/dna';
  * validator(40); //true
  */
 
-export const id = params => input => {
-  const regex = /^(\w+-)?[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+export const any = params => input => {};
 
-  if (!regex.test(input)) {
+export const id = params => input => {
+  if (!idRegex().test(input)) {
     return new Error(`${input} is not a RFC4122-compliant UUID`);
   }
 };
 
-export const string = params => input => {
+export const string = ({ max, min } = {}) => input => {
   if (!isString(input)) {
     return new Error(`${input} is not a string`);
   }
+  if (isNumber(max) && input.length > max) {
+    return new Error(`${input} is longer than max length ${max}`);
+  }
+  if (isNumber(min) && input.length < min) {
+    return new Error(`${input} is shorter than min length ${min}`);
+  }
 };
 
-export const number = params => input => {
+export const number = ({ reals, min, max } = {}) => input => {
   if (!isNumber(input)) {
     return new Error(`input ${input} is not a number`);
   }
 
-  if (isRealObject(params)) {
-    if (params.reals && !isRealNumber(input)) {
-      return new Error(`input ${input} is not a real number`);
-    }
+  if (reals && !isRealNumber(input)) {
+    return new Error(`input ${input} is not a real number`);
+  }
 
-    if (params.min && input < params.min) {
-      return new Error(`input ${input} is less than minimum ${params.min}`);
-    }
+  if (isNumber(min) && input < min) {
+    return new Error(`input ${input} is less than minimum ${params.min}`);
+  }
 
-    if (params.max && input > params.max) {
-      return new Error(`input ${input} is greater than maximum ${params.max}`);
-    }
+  if (isNumber(max) && input > max) {
+    return new Error(`input ${input} is greater than maximum ${params.max}`);
   }
 };
 
@@ -176,7 +181,7 @@ export const oneOf = possible => input => {
   }
 
   if (possible.indexOf(input) < 0) {
-    return new Error(input + ' not found in ' + possible.join(','));
+    return new Error(input + ' not found in ' + possible.join(', '));
   }
 };
 

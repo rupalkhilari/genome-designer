@@ -1,7 +1,7 @@
 import invariant from 'invariant';
 import { merge } from 'lodash';
 import * as ActionTypes from '../constants/ActionTypes';
-import BlockDefinition from '../schemas/Block';
+import BlockSchema from '../schemas/Block';
 import Block from '../models/Block';
 import { loadBlock } from '../middleware/data';
 import * as selectors from '../selectors/blocks';
@@ -12,11 +12,22 @@ import { pauseAction, resumeAction } from '../store/pausableStore';
 //todo - helper to wrap dispatch()'s in a paused transaction - make sure dispatch still runs when passed as arg
 
 //Promise
-//retrieves a block, and its components if specified
-export const blockLoad = (blockId, withComponents = false) => {
+//retrieves a block, and its options and components if specified
+export const blockLoad = (blockId, withContents = false, skipIfContentsEmpty = false) => {
   return (dispatch, getState) => {
-    return loadBlock(blockId, withComponents)
-      .then(blockMap => {
+    const retrieved = getState().blocks[blockId];
+    if (skipIfContentsEmpty === true && retrieved && !retrieved.components.length && !Object.keys(retrieved.options).length) {
+      return Promise.resolve([retrieved]);
+    }
+
+    let projectId;
+    if (retrieved && retrieved.projectId) {
+      projectId = retrieved.projectId;
+    }
+
+    return loadBlock(blockId, withContents, projectId)
+      .then(({ components, options }) => {
+        const blockMap = Object.assign({}, options, components);
         const blocks = Object.keys(blockMap).map(key => new Block(blockMap[key]));
         dispatch({
           type: ActionTypes.BLOCK_LOAD,
@@ -87,11 +98,16 @@ export const blockClone = (blockInput, parentObjectInput = {}, shallowOnly = fal
     let oldBlock;
     if (typeof blockInput === 'string') {
       oldBlock = getState().blocks[blockInput];
-    } else if (BlockDefinition.validate(blockInput)) {
+    } else if (BlockSchema.validate(blockInput)) {
       oldBlock = new Block(blockInput);
     } else {
       throw new Error('invalid input to blockClone', blockInput);
     }
+
+    //note - Block.options
+    // we dont need to do anything in cloning for block.options, since these are just copied over from project to project
+    // the assumption is that options will be fetched and stashed (not cloned) in the project as needed, but separate from cloning.
+    // this is so the option IDs remain consistent, and projects are not huge with duplicate blocks that are just options (since they are static)
 
     //get the project ID to use for parent, considering the block may be detached from a project (e.g. inventory block)
     const parentProjectId = oldBlock.getProjectId() || null;
@@ -124,6 +140,9 @@ export const blockClone = (blockInput, parentObjectInput = {}, shallowOnly = fal
       return acc;
     }, {});
     const clones = unmappedClones.map(clone => {
+      if (!clone.isConstruct()) {
+        return clone;
+      }
       const newComponents = clone.components.map(componentId => cloneIdMap[componentId]);
       return clone.mutate('components', newComponents);
     });
@@ -263,13 +282,13 @@ export const blockAddComponent = (blockId, componentId, index = -1, forceProject
 /**
  * add the array of componentIds into the given part at the given starting index. Rather than adding them all at once, dispatch an event for each to ensure we remove from previous parents and stay in a valid state.
  */
-export const blockAddComponents = (blockId, componentIds, index) => {
+export const blockAddComponents = (blockId, componentIds, index, forceProjectId = false) => {
   return (dispatch, getState) => {
     dispatch(pauseAction());
     dispatch(undoActions.transact());
 
     componentIds.forEach((componentId, subIndex) => {
-      dispatch(blockAddComponent(blockId, componentId, index + subIndex));
+      dispatch(blockAddComponent(blockId, componentId, index + subIndex, forceProjectId));
     });
 
     dispatch(undoActions.commit());
@@ -286,6 +305,54 @@ export const blockMoveComponent = (blockId, componentId, newIndex) => {
     const block = oldBlock.moveComponent(componentId, newIndex);
     dispatch({
       type: ActionTypes.BLOCK_COMPONENT_MOVE,
+      undoable: true,
+      block,
+    });
+    return block;
+  };
+};
+
+/***************************************
+ Options
+ ***************************************/
+
+//for authoring template
+export const blockOptionsAdd = (blockId, ...optionIds) => {
+  return (dispatch, getState) => {
+    const oldBlock = getState().blocks[blockId];
+    const block = oldBlock.addOptions(...optionIds);
+
+    dispatch({
+      type: ActionTypes.BLOCK_OPTION_ADD,
+      undoable: true,
+      block,
+    });
+    return block;
+  };
+};
+
+//for authoring template
+export const blockOptionsRemove = (blockId, ...optionIds) => {
+  return (dispatch, getState) => {
+    const oldBlock = getState().blocks[blockId];
+    const block = oldBlock.removeOptions(...optionIds);
+
+    dispatch({
+      type: ActionTypes.BLOCK_OPTION_REMOVE,
+      undoable: true,
+      block,
+    });
+    return block;
+  };
+};
+
+export const blockOptionsToggle = (blockId, ...optionIds) => {
+  return (dispatch, getState) => {
+    const oldBlock = getState().blocks[blockId];
+    const block = oldBlock.toggleOptions(...optionIds);
+
+    dispatch({
+      type: ActionTypes.BLOCK_OPTION_TOGGLE,
       undoable: true,
       block,
     });
@@ -339,8 +406,9 @@ export const blockSetColor = (blockId, color) => {
 export const blockSetRole = (blockId, role) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
+    const oldRole = oldBlock.rules.role;
 
-    if (oldBlock.rules.role === role) {
+    if (oldRole === role) {
       return oldBlock;
     }
 
@@ -348,27 +416,10 @@ export const blockSetRole = (blockId, role) => {
     dispatch({
       type: ActionTypes.BLOCK_SET_ROLE,
       undoable: true,
+      oldRole,
       block,
     });
     return block;
-  };
-};
-
-//todo - this should not be an action + unclear name. It is too simply composed of existing atomic actions... prevent API bloat
-/**
- * e.g. when the user drop an role symbol on an existing block.
- * Create a new child block and set the given role symbol
- */
-export const blockAddSbol = (blockId, role) => {
-  return (dispatch, getState) => {
-    dispatch(undoActions.transact());
-    const oldBlock = getState().blocks[blockId];
-    const newBlock = dispatch(blockCreate());
-    dispatch(blockSetRole(newBlock.id, role));
-    dispatch(blockAddComponent(oldBlock.id, newBlock.id, oldBlock.components.length));
-    //end transaction
-    dispatch(undoActions.commit());
-    return newBlock;
   };
 };
 

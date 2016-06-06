@@ -37,6 +37,7 @@ import { focusDetailsExist } from '../selectors/focus';
 import { undo, redo, transact, commit } from '../store/undo/actions';
 import {
   uiShowGenBankImport,
+  uiShowOrderForm,
   uiToggleDetailView,
   uiSetGrunt,
   uiShowAbout,
@@ -52,6 +53,7 @@ import {
   privacy,
 } from '../utils/ui/uiapi';
 import AutosaveTracking from '../components/GlobalNav/autosaveTracking';
+import { orderCreate, orderGenerateConstructs } from '../actions/orders';
 
 import '../styles/GlobalNav.css';
 
@@ -76,6 +78,7 @@ class GlobalNav extends Component {
     transact: PropTypes.func.isRequired,
     commit: PropTypes.func.isRequired,
     uiShowGenBankImport: PropTypes.func.isRequired,
+    uiShowOrderForm: PropTypes.func.isRequired,
     projectGetVersion: PropTypes.func.isRequired,
     blockClone: PropTypes.func.isRequired,
     clipboardSetData: PropTypes.func.isRequired,
@@ -114,16 +117,6 @@ class GlobalNav extends Component {
       evt.preventDefault();
       this.props.inventoryToggleVisibility(true);
       this.props.inventorySelectTab('search');
-    });
-    KeyboardTrap.bind('mod+e', (evt) => {
-      evt.preventDefault();
-      this.props.inventoryToggleVisibility(true);
-      this.props.inventorySelectTab('egf');
-    });
-    KeyboardTrap.bind('mod+b', (evt) => {
-      evt.preventDefault();
-      this.props.inventoryToggleVisibility(true);
-      this.props.inventorySelectTab('role');
     });
     KeyboardTrap.bind('option+n', (evt) => {
       evt.preventDefault();
@@ -171,6 +164,11 @@ class GlobalNav extends Component {
     KeyboardTrap.bind('mod+u', (evt) => {
       evt.preventDefault();
       this.props.uiToggleDetailView();
+    });
+    KeyboardTrap.bind('mod+b', (evt) => {
+      evt.preventDefault();
+      this.props.inventoryToggleVisibility(true);
+      this.props.inventorySelectTab('role');
     });
   }
 
@@ -276,7 +274,6 @@ class GlobalNav extends Component {
       // sort selected blocks so they are pasted in the same order as they exist now.
       // NOTE: we don't copy the children of any selected parents since they will
       // be cloned along with their parent
-      //const sorted = sortBlocksByIndexAndDepth(this.props.focus.blocks);
       const sorted = sortBlocksByIndexAndDepthExclude(this.props.focus.blockIds);
       // sorted is an array of array, flatten while retaining order
       const currentProjectVersion = this.props.projectGetVersion(this.props.currentProjectId);
@@ -334,9 +331,21 @@ class GlobalNav extends Component {
     this.props.projectOpen(project.id);
   }
 
+  /**
+   * return true if the focused construct is fixrf
+   * @return {Boolean} [description]
+   */
+  focusedConstruct() {
+    if (this.props.focus.constructId) {
+      return this.props.blocks[this.props.focus.constructId];
+    }
+    return null;
+  }
+
   // cut focused blocks to the clipboard, no clone required since we are removing them.
   cutFocusedBlocksToClipboard() {
-    if (this.props.focus.blockIds.length) {
+    if (this.props.focus.blockIds.length && !this.focusedConstruct().isFixed() && this.focusedConstruct().isFrozen()) {
+      // TODO, cut must be prevents on fixed or frozen blocks
       const blockIds = this.props.blockDetach(...this.props.focus.blockIds);
       this.props.clipboardSetData([clipboardFormats.blocks], [blockIds.map(blockId => this.props.blocks[blockId])]);
       this.props.focusBlocks([]);
@@ -345,22 +354,26 @@ class GlobalNav extends Component {
 
   // paste from clipboard to current construct
   pasteBlocksToConstruct() {
+    // verify current construct
+    invariant(this.focusedConstruct(), 'expected a construct');
+    // ignore if construct is immutable
+    if (this.focusedConstruct().isFixed() && this.focusedConstruct().isFrozen()) {
+      return;
+    }
     // paste blocks into construct if format available
     const index = this.props.clipboard.formats.indexOf(clipboardFormats.blocks);
     if (index >= 0) {
+      // TODO, paste must be prevented on fixed or frozen blocks
       const blocks = this.props.clipboard.data[index];
       invariant(blocks && blocks.length && Array.isArray(blocks), 'expected array of blocks on clipboard for this format');
-      // get current construct
-      const construct = this.props.blocks[this.props.focus.constructId];
-      invariant(construct, 'expected a construct');
       // we have to clone the blocks currently on the clipboard since they
       // can't be pasted twice
       const clones = blocks.map(block => {
         return this.props.blockClone(block.id);
       });
       // insert at end of construct if no blocks selected
-      let insertIndex = construct.components.length;
-      let parentId = construct.id;
+      let insertIndex = this.focusedConstruct().components.length;
+      let parentId = this.focusedConstruct().id;
       if (this.props.focus.blockIds.length) {
         const insertInfo = this.findInsertBlock();
         insertIndex = insertInfo.index;
@@ -381,7 +394,7 @@ class GlobalNav extends Component {
           text: 'FILE',
           items: [
             {
-              text: 'Snapshot Project',
+              text: 'Save Project',
               shortcut: stringToShortcut('meta S'),
               action: () => {
                 this.saveProject();
@@ -401,22 +414,6 @@ class GlobalNav extends Component {
               action: () => {
                 this.props.inventoryToggleVisibility(true);
                 this.props.inventorySelectTab('search');
-              },
-            },
-            {
-              text: 'EGF Library',
-              shortcut: stringToShortcut('meta E'),
-              action: () => {
-                this.props.inventoryToggleVisibility(true);
-                this.props.inventorySelectTab('egf');
-              },
-            },
-            {
-              text: 'Sketch Library',
-              shortcut: stringToShortcut('meta B'),
-              action: () => {
-                this.props.inventoryToggleVisibility(true);
-                this.props.inventorySelectTab('role');
               },
             },
             {},
@@ -447,6 +444,15 @@ class GlobalNav extends Component {
                 this.downloadProjectGenbank();
               },
             },
+            {},
+            {
+              text: 'Order DNA',
+              action: () => {
+                const order = this.props.orderCreate( this.props.project.id, [this.props.project.components[1]]);
+                this.props.orderGenerateConstructs( order.id );
+                this.props.uiShowOrderForm(true, order.id);
+              },
+            }
           ],
         },
         {
@@ -474,7 +480,7 @@ class GlobalNav extends Component {
             }, {
               text: 'Cut',
               shortcut: stringToShortcut('meta X'),
-              disabled: !this.props.focus.blockIds.length,
+              disabled: !this.props.focus.blockIds.length || !this.focusedConstruct() || this.focusedConstruct().isFixed() || this.focusedConstruct().isFrozen(),
               action: () => {
                 this.cutFocusedBlocksToClipboard();
               },
@@ -488,18 +494,14 @@ class GlobalNav extends Component {
             }, {
               text: 'Paste',
               shortcut: stringToShortcut('meta V'),
-              disabled: !this.props.clipboard.formats.includes(clipboardFormats.blocks),
+              disabled: !this.props.clipboard.formats.includes(clipboardFormats.blocks) || !this.focusedConstruct() || this.focusedConstruct().isFixed() || this.focusedConstruct().isFrozen(),
               action: () => {
                 this.pasteBlocksToConstruct();
               },
             }, {}, {
               text: 'Add Sequence',
               action: () => {
-                if (!this.props.focus.blockIds.length) {
-                  this.props.uiSetGrunt('Sequence data must be added to or before a selected block. Please select a block and try again.');
-                } else {
-                  this.props.uiShowDNAImport(true);
-                }
+                this.props.uiShowDNAImport(true);
               },
             }, {
               text: 'Select Empty Blocks',
@@ -535,11 +537,13 @@ class GlobalNav extends Component {
               },
               checked: this.props.detailViewVisible,
               shortcut: stringToShortcut('meta u'),
-            }, {}, {
-              text: 'Select Empty Blocks',
-              disabled: !this.props.focus.constructId,
+            }, {},
+            {
+              text: 'Sketch Library',
+              shortcut: stringToShortcut('meta B'),
               action: () => {
-                this.selectEmptyBlocks();
+                this.props.inventoryToggleVisibility(true);
+                this.props.inventorySelectTab('role');
               },
             },
           ],
@@ -549,22 +553,22 @@ class GlobalNav extends Component {
           items: [
             {
               text: 'User Guide',
-              action: this.disgorgeDiscourse.bind(this, '/c/genome-designer/user-guide'),
+              action: this.disgorgeDiscourse.bind(this, '/c/genetic-constructor/user-guide'),
             }, {
               text: 'Tutorials',
-              action: this.disgorgeDiscourse.bind(this, '/c/genome-designer/tutorials'),
+              action: this.disgorgeDiscourse.bind(this, '/c/genetic-constructor/tutorials'),
             }, {
               text: 'Forums',
-              action: this.disgorgeDiscourse.bind(this, '/c/genome-designer'),
+              action: this.disgorgeDiscourse.bind(this, '/c/genetic-constructor'),
             }, {
               text: 'Get Support',
-              action: this.disgorgeDiscourse.bind(this, '/c/genome-designer/support'),
+              action: this.disgorgeDiscourse.bind(this, '/c/genetic-constructor/support'),
             }, {
               text: 'Keyboard Shortcuts',
               action: () => {},
             }, {
               text: 'Give Us Feedback',
-              action: this.disgorgeDiscourse.bind(this, '/c/genome-designer/feedback'),
+              action: this.disgorgeDiscourse.bind(this, '/c/genetic-constructor/feedback'),
             }, {}, {
               text: 'About Genome Designer',
               action: () => {
@@ -597,7 +601,7 @@ class GlobalNav extends Component {
     return (
       <div className="GlobalNav">
         <RibbonGrunt />
-        <span className="GlobalNav-title">GD</span>
+        <img className="GlobalNav-logo" src="/images/homepage/app-logo.png"/>
         {showMenu && this.menuBar()}
         <span className="GlobalNav-spacer"/>
         {showMenu && <AutosaveTracking projectId={currentProjectId}/>}
@@ -607,7 +611,7 @@ class GlobalNav extends Component {
   }
 }
 
-function mapStateToProps(state) {
+function mapStateToProps(state, props) {
   return {
     focus: state.focus,
     blocks: state.blocks,
@@ -615,6 +619,7 @@ function mapStateToProps(state) {
     inspectorVisible: state.ui.inspector.isVisible,
     inventoryVisible: state.ui.inventory.isVisible,
     detailViewVisible: state.ui.detailView.isVisible,
+    project: state.projects[props.currentProjectId],
   };
 }
 
@@ -641,6 +646,7 @@ export default connect(mapStateToProps, {
   transact,
   commit,
   uiShowGenBankImport,
+  uiShowOrderForm,
   uiToggleDetailView,
   uiShowAbout,
   uiSetGrunt,
@@ -652,4 +658,6 @@ export default connect(mapStateToProps, {
   clipboardSetData,
   blockAddComponent,
   blockAddComponents,
+  orderCreate,
+  orderGenerateConstructs,
 })(GlobalNav);
