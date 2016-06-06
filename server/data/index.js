@@ -206,8 +206,9 @@ router.route('/:projectId/commit/:sha?')
         .then(project => res.status(200).json(project))
         .catch(err => next(err));
     } else {
-      //todo - get project history
-      res.status(501).send('not supported yet');
+      querying.getProjectVersions(projectId)
+        .then(log => res.status(200).json(log))
+        .catch(err => next(err));
     }
   })
   .post((req, res, next) => {
