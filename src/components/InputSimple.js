@@ -44,7 +44,6 @@ export default class InputSimple extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.refKey !== this.props.refKey) {
-      console.log('new key');
       if (this.midupdate) {
         this.midupdate();
         this.midupdate = null;
@@ -99,10 +98,7 @@ export default class InputSimple extends Component {
 
     if (!this.midupdate) {
       this.midupdate = () => {
-        console.log('midupdate');
-
         //todo - verify calling correct versions of these functions
-
         if (document.activeElement === ReactDom.findDOMNode(this.refs.input)) {
           this.props.onBlur();
           this.props.onFocus();

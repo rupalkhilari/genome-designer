@@ -59,8 +59,6 @@ export class InspectorBlock extends Component {
   };
 
   endTransaction = (shouldAbort = false) => {
-    console.log('ending transaction', this.currentName());
-
     if (shouldAbort === true) {
       this.props.abort();
       return;
