@@ -179,7 +179,7 @@ router.route('/projects/:projectId')
     const roll = req.body;
 
     rollup.writeProjectRollup(projectId, roll, user.uuid)
-      .then(() => persistence.projectSave(projectId))
+      .then(() => persistence.projectSave(projectId, user.uuid))
       .then(commit => res.status(200).json(commit))
       .catch(err => next(err));
   });
@@ -224,7 +224,7 @@ router.route('/:projectId/commit/:sha?')
       Promise.resolve();
 
     writePromise
-      .then(() => persistence.projectSnapshot(projectId, message))
+      .then(() => persistence.projectSnapshot(projectId, user.uuid, message))
       .then(commit => res.status(200).json(commit))
       //may want better error handling here
       .catch(err => {

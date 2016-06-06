@@ -115,18 +115,18 @@ const _orderWrite = (orderId, order = {}, projectId) => {
 // COMMITS
 
 //expects a well-formed commit message from commitMessages.js
-const _projectCommit = (projectId, message) => {
+const _projectCommit = (projectId, userId, message) => {
   const projectDataPath = filePaths.createProjectDataPath(projectId);
   const commitMessage = !message ? commitMessages.messageProject(projectId) : message;
-  return versioning.commit(projectDataPath, commitMessage)
+  return versioning.commit(projectDataPath, commitMessage, userId)
     .then(sha => versioning.getCommit(projectDataPath, sha));
 };
 
 //expects a well-formed commit message from commitMessages.js
-const _blockCommit = (blockId, projectId, message) => {
+const _blockCommit = (blockId, projectId, userId, message) => {
   const projectDataPath = filePaths.createProjectDataPath(projectId);
   const commitMessage = !message ? commitMessages.messageBlock(blockId) : message;
-  return versioning.commit(projectDataPath, commitMessage)
+  return versioning.commit(projectDataPath, commitMessage, userId)
     .then(sha => versioning.getCommit(path, sha));
 };
 
@@ -226,7 +226,7 @@ export const projectCreate = (projectId, project, userId) => {
     .then(() => _projectWrite(projectId, project))
     //MAY keep this initial commit message, even when not auto-commiting for all atomic operations
     //since create is a different operation than just called projectWrite / projectMerge
-    //.then(() => _projectCommit(projectId, commitMessages.messageCreateProject(projectId)))
+    //.then(() => _projectCommit(projectId, userId, commitMessages.messageCreateProject(projectId)))
     .then(() => project);
 };
 
@@ -234,7 +234,7 @@ export const blockCreate = (blockId, block, projectId) => {
   return blockAssertNew(blockId, projectId)
     .then(() => _blockSetup(blockId, projectId))
     .then(() => _blockWrite(blockId, block, projectId))
-    //.then(() => _blockCommit(blockId, projectId, commitMessages.messageCreateBlock(blockId)))
+    //.then(() => _blockCommit(blockId, projectId, userId, commitMessages.messageCreateBlock(blockId)))
     .then(() => block);
 };
 
@@ -251,7 +251,7 @@ export const projectWrite = (projectId, project, userId) => {
   return projectExists(projectId)
     .catch(() => _projectSetup(projectId, userId))
     .then(() => _projectWrite(projectId, idedProject))
-    //.then(() => _projectCommit(projectId))
+    //.then(() => _projectCommit(projectId, userId))
     .then(() => idedProject);
 };
 
@@ -277,7 +277,7 @@ export const blockWrite = (blockId, block, projectId) => {
   return blockExists(blockId, projectId)
     .catch(() => _blockSetup(blockId, projectId))
     .then(() => _blockWrite(blockId, idedBlock, projectId))
-    //.then(() => _blockCommit(blockId, projectId))
+    //.then(() => _blockCommit(blockId, projectId, userId))
     .then(() => idedBlock);
 };
 
@@ -333,7 +333,7 @@ export const blockDelete = (blockId, projectId) => {
   const blockPath = filePaths.createBlockPath(blockId, projectId);
   return blockExists(blockId, projectId)
     .then(() => directoryDelete(blockPath))
-    //.then(() => _projectCommit(projectId, commitMessages.messageDeleteBlock(blockId)))
+    //.then(() => _projectCommit(projectId, userId, commitMessages.messageDeleteBlock(blockId)))
     .then(() => blockId);
 };
 
@@ -348,22 +348,21 @@ export const orderDelete = (orderId, projectId) => {
 //SAVE
 
 //e.g. autosave
-export const projectSave = (projectId, messageAddition) => {
+export const projectSave = (projectId, userId, messageAddition) => {
   const message = commitMessages.messageSave(projectId, messageAddition);
-  return _projectCommit(projectId, message)
+  return _projectCommit(projectId, userId, message)
     .then(commit => {
       //not only create the commit, but then save the project so that is has the right commit (but dont commit again)
       //but still return the commit
-      //skip the user ID because can only save after the project has been made
-      return projectMerge(projectId, { version: commit.sha })
+      return projectMerge(projectId, { version: commit.sha }, userId)
         .then(() => commit);
     });
 };
 
 //explicit save aka 'snapshot'
-export const projectSnapshot = (projectId, messageAddition) => {
+export const projectSnapshot = (projectId, userId, messageAddition) => {
   const message = commitMessages.messageSnapshot(projectId, messageAddition);
-  return _projectCommit(projectId, message);
+  return _projectCommit(projectId, userId, message);
 };
 
 //sequence

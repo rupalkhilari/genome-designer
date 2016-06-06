@@ -52,7 +52,7 @@ export const isInitialized = (path) => {
 
 //todo - prevent conflicts -- shouldn't be an issue with only one branch
 //todo - ensure HEAD is latest on master
-export const commit = (path, message = 'commit message') => {
+export const commit = (path, message = 'commit message', userId = 'Author') => {
   const repoPath = makePath(path);
   return nodegit.Repository.open(repoPath)
     .then(repo => {
@@ -67,7 +67,7 @@ export const commit = (path, message = 'commit message') => {
               return nodegit.Reference.nameToId(repo, 'HEAD')
                 .then((head) => repo.getCommit(head))
                 .then(parent => {
-                  const author = nodegit.Signature.now('Person', 'email');
+                  const author = nodegit.Signature.now(userId, 'email');
                   const committer = author;
                   return repo.createCommit('HEAD', author, committer, message, oid, [parent]);
                 });

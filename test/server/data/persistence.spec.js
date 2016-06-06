@@ -382,11 +382,11 @@ describe('Server', () => {
         before(() => {
           return persistence.projectCreate(projectId, projectData, userId) //3
             .then(() => persistence.blockCreate(blockId, blockData, projectId))
-            .then(() => persistence.projectSave(projectId)) //2
+            .then(() => persistence.projectSave(projectId, userId)) //2
             .then(() => persistence.projectWrite(projectId, newProject))
-            .then(() => persistence.projectSave(projectId)) //1
+            .then(() => persistence.projectSave(projectId, userId)) //1
             .then(() => persistence.blockWrite(blockId, newBlock, projectId))
-            .then(() => persistence.projectSave(projectId)) //0
+            .then(() => persistence.projectSave(projectId, userId)) //0
             .then(() => versioning.log(projectRepoDataPath))
             .then(log => {
               versionLog = log;
