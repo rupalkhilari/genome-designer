@@ -41,7 +41,7 @@ describe('Plugins', () => {
           expect(getBlock(output.blocks, parentBlock.components[0]).rules.role).to.equal('promoter');
           expect(getBlock(output.blocks, parentBlock.components[1]).rules.role).to.equal('cds');
           expect(getBlock(output.blocks, parentBlock.components[2]).rules.role).to.equal('terminator');
-          expect(getBlock(output.blocks, parentBlock.components[3]).metadata.name).to.equal('rep_origin');
+          expect(getBlock(output.blocks, parentBlock.components[3]).rules.role).to.equal('originReplication');
           for (let key in output.blocks) {
             expect(BlockSchema.validate(output.blocks[key])).to.equal(true);
           }
@@ -57,13 +57,13 @@ describe('Plugins', () => {
           expect(output.project.components.length === 1).to.equal(true);
           const parentBlock = getBlock(output.blocks, output.project.components[0]);
           expect(parentBlock.components.length).to.equal(7);
-          expect(getBlock(output.blocks, parentBlock.components[0]).rules.role).to.equal(undefined);
+          expect(getBlock(output.blocks, parentBlock.components[0]).rules.role).to.equal('');
           expect(getBlock(output.blocks, parentBlock.components[1]).rules.role).to.equal('promoter');
-          expect(getBlock(output.blocks, parentBlock.components[2]).rules.role).to.equal(undefined);
+          expect(getBlock(output.blocks, parentBlock.components[2]).rules.role).to.equal('');
           expect(getBlock(output.blocks, parentBlock.components[3]).rules.role).to.equal('cds');
-          expect(getBlock(output.blocks, parentBlock.components[4]).rules.role).to.equal(undefined);
+          expect(getBlock(output.blocks, parentBlock.components[4]).rules.role).to.equal('');
           expect(getBlock(output.blocks, parentBlock.components[5]).rules.role).to.equal('terminator');
-          expect(getBlock(output.blocks, parentBlock.components[6]).metadata.name).to.equal('rep_origin');
+          expect(getBlock(output.blocks, parentBlock.components[6]).rules.role).to.equal('originReplication');
           for (let key in output.blocks) {
             expect(BlockSchema.validate(output.blocks[key])).to.equal(true);
           }
@@ -83,13 +83,13 @@ describe('Plugins', () => {
           expect(firstBlock.components.length).to.be.equal(3);
           expect(getBlock(output.blocks, firstBlock.components[0]).rules.role).to.equal('promoter');
           expect(getBlock(output.blocks, firstBlock.components[1]).rules.role).to.equal('cds');
-          expect(getBlock(output.blocks, firstBlock.components[2]).rules.role).to.equal(undefined);
+          expect(getBlock(output.blocks, firstBlock.components[2]).rules.role).to.equal('');
           let secondBlock = getBlock(output.blocks, parentBlock.components[1]);
           expect(secondBlock.components.length).to.be.equal(4);
           expect(getBlock(output.blocks, secondBlock.components[0]).rules.role).to.equal('cds');
-          expect(getBlock(output.blocks, secondBlock.components[1]).rules.role).to.equal(undefined);
+          expect(getBlock(output.blocks, secondBlock.components[1]).rules.role).to.equal('');
           expect(getBlock(output.blocks, secondBlock.components[2]).rules.role).to.equal('terminator');
-          expect(getBlock(output.blocks, secondBlock.components[3]).metadata.name).to.equal('rep_origin');
+          expect(getBlock(output.blocks, secondBlock.components[3]).rules.role).to.equal('originReplication');
           for (let key in output.blocks) {
             expect(BlockSchema.validate(output.blocks[key])).to.equal(true);
           }
@@ -129,7 +129,7 @@ describe('Plugins', () => {
           expect(output.project).not.to.equal(undefined);
           expect(ProjectSchema.validate(output.project)).to.equal(true);
           expect(output.project.metadata.name).to.equal('EU912544');
-          expect(output.project.metadata.description).to.equal('Cloning vector pDM313, complete sequence.')
+          expect(output.project.metadata.description).to.equal('Cloning vector pDM313, complete sequence.');
           return exportProject('genbank', output)
             .then(result => {
               expect(result).to.contain('LOCUS       EU912544                 120 bp    DNA');
