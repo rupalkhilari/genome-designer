@@ -6,6 +6,8 @@ import copyToStorage from '../data/egf_parts/copyToStorage';
 async function setup() {
   await Promise.all([
     directoryMake(createStorageUrl()),
+
+    //paths dependent on whether testing or not
     directoryMake(createStorageUrl('projects')),
     directoryMake(createStorageUrl('sequence')),
     directoryMake(createStorageUrl('file')),
