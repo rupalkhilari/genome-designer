@@ -278,9 +278,10 @@ export default class Block extends Instance {
    * @description Writes the sequence for a block
    * @param sequence {String}
    * @param useStrict {Boolean}
+   * @param persistSource {Boolean} Maintain the source of the block
    * @returns {Promise} Promise which resolves with the udpated block
    */
-  setSequence(sequence, useStrict = false) {
+  setSequence(sequence, useStrict = false, persistSource = false) {
     const sequenceLength = sequence.length;
     const sequenceMd5 = md5(sequence);
 
@@ -293,6 +294,8 @@ export default class Block extends Instance {
       return Promise.reject('sequence has invalid characters');
     }
 
+    const updatedSource = persistSource === true ? this.source : { source: 'user', id: null };
+
     return writeSequence(sequenceMd5, sequence, this.id)
       .then(() => {
         const updatedSequence = {
@@ -300,13 +303,11 @@ export default class Block extends Instance {
           length: sequenceLength,
           initialBases: sequence.substr(0, 5),
         };
+
         return this.merge({
           sequence: updatedSequence,
-          source: {
-            source: 'user',
-            id: null,
-          },
-         });
+          source: updatedSource,
+        });
       });
   }
 
