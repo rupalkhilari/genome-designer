@@ -134,20 +134,6 @@ const _blockCommit = (blockId, projectId, message) => {
  API
  *********/
 
-//SAVE
-
-//e.g. autosave
-export const projectSave = (projectId, messageAddition) => {
-  const message = commitMessages.messageSave(projectId, messageAddition);
-  return _projectCommit(projectId, message);
-};
-
-//explicit save aka 'snapshot'
-export const projectSnapshot = (projectId, messageAddition) => {
-  const message = commitMessages.messageSnapshot(projectId, messageAddition);
-  return _projectCommit(projectId, message);
-};
-
 //EXISTS
 
 export const projectExists = (projectId, sha) => {
@@ -357,6 +343,27 @@ export const orderDelete = (orderId, projectId) => {
   return orderId(orderId, projectId)
     .then(() => fileDelete(orderPath))
     .then(() => orderId);
+};
+
+//SAVE
+
+//e.g. autosave
+export const projectSave = (projectId, messageAddition) => {
+  const message = commitMessages.messageSave(projectId, messageAddition);
+  return _projectCommit(projectId, message)
+    .then(commit => {
+      //not only create the commit, but then save the project so that is has the right commit (but dont commit again)
+      //but still return the commit
+      //skip the user ID because can only save after the project has been made
+      return projectMerge(projectId, { version: commit.sha })
+        .then(() => commit);
+    });
+};
+
+//explicit save aka 'snapshot'
+export const projectSnapshot = (projectId, messageAddition) => {
+  const message = commitMessages.messageSnapshot(projectId, messageAddition);
+  return _projectCommit(projectId, message);
 };
 
 //sequence
