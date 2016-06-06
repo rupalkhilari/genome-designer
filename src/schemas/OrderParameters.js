@@ -32,6 +32,11 @@ export class OrderParametersSchemaClass extends Schema {
 
   validate(instance, shouldThrow) {
     const fieldsValid = super.validateFields(instance, shouldThrow);
+
+    if (!fieldsValid) {
+      return false;
+    }
+
     const hasFieldsIfNotOnePot = instance.onePot || (instance.combinatorialMethod && instance.permutations);
 
     if (!hasFieldsIfNotOnePot) {

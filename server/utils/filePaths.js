@@ -15,8 +15,9 @@ export const projectPath = 'projects';
 export const projectDataPath = 'data';
 export const orderPath = 'orders';
 
-export const permissionsFilename = 'permissions.json';
 export const manifestFilename = 'manifest.json';
+export const permissionsFilename = 'permissions.json';
+export const permissionsDeletedFileName = 'priorOwner.json';
 
 //All files are put in the storage folder (until platform comes along)
 export const createStorageUrl = (...urls) => {

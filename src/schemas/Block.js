@@ -71,6 +71,11 @@ export class BlockSchemaClass extends InstanceSchemaClass {
 
   validate(instance, shouldThrow) {
     const fieldsValid = super.validateFields(instance, shouldThrow);
+
+    if (!fieldsValid) {
+      return false;
+    }
+
     const optionsComponentsExclusive = Object.keys(instance.options).filter(opt => instance.options[opt]).length === 0 || instance.components.length === 0;
 
     if (!optionsComponentsExclusive) {
@@ -82,7 +87,7 @@ export class BlockSchemaClass extends InstanceSchemaClass {
       }
     }
 
-    return fieldsValid && optionsComponentsExclusive;
+    return optionsComponentsExclusive;
   }
 }
 

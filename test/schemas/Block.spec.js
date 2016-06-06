@@ -23,7 +23,7 @@ describe('Schema', () => {
       expect(regex.test(scaffold.id)).to.equal(true);
     });
 
-    it.only('components and options are mutually exclusive', () => {
+    it('components and options are mutually exclusive', () => {
       const scaffold = BlockSchema.scaffold();
 
       scaffold.components.push(uuid.v4());

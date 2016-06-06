@@ -331,10 +331,10 @@ export const projectDelete = (projectId) => {
 
       //dont want to actually delete it.. just delete the permissions (move to a new file)
       const projectPermissionsPath = filePaths.createProjectPermissionsPath(projectId);
-      const deletedOwnerPath = filePaths.createProjectPath(projectId, 'priorOwner.json');
+      const deletedOwnerPath = filePaths.createProjectPath(projectId, filePaths.permissionsDeletedFileName);
       return fileRead(projectPermissionsPath)
         .then(contents => {
-          return fileDelete(projectPermissionsPath)
+          return fileWrite(projectPermissionsPath, [])
           //but also should track somewhere who used to own it...
             .then(() => fileWrite(deletedOwnerPath, contents));
         });
