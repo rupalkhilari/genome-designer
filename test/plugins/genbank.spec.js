@@ -130,7 +130,7 @@ describe('Plugins', () => {
           expect(ProjectSchema.validate(output.project)).to.equal(true);
           expect(output.project.metadata.name).to.equal('EU912544');
           expect(output.project.metadata.description).to.equal('Cloning vector pDM313, complete sequence.')
-          exportProject('genbank', output)
+          return exportProject('genbank', output)
             .then(result => {
               expect(result).to.contain('LOCUS       EU912544                 120 bp    DNA');
               expect(result).to.contain('SYN 06-FEB-2009');
@@ -160,7 +160,8 @@ describe('Plugins', () => {
           expect(ProjectSchema.validate(output.project)).to.equal(true);
           expect(output.project.metadata.name).to.equal('EU912544');
           expect(output.project.metadata.description).to.equal('Cloning vector pDM313, complete sequence.')
-          exportConstruct('genbank', output, output.project.components[0])
+
+          return exportConstruct('genbank', output, output.project.components[0])
             .then(result => {
               expect(result).to.contain('LOCUS       EU912544                 120 bp    DNA');
               expect(result).to.contain('SYN 06-FEB-2009');
