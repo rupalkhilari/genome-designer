@@ -16,7 +16,7 @@ const describeCommit = (commit) => ({
   time: commit.timeMs(),
 });
 
-export const initialize = (path) => {
+export const initialize = (path, userId = 'Author') => {
   const repoPath = makePath(path);
   return nodegit.Repository.init(repoPath, 0)
     .then(repo => {
@@ -30,7 +30,7 @@ export const initialize = (path) => {
             .then(() => index.write())
             .then(() => index.writeTree())
             .then(oid => {
-              const author = nodegit.Signature.now('Person', 'email');
+              const author = nodegit.Signature.now(userId, 'email');
               const committer = author;
               return repo.createCommit('HEAD', author, committer, 'Initialize', oid, []);
             });

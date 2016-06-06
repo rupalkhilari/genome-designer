@@ -12,7 +12,6 @@ import * as querying from './querying';
 import * as persistence from './persistence';
 import * as rollup from './rollup';
 import { permissionsMiddleware } from './permissions';
-import errorHandlingMiddleware from '../utils/errorHandlingMiddleware';
 
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
@@ -25,8 +24,6 @@ const jsonParser = bodyParser.json({
  ****************************/
 
 router.use(jsonParser);
-
-router.use(errorHandlingMiddleware);
 
 // allow the route /block/<blockId> and find the projectId
 // not recommended e.g. for POST
@@ -292,6 +289,8 @@ router.route('/:projectId')
   .get((req, res, next) => {
     const { projectId } = req;
     //const { depth } = req.query; //future
+    
+    console.log('getting project ', projectId);
 
     persistence.projectGet(projectId)
       .then(result => {

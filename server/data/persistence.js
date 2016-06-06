@@ -87,7 +87,7 @@ const _projectSetup = (projectId, userId) => {
     .then(() => directoryMake(orderDirectory))
     .then(() => directoryMake(blockDirectory))
     .then(() => permissions.createProjectPermissions(projectId, userId))
-    .then(() => versioning.initialize(projectDataPath));
+    .then(() => versioning.initialize(projectDataPath, userId));
 };
 
 const _blockSetup = (blockId, projectId) => {

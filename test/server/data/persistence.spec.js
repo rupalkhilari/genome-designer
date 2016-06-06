@@ -423,7 +423,7 @@ describe('Server', () => {
 
         it('projectGet() defaults to latest version', () => {
           return persistence.projectGet(projectId)
-            .then(project => expect(project).to.eql(newProject));
+            .then(project => expect(project).to.eql(Object.assign({}, newProject, { version: versions[0] })));
         });
 
         it('blockExists() rejects on invalid version', () => {

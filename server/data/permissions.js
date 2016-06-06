@@ -1,4 +1,3 @@
-import { exec } from 'child_process';
 import * as filePaths from '../utils/filePaths';
 import * as fileSystem from '../utils/fileSystem';
 import { errorNoPermission, errorDoesNotExist } from '../utils/errors';
@@ -32,9 +31,8 @@ export const permissionsMiddleware = (req, res, next) => {
   const { projectId, user } = req;
 
   if (!user) {
-    console.error('no user attached by auth middleware!');
+    console.error('no user attached by auth middleware!', req.url);
     next('user not attached to request by middleware');
-    //todo - reject this request?
     return;
   }
 
@@ -43,12 +41,13 @@ export const permissionsMiddleware = (req, res, next) => {
   if (!idRegex().test(projectId)) next('projectId is not valid, got ' + projectId);
 
   checkProjectAccess(projectId, user.uuid)
-    .then(() => next())
+    .then(() => { next(); })
     .catch((err) => {
       if (err === errorNoPermission) {
         return res.status(403).send(`User ${user.email} does not have access to project ${projectId}`);
       }
-      console.log(err);
+      console.log('permissions error:', err);
+      console.log(err.stack);
       res.status(500).send('error checking project access');
     });
 };
