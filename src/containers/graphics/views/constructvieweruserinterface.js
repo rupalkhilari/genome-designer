@@ -341,11 +341,10 @@ export default class ConstructViewerUserInterface extends UserInterface {
       if (this.metaKey(evt) || evt.altKey || (window.__gde2e && window.__gde2e.metaKey)) {
         action = 'toggle';
       }
-      // if they clicked the context menu area, open it
-      // for now, open a context menu
+      // act according to region clicked
       const globalPoint = this.mouseTrap.mouseToGlobal(evt);
       const region = this.getBlockRegion(block, globalPoint);
-      switch (region) {
+      switch (region.where) {
 
       case 'dots':
         this.constructViewer.openPopup({
@@ -366,6 +365,10 @@ export default class ConstructViewerUserInterface extends UserInterface {
         if (action === 'replace') {
           action = 'add';
         }
+        break;
+
+      case 'option':
+          console.log('option clicked:', region.optionId);
         break;
 
       default: break;
@@ -416,7 +419,10 @@ export default class ConstructViewerUserInterface extends UserInterface {
   }
   /**
    * return an indication of where in the block this point lies.
-   * One of ['none', 'main, 'dots']
+   * {
+   * 	where: ['none', 'main, 'dots', 'option']
+   * 	// with additional properties as per the region hit
+   * }
    */
   getBlockRegion(block, globalPoint) {
     // substract window scrolling from global point to get viewport coordinates
@@ -427,21 +433,22 @@ export default class ConstructViewerUserInterface extends UserInterface {
     // compare to bounds
     if (vpt.x < box.left || vpt.x > box.right || vpt.y < box.top || vpt.y > box.bottom) {
       // check list blocks which are outside the bounds of the parent
-      node.children.forEach(child => {
+      let optionId;
+      for(let i = 0; i < node.children.length; i += 1) {
+        const child = node.children[i];
         if (child.listParentBlock) {
           // node represents a list block
           const childBox = child.el.getBoundingClientRect();
           if (vpt.x >= childBox.left && vpt.x < childBox.right && vpt.y >= childBox.top && vpt.y < childBox.bottom) {
-            console.log('List Item Clicked:', child.text);
-            console.log('List Item Id:', child.listBlock.id)
+            return {where: 'option', optionId: child.listBlock.id};
           }
         }
-      });
-      return 'none';
+      };
+      return {where: 'none'};
     }
     // context menu area?
     if (vpt.x >= box.right - kT.contextDotsW) {
-      return 'dots';
+      return {where: 'dots'};
     }
     // child expander, if present
     if (node.hasChildren) {
@@ -451,12 +458,12 @@ export default class ConstructViewerUserInterface extends UserInterface {
       if (insetX < triSize && insetY < triSize) {
         // whatever the x position is ( 0..triSize ), y must be less than trisize - x
         if (insetY <= (triSize - insetX)) {
-          return 'triangle';
+          return {where: 'triangle'};
         }
       }
     }
     // in block but nowhere special
-    return 'main';
+    return {where: 'main'};
   }
   /**
    * list of all selected blocks, based on our selected scenegraph blocks
