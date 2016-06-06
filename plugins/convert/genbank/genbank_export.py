@@ -178,4 +178,6 @@ def project_to_genbank(filename, project, allblocks):
 
         seq_obj_lst.append(seq_obj)
 
+    print('file is')
+    print(filename)
     SeqIO.write(seq_obj_lst, open(filename, "w"), "genbank")
