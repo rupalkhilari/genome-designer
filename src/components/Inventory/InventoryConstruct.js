@@ -93,7 +93,6 @@ export class InventoryConstruct extends Component {
     const innerContent = !this.shouldRenderAsConstruct()
       ?
       <InventoryItemBlock block={block}
-                          isTemplate={isTemplate}
                           {...rest} />
       :
       //explicitly call connected component to handle recursion
