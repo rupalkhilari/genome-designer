@@ -58,7 +58,7 @@ router.route('/:projectId/:orderId?')
     //future - this should be dynamic, based on the foundry, pulling from a registry
     submit(order, user)
       .then(response => {
-        return persistence.projectSnapshot(projectId, `ORDER`)
+        return persistence.projectSnapshot(projectId, user.uuid, `ORDER`)
           .then(({ sha, time }) => {
             merge(order, {
               projectVersion: sha,
