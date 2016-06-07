@@ -13,11 +13,18 @@ import Block from '../models/Block';
 //tracks rolls, so keep blocks at their state when last saved
 const rollMap = new Map();
 
+//tracks whether project orders have been loaded
+const projectOrders = new Map();
+
 //map of blocks
 const blockMap = new Map();
 
 //map of projects
 const projectMap = new Map();
+
+//map of orders
+//note - this will not track orders which are not submitted (i.e. temporary ones on the client) due to how this connects with the middleware
+const orderMap = new Map();
 
 /* helpers */
 
@@ -41,6 +48,8 @@ const isRollDifferent = (oldRollup, newRollup) => {
 export const getProject = (projectId) => projectMap.get(projectId);
 
 export const getBlock = (blockId) => blockMap.get(blockId);
+
+export const getOrder = (orderId) => orderMap.get(orderId);
 
 /* recursing */
 
@@ -101,6 +110,7 @@ export const blockLoaded = (...blockIds) => {
   });
 };
 
+//todo - ability to check if orders loaded
 //check if whole project is loaded
 export const projectLoaded = (projectId) => {
   const project = getProject(projectId);
@@ -108,6 +118,11 @@ export const projectLoaded = (projectId) => {
     return false;
   }
   return blockLoaded(...project.components);
+};
+
+export const orderLoaded = (orderId) => {
+  const order = getOrder(orderId);
+  return !!order;
 };
 
 /* save */
@@ -120,6 +135,10 @@ export const saveBlock = (...blocks) => {
   blocks.forEach(block => blockMap.set(block.id, block));
 };
 
+export const saveOrder = (...orders) => {
+  orders.forEach(order => orderMap.set(order.id, order));
+};
+
 /* remove */
 //likely dont need to do this, unless truly temporary (e.g. search results)
 
@@ -129,6 +148,10 @@ export const removeProject = (...projectIds) => {
 
 export const removeBlock = (...blockIds) => {
   blockIds.forEach(blockId => blockMap.delete(blockId));
+};
+
+export const removeOrder = (...orderIds) => {
+  orderIds.forEach(orderId => orderMap.delete(orderId));
 };
 
 /* rollups */
@@ -148,4 +171,23 @@ export const saveRollup = (rollup) => {
 
 export const isRollupNew = (rollup) => {
   return isRollDifferent(getSavedRollup(rollup.project.id), rollup);
+};
+
+/* orders */
+
+export const projectOrdersLoaded = (projectId) => projectOrders.get(projectId);
+
+export const saveProjectOrders = (projectId, ...orders) => {
+  projectOrders.set(projectId, true);
+  saveOrder(...orders);
+};
+
+export const getProjectOrders = (projectId) => {
+  const relevant = [];
+  for (const order of orderMap.values()) {
+    if (order.projectId === projectId) {
+      relevant.push(order);
+    }
+  }
+  return relevant;
 };
