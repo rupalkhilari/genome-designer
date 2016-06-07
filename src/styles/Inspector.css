@@ -60,20 +60,37 @@
     padding: var(--SidePanel-width-padding-content);
 
     &.closed {
-     display: none;
+      display: none;
     }
 
     &-group {
       padding-bottom: 0.5em;
-    }
+      user-select: none;
 
-    &-heading {
-      color: var(--colors-grey);
-    }
+      &-heading {
+        color: var(--colors-blueBlack);
+      }
 
-    &-text {
-      color: var(--colors-blueBlack);
-      padding-left: 1em;
+      &-text {
+        color: var(--colors-grey);
+      }
+
+      &-link {
+        color: var(--colors-bluetext);
+        padding-left: 0.5em;
+        cursor: pointer;
+      }
+
+      &.alt-colors {
+        .InspectorContent-section-group-heading {
+          color: var(--colors-grey);
+        }
+
+        .InspectorContent-section-group-text {
+          color: var(--colors-blueBlack);
+          padding-left: 1em;
+        }
+      }
     }
   }
 }

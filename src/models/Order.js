@@ -53,6 +53,10 @@ export default class Order extends Instance {
    metadata etc
    ************/
 
+  getName() {
+    return this.metadata.name || 'Untitled Order';
+  }
+
   setName(newName) {
     const renamed = this.mutate('metadata.name', newName);
     return renamed;
@@ -60,6 +64,10 @@ export default class Order extends Instance {
 
   isSubmitted() {
     return this.status.foundry && this.status.remoteId;
+  }
+
+  dateSubmitted() {
+    return this.isSubmitted() ? this.status.timeSent : null;
   }
 
   /************

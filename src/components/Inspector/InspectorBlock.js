@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { transact, commit, abort } from '../../store/undo/actions';
 import { blockMerge, blockSetColor, blockSetRole, blockRename } from '../../actions/blocks';
+import { uiShowOrderForm } from '../../actions/ui';
 import InputSimple from './../InputSimple';
 import ColorPicker from './../ui/ColorPicker';
 import Toggler from './../ui/Toggler';
@@ -13,6 +14,7 @@ export class InspectorBlock extends Component {
   static propTypes = {
     readOnly: PropTypes.bool.isRequired,
     instances: PropTypes.array.isRequired,
+    orders: PropTypes.array.isRequired,
     blockSetColor: PropTypes.func.isRequired,
     blockSetRole: PropTypes.func.isRequired,
     blockMerge: PropTypes.func.isRequired,
@@ -20,6 +22,7 @@ export class InspectorBlock extends Component {
     transact: PropTypes.func.isRequired,
     commit: PropTypes.func.isRequired,
     abort: PropTypes.func.isRequired,
+    uiShowOrderForm: PropTypes.func.isRequired,
     forceIsConstruct: PropTypes.bool,
   };
 
@@ -74,6 +77,10 @@ export class InspectorBlock extends Component {
   handleToggle = (field) => {
     const oldState = !!this.state.toggles[field];
     this.setState({ toggles: Object.assign({}, this.state.toggles, { [field]: !oldState }) });
+  };
+
+  handleOpenOrder = (orderId) => {
+    this.props.uiShowOrderForm(true, orderId);
   };
 
   /**
@@ -158,7 +165,7 @@ export class InspectorBlock extends Component {
   }
 
   render() {
-    const { instances, readOnly, forceIsConstruct } = this.props;
+    const { instances, orders, readOnly, forceIsConstruct } = this.props;
     const singleInstance = instances.length === 1;
     const isList = singleInstance && instances[0].isList();
     const isTemplate = singleInstance && instances[0].isTemplate();
@@ -172,6 +179,8 @@ export class InspectorBlock extends Component {
 
     const hasSequence = this.allBlocksWithSequence();
     const hasNotes = singleInstance && Object.keys(instances[0].notes).length > 0;
+
+    const relevantOrders = orders.filter(order => singleInstance && order.constructIds.indexOf(instances[0].id) >= 0);
 
     return (
       <div className="InspectorContent InspectorContentBlock">
@@ -205,7 +214,7 @@ export class InspectorBlock extends Component {
         {hasSequence && <p><strong>{this.currentSequenceLength()}</strong></p>}
 
         {hasNotes && (
-          <h4 className={'InspectorContent-heading toggler' + (this.state.toggles.metadata ? ' active': '')}
+          <h4 className={'InspectorContent-heading toggler' + (this.state.toggles.metadata ? ' active' : '')}
               onClick={() => this.handleToggle('metadata')}>
             <Toggler open={this.state.toggles.metadata}/>
             <span>{name} Metadata</span>
@@ -215,10 +224,33 @@ export class InspectorBlock extends Component {
           {Object.keys(this.props.instances[0].notes).map(key => {
             const note = this.props.instances[0].notes[key];
             return (
-              <div className="InspectorContent-section-group"
+              <div className="InspectorContent-section-group alt-colors"
                    key={key}>
-                <div className="InspectorContent-section-heading">{key}</div>
-                <div className="InspectorContent-section-text">{note}</div>
+                <div className="InspectorContent-section-group-heading">{key}</div>
+                <div className="InspectorContent-section-group-text">{note}</div>
+              </div>
+            );
+          })}
+        </div>)}
+
+        {!!relevantOrders.length && (
+          <h4 className={'InspectorContent-heading toggler' + (this.state.toggles.orders ? ' active' : '')}
+              onClick={() => this.handleToggle('orders')}>
+            <Toggler open={this.state.toggles.orders}/>
+            <span>Order History</span>
+          </h4>
+        )}
+        {!!relevantOrders.length && (<div className={'InspectorContent-section' + (this.state.toggles.orders ? '' : ' closed')}>
+          {relevantOrders.map(order => {
+            return (
+              <div className="InspectorContent-section-group"
+                   key={order.id}>
+                <div className="InspectorContent-section-group-heading">{order.getName()}</div>
+                <div className="InspectorContent-section-group-text">
+                  {(new Date(order.dateSubmitted())).toLocaleString()}
+                  <a className="InspectorContent-section-group-link"
+                     onClick={() => this.handleOpenOrder(order.id)}>Order Details...</a>
+                </div>
               </div>
             );
           })}
@@ -264,4 +296,5 @@ export default connect(() => ({}), {
   transact,
   commit,
   abort,
+  uiShowOrderForm,
 })(InspectorBlock);
