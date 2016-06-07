@@ -48,7 +48,7 @@ const c = (term) => { //eslint-disable-line id-length
         color: '#bababa',
       },
       rules: {
-        frozen: true,
+        //frozen: true,
         hidden: true,
       },
     },
