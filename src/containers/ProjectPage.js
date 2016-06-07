@@ -35,7 +35,6 @@ class ProjectPage extends Component {
   constructor(props) {
     super(props);
     this.lastProjectId = null;
-    this.layoutAlgorithm = 'wrap';
   }
 
   componentDidMount() {
@@ -67,11 +66,6 @@ class ProjectPage extends Component {
       return 'Project has unsaved work! Please save before leaving this page';
     }
   }
-
-  onLayoutChanged = () => {
-    this.layoutAlgorithm = this.refs.layoutSelector.value;
-    this.forceUpdate();
-  };
 
   render() {
     const { showingGrunt, project, projectId, constructs } = this.props;
@@ -106,8 +100,7 @@ class ProjectPage extends Component {
       return (
         <ConstructViewer key={construct.id}
                          projectId={projectId}
-                         constructId={construct.id}
-                         layoutAlgorithm={this.layoutAlgorithm}/>
+                         constructId={construct.id}/>
       );
     });
 
