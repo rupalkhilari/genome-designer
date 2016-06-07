@@ -44,4 +44,24 @@
     display: flex;
     flex-direction: row;
   }
+
+  &-section {
+    display: block;
+    background: var(--colors-blueGreyLighter);
+    margin: 0 -var(--SidePanel-width-padding-content);
+    padding: var(--SidePanel-width-padding-content);
+
+    &-group {
+      padding-bottom: 0.5em;
+    }
+
+    &-heading {
+      color: var(--colors-grey);
+    }
+
+    &-text {
+      color: var(--colors-blueBlack);
+      padding-left: 1em;
+    }
+  }
 }

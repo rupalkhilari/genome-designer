@@ -23,10 +23,10 @@ export default class InventoryItemBlock extends Component {
 
   render() {
     const { block, ...rest } = this.props;
-    
+
     const isTemplate = block.isTemplate();
-    const isConstruct = block.isConstruct();
     const isFixed = block.isFixed();
+    const isConstruct = block.isConstruct();
 
     return (
       <div className="InventoryItemBlock">

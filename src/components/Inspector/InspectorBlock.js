@@ -107,19 +107,18 @@ export class InspectorBlock extends Component {
     return '';
   }
 
+  allBlocksWithSequence() {
+    return this.props.instances.every(instance => instance.sequence.length);
+  }
+
   currentSequenceLength() {
-    if (this.props.instances.length > 1) {
-      const allHaveSequences = this.props.instances.every(instance => instance.sequence.length);
-      if (allHaveSequences) {
-        const reduced = this.props.instances.reduce((acc, instance) => acc + (instance.sequence.length || 0), 0);
-        return reduced + ' bp';
-      }
-      return 'Incomplete Sketch';
-    } else if (this.props.instances.length === 1) {
-      const length = this.props.instances[0].sequence.length;
-      return (length > 0 ? (length + ' bp') : 'No Sequence');
+    if (this.allBlocksWithSequence()) {
+      const reduced = this.props.instances.reduce((acc, instance) => acc + (instance.sequence.length || 0), 0);
+      return reduced + ' bp';
     }
-    return 'No Sequence';
+    return this.props.instances.length > 1 ?
+      'Incomplete Sketch' :
+      'No Sequence';
   }
 
   currentAnnotations() {
@@ -156,10 +155,13 @@ export class InspectorBlock extends Component {
     const isConstruct = singleInstance && instances[0].isConstruct();
     const inputKey = instances.map(inst => inst.id).join(',');
 
-    const name = isConstruct ? 'Construct' : (isTemplate ? 'Template' : 'Block'); //eslint-disable-line no-nested-ternary
+    const name = isTemplate ? 'Template' : (isConstruct ? 'Construct' : 'Block'); //eslint-disable-line no-nested-ternary
 
     const currentSourceElement = this.currentSource();
     const annotations = this.currentAnnotations();
+
+    const hasSequence = this.allBlocksWithSequence();
+    const hasNotes = singleInstance && Object.keys(instances[0].notes).length > 0;
 
     return (
       <div className="InspectorContent InspectorContentBlock">
@@ -189,8 +191,20 @@ export class InspectorBlock extends Component {
         {currentSourceElement && <h4 className="InspectorContent-heading">Source</h4>}
         {currentSourceElement}
 
-        <h4 className="InspectorContent-heading">Sequence Length</h4>
-        <p><strong>{this.currentSequenceLength()}</strong></p>
+        {hasSequence && <h4 className="InspectorContent-heading">Sequence Length</h4>}
+        {hasSequence && <p><strong>{this.currentSequenceLength()}</strong></p>}
+
+        {/*todo = collapsable*/}
+        {hasNotes && <h4 className="InspectorContent-heading">{name} Metadata</h4>}
+        {hasNotes && (<div className="InspectorContent-section">
+          {Object.keys(this.props.instances[0].notes).map(key => {
+            const note = this.props.instances[0].notes[key];
+            return (<div className="InspectorContent-section-group">
+              <div className="InspectorContent-section-heading">{key}</div>
+              <div className="InspectorContent-section-text">{note}</div>
+            </div>);
+          })}
+        </div>)}
 
         <h4 className="InspectorContent-heading">Color & Symbol</h4>
         <div className="InspectorContent-pickerWrap">
