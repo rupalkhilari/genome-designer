@@ -422,8 +422,12 @@ export default class Layout {
         this.sceneGraph.root.appendChild(this.titleNode);
       }
 
-      // update title to current position and text and width
-      const text = this.construct.getName('New Construct');
+      // update title to current position and text and width, also add gray text
+      // to indicate template if appropriate
+      let text = this.construct.getName('New Construct');
+      if (this.construct.isTemplate()) {
+        text += '<span style="color:gray">&nbsp;Template</span>';
+      }
       const width = this.titleNode.measureText(text).x + kT.textPad + kT.contextDotsW;
 
       this.titleNode.set({
@@ -455,41 +459,27 @@ export default class Layout {
     });
   }
   /**
-   * create or recycle a row on demand. resetRows
-   * should be called whenever the update starts so this method
-   * can track which rows are still in play or ready to be disposed.
-   * When the update is complete, call disposeRows() to get rid
-   * of any unused rows
-   * @return {[type]} [description]
+   * create or recycle a row on demand.
    */
   rowFactory(bounds) {
     // re-use existing if possible
-    let row = null;
-    if (this.rows.length) {
-      row = this.rows.shift();
-    } else {
+    let row = this.rows.find(row => row.updateReference !== this.updateReference);
+    if (!row) {
       row = new Node2D(Object.assign({
         sg: this.sceneGraph,
         strokeWidth: 0,
       }, kT.rowAppearance));
       this.sceneGraph.root.appendChild(row);
+      this.rows.push(row);
     }
     // set bounds and update to current color
     row.set({
       bounds: bounds,
       fill: this.baseColor,
       strokeWidth: 0,
+      updateReference: this.updateReference,
     });
-
-    // save into new rows so we know this row is in use
-    this.newRows.push(row);
     return row;
-  }
-  /**
-   * setup an array to track which rows are still being used
-   */
-  resetRows() {
-    this.newRows = [];
   }
 
   /**
@@ -499,15 +489,19 @@ export default class Layout {
     this.newNestedLayouts = {};
   }
   /**
-   * dispose and unused rows and move newRows to rows
+   * dispose and unused rows
    */
   disposeRows() {
-    // cleanup unused rows
-    while (this.rows.length) {
-      this.sceneGraph.root.removeChild(this.rows.pop());
-    }
-    this.rows = this.newRows;
-    this.newRows = null;
+    // keep rows still in use, remove the others
+    const keepers = [];
+    this.rows.forEach(row => {
+      if (row.updateReference === this.updateReference) {
+        keepers.push(row);
+      } else {
+        this.sceneGraph.root.removeChild(row);
+      }
+    });
+    this.rows = keepers;
   }
 
   /**
@@ -531,7 +525,7 @@ export default class Layout {
     this.currentConstructId = options.currentConstructId;
     this.currentBlocks = options.currentBlocks;
     this.focusedOptions = options.focusedOptions || {};
-    invariant(this.construct && this.blocks && this.currentConstructId && this.currentBlocks && this.focusedOptions, 'missing required options');
+    invariant(this.construct && this.blocks && this.currentBlocks && this.focusedOptions, 'missing required options');
 
     this.baseColor = this.construct.metadata.color;
 
@@ -596,8 +590,6 @@ export default class Layout {
     this.titleFactory();
     // maximum x position
     const mx = layoutOptions.xlimit;
-    // reset row factory
-    this.resetRows();
     // reset nested constructs
     this.resetNestedConstructs();
     // layout all the various components, constructing elements as required
@@ -652,6 +644,13 @@ export default class Layout {
       // measure element text or used condensed spacing
       let td = this.measureText(node, name);
 
+      // measure the max required width of all list blocks
+      Object.keys(block.options).filter(opt => block.options[opt]).forEach(blockId => {
+        let width = this.measureText(node, this.getListBlock(blockId).metadata.name).x;
+        width += kT.optionDotW;
+        td.x = Math.max(td.x, width);
+      });
+
       // if position would exceed x limit then wrap
       if (xp + td.x > mx) {
         xp = startX;
@@ -661,13 +660,6 @@ export default class Layout {
         row = this.rowFactory(new Box2D(xp, yp - kT.rowBarH, 0, kT.rowBarH));
         rowIndex += 1;
       }
-
-      // measure the max required width of all list blocks
-      Object.keys(block.options).filter(opt => block.options[opt]).forEach(blockId => {
-        let width = this.measureText(node, this.getListBlock(blockId).metadata.name).x;
-        width += kT.optionDotW;
-        td.x = Math.max(td.x, width);
-      });
 
       // update maxListHeight based on how many list items this block has
       maxListHeight = Math.max(maxListHeight, listN * kT.blockH);
