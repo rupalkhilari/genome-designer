@@ -71,6 +71,7 @@ const _blockRead = (blockId, projectId, sha) => {
 
 export const _orderRead = (orderId, projectId) => {
   const manifestPath = filePaths.createOrderManifestPath(orderId, projectId);
+  console.log('getting order @', manifestPath);
   return fileRead(manifestPath);
 };
 

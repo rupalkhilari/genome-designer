@@ -33,14 +33,14 @@ export const permissionsMiddleware = (req, res, next) => {
 
   if (!user) {
     console.error('no user attached by auth middleware!');
-    next('user not attached to request by middleware');
+    next('[permissionsMiddleware] user not attached to request by middleware');
     //todo - reject this request?
     return;
   }
 
-  if (!user.uuid) next('no user.uuid present on request object');
-  if (!projectId) next('projectId not found on route request');
-  if (!idRegex().test(projectId)) next('projectId is not valid, got ' + projectId);
+  if (!user.uuid) next('[permissionsMiddleware] no user.uuid present on request object');
+  if (!projectId) next('[permissionsMiddleware] projectId not found on route request');
+  if (!idRegex().test(projectId)) next('[permissionsMiddleware] projectId is not valid, got ' + projectId);
 
   checkProjectAccess(projectId, user.uuid)
     .then(() => next())
