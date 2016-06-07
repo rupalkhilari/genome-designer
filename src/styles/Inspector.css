@@ -18,6 +18,14 @@
     font-weight: 500;
     margin: 1.25em 0 0.4em;
     user-select: none;
+
+    &.toggler {
+      cursor: pointer;
+    }
+
+    &.active {
+      font-weight: bold;
+    }
   }
 
   &Block {
@@ -50,6 +58,10 @@
     background: var(--colors-blueGreyLighter);
     margin: 0 -var(--SidePanel-width-padding-content);
     padding: var(--SidePanel-width-padding-content);
+
+    &.closed {
+     display: none;
+    }
 
     &-group {
       padding-bottom: 0.5em;

@@ -4,6 +4,7 @@ import { transact, commit, abort } from '../../store/undo/actions';
 import { blockMerge, blockSetColor, blockSetRole, blockRename } from '../../actions/blocks';
 import InputSimple from './../InputSimple';
 import ColorPicker from './../ui/ColorPicker';
+import Toggler from './../ui/Toggler';
 import SymbolPicker from './../ui/SymbolPicker';
 import BlockSource from './BlockSource';
 import ListOptions from './ListOptions';
@@ -24,6 +25,10 @@ export class InspectorBlock extends Component {
 
   static defaultProps = {
     forceIsConstruct: false,
+  };
+
+  state = {
+    toggles: {},
   };
 
   setBlockName = (name) => {
@@ -64,6 +69,11 @@ export class InspectorBlock extends Component {
       return;
     }
     this.props.commit();
+  };
+
+  handleToggle = (field) => {
+    const oldState = !!this.state.toggles[field];
+    this.setState({ toggles: Object.assign({}, this.state.toggles, { [field]: !oldState }) });
   };
 
   /**
@@ -194,15 +204,23 @@ export class InspectorBlock extends Component {
         {hasSequence && <h4 className="InspectorContent-heading">Sequence Length</h4>}
         {hasSequence && <p><strong>{this.currentSequenceLength()}</strong></p>}
 
-        {/*todo = collapsable*/}
-        {hasNotes && <h4 className="InspectorContent-heading">{name} Metadata</h4>}
-        {hasNotes && (<div className="InspectorContent-section">
+        {hasNotes && (
+          <h4 className={'InspectorContent-heading toggler' + (this.state.toggles.metadata ? ' active': '')}
+              onClick={() => this.handleToggle('metadata')}>
+            <Toggler open={this.state.toggles.metadata}/>
+            <span>{name} Metadata</span>
+          </h4>
+        )}
+        {hasNotes && (<div className={'InspectorContent-section' + (this.state.toggles.metadata ? '' : ' closed')}>
           {Object.keys(this.props.instances[0].notes).map(key => {
             const note = this.props.instances[0].notes[key];
-            return (<div className="InspectorContent-section-group">
-              <div className="InspectorContent-section-heading">{key}</div>
-              <div className="InspectorContent-section-text">{note}</div>
-            </div>);
+            return (
+              <div className="InspectorContent-section-group"
+                   key={key}>
+                <div className="InspectorContent-section-heading">{key}</div>
+                <div className="InspectorContent-section-text">{note}</div>
+              </div>
+            );
           })}
         </div>)}
 
