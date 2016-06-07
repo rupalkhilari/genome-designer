@@ -9,6 +9,7 @@ import Inspector from './Inspector';
 import { projectList, projectLoad, projectCreate, projectOpen } from '../actions/projects';
 import { uiSetGrunt } from '../actions/ui';
 import { focusProject, focusConstruct } from '../actions/focus';
+import { orderList } from '../actions/orders';
 import autosaveInstance from '../store/autosave/autosaveInstance';
 
 import '../styles/ProjectPage.css';
@@ -20,6 +21,7 @@ class ProjectPage extends Component {
     projectId: PropTypes.string.isRequired,
     project: PropTypes.object, //if have a project (not fetching)
     constructs: PropTypes.array, //if have a project (not fetching)
+    orders: PropTypes.array, //if have a project (not fetching)
     projectCreate: PropTypes.func.isRequired,
     projectList: PropTypes.func.isRequired,
     projectLoad: PropTypes.func.isRequired,
@@ -27,6 +29,7 @@ class ProjectPage extends Component {
     uiSetGrunt: PropTypes.func.isRequired,
     focusProject: PropTypes.func.isRequired,
     focusConstruct: PropTypes.func.isRequired,
+    orderList: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -49,6 +52,9 @@ class ProjectPage extends Component {
       if (nextProps.project.components.length) {
         this.props.focusConstruct(nextProps.project.components[0]);
       }
+
+      //temp - get all the projects orders lazily, will re-render when have them
+      this.props.orderList(nextProps.projectId);
     }
   }
 
@@ -140,11 +146,17 @@ function mapStateToProps(state, ownProps) {
   }
 
   const constructs = project.components.map(componentId => state.blocks[componentId]);
+  const orders = Object.keys(state.orders)
+    .map(orderId => state.orders[orderId])
+    .filter(order => order.projectId === projectId && order.isSubmitted())
+    .sort((one, two) => one.status.timeSent - two.status.timeSent);
+
   return {
     showingGrunt,
     projectId,
     project,
     constructs,
+    orders,
   };
 }
 
@@ -156,4 +168,5 @@ export default connect(mapStateToProps, {
   uiSetGrunt,
   focusProject,
   focusConstruct,
+  orderList,
 })(ProjectPage);
