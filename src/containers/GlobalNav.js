@@ -448,9 +448,13 @@ class GlobalNav extends Component {
             {
               text: 'Order DNA',
               action: () => {
-                const order = this.props.orderCreate( this.props.project.id, [this.props.project.components[1]]);
-                this.props.orderGenerateConstructs( order.id );
-                this.props.uiShowOrderForm(true, order.id);
+                if (this.props.currentConstruct && this.props.currentConstruct.isTemplate()) {
+                  const order = this.props.orderCreate( this.props.project.id, [this.props.currentConstruct.id]);
+                  this.props.orderGenerateConstructs( order.id );
+                  this.props.uiShowOrderForm(true, order.id);
+                } else {
+                  this.props.uiSetGrunt('Please select a template construct to order.');
+                }
               },
             }
           ],
@@ -620,6 +624,7 @@ function mapStateToProps(state, props) {
     inventoryVisible: state.ui.inventory.isVisible,
     detailViewVisible: state.ui.detailView.isVisible,
     project: state.projects[props.currentProjectId],
+    currentConstruct: state.blocks[state.focus.constructId],
   };
 }
 
