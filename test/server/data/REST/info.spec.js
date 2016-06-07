@@ -13,7 +13,7 @@ describe('Server', () => {
     describe('REST', () => {
       describe('Info', () => {
         let server;
-        const userId = 0; //testing
+        const userId = '0'; //testing
 
         const roll = createExampleRollup();
 
@@ -24,7 +24,10 @@ describe('Server', () => {
         //add 5 weird role type blocks to roll
         const numberEsotericRole = 5;
         const esotericRole = 'sdlfkjasdlfkjasdf';
-        const blocks = range(numberEsotericRole).map(() => new Block({ rules: { role: esotericRole } }));
+        const blocks = range(numberEsotericRole).map(() => new Block({
+          projectId,
+          rules: { role: esotericRole },
+        }));
         roll.blocks.push(...blocks);
 
         before(() => {

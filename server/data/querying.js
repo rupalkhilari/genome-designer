@@ -1,6 +1,7 @@
 import * as fileSystem from '../utils/fileSystem';
 import * as filePaths from '../utils/filePaths';
 import * as persistence from './persistence';
+import * as versioning from './versioning';
 import invariant from 'invariant';
 import { exec } from 'child_process';
 import { flatten } from 'lodash';
@@ -89,6 +90,11 @@ export const getAllProjectManifests = (userId) => {
       console.error('error getting project manifests', err);
       return [];
     });
+};
+
+export const getProjectVersions = (projectId) => {
+  const projectDataPath = filePaths.createProjectDataPath(projectId);
+  return versioning.log(projectDataPath);
 };
 
 export const getAllBlocks = (userId) => {
