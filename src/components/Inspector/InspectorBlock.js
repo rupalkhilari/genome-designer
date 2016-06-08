@@ -11,6 +11,7 @@ import BlockSource from './BlockSource';
 import ListOptions from './ListOptions';
 import OrderList from './OrderList';
 import InspectorRow from './InspectorRow';
+import BlockNotes from './BlockNotes';
 
 export class InspectorBlock extends Component {
   static propTypes = {
@@ -218,16 +219,7 @@ export class InspectorBlock extends Component {
                       hasToggle
                       condition={hasNotes}>
           <div className="InspectorContent-section">
-            {Object.keys(this.props.instances[0].notes).map(key => {
-              const note = this.props.instances[0].notes[key];
-              return (
-                <div className="InspectorContent-section-group alt-colors"
-                     key={key}>
-                  <div className="InspectorContent-section-group-heading">{key}</div>
-                  <div className="InspectorContent-section-group-text">{note}</div>
-                </div>
-              );
-            })}
+            <BlockNotes notes={instances[0].notes}/>
           </div>
         </InspectorRow>
 
