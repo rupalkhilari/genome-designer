@@ -14,6 +14,7 @@ export class InspectorProject extends Component {
         return new Error('must pass a project (Project model) to InspectorProject');
       }
     },
+    orders: PropTypes.array.isRequired,
     projectRename: PropTypes.func.isRequired,
     projectMerge: PropTypes.func.isRequired,
     readOnly: PropTypes.bool.isRequired,
