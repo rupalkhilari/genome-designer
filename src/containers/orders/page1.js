@@ -16,7 +16,7 @@ import OrderParameters from '../../schemas/OrderParameters';
 import '../../../src/styles/form.css';
 import '../../../src/styles/ordermodal.css';
 
-class Page1 extends Component {
+export class Page1 extends Component {
   static propTypes = {
     open: PropTypes.bool.isRequired,
     order: PropTypes.object.isRequired,

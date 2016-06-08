@@ -62,7 +62,9 @@ export const orderCreate = (projectId, constructIds = [], parameters = {}) => {
       type: ActionTypes.ORDER_CREATE,
       order,
     });
-    return order;
+
+    //generate constructs and return
+    return dispatch(orderGenerateConstructs(order.id)); //eslint-disable-line no-use-before-define
   };
 };
 
