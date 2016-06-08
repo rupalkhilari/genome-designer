@@ -27,7 +27,7 @@ router.route('/:projectId/:orderId?')
     const { user, projectId } = req;
     const { orderId } = req.params;
 
-    if (!orderId) {
+    if (!!orderId) {
       return persistence.orderGet(orderId, projectId)
         .then(order => res.status(200).json(order))
         .catch(err => next(err));

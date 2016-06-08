@@ -18,6 +18,14 @@
     font-weight: 500;
     margin: 1.25em 0 0.4em;
     user-select: none;
+
+    &.toggler {
+      cursor: pointer;
+    }
+
+    &.active {
+      font-weight: bold;
+    }
   }
 
   &Block {
@@ -43,5 +51,46 @@
   &-pickerWrap {
     display: flex;
     flex-direction: row;
+  }
+
+  &-section {
+    display: block;
+    background: var(--colors-blueGreyLighter);
+    margin: 0 -var(--SidePanel-width-padding-content);
+    padding: var(--SidePanel-width-padding-content);
+
+    &.closed {
+      display: none;
+    }
+
+    &-group {
+      padding-bottom: 0.5em;
+      user-select: none;
+
+      &-heading {
+        color: var(--colors-blueBlack);
+      }
+
+      &-text {
+        color: var(--colors-grey);
+      }
+
+      &-link {
+        color: var(--colors-bluetext);
+        padding-left: 0.5em;
+        cursor: pointer;
+      }
+
+      &.alt-colors {
+        .InspectorContent-section-group-heading {
+          color: var(--colors-grey);
+        }
+
+        .InspectorContent-section-group-text {
+          color: var(--colors-blueBlack);
+          padding-left: 1em;
+        }
+      }
+    }
   }
 }

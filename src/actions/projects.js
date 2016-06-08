@@ -32,6 +32,7 @@ export const projectList = () => {
 //Promise
 export const projectDelete = (projectId) => {
   return (dispatch, getState) => {
+    invariant(false, 'should trigger a modal to confirm (or something) and change the route when calling this action before the actual deletion - update code');
     return deleteProject(projectId)
       .then(() => {
         dispatch({
@@ -99,9 +100,9 @@ export const projectSnapshot = (projectId, message, withRollup = true) => {
 };
 
 //Promise
-export const projectLoad = (projectId) => {
+export const projectLoad = (projectId, avoidCache = false) => {
   return (dispatch, getState) => {
-    return loadProject(projectId)
+    return loadProject(projectId, avoidCache)
       .then(rollup => {
         const { project, blocks } = rollup;
         const projectModel = new Project(project);
@@ -139,6 +140,12 @@ export const projectOpen = (inputProjectId) => {
     }
 
     return dispatch(projectSave(currentProjectId))
+      .catch(err => {
+        dispatch({
+          type: ActionTypes.UI_SET_GRUNT,
+          gruntMessage: `Project ${currentProjectId} couldn't be saved, but navigating anyway...`,
+        });
+      })
       .then(() => {
         /*
         future - clear the store of blocks from the old project.

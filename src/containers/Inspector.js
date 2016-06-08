@@ -24,7 +24,7 @@ export class Inspector extends Component {
   };
 
   render() {
-    const { showingGrunt, isVisible, focused, type, readOnly, forceIsConstruct } = this.props;
+    const { showingGrunt, isVisible, focused, orders, type, readOnly, forceIsConstruct } = this.props;
 
     // inspect instances, or construct if no instance or project if no construct or instances
     let inspect;
@@ -33,10 +33,11 @@ export class Inspector extends Component {
       inspect = <InspectorProject instance={focused} readOnly={readOnly}/>;
       break;
     case 'construct':
-      inspect = <InspectorBlock instances={focused} readOnly={readOnly}/>;
-      break;
     default:
-      inspect = <InspectorBlock instances={focused} readOnly={readOnly} forceIsConstruct={forceIsConstruct}/>;
+      inspect = (<InspectorBlock instances={focused}
+                                 orders={orders}
+                                 readOnly={readOnly}
+                                 forceIsConstruct={forceIsConstruct}/>);
       break;
     }
 
@@ -101,6 +102,11 @@ function mapStateToProps(state, props) {
   const forceIsConstruct = (level === 'construct') ||
     blockIds.some(blockId => currentProject.components.indexOf(blockId) >= 0);
 
+  const orders = Object.keys(state.orders)
+    .map(orderId => state.orders[orderId])
+    .filter(order => order.projectId === projectId && order.isSubmitted())
+    .sort((one, two) => one.status.timeSent - two.status.timeSent);
+
   return {
     showingGrunt,
     isVisible,
@@ -108,6 +114,7 @@ function mapStateToProps(state, props) {
     readOnly,
     focused,
     forceIsConstruct,
+    orders,
   };
 }
 
