@@ -214,7 +214,6 @@ export class ConstructViewer extends Component {
    * focus an option
    */
   optionSelected(blockId, optionId) {
-    console.log('OPTION SELECTED:---->', blockId, optionId);
     this.props.focusBlockOption(blockId, optionId);
   }
 

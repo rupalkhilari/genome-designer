@@ -9,7 +9,7 @@ export const initialState = {
   blockIds: [], //ids of selection
   constructId: null, //id of current
   level: 'project', //what to give priority to (when defined)
-  options: {},
+  options: {}, //map {listBlockId : selectedOptionId}
 };
 
 export default function inventory(state = initialState, action) {
