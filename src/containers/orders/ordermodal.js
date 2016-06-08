@@ -3,6 +3,9 @@ import { connect } from 'react-redux';
 import {
   uiShowOrderForm,
 } from '../../actions/ui';
+import {
+  orderSubmit,
+} from '../../actions/orders';
 import ModalWindow from '../../components/modal/modalwindow';
 import Page1 from './page1';
 import Page2 from './page2';
@@ -19,16 +22,12 @@ class OrderModal extends Component {
     uiShowOrderForm: PropTypes.func.isRequired,
     open: PropTypes.bool.isRequired,
     projectId: PropTypes.string.isRequired,
+    orderSubmit: PropTypes.func.isRequired,
   };
 
   state = {
     page: 1,
   };
-
-  onSubmit(evt) {
-    evt.preventDefault();
-    this.props.uiShowOrderForm(false);
-  }
 
   nav(inc) {
     let page = this.state.page + inc;
@@ -41,9 +40,42 @@ class OrderModal extends Component {
     // page 1 on opening and create order
     if (!this.props.open && nextProps.open) {
       this.setState({
-        page: 1,
+        page: nextProps.order.isSubmitted() ? 3 : 1,
       });
     }
+  }
+
+  onSubmit = (evt) => {
+    evt.preventDefault();
+    if (this.props.order.isSubmitted()) {
+      this.props.uiShowOrderForm(false);
+    } else {
+      this.props.orderSubmit(this.props.order.id)
+        .then(() => {
+          this.setState({page: 3})
+        });
+    }
+  };
+
+  modalButtons() {
+    if (!this.props.order.isSubmitted()) {
+      return (
+        <div className="buttons">
+          <button type="submit">Submit Order</button>
+          <button
+            type="button"
+            onClick={() => {
+              this.props.uiShowOrderForm(false);
+            }}>Cancel
+          </button>
+        </div>
+      )
+    }
+    return (
+      <div className="buttons">
+        <button type="submit">Done</button>
+      </div>
+    )
   }
 
   render() {
@@ -63,7 +95,7 @@ class OrderModal extends Component {
         this.props.uiShowOrderForm(false);
       }}
       payload={
-          <form className="gd-form order-form" onSubmit={this.onSubmit.bind(this)}>
+          <form className="gd-form order-form" onSubmit={this.onSubmit}>
             <div className="title">{titleText}</div>
             <div>
               <Page1 open={this.state.page === 1} order={this.props.order}/>
@@ -71,17 +103,17 @@ class OrderModal extends Component {
               <Page3 open={this.state.page === 3} order={this.props.order}/>
             </div>
             <div className="actions">
-              <NavLeftRight onClick={this.nav.bind(this, -1)} left={true} text={leftText} visible={this.state.page > 1}/>
-              <div className="buttons">
-                <button type="submit">Order</button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    this.props.uiShowOrderForm(false);
-                  }}>Cancel
-                </button>
-              </div>
-              <NavLeftRight onClick={this.nav.bind(this, 1)} left={false} text={rightText} visible={this.state.page < 3}/>
+              <NavLeftRight
+                onClick={this.nav.bind(this, -1)}
+                left={true}
+                text={leftText}
+                visible={this.state.page > 1}/>
+              {this.modalButtons()}
+              <NavLeftRight
+                onClick={this.nav.bind(this, 1)}
+                left={false}
+                text={rightText}
+              visible={this.state.page < 3 && !(this.state.page === 2 && !this.props.order.isSubmitted())}/>
             </div>
           </form>}
 
@@ -99,4 +131,5 @@ function mapStateToProps(state, props) {
 
 export default connect(mapStateToProps, {
   uiShowOrderForm,
+  orderSubmit,
 })(OrderModal);

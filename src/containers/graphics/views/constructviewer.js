@@ -19,8 +19,13 @@ import {
 import {
   uiShowDNAImport,
   uiToggleDetailView,
-  inspectorToggleVisibility
+  inspectorToggleVisibility,
+  uiShowOrderForm,
 } from '../../../actions/ui';
+import {
+  orderCreate,
+  orderGenerateConstructs,
+} from '../../../actions/orders';
 import {
   blockGetParents,
 } from '../../../selectors/blocks';
@@ -40,6 +45,8 @@ import {
   projectGetVersion,
 } from '../../../selectors/projects';
 import { projectRemoveConstruct } from '../../../actions/projects';
+
+import "../../../styles/constructviewer.css";
 
 // static hash for matching viewers to constructs
 const idToViewer = {};
@@ -65,6 +72,9 @@ export class ConstructViewer extends Component {
     blockAddComponents: PropTypes.func,
     blockDetach: PropTypes.func,
     uiShowDNAImport: PropTypes.func,
+    uiShowOrderForm: PropTypes.func.isRequired,
+    orderCreate: PropTypes.func.isRequired,
+    orderGenerateConstructs: PropTypes.func.isRequired,
     blockRemoveComponent: PropTypes.func,
     blockGetParents: PropTypes.func,
     projectGetVersion: PropTypes.func,
@@ -214,7 +224,6 @@ export class ConstructViewer extends Component {
    * focus an option
    */
   optionSelected(blockId, optionId) {
-    console.log('OPTION SELECTED:---->', blockId, optionId);
     this.props.focusBlockOption(blockId, optionId);
   }
 
@@ -258,7 +267,6 @@ export class ConstructViewer extends Component {
    * @return {[type]} [description]
    */
   windowResized() {
-    console.log('WSIZE:', this.dom.clientWidth, ' ', this.dom.clientHeight);
     this.sg.availableWidth = this.dom.clientWidth;
     this.sg.availableHeight = this.dom.clientHeight;
     this.forceUpdate();
@@ -494,6 +502,24 @@ export class ConstructViewer extends Component {
   }
 
   /**
+   * launch DNA form for this construct
+   */
+  onOrderDNA = () => {
+    const order = this.props.orderCreate(this.props.projectId, [this.props.construct.id]);
+    this.props.uiShowOrderForm(true, order.id);
+  };
+
+  /**
+   * only visible on templates for now
+   */
+  orderButton() {
+    if (this.props.construct.isTemplate()) {
+      return <button onClick={this.onOrderDNA} className="order-button">Order DNA</button>;
+    }
+    return null;
+  }
+
+  /**
    * render the component, the scene graph will render later when componentDidUpdate is called
    */
   render() {
@@ -504,6 +530,7 @@ export class ConstructViewer extends Component {
         </div>
         {this.blockContextMenu()}
         {this.constructContextMenu()}
+        {this.orderButton()}
       </div>
     );
     return rendered;
@@ -538,5 +565,8 @@ export default connect(mapStateToProps, {
   projectRemoveConstruct,
   inspectorToggleVisibility,
   uiShowDNAImport,
+  uiShowOrderForm,
   uiToggleDetailView,
+  orderCreate,
+  orderGenerateConstructs,
 })(ConstructViewer);

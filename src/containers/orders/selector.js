@@ -7,6 +7,7 @@ export default class Selector extends Component {
     options: PropTypes.array.isRequired,
     onChange: PropTypes.func.isRequired,
     value: PropTypes.any,
+    disabled: PropTypes.bool.isRequired,
   };
 
   render() {
@@ -16,8 +17,9 @@ export default class Selector extends Component {
           this.props.onChange(evt.target.value);
         }}
         defaultValue={this.props.value}
+        disabled={this.props.disabled}
       >
-        {this.props.options.map(option => {
+        {this.props.disabled ? null : this.props.options.map(option => {
           return (<option value={option.value}>{option.label}</option>);
         })}
       </select>

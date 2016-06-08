@@ -24,7 +24,7 @@ export class ListOptions extends Component {
     const { options } = block;
 
     return (
-      <div className="ListOptions">
+      <div className="ListOptions no-vertical-scroll">
         {optionBlocks.map(item => {
           return (
             <ListOption
