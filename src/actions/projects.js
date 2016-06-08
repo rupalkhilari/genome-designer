@@ -63,6 +63,14 @@ export const projectSave = (inputProjectId) => {
           return null;
         }
 
+        //if no version => first time saving, show a grunt
+        if (!roll.project.version) {
+          dispatch({
+            type: ActionTypes.UI_SET_GRUNT,
+            gruntMessage: 'Project Saved. Changes will continue to be saved automatically as you work.',
+          });
+        }
+
         const { sha } = commitInfo;
         dispatch({
           type: ActionTypes.PROJECT_SAVE,
