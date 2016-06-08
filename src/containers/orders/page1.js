@@ -16,7 +16,7 @@ import OrderParameters from '../../schemas/OrderParameters';
 import '../../../src/styles/form.css';
 import '../../../src/styles/ordermodal.css';
 
-class Page1 extends Component {
+export class Page1 extends Component {
   static propTypes = {
     open: PropTypes.bool.isRequired,
     order: PropTypes.object.isRequired,
@@ -52,7 +52,7 @@ class Page1 extends Component {
   };
 
   numberOfAssembliesChanged = (newValue) => {
-    const total = parseInt(newValue);
+    const total = parseInt(newValue, 10);
     this.props.orderSetParameters(this.props.order.id, {
       permutations: Number.isInteger(total) ? Math.min(this.props.constructs.length, Math.max(0, total)) : 1,
     }, true);
@@ -83,19 +83,21 @@ class Page1 extends Component {
       return null;
     }
 
+    const { order } = this.props;
+
     return (
       <div className="order-page page1">
-        <fieldset disabled={this.props.order.isSubmitted()}>
+        <fieldset disabled={order.isSubmitted()}>
           <Row text="Label:">
             <Input
               onChange={this.labelChanged}
-              value={this.props.order.metadata.name}
+              value={order.metadata.name}
               placeholder="e.g. Construct A - Order #1"
             />
           </Row>
           <Row text="Assembly Containers:">
             <Selector
-              value={this.props.order.parameters.onePot}
+              value={order.parameters.onePot}
               options={this.assemblyOptions()}
               onChange={(val) => this.assemblyContainerChanged(val)}
             />
@@ -103,24 +105,24 @@ class Page1 extends Component {
           <Row text="Number of assemblies:">
             <Permutations
               total={this.props.constructs.length}
-              value={this.props.order.parameters.permutations}
-              editable={!this.props.order.parameters.onePot}
+              value={order.parameters.permutations}
+              editable={!order.parameters.onePot}
               onChange={(val) => this.numberOfAssembliesChanged(val)}
             />
           </Row>
           <Row text="Combinatorial method:">
             <Selector
-              value={this.props.order.parameters.combinatorialMethod}
+              value={order.parameters.combinatorialMethod}
               options={this.methodOptions()}
               onChange={this.methodChanged}
-              disabled={this.props.order.parameters.onePot || (!this.props.order.parameters.onePot && this.props.order.parameters.permutations === this.props.constructs.length) }
+              disabled={order.parameters.onePot || (!order.parameters.onePot && order.parameters.permutations === this.props.constructs.length) }
             />
           </Row>
           <Row text="After fabrication:">
             <Checkbox
               onChange={this.sequenceAssemblies}
               label="Sequence Assemblies"
-              value={this.props.order.parameters.sequenceAssemblies}
+              value={order.parameters.sequenceAssemblies}
             />
           </Row>
           <br/>

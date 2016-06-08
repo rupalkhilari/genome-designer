@@ -73,6 +73,8 @@ export class ConstructViewer extends Component {
     blockDetach: PropTypes.func,
     uiShowDNAImport: PropTypes.func,
     uiShowOrderForm: PropTypes.func.isRequired,
+    orderCreate: PropTypes.func.isRequired,
+    orderGenerateConstructs: PropTypes.func.isRequired,
     blockRemoveComponent: PropTypes.func,
     blockGetParents: PropTypes.func,
     projectGetVersion: PropTypes.func,
@@ -222,7 +224,6 @@ export class ConstructViewer extends Component {
    * focus an option
    */
   optionSelected(blockId, optionId) {
-    console.log('OPTION SELECTED:---->', blockId, optionId);
     this.props.focusBlockOption(blockId, optionId);
   }
 
@@ -505,9 +506,8 @@ export class ConstructViewer extends Component {
    */
   onOrderDNA = () => {
     const order = this.props.orderCreate(this.props.projectId, [this.props.construct.id]);
-    this.props.orderGenerateConstructs(order.id);
     this.props.uiShowOrderForm(true, order.id);
-  }
+  };
 
   /**
    * only visible on templates for now
@@ -567,7 +567,6 @@ export default connect(mapStateToProps, {
   uiShowDNAImport,
   uiShowOrderForm,
   uiToggleDetailView,
-  uiShowOrderForm,
   orderCreate,
   orderGenerateConstructs,
 })(ConstructViewer);

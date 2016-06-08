@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 
-export default class Page1 extends Component {
+export default class NavLeftRight extends Component {
   static propTypes = {
     left: PropTypes.bool.isRequired,
     text: PropTypes.string.isRequired,
