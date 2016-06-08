@@ -258,7 +258,6 @@ export class ConstructViewer extends Component {
    * @return {[type]} [description]
    */
   windowResized() {
-    console.log('WSIZE:', this.dom.clientWidth, ' ', this.dom.clientHeight);
     this.sg.availableWidth = this.dom.clientWidth;
     this.sg.availableHeight = this.dom.clientHeight;
     this.forceUpdate();

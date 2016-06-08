@@ -9,9 +9,12 @@ export default class Input extends Component {
 
   render() {
     return (
-      <input onChange={evt => {
-        this.props.onChange(evt.target.value);
-      }} defaultValue={this.props.value}/>
+      <input
+        onChange={evt => {
+          this.props.onChange(evt.target.value);
+        }}
+        defaultValue={this.props.value}
+      />
     )
   }
 }

@@ -39,10 +39,12 @@ class Page1 extends Component {
   }
 
   assemblyContainerChanged = (newValue) => {
-    console.log('Assembly Changed:', newValue);
+    const onePot = newValue === 'true';
     this.props.orderSetParameters(this.props.order.id, {
-      onePot: newValue === 'true',
-    });
+      permutations: this.props.constructs.length,
+      combinatorialMethod: 'Random Subset',
+      onePot,
+    }, true);
   };
 
   _labelChanged = (newLabel) => {
@@ -51,13 +53,16 @@ class Page1 extends Component {
 
   numberOfAssembliesChanged = (newValue) => {
     const total = parseInt(newValue);
+    debugger;
+    console.log(this.props.constructs.length);
     this.props.orderSetParameters(this.props.order.id, {
       permutations: Number.isInteger(total) ? Math.min(this.props.constructs.length, Math.max(0, total)) : 1,
-    });
+    }, true);
   };
 
   methodOptions() {
-    return ['Random Subset', 'Maximum Unique Set', 'All Combinations'].map(item => {
+    //return ['Random Subset', 'Maximum Unique Set', 'All Combinations'].map(item => {
+    return ['Random Subset', 'Maximum Unique Set'].map(item => {
       return {value: item, label: item};
     });
   }
@@ -65,13 +70,13 @@ class Page1 extends Component {
   methodChanged = (newMethod) => {
     this.props.orderSetParameters(this.props.order.id, {
       combinatorialMethod: newMethod,
-    });
+    }, true);
   };
 
   sequenceAssemblies = (state) => {
     this.props.orderSetParameters(this.props.order.id, {
       sequenceAssemblies: state,
-    });
+    }, true);
   };
 
   render() {
@@ -82,42 +87,45 @@ class Page1 extends Component {
 
     return (
       <div className="order-page page1">
-        <Row text="Label:">
-          <Input
-            onChange={this.labelChanged}
-            value={this.props.order.metadata.name}
-          />
-        </Row>
-        <Row text="Assembly Containers:">
-          <Selector
-            value={this.props.order.parameters.onePot}
-            options={this.assemblyOptions()}
-            onChange={this.assemblyContainerChanged}
-          />
-        </Row>
-        <Row text="Number of assemblies:">
-          <Permutations
-            total={this.props.constructs.length}
-            value={this.props.order.parameters.permutations || 1}
-            editable={!this.props.order.parameters.onePot}
-            onChange={this.numberOfAssembliesChanged}
-          />
-        </Row>
-        <Row text="Combinatorial method:">
-          <Selector
-            value={this.props.order.parameters.combinatorialMethod}
-            options={this.methodOptions()}
-            onChange={this.methodChanged}
-          />
-        </Row>
-        <Row text="After fabrication:">
-          <Checkbox
-            onChange={this.sequenceAssemblies}
-            label="Sequence Assemblies"
-            value={this.props.order.parameters.sequenceAssemblies}
-          />
-        </Row>
-        <br/>
+        <fieldset disabled={this.props.order.isSubmitted().length}>
+          <Row text="Label:">
+            <Input
+              onChange={this.labelChanged}
+              value={this.props.order.metadata.name}
+            />
+          </Row>
+          <Row text="Assembly Containers:">
+            <Selector
+              value={this.props.order.parameters.onePot}
+              options={this.assemblyOptions()}
+              onChange={(val) => this.assemblyContainerChanged(val)}
+            />
+          </Row>
+          <Row text="Number of assemblies:">
+            <Permutations
+              total={this.props.constructs.length}
+              value={this.props.order.parameters.permutations}
+              editable={!this.props.order.parameters.onePot}
+              onChange={(val) => this.numberOfAssembliesChanged(val)}
+            />
+          </Row>
+          <Row text="Combinatorial method:">
+            <Selector
+              value={this.props.order.parameters.combinatorialMethod}
+              options={this.methodOptions()}
+              onChange={this.methodChanged}
+              disabled={this.props.order.parameters.onePot || (!this.props.order.parameters.onePot && this.props.order.parameters.permutations === this.props.constructs.length) }
+            />
+          </Row>
+          <Row text="After fabrication:">
+            <Checkbox
+              onChange={this.sequenceAssemblies}
+              label="Sequence Assemblies"
+              value={this.props.order.parameters.sequenceAssemblies}
+            />
+          </Row>
+          <br/>
+        </fieldset>
       </div>
     );
   }

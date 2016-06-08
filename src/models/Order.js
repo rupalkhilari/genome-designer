@@ -67,8 +67,8 @@ export default class Order extends Instance {
    ************/
 
   setParameters(parameters = {}, shouldMerge = false) {
-    const nextParameters = merge({}, (shouldMerge === true ? this.parameters : {}), parameters);
-    invariant(OrderParametersSchema.validate(parameters, false), 'parameters must pass validation');
+    const nextParameters = merge({}, (shouldMerge === true ? cloneDeep(this.parameters) : {}), parameters);
+    // invariant(OrderParametersSchema.validate(parameters, false), 'parameters must pass validation');
     return this.merge({ parameters: nextParameters });
   }
 
