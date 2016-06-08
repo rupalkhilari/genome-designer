@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import Block from '../../models/Block';
 import { transact, commit, abort } from '../../store/undo/actions';
 import { blockMerge, blockSetColor, blockSetRole, blockRename } from '../../actions/blocks';
 import { uiShowOrderForm } from '../../actions/ui';
@@ -13,7 +14,12 @@ import ListOptions from './ListOptions';
 export class InspectorBlock extends Component {
   static propTypes = {
     readOnly: PropTypes.bool.isRequired,
-    instances: PropTypes.array.isRequired,
+    instances: PropTypes.arrayOf((propValue, key) => {
+      const instance = propValue[key];
+      if (!(Block.validate(instance) && instance instanceof Block)) {
+        return new Error('Must pass valid instances of blocks to the inspector, got ' + JSON.stringify(instance));
+      }
+    }).isRequired,
     orders: PropTypes.array.isRequired,
     blockSetColor: PropTypes.func.isRequired,
     blockSetRole: PropTypes.func.isRequired,
