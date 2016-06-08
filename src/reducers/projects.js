@@ -7,7 +7,7 @@ const initialState = {};
 
 //testing = combinatorial
 Object.assign(initialState, {
-  'combinatorial': combiProject,
+  combinatorial: combiProject,
 });
 instanceMap.saveProject(combiProject);
 
