@@ -14,6 +14,7 @@ export default class Input extends Component {
           this.props.onChange(evt.target.value);
         }}
         defaultValue={this.props.value}
+        placeholder={this.props.placeholder}
       />
     )
   }

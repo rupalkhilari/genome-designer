@@ -40,7 +40,7 @@ class OrderModal extends Component {
     // page 1 on opening and create order
     if (!this.props.open && nextProps.open) {
       this.setState({
-        page: 1,
+        page: nextProps.order.isSubmitted() ? 3 : 1,
       });
     }
   }

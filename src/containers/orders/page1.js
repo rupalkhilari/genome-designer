@@ -90,6 +90,7 @@ class Page1 extends Component {
             <Input
               onChange={this.labelChanged}
               value={this.props.order.metadata.name}
+              placeholder="e.g. Construct A - Order #1"
             />
           </Row>
           <Row text="Assembly Containers:">
