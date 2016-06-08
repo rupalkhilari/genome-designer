@@ -1,3 +1,4 @@
+import { exec } from 'child_process';
 import * as filePaths from '../utils/filePaths';
 import * as fileSystem from '../utils/fileSystem';
 import { errorNoPermission, errorDoesNotExist } from '../utils/errors';
@@ -32,16 +33,16 @@ export const permissionsMiddleware = (req, res, next) => {
 
   if (!user) {
     console.error('no user attached by auth middleware!', req.url);
-    next('user not attached to request by middleware');
+    next('[permissionsMiddleware] user not attached to request by middleware');
     return;
   }
 
-  if (!user.uuid) next('no user.uuid present on request object');
-  if (!projectId) next('projectId not found on route request');
-  if (!idRegex().test(projectId)) next('projectId is not valid, got ' + projectId);
+  if (!user.uuid) next('[permissionsMiddleware] no user.uuid present on request object');
+  if (!projectId) next('[permissionsMiddleware] projectId not found on route request');
+  if (!idRegex().test(projectId)) next('[permissionsMiddleware] projectId is not valid, got ' + projectId);
 
   checkProjectAccess(projectId, user.uuid)
-    .then(() => { next(); })
+    .then(() => next())
     .catch((err) => {
       if (err === errorNoPermission) {
         return res.status(403).send(`User ${user.email} does not have access to project ${projectId}`);

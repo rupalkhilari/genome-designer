@@ -12,7 +12,9 @@ import OrderConstructSchema from '../schemas/OrderConstruct';
 export const orderList = (projectId) => {
   return (dispatch, getState) => {
     return getOrders(projectId)
-      .then(orders => {
+      .then(ordersData => {
+        const orders = ordersData.map(order => new Order(order));
+
         dispatch({
           type: ActionTypes.ORDER_STASH,
           orders,
@@ -25,7 +27,9 @@ export const orderList = (projectId) => {
 export const orderGet = (projectId, orderId) => {
   return (dispatch, getState) => {
     return getOrder(projectId, orderId)
-      .then(order => {
+      .then(orderData => {
+        const order = new Order(orderData);
+
         dispatch({
           type: ActionTypes.ORDER_STASH,
           order,
@@ -127,12 +131,14 @@ export const orderSetName = (orderId, name) => {
 //actually saves the order to the server
 export const orderSubmit = (orderId, foundry) => {
   return (dispatch, getState) => {
-    const order = getState().orders[orderId];
-    invariant(order, 'order not in the store...');
-    invariant(!order.isSubmitted(), 'Cant submit an order twice');
+    const retrievedOrder = getState().orders[orderId];
+    invariant(retrievedOrder, 'order not in the store...');
+    invariant(!retrievedOrder.isSubmitted(), 'Cant submit an order twice');
 
-    return order.submit(foundry)
-      .then(order => {
+    return retrievedOrder.submit(foundry)
+      .then(orderData => {
+        const order = new Order(orderData);
+
         dispatch({
           type: ActionTypes.PROJECT_SNAPSHOT,
           projectId: order.projectId,

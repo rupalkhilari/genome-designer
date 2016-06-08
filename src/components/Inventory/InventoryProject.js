@@ -44,9 +44,7 @@ export class InventoryProject extends Component {
           //inspect it
           this.inspectProject(projectId);
         } else {
-          //save the previous one, open the new one
-          this.props.projectSave()
-            .then(() => this.props.projectOpen(projectId));
+          this.props.projectOpen(projectId);
         }
       });
   };
