@@ -1,15 +1,12 @@
 var dragFromTo = require('./dragfromto');
+var clickMainMenu = require('./click-main-menu');
 var newproject = function(browser) {
   browser
     // make sure inventory is present
-    .waitForElementPresent('.SidePanel.Inventory', 5000, 'Expected Inventory Groups')
-    // open the file menu and add new constructs
-    .click('.menu-dropdown:nth-of-type(1)')
-    .waitForElementPresent('.menu-header-open', 5000, 'expected an open menu')
-    // click new construct menu item
-    .pause(250)
-    .click('.menu-dropdown:nth-of-type(1) .menu-item:nth-of-type(6)')
-    .waitForElementNotPresent('.menu-header-open', 5000, 'expected a closed menu')
+    .waitForElementPresent('.SidePanel.Inventory', 5000, 'Expected Inventory Groups');
+    // click new project, which adds a new construct
+  clickMainMenu(browser, 1, 4);
+  browser
     .waitForElementPresent('.construct-viewer', 5000, 'expect a construct for the new project')
     // click the second inventory group 'EGF Parts' to open it
     .click('.InventoryGroup:nth-of-type(2) .InventoryGroup-heading')
