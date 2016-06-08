@@ -53,8 +53,6 @@ class Page1 extends Component {
 
   numberOfAssembliesChanged = (newValue) => {
     const total = parseInt(newValue);
-    debugger;
-    console.log(this.props.constructs.length);
     this.props.orderSetParameters(this.props.order.id, {
       permutations: Number.isInteger(total) ? Math.min(this.props.constructs.length, Math.max(0, total)) : 1,
     }, true);
@@ -87,7 +85,7 @@ class Page1 extends Component {
 
     return (
       <div className="order-page page1">
-        <fieldset disabled={this.props.order.isSubmitted().length}>
+        <fieldset disabled={this.props.order.isSubmitted()}>
           <Row text="Label:">
             <Input
               onChange={this.labelChanged}

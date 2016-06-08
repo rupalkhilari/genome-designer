@@ -47,11 +47,36 @@ class OrderModal extends Component {
 
   onSubmit = (evt) => {
     evt.preventDefault();
-    this.props.orderSubmit(this.props.order.id)
-      .then(() => {
-        this.setState({page: 3})
-      });
+    if (this.props.order.isSubmitted()) {
+      this.props.uiShowOrderForm(false);
+    } else {
+      this.props.orderSubmit(this.props.order.id)
+        .then(() => {
+          this.setState({page: 3})
+        });
+    }
   };
+
+  modalButtons() {
+    if (!this.props.order.isSubmitted()) {
+      return (
+        <div className="buttons">
+          <button type="submit">Submit Order</button>
+          <button
+            type="button"
+            onClick={() => {
+              this.props.uiShowOrderForm(false);
+            }}>Cancel
+          </button>
+        </div>
+      )
+    }
+    return (
+      <div className="buttons">
+        <button type="submit">Done</button>
+      </div>
+    )
+  }
 
   render() {
     // no render when not open
@@ -83,20 +108,12 @@ class OrderModal extends Component {
                 left={true}
                 text={leftText}
                 visible={this.state.page > 1}/>
-              <div className="buttons">
-                <button type="submit">Order</button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    this.props.uiShowOrderForm(false);
-                  }}>Cancel
-                </button>
-              </div>
+              {this.modalButtons()}
               <NavLeftRight
                 onClick={this.nav.bind(this, 1)}
                 left={false}
                 text={rightText}
-              visible={this.state.page < 3 && !(this.state.page === 2 && this.props.order.isSubmitted().length === 0)}/>
+              visible={this.state.page < 3 && !(this.state.page === 2 && !this.props.order.isSubmitted())}/>
             </div>
           </form>}
 

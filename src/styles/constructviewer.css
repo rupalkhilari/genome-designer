@@ -1,0 +1,21 @@
+@import 'variables.css';
+
+.order-button {
+  position: absolute;
+  right: 2px;
+  top: 8px;
+  text-transform: uppercase;
+  background-color: var(--colors-blueGreyMed);
+  color: var(--colors-greyLight);
+  border: 1px solid transparent;
+  border-radius: 2px;
+}
+.order-button:focus {
+  outline: none;
+}
+.order-button:active {
+  color: var(--colors-selected);
+}
+.order-button:hover {
+  background-color: var(--colors-blueBlack);
+}

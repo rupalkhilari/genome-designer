@@ -18,7 +18,7 @@ export default class Page3 extends Component {
           <div>{this.props.order.metadata.name}</div>
         </Row>
         <Row text="Job ID:">
-          <div>{this.props.order.isSubmitted()}</div>
+          <div>{this.props.order.status.remoteId}</div>
         </Row>
         <Row text="Date Submitted:">
           <div>{new Date(this.props.order.status.timeSent).toUTCString()}</div>

@@ -38,7 +38,6 @@ import { focusDetailsExist } from '../selectors/focus';
 import { undo, redo, transact, commit } from '../store/undo/actions';
 import {
   uiShowGenBankImport,
-  uiShowOrderForm,
   uiToggleDetailView,
   uiSetGrunt,
   uiShowAbout,
@@ -54,7 +53,6 @@ import {
   privacy,
 } from '../utils/ui/uiapi';
 import AutosaveTracking from '../components/GlobalNav/autosaveTracking';
-import { orderCreate, orderGenerateConstructs } from '../actions/orders';
 
 import '../styles/GlobalNav.css';
 
@@ -79,7 +77,6 @@ class GlobalNav extends Component {
     transact: PropTypes.func.isRequired,
     commit: PropTypes.func.isRequired,
     uiShowGenBankImport: PropTypes.func.isRequired,
-    uiShowOrderForm: PropTypes.func.isRequired,
     projectGetVersion: PropTypes.func.isRequired,
     blockClone: PropTypes.func.isRequired,
     clipboardSetData: PropTypes.func.isRequired,
@@ -445,19 +442,6 @@ class GlobalNav extends Component {
                 this.downloadProjectGenbank();
               },
             },
-            {},
-            {
-              text: 'Order DNA',
-              action: () => {
-                if (this.props.currentConstruct && this.props.currentConstruct.isTemplate()) {
-                  const order = this.props.orderCreate( this.props.project.id, [this.props.currentConstruct.id]);
-                  this.props.orderGenerateConstructs( order.id );
-                  this.props.uiShowOrderForm(true, order.id);
-                } else {
-                  this.props.uiSetGrunt('Please select a template construct to order.');
-                }
-              },
-            }
           ],
         },
         {
@@ -652,7 +636,6 @@ export default connect(mapStateToProps, {
   transact,
   commit,
   uiShowGenBankImport,
-  uiShowOrderForm,
   uiToggleDetailView,
   uiShowAbout,
   uiSetGrunt,
@@ -664,6 +647,4 @@ export default connect(mapStateToProps, {
   clipboardSetData,
   blockAddComponent,
   blockAddComponents,
-  orderCreate,
-  orderGenerateConstructs,
 })(GlobalNav);
