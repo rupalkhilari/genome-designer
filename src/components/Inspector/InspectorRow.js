@@ -26,8 +26,8 @@ export default class InspectorRow extends Component {
   };
 
   getActiveState = () => {
-    const { hasToggle, forceActive } = this.props;
-    return !hasToggle || ((forceActive === true || forceActive === false) ? forceActive : this.state.active);
+    const { forceActive } = this.props;
+    return (forceActive === true || forceActive === false) ? forceActive : this.state.active;
   };
 
   handleToggle = () => {
@@ -46,19 +46,19 @@ export default class InspectorRow extends Component {
 
     const headingEl = hasToggle ?
       (
-        <h4 className={'InspectorContent-heading toggler' + (isActive ? ' active' : '')}
+        <h4 className={'InspectorRow-heading toggler' + (isActive ? ' active' : '')}
             onClick={() => this.handleToggle()}>
           <Toggler open={isActive}/>
           <span>{heading}</span>
         </h4>
       )
       :
-      (<h4 className="InspectorContent-heading">{heading}</h4>);
+      (<h4 className="InspectorRow-heading">{heading}</h4>);
 
     return (
       <div className="InspectorRow">
         {headingEl}
-        {isActive && children}
+        {(!hasToggle || isActive) && children}
       </div>
     );
   }

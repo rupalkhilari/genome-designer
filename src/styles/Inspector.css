@@ -12,22 +12,6 @@
   flex-grow: 1;
   color: var(--colors-greyLight);
 
-  &-heading {
-    font-size: var(--font-size-text);
-    color: var(--colors-grey);
-    font-weight: 500;
-    margin: 1.25em 0 0.4em;
-    user-select: none;
-
-    &.toggler {
-      cursor: pointer;
-    }
-
-    &.active {
-      font-weight: bold;
-    }
-  }
-
   &Block {
 
     &-Annotations {

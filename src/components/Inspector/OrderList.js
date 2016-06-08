@@ -12,12 +12,12 @@ export default function OrderList({ orders, onClick, ...rest }) {
     <div className="OrderList">
       {orders.map(order => {
         return (
-          <div className="InspectorContent-section-group"
+          <div className="OrderList-group"
                key={order.id}>
-            <div className="InspectorContent-section-group-heading">{order.getName()}</div>
-            <div className="InspectorContent-section-group-text">
+            <div className="OrderList-group-heading">{order.getName()}</div>
+            <div className="OrderList-group-time">
               {(new Date(order.dateSubmitted())).toLocaleString()}
-              <a className="InspectorContent-section-group-link"
+              <a className="OrderList-group-action"
                  onClick={() => onClick(order.id)}>Order Details...</a>
             </div>
           </div>
