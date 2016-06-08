@@ -2,6 +2,7 @@ import { errorDoesNotExist, errorFileSystem } from './../utils/errors';
 import mkpath from 'mkpath';
 import rimraf from 'rimraf';
 import fs from 'fs';
+import mv from 'mv';
 
 const parser = (string) => {
   if (typeof string !== 'string') {
@@ -130,6 +131,17 @@ export const directoryDelete = (path) => {
         return reject(err);
       }
       resolve(path);
+    });
+  });
+};
+
+export const directoryMove = (path, newPath) => {
+  return new Promise((resolve, reject) => {
+    mv(path, newPath, { mkdirp: true }, (err) => {
+      if (err) {
+        return reject(err);
+      }
+      return resolve(newPath);
     });
   });
 };

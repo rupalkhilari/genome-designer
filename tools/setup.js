@@ -14,6 +14,7 @@ async function setup() {
     directoryMake(createStorageUrl('temp')),
     directoryMake(createStorageUrl('genbank')),
     directoryMake(createStorageUrl('csv')),
+    directoryMake(createStorageUrl('trash')),
   ]);
 
   await copyToStorage();

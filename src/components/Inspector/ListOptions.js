@@ -25,7 +25,7 @@ export class ListOptions extends Component {
     const isFrozen = block.isFrozen();
 
     return (
-      <div className={'ListOptions' + (isFrozen ? ' isFrozen' : '')}>
+      <div className={'ListOptions no-vertical-scroll' + (isFrozen ? ' isFrozen' : '')}>
         {isFrozen && <div className="ListOptions-explanation">List items cannot be modified after they have been frozen. Duplicate the template to make changes.</div>}
         {optionBlocks.map(item => {
           return (

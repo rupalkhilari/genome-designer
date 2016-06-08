@@ -62,7 +62,9 @@ export const orderCreate = (projectId, constructIds = [], parameters = {}) => {
       type: ActionTypes.ORDER_CREATE,
       order,
     });
-    return order;
+
+    //generate constructs and return
+    return dispatch(orderGenerateConstructs(order.id)); //eslint-disable-line no-use-before-define
   };
 };
 
@@ -100,10 +102,11 @@ export const orderGenerateConstructs = (orderId) => {
 
 export const orderSetParameters = (orderId, parameters = {}, shouldMerge = false) => {
   return (dispatch, getState) => {
-    invariant(Order.validateParameters(parameters), 'parameters must pass validation');
-
     const oldOrder = getState().orders[orderId];
     const order = oldOrder.setParameters(parameters, shouldMerge);
+
+    //validate afterwards in case merging
+    invariant(Order.validateParameters(order.parameters), 'parameters must pass validation');
 
     dispatch({
       type: ActionTypes.ORDER_STASH,

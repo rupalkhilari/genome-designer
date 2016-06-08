@@ -77,7 +77,7 @@ const _getOptions = (blockId, state, includeUnselected = false) => {
 // returns flat array of blocks, not touching list blocks
 const _flattenConstruct = (blockId, state) => {
   const block = _getBlockFromStore(blockId, state);
-  if (!block.components.length) {
+  if (!block.isConstruct()) {
     return [block];
   }
 
@@ -224,24 +224,24 @@ export const blockHasSequence = blockId => {
 };
 
 /*
-deprecated filters for now
-//expects object block.rules.filter
-export const blockGetFiltered = filters => {
-  return (dispatch, getState) => {
-    invariant(typeof filters === 'object', 'must pass ovject of filters');
-    const blockState = getState().blocks;
+ deprecated filters for now
+ //expects object block.rules.filter
+ export const blockGetFiltered = filters => {
+ return (dispatch, getState) => {
+ invariant(typeof filters === 'object', 'must pass ovject of filters');
+ const blockState = getState().blocks;
 
-    return Object.keys(blockState)
-      .map(id => blockState[id])
-      .filter(block => {
-        return Object.keys(filters).every(key => {
-          const value = filters[key];
-          return pathGet(block, key) === value;
-        });
-      });
-  };
-};
-*/
+ return Object.keys(blockState)
+ .map(id => blockState[id])
+ .filter(block => {
+ return Object.keys(filters).every(key => {
+ const value = filters[key];
+ return pathGet(block, key) === value;
+ });
+ });
+ };
+ };
+ */
 
 //given a construct, returns an array of parts that have sequence / are list blocks, including hidden blocks
 export const blockFlattenConstruct = (blockId) => {
@@ -260,9 +260,9 @@ export const blockFlattenConstruct = (blockId) => {
 
  generates:
  [
-   [A],
-   [block2, block3, block4],
-   [block6],
+ [A],
+ [block2, block3, block4],
+ [block6],
  ]
  */
 export const blockGetPositionalCombinations = (blockId, includeUnselected = false) => {
@@ -290,9 +290,9 @@ export const blockGetPositionalCombinations = (blockId, includeUnselected = fals
 
  generates:
  [
-   [A, block2, block6],
-   [A, block3, block6],
-   [A, block4, block6],
+ [A, block2, block6],
+ [A, block3, block6],
+ [A, block4, block6],
  ]
  */
 //todo - parameters for limiting number combinations, how to select them
@@ -312,3 +312,17 @@ export const blockGetCombinations = (blockId, parameters = {}) => {
   };
 };
 
+export const blockFlattenConstructAndLists = (blockId) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const optionPreferences = state.focus.options;
+    const flattened = _flattenConstruct(blockId, state);
+    return flattened.map(block => {
+      const options = block.getOptions();
+      const preference = optionPreferences[block.id];
+      return (block.isList() && options.length) ?
+        state.blocks[preference || options[0]] :
+        block;
+    });
+  };
+};
