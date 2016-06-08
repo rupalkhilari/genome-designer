@@ -44,7 +44,7 @@ module.exports = {
     browser
       // expect two construct views, two with one block each
       .assert.countelements('.construct-viewer', 2)
-      .assert.countelements('.role-glyph', 2)
+      .assert.countelements('[data-nodetype="block"]', 2)
       // expect SVG elements for each role symbol
       .assert.countelements('.construct-viewer svg', 2);
 
@@ -75,7 +75,7 @@ module.exports = {
     browser
       // expect three constructs and three blocks
       .assert.countelements('.construct-viewer', 3)
-      .assert.countelements('.role-glyph', 3)
+      .assert.countelements('[data-nodetype="block"]', 3)
       // expect SVG elements for each role symbol
       .assert.countelements('.construct-viewer svg', 3);
 
@@ -86,7 +86,7 @@ module.exports = {
     browser
       // expect four construct views and 4 blocks
       .assert.countelements('.construct-viewer', 4)
-      .assert.countelements('.role-glyph', 4)
+      .assert.countelements('[data-nodetype="block"]', 4)
       // expect SVG elements for each role symbol
       .assert.countelements('.construct-viewer svg', 4)
       .end();

@@ -41,7 +41,7 @@ module.exports = {
     browser
       // expect two construct views, two with one block each
       .assert.countelements('.construct-viewer', 2)
-      .assert.countelements('.role-glyph', 2)
+      .assert.countelements('[data-nodetype="block"]', 2)
       // expect SVG elements for each role symbol
       .assert.countelements('.construct-viewer svg', 2)
       .end();

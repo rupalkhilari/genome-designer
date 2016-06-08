@@ -27,7 +27,7 @@ module.exports = {
 
       // expect to start with 6 blocks
     browser
-      .assert.countelements('.role-glyph', 6)
+      .assert.countelements('[data-nodetype="block"]', 6)
       // send select all
       .keys([browser.Keys.COMMAND, 'a'])
       .pause(1000)

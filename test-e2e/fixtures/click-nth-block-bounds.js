@@ -7,7 +7,7 @@ module.exports = function (browser, srcSelector, blockIndex) {
   browser.execute(function(srcSelector, blockIndex) {
 
     var src = document.querySelector(srcSelector);
-    var blocks = src.querySelectorAll('.role-glyph');
+    var blocks = src.querySelectorAll('[data-nodetype="block"]');
     var block = blocks[blockIndex];
     return block.getBoundingClientRect();
 

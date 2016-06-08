@@ -43,7 +43,7 @@ module.exports = {
     browser
       // expect one construct view and one block
       .assert.countelements('.construct-viewer', 1)
-      .assert.countelements('.role-glyph', 1);
+      .assert.countelements('[data-nodetype="block"]', 1);
 
 
     var blockBounds = openNthBlockContextMenu(browser, '.sceneGraph', 0);

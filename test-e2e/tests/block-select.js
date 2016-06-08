@@ -7,6 +7,7 @@ var newProject = require('../fixtures/newproject');
 var newConstruct = require('../fixtures/newconstruct');
 var clickNthBlock = require('../fixtures/click-nth-block-bounds');
 var clickAt = require('../fixtures/clickAt');
+var openInventory = require('../fixtures/open-inventory');
 
 module.exports = {
   'Test that you can shift/meta/fence select blocks' : function (browser) {
@@ -27,11 +28,10 @@ module.exports = {
     newProject(browser);
 
       // open inventory
+    openInventory(browser);
     browser
-      .click('.Inventory-trigger')
-      .waitForElementPresent('.SidePanel.Inventory.visible', 5000, 'Expected inventory to be visible')
       // sketch blocks
-      .click('.InventoryGroup:nth-of-type(4) .InventoryGroup-heading');
+      .click('.InventoryGroup:nth-of-type(3) .InventoryGroup-heading');
 
     // expect one construct
     browser.assert.countelements('.construct-viewer', 1);
@@ -41,7 +41,7 @@ module.exports = {
 
     browser
       // expect one block
-      .assert.countelements('.role-glyph', 1)
+      .assert.countelements('[data-nodetype="block"]', 1)
       .pause(500);
 
     // drag some other blocks into the construct
@@ -51,12 +51,12 @@ module.exports = {
       dragFromTo(
           browser,
           '.InventoryItemRole:nth-of-type(' + i + ')', 10, 10,
-          '.construct-viewer:nth-of-type(1) .sceneGraph .role-glyph:nth-of-type(1)', 10, 10);
+          '.construct-viewer:nth-of-type(1) .sceneGraph [data-nodetype="block"]', 10, 10);
       browser.pause(50);
     }
 
     // should have 10 blocks total
-    browser.assert.countelements('.role-glyph', 10);
+    browser.assert.countelements('[data-nodetype="block"]', 10);
     var blockBounds = clickNthBlock(browser, '.sceneGraph', 0);
 
     // expect 1 selection block
