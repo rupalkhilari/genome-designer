@@ -11,6 +11,7 @@ const makePath = (...paths) => {
   return path.resolve(__dirname, '../../storage/', ...paths);
 };
 
+export const trashPath = 'trash';
 export const filePath = 'file';
 export const sequencePath = 'sequence';
 export const blockPath = 'blocks';
@@ -35,6 +36,10 @@ export const createFilePath = (path) => {
 };
 
 /***** data *****/
+
+// TRASH
+
+export const createTrashPath = (...paths) => createStorageUrl(trashPath, ...paths);
 
 //PROJECTS
 

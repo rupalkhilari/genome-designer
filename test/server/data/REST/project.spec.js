@@ -186,7 +186,7 @@ describe('Server', () => {
             .expect(400, done);
         });
 
-        it('DELETE removes ownership of the project', (done) => {
+        it('DELETE moves the project to the trash folder', (done) => {
           const url = `/data/${projectId}`;
           request(server)
             .delete(url)
@@ -196,21 +196,21 @@ describe('Server', () => {
                 done(err);
               }
 
-              persistence.projectExists(projectId)
-                .catch(() => done('project should still exist...'))
-                .then(result => {
-                  assert(result, 'project should still exist');
+              const trashPath = filePaths.createTrashPath(projectId);
 
-                  const projectPermissionsPath = filePaths.createProjectPermissionsPath(projectId);
-                  const deletedOwnerPath = filePaths.createProjectPath(projectId, filePaths.permissionsDeletedFileName);
+              persistence.projectExists(projectId)
+                .then(() => assert(false, 'shouldnt exist here any more...'))
+                .catch(() => fileSystem.directoryExists(trashPath))
+                .catch(() => assert(false, 'directory should exist'))
+                .then(() => {
+                  const manifestPath = filePaths.createTrashPath(projectId, filePaths.projectDataPath, filePaths.manifestFilename);
+                  const permissionsPath = filePaths.createTrashPath(projectId, filePaths.permissionsFilename);
 
                   return Promise.all([
-                    fileSystem.fileExists(deletedOwnerPath).catch(err => done(err)),
-                    fileSystem.fileExists(projectPermissionsPath).catch(err => done(err)),
-                    fileSystem.fileRead(projectPermissionsPath)
-                      .then(result => assert(!result.indexOf('0') >= 0, 'should not include user ID in permissions')),
-                    fileSystem.fileRead(deletedOwnerPath)
-                      .then(result => assert(result.indexOf('0') >= 0, 'old owners should list user ID')),
+                    fileSystem.fileExists(manifestPath).catch(err => done(err)),
+                    fileSystem.fileExists(permissionsPath).catch(err => done(err)),
+                    fileSystem.fileRead(permissionsPath)
+                      .then(result => assert(result.indexOf('0') >= 0, 'should still list user ID')),
                   ])
                   .then(() => done())
                   .catch(err => done(err));

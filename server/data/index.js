@@ -289,7 +289,7 @@ router.route('/:projectId')
   .get((req, res, next) => {
     const { projectId } = req;
     //const { depth } = req.query; //future
-    
+
     persistence.projectGet(projectId)
       .then(result => {
         if (!result) {
