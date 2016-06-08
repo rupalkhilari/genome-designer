@@ -19,6 +19,7 @@ export class InventoryItem extends Component {
         image: PropTypes.string,
       }).isRequired,
     }).isRequired,
+    itemDetail: PropTypes.string, //gray text shown after
     svg: PropTypes.string, //right now, SBOL SVG ID
     svgProps: PropTypes.object,
     defaultName: PropTypes.string,
@@ -109,7 +110,7 @@ export class InventoryItem extends Component {
   };
 
   render() {
-    const { item, svg, svgProps, defaultName } = this.props;
+    const { item, itemDetail, svg, svgProps, defaultName } = this.props;
     const isSelected = this.props.forceBlocks.indexOf(item) >= 0;
 
     const hasSequence = item.sequence && item.sequence.length > 0;
@@ -126,7 +127,8 @@ export class InventoryItem extends Component {
           <span className="InventoryItem-text">
             {itemName}
           </span>
-          {hasSequence && <BasePairCount count={item.sequence.length}/>}
+          {itemDetail && <span className="InventoryItem-detail">{itemDetail}</span>}
+          {(!itemDetail && hasSequence) && <span className="InventoryItem-detail"><BasePairCount count={item.sequence.length}/></span>}
         </a>
       </div>
     );
