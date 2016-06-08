@@ -9,6 +9,7 @@ import Toggler from './../ui/Toggler';
 import SymbolPicker from './../ui/SymbolPicker';
 import BlockSource from './BlockSource';
 import ListOptions from './ListOptions';
+import OrderList from './OrderList';
 
 export class InspectorBlock extends Component {
   static propTypes = {
@@ -240,21 +241,12 @@ export class InspectorBlock extends Component {
             <span>Order History</span>
           </h4>
         )}
-        {!!relevantOrders.length && (<div className={'InspectorContent-section' + (this.state.toggles.orders ? '' : ' closed')}>
-          {relevantOrders.map(order => {
-            return (
-              <div className="InspectorContent-section-group"
-                   key={order.id}>
-                <div className="InspectorContent-section-group-heading">{order.getName()}</div>
-                <div className="InspectorContent-section-group-text">
-                  {(new Date(order.dateSubmitted())).toLocaleString()}
-                  <a className="InspectorContent-section-group-link"
-                     onClick={() => this.handleOpenOrder(order.id)}>Order Details...</a>
-                </div>
-              </div>
-            );
-          })}
-        </div>)}
+        {!!relevantOrders.length && (
+          <div className={'InspectorContent-section' + (this.state.toggles.orders ? '' : ' closed')}>
+            <OrderList orders={relevantOrders}
+                       onClick={(orderId) => this.handleOpenOrder(orderId)}/>
+          </div>
+        )}
 
         <h4 className="InspectorContent-heading">Color & Symbol</h4>
         <div className="InspectorContent-pickerWrap">

@@ -4,6 +4,8 @@ import { transact, commit, abort } from '../../store/undo/actions';
 import { projectRename, projectMerge } from '../../actions/projects';
 import InputSimple from './../InputSimple';
 import Project from '../../models/Project';
+import OrderList from './OrderList';
+import Toggler from './../ui/Toggler';
 
 export class InspectorProject extends Component {
   static propTypes = {
@@ -18,6 +20,15 @@ export class InspectorProject extends Component {
     transact: PropTypes.func.isRequired,
     commit: PropTypes.func.isRequired,
     abort: PropTypes.func.isRequired,
+  };
+
+  state = {
+    toggles: {},
+  };
+
+  handleToggle = (field) => {
+    const oldState = !!this.state.toggles[field];
+    this.setState({ toggles: Object.assign({}, this.state.toggles, { [field]: !oldState }) });
   };
 
   setProjectName = (name) => {
@@ -43,7 +54,7 @@ export class InspectorProject extends Component {
   };
 
   render() {
-    const { instance, readOnly } = this.props;
+    const { instance, orders, readOnly } = this.props;
 
     return (
       <div className="InspectorContent InspectorContentProject">
@@ -67,6 +78,19 @@ export class InspectorProject extends Component {
                      readOnly={readOnly}
                      maxLength={2048}
                      value={instance.metadata.description}/>
+
+        {!!orders.length && (
+          <h4 className={'InspectorContent-heading toggler' + (this.state.toggles.orders ? ' active' : '')}
+              onClick={() => this.handleToggle('orders')}>
+            <Toggler open={this.state.toggles.orders}/>
+            <span>Order History</span>
+          </h4>
+        )}
+        {!!orders.length && (
+          <div className={'InspectorContent-section' + (this.state.toggles.orders ? '' : ' closed')}>
+            <OrderList orders={orders} />
+          </div>
+        )}
       </div>
     );
   }
