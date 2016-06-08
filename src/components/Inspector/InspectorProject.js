@@ -24,7 +24,7 @@ export class InspectorProject extends Component {
     abort: PropTypes.func.isRequired,
     uiShowOrderForm: PropTypes.func.isRequired,
   };
-  
+
   setProjectName = (name) => {
     this.props.projectRename(this.props.instance.id, name);
   };
