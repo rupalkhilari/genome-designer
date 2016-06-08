@@ -301,14 +301,14 @@ export const blockGetCombinations = (blockId, parameters = {}) => {
     const positions = dispatch(blockGetPositionalCombinations(blockId, false));
 
     //guarantee both accumulator (and positions) array have at least one item to map over
-    const first = positions.shift();
+    const last = positions.pop();
 
     //iterate through positions, essentially generating tree with * N branches for N options at position
-    return positions.reduce((acc, position) => {
+    return positions.reduceRight((acc, position) => {
       // for each extant construct, create one variant which adds each part respectively
       // flatten them for return and repeat!
-      return flatten(position.map(option => acc.map(partialConstruct => partialConstruct.concat(option))));
-    }, [first]);
+      return flatten(position.map(option => acc.map(partialConstruct => [option].concat(partialConstruct))));
+    }, [last]);
   };
 };
 

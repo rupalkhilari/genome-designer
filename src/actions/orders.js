@@ -6,7 +6,7 @@ import * as projectActions from './projects';
 import * as blockActions from './blocks';
 import * as projectSelectors from '../selectors/projects';
 import * as blockSelectors from '../selectors/blocks';
-import { merge, flatten } from 'lodash';
+import { merge, flatten, sampleSize } from 'lodash';
 import OrderConstructSchema from '../schemas/OrderConstruct';
 
 export const orderList = (projectId) => {
@@ -75,7 +75,7 @@ export const orderGenerateConstructs = (orderId) => {
 
     //for each constructId, get construct combinations as blocks
     //flatten all combinations into a single list of combinations
-    const constructs = flatten(constructIds.map(constructId => dispatch(blockSelectors.blockGetCombinations(constructId, parameters))))
+    const allConstructs = flatten(constructIds.map(constructId => dispatch(blockSelectors.blockGetCombinations(constructId, parameters))))
     //convert each combination construct (currently blocks) into schema-conforming form
       .map(construct => {
         //each construct comforms ot OrderConstruct
@@ -87,6 +87,18 @@ export const orderGenerateConstructs = (orderId) => {
           })),
         });
       });
+
+    let constructs = allConstructs;
+    if (!parameters.onePot && parameters.permutations < allConstructs.length) {
+      if (parameters.combinatorialMethod === 'Maximum Unique Set') {
+        //this may not be the most exlucsive set.... should actually think through this (and dependent on how generated)
+        //also not exact, so trim to make sure correct length
+        constructs = sampleSize(allConstructs.filter((el, idx, arr) => idx % Math.floor(allConstructs.length / parameters.permutations) === 0), parameters.permutations);
+      } else {
+        //default to random subset
+        constructs = sampleSize(allConstructs, parameters.permutations);
+      }
+    }
 
     const order = oldOrder.setConstructs(constructs);
 
