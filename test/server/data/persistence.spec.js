@@ -313,6 +313,8 @@ describe('Server', () => {
         const projectManifestPath = filePaths.createProjectManifestPath(projectId);
         const projectPermissionsPath = filePaths.createProjectPermissionsPath(projectId);
         const projectOldOwnersPath = filePaths.createProjectPath(projectId, filePaths.permissionsDeletedFileName);
+        const trashPathProject = filePaths.createTrashPath(projectId);
+        const trashPathProjectManifest = filePaths.createTrashPath(projectId, filePaths.projectDataPath, filePaths.manifestFilename);
 
         const blockData = new Block({ projectId });
         const blockId = blockData.id;
@@ -321,17 +323,23 @@ describe('Server', () => {
 
         //hack(ish) - creating at beginning of each because chaining tests is hard, and beforeEach will encounter race condition
 
-        it('projectDelete() does NOT delete the folder, changes permissions', () => {
+        it('projectDelete() moves the folder to the trash', () => {
           return persistence.projectWrite(projectId, projectData, userId)
             .then(() => fileRead(projectManifestPath))
             .then(result => expect(result).to.eql(projectData))
             .then(() => persistence.projectDelete(projectId))
+            /*
+            //for scenario of writing old permissions file
             .then(() => fileExists(projectManifestPath))
             .then(result => assert(true))
             .then(() => fileRead(projectPermissionsPath))
             .then(contents => assert(!contents.indexOf(userId) >= 0, 'user should not be present anymore'))
             .then(() => fileRead(projectOldOwnersPath))
             .then(contents => assert(contents.indexOf(userId) >= 0, 'user ID should be present'));
+            */
+            .then(() => directoryExists(trashPathProject))
+            .then(() => fileRead(trashPathProjectManifest))
+            .then(result => expect(result).to.eql(projectData));
         });
 
         it('blockDelete() deletes block', () => {
