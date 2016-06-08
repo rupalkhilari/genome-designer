@@ -44,8 +44,8 @@ export default class Project extends Instance {
   }
 
   addComponents(...components) {
-    invariant(components.every(comp => idValidator(comp)), 'must pass component IDs');
-    return this.mutate('components', this.components.concat(components));
+    invariant(components.length && components.every(comp => idValidator(comp)), 'must pass component IDs');
+    return this.mutate('components', components.concat(this.components));
   }
 
   removeComponents(...components) {
