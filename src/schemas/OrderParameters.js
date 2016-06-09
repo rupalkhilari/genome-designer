@@ -14,9 +14,10 @@ const fieldDefs = {
   sequenceAssemblies: [
     fields.bool(),
     'Whether to sequence all assemblies after production',
+    { scaffold : () => true },
   ],
   permutations: [
-    fields.number({ min: 1 }),
+    fields.number(),
     'For multi pot combinatorial this is number of random constructs to assemble',
   ],
   combinatorialMethod: [

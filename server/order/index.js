@@ -43,12 +43,12 @@ router.route('/:projectId/:orderId?')
     const { foundry, order } = req.body;
 
     if (projectId !== order.projectId) {
-      res.status(401).send('project ID and order.projectId must match');
+      return res.status(401).send('project ID and order.projectId must match');
     }
 
     //note - this expects order.id to be defined
     if (!Order.validateSetup(order)) {
-      next(errorInvalidModel);
+      return next(errorInvalidModel);
     }
 
     if (foundry !== 'egf') {
@@ -64,15 +64,16 @@ router.route('/:projectId/:orderId?')
     submit(order, user)
       .then(response => {
         // freeze all the blocks in the construct
-        Promise.all(order.constructIds.map((constructId) => rollup.getContents(constructId, projectId)))
-          .then(nestedContents => flatten(nestedContents))
-          .then(blocks => blocks.map(block => {
-            block.rules.frozen = true;
-            return block;
-          }))
+        return Promise.all(order.constructIds.map((constructId) => rollup.getContents(constructId, projectId)))
+          .then(blockMaps => blockMaps.reduce((acc, map) => Object.assign(acc, map.components, map.options), {}))
+          .then(blockMap => Object.keys(blockMap).map(key => blockMap[key]))
+          .then(blocks => blocks.map(block => merge(block, { rules: { frozen: true } })))
           .then(blocks => Promise.all(blocks.map(block => persistence.blockWrite(block.id, block, projectId))))
-          //snapshot, return the order to the client
-          .then(() => persistence.projectSnapshot(projectId, user.uuid, `ORDER`))
+          .then(() => response);
+      })
+      .then(response => {
+        //snapshot, return the order to the client
+        return persistence.projectSnapshot(projectId, user.uuid, `ORDER`)
           .then(({ sha, time }) => {
             merge(order, {
               projectVersion: sha,
