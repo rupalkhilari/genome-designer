@@ -27,10 +27,12 @@ export default class InventoryItemBlock extends Component {
     const isTemplate = block.isTemplate();
     const isFixed = block.isFixed();
     const isConstruct = block.isConstruct();
+    const type = isTemplate ? 'template' : (isConstruct ? 'construct' : 'block'); //eslint-disable-line no-nested-ternary
 
     return (
       <div className="InventoryItemBlock">
         <InventoryItem {...rest}
+          dataAttribute={`${type} ${block.id}`}
           inventoryType={blockDragType}
           defaultName={block.getName()}
           svg={isFixed ? 'lock' : null}

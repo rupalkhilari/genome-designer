@@ -105,10 +105,12 @@ export class InventoryRoleMap extends Component {
           <InventoryListGroup key={type}
                               title={name + ` (${count})`}
                               isLoading={isLoading}
-                              onToggle={(nextState) => this.onToggleType(nextState, type)}>
+                              onToggle={(nextState) => this.onToggleType(nextState, type)}
+                              dataAttribute={`roleMap ${name}`}>
             <InventoryList inventoryType={blockDragType}
                            onDrop={this.onBlockDrop}
-                           items={items}/>
+                           items={items}
+                           dataAttributePrefix={`roleMap ${name}`}/>
           </InventoryListGroup>
         );
       });

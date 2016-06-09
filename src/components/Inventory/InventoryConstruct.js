@@ -101,6 +101,7 @@ export class InventoryConstruct extends Component {
                             isActive={isActive}
                             onSelect={() => focusForceBlocks([block])}
                             isSelectable
+                            dataAttribute={`construct ${block.id}`}
                             ref={(el) => {
                               if (el) { this.itemElement = el.getHeading(); }
                             }}>

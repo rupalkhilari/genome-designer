@@ -99,7 +99,8 @@ export class InventoryProject extends Component {
                           isExpanded={isExpanded && canToggle}
                           onToggle={(nextState) => this.handleToggleProject(nextState, projectId)}
                           onSelect={(nextState) => this.onToggleProject(nextState, projectId)}
-                          isActive={isActive}>
+                          isActive={isActive}
+                          dataAttribute={`project ${project.id}`}>
         {project.components.map(compId => {
           return (<InventoryConstruct key={compId}
                                       blockId={compId}/>);
