@@ -86,7 +86,10 @@ router.route('/:projectId/:orderId?')
               },
             });
 
-            return persistence.orderWrite(order.id, order, projectId);
+            return rollup.getProjectRollup(projectId)
+              .then(roll => {
+                return persistence.orderWrite(order.id, order, projectId, roll);
+              });
           });
       })
       .then(order => {

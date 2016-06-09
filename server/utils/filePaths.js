@@ -82,16 +82,25 @@ export const createBlockManifestPath = (blockId, projectId) => {
 
 //ORDERS
 
+// projects/<projectId>/orders
 export const createOrderDirectoryPath = (projectId, ...rest) => {
   return createProjectPath(projectId, orderPath, ...rest);
 };
 
-//orders dont have their own directory, they are just files named by orderId
-export const createOrderManifestPath = (orderId, projectId) => {
+// projects/<projectId>/orders/<orderId>
+export const createOrderPath = (orderId, projectId, ...rest) => {
   invariant(orderId, 'Order ID required');
   invariant(projectId, 'Project ID required');
+  return createOrderDirectoryPath(projectId, orderId, ...rest);
+};
 
-  return createOrderDirectoryPath(projectId, `${orderId}.json`);
+//orders dont have their own directory, they are just files named by orderId
+export const createOrderManifestPath = (orderId, projectId) => {
+  return createOrderPath(orderId, projectId, manifestFilename);
+};
+
+export const createOrderProjectManifestPath = (orderId, projectId) => {
+  return createOrderPath(orderId, projectId, 'project.json');
 };
 
 //SEQUENCE
