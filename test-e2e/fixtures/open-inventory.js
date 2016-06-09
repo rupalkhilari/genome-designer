@@ -7,7 +7,6 @@ var openinventory = function(browser) {
   browser.execute(function() {
     return !!document.querySelector('.SidePanel.Inventory.visible');
   }, [], function(result) {
-    console.log('Result:', JSON.stringify(result, null, 2));
     if (!result.value) {
       browser
         .click('.Inventory-trigger')

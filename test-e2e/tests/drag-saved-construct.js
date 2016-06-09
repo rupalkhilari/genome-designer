@@ -5,6 +5,7 @@ var dragFromTo = require('../fixtures/dragfromto');
 var newProject = require('../fixtures/newproject');
 var newConstruct = require('../fixtures/newconstruct');
 var clickMainMenu = require('../fixtures/click-main-menu');
+var openInventory = require('../fixtures/open-inventory');
 
 module.exports = {
   'Create a construct, save to inventory, drag out to create a new construct' : function (browser) {
@@ -19,31 +20,24 @@ module.exports = {
     browser
       // wait for inventory and inspector to be present
       .waitForElementPresent('.SidePanel.Inventory', 5000, 'Expected Inventory Groups')
-      .waitForElementPresent('.SidePanel.Inspector', 5000, 'Expected Inspector')
-      // open inventory
-      .click('.Inventory-trigger')
-      .waitForElementPresent('.SidePanel.Inventory.visible', 5000, 'Expected inventory to be visible')
-      // click the second inventory group 'EGF Parts' to open it
-      .click('.InventoryGroup:nth-of-type(2) .InventoryGroup-heading');
+      .waitForElementPresent('.SidePanel.Inspector', 5000, 'Expected Inspector');
 
+    newProject(browser);
+    openInventory(browser);
 
-
-    // we should have an empty project
     browser
-      .assert.countelements('.construct-viewer', 0);
+      // open sbol blocks
+      .click('.InventoryGroup:nth-of-type(3) .InventoryGroup-heading');
 
     // create a new construct with a single block
-    dragFromTo(browser, '.InventoryItemBlock:nth-of-type(1)', 10, 10, '.cvc-drop-target', 10, 10);
-
-    // open the role symbols and drag from there to make a new construct
-    browser.click('.InventoryGroup:nth-of-type(4) .InventoryGroup-heading');
+    dragFromTo(browser, '.InventoryItemRole:nth-of-type(1)', 10, 10, '.cvc-drop-target', 10, 10);
 
     // and again
     dragFromTo(browser, '.InventoryItemRole:nth-of-type(1)', 10, 10, '.cvc-drop-target', 10, 10);
 
     browser
-      // expect two construct views, two with one block each
-      .assert.countelements('.construct-viewer', 2)
+      // expect three construct views, two with one block each
+      .assert.countelements('.construct-viewer', 3)
       .assert.countelements('[data-nodetype="block"]', 2)
       // expect SVG elements for each role symbol
       .assert.countelements('.construct-viewer svg', 2);
@@ -53,23 +47,25 @@ module.exports = {
 
     // click the my projects inventory tab and expect a project.
     browser
-      .click('.InventoryGroup:nth-of-type(3) .InventoryGroup-heading')
+      .click('.InventoryGroup:nth-of-type(2) .InventoryGroup-heading')
       // expect one project
       .waitForElementPresent('.InventoryListGroup-heading', 5000, 'expect a list of projects to appear')
       // click to expand
       .click('.InventoryListGroup-heading')
-      .pause(500)
-      // now we should have three list headings, 1 for project, 1 for each construct
-      .assert.countelements('.InventoryConstruct', 2)
-      // expand them both
-      .click('.InventoryConstruct:nth-of-type(1)')
-      .click('.InventoryConstruct:nth-of-type(2)')
+      .pause(2000)
+      // 3 constructs + the test project
+      .assert.countelements('.InventoryListGroup', 4)
+      // expand them all
+      .click('.InventoryListGroup:nth-of-type(1)')
+      .click('.InventoryListGroup:nth-of-type(2)')
+      .click('.InventoryListGroup:nth-of-type(3)')
       .pause(500)
       // expect to see 2 blocks that we added to the two constructs
+      .pause(10000000)
       .assert.countelements('.InventoryItem-item', 2)
 
     // drag one of the constructs to the new construct drop target
-    dragFromTo(browser, '.InventoryConstruct:nth-of-type(1)', 10, 10, '.cvc-drop-target', 10, 10);
+    dragFromTo(browser, '.InventoryListGroup:nth-of-type(1)', 10, 10, '.cvc-drop-target', 10, 10);
 
     // should have a new construct with a corresponding increase in numbers of blocks/role glyphs
     browser
