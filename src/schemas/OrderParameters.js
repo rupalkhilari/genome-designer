@@ -16,11 +16,11 @@ const fieldDefs = {
     'Whether to sequence all assemblies after production',
   ],
   permutations: [
-    fields.number(),
+    fields.number({ min: 1 }),
     'For multi pot combinatorial this is number of random constructs to assemble',
   ],
   combinatorialMethod: [
-    fields.oneOf(['Random Subset', 'Maximum Unique Set', 'All Combinations']),
+    fields.oneOf(['Random Subset', 'Maximum Unique Set']),
     'Combinatorial Method',
   ],
 };
