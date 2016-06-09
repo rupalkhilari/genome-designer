@@ -96,6 +96,10 @@ export default class Block extends Instance {
     return this.mutate(`rules.${rule}`, value);
   }
 
+  setFrozen(isFrozen) {
+    return this.setRule('frozen', isFrozen);
+  }
+
   setRole(role) {
     return this.setRule('role', role);
   }
@@ -116,10 +120,6 @@ export default class Block extends Instance {
   /************
    metadata
    ************/
-
-  getProjectId() {
-    return this.projectId;
-  }
 
   setProjectId(projectId) {
     invariant(idValidator(projectId) || projectId === null, 'project Id is required, or null to mark unassociated');

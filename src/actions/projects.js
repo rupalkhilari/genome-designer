@@ -234,7 +234,7 @@ export const projectAddConstruct = (projectId, componentId, forceProjectId = fal
     const oldProject = getState().projects[projectId];
     const component = getState().blocks[componentId];
 
-    const componentProjectId = component.getProjectId();
+    const componentProjectId = component.projectId;
 
     dispatch(pauseAction());
     dispatch(undoActions.transact());

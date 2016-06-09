@@ -110,7 +110,7 @@ export const blockClone = (blockInput, parentObjectInput = {}, shallowOnly = fal
     // this is so the option IDs remain consistent, and projects are not huge with duplicate blocks that are just options (since they are static)
 
     //get the project ID to use for parent, considering the block may be detached from a project (e.g. inventory block)
-    const parentProjectId = oldBlock.getProjectId() || null;
+    const parentProjectId = oldBlock.projectId || null;
     //will default to null if parentProjectId is undefined
     const parentProjectVersion = dispatch(projectSelectors.projectGetVersion(parentProjectId));
 
@@ -156,6 +156,23 @@ export const blockClone = (blockInput, parentObjectInput = {}, shallowOnly = fal
     const rootId = cloneIdMap[oldBlock.id];
     const root = clones.find(clone => clone.id === rootId);
     return root;
+  };
+};
+
+export const blockFreeze = (blockId, recursive = true) => {
+  return (dispatch, getState) => {
+    const oldBlocks = [getState().blocks[blockId]];
+    if (recursive === true) {
+      oldBlocks.push(...dispatch(selectors.blockGetChildrenRecursive(blockId)));
+    }
+
+    const blocks = oldBlocks.map(block => block.setFrozen(true));
+
+    dispatch({
+      type: ActionTypes.BLOCK_FREEZE,
+      undoable: true,
+      blocks,
+    });
   };
 };
 
@@ -239,8 +256,8 @@ export const blockAddComponent = (blockId, componentId, index = -1, forceProject
     const oldBlock = getState().blocks[blockId];
     const component = getState().blocks[componentId];
 
-    const componentProjectId = component.getProjectId();
-    const nextParentProjectId = oldBlock.getProjectId();
+    const componentProjectId = component.projectId;
+    const nextParentProjectId = oldBlock.projectId;
 
     dispatch(pauseAction());
     dispatch(undoActions.transact());
