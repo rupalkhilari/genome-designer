@@ -60,12 +60,19 @@ router.route('/:projectId/:orderId?')
       user: user.uuid,
     });
 
+    // outerscope, to assign to the order
+    const constructNames = [];
+
     //future - this should be dynamic, based on the foundry, pulling from a registry
     submit(order, user)
       .then(response => {
         // freeze all the blocks in the construct
         return Promise.all(order.constructIds.map((constructId) => rollup.getContents(constructId, projectId)))
           .then(blockMaps => blockMaps.reduce((acc, map) => Object.assign(acc, map.components, map.options), {}))
+          .then(blockMap => {
+            constructNames.push(...order.constructIds.map(constructId => blockMap[constructId].metadata.name));
+            return blockMap;
+          })
           .then(blockMap => Object.keys(blockMap).map(key => blockMap[key]))
           .then(blocks => blocks.map(block => merge(block, { rules: { frozen: true } })))
           .then(blocks => Promise.all(blocks.map(block => persistence.blockWrite(block.id, block, projectId))))
@@ -76,6 +83,9 @@ router.route('/:projectId/:orderId?')
         return persistence.projectSnapshot(projectId, user.uuid, `ORDER`)
           .then(({ sha, time }) => {
             merge(order, {
+              metadata: {
+                constructNames,
+              },
               projectVersion: sha,
               status: {
                 foundry,
