@@ -154,8 +154,7 @@ export const getAllBlockRoles = (userId) => {
 export const getOrderIds = (projectId) => {
   const directory = filePaths.createOrderDirectoryPath(projectId);
   return persistence.projectExists(projectId)
-    .then(() => fileSystem.directoryContents(directory))
-    .then(contents => contents.map(fileName => fileName.replace('.json', '')));
+    .then(() => fileSystem.directoryContents(directory));
 };
 
 export const getOrders = (projectId) => {

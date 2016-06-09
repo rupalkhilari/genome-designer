@@ -95,6 +95,11 @@ const _blockSetup = (blockId, projectId) => {
   return directoryMake(blockPath);
 };
 
+const _orderSetup = (orderId, projectId) => {
+  const orderDirectory = filePaths.createOrderPath(orderId, projectId);
+  return directoryMake(orderDirectory);
+};
+
 // WRITING
 
 const _projectWrite = (projectId, project = {}) => {
@@ -110,6 +115,11 @@ const _blockWrite = (blockId, block = {}, projectId) => {
 const _orderWrite = (orderId, order = {}, projectId) => {
   const manifestPath = filePaths.createOrderManifestPath(orderId, projectId);
   return fileWrite(manifestPath, order);
+};
+
+const _orderRollupWrite = (orderId, rollup, projectId) => {
+  const orderPath = filePaths.createOrderProjectManifestPath(orderId, projectId);
+  return fileWrite(orderPath, rollup);
 };
 
 // COMMITS
@@ -292,7 +302,7 @@ export const blockMerge = (blockId, block, projectId) => {
     });
 };
 
-export const orderWrite = (orderId, order, projectId) => {
+export const orderWrite = (orderId, order, projectId, roll) => {
   const idedOrder = Object.assign({}, order, {
     projectId,
     id: orderId,
@@ -303,7 +313,11 @@ export const orderWrite = (orderId, order, projectId) => {
   }
 
   return orderAssertNew(orderId, projectId)
-    .then(() => _orderWrite(orderId, idedOrder, projectId))
+    .then(() => _orderSetup(orderId, projectId))
+    .then(() => Promise.all([
+      _orderWrite(orderId, idedOrder, projectId),
+      _orderRollupWrite(orderId, roll, projectId),
+    ]))
     .then(() => idedOrder);
 };
 
