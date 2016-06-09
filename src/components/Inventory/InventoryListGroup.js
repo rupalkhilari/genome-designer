@@ -92,7 +92,6 @@ export default class InventoryListGroup extends Component {
              ref={(el) => this.headingElement = el}
              onClick={this.handleSelect}>
           <Toggler hidden={hideToggle}
-                   disabled={!canToggle}
                    onClick={this.handleToggle}
                    open={expanded}/>
           <a className="InventoryListGroup-title">

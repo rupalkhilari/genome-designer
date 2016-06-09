@@ -51,40 +51,40 @@ module.exports = {
       // expect one project
       .waitForElementPresent('.InventoryListGroup-heading', 5000, 'expect a list of projects to appear')
       // click to expand
-      .click('.InventoryListGroup-heading')
+      //.click('.InventoryListGroup-heading')
+      .pause(1000)
+      // expect to see 4 projects including the combinatorial test project
+      .assert.countelements('[data-inventory~="project"]', 4)
+      // expand the 3rd project
+      .click('[data-inventory~="project"]:nth-of-type(1) .Toggler')
+      .click('[data-inventory~="project"]:nth-of-type(2) .Toggler')
+      .click('[data-inventory~="project"]:nth-of-type(3) .Toggler')
       .pause(2000)
-      // 3 constructs + the test project
-      .assert.countelements('.InventoryListGroup', 4)
-      // expand them all
-      .click('.InventoryListGroup:nth-of-type(1)')
-      .click('.InventoryListGroup:nth-of-type(2)')
-      .click('.InventoryListGroup:nth-of-type(3)')
-      .pause(500)
       // expect to see 2 blocks that we added to the two constructs
-      .pause(10000000)
-      .assert.countelements('.InventoryItem-item', 2)
+      .assert.countelements('[data-inventory~="construct"]', 2)
 
-    // drag one of the constructs to the new construct drop target
-    dragFromTo(browser, '.InventoryListGroup:nth-of-type(1)', 10, 10, '.cvc-drop-target', 10, 10);
+    // drag the first construct into the canvas
+    dragFromTo(browser, '[data-inventory~="construct"]', 10, 10, '.cvc-drop-target', 10, 10);
 
     // should have a new construct with a corresponding increase in numbers of blocks/role glyphs
     browser
-      // expect three constructs and three blocks
-      .assert.countelements('.construct-viewer', 3)
+      .pause(250)
+      // expect four constructs and three blocks
+      .assert.countelements('.construct-viewer', 4)
       .assert.countelements('[data-nodetype="block"]', 3)
       // expect SVG elements for each role symbol
       .assert.countelements('.construct-viewer svg', 3);
 
-    // drag a single block to create a new construct
+    //drag a single block to create a new construct
     dragFromTo(browser, '.InventoryItem-item', 10, 10, '.cvc-drop-target', 10, 10);
 
     // should have a new construct with a corresponding increase in numbers of blocks/role glyphs
     browser
       // expect four construct views and 4 blocks
-      .assert.countelements('.construct-viewer', 4)
+      .assert.countelements('.construct-viewer', 5)
       .assert.countelements('[data-nodetype="block"]', 4)
-      // expect SVG elements for each role symbol
-      .assert.countelements('.construct-viewer svg', 4)
+      // expect SVG elements for each role symbol but not for the last block added
+      .assert.countelements('.construct-viewer svg', 3)
       .end();
 
   }
