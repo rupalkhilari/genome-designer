@@ -45,6 +45,7 @@ import {
   projectGetVersion,
 } from '../../../selectors/projects';
 import { projectRemoveConstruct } from '../../../actions/projects';
+import RoleSvg from '../../../components/RoleSvg';
 
 import "../../../styles/constructviewer.css";
 
@@ -519,6 +520,24 @@ export class ConstructViewer extends Component {
     return null;
   }
 
+  lockIcon() {
+    const locked = this.props.construct.isTemplate() && this.props.construct.isFrozen();
+    if (!locked) {
+      return null;
+    }
+    return (
+      <div className="lockIcon">
+        <RoleSvg
+          symbolName="lock"
+          color={this.props.construct.metadata.color}
+          width="14px"
+          height="14px"
+          fill={this.props.construct.metadata.color}
+        />
+      </div>
+    )
+  }
+
   /**
    * render the component, the scene graph will render later when componentDidUpdate is called
    */
@@ -531,6 +550,7 @@ export class ConstructViewer extends Component {
         {this.blockContextMenu()}
         {this.constructContextMenu()}
         {this.orderButton()}
+        {this.lockIcon()}
       </div>
     );
     return rendered;
