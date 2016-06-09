@@ -43,7 +43,8 @@ export default class InventoryItemRole extends Component {
         <InventoryItem {...rest}
           inventoryType={roleDragType}
           svg={role.id}
-          item={this.roleBlock}/>
+          item={this.roleBlock}
+          dataAttribute={`sbol ${role.id}`}/>
       </div>
     );
   }
