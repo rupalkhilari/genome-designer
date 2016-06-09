@@ -41,7 +41,9 @@ export default class Block extends Instance {
       projectId: this.projectId,
       version: (firstParent && firstParent.projectId === this.projectId) ? firstParent.version : null,
     }, parentInfo);
-    return super.clone(parentObject);
+
+    //forcibly unfreeze a clone
+    return super.clone(parentObject, { rules: { frozen: false } });
   }
 
   mutate(...args) {
