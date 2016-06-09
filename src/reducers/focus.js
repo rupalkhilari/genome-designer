@@ -13,6 +13,7 @@ export const initialState = {
 };
 
 export default function inventory(state = initialState, action) {
+  console.log(action);
   switch (action.type) {
   case ActionTypes.FOCUS_FORCE_PROJECT:
     const { project } = action;
@@ -72,6 +73,7 @@ export default function inventory(state = initialState, action) {
   case ActionTypes.FOCUS_BLOCK_OPTION :
     const { options } = action;
     return Object.assign({}, state, {
+      level: 'option',
       options,
     });
 
