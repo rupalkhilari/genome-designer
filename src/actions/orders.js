@@ -2,10 +2,12 @@ import invariant from 'invariant';
 import Order from '../models/Order';
 import { getOrder, getOrders } from '../middleware/order';
 import * as ActionTypes from '../constants/ActionTypes';
-import * as projectActions from './projects';
+import * as undoActions from '../store/undo/actions';
+import { pauseAction, resumeAction } from '../store/pausableStore';
 import * as blockActions from './blocks';
-import * as projectSelectors from '../selectors/projects';
 import * as blockSelectors from '../selectors/blocks';
+import * as projectActions from './projects';
+import * as projectSelectors from '../selectors/projects';
 import { merge, flatten, sampleSize } from 'lodash';
 import OrderConstructSchema from '../schemas/OrderConstruct';
 
@@ -154,6 +156,12 @@ export const orderSubmit = (orderId, foundry) => {
       .then(orderData => {
         const order = new Order(orderData);
 
+        dispatch(pauseAction());
+        dispatch(undoActions.transact());
+
+        //todo - the order is also frozen on the server... maybe we should just send + save the project...
+        order.constructIds.forEach(constructId => dispatch(blockActions.blockFreeze(constructId, true)));
+
         dispatch({
           type: ActionTypes.PROJECT_SNAPSHOT,
           projectId: order.projectId,
@@ -164,6 +172,9 @@ export const orderSubmit = (orderId, foundry) => {
           type: ActionTypes.ORDER_SUBMIT,
           order,
         });
+
+        dispatch(undoActions.commit());
+        dispatch(resumeAction());
 
         return order;
       });

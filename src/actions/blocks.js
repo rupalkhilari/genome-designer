@@ -129,7 +129,7 @@ export const blockClone = (blockInput, parentObjectInput = {}, shallowOnly = fal
       return block;
     }
 
-    const allChildren = dispatch(selectors.blockGetChildrenRecursive(oldBlock.id));
+    const allChildren = dispatch(selectors.blockGetComponentsRecursive(oldBlock.id));
     const allToClone = [oldBlock, ...allChildren];
     //all blocks must be from same project, and all were from given version
     const unmappedClones = allToClone.map(block => block.clone(parentObject));
@@ -163,7 +163,7 @@ export const blockFreeze = (blockId, recursive = true) => {
   return (dispatch, getState) => {
     const oldBlocks = [getState().blocks[blockId]];
     if (recursive === true) {
-      oldBlocks.push(...dispatch(selectors.blockGetChildrenRecursive(blockId)));
+      oldBlocks.push(...dispatch(selectors.blockGetComponentsRecursive(blockId)));
     }
 
     const blocks = oldBlocks.map(block => block.setFrozen(true));

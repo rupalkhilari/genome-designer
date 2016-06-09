@@ -99,6 +99,9 @@ export default class Block extends Instance {
   }
 
   setFrozen(isFrozen) {
+    if (this.rules.frozen === true) {
+      return this;
+    }
     return this.setRule('frozen', isFrozen);
   }
 

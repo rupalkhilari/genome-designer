@@ -5,9 +5,10 @@ import {
   errorDoesNotExist,
   errorVersioningSystem,
 } from './../utils/errors';
-import { merge } from 'lodash';
+import { merge, flatten } from 'lodash';
 import * as querying from './../data/querying';
 import * as persistence from './../data/persistence';
+import * as rollup from './../data/rollup';
 import { permissionsMiddleware } from './../data/permissions';
 
 import Order from '../../src/models/Order';
@@ -41,6 +42,10 @@ router.route('/:projectId/:orderId?')
     const { user, projectId } = req;
     const { foundry, order } = req.body;
 
+    if (projectId !== order.projectId) {
+      res.status(401).send('project ID and order.projectId must match');
+    }
+
     //note - this expects order.id to be defined
     if (!Order.validateSetup(order)) {
       next(errorInvalidModel);
@@ -58,7 +63,16 @@ router.route('/:projectId/:orderId?')
     //future - this should be dynamic, based on the foundry, pulling from a registry
     submit(order, user)
       .then(response => {
-        return persistence.projectSnapshot(projectId, user.uuid, `ORDER`)
+        // freeze all the blocks in the construct
+        Promise.all(order.constructIds.map((constructId) => rollup.getContents(constructId, projectId)))
+          .then(nestedContents => flatten(nestedContents))
+          .then(blocks => blocks.map(block => {
+            block.rules.frozen = true;
+            return block;
+          }))
+          .then(blocks => Promise.all(blocks.map(block => persistence.blockWrite(block.id, block, projectId))))
+          //snapshot, return the order to the client
+          .then(() => persistence.projectSnapshot(projectId, user.uuid, `ORDER`))
           .then(({ sha, time }) => {
             merge(order, {
               projectVersion: sha,
