@@ -31,7 +31,7 @@ import {
 } from '../actions/blocks';
 import {
   blockGetParents,
-  blockGetChildrenRecursive,
+  blockGetComponentsRecursive,
 } from '../selectors/blocks';
 import { projectGetVersion } from '../selectors/projects';
 import { focusDetailsExist } from '../selectors/focus';
@@ -628,7 +628,7 @@ export default connect(mapStateToProps, {
   inventoryToggleVisibility,
   blockRemoveComponent,
   blockGetParents,
-  blockGetChildrenRecursive,
+  blockGetComponentsRecursive,
   uiShowDNAImport,
   inventorySelectTab,
   undo,

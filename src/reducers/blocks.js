@@ -26,6 +26,7 @@ export default function blocks(state = initialState, action) {
   case ActionTypes.BLOCK_CLONE :
   case ActionTypes.BLOCK_LOAD :
   case ActionTypes.BLOCK_STASH :
+  case ActionTypes.BLOCK_FREEZE :
   case ActionTypes.BLOCK_SET_ROLE :
   case ActionTypes.BLOCK_ADD_ROLE :
   case ActionTypes.BLOCK_ANNOTATE :

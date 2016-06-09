@@ -41,7 +41,9 @@ export default class Block extends Instance {
       projectId: this.projectId,
       version: (firstParent && firstParent.projectId === this.projectId) ? firstParent.version : null,
     }, parentInfo);
-    return super.clone(parentObject);
+
+    //forcibly unfreeze a clone
+    return super.clone(parentObject, { rules: { frozen: false } });
   }
 
   mutate(...args) {
@@ -96,6 +98,13 @@ export default class Block extends Instance {
     return this.mutate(`rules.${rule}`, value);
   }
 
+  setFrozen(isFrozen) {
+    if (this.rules.frozen === true) {
+      return this;
+    }
+    return this.setRule('frozen', isFrozen);
+  }
+
   setRole(role) {
     return this.setRule('role', role);
   }
@@ -116,10 +125,6 @@ export default class Block extends Instance {
   /************
    metadata
    ************/
-
-  getProjectId() {
-    return this.projectId;
-  }
 
   setProjectId(projectId) {
     invariant(idValidator(projectId) || projectId === null, 'project Id is required, or null to mark unassociated');
