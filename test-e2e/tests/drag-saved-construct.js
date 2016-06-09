@@ -11,7 +11,7 @@ module.exports = {
   'Create a construct, save to inventory, drag out to create a new construct' : function (browser) {
 
     // maximize for graphical tests
-    browser.windowSize('current', 1200, 900);
+    browser.windowSize('current', 1200, 1200);
 
     // register via fixture
     var credentials = homepageRegister(browser);
@@ -85,6 +85,8 @@ module.exports = {
       .assert.countelements('[data-nodetype="block"]', 4)
       // expect SVG elements for each role symbol but not for the last block added
       .assert.countelements('.construct-viewer svg', 3)
+      // generate test image
+      .saveScreenshot('./test-e2e/current-screenshots/drag-saved-construct.png')
       .end();
 
   }
