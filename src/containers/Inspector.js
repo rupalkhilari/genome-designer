@@ -30,7 +30,9 @@ export class Inspector extends Component {
     let inspect;
     switch (type) {
     case 'project':
-      inspect = <InspectorProject instance={focused} readOnly={readOnly}/>;
+      inspect = (<InspectorProject instance={focused}
+                                  orders={orders}
+                                  readOnly={readOnly}/>);
       break;
     case 'construct':
     default:

@@ -10,6 +10,9 @@ import Toggler from './../ui/Toggler';
 import SymbolPicker from './../ui/SymbolPicker';
 import BlockSource from './BlockSource';
 import ListOptions from './ListOptions';
+import OrderList from './OrderList';
+import InspectorRow from './InspectorRow';
+import BlockNotes from './BlockNotes';
 
 export class InspectorBlock extends Component {
   static propTypes = {
@@ -34,10 +37,6 @@ export class InspectorBlock extends Component {
 
   static defaultProps = {
     forceIsConstruct: false,
-  };
-
-  state = {
-    toggles: {},
   };
 
   setBlockName = (name) => {
@@ -78,11 +77,6 @@ export class InspectorBlock extends Component {
       return;
     }
     this.props.commit();
-  };
-
-  handleToggle = (field) => {
-    const oldState = !!this.state.toggles[field];
-    this.setState({ toggles: Object.assign({}, this.state.toggles, { [field]: !oldState }) });
   };
 
   handleOpenOrder = (orderId) => {
@@ -190,92 +184,75 @@ export class InspectorBlock extends Component {
 
     return (
       <div className="InspectorContent InspectorContentBlock">
-        <h4 className="InspectorContent-heading">{name}</h4>
-        <InputSimple refKey={inputKey}
-                     placeholder="Enter a name"
-                     readOnly={readOnly}
-                     onChange={this.setBlockName}
-                     onFocus={this.startTransaction}
-                     onBlur={this.endTransaction}
-                     onEscape={() => this.endTransaction(true)}
-                     maxLength={64}
-                     value={this.currentName()}/>
 
-        <h4 className="InspectorContent-heading">Description</h4>
-        <InputSimple refKey={inputKey + 'desc'}
-                     placeholder="Enter a description"
-                     useTextarea
-                     readOnly={readOnly}
-                     onChange={this.setBlockDescription}
-                     onFocus={this.startTransaction}
-                     onBlur={this.endTransaction}
-                     onEscape={() => this.endTransaction(true)}
-                     maxLength={1024}
-                     value={this.currentDescription()}/>
-
-        {currentSourceElement && <h4 className="InspectorContent-heading">Source</h4>}
-        {currentSourceElement}
-
-        {hasSequence && <h4 className="InspectorContent-heading">Sequence Length</h4>}
-        {hasSequence && <p><strong>{this.currentSequenceLength()}</strong></p>}
-
-        {hasNotes && (
-          <h4 className={'InspectorContent-heading toggler' + (this.state.toggles.metadata ? ' active' : '')}
-              onClick={() => this.handleToggle('metadata')}>
-            <Toggler open={this.state.toggles.metadata}/>
-            <span>{name} Metadata</span>
-          </h4>
-        )}
-        {hasNotes && (<div className={'InspectorContent-section' + (this.state.toggles.metadata ? '' : ' closed')}>
-          {Object.keys(this.props.instances[0].notes).map(key => {
-            const note = this.props.instances[0].notes[key];
-            return (
-              <div className="InspectorContent-section-group alt-colors"
-                   key={key}>
-                <div className="InspectorContent-section-group-heading">{key}</div>
-                <div className="InspectorContent-section-group-text">{note}</div>
-              </div>
-            );
-          })}
-        </div>)}
-
-        {!!relevantOrders.length && (
-          <h4 className={'InspectorContent-heading toggler' + (this.state.toggles.orders ? ' active' : '')}
-              onClick={() => this.handleToggle('orders')}>
-            <Toggler open={this.state.toggles.orders}/>
-            <span>Order History</span>
-          </h4>
-        )}
-        {!!relevantOrders.length && (<div className={'InspectorContent-section' + (this.state.toggles.orders ? '' : ' closed')}>
-          {relevantOrders.map(order => {
-            return (
-              <div className="InspectorContent-section-group"
-                   key={order.id}>
-                <div className="InspectorContent-section-group-heading">{order.getName()}</div>
-                <div className="InspectorContent-section-group-text">
-                  {(new Date(order.dateSubmitted())).toLocaleString()}
-                  <a className="InspectorContent-section-group-link"
-                     onClick={() => this.handleOpenOrder(order.id)}>Order Details...</a>
-                </div>
-              </div>
-            );
-          })}
-        </div>)}
-
-        <h4 className="InspectorContent-heading">Color & Symbol</h4>
-        <div className="InspectorContent-pickerWrap">
-          <ColorPicker current={this.currentColor()}
+        <InspectorRow heading={name}>
+          <InputSimple refKey={inputKey}
+                       placeholder="Enter a name"
                        readOnly={readOnly}
-                       onSelect={this.selectColor}/>
+                       onChange={this.setBlockName}
+                       onFocus={this.startTransaction}
+                       onBlur={this.endTransaction}
+                       onEscape={() => this.endTransaction(true)}
+                       maxLength={64}
+                       value={this.currentName()}/>
+        </InspectorRow>
 
-          <SymbolPicker current={this.currentRoleSymbol()}
-                        readOnly={readOnly || isConstruct || isTemplate || isList || forceIsConstruct}
-                        onSelect={this.selectSymbol}/>
-        </div>
+        <InspectorRow heading={name}>
+          <InputSimple refKey={inputKey + 'desc'}
+                       placeholder="Enter a description"
+                       useTextarea
+                       readOnly={readOnly}
+                       onChange={this.setBlockDescription}
+                       onFocus={this.startTransaction}
+                       onBlur={this.endTransaction}
+                       onEscape={() => this.endTransaction(true)}
+                       maxLength={1024}
+                       value={this.currentDescription()}/>
+        </InspectorRow>
 
+        <InspectorRow heading="Source"
+                      condition={!!currentSourceElement}>
+          {currentSourceElement}
+        </InspectorRow>
 
-        {!!annotations.length && (<h4 className="InspectorContent-heading">Annotations</h4>)}
-        {!!annotations.length && (<div className="InspectorContentBlock-Annotations">
+        <InspectorRow heading="Sequence Length"
+                      condition={hasSequence}>
+          <p><strong>{this.currentSequenceLength()}</strong></p>
+        </InspectorRow>
+
+        {/* todo - this should have its own component */}
+        <InspectorRow heading={ name + ' Metadata'}
+                      hasToggle
+                      condition={hasNotes}>
+          <div className="InspectorContent-section">
+            <BlockNotes notes={instances[0].notes}/>
+          </div>
+        </InspectorRow>
+
+        <InspectorRow heading="Order History"
+                      hasToggle
+                      condition={relevantOrders.length > 0}>
+          <div className="InspectorContent-section">
+            <OrderList orders={relevantOrders}
+                       onClick={(orderId) => this.handleOpenOrder(orderId)}/>
+          </div>
+        </InspectorRow>
+
+        <InspectorRow heading="Color & Symbol">
+          <div className="InspectorContent-pickerWrap">
+            <ColorPicker current={this.currentColor()}
+                         readOnly={readOnly}
+                         onSelect={this.selectColor}/>
+
+            <SymbolPicker current={this.currentRoleSymbol()}
+                          readOnly={readOnly || isConstruct || isTemplate || isList || forceIsConstruct}
+                          onSelect={this.selectSymbol}/>
+          </div>
+        </InspectorRow>
+
+        <InspectorRow heading="Annotations"
+                      condition={annotations.length > 0}>
+          <div className="InspectorContentBlock-Annotations">
             {annotations.map((annotation, idx) => {
               return (
                 <span className="InspectorContentBlock-Annotation"
@@ -285,10 +262,13 @@ export class InspectorBlock extends Component {
               );
             })}
           </div>
-        )}
+        </InspectorRow>
 
-        {isList && (<h4 className="InspectorContent-heading">List Options</h4>)}
-        {isList && (<ListOptions block={instances[0]}/>)}
+        <InspectorRow heading="List Options"
+                      condition={isList}>
+          <ListOptions block={instances[0]}/>
+        </InspectorRow>
+
       </div>
     );
   }
