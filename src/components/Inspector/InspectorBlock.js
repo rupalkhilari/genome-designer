@@ -107,9 +107,9 @@ export class InspectorBlock extends Component {
   /**
    * current name of instance or null if multi-select
    */
-  currentName() {
+  currentName(defaultToRole) {
     if (this.props.instances.length === 1) {
-      return this.props.instances[0].metadata.name || this.props.instances[0].rules.role || '';
+      return this.props.instances[0].metadata.name || (defaultToRole ? this.props.instances[0].rules.role : '') || '';
     }
     return '';
   }
@@ -187,14 +187,14 @@ export class InspectorBlock extends Component {
 
         <InspectorRow heading={name}>
           <InputSimple refKey={inputKey}
-                       placeholder="Enter a name"
+                       placeholder={this.currentName(true) || 'Enter a name'}
                        readOnly={readOnly}
                        onChange={this.setBlockName}
                        onFocus={this.startTransaction}
                        onBlur={this.endTransaction}
                        onEscape={() => this.endTransaction(true)}
                        maxLength={64}
-                       value={this.currentName()}/>
+                       value={this.currentName(false)}/>
         </InspectorRow>
 
         <InspectorRow heading={name}>
