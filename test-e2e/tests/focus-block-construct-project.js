@@ -44,7 +44,6 @@ module.exports = {
       // we should have a single focused block, so changing its text should change the displayed block
       .clearValue('.Inspector .InputSimple-input')
       .setValue('.Inspector .InputSimple-input', ['Donald Trump', browser.Keys.ENTER])
-      .pause(500000000)
       // expect the construct title to be updated
       .assert.containsText('[data-nodetype="block"] .nodetext', 'Donald Trump');
 
@@ -63,6 +62,7 @@ module.exports = {
       .setValue('.Inspector .InputSimple-input', ['Bernie Saunders', browser.Keys.ENTER])
       .pause(500)
       .assert.containsText('.ProjectHeader-title', 'Bernie Saunders')
+      .saveScreenshot('./test-e2e/current-screenshots/focus-block-construct-project.png')
       .end();
   }
 };
