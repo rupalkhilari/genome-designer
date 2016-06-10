@@ -1,14 +1,14 @@
 import * as ActionTypes from '../constants/ActionTypes';
 import { registry, getSources } from '../inventory/registry';
+import { getItem, setItem } from '../middleware/localStorageCache';
 
-const initialSearchSources = getSources('search');
-const defaultSearchResults = initialSearchSources.reduce((acc, source) => Object.assign(acc, { [source]: [] }), {});
+const searchSources = getSources('search');
+const initialSearchSources = getItem('searchSources') ? getItem('searchSources').split(',') : searchSources;
+const defaultSearchResults = searchSources.reduce((acc, source) => Object.assign(acc, { [source]: [] }), {});
 
 const createSourcesVisible = (valueFunction = () => false) => {
   return getSources('search').reduce((acc, source) => Object.assign(acc, { [source]: valueFunction(source) }), {});
 };
-
-//todo - defaults from local storage
 
 export const initialState = {
   sourcesToggling: false,
@@ -54,6 +54,7 @@ export default function inventory(state = initialState, action) {
   }
   case ActionTypes.INVENTORY_SET_SOURCES : {
     const { sourceList } = action;
+    setItem('searchSources', sourceList.join(','));
     return Object.assign({}, state, {
       sourceList,
     });

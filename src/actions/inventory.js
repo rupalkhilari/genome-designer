@@ -1,5 +1,5 @@
 import * as ActionTypes from '../constants/ActionTypes';
-import { registry, getSources } from '../inventory/registry';
+import { getSources } from '../inventory/registry';
 import * as searchApi from '../middleware/search';
 
 const searchSources = getSources('search');
