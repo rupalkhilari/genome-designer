@@ -1,16 +1,37 @@
 import * as ActionTypes from '../constants/ActionTypes';
 import { registry, getSources } from '../inventory/registry';
 import * as searchApi from '../middleware/search';
-import { debounce } from 'lodash';
 
 const searchSources = getSources('search');
 
-const searchFunction = (searchTerm, options, sourceList) => {
-  return searchApi.search(searchTerm, options, sourceList);
-};
+//if immediate, call on leading edge, prevent subsequence calls until timeout clears
+//will not resolve when debounced. note that not rejected, could probably write to handle that with a pending state
+let timeout;
+function debouncer(wait = 200, immediate = false) {
+  return new Promise((resolve, reject) => {
+    const later = () => {
+      timeout = null;
+      if (!immediate) {
+        resolve();
+      }
+    };
+    const callNow = immediate === true || !timeout;
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+    if (callNow) resolve();
+  });
+}
 
-//todo - re-enable debounced searching here, not in inventory component
-const debouncedSearchFunction = debounce(searchFunction, 250);
+//doesnt run a search
+export const inventorySetSearchTerm = (searchTerm) => {
+  return (dispatch, getState) => {
+    dispatch({
+      type: ActionTypes.INVENTORY_SET_SEARCH_TERM,
+      searchTerm,
+    });
+    return searchTerm;
+  };
+};
 
 export const inventorySearch = (inputTerm = '', options = null, skipDebounce = false) => {
   return (dispatch, getState) => {
@@ -18,13 +39,20 @@ export const inventorySearch = (inputTerm = '', options = null, skipDebounce = f
     const { sourceList } = state.inventory;
     const searchTerm = !!inputTerm ? inputTerm : state.inventory.searchTerm;
 
-    dispatch({
-      type: ActionTypes.INVENTORY_SEARCH,
-      sourceList,
-      searchTerm,
-    });
+    //update the search term even if not actually running the search
+    dispatch(inventorySetSearchTerm(searchTerm));
 
-    return searchFunction(searchTerm, options, sourceList)
+    const promise = skipDebounce === true ? Promise.resolve() : debouncer();
+
+    return promise
+      .then(() => {
+        dispatch({
+          type: ActionTypes.INVENTORY_SEARCH,
+          sourceList,
+          searchTerm,
+        });
+        return searchApi.search(searchTerm, options, sourceList);
+      })
       .then(searchResults => {
         dispatch({
           type: ActionTypes.INVENTORY_SEARCH_RESOLVE,

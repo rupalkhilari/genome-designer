@@ -66,6 +66,12 @@ export default function inventory(state = initialState, action) {
     const { sourcesVisible } = action;
     return Object.assign({}, state, { sourcesVisible });
   }
+  case ActionTypes.INVENTORY_SET_SEARCH_TERM : {
+    const { searchTerm } = action;
+    return Object.assign({}, state, {
+      searchTerm,
+    });
+  }
   default :
     return state;
   }
