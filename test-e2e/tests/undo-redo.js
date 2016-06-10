@@ -41,17 +41,17 @@ module.exports = {
       .keys([browser.Keys.NULL, browser.Keys.COMMAND, 'v'])
       .pause(1000)
       // should now have 12 blocks
-      .assert.countelements(".role-glyph", 12)
+      .assert.countelements('[data-nodetype="block"]', 12)
       // undo
       .keys([browser.Keys.NULL, browser.Keys.COMMAND, 'z'])
       .pause(1000)
       // back to 6 blocks
-      .assert.countelements(".role-glyph", 6)
+      .assert.countelements('[data-nodetype="block"]', 6)
       // redo
       .keys([browser.Keys.NULL, browser.Keys.SHIFT, browser.Keys.COMMAND, 'z'])
       .pause(1000)
       // back to 12 blocks
-      .assert.countelements(".role-glyph", 12)
+      .assert.countelements('[data-nodetype="block"]', 12)
 
       .end();
   }
