@@ -58,6 +58,7 @@ module.exports = {
         .url(uri)
         .pause(5000)
         .assert.urlContains(projectURL)
+        .saveScreenshot('./test-e2e/current-screenshots/import-export-genbank-file.png')
         .end();
     });
   }
