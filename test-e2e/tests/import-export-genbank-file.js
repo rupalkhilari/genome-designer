@@ -24,7 +24,7 @@ module.exports = {
     newProject(browser);
 
     // click the file menu -> Upload Genbank File
-    clickMainMenu(browser, 1, 8);
+    clickMainMenu(browser, 1, 6);
 
     browser
       .waitForElementPresent('.genbank-import-form', 5000, 'Expect the import dialog to appear')
