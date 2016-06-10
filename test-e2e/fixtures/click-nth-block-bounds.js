@@ -14,6 +14,7 @@ module.exports = function (browser, srcSelector, blockIndex) {
   }, [srcSelector, blockIndex], function(result) {
     var b = result.value;
     browser
+      .pause(100)
       .moveToElement('body', b.left + 10, b.top + 10)
       .mouseButtonDown(0)
       .mouseButtonUp(0);

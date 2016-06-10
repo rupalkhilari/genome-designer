@@ -74,7 +74,9 @@ module.exports = {
     }
 
     // expect all 10 elements to be selected
-    browser.assert.countelements(".scenegraph-userinterface-selection", 10);
+    browser
+      .pause(250)
+      .assert.countelements(".scenegraph-userinterface-selection", 10);
 
     // turn off shift key and test that meta key toggles a blocks selection state
     browser.execute(function() {
