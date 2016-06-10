@@ -1,24 +1,23 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { inventorySearch, inventorySourcesVisibility } from '../../actions/inventory';
+import {
+  inventorySearch,
+  inventoryShowSourcesToggling,
+  inventorySetSources,
+  inventoryToggleSource,
+  inventoryToggleSourceVisible,
+} from '../../actions/inventory';
 import { blockStash } from '../../actions/blocks';
 import { block as blockDragType } from '../../constants/DragTypes';
-import { chain, debounce, escapeRegExp } from 'lodash';
+import { chain } from 'lodash';
 
-import { registry, getSources } from '../../inventory/registry';
-import * as searchApi from '../../middleware/search';
+import { registry } from '../../inventory/registry';
 
 import InventorySources from './InventorySources';
 import InventoryTabs from './InventoryTabs';
 import InventorySearch from './InventorySearch';
 import InventoryList from './InventoryList';
 import InventoryListGroup from './InventoryListGroup';
-
-const defaultSearchResults = getSources('search').reduce((acc, source) => Object.assign(acc, { [source]: [] }), {});
-
-const createSourcesVisible = (valueFunction = () => false) => {
-  return getSources('search').reduce((acc, source) => Object.assign(acc, { [source]: valueFunction(source) }), {});
-};
 
 const inventoryTabs = [
   { key: 'source', name: 'By Source' },
@@ -29,79 +28,29 @@ export class InventoryGroupSearch extends Component {
   static propTypes = {
     searchTerm: PropTypes.string.isRequired,
     sourcesToggling: PropTypes.bool.isRequired,
+    searching: PropTypes.bool.isRequired,
+    sourceList: PropTypes.array.isRequired,
+    sourcesVisible: PropTypes.object.isRequired,
+    searchResults: PropTypes.object.isRequired,
     inventorySearch: PropTypes.func.isRequired,
-    inventorySourcesVisibility: PropTypes.func.isRequired,
+    inventoryShowSourcesToggling: PropTypes.func.isRequired,
+    inventorySetSources: PropTypes.func.isRequired,
+    inventoryToggleSource: PropTypes.func.isRequired,
+    inventoryToggleSourceVisible: PropTypes.func.isRequired,
     blockStash: PropTypes.func.isRequired,
   };
 
   state = {
-    searching: false,
-    sourceList: getSources('search'),
-    sourcesVisible: createSourcesVisible(),
-    searchResults: defaultSearchResults,
     groupBy: 'source',
-    lastSearch: { term: '', sourceList: [] },
   };
-
-  componentDidMount() {
-    const searchingFunction = (term, options = null) => {
-      this.setState({ searching: true });
-      const sourceList = this.state.sourceList;
-
-      searchApi.search(term, options, sourceList)
-        .then(searchResults => this.setState({
-          searchResults,
-          lastSearch: { term, sourceList },
-          sourcesVisible: createSourcesVisible((source) => searchResults[source] && searchResults[source].length > 0),
-          searching: false,
-        }))
-        .catch(err => {
-          console.warn('couldnt fetch results!', err);
-          this.setState({
-            searchResults: defaultSearchResults,
-            searching: false,
-          });
-        });
-    };
-
-    this.forceSearch = searchingFunction;
-    this.debouncedSearch = debounce(searchingFunction, 200);
-  }
 
   onListGroupToggle = (source) => {
-    this.setState({
-      sourcesVisible: Object.assign(this.state.sourcesVisible, { [source]: !this.state.sourcesVisible[source] }),
-    });
-  };
-
-  handleToggleSourceVisiblity = (nextState) => {
-    const newState = this.props.inventorySourcesVisibility(nextState);
-
-    //if hiding, check if any new sources enabled, and if so run a new search
-    if (!newState) {
-      if (this.state.sourceList.some(source => !this.state.lastSearch.sourceList.includes(source))) {
-        this.forceSearch(this.props.searchTerm);
-      }
-    }
+    this.props.inventoryToggleSourceVisible(source);
   };
 
   onSourceToggle = (source) => {
-    const { sourceList } = this.state;
-    const newSourceList = sourceList.length ? sourceList.slice() : getSources('search');
-
-    //xor, reset if empty
-    const indexOfSource = newSourceList.indexOf(source);
-    if (indexOfSource >= 0) {
-      newSourceList.splice(indexOfSource, 1);
-      if (newSourceList.length === 0) {
-        newSourceList.push(...getSources('search'));
-      }
-    } else {
-      newSourceList.push(source);
-    }
-
-    this.setState({ sourceList: newSourceList });
-    this.handleToggleSourceVisiblity(false);
+    this.props.inventoryToggleSource(source);
+    this.props.inventoryShowSourcesToggling(false);
   };
 
   getFullItem = (registryKey, item, shouldAddToStore) => {
@@ -133,11 +82,6 @@ export class InventoryGroupSearch extends Component {
     this.setState({ groupBy: key });
   };
 
-  handleSearchChange = (value) => {
-    this.props.inventorySearch(value);
-    this.debouncedSearch(value);
-  };
-
   handleListOnSelect = (registryKey, item) => {
     return this.getFullItem(registryKey, item, false);
   };
@@ -146,20 +90,9 @@ export class InventoryGroupSearch extends Component {
     return this.getFullItem(registryKey, item, true);
   };
 
-  //want to filter down results while next query running
-  filterListItems = list => {
-    const { searchTerm } = this.props;
-    const { searching } = this.state;
-
-    if (!searching) return list;
-
-    const searchRegex = new RegExp(escapeRegExp(searchTerm), 'gi');
-    return list.filter(item => searchRegex.test(item.metadata.name) || searchRegex.test(item.rules.role));
-  };
-
   render() {
-    const { searchTerm, sourcesToggling } = this.props;
-    const { searching, sourceList, searchResults, sourcesVisible, groupBy } = this.state;
+    const { searchTerm, sourcesToggling, searching, sourceList, searchResults, sourcesVisible, inventoryShowSourcesToggling, inventorySearch } = this.props;
+    const { groupBy } = this.state;
 
     //doesnt account for filtering...
     const noSearchResults = Object.keys(searchResults).reduce((acc, key) => acc + searchResults[key].length, 0) === 0;
@@ -222,12 +155,12 @@ export class InventoryGroupSearch extends Component {
         <InventorySearch searchTerm={searchTerm}
                          isSearching={searching}
                          disabled={sourcesToggling}
-                         onSearchChange={this.handleSearchChange}/>
+                         onSearchChange={(value) => inventorySearch(value)}/>
         <InventorySources registry={registry}
                           sourceList={sourceList}
                           toggling={sourcesToggling}
-                          onToggleVisible={this.handleToggleSourceVisiblity}
-                          onSourceToggle={this.onSourceToggle}/>
+                          onToggleVisible={(nextState) => inventoryShowSourcesToggling(nextState)}
+                          onSourceToggle={(source) => this.onSourceToggle(source)}/>
 
         {(!noSearchResults && !sourcesToggling) && (
           <InventoryTabs tabs={inventoryTabs}
@@ -246,16 +179,14 @@ export class InventoryGroupSearch extends Component {
 }
 
 function mapStateToProps(state, props) {
-  const { searchTerm, sourcesToggling } = state.inventory;
-
-  return {
-    searchTerm,
-    sourcesToggling,
-  };
+  return state.inventory;
 }
 
 export default connect(mapStateToProps, {
   inventorySearch,
-  inventorySourcesVisibility,
+  inventoryShowSourcesToggling,
+  inventorySetSources,
+  inventoryToggleSource,
+  inventoryToggleSourceVisible,
   blockStash,
 })(InventoryGroupSearch);
