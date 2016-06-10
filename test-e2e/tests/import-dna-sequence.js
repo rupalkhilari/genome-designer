@@ -2,12 +2,12 @@ var homepageRegister = require('../fixtures/homepage-register');
 var signout = require('../fixtures/signout');
 var signin = require('../fixtures/signin');
 var dragFromTo = require('../fixtures/dragfromto');
-var newProject = require('../fixtures/newproject');
 var newConstruct = require('../fixtures/newconstruct');
 var openNthBlockContextMenu = require('../fixtures/open-nth-block-contextmenu');
 var clickNthContextMenuItem = require('../fixtures/click-popmenu-nth-item');
 var openInventory = require('../fixtures/open-inventory');
 var clickMainMenu = require('../fixtures/click-main-menu');
+var newProject = require('../fixtures/newproject');
 
 module.exports = {
   'Import a DNA sequence into a sketch block' : function (browser) {
@@ -31,10 +31,10 @@ module.exports = {
 
     browser
       // open the sketch blocks
-      .click('.InventoryGroup:nth-of-type(3) .InventoryGroup-heading');
+      .click('.InventoryGroup:nth-of-type(3) .InventoryGroup-heading')
 
     // double check there are no construct viewers present
-    browser.assert.countelements('.construct-viewer', 1);
+      .assert.countelements('.construct-viewer', 1);
 
     // add block to construct
     dragFromTo(browser, '.InventoryItemRole:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 30, 30);
@@ -73,10 +73,11 @@ module.exports = {
     newProject(browser);
 
     // open import DNA from main edit menu
-    clickMainMenu(2, 7);
+    clickMainMenu(browser, 2, 7);
 
     browser
-      .assert.containsText('.ribbongrunt', 'Sequence data must be added to or before a selected block. Please select a block and try again.')
+      .pause(100)
+      .waitForElementPresent('.ribbongrunt', 1000, 'expect an error message for this case')
       .end();
   }
 };
