@@ -1,6 +1,6 @@
 [
   {
-    "id": "block-8d604609-1a39-42f4-a0af-5145da782158",
+    "id": "block-69138275-9b9c-425c-853b-8d21a1065a19",
     "parents": [],
     "metadata": {
       "name": "5'HA-hAAVS1",
@@ -8,6 +8,7 @@
       "authors": [],
       "tags": {},
       "color": "#e7aaa9",
+      "shortName": "",
       "egfPosition": "1"
     },
     "sequence": {
@@ -31,12 +32,11 @@
     "options": {},
     "notes": {
       "category": "Homology Arm",
-      "subCategory": "Human genomic locus",
-      "shortName": ""
+      "sub-category": "Human genomic locus"
     }
   },
   {
-    "id": "block-4e04010f-de6d-44d3-8093-04da5241706f",
+    "id": "block-8272d8d0-d8ba-4585-84f3-b54b785ada3f",
     "parents": [],
     "metadata": {
       "name": "5'-ITR-PB",
@@ -44,6 +44,7 @@
       "authors": [],
       "tags": {},
       "color": "#D28482",
+      "shortName": "",
       "egfPosition": "1"
     },
     "sequence": {
@@ -67,12 +68,11 @@
     "options": {},
     "notes": {
       "category": "inverted terminal repeat sequences (ITRs)",
-      "subCategory": "transposon-specific inverted terminal repeat sequences (ITRs)",
-      "shortName": ""
+      "sub-category": "transposon-specific inverted terminal repeat sequences (ITRs)"
     }
   },
   {
-    "id": "block-46708f8c-b0b9-47f0-ad66-85acc37df4a0",
+    "id": "block-08bbb0d4-2e66-4d3f-83ff-58595d29787d",
     "parents": [],
     "metadata": {
       "name": "Insulator_FB",
@@ -80,6 +80,7 @@
       "authors": [],
       "tags": {},
       "color": "#E9BA9b",
+      "shortName": "IS_FB",
       "egfPosition": "2"
     },
     "sequence": {
@@ -103,12 +104,11 @@
     "options": {},
     "notes": {
       "category": "Insulators",
-      "subCategory": "endogenous elements",
-      "shortName": "IS_FB"
+      "sub-category": "endogenous elements"
     }
   },
   {
-    "id": "block-3603db01-6d91-4011-85be-f440c1e8759f",
+    "id": "block-e83a332d-4278-4cdb-94b7-2c8de78478db",
     "parents": [],
     "metadata": {
       "name": "CAGp",
@@ -116,6 +116,7 @@
       "authors": [],
       "tags": {},
       "color": "#efac7e",
+      "shortName": "",
       "egfPosition": "3"
     },
     "sequence": {
@@ -139,12 +140,11 @@
     "options": {},
     "notes": {
       "category": "Promoters",
-      "subCategory": "Constitutional Promoter",
-      "shortName": ""
+      "sub-category": "Constitutional Promoter"
     }
   },
   {
-    "id": "block-ce72db89-3151-4fe9-9349-7206934f7ea5",
+    "id": "block-67970ffd-f551-4355-b991-b078fdee74e0",
     "parents": [],
     "metadata": {
       "name": "CMVp_Tet",
@@ -152,6 +152,7 @@
       "authors": [],
       "tags": {},
       "color": "#EFD79A",
+      "shortName": "",
       "egfPosition": "3"
     },
     "sequence": {
@@ -175,12 +176,11 @@
     "options": {},
     "notes": {
       "category": "Promoters",
-      "subCategory": "Repressible promoter",
-      "shortName": ""
+      "sub-category": "Repressible promoter"
     }
   },
   {
-    "id": "block-504b3a87-4ea1-4cf1-86e3-d4f9cf48d011",
+    "id": "block-a3ae9633-4acb-4f4d-8391-73d9c115e325",
     "parents": [],
     "metadata": {
       "name": "EF1ap",
@@ -188,6 +188,7 @@
       "authors": [],
       "tags": {},
       "color": "#F1D26C",
+      "shortName": "",
       "egfPosition": "3"
     },
     "sequence": {
@@ -211,12 +212,11 @@
     "options": {},
     "notes": {
       "category": "Promoters",
-      "subCategory": "Constitutional Promoter",
-      "shortName": ""
+      "sub-category": "Constitutional Promoter"
     }
   },
   {
-    "id": "block-2e05b94e-12cc-41c1-ad8e-3bd6e8a53a5d",
+    "id": "block-96e5ff91-4042-4c87-8e8a-7569d295df0b",
     "parents": [],
     "metadata": {
       "name": "TRE3Gp",
@@ -224,6 +224,7 @@
       "authors": [],
       "tags": {},
       "color": "#E4E480",
+      "shortName": "",
       "egfPosition": "3"
     },
     "sequence": {
@@ -247,12 +248,11 @@
     "options": {},
     "notes": {
       "category": "Promoters",
-      "subCategory": "Inducible Promoter",
-      "shortName": ""
+      "sub-category": "Inducible Promoter"
     }
   },
   {
-    "id": "block-5e006833-73d0-40b0-96cf-b963ea5d3332",
+    "id": "block-362cb338-6ffb-480d-998e-1a784279303f",
     "parents": [],
     "metadata": {
       "name": "Kt-L7Ae - Weiss",
@@ -260,6 +260,7 @@
       "authors": [],
       "tags": {},
       "color": "#D3D34F",
+      "shortName": "Kt",
       "egfPosition": "4"
     },
     "sequence": {
@@ -283,12 +284,11 @@
     "options": {},
     "notes": {
       "category": "RNA regulatory sequences",
-      "subCategory": "Translational regulatory sequences",
-      "shortName": "Kt"
+      "sub-category": "Translational regulatory sequences"
     }
   },
   {
-    "id": "block-d7c0ffc6-cb80-4efd-87e8-964551b45107",
+    "id": "block-2becf035-82ff-4ac0-aeb2-c5f881fec86b",
     "parents": [],
     "metadata": {
       "name": "attB - BxB1",
@@ -296,6 +296,7 @@
       "authors": [],
       "tags": {},
       "color": "#9CC6C0",
+      "shortName": "attB",
       "egfPosition": "5"
     },
     "sequence": {
@@ -319,12 +320,11 @@
     "options": {},
     "notes": {
       "category": "Site-specific recombinases recognition sites",
-      "subCategory": "Serine integrase recognition sequences",
-      "shortName": "attB"
+      "sub-category": "Serine integrase recognition sequences"
     }
   },
   {
-    "id": "block-036d8d8d-63f1-438e-a033-77b0f4dacba8",
+    "id": "block-693f08ad-8a9c-4ced-9684-df34c7f78298",
     "parents": [],
     "metadata": {
       "name": "attP - BxB1",
@@ -332,6 +332,7 @@
       "authors": [],
       "tags": {},
       "color": "#6DA19C",
+      "shortName": "attP",
       "egfPosition": "5"
     },
     "sequence": {
@@ -355,12 +356,11 @@
     "options": {},
     "notes": {
       "category": "Site-specific recombinases recognition sites",
-      "subCategory": "Serine integrase recognition sequences",
-      "shortName": "attP"
+      "sub-category": "Serine integrase recognition sequences"
     }
   },
   {
-    "id": "block-22be42d3-ecfc-401e-af60-2ccc6c8ff37a",
+    "id": "block-5b41bc67-e714-4508-9c7f-58e6841b297f",
     "parents": [],
     "metadata": {
       "name": "K1-K1 -L7Ae",
@@ -368,6 +368,7 @@
       "authors": [],
       "tags": {},
       "color": "#B1CED0",
+      "shortName": "K1",
       "egfPosition": "5"
     },
     "sequence": {
@@ -391,12 +392,11 @@
     "options": {},
     "notes": {
       "category": "RNA regulatory sequences",
-      "subCategory": "Translational regulatory sequences",
-      "shortName": "K1"
+      "sub-category": "Translational regulatory sequences"
     }
   },
   {
-    "id": "block-3c9e5829-a0b6-498b-87e6-be89713f2e5c",
+    "id": "block-6a596f7b-8b04-46e1-914e-db194f32874b",
     "parents": [],
     "metadata": {
       "name": "Kt-Kt -L7Ae-Weiss",
@@ -404,6 +404,7 @@
       "authors": [],
       "tags": {},
       "color": "#65AAB1",
+      "shortName": "Kt-Kt",
       "egfPosition": "5"
     },
     "sequence": {
@@ -427,12 +428,11 @@
     "options": {},
     "notes": {
       "category": "RNA regulatory sequences",
-      "subCategory": "Translational regulatory sequences",
-      "shortName": "Kt-Kt"
+      "sub-category": "Translational regulatory sequences"
     }
   },
   {
-    "id": "block-f803e4ef-53f5-415a-b33d-83052cac7c23",
+    "id": "block-2565f13f-9c79-4a92-bf3e-c22b22837ac4",
     "parents": [],
     "metadata": {
       "name": "ATG-BoxC (L7Ae)",
@@ -440,6 +440,7 @@
       "authors": [],
       "tags": {},
       "color": "#8EC78D",
+      "shortName": "",
       "egfPosition": "6"
     },
     "sequence": {
@@ -463,12 +464,11 @@
     "options": {},
     "notes": {
       "category": "RNA regulatory sequences",
-      "subCategory": "Translational regulatory sequences",
-      "shortName": ""
+      "sub-category": "Translational regulatory sequences"
     }
   },
   {
-    "id": "block-bf68d861-995b-494e-b056-738183908902",
+    "id": "block-82dc9d5d-6a57-417a-bc0c-dffe12743fa7",
     "parents": [],
     "metadata": {
       "name": "Kozak_ATG",
@@ -476,6 +476,7 @@
       "authors": [],
       "tags": {},
       "color": "#53B15F",
+      "shortName": "Kz_1",
       "egfPosition": "6"
     },
     "sequence": {
@@ -499,12 +500,11 @@
     "options": {},
     "notes": {
       "category": "Kozak sequence + ATG",
-      "subCategory": "",
-      "shortName": "Kz_1"
+      "sub-category": ""
     }
   },
   {
-    "id": "block-ea4e0281-10c0-4cb3-a111-202f7804909d",
+    "id": "block-2ddc0a00-0258-48a8-b2e5-ab9499eb987d",
     "parents": [],
     "metadata": {
       "name": "Nt-IgKL sequence",
@@ -512,6 +512,7 @@
       "authors": [],
       "tags": {},
       "color": "#C5C4C1",
+      "shortName": "IgKL",
       "egfPosition": "6"
     },
     "sequence": {
@@ -535,12 +536,11 @@
     "options": {},
     "notes": {
       "category": "Peptide Tags",
-      "subCategory": "Protein Tags for Subcellular targeting",
-      "shortName": "IgKL"
+      "sub-category": "Protein Tags for Subcellular targeting"
     }
   },
   {
-    "id": "block-4c738e2f-e114-4e63-8a68-ff5181e50df1",
+    "id": "block-ea5eee7f-b920-427c-992f-5ed88f7ef981",
     "parents": [],
     "metadata": {
       "name": "Nt-MLS",
@@ -548,6 +548,7 @@
       "authors": [],
       "tags": {},
       "color": "#A5A6A2",
+      "shortName": "MLS",
       "egfPosition": "6"
     },
     "sequence": {
@@ -571,12 +572,11 @@
     "options": {},
     "notes": {
       "category": "Peptide Tags",
-      "subCategory": "Protein Tags for Subcellular targeting",
-      "shortName": "MLS"
+      "sub-category": "Protein Tags for Subcellular targeting"
     }
   },
   {
-    "id": "block-5f3e854d-63d8-4365-a481-7e4cbeb77750",
+    "id": "block-24847784-eb88-4f86-b5d7-1226fc29cd57",
     "parents": [],
     "metadata": {
       "name": "Nt-myristoylation signal",
@@ -584,6 +584,7 @@
       "authors": [],
       "tags": {},
       "color": "#e7aaa9",
+      "shortName": "",
       "egfPosition": "6"
     },
     "sequence": {
@@ -607,12 +608,11 @@
     "options": {},
     "notes": {
       "category": "Peptide Tags",
-      "subCategory": "Protein Tags for Subcellular targeting",
-      "shortName": ""
+      "sub-category": "Protein Tags for Subcellular targeting"
     }
   },
   {
-    "id": "block-3c73c788-5093-400b-ac23-0d89a158675f",
+    "id": "block-63caf324-a178-47c3-b48f-f54c53551e92",
     "parents": [],
     "metadata": {
       "name": "Nt-Palmytolination sequence",
@@ -620,6 +620,7 @@
       "authors": [],
       "tags": {},
       "color": "#D28482",
+      "shortName": "Pal",
       "egfPosition": "6"
     },
     "sequence": {
@@ -643,12 +644,11 @@
     "options": {},
     "notes": {
       "category": "Peptide Tags",
-      "subCategory": "Protein Tags for Subcellular targeting",
-      "shortName": "Pal"
+      "sub-category": "Protein Tags for Subcellular targeting"
     }
   },
   {
-    "id": "block-72d3d2c8-171a-48c5-9510-1ce3e7c4a6c0",
+    "id": "block-ce24a7ae-9f99-4b12-bb4e-22365e08b92a",
     "parents": [],
     "metadata": {
       "name": "Nt-SV40-NLS",
@@ -656,6 +656,7 @@
       "authors": [],
       "tags": {},
       "color": "#E9BA9b",
+      "shortName": "SV40-NLS",
       "egfPosition": "6"
     },
     "sequence": {
@@ -679,12 +680,11 @@
     "options": {},
     "notes": {
       "category": "Peptide Tags",
-      "subCategory": "Protein Tags for Subcellular targeting",
-      "shortName": "SV40-NLS"
+      "sub-category": "Protein Tags for Subcellular targeting"
     }
   },
   {
-    "id": "block-e5605aaa-0df8-4815-b28f-8daeb7c7f15a",
+    "id": "block-f686653c-9259-4f34-b106-70b348c6f326",
     "parents": [],
     "metadata": {
       "name": "BxB1",
@@ -692,6 +692,7 @@
       "authors": [],
       "tags": {},
       "color": "#efac7e",
+      "shortName": "",
       "egfPosition": "7"
     },
     "sequence": {
@@ -715,12 +716,11 @@
     "options": {},
     "notes": {
       "category": "Site-specific recombinases",
-      "subCategory": "Serine Integrases",
-      "shortName": ""
+      "sub-category": "Serine Integrases"
     }
   },
   {
-    "id": "block-bcdba033-fc61-4cc0-9cdd-35784266b99a",
+    "id": "block-725a825b-2a94-4396-9876-59ca92ee8e11",
     "parents": [],
     "metadata": {
       "name": "L7Ae - Weiss",
@@ -728,6 +728,7 @@
       "authors": [],
       "tags": {},
       "color": "#EFD79A",
+      "shortName": "L7Ae",
       "egfPosition": "7"
     },
     "sequence": {
@@ -751,12 +752,11 @@
     "options": {},
     "notes": {
       "category": "RNA-Binding proteins",
-      "subCategory": "RNA-Binding proteins",
-      "shortName": "L7Ae"
+      "sub-category": "RNA-Binding proteins"
     }
   },
   {
-    "id": "block-8a7ac75c-becb-4525-9190-bbdcd8870e73",
+    "id": "block-73f35e11-7135-4238-b4f8-98d1cdf16109",
     "parents": [],
     "metadata": {
       "name": "L7Ae ",
@@ -764,6 +764,7 @@
       "authors": [],
       "tags": {},
       "color": "#F1D26C",
+      "shortName": "",
       "egfPosition": "7"
     },
     "sequence": {
@@ -787,12 +788,11 @@
     "options": {},
     "notes": {
       "category": "RNA-Binding proteins",
-      "subCategory": "RNA-Binding proteins",
-      "shortName": ""
+      "sub-category": "RNA-Binding proteins"
     }
   },
   {
-    "id": "block-2fa7a21c-3e02-48d0-a33a-896c6d457379",
+    "id": "block-53702313-3162-422b-8d9d-ca691dbf7991",
     "parents": [],
     "metadata": {
       "name": "mKate2",
@@ -800,6 +800,7 @@
       "authors": [],
       "tags": {},
       "color": "#E4E480",
+      "shortName": "mK2",
       "egfPosition": "7"
     },
     "sequence": {
@@ -823,12 +824,11 @@
     "options": {},
     "notes": {
       "category": "Fluorescent Reporter",
-      "subCategory": "Far-red Fluorescent Reporter",
-      "shortName": "mK2"
+      "sub-category": "Far-red Fluorescent Reporter"
     }
   },
   {
-    "id": "block-c9625712-f4a1-44af-8133-94c5289ad57d",
+    "id": "block-efeda1f1-0847-45ac-bd6d-35c5f2e092a5",
     "parents": [],
     "metadata": {
       "name": "mNeoGreen",
@@ -836,6 +836,7 @@
       "authors": [],
       "tags": {},
       "color": "#D3D34F",
+      "shortName": "mNG",
       "egfPosition": "7"
     },
     "sequence": {
@@ -859,12 +860,11 @@
     "options": {},
     "notes": {
       "category": "Fluorescent Reporter",
-      "subCategory": "Green Fluorescent Reporter",
-      "shortName": "mNG"
+      "sub-category": "Green Fluorescent Reporter"
     }
   },
   {
-    "id": "block-38956caa-2523-410a-8015-b86c219d6398",
+    "id": "block-a1f1fd9e-20e5-42f7-bf63-cc2ca245e3d2",
     "parents": [],
     "metadata": {
       "name": "mRuby2",
@@ -872,6 +872,7 @@
       "authors": [],
       "tags": {},
       "color": "#9CC6C0",
+      "shortName": "mR2",
       "egfPosition": "7"
     },
     "sequence": {
@@ -895,12 +896,11 @@
     "options": {},
     "notes": {
       "category": "Fluorescent Reporter",
-      "subCategory": "Red Fluorescent Reporter",
-      "shortName": "mR2"
+      "sub-category": "Red Fluorescent Reporter"
     }
   },
   {
-    "id": "block-a5ea606a-8ba9-4987-9247-9615b3489e23",
+    "id": "block-d51e5293-a233-470b-8a26-af0117fa5626",
     "parents": [],
     "metadata": {
       "name": "mTagBFP2",
@@ -908,6 +908,7 @@
       "authors": [],
       "tags": {},
       "color": "#6DA19C",
+      "shortName": "mBP2",
       "egfPosition": "7"
     },
     "sequence": {
@@ -931,12 +932,11 @@
     "options": {},
     "notes": {
       "category": "Fluorescent Reporter",
-      "subCategory": "Blue Fluorescent Reporter",
-      "shortName": "mBP2"
+      "sub-category": "Blue Fluorescent Reporter"
     }
   },
   {
-    "id": "block-b92d2f5d-d10a-4cf8-be91-0a2dfe195808",
+    "id": "block-3f200c7f-bea8-4f61-a889-fc4c4e936c51",
     "parents": [],
     "metadata": {
       "name": "Linker 1",
@@ -944,6 +944,7 @@
       "authors": [],
       "tags": {},
       "color": "#B1CED0",
+      "shortName": "LK-1",
       "egfPosition": "8"
     },
     "sequence": {
@@ -967,12 +968,11 @@
     "options": {},
     "notes": {
       "category": "Peptide Linker",
-      "subCategory": "Flexible Peptide Linker",
-      "shortName": "LK-1"
+      "sub-category": "Flexible Peptide Linker"
     }
   },
   {
-    "id": "block-18d3ce72-9da3-4229-83ac-26497f8fe120",
+    "id": "block-b4223259-5416-4e08-8995-f1a6438f64cf",
     "parents": [],
     "metadata": {
       "name": "Linker 2",
@@ -980,6 +980,7 @@
       "authors": [],
       "tags": {},
       "color": "#65AAB1",
+      "shortName": "LK-2",
       "egfPosition": "8"
     },
     "sequence": {
@@ -1003,12 +1004,11 @@
     "options": {},
     "notes": {
       "category": "Peptide Linker",
-      "subCategory": "Flexible Peptide Linker",
-      "shortName": "LK-2"
+      "sub-category": "Flexible Peptide Linker"
     }
   },
   {
-    "id": "block-44ba4f9f-bec4-41cc-bc34-5cde88bb2f1d",
+    "id": "block-ae05efe9-0ee3-4a54-b678-5b6c321b53ef",
     "parents": [],
     "metadata": {
       "name": "p2A-Porcine teschovirus-1 ",
@@ -1016,6 +1016,7 @@
       "authors": [],
       "tags": {},
       "color": "#8EC78D",
+      "shortName": "p2A",
       "egfPosition": "8"
     },
     "sequence": {
@@ -1039,12 +1040,11 @@
     "options": {},
     "notes": {
       "category": "2A-like peptide sequences ",
-      "subCategory": "2A peptide ",
-      "shortName": "p2A"
+      "sub-category": "2A peptide "
     }
   },
   {
-    "id": "block-5d914214-e2ce-4ac2-b8d8-040d8ce2c880",
+    "id": "block-a5c2bc80-83f5-43c7-8ca3-31fd74a88008",
     "parents": [],
     "metadata": {
       "name": "Ct-KDEL",
@@ -1052,6 +1052,7 @@
       "authors": [],
       "tags": {},
       "color": "#53B15F",
+      "shortName": "KDEL",
       "egfPosition": "8a"
     },
     "sequence": {
@@ -1075,12 +1076,11 @@
     "options": {},
     "notes": {
       "category": "Peptide Tags",
-      "subCategory": "Protein Tags for Subcellular targeting",
-      "shortName": "KDEL"
+      "sub-category": "Protein Tags for Subcellular targeting"
     }
   },
   {
-    "id": "block-0688b9d0-0c7d-460e-b3a6-f3d06f518335",
+    "id": "block-e38cd74b-0ace-4ef1-8f84-312de1e2d4f3",
     "parents": [],
     "metadata": {
       "name": "IRES2",
@@ -1088,6 +1088,7 @@
       "authors": [],
       "tags": {},
       "color": "#C5C4C1",
+      "shortName": "",
       "egfPosition": "8b"
     },
     "sequence": {
@@ -1111,12 +1112,11 @@
     "options": {},
     "notes": {
       "category": "IRES (Internal Ribosome Entry Sequence)",
-      "subCategory": "",
-      "shortName": ""
+      "sub-category": ""
     }
   },
   {
-    "id": "block-ac13b855-5c93-482f-a189-92222f17f0b3",
+    "id": "block-9ed95e92-96bf-4a3c-ad38-50c069314674",
     "parents": [],
     "metadata": {
       "name": "BSDR",
@@ -1124,6 +1124,7 @@
       "authors": [],
       "tags": {},
       "color": "#A5A6A2",
+      "shortName": "",
       "egfPosition": "9"
     },
     "sequence": {
@@ -1147,12 +1148,11 @@
     "options": {},
     "notes": {
       "category": "Selection Markers",
-      "subCategory": "Antibiotic Resistance",
-      "shortName": ""
+      "sub-category": "Antibiotic Resistance"
     }
   },
   {
-    "id": "block-7bda6c01-1d43-4cd9-a00f-e6c16b6fe2da",
+    "id": "block-2c91e640-dd34-44d6-826b-a58e81985e37",
     "parents": [],
     "metadata": {
       "name": "PuroR",
@@ -1160,6 +1160,7 @@
       "authors": [],
       "tags": {},
       "color": "#e7aaa9",
+      "shortName": "",
       "egfPosition": "9"
     },
     "sequence": {
@@ -1183,12 +1184,11 @@
     "options": {},
     "notes": {
       "category": "Selection Markers",
-      "subCategory": "Antibiotic Resistance",
-      "shortName": ""
+      "sub-category": "Antibiotic Resistance"
     }
   },
   {
-    "id": "block-59ede9e5-aff1-40f3-af69-fa3efb4f542a",
+    "id": "block-d6d06ce0-e897-4fb5-92ca-9e5dfa089bfe",
     "parents": [],
     "metadata": {
       "name": "NeoR",
@@ -1196,6 +1196,7 @@
       "authors": [],
       "tags": {},
       "color": "#D28482",
+      "shortName": "",
       "egfPosition": "9"
     },
     "sequence": {
@@ -1219,12 +1220,11 @@
     "options": {},
     "notes": {
       "category": "Selection Markers",
-      "subCategory": "Antibiotic Resistance",
-      "shortName": ""
+      "sub-category": "Antibiotic Resistance"
     }
   },
   {
-    "id": "block-9b982d4e-c7b0-41d2-959b-fa6089805fa9",
+    "id": "block-7096cd85-9012-4e9d-a393-b5d894058208",
     "parents": [],
     "metadata": {
       "name": "DmrC",
@@ -1232,6 +1232,7 @@
       "authors": [],
       "tags": {},
       "color": "#E9BA9b",
+      "shortName": "",
       "egfPosition": "9"
     },
     "sequence": {
@@ -1255,12 +1256,11 @@
     "options": {},
     "notes": {
       "category": "Dimerization domain",
-      "subCategory": "Chemically induced dimerization domain",
-      "shortName": ""
+      "sub-category": "Chemically induced dimerization domain"
     }
   },
   {
-    "id": "block-bb188fcf-fa9d-478c-91a0-17c93154f137",
+    "id": "block-61e532cc-519c-4bd9-93aa-7460a0a9dccd",
     "parents": [],
     "metadata": {
       "name": "Fyrefly Luciferase ",
@@ -1268,6 +1268,7 @@
       "authors": [],
       "tags": {},
       "color": "#efac7e",
+      "shortName": "LCF",
       "egfPosition": "9"
     },
     "sequence": {
@@ -1291,12 +1292,11 @@
     "options": {},
     "notes": {
       "category": "Bioluminescent Reporters",
-      "subCategory": "Luciferases",
-      "shortName": "LCF"
+      "sub-category": "Luciferases"
     }
   },
   {
-    "id": "block-c38746d5-d5b5-4d9f-a4c1-1b9ada67a8f0",
+    "id": "block-26a1e16c-8bdd-4bae-b503-b97fdcd65c27",
     "parents": [],
     "metadata": {
       "name": "mNeoGreen",
@@ -1304,6 +1304,7 @@
       "authors": [],
       "tags": {},
       "color": "#EFD79A",
+      "shortName": "mNG",
       "egfPosition": "9"
     },
     "sequence": {
@@ -1327,12 +1328,11 @@
     "options": {},
     "notes": {
       "category": "Fluorescent Reporter",
-      "subCategory": "Green Fluorescent Reporter",
-      "shortName": "mNG"
+      "sub-category": "Green Fluorescent Reporter"
     }
   },
   {
-    "id": "block-a4a09f8d-5986-42fd-8776-abbf97e3de36",
+    "id": "block-f91ddf46-8b3c-4144-9959-986f64300449",
     "parents": [],
     "metadata": {
       "name": "mRuby2",
@@ -1340,6 +1340,7 @@
       "authors": [],
       "tags": {},
       "color": "#F1D26C",
+      "shortName": "mR2",
       "egfPosition": "9"
     },
     "sequence": {
@@ -1363,12 +1364,11 @@
     "options": {},
     "notes": {
       "category": "Fluorescent Reporter",
-      "subCategory": "Red Fluorescent Reporter",
-      "shortName": "mR2"
+      "sub-category": "Red Fluorescent Reporter"
     }
   },
   {
-    "id": "block-4b07eaa1-6a42-4c54-ae46-418da7cf3cb2",
+    "id": "block-61b0003c-5d64-4e35-b6ba-58e979645acc",
     "parents": [],
     "metadata": {
       "name": "mTagBFP2",
@@ -1376,6 +1376,7 @@
       "authors": [],
       "tags": {},
       "color": "#E4E480",
+      "shortName": "mBP2",
       "egfPosition": "9"
     },
     "sequence": {
@@ -1399,12 +1400,11 @@
     "options": {},
     "notes": {
       "category": "Fluorescent Reporter",
-      "subCategory": "Blue Fluorescent Reporter",
-      "shortName": "mBP2"
+      "sub-category": "Blue Fluorescent Reporter"
     }
   },
   {
-    "id": "block-9886a647-52d1-4083-9204-5a1880dd6059",
+    "id": "block-2d22a0cf-0e85-4a40-9c25-ee804f748ac5",
     "parents": [],
     "metadata": {
       "name": "a-Tubulin",
@@ -1412,6 +1412,7 @@
       "authors": [],
       "tags": {},
       "color": "#D3D34F",
+      "shortName": "Tb",
       "egfPosition": "9"
     },
     "sequence": {
@@ -1435,12 +1436,11 @@
     "options": {},
     "notes": {
       "category": "Structural proteins",
-      "subCategory": "Cytoskeleton proteins",
-      "shortName": "Tb"
+      "sub-category": "Cytoskeleton proteins"
     }
   },
   {
-    "id": "block-bb55544a-bb5d-482a-9c95-1c93919a53c9",
+    "id": "block-61be7a0a-47e8-4f5e-96f4-2d8e06cef7c1",
     "parents": [],
     "metadata": {
       "name": "Tet-Aptazyme",
@@ -1448,6 +1448,7 @@
       "authors": [],
       "tags": {},
       "color": "#9CC6C0",
+      "shortName": "",
       "egfPosition": "10"
     },
     "sequence": {
@@ -1471,12 +1472,11 @@
     "options": {},
     "notes": {
       "category": "RNA regulatory sequences",
-      "subCategory": "Chemically induced Aptazyme",
-      "shortName": ""
+      "sub-category": "Chemically induced Aptazyme"
     }
   },
   {
-    "id": "block-ffb7e68a-93a2-49e9-bbe1-68d9f887abcf",
+    "id": "block-0095afb5-d804-4265-bec2-19e3e7b001c0",
     "parents": [],
     "metadata": {
       "name": "SV40 polyA",
@@ -1484,6 +1484,7 @@
       "authors": [],
       "tags": {},
       "color": "#6DA19C",
+      "shortName": "SV40pA",
       "egfPosition": "11"
     },
     "sequence": {
@@ -1507,12 +1508,11 @@
     "options": {},
     "notes": {
       "category": "PolyA transcription terminators",
-      "subCategory": "Virus derived polyA",
-      "shortName": "SV40pA"
+      "sub-category": "Virus derived polyA"
     }
   },
   {
-    "id": "block-a5cde1a1-4fdc-4849-86a8-6e879f002e45",
+    "id": "block-30defcd3-7f66-43ef-8939-2711d833a538",
     "parents": [],
     "metadata": {
       "name": "SV40p",
@@ -1520,6 +1520,7 @@
       "authors": [],
       "tags": {},
       "color": "#B1CED0",
+      "shortName": "",
       "egfPosition": "14"
     },
     "sequence": {
@@ -1543,12 +1544,11 @@
     "options": {},
     "notes": {
       "category": "Promoters",
-      "subCategory": "Constitutional Promoter",
-      "shortName": ""
+      "sub-category": "Constitutional Promoter"
     }
   },
   {
-    "id": "block-5c20f54f-c590-434c-817f-960e9de8727e",
+    "id": "block-73a1e3f2-fd20-492c-9de6-74d7a6a3b433",
     "parents": [],
     "metadata": {
       "name": "PuroR",
@@ -1556,6 +1556,7 @@
       "authors": [],
       "tags": {},
       "color": "#65AAB1",
+      "shortName": "",
       "egfPosition": "15"
     },
     "sequence": {
@@ -1579,12 +1580,11 @@
     "options": {},
     "notes": {
       "category": "Selection Markers",
-      "subCategory": "Antibiotic Resistance",
-      "shortName": ""
+      "sub-category": "Antibiotic Resistance"
     }
   },
   {
-    "id": "block-4ad13137-b1a0-4480-9af6-995a1cad1795",
+    "id": "block-91bc869f-05bb-4235-a562-7513ec585082",
     "parents": [],
     "metadata": {
       "name": "bGH polyA",
@@ -1592,6 +1592,7 @@
       "authors": [],
       "tags": {},
       "color": "#8EC78D",
+      "shortName": "bGHpA",
       "egfPosition": "16"
     },
     "sequence": {
@@ -1615,12 +1616,11 @@
     "options": {},
     "notes": {
       "category": "PolyA transcription terminators",
-      "subCategory": "Endogenous  derived polyA",
-      "shortName": "bGHpA"
+      "sub-category": "Endogenous  derived polyA"
     }
   },
   {
-    "id": "block-48e3e85d-be04-4eb2-ae3b-e50660afbb8a",
+    "id": "block-0296b5c9-c9ef-4d7f-ad01-d11cbae1f50a",
     "parents": [],
     "metadata": {
       "name": "CMVp",
@@ -1628,6 +1628,7 @@
       "authors": [],
       "tags": {},
       "color": "#53B15F",
+      "shortName": "",
       "egfPosition": "18"
     },
     "sequence": {
@@ -1651,12 +1652,11 @@
     "options": {},
     "notes": {
       "category": "Promoters",
-      "subCategory": "Constitutional Promoter",
-      "shortName": ""
+      "sub-category": "Constitutional Promoter"
     }
   },
   {
-    "id": "block-81374e54-e379-422c-a84d-50a1be8a0616",
+    "id": "block-9450d125-1b55-4b0c-8b2d-03aaa3e23da7",
     "parents": [],
     "metadata": {
       "name": "EF1ap",
@@ -1664,6 +1664,7 @@
       "authors": [],
       "tags": {},
       "color": "#C5C4C1",
+      "shortName": "",
       "egfPosition": "18"
     },
     "sequence": {
@@ -1687,12 +1688,11 @@
     "options": {},
     "notes": {
       "category": "Promoters",
-      "subCategory": "Constitutional Promoter",
-      "shortName": ""
+      "sub-category": "Constitutional Promoter"
     }
   },
   {
-    "id": "block-61775122-fa81-43b9-86ed-669ce6e07fa6",
+    "id": "block-3a7f22bf-e03c-48cf-9cd2-782810d7dc69",
     "parents": [],
     "metadata": {
       "name": "mNeoGreen",
@@ -1700,6 +1700,7 @@
       "authors": [],
       "tags": {},
       "color": "#A5A6A2",
+      "shortName": "mNG",
       "egfPosition": "19"
     },
     "sequence": {
@@ -1723,12 +1724,11 @@
     "options": {},
     "notes": {
       "category": "Fluorescent Reporter",
-      "subCategory": "Green Fluorescent Reporter",
-      "shortName": "mNG"
+      "sub-category": "Green Fluorescent Reporter"
     }
   },
   {
-    "id": "block-fd17eafd-c08f-411d-bb55-a74df6688301",
+    "id": "block-329f5d2c-4398-40b2-82d5-8f0e3fcf9c21",
     "parents": [],
     "metadata": {
       "name": "mRuby2",
@@ -1736,6 +1736,7 @@
       "authors": [],
       "tags": {},
       "color": "#e7aaa9",
+      "shortName": "mR2",
       "egfPosition": "19"
     },
     "sequence": {
@@ -1759,12 +1760,11 @@
     "options": {},
     "notes": {
       "category": "Fluorescent Reporter",
-      "subCategory": "Red Fluorescent Reporter",
-      "shortName": "mR2"
+      "sub-category": "Red Fluorescent Reporter"
     }
   },
   {
-    "id": "block-26746c7f-2fae-4420-9b63-57104faf0659",
+    "id": "block-269d815f-4735-4082-b830-0d22cd590b9d",
     "parents": [],
     "metadata": {
       "name": "mTagBFP2",
@@ -1772,6 +1772,7 @@
       "authors": [],
       "tags": {},
       "color": "#D28482",
+      "shortName": "mBP2",
       "egfPosition": "19"
     },
     "sequence": {
@@ -1795,12 +1796,11 @@
     "options": {},
     "notes": {
       "category": "Fluorescent Reporter",
-      "subCategory": "Blue Fluorescent Reporter",
-      "shortName": "mBP2"
+      "sub-category": "Blue Fluorescent Reporter"
     }
   },
   {
-    "id": "block-0efb1946-8517-48a1-ba1c-655c1714a751",
+    "id": "block-573a3908-a624-4534-bc7e-4fde342613be",
     "parents": [],
     "metadata": {
       "name": "Tet-ON-3G",
@@ -1808,6 +1808,7 @@
       "authors": [],
       "tags": {},
       "color": "#E9BA9b",
+      "shortName": "",
       "egfPosition": "19"
     },
     "sequence": {
@@ -1831,12 +1832,11 @@
     "options": {},
     "notes": {
       "category": "Transcription Factor ",
-      "subCategory": "Inducible transcriptional activator",
-      "shortName": ""
+      "sub-category": "Inducible transcriptional activator"
     }
   },
   {
-    "id": "block-1bf0405c-0ca2-4a40-9d93-93177a27c6cc",
+    "id": "block-e4523853-d979-4dbf-b7c2-0be3f3a8f401",
     "parents": [],
     "metadata": {
       "name": "Ct-minute-NES",
@@ -1844,6 +1844,7 @@
       "authors": [],
       "tags": {},
       "color": "#efac7e",
+      "shortName": "NES",
       "egfPosition": "20"
     },
     "sequence": {
@@ -1867,12 +1868,11 @@
     "options": {},
     "notes": {
       "category": "Peptide Tags",
-      "subCategory": "Protein Tags for Subcellular targeting",
-      "shortName": "NES"
+      "sub-category": "Protein Tags for Subcellular targeting"
     }
   },
   {
-    "id": "block-0bdc09a5-e632-4127-956b-228645bfc562",
+    "id": "block-4049db7b-319b-45b8-bf3c-3cd736128c3d",
     "parents": [],
     "metadata": {
       "name": "Ct-NES",
@@ -1880,6 +1880,7 @@
       "authors": [],
       "tags": {},
       "color": "#EFD79A",
+      "shortName": "",
       "egfPosition": "20"
     },
     "sequence": {
@@ -1903,12 +1904,11 @@
     "options": {},
     "notes": {
       "category": "Peptide Tags",
-      "subCategory": "Protein Tags for Subcellular targeting",
-      "shortName": ""
+      "sub-category": "Protein Tags for Subcellular targeting"
     }
   },
   {
-    "id": "block-153af64b-a414-46fb-8751-afc9e60915bf",
+    "id": "block-33eec19c-8563-4b02-b420-373c16558973",
     "parents": [],
     "metadata": {
       "name": "Linker 3",
@@ -1916,6 +1916,7 @@
       "authors": [],
       "tags": {},
       "color": "#F1D26C",
+      "shortName": "LK-3",
       "egfPosition": "20"
     },
     "sequence": {
@@ -1939,12 +1940,11 @@
     "options": {},
     "notes": {
       "category": "Peptide Linker",
-      "subCategory": "Flexible Peptide Linker",
-      "shortName": "LK-3"
+      "sub-category": "Flexible Peptide Linker"
     }
   },
   {
-    "id": "block-ed487741-7356-403e-9f5d-b317b17a8364",
+    "id": "block-b9fc01fd-97e4-4352-98b7-905dc95e4c50",
     "parents": [],
     "metadata": {
       "name": "p2A-Porcine teschovirus-1 ",
@@ -1952,6 +1952,7 @@
       "authors": [],
       "tags": {},
       "color": "#E4E480",
+      "shortName": "p2A",
       "egfPosition": "20"
     },
     "sequence": {
@@ -1975,12 +1976,11 @@
     "options": {},
     "notes": {
       "category": "2A-like peptide sequences ",
-      "subCategory": "2A peptide ",
-      "shortName": "p2A"
+      "sub-category": "2A peptide "
     }
   },
   {
-    "id": "block-86d798e7-7335-44ab-a025-8da97fceb0dc",
+    "id": "block-6822d0ee-5cec-4621-b8a4-ae2bdc63eeea",
     "parents": [],
     "metadata": {
       "name": "DmrA",
@@ -1988,6 +1988,7 @@
       "authors": [],
       "tags": {},
       "color": "#D3D34F",
+      "shortName": "",
       "egfPosition": "21"
     },
     "sequence": {
@@ -2011,12 +2012,11 @@
     "options": {},
     "notes": {
       "category": "Dimerization domain",
-      "subCategory": "Chemically induced dimerization domain",
-      "shortName": ""
+      "sub-category": "Chemically induced dimerization domain"
     }
   },
   {
-    "id": "block-25b67fe0-b46b-42d0-b485-43b2e20ea78b",
+    "id": "block-91f90539-313e-4c54-b10f-d25d78c54924",
     "parents": [],
     "metadata": {
       "name": "mKate2",
@@ -2024,6 +2024,7 @@
       "authors": [],
       "tags": {},
       "color": "#9CC6C0",
+      "shortName": "mK2",
       "egfPosition": "21"
     },
     "sequence": {
@@ -2047,12 +2048,11 @@
     "options": {},
     "notes": {
       "category": "Fluorescent Reporter",
-      "subCategory": "Far-red Fluorescent Reporter",
-      "shortName": "mK2"
+      "sub-category": "Far-red Fluorescent Reporter"
     }
   },
   {
-    "id": "block-6565225b-cb24-492f-9bd3-a030f4cdcf44",
+    "id": "block-af84d78b-8bac-4697-ba23-455180faf605",
     "parents": [],
     "metadata": {
       "name": "mNeoGreen",
@@ -2060,6 +2060,7 @@
       "authors": [],
       "tags": {},
       "color": "#6DA19C",
+      "shortName": "mNG",
       "egfPosition": "21"
     },
     "sequence": {
@@ -2083,12 +2084,11 @@
     "options": {},
     "notes": {
       "category": "Fluorescent Reporter",
-      "subCategory": "Green Fluorescent Reporter",
-      "shortName": "mNG"
+      "sub-category": "Green Fluorescent Reporter"
     }
   },
   {
-    "id": "block-1c3448f8-db8b-4577-9bc0-a394c1f8ec6d",
+    "id": "block-91957e73-f71b-4740-be12-85802f02b75b",
     "parents": [],
     "metadata": {
       "name": "mRuby2",
@@ -2096,6 +2096,7 @@
       "authors": [],
       "tags": {},
       "color": "#B1CED0",
+      "shortName": "mR2",
       "egfPosition": "21"
     },
     "sequence": {
@@ -2119,12 +2120,11 @@
     "options": {},
     "notes": {
       "category": "Fluorescent Reporter",
-      "subCategory": "Red Fluorescent Reporter",
-      "shortName": "mR2"
+      "sub-category": "Red Fluorescent Reporter"
     }
   },
   {
-    "id": "block-cfddfda5-558c-459a-a8a1-120de5c8ead6",
+    "id": "block-f0f423cf-ed2f-44cc-aff2-ca65bc61283f",
     "parents": [],
     "metadata": {
       "name": "mTagBFP2",
@@ -2132,6 +2132,7 @@
       "authors": [],
       "tags": {},
       "color": "#65AAB1",
+      "shortName": "mBP2",
       "egfPosition": "21"
     },
     "sequence": {
@@ -2155,12 +2156,11 @@
     "options": {},
     "notes": {
       "category": "Fluorescent Reporter",
-      "subCategory": "Blue Fluorescent Reporter",
-      "shortName": "mBP2"
+      "sub-category": "Blue Fluorescent Reporter"
     }
   },
   {
-    "id": "block-e435d9e0-ee2a-4504-9050-de5153a08739",
+    "id": "block-1a6a304d-529a-4a28-96c1-d088aa233ec5",
     "parents": [],
     "metadata": {
       "name": "PuroR",
@@ -2168,6 +2168,7 @@
       "authors": [],
       "tags": {},
       "color": "#8EC78D",
+      "shortName": "",
       "egfPosition": "21"
     },
     "sequence": {
@@ -2191,12 +2192,11 @@
     "options": {},
     "notes": {
       "category": "Selection Markers",
-      "subCategory": "Antibiotic Resistance",
-      "shortName": ""
+      "sub-category": "Antibiotic Resistance"
     }
   },
   {
-    "id": "block-a422058b-eb7b-4001-a236-b1dcb4ff99d5",
+    "id": "block-0b91b884-d4b7-4708-86ad-f3417bc0480c",
     "parents": [],
     "metadata": {
       "name": "PGK polyA",
@@ -2204,6 +2204,7 @@
       "authors": [],
       "tags": {},
       "color": "#53B15F",
+      "shortName": "PGKpA",
       "egfPosition": "22"
     },
     "sequence": {
@@ -2227,12 +2228,11 @@
     "options": {},
     "notes": {
       "category": "PolyA transcription terminators",
-      "subCategory": "Endogenous  derived polyA",
-      "shortName": "PGKpA"
+      "sub-category": "Endogenous  derived polyA"
     }
   },
   {
-    "id": "block-5bca3fe1-74e3-437c-8b46-5ca59ca9da64",
+    "id": "block-3b9f5501-f0dd-4946-8360-91b645dff33f",
     "parents": [],
     "metadata": {
       "name": "Insulator_FB",
@@ -2240,6 +2240,7 @@
       "authors": [],
       "tags": {},
       "color": "#C5C4C1",
+      "shortName": "IS_FB",
       "egfPosition": "23"
     },
     "sequence": {
@@ -2263,12 +2264,11 @@
     "options": {},
     "notes": {
       "category": "Insulators",
-      "subCategory": "endogenous elements",
-      "shortName": "IS_FB"
+      "sub-category": "endogenous elements"
     }
   },
   {
-    "id": "block-e7eeda09-b8de-45a8-810e-a06e71fb489d",
+    "id": "block-5178a5d0-8189-472b-bcc1-2fb7400e669f",
     "parents": [],
     "metadata": {
       "name": "3'HA-hAAVS1",
@@ -2276,6 +2276,7 @@
       "authors": [],
       "tags": {},
       "color": "#A5A6A2",
+      "shortName": "",
       "egfPosition": "24"
     },
     "sequence": {
@@ -2299,12 +2300,11 @@
     "options": {},
     "notes": {
       "category": "Homology Arm",
-      "subCategory": "Human genomic locus",
-      "shortName": ""
+      "sub-category": "Human genomic locus"
     }
   },
   {
-    "id": "block-60752222-df9e-4950-8632-03f800dc59ad",
+    "id": "block-d22bb655-7fc5-4edb-8e6b-d91409c4e822",
     "parents": [],
     "metadata": {
       "name": "3'-ITR-PB",
@@ -2312,6 +2312,7 @@
       "authors": [],
       "tags": {},
       "color": "#e7aaa9",
+      "shortName": "",
       "egfPosition": "24"
     },
     "sequence": {
@@ -2335,12 +2336,11 @@
     "options": {},
     "notes": {
       "category": "inverted terminal repeat sequences (ITRs)",
-      "subCategory": "transposon-specific inverted terminal repeat sequences (ITRs)",
-      "shortName": ""
+      "sub-category": "transposon-specific inverted terminal repeat sequences (ITRs)"
     }
   },
   {
-    "id": "block-e9f53767-a2d7-4815-8f20-fc8a7405f493",
+    "id": "block-a3ddf8b1-ef36-4385-aa08-7cba64af1d78",
     "parents": [],
     "metadata": {
       "name": "SV40-ORI",
@@ -2348,6 +2348,7 @@
       "authors": [],
       "tags": {},
       "color": "#D28482",
+      "shortName": "",
       "egfPosition": "25"
     },
     "sequence": {
@@ -2371,8 +2372,7 @@
     "options": {},
     "notes": {
       "category": "Episomal elements",
-      "subCategory": "Viral",
-      "shortName": ""
+      "sub-category": "Viral"
     }
   }
 ]

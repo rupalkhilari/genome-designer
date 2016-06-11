@@ -57,13 +57,14 @@ const zip = (keys, vals) => keys.reduce(
 
 const mapPartFields = (imported) => {
   //fields based on array at top
-  const { part, description, position, role, sequence, category, subCategory, ...rest } = imported;
+  const { part, description, position, role, sequence, category, subCategory, shortName, ...rest } = imported;
   const id = part;
 
   return {
     metadata: {
       name: part,
       description: description,
+      shortName,
       egfPosition: position,
     },
     source: {
