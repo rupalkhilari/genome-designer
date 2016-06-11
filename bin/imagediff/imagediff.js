@@ -65,8 +65,8 @@ console.log(`Tests Folder     : ${test}`);
 filesInFolder(truth).forEach(file => {
   // get corresponding file in tests folder
   const match = path.join(test, fileFromPath(file));
-  console.log(clc.yellow(`Comparing\n${file}\n${match}`));
-  resemble(file).compareTo(match).onComplete(function(data){
+  resemble(file).compareTo(match).onComplete(function(data) {
+    console.log(clc.yellow(`Comparing\n${file}\n${match}`));
     const misMatch = parseFloat(data.misMatchPercentage);
     if (data.isSameDimensions && misMatch === 0) {
       console.log(clc.green('Perfect Match'));
