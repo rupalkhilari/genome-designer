@@ -370,7 +370,9 @@ export default class ConstructViewerUserInterface extends UserInterface {
       case 'option':
         // user might have clicked an 'empty list' placeholder, otherwise select the option
         if (region.optionId) {
+          this.constructViewer.blockSelected([block]);
           this.constructViewer.optionSelected(region.blockId, region.optionId);
+          action = 'optionSelect';
         }
         break;
 
@@ -380,6 +382,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
       switch (action) {
       case 'toggle' : this.constructViewer.blockToggleSelected([block]); break;
       case 'add': this.constructViewer.blockAddToSelectionsRange(block, this.selectedElements); break;
+      case 'optionSelect': break;
       default: this.constructViewer.blockSelected([block]); break;
       }
     } else {

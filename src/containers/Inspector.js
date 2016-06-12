@@ -31,8 +31,8 @@ export class Inspector extends Component {
     switch (type) {
     case 'project':
       inspect = (<InspectorProject instance={focused}
-                                  orders={orders}
-                                  readOnly={readOnly}/>);
+                                   orders={orders}
+                                   readOnly={readOnly}/>);
       break;
     case 'construct':
     default:
@@ -72,7 +72,9 @@ function mapStateToProps(state, props) {
   //UI adjustment
   const showingGrunt = !!state.ui.modals.gruntMessage;
 
-  const { level, forceProject, forceBlocks, projectId, constructId, blockIds } = state.focus;
+  // todo - maybe should move to focus selector, and just run this in render, to share code. this is kinda gnar.
+
+  const { level, forceProject, forceBlocks, projectId, constructId, blockIds, options } = state.focus;
   let focused;
   let readOnly = false;
   let type = level;
@@ -91,6 +93,10 @@ function mapStateToProps(state, props) {
     const construct = state.blocks[constructId];
     focused = [construct];
     readOnly = construct.isFrozen();
+  } else if (level === 'option' && blockIds.length === 1) {
+    const optionId = options[blockIds[0]];
+    focused = [state.blocks[optionId]];
+    readOnly = true;
   } else {
     if (forceBlocks.length) {
       focused = forceBlocks;
