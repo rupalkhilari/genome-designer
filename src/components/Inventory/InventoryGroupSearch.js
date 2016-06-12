@@ -185,11 +185,13 @@ export class InventoryGroupSearch extends Component {
                                 manual
                                 isExpanded={sourcesVisible[key]}
                                 onToggle={() => this.onListGroupToggle(key)}
-                                key={key}>
+                                key={key}
+                                dataAttribute={`searchgroup ${name}`}>
               <InventoryList inventoryType={blockDragType}
                              onDrop={(item) => this.handleListOnDrop(key, item)}
                              onSelect={(item) => this.handleListOnSelect(key, item)}
-                             items={listingItems}/>
+                             items={listingItems}
+                             dataAttributePrefix={`searchresult ${name}`}/>
             </InventoryListGroup>
           );
         })
@@ -207,11 +209,13 @@ export class InventoryGroupSearch extends Component {
                                   manual
                                   isExpanded={sourcesVisible[group]}
                                   onToggle={() => this.onListGroupToggle(group)}
-                                  key={group}>
+                                  key={group}
+                                  dataAttribute={`searchgroup-role ${group}`}>
                 <InventoryList inventoryType={blockDragType}
                                onDrop={(item) => this.handleListOnDrop(item.source, item)}
                                onSelect={(item) => this.handleListOnSelect(item.source, item)}
-                               items={listingItems}/>
+                               items={listingItems}
+                               dataAttributePrefix={`searchresult ${group}`}/>
               </InventoryListGroup>
             );
           })

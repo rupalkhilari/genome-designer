@@ -1,5 +1,6 @@
 var homepageRegister = require('../fixtures/homepage-register');
 var newConstruct = require('../fixtures/newconstruct');
+var newProject = require('../fixtures/newproject');
 var clickAt = require('../fixtures/clickAt');
 var rightClickAt = require('../fixtures/rightClickAt');
 var clickContextMenu = require('../fixtures/click-popmenu-nth-item.js');
@@ -12,7 +13,7 @@ module.exports = {
       .waitForElementPresent('.SidePanel.Inventory', 5000, 'Expected Inventory Groups')
       .waitForElementPresent('.SidePanel.Inspector', 5000, 'Expected Inspector');
 
-    newConstruct(browser);
+    newProject(browser);
 
     browser
       .waitForElementPresent('.construct-viewer', 5000, 'expected one construct viewer')
