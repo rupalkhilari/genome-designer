@@ -554,7 +554,7 @@ class GlobalNav extends Component {
               action: this.disgorgeDiscourse.bind(this, '/c/genetic-constructor/support'),
             }, {
               text: 'Keyboard Shortcuts',
-              action: () => {},
+              action: this.disgorgeDiscourse.bind(this, '/t/keyboard-shortcuts'),
             }, {
               text: 'Give Us Feedback',
               action: this.disgorgeDiscourse.bind(this, '/c/genetic-constructor/feedback'),
