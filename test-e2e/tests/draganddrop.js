@@ -35,9 +35,9 @@ module.exports = {
       .waitForElementPresent('.InventoryItem', 5000, 'expected an inventory item');
 
     // drag a block to each construct to start them off
-    dragFromTo(browser, '.InventoryItemRole:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 30, 30);
-    dragFromTo(browser, '.InventoryItemRole:nth-of-type(2)', 10, 10, '.construct-viewer:nth-of-type(2) .sceneGraph', 30, 30);
-    dragFromTo(browser, '.InventoryItemRole:nth-of-type(3)', 10, 10, '.construct-viewer:nth-of-type(3) .sceneGraph', 30, 30);
+    dragFromTo(browser, '.InventoryItemRole:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(2) .sceneGraph', 30, 30);
+    dragFromTo(browser, '.InventoryItemRole:nth-of-type(2)', 10, 10, '.construct-viewer:nth-of-type(3) .sceneGraph', 30, 30);
+    dragFromTo(browser, '.InventoryItemRole:nth-of-type(3)', 10, 10, '.construct-viewer:nth-of-type(4) .sceneGraph', 30, 30);
 
     // drag an item from the inventory
     for(var j = 1; j <= 3; j += 1) {
@@ -45,7 +45,7 @@ module.exports = {
         dragFromTo(
             browser,
             '.InventoryItemRole:nth-of-type(' + i + ')', 10, 10,
-            '.construct-viewer:nth-of-type(' + j + ') .sceneGraph [data-nodetype="block"]', 30, 10);
+            '.construct-viewer:nth-of-type(' + (j + 1) + ') .sceneGraph [data-nodetype="block"]', 30, 10);
       }
     }
 

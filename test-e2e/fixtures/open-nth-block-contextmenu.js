@@ -16,6 +16,7 @@ module.exports = function (browser, srcSelector, blockIndex) {
     browser
       .moveToElement('body', b.left + b.width - 10, b.top + 10)
       .mouseButtonDown(0)
+      .pause(100)
       .mouseButtonUp(0);
   });
 }
