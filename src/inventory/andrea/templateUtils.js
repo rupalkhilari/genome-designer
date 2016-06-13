@@ -4,7 +4,8 @@ import parts from './parts';
 import Block from '../../models/Block';
 import { merge } from 'lodash';
 
-const stringIsConnector = (string) => (/^[a-zA-Z](-[a-zA-Z])?$/gi).test(string);
+const termIsPartPos = term => Number.isInteger(term) || term === '8a' || term === '8b';
+const stringIsConnector = (string) => (/^[a-zA-Z](-[a-zA-Z])?( BsaI\-.)?$/gi).test(string);
 
 // pass number, return map for block options
 export const getOptionParts = (pos, optionId) => {
@@ -37,7 +38,7 @@ export const conn = (term) => { //eslint-disable-line id-length
   const isPos = !isNaN(parseInt(term[0], 10));
   return connectors.find(conn => isPos ?
     conn.metadata.egfPosition === `${term}` :
-    conn.metadata.name === `conn ${term.toUpperCase()}`
+    conn.metadata.name.toUpperCase() === `conn ${term}`.toUpperCase()
   );
 };
 
@@ -46,15 +47,19 @@ export const conn = (term) => { //eslint-disable-line id-length
 export const part = (term) => {
   return parts.find(part => {
     return part.metadata.name.toLowerCase() === term ||
-        part.metadata.shortName.toLowerCase() === term;
+      part.metadata.shortName.toLowerCase() === term;
   });
 };
 
-//pass numbers for parts, strings as '#' or '#-#' for connectors, otherwise a part name
+//pass numbers for parts, strings as '#' or '#-#' for connectors (or e.g. 'A-B BsaI-X', see regex above), otherwise a part name
 //todo - need to handle linkers
 export const makeComponents = (...terms) => {
   return terms
-    .map(term => Number.isInteger(term) ? list(term) : (stringIsConnector(term) ? conn(term) : part(term))); //eslint-disable-line no-nested-ternary
+    .map(term => termIsPartPos(term) ? //eslint-disable-line no-nested-ternary
+      list(term) :
+      stringIsConnector(term) ?
+        conn(term) :
+        part(term));
 };
 
 //pass in actual list of compoennts
