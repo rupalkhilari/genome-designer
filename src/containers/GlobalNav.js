@@ -53,6 +53,7 @@ import {
   privacy,
 } from '../utils/ui/uiapi';
 import AutosaveTracking from '../components/GlobalNav/autosaveTracking';
+import OkCancel from '../components/okcancel';
 
 import '../styles/GlobalNav.css';
 
@@ -595,6 +596,32 @@ class GlobalNav extends Component {
         <span className="GlobalNav-spacer"/>
         {showMenu && <AutosaveTracking projectId={currentProjectId}/>}
         <UserWidget/>
+        <OkCancel
+          open={true}
+          titleText="Delete Project"
+          messageHTML={(
+            <div className="message">
+              <br/>
+              <span className="line">Line 1</span>
+              <br/>
+              <span className="line">Line 2</span>
+              <br/>
+              <span className="line">Line 3</span>
+              <br/>
+              <br/>
+              <br/>
+              <br/>
+            </div>
+          )}
+          okText="Confirmed"
+          cancelText="Denied"
+          ok={() => {
+            alert('Ok');
+          }}
+          cancel={() => {
+            alert('Cancel');
+          }}
+          />
       </div>
     );
   }
