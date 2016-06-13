@@ -4,6 +4,7 @@ var openInventory = require('./open-inventory');
 
 var newproject = function(browser) {
   browser
+    .pause(1000)
     // make sure inventory is present
     .waitForElementPresent('.SidePanel.Inventory', 5000, 'Expected Inventory Groups');
     // click new project, which adds a new construct
@@ -19,12 +20,12 @@ var newproject = function(browser) {
     .waitForElementPresent('.InventoryItem', 5000, 'expected an inventory item');
 
   // drag 3 role symbols into construct
-  dragFromTo(browser, '.InventoryItemRole:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 700, 30);
-  dragFromTo(browser, '.InventoryItemRole:nth-of-type(2)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 700, 30);
-  dragFromTo(browser, '.InventoryItemRole:nth-of-type(3)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 700, 30);
-  dragFromTo(browser, '.InventoryItemRole:nth-of-type(4)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 700, 30);
-  dragFromTo(browser, '.InventoryItemRole:nth-of-type(5)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 700, 30);
-  dragFromTo(browser, '.InventoryItemRole:nth-of-type(6)', 10, 10, '.construct-viewer:nth-of-type(1) .sceneGraph', 700, 30);
+  dragFromTo(browser, '.InventoryItemRole:nth-of-type(1)', 10, 10, '.construct-viewer:nth-of-type(2) .sceneGraph', 700, 30);
+  dragFromTo(browser, '.InventoryItemRole:nth-of-type(2)', 10, 10, '.construct-viewer:nth-of-type(2) .sceneGraph', 700, 30);
+  dragFromTo(browser, '.InventoryItemRole:nth-of-type(3)', 10, 10, '.construct-viewer:nth-of-type(2) .sceneGraph', 700, 30);
+  dragFromTo(browser, '.InventoryItemRole:nth-of-type(4)', 10, 10, '.construct-viewer:nth-of-type(2) .sceneGraph', 700, 30);
+  dragFromTo(browser, '.InventoryItemRole:nth-of-type(5)', 10, 10, '.construct-viewer:nth-of-type(2) .sceneGraph', 700, 30);
+  dragFromTo(browser, '.InventoryItemRole:nth-of-type(6)', 10, 10, '.construct-viewer:nth-of-type(2) .sceneGraph', 700, 30);
 
   browser
     .pause(250)
