@@ -10,6 +10,7 @@ import {
   projectAddConstruct,
   projectSave,
   projectOpen,
+  projectDelete,
 } from '../actions/projects';
 import {
   focusBlocks,
@@ -181,6 +182,7 @@ class GlobalNav extends Component {
   state = {
     showAddProject: false,
     recentProjects: [],
+    showDeleteProject: false,
   };
 
   /**
@@ -206,6 +208,24 @@ class GlobalNav extends Component {
     this.props.projectAddConstruct(project.id, block.id);
     this.props.focusConstruct(block.id);
     this.props.projectOpen(project.id);
+  }
+
+  /**
+   * show the delete project dialog
+   * @return {[type]} [description]
+   */
+  queryDeleteProject() {
+    this.setState({
+      showDeleteProject: true,
+    })
+  }
+
+  /**
+   * delete the current project
+   */
+  deleteProject() {
+    debugger;
+    projectDelete(this.props.currentProjectId);
   }
 
   /**
@@ -424,6 +444,12 @@ class GlobalNav extends Component {
               },
             },
             {
+              text: 'Delete Project',
+              action: () => {
+                this.queryDeleteProject();
+              },
+            },
+            {
               text: 'New Construct',
               shortcut: stringToShortcut('shift option N'),
               action: () => {
@@ -597,16 +623,16 @@ class GlobalNav extends Component {
         {showMenu && <AutosaveTracking projectId={currentProjectId}/>}
         <UserWidget/>
         <OkCancel
-          open={true}
+          open={this.state.showDeleteProject}
           titleText="Delete Project"
           messageHTML={(
             <div className="message">
               <br/>
-              <span className="line">Line 1</span>
+              <span className="line">{this.props.project ? (`"${this.props.project.getName()}"` || "Your Project") : ""}</span>
               <br/>
-              <span className="line">Line 2</span>
+              <span className="line">and all related project data will be permanently deleted.</span>
               <br/>
-              <span className="line">Line 3</span>
+              <span className="line">This action cannot be undone.</span>
               <br/>
               <br/>
               <br/>
@@ -616,10 +642,11 @@ class GlobalNav extends Component {
           okText="Confirmed"
           cancelText="Denied"
           ok={() => {
-            alert('Ok');
+            this.setState({showDeleteProject: false});
+            this.deleteProject();
           }}
           cancel={() => {
-            alert('Cancel');
+            this.setState({showDeleteProject: false});
           }}
           />
       </div>
@@ -645,6 +672,7 @@ export default connect(mapStateToProps, {
   projectCreate,
   projectSave,
   projectOpen,
+  projectDelete,
   projectGetVersion,
   blockCreate,
   blockClone,
