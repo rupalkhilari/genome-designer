@@ -170,7 +170,6 @@ export default class Layout {
   updateListForBlock(block, pW) {
     // ignore if not a list block
     if (!block.isList()) {
-      debugger;
       return;
     }
     // the node representing the parent block
