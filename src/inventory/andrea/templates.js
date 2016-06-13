@@ -2,6 +2,9 @@ import invariant from 'invariant';
 import { makeComponents, templateFromComponents } from './templateUtils';
 import Block from '../../models/Block';
 
+import connectors from './connectors';
+import parts from './parts';
+
 //track the components we make, wrap makeComponents
 const created = [];
 const make = (...terms) => {
@@ -35,7 +38,11 @@ const components13A = make(1, 2, 3, 'd-f', 6, 7, 8, 9, 10, 11, 'l-n', 14, 15, 16
 const components13B = make(1, 2, 3, 'd-f', 6, 7, 'h-ha', '8b', 9, 10, 11, 'l-n', 14, 15, 16, 'q-w', 23, 24, 'y-z');
 
 //all parts + connectors + list blocks used and created
-export const blocks = [...new Set(created)];
+export const blocks = [...new Set([
+  ...created,
+  ...parts,
+  ...connectors,
+  ])];
 
 //export the templates
 export const templates = [

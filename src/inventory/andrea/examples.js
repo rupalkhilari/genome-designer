@@ -3,13 +3,13 @@
 
 import invariant from 'invariant';
 import { merge } from 'lodash';
-import { list } from './templateUtils';
+import { list } from './templateUtils'; 
 import { templates, blocks as templateBlocks } from './templates';
 
 //list of list blocks created while creating our examples
 const created = [];
 
-const getTemplate = (name) => templates.find(tmpl => tmpl.metadata.name.toLowerCase() === `template ${name}`);
+const getTemplate = (name) => templates.find(tmpl => tmpl.metadata.name.toLowerCase() === `template ${name}`.toLowerCase());
 
 //need to find the specific one for this position, not just by name, because dependent on position
 const exampleOfTemplate = (template, options, toMerge = {}) => {
