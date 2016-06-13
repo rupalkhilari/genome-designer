@@ -18,7 +18,10 @@ export default function InventorySources({ toggling, sourceList, registry, onSou
         const source = registry[key];
         return {
           text: source.name,
-          action: () => onSourceToggle(key),
+          action: (evt) => {
+            evt.stopPropagation();
+            onSourceToggle(key);
+          },
           checked: sourceList.includes(key),
         };
       })),

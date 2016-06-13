@@ -143,16 +143,18 @@ export const projectOpen = (inputProjectId) => {
     const currentProjectId = dispatch(projectSelectors.projectGetCurrentId());
     const projectId = inputProjectId || getItem(recentProjectKey);
 
-    if (currentProjectId === projectId) {
+    if (!!currentProjectId && currentProjectId === projectId) {
       return Promise.resolve();
     }
 
     return dispatch(projectSave(currentProjectId))
       .catch(err => {
-        dispatch({
-          type: ActionTypes.UI_SET_GRUNT,
-          gruntMessage: `Project ${currentProjectId} couldn't be saved, but navigating anyway...`,
-        });
+        if (currentProjectId) {
+          dispatch({
+            type: ActionTypes.UI_SET_GRUNT,
+            gruntMessage: `Project ${currentProjectId} couldn't be saved, but navigating anyway...`,
+          });
+        }
       })
       .then(() => {
         /*

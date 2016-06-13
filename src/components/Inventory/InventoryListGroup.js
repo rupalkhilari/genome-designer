@@ -20,6 +20,7 @@ export default class InventoryListGroup extends Component {
     hideToggle: PropTypes.bool, //disable toggler (hide it)
     canToggle: PropTypes.bool,
     toggleOnSelect: PropTypes.bool, //run toggling on selection
+    dataAttribute: PropTypes.string,
   };
 
   static defaultProps = {
@@ -30,6 +31,7 @@ export default class InventoryListGroup extends Component {
     isSelectable: false,
     canToggle: true,
     toggleOnSelect: true,
+    dataAttribute: '',
     //no default for onToggle because check invariant
   };
 
@@ -76,7 +78,7 @@ export default class InventoryListGroup extends Component {
   };
 
   render() {
-    const { isSelectable, hideToggle, title, manual, isLoading, isExpanded, isActive, children, disabled, canToggle } = this.props;
+    const { isSelectable, hideToggle, title, manual, isLoading, isExpanded, isActive, children, disabled, canToggle, dataAttribute } = this.props;
     const expanded = manual ? isExpanded : this.state.expanded;
 
     return (
@@ -84,12 +86,12 @@ export default class InventoryListGroup extends Component {
       (isSelectable ? ' isSelectable' : '') +
       (expanded ? ' expanded' : '') +
       (disabled ? ' disabled' : '') +
-      (isActive ? ' active' : '')}>
+      (isActive ? ' active' : '')}
+           data-inventory={dataAttribute}>
         <div className="InventoryListGroup-heading"
              ref={(el) => this.headingElement = el}
              onClick={this.handleSelect}>
           <Toggler hidden={hideToggle}
-                   disabled={!canToggle}
                    onClick={this.handleToggle}
                    open={expanded}/>
           <a className="InventoryListGroup-title">

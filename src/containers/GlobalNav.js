@@ -84,7 +84,7 @@ class GlobalNav extends Component {
     uiSetGrunt: PropTypes.func.isRequired,
     blockDetach: PropTypes.func.isRequired,
     clipboard: PropTypes.object.isRequired,
-    blockGetChildrenRecursive: PropTypes.func.isRequired,
+    blockGetComponentsRecursive: PropTypes.func.isRequired,
     blockAddComponent: PropTypes.func.isRequired,
     blockAddComponents: PropTypes.func.isRequired,
     uiShowAbout: PropTypes.func.isRequired,
@@ -186,7 +186,7 @@ class GlobalNav extends Component {
    * select all blocks of the current construct
    */
   onSelectAll() {
-    this.props.focusBlocks(this.props.blockGetChildrenRecursive(this.props.focus.constructId).map(block => block.id));
+    this.props.focusBlocks(this.props.blockGetComponentsRecursive(this.props.focus.constructId).map(block => block.id));
   }
 
   // get parent of block
@@ -290,7 +290,7 @@ class GlobalNav extends Component {
    * select all the empty blocks in the current construct
    */
   selectEmptyBlocks() {
-    const allChildren = this.props.blockGetChildrenRecursive(this.props.focus.constructId);
+    const allChildren = this.props.blockGetComponentsRecursive(this.props.focus.constructId);
     const emptySet = allChildren.filter(block => !block.hasSequence()).map(block => block.id);
     this.props.focusBlocks(emptySet);
     if (!emptySet.length) {
@@ -342,7 +342,7 @@ class GlobalNav extends Component {
 
   // cut focused blocks to the clipboard, no clone required since we are removing them.
   cutFocusedBlocksToClipboard() {
-    if (this.props.focus.blockIds.length && !this.focusedConstruct().isFixed() && this.focusedConstruct().isFrozen()) {
+    if (this.props.focus.blockIds.length && !this.focusedConstruct().isFixed() && !this.focusedConstruct().isFrozen()) {
       // TODO, cut must be prevents on fixed or frozen blocks
       const blockIds = this.props.blockDetach(...this.props.focus.blockIds);
       this.props.clipboardSetData([clipboardFormats.blocks], [blockIds.map(blockId => this.props.blocks[blockId])]);

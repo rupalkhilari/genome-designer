@@ -54,7 +54,7 @@ export class Page1 extends Component {
   numberOfAssembliesChanged = (newValue) => {
     const total = parseInt(newValue, 10);
     this.props.orderSetParameters(this.props.order.id, {
-      permutations: Number.isInteger(total) ? Math.min(this.props.constructs.length, Math.max(0, total)) : 1,
+      permutations: Number.isInteger(total) ? Math.min(this.props.constructs.length, Math.max(1, total)) : 1,
     }, true);
   };
 

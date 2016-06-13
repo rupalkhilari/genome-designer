@@ -37,7 +37,7 @@ module.exports = {
     // expect all blocks to be deleted
     browser
       .pause(250)
-      .assert.countelements('.role-glyph', 0)
+      .assert.countelements('[data-nodetype="block"]', 0)
       .end();
   }
 };
