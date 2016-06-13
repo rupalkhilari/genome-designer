@@ -25,7 +25,7 @@
       "list": false,
       "role": null,
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -61,7 +61,7 @@
       "list": false,
       "role": null,
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -97,7 +97,7 @@
       "list": false,
       "role": "insulator",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -133,7 +133,7 @@
       "list": false,
       "role": "promoter",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -169,7 +169,7 @@
       "list": false,
       "role": "promoter",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -205,7 +205,7 @@
       "list": false,
       "role": "promoter",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -241,7 +241,7 @@
       "list": false,
       "role": "promoter",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -277,7 +277,7 @@
       "list": false,
       "role": "regulatory",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -313,7 +313,7 @@
       "list": false,
       "role": null,
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -349,7 +349,7 @@
       "list": false,
       "role": null,
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -385,7 +385,7 @@
       "list": false,
       "role": "regulatory",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -421,7 +421,7 @@
       "list": false,
       "role": "regulatory",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -457,7 +457,7 @@
       "list": false,
       "role": "regulatory",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -493,7 +493,7 @@
       "list": false,
       "role": null,
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -529,7 +529,7 @@
       "list": false,
       "role": "tag",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -565,7 +565,7 @@
       "list": false,
       "role": "tag",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -601,7 +601,7 @@
       "list": false,
       "role": "tag",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -637,7 +637,7 @@
       "list": false,
       "role": "tag",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -673,7 +673,7 @@
       "list": false,
       "role": "tag",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -709,7 +709,7 @@
       "list": false,
       "role": null,
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -745,7 +745,7 @@
       "list": false,
       "role": null,
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -781,7 +781,7 @@
       "list": false,
       "role": null,
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -817,7 +817,7 @@
       "list": false,
       "role": "reporter",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -853,7 +853,7 @@
       "list": false,
       "role": "reporter",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -889,7 +889,7 @@
       "list": false,
       "role": "reporter",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -925,7 +925,7 @@
       "list": false,
       "role": "reporter",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -961,7 +961,7 @@
       "list": false,
       "role": "structural",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -997,7 +997,7 @@
       "list": false,
       "role": "structural",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -1033,7 +1033,7 @@
       "list": false,
       "role": null,
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -1069,7 +1069,7 @@
       "list": false,
       "role": "tag",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -1105,7 +1105,7 @@
       "list": false,
       "role": "rbs",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -1141,7 +1141,7 @@
       "list": false,
       "role": "selection",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -1177,7 +1177,7 @@
       "list": false,
       "role": "selection",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -1213,7 +1213,7 @@
       "list": false,
       "role": "selection",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -1249,7 +1249,7 @@
       "list": false,
       "role": "structural",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -1285,7 +1285,7 @@
       "list": false,
       "role": "reporter",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -1321,7 +1321,7 @@
       "list": false,
       "role": "reporter",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -1357,7 +1357,7 @@
       "list": false,
       "role": "reporter",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -1393,7 +1393,7 @@
       "list": false,
       "role": "reporter",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -1429,7 +1429,7 @@
       "list": false,
       "role": "structural",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -1465,7 +1465,7 @@
       "list": false,
       "role": "regulatory",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -1501,7 +1501,7 @@
       "list": false,
       "role": "terminator",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -1537,7 +1537,7 @@
       "list": false,
       "role": "promoter",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -1573,7 +1573,7 @@
       "list": false,
       "role": "selection",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -1609,7 +1609,7 @@
       "list": false,
       "role": "terminator",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -1645,7 +1645,7 @@
       "list": false,
       "role": "promoter",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -1681,7 +1681,7 @@
       "list": false,
       "role": "promoter",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -1717,7 +1717,7 @@
       "list": false,
       "role": "reporter",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -1753,7 +1753,7 @@
       "list": false,
       "role": "reporter",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -1789,7 +1789,7 @@
       "list": false,
       "role": "reporter",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -1825,7 +1825,7 @@
       "list": false,
       "role": null,
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -1861,7 +1861,7 @@
       "list": false,
       "role": "tag",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -1897,7 +1897,7 @@
       "list": false,
       "role": "tag",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -1933,7 +1933,7 @@
       "list": false,
       "role": "structural",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -1969,7 +1969,7 @@
       "list": false,
       "role": null,
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -2005,7 +2005,7 @@
       "list": false,
       "role": "structural",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -2041,7 +2041,7 @@
       "list": false,
       "role": "reporter",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -2077,7 +2077,7 @@
       "list": false,
       "role": "reporter",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -2113,7 +2113,7 @@
       "list": false,
       "role": "reporter",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -2149,7 +2149,7 @@
       "list": false,
       "role": "reporter",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -2185,7 +2185,7 @@
       "list": false,
       "role": "selection",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -2221,7 +2221,7 @@
       "list": false,
       "role": "terminator",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -2257,7 +2257,7 @@
       "list": false,
       "role": "insulator",
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -2293,7 +2293,7 @@
       "list": false,
       "role": null,
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -2329,7 +2329,7 @@
       "list": false,
       "role": null,
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],
@@ -2365,7 +2365,7 @@
       "list": false,
       "role": null,
       "hidden": false,
-      "frozen": true,
+      
       "fixed": false
     },
     "components": [],

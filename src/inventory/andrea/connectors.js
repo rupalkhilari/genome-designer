@@ -8,7 +8,7 @@ export default connectorList
       color: '#bababa',
     },
     rules: {
-      frozen: true,
       hidden: true,
     },
-  }));
+  }))
+  .map(connector => connector.setFrozen());

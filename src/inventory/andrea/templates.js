@@ -1,9 +1,13 @@
+import invariant from 'invariant';
 import { makeComponents, templateFromComponents } from './templateUtils';
+import Block from '../../models/Block';
 
 //track the components we make, wrap makeComponents
 const created = [];
 const make = (...terms) => {
   const components = makeComponents(...terms);
+  const invalid = components.findIndex(comp => !Block.validate(comp));
+  invariant(invalid < 0, 'got invalid component for ' + terms[invalid]);
   created.push(...components);
   return components;
 };
@@ -23,7 +27,7 @@ const components6B = make(1, 2, 3, 'd-f', 6, 7, 'h-k', 11, 'l-r', 18, 19, 20, 21
 const components7 = make(1, 2, 3, 'd-f', 6, 7, 'h-k', 11, 'l-n', 14, 15, 16, 'q-r', 18, 19, 't-v', 22, 23, 24, 'y-z');
 const components8 = make(1, 2, 3, 'd-f', 6, 7, 8, 9, 'j-k', 11, 'l-n', 14, 15, 16, 'q-r', 18, 19, 20, 21, 22, 23, 24, 'y-z');
 const components9 = make(1, 2, 3, 'd-e', 5, 6, 7, 8, 9, 'h-k', 11, 'l-w', 23, 24, 'y-z');
-const components10 = make('a-e', 5, 6, 7, 'h-ha', '8b', 9, 'j-k', 11, 'l-r', 18, 19, 20, 'u-v', 22, 'w-z');
+//const components10 = make('a-e', 5, 6, 7, 'h-ha', '8b', 9, 'j-k', 11, 'l-r', 18, 19, 20, 'u-v', 22, 'w-z'); //connector A-E is missing
 const components11A = make('a-b BsaI-X', 'b-c', 3, 'd-e', 5, 6, 7, 'h-k', 11, 'l-y', 'y-z BsaI-Y');
 const components11B = make('a-b BsaI-1', 'b-c', 3, 'd-f', 6, 7, 'h-ha', '8b', 'j-k', 11, 'l-r', 18, 19, 20, 21, 22, 'w-y', 'y-z BsaI-Y');
 //12 is the same as 2, just different preferred parts in #6
@@ -228,6 +232,7 @@ export const templates = [
     },
   ),
 
+  /*
   templateFromComponents(
     components10,
     {
@@ -246,6 +251,7 @@ export const templates = [
       },
     }
   ),
+  */
 
   templateFromComponents(
     components11A,

@@ -73,7 +73,6 @@ const mapPartFields = (imported) => {
     },
     rules: {
       role: role,
-      frozen: true,
     },
     notes: {
       category,
@@ -100,7 +99,6 @@ const mapConnectorFields = (imported) => {
     },
     rules: {
       role: 'connector',
-      frozen: true,
     },
     sequence: sequence, //this field is removed later to conform to schema
   };

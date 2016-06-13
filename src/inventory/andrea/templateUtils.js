@@ -5,16 +5,16 @@ import Block from '../../models/Block';
 import { merge } from 'lodash';
 
 const termIsPartPos = term => Number.isInteger(term) || term === '8a' || term === '8b';
-const stringIsConnector = (string) => (/^[a-zA-Z](-[a-zA-Z])?( BsaI\-.)?$/gi).test(string);
+const stringIsConnector = (string) => (/^[a-zA-Z](-[a-zA-Z]{1,2})?( BsaI\-.)?$/gi).test(string);
 
-// pass number, return map for block options
+// pass position number, return map for block options
 export const getOptionParts = (pos, optionId) => {
   return parts.filter(part => part.metadata.egfPosition === `${pos}`)
-    .reduce((acc, part, index) => Object.assign(acc, { [part.id]: (optionId ? optionId === part.id : index === 0) }), {});
+    .reduce((acc, part, index) => Object.assign(acc, { [part.id]: (optionId ? optionId === part.id : true) }), {});
 };
 
 // create list block with parts
-export const list = (pos, optionId) => { //eslint-disable-line id-length
+export const list = (pos, optionId) => {
   const listBlock = new Block({
     metadata: {
       name: `Position ${pos}`,
@@ -34,7 +34,7 @@ export const list = (pos, optionId) => { //eslint-disable-line id-length
 // create block which is connector
 // string with numbers for positions
 // letters for name ('A-C')
-export const conn = (term) => { //eslint-disable-line id-length
+export const conn = (term) => {
   const isPos = !isNaN(parseInt(term[0], 10));
   return connectors.find(conn => isPos ?
     conn.metadata.egfPosition === `${term}` :
