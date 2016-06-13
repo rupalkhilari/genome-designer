@@ -1,9 +1,10 @@
 import express from 'express';
-const router = express.Router();
 
-const defaultUser = {
-  uuid: "0",
-  email: "developer@localhost",
+export const router = express.Router(); //eslint-disable-line new-cap
+
+export const defaultUser = {
+  uuid: '0',
+  email: 'developer@localhost',
   firstName: 'Dev',
   lastName: 'Eloper',
 };
@@ -32,20 +33,19 @@ router.get('/current-user', (req, res) => {
   return res.end();
 });
 
-//testing only
+//testing only - route not present in auth module
 router.get('/cookies', (req, res) => {
   if (req.cookies.sess) {
-    res.send(req.cookies.sess);
+    return res.send(req.cookies.sess);
   }
-  else res.send(':(');
+
+  res.send(':(');
 });
 
-const mockUser = (req, res, next) => {
+export const mockUser = (req, res, next) => {
   if (req.cookies.sess !== null) {
     Object.assign(req, { user: defaultUser });
   }
+
   next();
 };
-
-module.exports.router = router;
-module.exports.mockUser = mockUser;
