@@ -37,10 +37,14 @@ export const inventorySearch = (inputTerm = '', options = null, skipDebounce = f
   return (dispatch, getState) => {
     const state = getState();
     const { sourceList } = state.inventory;
-    const searchTerm = !!inputTerm ? inputTerm : state.inventory.searchTerm;
+    const searchTerm = (typeof inputTerm !== 'undefined') ? inputTerm : state.inventory.searchTerm;
 
     //update the search term even if not actually running the search
     dispatch(inventorySetSearchTerm(searchTerm));
+
+    if (!inputTerm.length) {
+      return Promise.resolve();
+    }
 
     const promise = skipDebounce === true ? Promise.resolve() : debouncer();
 
