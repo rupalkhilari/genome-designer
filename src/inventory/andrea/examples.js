@@ -2,9 +2,10 @@
 //requires templates to have already been made
 
 import invariant from 'invariant';
-import { merge } from 'lodash';
+import { cloneDeep, merge } from 'lodash';
 import { list } from './templateUtils';
 import { templates, blocks as templateBlocks } from './templates';
+import Block from '../../models/Block';
 
 //list of list blocks created while creating our examples
 const created = [];
@@ -47,7 +48,10 @@ const exampleOfTemplate = (template, options, toMerge = {}) => {
       return newListComponent.id;
     });
 
-  return template.merge(merge(toMerge, {
+  const cloned = cloneDeep(template);
+  delete cloned.id;
+
+  return new Block(merge(cloned, toMerge, {
     components,
     rules: {
       frozen: true,
@@ -326,44 +330,44 @@ The final resulting vector encode for a tetracycline inducible expression system
   ),
 
   /*
-  exampleOfTemplate(
-    getTemplate('13A'),
-    ["5'-ITR-PB", 'IS_FB', 'EF1ap', '3XFLG', 'LCF', 'p2A', 'mK2', 'SV40pA', 'SV40p', 'PuroR', 'bGHpA', 'IS_FB', "3'-ITR-PB"],
-    {
-      metadata: {
-        name: 'Reporter vector',
-        description: `This vector is design for the expression of reporter genes and therefore to constantly track the transfected cells (such as tumor cells).
+   exampleOfTemplate(
+   getTemplate('13A'),
+   ["5'-ITR-PB", 'IS_FB', 'EF1ap', '3XFLG', 'LCF', 'p2A', 'mK2', 'SV40pA', 'SV40p', 'PuroR', 'bGHpA', 'IS_FB', "3'-ITR-PB"],
+   {
+   metadata: {
+   name: 'Reporter vector',
+   description: `This vector is design for the expression of reporter genes and therefore to constantly track the transfected cells (such as tumor cells).
 
-Luciferase reporter: Bioluminescent imaging  is a sensitive and versatile tool that uses luciferase enzyme as an imaging reporter. It has been used to track transfected cells. Luciferase has also a 3XFLAG for immunostaining
+   Luciferase reporter: Bioluminescent imaging  is a sensitive and versatile tool that uses luciferase enzyme as an imaging reporter. It has been used to track transfected cells. Luciferase has also a 3XFLAG for immunostaining
 
-The piggyBac system allow random integration of the vector in the genome.`,
-      },
-      notes: {
-        Application: 'Reporter gene',
-      },
-    },
-  ),
+   The piggyBac system allow random integration of the vector in the genome.`,
+   },
+   notes: {
+   Application: 'Reporter gene',
+   },
+   },
+   ),
 
-  exampleOfTemplate(
-    getTemplate('13B'),
-    ["5'-ITR-PB", 'IS_FB', 'EF1ap', 'Palm', 'mK2', 'IRES2', 'LCF', '3XFLG', 'SV40pA', 'SV40p', 'PuroR', 'bGHpA', 'IS_FB', "3'-ITR-PB"],
-    {
-      metadata: {
-        name: 'Reporter vector',
-        description: `This vector is design for the expression of reporter genes and therefore to constantly track the transfected cells (such as tumor cells).
+   exampleOfTemplate(
+   getTemplate('13B'),
+   ["5'-ITR-PB", 'IS_FB', 'EF1ap', 'Palm', 'mK2', 'IRES2', 'LCF', '3XFLG', 'SV40pA', 'SV40p', 'PuroR', 'bGHpA', 'IS_FB', "3'-ITR-PB"],
+   {
+   metadata: {
+   name: 'Reporter vector',
+   description: `This vector is design for the expression of reporter genes and therefore to constantly track the transfected cells (such as tumor cells).
 
-Luciferase reporter: Bioluminescent imaging  is a sensitive and versatile tool that uses luciferase enzyme as an imaging reporter. It has been used to track transfected cells. Luciferase has also a 3XFLAG for immunostaining
+   Luciferase reporter: Bioluminescent imaging  is a sensitive and versatile tool that uses luciferase enzyme as an imaging reporter. It has been used to track transfected cells. Luciferase has also a 3XFLAG for immunostaining
 
-mK2 is targeted to the plasma membrane
+   mK2 is targeted to the plasma membrane
 
-The piggyBac system allow random integration of the vector in the genome.`,
-      },
-      notes: {
-        Application: 'Reporter gene',
-      },
-    },
-  ),
-  */
+   The piggyBac system allow random integration of the vector in the genome.`,
+   },
+   notes: {
+   Application: 'Reporter gene',
+   },
+   },
+   ),
+   */
 
 ];
 
