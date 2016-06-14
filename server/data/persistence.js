@@ -6,7 +6,15 @@ import { validateBlock, validateProject, validateOrder } from '../utils/validati
 import * as filePaths from './../utils/filePaths';
 import * as versioning from './versioning';
 import * as commitMessages from './commitMessages';
-import { fileExists, fileRead, fileWrite, fileDelete, directoryMake, directoryDelete, directoryMove } from '../utils/fileSystem';
+import {
+  fileExists,
+  fileRead,
+  fileWrite,
+  fileDelete,
+  directoryMake,
+  directoryDelete,
+  directoryMove
+} from '../utils/fileSystem';
 import * as permissions from './permissions';
 
 /*********
@@ -325,23 +333,29 @@ export const orderWrite = (orderId, order, projectId, roll) => {
 
 export const projectDelete = (projectId) => {
   return projectExists(projectId)
+    .then(() => projectGet(projectId))
+    .then(project => {
+      if (project.isSample) {
+        return Promise.reject('cannot delete sample projects');
+      }
+    })
     .then(() => {
       // DEPRECATED - ACTUALLY DELETE
       //const projectPath = filePaths.createProjectPath(projectId);
       //return directoryDelete(projectPath);
 
       /*
-      //DEPRECATED - CHANGE PERMISSIONS FILE
-      //dont want to actually delete it.. just delete the permissions (move to a new file)
-      const projectPermissionsPath = filePaths.createProjectPermissionsPath(projectId);
-      const deletedOwnerPath = filePaths.createProjectPath(projectId, filePaths.permissionsDeletedFileName);
-      return fileRead(projectPermissionsPath)
-        .then(contents => {
-          return fileWrite(projectPermissionsPath, [])
-          //but also should track somewhere who used to own it...
-            .then(() => fileWrite(deletedOwnerPath, contents));
-        });
-      */
+       //DEPRECATED - CHANGE PERMISSIONS FILE
+       //dont want to actually delete it.. just delete the permissions (move to a new file)
+       const projectPermissionsPath = filePaths.createProjectPermissionsPath(projectId);
+       const deletedOwnerPath = filePaths.createProjectPath(projectId, filePaths.permissionsDeletedFileName);
+       return fileRead(projectPermissionsPath)
+       .then(contents => {
+       return fileWrite(projectPermissionsPath, [])
+       //but also should track somewhere who used to own it...
+       .then(() => fileWrite(deletedOwnerPath, contents));
+       });
+       */
 
       //MOVE TO TRASH FOLDER
       const projectPath = filePaths.createProjectPath(projectId);

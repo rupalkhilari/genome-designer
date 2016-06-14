@@ -5,6 +5,7 @@ import { templates, blocks as templateBlocks } from './templates';
 import { examples, blocks as exampleBlocks } from './examples';
 
 export const project = new Project({
+  isSample: true,
   metadata: {
     name: 'EGF Sample Templates',
   },
