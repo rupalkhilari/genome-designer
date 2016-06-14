@@ -54,7 +54,7 @@ module.exports = {
       //.click('.InventoryListGroup-heading')
       .pause(1000)
       // expect to see 4 projects including the combinatorial test project
-      .assert.countelements('[data-inventory~="project"]', 4)
+      .assert.countelements('[data-inventory~="project"]', 3)
       // expand the 3rd project
       .click('[data-inventory~="project"]:nth-of-type(1) .Toggler')
       .click('[data-inventory~="project"]:nth-of-type(2) .Toggler')

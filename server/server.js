@@ -70,6 +70,7 @@ if (process.env.BIO_NANO_AUTH) {
         //note this expects an abnormal return of req and res to the next function
         .then(() => next(req, res));
     },
+    registerRedirect: false,
   };
   app.use(initAuthMiddleware(authConfig));
 } else {
