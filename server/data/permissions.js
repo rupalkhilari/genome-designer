@@ -48,7 +48,7 @@ export const permissionsMiddleware = (req, res, next) => {
     return;
   }
   if (!idRegex().test(projectId)) {
-    console.log('got invalid projectId: ', projectId);
+    //todo - status text is not being sent to the client. probably need to pass to error handler, which uses error as status text (this is going as body)
     res.status(400).send(errorInvalidId);
     next('[permissionsMiddleware] projectId is not valid, got ' + projectId);
     return;
