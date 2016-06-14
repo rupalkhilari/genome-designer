@@ -1,4 +1,4 @@
-import Block from '../../models/Block';
+import Block from '../../src/models/Block';
 import partList from './partList.json';
 
 export default partList

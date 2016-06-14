@@ -1,6 +1,6 @@
 import invariant from 'invariant';
 import { makeComponents, templateFromComponents } from './templateUtils';
-import Block from '../../models/Block';
+import Block from '../../src/models/Block';
 
 import connectors from './connectors';
 import parts from './parts';

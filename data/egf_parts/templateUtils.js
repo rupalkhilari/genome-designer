@@ -1,7 +1,7 @@
 import invariant from 'invariant';
 import connectors from './connectors';
 import parts from './parts';
-import Block from '../../models/Block';
+import Block from '../../src/models/Block';
 import { merge } from 'lodash';
 
 const templateSymbols = {

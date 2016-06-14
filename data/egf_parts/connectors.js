@@ -1,4 +1,4 @@
-import Block from '../../models/Block';
+import Block from '../../src/models/Block';
 import connectorList from './connectorList.json';
 
 export default connectorList

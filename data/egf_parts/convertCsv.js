@@ -9,9 +9,9 @@
  do not import into client bundle. it will break it.
  */
 
-import * as fileSystem from '../../../server/utils/fileSystem';
+import * as fileSystem from '../../server/utils/fileSystem';
 import invariant from 'invariant';
-import Block from '../../models/Block';
+import Block from '../../src/models/Block';
 import parse from 'csv-parse';
 import md5 from 'md5';
 import path from 'path';

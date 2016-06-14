@@ -5,7 +5,7 @@ import invariant from 'invariant';
 import { cloneDeep, merge } from 'lodash';
 import { list } from './templateUtils';
 import { templates, blocks as templateBlocks } from './templates';
-import Block from '../../models/Block';
+import Block from '../../src/models/Block';
 
 //list of list blocks created while creating our examples
 const created = [];

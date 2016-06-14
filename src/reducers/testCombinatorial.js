@@ -1,8 +1,8 @@
 import Block from '../models/Block';
 import Project from '../models/Project';
 
-import { templates, blocks as templateBlocks } from '../inventory/andrea/templates';
-import { examples, blocks as exampleBlocks } from '../inventory/andrea/examples';
+import { templates, blocks as templateBlocks } from '../../data/egf_parts/templates';
+import { examples, blocks as exampleBlocks } from '../../data/egf_parts/examples';
 
 const proj = new Project({
   id: 'combinatorial',
