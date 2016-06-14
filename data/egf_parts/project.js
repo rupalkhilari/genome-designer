@@ -6,7 +6,7 @@ import { examples, blocks as exampleBlocks } from './examples';
 
 export const project = new Project({
   metadata: {
-    name: 'Combinatorial Demo',
+    name: 'EGF Sample Templates',
   },
   components: [
     ...templates.map(template => template.id),

@@ -2,8 +2,8 @@ export const errorNoPermission = 'PERMISSION_DENIED';
 export const errorDoesNotExist = 'DOES_NOT_EXIST';
 export const errorAlreadyExists = 'ALREADY_EXISTS';
 export const errorNoIdProvided = 'ID_NOT_PROVIDED';
-export const errorIdInvalid = 'ID_TOO_SHORT';
 
+export const errorInvalidId = 'INVALID_ID';
 export const errorInvalidModel = 'INVALID_MODEL';
 export const errorInvalidRoute = 'INVALID_ROUTE';
 

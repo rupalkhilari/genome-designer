@@ -1,7 +1,7 @@
 import { exec } from 'child_process';
 import * as filePaths from '../utils/filePaths';
 import * as fileSystem from '../utils/fileSystem';
-import { errorNoPermission, errorDoesNotExist } from '../utils/errors';
+import { errorInvalidId, errorNoIdProvided, errorNoPermission, errorDoesNotExist } from '../utils/errors';
 import { id as idRegex } from '../../src/utils/regex';
 
 export const createProjectPermissions = (projectId, userId) => {
@@ -43,11 +43,13 @@ export const permissionsMiddleware = (req, res, next) => {
     return;
   }
   if (!projectId) {
+    res.status(400).send(errorNoIdProvided);
     next('[permissionsMiddleware] projectId not found on route request');
     return;
   }
   if (!idRegex().test(projectId)) {
-    res.status(400);
+    console.log('got invalid projectId: ', projectId);
+    res.status(400).send(errorInvalidId);
     next('[permissionsMiddleware] projectId is not valid, got ' + projectId);
     return;
   }
