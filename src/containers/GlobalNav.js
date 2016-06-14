@@ -224,8 +224,12 @@ class GlobalNav extends Component {
    * delete the current project and create and open a new project.
    */
   deleteProject() {
-    this.props.projectDelete(this.props.currentProjectId);
-    this.newProject();
+    if (this.props.project.isSample) {
+      this.props.uiSetGrunt('This is a sample project and cannot be deleted.');
+    } else {
+      this.props.projectDelete(this.props.currentProjectId);
+      this.newProject();
+    }
   }
 
   /**
