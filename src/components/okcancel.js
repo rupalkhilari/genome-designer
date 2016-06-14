@@ -31,7 +31,6 @@ export default class OkCancel extends Component {
             <form
               className="gd-form ok-cancel-form"
               onSubmit={(evt) => {
-                debugger;
                 evt.preventDefault();
                 this.props.ok();
               }}
