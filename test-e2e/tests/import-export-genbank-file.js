@@ -23,8 +23,8 @@ module.exports = {
     // start with a new project to ensure no construct viewers are visible
     newProject(browser);
 
-    // click the file menu -> Upload Genbank File
-    clickMainMenu(browser, 1, 8);
+    // import from menu
+    clickMainMenu(browser, 1, 7);
 
     browser
       .waitForElementPresent('.genbank-import-form', 5000, 'Expect the import dialog to appear')

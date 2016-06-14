@@ -28,7 +28,14 @@ export default class OkCancel extends Component {
           open
           title={this.props.titleText}
           payload={(
-            <form className="gd-form ok-cancel-form" >
+            <form
+              className="gd-form ok-cancel-form"
+              onSubmit={(evt) => {
+                debugger;
+                evt.preventDefault();
+                this.props.ok();
+              }}
+            >
               <div className="title">{this.props.titleText}</div>
               {this.props.messageHTML}
               <button

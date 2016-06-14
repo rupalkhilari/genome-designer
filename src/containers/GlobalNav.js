@@ -221,11 +221,11 @@ class GlobalNav extends Component {
   }
 
   /**
-   * delete the current project
+   * delete the current project and create and open a new project.
    */
   deleteProject() {
-    debugger;
-    projectDelete(this.props.currentProjectId);
+    this.props.projectDelete(this.props.currentProjectId);
+    this.newProject();
   }
 
   /**
@@ -639,8 +639,8 @@ class GlobalNav extends Component {
               <br/>
             </div>
           )}
-          okText="Confirmed"
-          cancelText="Denied"
+          okText="Delete"
+          cancelText="Cancel"
           ok={() => {
             this.setState({showDeleteProject: false});
             this.deleteProject();
