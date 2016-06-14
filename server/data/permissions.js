@@ -37,9 +37,20 @@ export const permissionsMiddleware = (req, res, next) => {
     return;
   }
 
-  if (!user.uuid) next('[permissionsMiddleware] no user.uuid present on request object');
-  if (!projectId) next('[permissionsMiddleware] projectId not found on route request');
-  if (!idRegex().test(projectId)) next('[permissionsMiddleware] projectId is not valid, got ' + projectId);
+  if (!user.uuid) {
+    res.status(401);
+    next('[permissionsMiddleware] no user.uuid present on request object');
+    return;
+  }
+  if (!projectId) {
+    next('[permissionsMiddleware] projectId not found on route request');
+    return;
+  }
+  if (!idRegex().test(projectId)) {
+    res.status(400);
+    next('[permissionsMiddleware] projectId is not valid, got ' + projectId);
+    return;
+  }
 
   checkProjectAccess(projectId, user.uuid)
     .then(() => next())
