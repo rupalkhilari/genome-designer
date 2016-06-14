@@ -7,6 +7,9 @@ export default function BlockNotes({ notes }) {
     <div className="BlockNotes">
       {Object.keys(notes).map(key => {
         const value = notes[key];
+        if (!value) {
+          return null;
+        }
         return (
           <div className="BlockNotes-group"
                key={key}>

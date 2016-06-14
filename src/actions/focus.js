@@ -10,9 +10,7 @@ const idValidator = (id) => safeValidate(idValidatorCreator(), true, id);
 
 export const focusProject = (inputProjectId = null) => {
   return (dispatch, getState) => {
-    //testing - can re-enable when remove 'combinatorial' project
-    //const projectId = idValidator(inputProjectId) ? inputProjectId : null;
-    const projectId = inputProjectId;
+    const projectId = idValidator(inputProjectId) ? inputProjectId : null;
 
     dispatch({
       type: ActionTypes.FOCUS_PROJECT,

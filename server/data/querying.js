@@ -3,9 +3,9 @@ import * as filePaths from '../utils/filePaths';
 import * as persistence from './persistence';
 import * as versioning from './versioning';
 import invariant from 'invariant';
-import { exec } from 'child_process';
+import { spawn, exec } from 'child_process';
 import { flatten } from 'lodash';
-import { errorCouldntFindProjectId } from '../utils/errors';
+import { errorDoesNotExist, errorCouldntFindProjectId } from '../utils/errors';
 
 // key for no role rule
 const untypedKey = 'none';
@@ -34,7 +34,7 @@ export const findProjectFromBlock = (blockId) => {
 
   return new Promise((resolve, reject) => {
     const storagePath = filePaths.createStorageUrl(filePaths.projectPath);
-    exec(`cd ${storagePath} && find . -type d -name ${blockId}`, (err, output) => {
+    exec(`find ${storagePath} -type d -name ${blockId}`, (err, output) => {
       if (err) {
         return reject(err);
       }
@@ -55,11 +55,12 @@ export const findProjectFromBlock = (blockId) => {
   });
 };
 
+//fixme - this will error if the user has no projects
 //search each permissions.json by user ID to find projects they have access to
 export const listProjectsWithAccess = (userId) => {
   const directory = filePaths.createProjectsDirectoryPath();
   return new Promise((resolve, reject) => {
-    exec(`cd ${directory} && grep -e "\"${userId}\"" --include=permissions.json -Rl .`, (err, output) => {
+    exec(`cd ${directory} && grep --regexp='"${userId}"' --include=permissions.json -Rl .`, (err, output, stderr) => {
       if (err) {
         console.log(err);
         return reject(err);
@@ -159,5 +160,11 @@ export const getOrderIds = (projectId) => {
 
 export const getOrders = (projectId) => {
   return getOrderIds(projectId)
-    .then(orderIds => Promise.all(orderIds.map(orderId => persistence.orderGet(orderId, projectId))));
+    .then(orderIds => Promise.all(orderIds.map(orderId => persistence.orderGet(orderId, projectId))))
+    .catch(err => {
+      if (err === errorDoesNotExist) {
+        return [];
+      }
+      return Promise.reject(err);
+    });
 };

@@ -197,7 +197,7 @@ export class InspectorBlock extends Component {
                        value={this.currentName(false)}/>
         </InspectorRow>
 
-        <InspectorRow heading={name}>
+        <InspectorRow heading="Description">
           <InputSimple refKey={inputKey + 'desc'}
                        placeholder="Enter a description"
                        useTextarea

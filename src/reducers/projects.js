@@ -1,15 +1,8 @@
 import * as ActionTypes from '../constants/ActionTypes';
 import * as instanceMap from '../store/instanceMap';
 import { project as testProject } from './testProject';
-import { project as combiProject } from './testCombinatorial';
 
 const initialState = {};
-
-//testing = combinatorial
-Object.assign(initialState, {
-  combinatorial: combiProject,
-});
-instanceMap.saveProject(combiProject);
 
 if (process.env.NODE_ENV === 'test') {
   Object.assign(initialState, {

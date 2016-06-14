@@ -3,21 +3,21 @@
 
  call like this (from project root):
 
- babel-node ./src/inventory/andrea/convertCsv.js /path/to/parts.csv true /path/to/output.json
- babel-node ./src/inventory/andrea/convertCsv.js /path/to/connectors.csv false /path/to/output.json
+ babel-node ./src/inventory/andrea/convertCsv.js /path/to/parts.csv true forced/path/to/output.json
+ babel-node ./src/inventory/andrea/convertCsv.js /path/to/connectors.csv false forced/path/to/output.json
 
  do not import into client bundle. it will break it.
  */
 
-import * as fileSystem from '../../../server/utils/fileSystem';
+import * as fileSystem from '../../server/utils/fileSystem';
 import invariant from 'invariant';
-import Block from '../../models/Block';
+import Block from '../../src/models/Block';
 import parse from 'csv-parse';
 import md5 from 'md5';
 import path from 'path';
 
 //edit these dependent on the spreadsheet
-const partFields = ['position', 'part', 'category', 'sub-category', 'sequence', 'description'];
+const partFields = ['position', 'part', 'shortName', 'category', 'subCategory', 'sequence', 'description'];
 const connectorFields = ['connector', 'positions', 'sequence'];
 
 const headerRows = 2;
@@ -57,21 +57,27 @@ const zip = (keys, vals) => keys.reduce(
 
 const mapPartFields = (imported) => {
   //fields based on array at top
-  const { part, description, position, role, sequence, ...rest } = imported;
+  const { part, description, position, role, sequence, category, subCategory, shortName, ...rest } = imported;
+  const id = part;
 
   return {
     metadata: {
       name: part,
       description: description,
+      shortName,
       egfPosition: position,
-      ...rest,
     },
     source: {
       source: 'egf',
-      id: part, //todo - need EGF part ID
+      id,
     },
     rules: {
       role: role,
+    },
+    notes: {
+      category,
+      'sub-category': subCategory,
+      ...rest,
     },
     sequence: sequence, //this field is removed later to conform to schema
   };
@@ -80,6 +86,7 @@ const mapPartFields = (imported) => {
 const mapConnectorFields = (imported) => {
   //fields based on array at top
   const { connector, positions, sequence} = imported;
+  const id = connector;
 
   return {
     metadata: {
@@ -88,7 +95,7 @@ const mapConnectorFields = (imported) => {
     },
     source: {
       source: 'egf',
-      id: connector, //todo - need EGF part ID
+      id,
     },
     rules: {
       role: 'connector',
@@ -120,7 +127,7 @@ export default function convertCsv(csvPath, isPartInput = 'true', outputPath) {
     .then(lines => lines.filter(line => line.some(field => !!field)))
     //make object with appropriate keys
     .then(lines => lines.map(line => zip(isPart ? partFields : connectorFields, line)))
-    //assign role
+    //assign role (for parts, overridden for connectors)
     .then(parts => parts.map(part => Object.assign(part, { role: roleMap[part.category] || null })))
     //map fields to block fields
     .then(parts => parts.map(part => isPart ? mapPartFields(part) : mapConnectorFields(part)))

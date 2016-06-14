@@ -1,7 +1,7 @@
 import * as filePaths from '../../server/utils/filePaths';
 import * as fileSystem from '../../server/utils/fileSystem';
 
-import parts from '../../src/inventory/andrea';
+import parts from './parts';
 
 const md5s = parts.map(part => part.sequence.md5);
 

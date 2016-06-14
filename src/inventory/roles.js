@@ -30,12 +30,14 @@ export const roleMassager = {
 
 /*
  proposed roles:
-
- connector
- reporter
- regulatory
- selection
+ restrictionEnzyme (this is in SBOL)
  structural
+   connector
+ regulatory
+ tag
+   reporter
+   marker
+   selection
  */
 
 function makeImagePath(fileName, folder = 'thin') {

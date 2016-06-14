@@ -1,15 +1,8 @@
 import * as ActionTypes from '../constants/ActionTypes';
 import * as instanceMap from '../store/instanceMap';
 import { blocks as testBlocks } from './testProject';
-import { blocks as combiBlocks } from './testCombinatorial';
 
 const initialState = {};
-
-//testing = combinatorial
-combiBlocks.forEach(block => Object.assign(initialState,
-  { [block.id]: block }
-));
-instanceMap.saveBlock(...combiBlocks);
 
 if (process.env.NODE_ENV === 'test') {
   testBlocks.forEach(block => Object.assign(initialState,
