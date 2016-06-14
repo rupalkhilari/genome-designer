@@ -4,6 +4,36 @@ import parts from './parts';
 import Block from '../../models/Block';
 import { merge } from 'lodash';
 
+const templateSymbols = {
+  1: 'structural',
+  2: 'insulator',
+  3: 'promoter',
+  4: 'rnaStability',
+  5: 'regulatory',
+  6: 'cds',
+  7: 'cds',
+  8: 'structural',
+  '8a': 'structural',
+  '8b': 'structural',
+  9: 'cds',
+  10: 'regulatory',
+  11: 'terminator',
+  12: 'insulator',
+  13: 'restrictionEnzyme',
+  14: 'promoter',
+  15: 'cds',
+  16: 'terminator',
+  17: 'restrictionEnzyme',
+  18: 'promoter',
+  19: 'cds',
+  20: 'structural',
+  21: 'cds',
+  22: 'terminator',
+  23: 'insulator',
+  24: 'structural',
+  25: 'originReplication',
+};
+
 const termIsPartPos = term => Number.isInteger(term) || term === '8a' || term === '8b';
 const stringIsConnector = (string) => (/^[a-zA-Z](-[a-zA-Z]{1,2})?( BsaI\-.)?$/gi).test(string);
 
@@ -21,6 +51,7 @@ export const list = (pos, optionId) => {
     },
     rules: {
       list: true,
+      role: templateSymbols[pos],
     },
     options: getOptionParts(pos, optionId),
     notes: {
