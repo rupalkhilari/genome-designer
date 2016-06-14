@@ -18,7 +18,7 @@ def add_features(block, allblocks, gb, start):
     # Set the type based on the original type or the role type
     if "genbank" in block["metadata"] and "type" in block["metadata"]["genbank"]:
         sf.type = block["metadata"]["genbank"]["type"]
-    elif "rules" in block and "role" in block["rules"] and block["rules"]["role"] is not None:
+    elif "rules" in block and "role" in block["rules"] and block["rules"]["role"] is not None and block["rules"]["role"] != "":
         sf.type = block["rules"]["role"]
     else:
         sf.type = "unknown"

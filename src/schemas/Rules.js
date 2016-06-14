@@ -6,6 +6,7 @@ const rulesFields = {
     fields.bool(),
     'Block is a list block. It has options rather than components.',
   ],
+  //see inventory/roles.js for list
   role: [
     fields.string(),
     'Role of the Block (often corresponds to SBOL symbols)',
