@@ -44,7 +44,10 @@ import invariant from 'invariant';
 import {
   projectGetVersion,
 } from '../../../selectors/projects';
-import { projectRemoveConstruct } from '../../../actions/projects';
+import {
+  projectRemoveConstruct,
+  projectAddConstruct,
+} from '../../../actions/projects';
 import RoleSvg from '../../../components/RoleSvg';
 
 import "../../../styles/constructviewer.css";
@@ -80,6 +83,7 @@ export class ConstructViewer extends Component {
     blockGetParents: PropTypes.func,
     projectGetVersion: PropTypes.func,
     projectRemoveConstruct: PropTypes.func,
+    projectAddConstruct: PropTypes.func,
     blocks: PropTypes.object,
     focus: PropTypes.object,
     constructPopupMenuOpen: PropTypes.bool,
@@ -198,16 +202,6 @@ export class ConstructViewer extends Component {
   }
 
   /**
-   * rename one of our blocks
-   * @param  {[type]} blockId [description]
-   * @param  {[type]} newName [description]
-   * @return {[type]}         [description]
-   */
-  blockRename(blockId, newName) {
-
-  }
-
-  /**
    * select the given block
    */
   constructSelected(id) {
@@ -246,7 +240,7 @@ export class ConstructViewer extends Component {
    * Join the given block with any other selected block in the same
    * construct level and select them all
    */
-  blockAddToSelectionsRange(partId, currentSelections) {
+   blockAddToSelectionsRange(partId, currentSelections) {
     // get all the blocks at the same level as this one
     const levelBlocks = (this.props.blockGetParents(partId)[0]).components;
     // find min/max index of these blocks if they are in the currentSelections
@@ -373,9 +367,10 @@ export class ConstructViewer extends Component {
    * menu items for the construct context menu
    */
   constructContextMenuItems = () => {
+    const typeName = this.props.construct.isTemplate() ? "Template" : "Construct";
     return [
       {
-        text: 'Inspect Construct',
+        text: `Inspect ${typeName}`,
         action: () => {
           this.openInspector();
           this.props.focusBlocks([]);
@@ -383,9 +378,22 @@ export class ConstructViewer extends Component {
         },
       },
       {
-        text: 'Delete Construct',
+        text: `Delete ${typeName}`,
         action: () => {
           this.props.projectRemoveConstruct(this.props.projectId, this.props.constructId);
+        },
+      },
+      {
+        text: `Duplicate ${typeName}`,
+        action: () => {
+          // clone the our construct/template and then add to project and ensure focused
+          let clone = this.props.blockClone(this.props.construct);
+          const oldName = clone.getName();
+          if (!oldName.endsWith(' - copy')) {
+            clone = this.props.blockRename(clone.id, `${oldName} - copy`);
+          }
+          this.props.projectAddConstruct(this.props.projectId, clone.id);
+          this.props.focusConstruct(clone.id);
         },
       },
     ];
@@ -583,6 +591,7 @@ export default connect(mapStateToProps, {
   focusConstruct,
   projectGetVersion,
   projectRemoveConstruct,
+  projectAddConstruct,
   inspectorToggleVisibility,
   uiShowDNAImport,
   uiShowOrderForm,

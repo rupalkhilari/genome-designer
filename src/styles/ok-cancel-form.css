@@ -1,0 +1,16 @@
+.ok-cancel-form {
+  min-width: 50rem;
+
+  button {
+    width: 30rem;
+  }
+
+  .message {
+    margin: 0 auto;
+    display: inline-block;
+    text-align: center;
+    .line {
+      margin: 0 auto;
+    }
+  }
+}
