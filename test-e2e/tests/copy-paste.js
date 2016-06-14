@@ -21,8 +21,6 @@ module.exports = {
 
     // now we can go to the project page
     browser
-      // expect to start with 8 blocks
-      .assert.countelements('.role-glyph', 6)
       // send select all
       .keys([browser.Keys.COMMAND, 'a'])
       .pause(1000)
@@ -36,7 +34,7 @@ module.exports = {
       .keys([browser.Keys.NULL, browser.Keys.COMMAND, 'v'])
       .pause(1000)
       // should now have 16 blocks
-      .assert.countelements(".role-glyph", 12)
+      .assert.countelements('[data-nodetype="block"]', 12)
       .end();
   }
 };

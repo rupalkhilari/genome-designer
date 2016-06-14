@@ -60,6 +60,7 @@ const createBlockStructureAndSaveSequence = (block, sourceId) => {
       id: fileName,
     },
     rules: block.rules,
+    notes: block.notes,
   };
 
   //be sure to pass in empty project first, so you arent overwriting scaffold each time

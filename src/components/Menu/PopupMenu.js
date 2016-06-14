@@ -35,10 +35,10 @@ export default class Menu extends Component {
       >
         <div className="menu-popup-container" style={position}>
           {this.props.menuItems.map((item, index) => {
-            const boundAction = () => {
+            const boundAction = (evt) => {
               this.props.closePopup();
               if (item.action) {
-                item.action();
+                item.action(evt);
               }
             };
             return (

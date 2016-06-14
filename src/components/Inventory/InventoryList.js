@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import {transact, commit} from '../../store/undo/actions';
+import { transact, commit } from '../../store/undo/actions';
 
 import InventoryItem from './InventoryItem';
 
@@ -12,14 +12,19 @@ export class InventoryList extends Component {
     items: PropTypes.arrayOf(PropTypes.shape({
       id: PropTypes.string,
     })).isRequired,
+    dataAttributePrefix: PropTypes.string,
     onDrop: PropTypes.func, //passed to items
     onSelect: PropTypes.func, //passed to items
     transact: PropTypes.func,
     commit: PropTypes.func,
   };
 
+  static defaultProps = {
+    dataAttributePrefix: '',
+  };
+
   render() {
-    const { items, inventoryType, onDrop, onSelect, transact, commit } = this.props;
+    const { items, inventoryType, dataAttributePrefix, onDrop, onSelect, transact, commit } = this.props;
 
     return (
       <div className="InventoryList no-vertical-scroll">
@@ -31,7 +36,8 @@ export class InventoryList extends Component {
                            onDragComplete={commit}
                            onDrop={onDrop}
                            onSelect={onSelect}
-                           item={item}/>
+                           item={item}
+                           dataAttribute={`${dataAttributePrefix} ${item.id}`}/>
           );
         })}
       </div>

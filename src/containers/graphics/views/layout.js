@@ -168,14 +168,18 @@ export default class Layout {
    * create / update the list items for the block
    */
   updateListForBlock(block, pW) {
+    // ignore if not a list block
+    if (!block.isList()) {
+      return;
+    }
     // the node representing the parent block
     const parentNode = this.nodeFromElement(block.id);
     // get the focused list for this block, if any
     const focusedOptionId = this.focusedOptions[block.id];
     // get only the options that are enabled for this block
     const enabled = Object.keys(block.options).filter(opt => block.options[opt]);
-    // if this is a template construct and the options are empty add a single empty options block
-    if (enabled.length === 0 && this.construct.isTemplate()) {
+    // if block list is empty add a single placeholder block
+    if (enabled.length === 0) {
         const node = this.emptyListBlockFactory(block.id, parentNode);
         node.set({
           bounds: new Box2D(0, kT.blockH + 1, pW, kT.optionH),

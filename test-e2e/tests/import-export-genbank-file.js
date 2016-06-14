@@ -22,6 +22,7 @@ module.exports = {
 
     // start with a new project to ensure no construct viewers are visible
     newProject(browser);
+    browser.pause(3000);
 
     // import from menu
     clickMainMenu(browser, 1, 7);
@@ -58,6 +59,7 @@ module.exports = {
         .url(uri)
         .pause(5000)
         .assert.urlContains(projectURL)
+        .saveScreenshot('./test-e2e/current-screenshots/import-export-genbank-file.png')
         .end();
     });
   }
