@@ -1,15 +1,8 @@
 import * as ActionTypes from '../constants/ActionTypes';
 import * as instanceMap from '../store/instanceMap';
 import { project as testProject } from './testProject';
-import { project as egfProject } from '../../data/egf_parts/project';
 
 const initialState = {};
-
-//testing = combinatorial
-Object.assign(initialState, {
-  egfProject: egfProject,
-});
-instanceMap.saveProject(egfProject);
 
 if (process.env.NODE_ENV === 'test') {
   Object.assign(initialState, {
