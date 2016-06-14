@@ -22,6 +22,7 @@ module.exports = {
 
     // start with a new project to ensure no construct viewers are visible
     newProject(browser);
+    browser.pause(3000);
 
     // click the file menu -> Upload Genbank File
     clickMainMenu(browser, 1, 6);

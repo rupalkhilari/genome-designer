@@ -21,22 +21,46 @@ def create_block_json(id, sequence, features):
         "metadata" : {},
         "rules": {},
         "components": [],
+        "notes": {},
         "sequence" : {
             "sequence": sequence,
             "features": features
         }
       }
 
+def has_property(line, property_name):
+    if property_name not in line or line[property_name] == "":
+        return False
+    return True
+
+# Validates a particular line in the csv file. Returns the error or "Ok"
+def validate_line(line):
+    if not has_property(line, "Name") and not has_property(line, "Role") and not has_property(line, "Sequence"):
+        return "All lines must have a name, a role or a sequence"
+    return "Ok"
+
+
 # Given a structure representing a line in the csv file, create a block
 def line_to_block(line):
     block_id = str(uuid.uuid4())
-    block = create_block_json(block_id, line["Sequence"], [])
-    block["metadata"]["name"] = line["Name"]
-    block["metadata"]["description"] = line["Description"]
-    if "SBOL Type" in line:
-        block["rules"]["role"] = line["SBOL Type"].lower()
-    if "Background Color" in line:
-        block["metadata"]["color"] = line["Background Color"]
+    sequence = ""
+    if "Sequence" in line:
+        sequence = line["Sequence"]
+    block = create_block_json(block_id, sequence, [])
+    if "Name" in line:
+        block["metadata"]["name"] = line["Name"]
+    if "Description" in line:
+        block["metadata"]["description"] = line["Description"]
+    if "Role" in line:
+        block["rules"]["role"] = line["Role"].lower()
+    if "Color" in line:
+        block["metadata"]["color"] = line["Color"]
+
+    # Load custom properties starting with @
+    custom_properties = [[item[1:], line[item]] for item in line if item[:1]=="@"]
+    for custom_property in custom_properties:
+        block["notes"][custom_property[0]] = custom_property[1]
+
     return {"id": block_id, "block": block}
 
 # Given a file, create project and blocks structures to import into GD
@@ -50,9 +74,13 @@ def csv_to_project(filename):
     with open(filename, "rb" ) as theFile:
         reader = csv.DictReader(theFile)
         for line in reader:
-            # line is { 'workers': 'w0', 'constant': 7.334, 'age': -1.406, ... }
-            # e.g. print( line[ 'workers' ] ) yields 'w0'
-            new_block = line_to_block(line)
+            # line is { 'Name': 'w0', 'Description': 'Block Description', 'Role': 'Promoter', 'Color': '#434454', 'Sequence': 'actgtg' }
+            # Everything is optional - Must have one of Name, Role or Sequence
+            validation = validate_line(line)
+            if validation == "Ok":
+                new_block = line_to_block(line)
+            else:
+                return validation
             blocks[new_block["id"]] = new_block["block"]
             root_block["components"].append(new_block["id"])
     return { "project": project, "blocks": blocks }
