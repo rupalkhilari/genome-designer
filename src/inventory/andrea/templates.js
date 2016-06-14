@@ -26,13 +26,13 @@ const components2B = make('a-c', 3, 'd-f', 6, 7, 8, 9, 'j-k', 11, 'l-y', 'y-z');
 //const components4 = make('a-c', 3, 'd-f', 6, 7, 'p2A', 9, 'j-k', 11, 'l-y', 25); //todo - verify this picks the right part
 const components5 = make('a-c', 3, 'd-f', 6, 7, '8a', '8b', 9, 'j-k', 11, 'l-y', 25);
 const components6A = make('a-c', 3, 'd-f', 6, 7, 8, 9, 'j-k', 11, 'l-r', 18, 19, 20, 21, 22, 'w-y', 25);
-const components6B = make(1, 2, 3, 'd-f', 6, 7, 'h-k', 11, 'l-r', 18, 19, 20, 21, 22, 23, 24, 25);
-const components7 = make(1, 2, 3, 'd-f', 6, 7, 'h-k', 11, 'l-n', 14, 15, 16, 'q-r', 18, 19, 't-v', 22, 23, 24, 'y-z');
+const components6B = make(1, 2, 3, 'd-f', 6, 7, 'h-k', 11, 'l-r', 18, 19, 20, 21, 22, 23, 24, 'y-z');
+const components7 = make(1, 2, 3, 'd-f', 6, 7, 'h-k', 11, 'l-n', 14, 15, 16, 'q-r', 18, 19, 20, 't-v', 22, 23, 24, 'y-z');
 const components8 = make(1, 2, 3, 'd-f', 6, 7, 8, 9, 'j-k', 11, 'l-n', 14, 15, 16, 'q-r', 18, 19, 20, 21, 22, 23, 24, 'y-z');
 const components9 = make(1, 2, 3, 'd-e', 5, 6, 7, 8, 9, 'h-k', 11, 'l-w', 23, 24, 'y-z');
 //const components10 = make('a-e', 5, 6, 7, 'h-ha', '8b', 9, 'j-k', 11, 'l-r', 18, 19, 20, 'u-v', 22, 'w-z'); //connector A-E is missing
 const components11A = make('a-b BsaI-X', 'b-c', 3, 'd-e', 5, 6, 7, 'h-k', 11, 'l-y', 'y-z BsaI-Y');
-const components11B = make('a-b BsaI-1', 'b-c', 3, 'd-f', 6, 7, 'h-ha', '8b', 'j-k', 11, 'l-r', 18, 19, 20, 21, 22, 'w-y', 'y-z BsaI-Y');
+const components11B = make('a-b BsaI-1', 'b-c', 3, 'd-f', 6, 7, 'h-ha', '8b', 9, 'j-k', 11, 'l-r', 18, 19, 20, 21, 22, 'w-y', 'y-z BsaI-Y');
 //12 is the same as 1A, just different preferred parts in #6
 const components13A = make(1, 2, 3, 'd-f', 6, 7, 8, 9, 10, 11, 'l-n', 14, 15, 16, 'q-w', 23, 24, 'y-z');
 const components13B = make(1, 2, 3, 'd-f', 6, 7, 'h-ha', '8b', 9, 10, 11, 'l-n', 14, 15, 16, 'q-w', 23, 24, 'y-z');

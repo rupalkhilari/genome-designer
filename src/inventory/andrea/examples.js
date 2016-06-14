@@ -213,7 +213,7 @@ Addition of SV40-ORI makes this vector episomal when is introduced in HEK293T ce
 
   exampleOfTemplate(
     getTemplate('6B'),
-    ["5'HA-hAAVS1", 'IS_FB', 'TRE3Gp', 'mNG', 'SV40pA', 'CMVp', 'Tet-ON-3G', 'p2A', 'PuroR', 'PGKpA', 'IS_FB', "3'HA-hAAVS1"],
+    ["5'HA-hAAVS1", 'IS_FB', 'TRE3Gp', 'Kz_1', 'mNG', 'SV40pA', 'CMVp', 'Tet-ON-3G', 'p2A', 'PuroR', 'PGKpA', 'IS_FB', "3'HA-hAAVS1"],
     {
       metadata: {
         name: 'Tetracycline inducible expression system ',
@@ -251,7 +251,7 @@ PuroR is used to select cells that have integrated the vector in the genome`,
 
   exampleOfTemplate(
     getTemplate('8'),
-    ["5'-ITR-PB", 'IS_FB', 'CAGp', 'Pal', 'mR2', 'LK-1', 'DmrC', 'SV40pA', 'SV40p', 'PuroR', 'bGHpA', 'EF1ap', 'mNG', 'LK-2', 'DmrA', 'PGKpA', 'IS_FB', "3'-ITR-PB"],
+    ["5'-ITR-PB", 'IS_FB', 'CAGp', 'Pal', 'mR2', 'LK-1', 'DmrC', 'SV40pA', 'SV40p', 'PuroR', 'bGHpA', 'EF1ap', 'mNG', 'LK-3', 'DmrA', 'PGKpA', 'IS_FB', "3'-ITR-PB"],
     {
       metadata: {
         name: 'Dimerization inducible system',
@@ -261,7 +261,7 @@ The piggyBac system allow random integration of the vector in the genome.
 
 A peptide linker is used to fuse 2 protein/domains together
 
-Inducible dimerization system: protein are fused with dimerization domains. The dimerization domains dimerize in presence of chemical compound. 
+Inducible dimerization system: protein are fused with dimerization domains. The dimerization domains dimerize in presence of chemical compound.
 
 PuroR is used to select cells that have integrated the vector in the genome.`,
       },
@@ -273,7 +273,7 @@ PuroR is used to select cells that have integrated the vector in the genome.`,
 
   exampleOfTemplate(
     getTemplate('9'),
-    ["5'HA-hAAVS1", 'IS_FB', 'CAGp', 'attP', 'SV40pA', 'CMVp', 'Tet-ON-3G', 'p2A', 'PuroR', 'PGKpA', 'IS_FB', "3'HA-hAAVS1"],
+    ["5'HA-hAAVS1", 'IS_FB', 'CAGp', 'attP', 'Kz_1', 'BxB1', 'p2A', 'PuroR', 'SV40pA', 'IS_FB', "3'HA-hAAVS1"],
     {
       metadata: {
         name: 'Recombinase-mediated genomic landing pad',
@@ -295,7 +295,7 @@ PuroR is used to select cells that have integrated the vector in the genome`,
 
   exampleOfTemplate(
     getTemplate('11A'),
-    [],
+    ['CAGp', 'Kt-Kt', 'Kz_1', 'mNG', 'SV40pA'],
     {
       metadata: {
         name: 'Tet-inducible translation regulator (part A)',
@@ -311,7 +311,7 @@ The final resulting vector encode for a tetracycline inducible expression system
 
   exampleOfTemplate(
     getTemplate('11B'),
-    [],
+    ['TRE3Gp', 'Kz_1', 'L7Ae', 'IRES2', 'mR2', 'SV40pA', 'CMVp', 'Tet-ON-3G', 'p2A', 'mBP2', 'PGKpA'],
     {
       metadata: {
         name: 'Tet-inducible translation regulator (part B)',
