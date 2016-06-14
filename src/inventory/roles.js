@@ -10,6 +10,22 @@ export const symbolMap = {
   ribonuclease: 'Ribonuclease',
   proteinStability: 'Protein stability',
   rnaStability: 'RNA stability',
+  restrictionSite: 'Restriction Site',
+  structural: 'Structural',
+};
+
+export const roleMassager = {
+  'gene': 'cds',
+  'ribosome entry site': 'rbs',
+  'ribonuclease site': 'ribonuclease',
+  'rna stability element': 'rnaStability',
+  'protease site': 'protease',
+  'protein stability element': 'proteinStability',
+  'origin of replication': 'originReplication',
+  'restriction site': 'restrictionSite',
+  'regulatory': 'promoter',
+  'mat_peptide': 'cds',
+  'rep_origin': 'originReplication',
 };
 
 /*
