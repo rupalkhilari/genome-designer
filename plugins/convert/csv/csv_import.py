@@ -19,7 +19,9 @@ def create_block_json(id, sequence, features):
     return {
         "id": id,
         "metadata" : {},
-        "rules": {},
+        "rules": {
+            "role": ""
+        },
         "components": [],
         "notes": {},
         "sequence" : {
