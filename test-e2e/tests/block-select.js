@@ -29,6 +29,8 @@ module.exports = {
       window.__gde2e = {shiftKey: true}
     }, [], function() {});
 
+    browser.pause(2000);
+
     for(var i = 0; i < 6; i += 1) {
       clickNthBlock(browser, '.sceneGraph', i);
     }
@@ -44,7 +46,10 @@ module.exports = {
         shiftKey: false,
         metaKey: true
       }
-    }, [], function() {});
+    }, [], function() {
+
+    });
+    browser.pause(2000);
 
     clickNthBlock(browser, '.sceneGraph', 5);
     browser.pause(1000);

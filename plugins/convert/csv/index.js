@@ -9,7 +9,7 @@ import BlockSchema from '../../../src/schemas/Block';
 import ProjectSchema from '../../../src/schemas/Project';
 import md5 from 'md5';
 import * as persistence from '../../../server/data/persistence';
-import formidable from 'formidable';
+import { roleMassager } from '../../../src/inventory/roles';
 
 import {chunk, cloneDeep} from 'lodash';
 
@@ -47,6 +47,7 @@ const createBlockStructureAndSaveSequence = (block, sourceId) => {
   const fileName = /[^/]*$/.exec(sourceId)[0];
   //get the sequence md5
   const sequenceMd5 = block.sequence.sequence ? md5(block.sequence.sequence) : '';
+  const importedRole = roleMassager[block.rules.role] ? roleMassager[block.rules.role] : block.rules.role;
 
   //reassign values
   const toMerge = {
@@ -59,7 +60,10 @@ const createBlockStructureAndSaveSequence = (block, sourceId) => {
       source: 'csv',
       id: fileName,
     },
-    rules: block.rules,
+    rules: {
+      role: importedRole,
+    },
+    notes: block.notes,
   };
 
   //be sure to pass in empty project first, so you arent overwriting scaffold each time

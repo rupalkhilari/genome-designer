@@ -65,6 +65,10 @@ if (process.env.BIO_NANO_AUTH) {
     loginFailure: false,
     resetForm: "/homepage/reset",
     apiEndPoint: process.env.API_END_POINT || "http://localhost:8080/api",
+    onLogin: function (req, res, next) {
+      console.log("empty onLogin function");
+      return next(req, res);
+    },
   };
   app.use(initAuthMiddleware(authConfig));
 } else {
