@@ -205,7 +205,7 @@ const orderAssertNew = (orderId, projectId) => {
 export const projectGet = (projectId, sha) => {
   return _projectRead(projectId, sha)
     .catch(err => {
-      console.log('error reading project ' + projectId, err);
+      console.log('(persistence.projectGet) error reading project ' + projectId, err);
       if (err === errorDoesNotExist && !sha) {
         return Promise.resolve(null);
       }

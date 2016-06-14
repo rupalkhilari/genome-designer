@@ -21,6 +21,9 @@ const checkUserSetup = (req, res, next) => {
         return createInitialData(req.user);
       }
     })
+    //fixme - sometimes this fails if the user has no projects, so lets just make in that case
+    //should update listProjectsWIthAccess
+    .catch((err) => createInitialData(req.user))
     .then(() => next());
 };
 
