@@ -9,6 +9,7 @@ import fileRouter from './file/index';
 import extensionsRouter from './extensions/index';
 import bodyParser from 'body-parser';
 import errorHandlingMiddleware from './utils/errorHandlingMiddleware';
+import checkUserSetup from './auth/userSetup';
 
 import importRouter from '../plugins/convert/import';
 import exportRouter from '../plugins/convert/export';
@@ -73,6 +74,10 @@ if (process.env.BIO_NANO_AUTH) {
   const authRouter = require('./auth/local').router;
   app.use('/auth', authRouter);
 }
+
+//initial check
+//todo - we want to run this after they log in - we need the user object
+app.use(checkUserSetup);
 
 //primary routes
 app.use('/data', dataRouter);
