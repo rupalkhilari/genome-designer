@@ -11,21 +11,12 @@ module.exports = {
 
     // maximize for graphical tests
     browser.windowSize('current', 1200, 900);
-
-    // register via fixture
-    var credentials = homepageRegister(browser);
-
-    // now we can go to the project page
-    browser
-      // wait for inventory and inspector to be present
-      .waitForElementPresent('.SidePanel.Inventory', 5000, 'Expected Inventory Groups')
-      .waitForElementPresent('.SidePanel.Inspector', 5000, 'Expected Inspector')
+    homepageRegister(browser);
 
     // create three new constructs
     newProject(browser);
     newConstruct(browser);
     newConstruct(browser);
-
     openInventory(browser);
 
       // open inventory

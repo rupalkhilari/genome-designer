@@ -18,14 +18,6 @@ module.exports = {
     var credentials = homepageRegister(browser);
 
     // now we can go to the project page
-    browser
-      // wait for inventory and inspector to be present
-      .waitForElementPresent('.SidePanel.Inventory', 5000, 'Expected Inventory Groups')
-      .waitForElementPresent('.SidePanel.Inspector', 5000, 'Expected Inspector')
-      // open inventory
-      .click('.Inventory-trigger')
-      .waitForElementPresent('.SidePanel.Inventory.visible', 5000, 'Expected inventory to be visible');
-
     testProject(browser);
 
     // delete block from second construct viewer

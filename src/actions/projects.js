@@ -32,7 +32,6 @@ export const projectList = () => {
 //Promise
 export const projectDelete = (projectId) => {
   return (dispatch, getState) => {
-    invariant(false, 'should trigger a modal to confirm (or something) and change the route when calling this action before the actual deletion - update code');
     return deleteProject(projectId)
       .then(() => {
         dispatch({
