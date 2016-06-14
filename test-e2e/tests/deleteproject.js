@@ -7,7 +7,7 @@ var newConstruct = require('../fixtures/newconstruct');
 var clickMainMenu = require('../fixtures/click-main-menu');
 
 module.exports = {
-  'Test that when creating a new project we get a new focused construct' : function (browser) {
+  'Test that we can delete a construct via its context menu' : function (browser) {
 
     // maximize for graphical tests
     browser.windowSize('current', 1200, 900);
@@ -30,7 +30,7 @@ module.exports = {
       // wait for form to go away
       .waitForElementNotPresent('form.ok-cancel-form', 5000, 'expected confirmation dialog to appear')
       // expect no blocks since we should be looking at a new project.
-      .waitForElementNotPresent('[data-nodetype="block"]', 5000, 'expected blocks to go away')  
+      .waitForElementNotPresent('[data-nodetype="block"]', 5000, 'expected blocks to go away')
       .assert.countelements('[data-nodetype="block"]', 0)
       .end();
   }
