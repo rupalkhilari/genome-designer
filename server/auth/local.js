@@ -1,4 +1,5 @@
 import express from 'express';
+import checkUserSetup from './userSetup';
 
 export const router = express.Router(); //eslint-disable-line new-cap
 
@@ -47,5 +48,7 @@ export const mockUser = (req, res, next) => {
     Object.assign(req, { user: defaultUser });
   }
 
-  next();
+  //stub the initial user setup here as well
+  checkUserSetup({uuid: 0})
+    .then(() => next());
 };

@@ -7,24 +7,16 @@ const createInitialData = (user) => {
   return rollup.writeProjectRollup(egfRollup.project.id, egfRollup, user.uuid);
 };
 
-const checkUserSetup = (req, res, next) => {
-  //todo - only login and create account
-  if (req.url.indexOf('/auth') !== 0) {
-    return next();
-  }
-
-  console.log(req.user);
-
-  querying.listProjectsWithAccess(req.user.uuid)
+const checkUserSetup = (user) => {
+  return querying.listProjectsWithAccess(user.uuid)
     .then(projects => {
       if (!projects.length) {
-        return createInitialData(req.user);
+        return createInitialData(user);
       }
     })
     //fixme - sometimes this fails if the user has no projects, so lets just make in that case
     //should update listProjectsWIthAccess
-    .catch((err) => createInitialData(req.user))
-    .then(() => next());
+    .catch((err) => createInitialData(user));
 };
 
 export default checkUserSetup;

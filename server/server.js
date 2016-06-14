@@ -55,19 +55,20 @@ app.set('view engine', 'jade');
 // the auth routes are currently called from the client and expect JSON responses
 if (process.env.BIO_NANO_AUTH) {
   console.log("real user authentication enabled");
-  var initAuthMiddleware = require('bio-user-platform').initAuthMiddleware;
+  const initAuthMiddleware = require('bio-user-platform').initAuthMiddleware;
 
   // TODO load a custom configuration here
   // disable all redirects
-  var authConfig = {
+  const authConfig = {
     logoutLanding: false,
     loginLanding: false,
     loginFailure: false,
-    resetForm: "/homepage/reset",
-    apiEndPoint: process.env.API_END_POINT || "http://localhost:8080/api",
-    onLogin: function (req, res, next) {
-      console.log("empty onLogin function");
-      return next(req, res);
+    resetForm: '/homepage/reset',
+    apiEndPoint: process.env.API_END_POINT || 'http://localhost:8080/api',
+    onLogin: (req, res, next) => {
+      return checkUserSetup(req.user)
+        //note this expects an abnormal return of req and res to the next function
+        .then(() => next(req, res));
     },
   };
   app.use(initAuthMiddleware(authConfig));
@@ -78,10 +79,6 @@ if (process.env.BIO_NANO_AUTH) {
   const authRouter = require('./auth/local').router;
   app.use('/auth', authRouter);
 }
-
-//initial check
-//todo - we want to run this after they log in - we need the user object
-app.use(checkUserSetup);
 
 //primary routes
 app.use('/data', dataRouter);
