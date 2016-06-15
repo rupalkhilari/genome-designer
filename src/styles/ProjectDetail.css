@@ -50,6 +50,11 @@
       align-self: flex-start;
       color: white;
       background-image: url('/images/ui/caret_open_light.svg');
+      cursor: pointer;
+
+      .disabled & {
+        cursor: not-allowed;
+      }
 
       .visible & {
         transform: rotateX(180deg);
@@ -88,6 +93,7 @@
       top: 5px;
       right: 5px;
       background-image: url('/images/ui/close_icon_dark.svg');
+      cursor: pointer;
     }
   }
 
