@@ -172,7 +172,7 @@ export class InspectorBlock extends Component {
     const isConstruct = singleInstance && instances[0].isConstruct();
     const inputKey = instances.map(inst => inst.id).join(',');
 
-    const name = isTemplate ? 'Template' : (isConstruct ? 'Construct' : 'Block'); //eslint-disable-line no-nested-ternary
+    const name = singleInstance ? instances[0].getType() : 'Block';
 
     const currentSourceElement = this.currentSource();
     const annotations = this.currentAnnotations();
