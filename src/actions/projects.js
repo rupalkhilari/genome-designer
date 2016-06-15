@@ -62,6 +62,14 @@ export const projectSave = (inputProjectId) => {
           return null;
         }
 
+        //if no version => first time saving, show a grunt
+        if (!roll.project.version) {
+          dispatch({
+            type: ActionTypes.UI_SET_GRUNT,
+            gruntMessage: 'Project Saved. Changes will continue to be saved automatically as you work.',
+          });
+        }
+
         const { sha } = commitInfo;
         dispatch({
           type: ActionTypes.PROJECT_SAVE,
@@ -99,9 +107,9 @@ export const projectSnapshot = (projectId, message, withRollup = true) => {
 };
 
 //Promise
-export const projectLoad = (projectId) => {
+export const projectLoad = (projectId, avoidCache = false) => {
   return (dispatch, getState) => {
-    return loadProject(projectId)
+    return loadProject(projectId, avoidCache)
       .then(rollup => {
         const { project, blocks } = rollup;
         const projectModel = new Project(project);
@@ -134,11 +142,19 @@ export const projectOpen = (inputProjectId) => {
     const currentProjectId = dispatch(projectSelectors.projectGetCurrentId());
     const projectId = inputProjectId || getItem(recentProjectKey);
 
-    if (currentProjectId === projectId) {
+    if (!!currentProjectId && currentProjectId === projectId) {
       return Promise.resolve();
     }
 
     return dispatch(projectSave(currentProjectId))
+      .catch(err => {
+        if (currentProjectId) {
+          dispatch({
+            type: ActionTypes.UI_SET_GRUNT,
+            gruntMessage: `Project ${currentProjectId} couldn't be saved, but navigating anyway...`,
+          });
+        }
+      })
       .then(() => {
         /*
         future - clear the store of blocks from the old project.
@@ -219,7 +235,7 @@ export const projectAddConstruct = (projectId, componentId, forceProjectId = fal
     const oldProject = getState().projects[projectId];
     const component = getState().blocks[componentId];
 
-    const componentProjectId = component.getProjectId();
+    const componentProjectId = component.projectId;
 
     dispatch(pauseAction());
     dispatch(undoActions.transact());

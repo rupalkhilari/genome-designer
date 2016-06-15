@@ -5,19 +5,27 @@ import * as BlockSelector from './blocks';
 export const focusGetFocused = (defaultToConstruct = true) => {
   return (dispatch, getState) => {
     const state = getState();
-    const { level, forceProject, forceBlocks, projectId, constructId, blockIds } = state.focus;
+    const { level, forceProject, forceBlocks, projectId, constructId, blockIds, options } = state.focus;
     let focused;
     let readOnly = false;
+    let type = level;
 
-    if (level === 'project') {
+    if (level === 'project' || (!constructId && !forceBlocks.length && !blockIds.length)) {
       if (forceProject) {
         focused = forceProject;
         readOnly = true;
       } else {
         focused = state.projects[projectId];
       }
-    } else if (level === 'construct' || (defaultToConstruct === true && !forceBlocks.length && !blockIds.length)) {
-      focused = state.blocks[constructId];
+      type = 'project'; //need to override so dont try to show block inspector
+    } else if (level === 'construct' || (defaultToConstruct === true && constructId && !forceBlocks.length && !blockIds.length)) {
+      const construct = state.blocks[constructId];
+      focused = [construct];
+      readOnly = construct.isFrozen();
+    } else if (level === 'option' && blockIds.length === 1) {
+      const optionId = options[blockIds[0]];
+      focused = [state.blocks[optionId]];
+      readOnly = true;
     } else {
       if (forceBlocks.length) {
         focused = forceBlocks;
@@ -29,7 +37,7 @@ export const focusGetFocused = (defaultToConstruct = true) => {
     }
 
     return {
-      type: level,
+      type,
       readOnly,
       focused,
     };

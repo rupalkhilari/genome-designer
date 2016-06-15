@@ -47,7 +47,7 @@ export default class Instance {
   }
 
   //clone can accept just an ID (e.g. project), but likely want to pass an object (e.g. block, which also has field projectId in parent)
-  clone(parentInfo = {}) {
+  clone(parentInfo = {}, overwrites = {}) {
     const cloned = cloneDeep(this);
     const inputObject = (typeof parentInfo === 'string') ?
     { version: parentInfo } :
@@ -60,7 +60,7 @@ export default class Instance {
 
     invariant(versionValidator(parentObject.version), 'must pass a valid version (SHA), got ' + parentObject.version);
 
-    const clone = Object.assign(cloned, {
+    const clone = merge(cloned, overwrites, {
       parents: [parentObject].concat(cloned.parents),
     });
     delete clone.id;

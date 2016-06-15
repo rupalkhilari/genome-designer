@@ -3,19 +3,23 @@
  */
 module.exports = function (browser, srcSelector, blockIndex) {
 
+  var b;
+
   // generate mouse move events on body from source to destination
   browser.execute(function(srcSelector, blockIndex) {
 
     var src = document.querySelector(srcSelector);
-    var blocks = src.querySelectorAll('.role-glyph');
+    var blocks = src.querySelectorAll('[data-nodetype="block"]');
     var block = blocks[blockIndex];
-    return block.getBoundingClientRect();
+    var bounds = block.getBoundingClientRect();
+    return bounds;
 
   }, [srcSelector, blockIndex], function(result) {
-    var b = result.value;
+    b = result.value;
     browser
-      .moveToElement('body', b.left + 10, b.top + 10)
+      .moveToElement('body', b.left + 30, b.top + 20)
       .mouseButtonDown(0)
+      .pause(100)
       .mouseButtonUp(0);
   });
 }

@@ -53,6 +53,10 @@ export default class Order extends Instance {
    metadata etc
    ************/
 
+  getName() {
+    return this.metadata.name || 'Untitled Order';
+  }
+
   setName(newName) {
     const renamed = this.mutate('metadata.name', newName);
     return renamed;
@@ -62,13 +66,17 @@ export default class Order extends Instance {
     return this.status.foundry && this.status.remoteId;
   }
 
+  dateSubmitted() {
+    return this.isSubmitted() ? this.status.timeSent : null;
+  }
+
   /************
    parameters, user, other information
    ************/
 
   setParameters(parameters = {}, shouldMerge = false) {
-    const nextParameters = merge({}, (shouldMerge === true ? this.parameters : {}), parameters);
-    invariant(OrderParametersSchema.validate(parameters, false), 'parameters must pass validation');
+    const nextParameters = merge({}, (shouldMerge === true ? cloneDeep(this.parameters) : {}), parameters);
+    // invariant(OrderParametersSchema.validate(parameters, false), 'parameters must pass validation');
     return this.merge({ parameters: nextParameters });
   }
 

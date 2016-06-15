@@ -23,6 +23,10 @@
     border-radius: var(--radius);
   }
 
+  fieldset {
+    width: 100%;
+  }
+
   .title {
     font-size: var(--element-height * 0.5);
     color: var(--textcolor);
@@ -116,6 +120,7 @@
     font-size: var(--fontsize);
     color: var(--textcolor);
   }
+  
   p {
     font-size: var(--fontsize);
     color: var(--textcolor);

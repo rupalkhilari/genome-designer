@@ -17,18 +17,21 @@ describe('Server', () => {
       const terminatorBlockName = 'el terminado';
 
       const createCustomRollup = () => {
-        const rollup = createExampleRollup();
+        const roll = createExampleRollup();
+        const projectId = roll.project.id;
         const promoter = Block.classless({
+          projectId,
           metadata: { name: 'promoter' },
           rules: { role: 'promoter' },
         });
         const terminator = Block.classless({
+          projectId,
           metadata: { name: terminatorBlockName },
           rules: { role: 'terminator' },
         });
-        rollup.blocks.push(promoter, terminator);
-        rollup.project.components.push(promoter.id, terminator.id);
-        return rollup;
+        roll.blocks.push(promoter, terminator);
+        roll.project.components.push(promoter.id, terminator.id);
+        return roll;
       };
       const numberBlocksInCustomRollup = createCustomRollup().blocks.length;
 

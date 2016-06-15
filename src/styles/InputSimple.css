@@ -25,6 +25,8 @@
   }
 
   &.readOnly {
+    overflow: scroll;
+
     .InputSimple-input {
       cursor: default;
 

@@ -10,7 +10,6 @@ import InventoryItem from './InventoryItem';
 
 export default class InventoryItemBlock extends Component {
   static propTypes = {
-    isTemplate: PropTypes.bool,
     block: (props, propName) => {
       if (!(Block.validate(props[propName]) && props[propName] instanceof Block)) {
         return new Error('must pass a real block (Block model) to InventoryItemBlock');
@@ -19,20 +18,27 @@ export default class InventoryItemBlock extends Component {
   };
 
   componentDidMount() {
-    invariant(this.props.block.isTemplate || !this.props.block.isConstruct(), 'Do not use InventoryItemBlock when you want to show components, use InventoryConstruct');
+    invariant(this.props.block.isTemplate() || !this.props.block.isConstruct(), 'Do not use InventoryItemBlock when you want to show components, use InventoryConstruct');
   }
 
   render() {
-    const { block, isTemplate, ...rest } = this.props;
+    const { block, ...rest } = this.props;
+
+    const isTemplate = block.isTemplate();
+    const isFixed = block.isFixed();
+    const isConstruct = block.isConstruct();
+    const type = isTemplate ? 'template' : (isConstruct ? 'construct' : 'block'); //eslint-disable-line no-nested-ternary
 
     return (
       <div className="InventoryItemBlock">
         <InventoryItem {...rest}
+          dataAttribute={`${type} ${block.id}`}
           inventoryType={blockDragType}
           defaultName={block.getName()}
-          svg={isTemplate ? 'lock' : null}
+          svg={isFixed ? 'lock' : null}
           svgProps={{width: '1em', height: '1em', fill: 'rgba(255,255,255,0.75)'}}
-          item={block}/>
+          item={block}
+          itemDetail={isTemplate ? 'template' : null}/>
       </div>
     );
   }

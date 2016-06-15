@@ -1,15 +1,8 @@
 import * as ActionTypes from '../constants/ActionTypes';
 import * as instanceMap from '../store/instanceMap';
 import { blocks as testBlocks } from './testProject';
-import { blocks as combiBlocks } from './testCombinatorial';
 
 const initialState = {};
-
-//testing = combinatorial
-combiBlocks.forEach(block => Object.assign(initialState,
-  { [block.id]: block }
-));
-instanceMap.saveBlock(...combiBlocks);
 
 if (process.env.NODE_ENV === 'test') {
   testBlocks.forEach(block => Object.assign(initialState,
@@ -26,6 +19,7 @@ export default function blocks(state = initialState, action) {
   case ActionTypes.BLOCK_CLONE :
   case ActionTypes.BLOCK_LOAD :
   case ActionTypes.BLOCK_STASH :
+  case ActionTypes.BLOCK_FREEZE :
   case ActionTypes.BLOCK_SET_ROLE :
   case ActionTypes.BLOCK_ADD_ROLE :
   case ActionTypes.BLOCK_ANNOTATE :

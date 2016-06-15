@@ -5,7 +5,7 @@ import MouseTrap from '../../containers/graphics/mousetrap';
 import RoleSvg from '../RoleSvg';
 import BasePairCount from '../ui/BasePairCount';
 
-import { inspectorToggleVisibility } from '../../actions/ui';
+import { inspectorToggleVisibility, uiSetGrunt } from '../../actions/ui';
 import { focusForceBlocks } from '../../actions/focus';
 
 import '../../styles/InventoryItem.css';
@@ -19,20 +19,25 @@ export class InventoryItem extends Component {
         image: PropTypes.string,
       }).isRequired,
     }).isRequired,
+    itemDetail: PropTypes.string, //gray text shown after
     svg: PropTypes.string, //right now, SBOL SVG ID
     svgProps: PropTypes.object,
     defaultName: PropTypes.string,
+    dataAttribute: PropTypes.string,
     onDrop: PropTypes.func, //can return promise (e.g. update store), value is used for onDrop in DnD registered drop target. Can pass value from promise to use for drop as payload, or undefined
+    onDropFailure: PropTypes.func,
     onDragStart: PropTypes.func, //transact
     onDragComplete: PropTypes.func, //commit
     onSelect: PropTypes.func, //e.g. when clicked
     forceBlocks: PropTypes.array.isRequired,
     inspectorToggleVisibility: PropTypes.func.isRequired,
     focusForceBlocks: PropTypes.func.isRequired,
+    uiSetGrunt: PropTypes.func.isRequired,
   };
 
   static defaultProps = {
     svgProps: {},
+    dataAttribute: '',
   };
 
   componentDidMount() {
@@ -62,6 +67,13 @@ export class InventoryItem extends Component {
       onDrop: (target, position) => {
         if (this.props.onDrop) {
           return this.props.onDrop(this.props.item, target, position);
+        }
+      },
+      onDropFailure: (error, target) => {
+        this.props.uiSetGrunt(`There was an error creating a block for ${this.props.item.metadata.name}`);
+
+        if (this.props.onDropFailure) {
+          return this.props.onDropFailure(error, target);
         }
       },
       onDragComplete: (target, position, payload) => {
@@ -100,30 +112,34 @@ export class InventoryItem extends Component {
   };
 
   render() {
-    const { item, svg, svgProps, defaultName } = this.props;
+    const { item, itemDetail, svg, svgProps, defaultName, inventoryType, dataAttribute } = this.props;
     const isSelected = this.props.forceBlocks.indexOf(item) >= 0;
 
     const hasSequence = item.sequence && item.sequence.length > 0;
     const itemName = item.metadata.name || defaultName || 'Unnamed';
+    const dataAttr = !!dataAttribute ? dataAttribute : `${inventoryType} ${item.id}`;
 
     return (
       <div className={'InventoryItem' +
         (!!svg ? ' hasImage' : '') +
         (!!isSelected ? ' selected' : '')}
-           ref={(el) => this.itemElement = el}>
+           ref={(el) => this.itemElement = el}
+           data-inventory={dataAttr}>
         <a className="InventoryItem-item"
            onClick={this.handleClick}>
           {svg ? <RoleSvg symbolName={svg} color="white" {...svgProps}/> : null}
           <span className="InventoryItem-text">
             {itemName}
           </span>
-          {hasSequence && <BasePairCount count={item.sequence.length}/>}
+          {itemDetail && <span className="InventoryItem-detail">{itemDetail}</span>}
+          {(!itemDetail && hasSequence) && <span className="InventoryItem-detail"><BasePairCount count={item.sequence.length}/></span>}
         </a>
       </div>
     );
   }
 }
-
+1
+1
 export default connect((state) => {
   return {
     forceBlocks: state.focus.forceBlocks,
@@ -131,4 +147,5 @@ export default connect((state) => {
 }, {
   focusForceBlocks,
   inspectorToggleVisibility,
+  uiSetGrunt,
 })(InventoryItem);

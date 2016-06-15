@@ -19,8 +19,13 @@ import {
 import {
   uiShowDNAImport,
   uiToggleDetailView,
-  inspectorToggleVisibility
+  inspectorToggleVisibility,
+  uiShowOrderForm,
 } from '../../../actions/ui';
+import {
+  orderCreate,
+  orderGenerateConstructs,
+} from '../../../actions/orders';
 import {
   blockGetParents,
 } from '../../../selectors/blocks';
@@ -33,12 +38,19 @@ import {
   focusBlocksAdd,
   focusBlocksToggle,
   focusConstruct,
+  focusBlockOption,
 } from '../../../actions/focus';
 import invariant from 'invariant';
 import {
   projectGetVersion,
 } from '../../../selectors/projects';
-import { projectRemoveConstruct } from '../../../actions/projects';
+import {
+  projectRemoveConstruct,
+  projectAddConstruct,
+} from '../../../actions/projects';
+import RoleSvg from '../../../components/RoleSvg';
+
+import "../../../styles/constructviewer.css";
 
 // static hash for matching viewers to constructs
 const idToViewer = {};
@@ -54,6 +66,7 @@ export class ConstructViewer extends Component {
     focusBlocksAdd: PropTypes.func.isRequired,
     focusBlocksToggle: PropTypes.func.isRequired,
     focusConstruct: PropTypes.func.isRequired,
+    focusBlockOption: PropTypes.func.isRequired,
     currentBlock: PropTypes.array,
     blockSetRole: PropTypes.func,
     blockCreate: PropTypes.func,
@@ -63,10 +76,14 @@ export class ConstructViewer extends Component {
     blockAddComponents: PropTypes.func,
     blockDetach: PropTypes.func,
     uiShowDNAImport: PropTypes.func,
+    uiShowOrderForm: PropTypes.func.isRequired,
+    orderCreate: PropTypes.func.isRequired,
+    orderGenerateConstructs: PropTypes.func.isRequired,
     blockRemoveComponent: PropTypes.func,
     blockGetParents: PropTypes.func,
     projectGetVersion: PropTypes.func,
     projectRemoveConstruct: PropTypes.func,
+    projectAddConstruct: PropTypes.func,
     blocks: PropTypes.object,
     focus: PropTypes.object,
     constructPopupMenuOpen: PropTypes.bool,
@@ -185,16 +202,6 @@ export class ConstructViewer extends Component {
   }
 
   /**
-   * rename one of our blocks
-   * @param  {[type]} blockId [description]
-   * @param  {[type]} newName [description]
-   * @return {[type]}         [description]
-   */
-  blockRename(blockId, newName) {
-
-  }
-
-  /**
    * select the given block
    */
   constructSelected(id) {
@@ -206,6 +213,13 @@ export class ConstructViewer extends Component {
    */
   blockSelected(partIds) {
     this.props.focusBlocks(partIds);
+  }
+
+  /**
+   * focus an option
+   */
+  optionSelected(blockId, optionId) {
+    this.props.focusBlockOption(blockId, optionId);
   }
 
   /**
@@ -226,7 +240,7 @@ export class ConstructViewer extends Component {
    * Join the given block with any other selected block in the same
    * construct level and select them all
    */
-  blockAddToSelectionsRange(partId, currentSelections) {
+   blockAddToSelectionsRange(partId, currentSelections) {
     // get all the blocks at the same level as this one
     const levelBlocks = (this.props.blockGetParents(partId)[0]).components;
     // find min/max index of these blocks if they are in the currentSelections
@@ -278,6 +292,7 @@ export class ConstructViewer extends Component {
       blocks: this.props.blocks,
       currentBlocks: this.props.focus.blockIds,
       currentConstructId: this.props.focus.constructId,
+      focusedOptions: this.props.focus.options,
     });
     this.sg.update();
     this.sg.ui.update();
@@ -352,9 +367,10 @@ export class ConstructViewer extends Component {
    * menu items for the construct context menu
    */
   constructContextMenuItems = () => {
+    const typeName = this.props.construct.isTemplate() ? "Template" : "Construct";
     return [
       {
-        text: 'Inspect Construct',
+        text: `Inspect ${typeName}`,
         action: () => {
           this.openInspector();
           this.props.focusBlocks([]);
@@ -362,9 +378,22 @@ export class ConstructViewer extends Component {
         },
       },
       {
-        text: 'Delete Construct',
+        text: `Delete ${typeName}`,
         action: () => {
           this.props.projectRemoveConstruct(this.props.projectId, this.props.constructId);
+        },
+      },
+      {
+        text: `Duplicate ${typeName}`,
+        action: () => {
+          // clone the our construct/template and then add to project and ensure focused
+          let clone = this.props.blockClone(this.props.construct);
+          const oldName = clone.getName();
+          if (!oldName.endsWith(' - copy')) {
+            clone = this.props.blockRename(clone.id, `${oldName} - copy`);
+          }
+          this.props.projectAddConstruct(this.props.projectId, clone.id);
+          this.props.focusConstruct(clone.id);
         },
       },
     ];
@@ -482,6 +511,42 @@ export class ConstructViewer extends Component {
   }
 
   /**
+   * launch DNA form for this construct
+   */
+  onOrderDNA = () => {
+    const order = this.props.orderCreate(this.props.projectId, [this.props.construct.id]);
+    this.props.uiShowOrderForm(true, order.id);
+  };
+
+  /**
+   * only visible on templates for now
+   */
+  orderButton() {
+    if (this.props.construct.isTemplate()) {
+      return <button onClick={this.onOrderDNA} className="order-button">Order DNA</button>;
+    }
+    return null;
+  }
+
+  lockIcon() {
+    const locked = this.props.construct.isTemplate() && this.props.construct.isFrozen();
+    if (!locked) {
+      return null;
+    }
+    return (
+      <div className="lockIcon">
+        <RoleSvg
+          symbolName="lock"
+          color={this.props.construct.metadata.color}
+          width="14px"
+          height="14px"
+          fill={this.props.construct.metadata.color}
+        />
+      </div>
+    )
+  }
+
+  /**
    * render the component, the scene graph will render later when componentDidUpdate is called
    */
   render() {
@@ -492,6 +557,8 @@ export class ConstructViewer extends Component {
         </div>
         {this.blockContextMenu()}
         {this.constructContextMenu()}
+        {this.orderButton()}
+        {this.lockIcon()}
       </div>
     );
     return rendered;
@@ -520,10 +587,15 @@ export default connect(mapStateToProps, {
   focusBlocks,
   focusBlocksAdd,
   focusBlocksToggle,
+  focusBlockOption,
   focusConstruct,
   projectGetVersion,
   projectRemoveConstruct,
+  projectAddConstruct,
   inspectorToggleVisibility,
   uiShowDNAImport,
+  uiShowOrderForm,
   uiToggleDetailView,
+  orderCreate,
+  orderGenerateConstructs,
 })(ConstructViewer);

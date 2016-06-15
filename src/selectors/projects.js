@@ -37,7 +37,7 @@ export const projectListAllComponents = (projectId) => {
 
     return project.components.reduce((acc, componentId) => {
       acc.push(dispatch(blockSelectors.blockGet(componentId)));
-      const constructChildren = dispatch(blockSelectors.blockGetChildrenRecursive(componentId));
+      const constructChildren = dispatch(blockSelectors.blockGetComponentsRecursive(componentId));
       acc.push(...constructChildren);
       return acc;
     }, []);

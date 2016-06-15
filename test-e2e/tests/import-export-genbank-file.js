@@ -22,9 +22,10 @@ module.exports = {
 
     // start with a new project to ensure no construct viewers are visible
     newProject(browser);
+    browser.pause(3000);
 
-    // click the file menu -> Upload Genbank File
-    clickMainMenu(browser, 1, 8);
+    // import from menu
+    clickMainMenu(browser, 1, 7);
 
     browser
       .waitForElementPresent('.genbank-import-form', 5000, 'Expect the import dialog to appear')
@@ -58,6 +59,7 @@ module.exports = {
         .url(uri)
         .pause(5000)
         .assert.urlContains(projectURL)
+        .saveScreenshot('./test-e2e/current-screenshots/import-export-genbank-file.png')
         .end();
     });
   }

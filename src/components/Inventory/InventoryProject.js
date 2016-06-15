@@ -44,9 +44,7 @@ export class InventoryProject extends Component {
           //inspect it
           this.inspectProject(projectId);
         } else {
-          //save the previous one, open the new one
-          this.props.projectSave()
-            .then(() => this.props.projectOpen(projectId));
+          this.props.projectOpen(projectId);
         }
       });
   };
@@ -101,7 +99,8 @@ export class InventoryProject extends Component {
                           isExpanded={isExpanded && canToggle}
                           onToggle={(nextState) => this.handleToggleProject(nextState, projectId)}
                           onSelect={(nextState) => this.onToggleProject(nextState, projectId)}
-                          isActive={isActive}>
+                          isActive={isActive}
+                          dataAttribute={`project ${project.id}`}>
         {project.components.map(compId => {
           return (<InventoryConstruct key={compId}
                                       blockId={compId}/>);

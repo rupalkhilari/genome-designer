@@ -14,13 +14,14 @@ const fieldDefs = {
   sequenceAssemblies: [
     fields.bool(),
     'Whether to sequence all assemblies after production',
+    { scaffold : () => true },
   ],
   permutations: [
     fields.number(),
     'For multi pot combinatorial this is number of random constructs to assemble',
   ],
   combinatorialMethod: [
-    fields.oneOf(['Random Subset', 'Maximum Unique Set', 'All Combinations']),
+    fields.oneOf(['Random Subset', 'Maximum Unique Set']),
     'Combinatorial Method',
   ],
 };
@@ -32,6 +33,11 @@ export class OrderParametersSchemaClass extends Schema {
 
   validate(instance, shouldThrow) {
     const fieldsValid = super.validateFields(instance, shouldThrow);
+
+    if (!fieldsValid) {
+      return false;
+    }
+
     const hasFieldsIfNotOnePot = instance.onePot || (instance.combinatorialMethod && instance.permutations);
 
     if (!hasFieldsIfNotOnePot) {

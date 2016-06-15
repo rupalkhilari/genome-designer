@@ -41,7 +41,9 @@ export default class Block extends Instance {
       projectId: this.projectId,
       version: (firstParent && firstParent.projectId === this.projectId) ? firstParent.version : null,
     }, parentInfo);
-    return super.clone(parentObject);
+
+    //forcibly unfreeze a clone
+    return super.clone(parentObject, { rules: { frozen: false } });
   }
 
   mutate(...args) {
@@ -96,6 +98,13 @@ export default class Block extends Instance {
     return this.mutate(`rules.${rule}`, value);
   }
 
+  setFrozen(isFrozen) {
+    if (this.rules.frozen === true) {
+      return this;
+    }
+    return this.setRule('frozen', isFrozen);
+  }
+
   setRole(role) {
     return this.setRule('role', role);
   }
@@ -116,10 +125,6 @@ export default class Block extends Instance {
   /************
    metadata
    ************/
-
-  getProjectId() {
-    return this.projectId;
-  }
 
   setProjectId(projectId) {
     invariant(idValidator(projectId) || projectId === null, 'project Id is required, or null to mark unassociated');
@@ -278,9 +283,10 @@ export default class Block extends Instance {
    * @description Writes the sequence for a block
    * @param sequence {String}
    * @param useStrict {Boolean}
+   * @param persistSource {Boolean} Maintain the source of the block
    * @returns {Promise} Promise which resolves with the udpated block
    */
-  setSequence(sequence, useStrict = false) {
+  setSequence(sequence, useStrict = false, persistSource = false) {
     const sequenceLength = sequence.length;
     const sequenceMd5 = md5(sequence);
 
@@ -293,6 +299,8 @@ export default class Block extends Instance {
       return Promise.reject('sequence has invalid characters');
     }
 
+    const updatedSource = persistSource === true ? this.source : { source: 'user', id: null };
+
     return writeSequence(sequenceMd5, sequence, this.id)
       .then(() => {
         const updatedSequence = {
@@ -300,13 +308,11 @@ export default class Block extends Instance {
           length: sequenceLength,
           initialBases: sequence.substr(0, 5),
         };
+
         return this.merge({
           sequence: updatedSequence,
-          source: {
-            source: 'user',
-            id: null,
-          },
-         });
+          source: updatedSource,
+        });
       });
   }
 

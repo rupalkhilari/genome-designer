@@ -24,19 +24,22 @@ export class Inspector extends Component {
   };
 
   render() {
-    const { showingGrunt, isVisible, focused, type, readOnly, forceIsConstruct } = this.props;
+    const { showingGrunt, isVisible, focused, orders, type, readOnly, forceIsConstruct } = this.props;
 
     // inspect instances, or construct if no instance or project if no construct or instances
     let inspect;
     switch (type) {
     case 'project':
-      inspect = <InspectorProject instance={focused} readOnly={readOnly}/>;
+      inspect = (<InspectorProject instance={focused}
+                                   orders={orders}
+                                   readOnly={readOnly}/>);
       break;
     case 'construct':
-      inspect = <InspectorBlock instances={focused} readOnly={readOnly}/>;
-      break;
     default:
-      inspect = <InspectorBlock instances={focused} readOnly={readOnly} forceIsConstruct={forceIsConstruct}/>;
+      inspect = (<InspectorBlock instances={focused}
+                                 orders={orders}
+                                 readOnly={readOnly}
+                                 forceIsConstruct={forceIsConstruct}/>);
       break;
     }
 
@@ -69,7 +72,9 @@ function mapStateToProps(state, props) {
   //UI adjustment
   const showingGrunt = !!state.ui.modals.gruntMessage;
 
-  const { level, forceProject, forceBlocks, projectId, constructId, blockIds } = state.focus;
+  // todo - maybe should move to focus selector, and just run this in render, to share code. this is kinda gnar.
+
+  const { level, forceProject, forceBlocks, projectId, constructId, blockIds, options } = state.focus;
   let focused;
   let readOnly = false;
   let type = level;
@@ -88,6 +93,10 @@ function mapStateToProps(state, props) {
     const construct = state.blocks[constructId];
     focused = [construct];
     readOnly = construct.isFrozen();
+  } else if (level === 'option' && blockIds.length === 1) {
+    const optionId = options[blockIds[0]];
+    focused = [state.blocks[optionId]];
+    readOnly = true;
   } else {
     if (forceBlocks.length) {
       focused = forceBlocks;
@@ -101,6 +110,11 @@ function mapStateToProps(state, props) {
   const forceIsConstruct = (level === 'construct') ||
     blockIds.some(blockId => currentProject.components.indexOf(blockId) >= 0);
 
+  const orders = Object.keys(state.orders)
+    .map(orderId => state.orders[orderId])
+    .filter(order => order.projectId === projectId && order.isSubmitted())
+    .sort((one, two) => one.status.timeSent - two.status.timeSent);
+
   return {
     showingGrunt,
     isVisible,
@@ -108,6 +122,7 @@ function mapStateToProps(state, props) {
     readOnly,
     focused,
     forceIsConstruct,
+    orders,
   };
 }
 

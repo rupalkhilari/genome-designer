@@ -61,6 +61,8 @@ class ConstructPreview extends Component {
             color: 'lightgray',
           },
           components: this.props.constructs[this.state.index - 1].map(block => block.id),
+          // this fake construct should not be a template, so we don't get empty list block placeholders
+          isTemplate: () => {return false;},
         },
         blocks: this.props.blocks,
         currentBlocks: [],

@@ -8,6 +8,8 @@ import orderRouter from './order/index';
 import fileRouter from './file/index';
 import extensionsRouter from './extensions/index';
 import bodyParser from 'body-parser';
+import errorHandlingMiddleware from './utils/errorHandlingMiddleware';
+import checkUserSetup from './auth/userSetup';
 
 import importRouter from '../plugins/convert/import';
 import exportRouter from '../plugins/convert/export';
@@ -35,20 +37,7 @@ app.use(bodyParser.json({
   strict: false,
 }));
 
-//error logging middleware
-if (process.env.NODE_ENV !== 'production') {
-  app.use((err, req, res, next) => {
-    console.log('hit error logging middleware', err, req, res, next);
-    if (err) {
-      console.error(err);
-      if (res.headersSent) {
-        return next(err);
-      }
-      res.status(502).send(err);
-    }
-    return next();
-  });
-}
+app.use(errorHandlingMiddleware);
 
 //HTTP logging middleware
 app.use(morgan('dev', {
@@ -66,16 +55,22 @@ app.set('view engine', 'jade');
 // the auth routes are currently called from the client and expect JSON responses
 if (process.env.BIO_NANO_AUTH) {
   console.log("real user authentication enabled");
-  var initAuthMiddleware = require('bio-user-platform').initAuthMiddleware;
+  const initAuthMiddleware = require('bio-user-platform').initAuthMiddleware;
 
   // TODO load a custom configuration here
   // disable all redirects
-  var authConfig = {
+  const authConfig = {
     logoutLanding: false,
     loginLanding: false,
     loginFailure: false,
-    resetForm: "/homepage/reset",
-    apiEndPoint: process.env.API_END_POINT || "http://localhost:8080/api",
+    resetForm: '/homepage/reset',
+    apiEndPoint: process.env.API_END_POINT || 'http://localhost:8080/api',
+    onLogin: (req, res, next) => {
+      return checkUserSetup(req.user)
+        //note this expects an abnormal return of req and res to the next function
+        .then(() => next(req, res));
+    },
+    registerRedirect: false,
   };
   app.use(initAuthMiddleware(authConfig));
 } else {

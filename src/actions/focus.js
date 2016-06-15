@@ -10,9 +10,7 @@ const idValidator = (id) => safeValidate(idValidatorCreator(), true, id);
 
 export const focusProject = (inputProjectId = null) => {
   return (dispatch, getState) => {
-    //testing - can re-enable when remove 'combinatorial' project
-    //const projectId = idValidator(inputProjectId) ? inputProjectId : null;
-    const projectId = inputProjectId;
+    const projectId = idValidator(inputProjectId) ? inputProjectId : null;
 
     dispatch({
       type: ActionTypes.FOCUS_PROJECT,
@@ -30,7 +28,7 @@ export const focusConstruct = (inputConstructId) => {
     //prune blocks if outside current construct
     const currentBlocks = getState().focus.blockIds;
     if (constructId && currentBlocks.length) {
-      const children = dispatch(BlockSelector.blockGetChildrenRecursive(constructId));
+      const children = dispatch(BlockSelector.blockGetComponentsRecursive(constructId));
       const blockIds = currentBlocks.filter(blockId => {
         return children.some(block => block.id === blockId);
       });

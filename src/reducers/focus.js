@@ -9,10 +9,11 @@ export const initialState = {
   blockIds: [], //ids of selection
   constructId: null, //id of current
   level: 'project', //what to give priority to (when defined)
-  options: {},
+  options: {}, //map {listBlockId : selectedOptionId}
 };
 
 export default function inventory(state = initialState, action) {
+  console.log(action);
   switch (action.type) {
   case ActionTypes.FOCUS_FORCE_PROJECT:
     const { project } = action;
@@ -72,6 +73,7 @@ export default function inventory(state = initialState, action) {
   case ActionTypes.FOCUS_BLOCK_OPTION :
     const { options } = action;
     return Object.assign({}, state, {
+      level: 'option',
       options,
     });
 

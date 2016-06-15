@@ -1,5 +1,6 @@
 var resemble = require('../../node_modules/node-resemble-js/resemble.js');
-var fs = require('fs');
+var fs = require('../../node_modules/fs-extra/lib/index.js');
+var readline = require('readline');
 var path = require('path');
 var clc = require('../../node_modules/cli-color/index.js');
 var execSync = require('child_process').execSync;
@@ -35,6 +36,28 @@ const openImages = (image1, image2) => {
   execSync(cli);
 }
 
+
+// ask the user what to do when two images diff
+const handleDifference = (cannonical, test) => {
+
+  openImages(cannonical, test);
+  console.log(clc.yellow('Test Failed, Options Are:'));
+  console.log('1 - Test Passes, Update Cannonical Image and Continue');
+  console.log('2 - Test Fails, Continue');
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
+  rl.question('\nSelect the action: ', (answer) => {
+    rl.close();
+    const n = parseFloat(answer);
+    if (n === 1) {
+      // overwrite cannonical image with test image
+      fs.copySync(test, cannonical);
+    }
+  });
+}
+
 console.log('|====== Screenshot Comparison ======|');
 console.log(`Cannonical Folder: ${truth}`);
 console.log(`Tests Folder     : ${test}`);
@@ -42,20 +65,22 @@ console.log(`Tests Folder     : ${test}`);
 filesInFolder(truth).forEach(file => {
   // get corresponding file in tests folder
   const match = path.join(test, fileFromPath(file));
-  console.log(clc.yellow(`Comparing\n${file}\n${match}`));
-  resemble(file).compareTo(match).onComplete(function(data){
+  resemble(file).compareTo(match).onComplete(function(data) {
+    console.log(clc.yellow(`Comparing\n${file}\n${match}`));
     const misMatch = parseFloat(data.misMatchPercentage);
     if (data.isSameDimensions && misMatch === 0) {
       console.log(clc.green('Perfect Match'));
-      openImages(file, match);
     } else {
       if (!data.isSameDimensions) {
-        console.log(clc.red('Images are different sizes'));
+        console.log(clc.red.bgWhite('Images are different sizes'));
+        handleDifference(file, match);
       } else {
         if (misMatch < 1e-6) {
-          console.log(clc.orange('Images are very similar ( < 1e-6% delta )'));
+          console.log(clc.orange.bgWhite('Images are very similar ( < 1e-6% delta )'));
+          handleDifference(file, match);
         } else {
-          console.error(clc.red(`Error, mismatch: ${misMatch}%`));
+          console.error(clc.red.bgWhite(`Error, mismatch: ${misMatch}%`));
+          handleDifference(file, match);
         }
       }
     }
