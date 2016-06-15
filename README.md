@@ -7,6 +7,8 @@
 
 `npm run start`
 
+Please check `package.json` to ensure you have valid versions of globally installed software packages (e.g. node, npm, webpack).
+
 ### user authentication
 User authentication depends on the Bio/Nano User Platform project, which is currently not open source. As a result user
 authentication is NOT enabled by default when running this application locally. Authentication routes and a user object
