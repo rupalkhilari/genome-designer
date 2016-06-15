@@ -29,6 +29,7 @@ export default class Project extends Instance {
     //massage two into a temp object with fields from one that we dont want to compare
     const massaged = Object.assign(cloneDeep(two), {
       version: one.version,
+      lastSaved: one.lastSaved,
     });
     return isEqual(one, massaged);
   }
@@ -40,7 +41,7 @@ export default class Project extends Instance {
   //ideally, this would just return the same instance, would be much easier
   updateVersion(version, lastSaved = Date.now()) {
     invariant(versionValidator(version), 'must pass valid SHA to update version');
-    invariant(Number.isNumber(lastSaved), 'must pass valid time to update version');
+    invariant(Number.isInteger(lastSaved), 'must pass valid time to update version');
     return this.merge({ version, lastSaved });
   }
 

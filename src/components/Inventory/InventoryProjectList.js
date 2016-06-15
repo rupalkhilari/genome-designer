@@ -37,18 +37,21 @@ export class InventoryProjectList extends Component {
       (<p>no projects</p>)
       :
       <div className="InventoryProjectList">
-        {Object.keys(projects).map(projectId => {
-          const project = projects[projectId];
-          const isActive = (projectId === currentProject);
+        {Object.keys(projects)
+          .map(projectId => projects[projectId])
+          .sort((one, two) => two.lastSaved - one.lastSaved)
+          .map(project => {
+            const projectId = project.id;
+            const isActive = (projectId === currentProject);
 
-          return (
-            <InventoryProject key={projectId}
-                              project={project}
-                              isActive={isActive}/>
-          );
-        })}
+            return (
+              <InventoryProject key={projectId}
+                                project={project}
+                                isActive={isActive}/>
+            );
+          })}
       </div>
-    ;
+      ;
   }
 }
 
