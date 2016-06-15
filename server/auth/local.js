@@ -49,6 +49,6 @@ export const mockUser = (req, res, next) => {
   }
 
   //stub the initial user setup here as well
-  checkUserSetup({uuid: 0})
+  checkUserSetup({uuid: "0"})
     .then(() => next());
 };
