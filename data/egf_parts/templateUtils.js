@@ -4,7 +4,8 @@ import parts from './parts';
 import Block from '../../src/models/Block';
 import { merge } from 'lodash';
 
-const templateSymbols = {
+//note that technically, these keys are strings, and passing a number will cast to a string as the key
+export const templateSymbols = {
   1: 'structural',
   2: 'insulator',
   3: 'promoter',
@@ -48,10 +49,10 @@ export const list = (pos, optionId) => {
   const listBlock = new Block({
     metadata: {
       name: `Position ${pos}`,
+      role: templateSymbols[pos], //role as metadata, since constructs shouldn't have a role
     },
     rules: {
       list: true,
-      role: templateSymbols[pos],
     },
     options: getOptionParts(pos, optionId),
     notes: {

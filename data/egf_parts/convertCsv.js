@@ -15,23 +15,24 @@ import Block from '../../src/models/Block';
 import parse from 'csv-parse';
 import md5 from 'md5';
 import path from 'path';
+import { templateSymbols } from './templateUtils';
 
 //edit these dependent on the spreadsheet
-const partFields = ['position', 'part', 'shortName', 'category', 'subCategory', 'sequence', 'description'];
+const partFields = ['position', 'part', 'shortName', 'category', 'subCategory', 'sequence', 'description', 'id'];
 const connectorFields = ['connector', 'positions', 'sequence'];
 
 const headerRows = 2;
 
 //converting categories
 const roleMap = {
-  'Homology Arm': '',
+  'Homology Arm': 'structural',
   'inverted terminal repeat sequences (ITRs)': '',
   'Insulators': 'insulator',
   'Promoters': 'promoter',
   'RNA regulatory sequences': 'regulatory',
-  'Site-specific recombinases recognition sites': '',
+  'Site-specific recombinases recognition sites': 'restrictionSite',
   'Peptide Tags': 'tag',
-  'Site-specific recombinases': '',
+  'Site-specific recombinases': 'restrictionSite',
   'RNA-Binding proteins': '',
   'Fluorescent Reporter': 'reporter',
   'Peptide Linker': 'structural',
@@ -43,7 +44,7 @@ const roleMap = {
   'Structural proteins': 'structural',
   'PolyA transcription terminators': 'terminator',
   'Transcription Factor': '',
-  'Episomal elements': '',
+  'Episomal elements': 'structural',
 };
 
 const trimSequence = (sequence, front = "5'-CGTCTCnNNNN".length, back = "NNNNnGAGACG-3'".length) => {
@@ -57,8 +58,8 @@ const zip = (keys, vals) => keys.reduce(
 
 const mapPartFields = (imported) => {
   //fields based on array at top
-  const { part, description, position, role, sequence, category, subCategory, shortName, ...rest } = imported;
-  const id = part;
+  const { id, part, description, position, role, sequence, category, subCategory, shortName, ...rest } = imported;
+  const roleWithBackup = role || templateSymbols[position];
 
   return {
     metadata: {
@@ -72,7 +73,7 @@ const mapPartFields = (imported) => {
       id,
     },
     rules: {
-      role: role,
+      role: roleWithBackup,
     },
     notes: {
       category,
@@ -85,7 +86,7 @@ const mapPartFields = (imported) => {
 
 const mapConnectorFields = (imported) => {
   //fields based on array at top
-  const { connector, positions, sequence} = imported;
+  const { connector, positions, sequence } = imported;
   const id = connector;
 
   return {
@@ -98,7 +99,7 @@ const mapConnectorFields = (imported) => {
       id,
     },
     rules: {
-      role: 'connector',
+      role: 'structural',
     },
     sequence: sequence, //this field is removed later to conform to schema
   };
