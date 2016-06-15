@@ -491,7 +491,7 @@
     },
     "rules": {
       "list": false,
-      "role": "tag",
+      "role": "cds",
       "hidden": false,
       "frozen": false,
       "fixed": false
@@ -527,7 +527,7 @@
     },
     "rules": {
       "list": false,
-      "role": "tag",
+      "role": "cds",
       "hidden": false,
       "frozen": false,
       "fixed": false
@@ -563,7 +563,7 @@
     },
     "rules": {
       "list": false,
-      "role": "tag",
+      "role": "cds",
       "hidden": false,
       "frozen": false,
       "fixed": false
@@ -599,7 +599,7 @@
     },
     "rules": {
       "list": false,
-      "role": "tag",
+      "role": "cds",
       "hidden": false,
       "frozen": false,
       "fixed": false
@@ -635,7 +635,7 @@
     },
     "rules": {
       "list": false,
-      "role": "tag",
+      "role": "cds",
       "hidden": false,
       "frozen": false,
       "fixed": false
@@ -671,7 +671,7 @@
     },
     "rules": {
       "list": false,
-      "role": "tag",
+      "role": "cds",
       "hidden": false,
       "frozen": false,
       "fixed": false
@@ -1103,7 +1103,7 @@
     },
     "rules": {
       "list": false,
-      "role": "tag",
+      "role": "cds",
       "hidden": false,
       "frozen": false,
       "fixed": false
@@ -1895,7 +1895,7 @@
     },
     "rules": {
       "list": false,
-      "role": "tag",
+      "role": "cds",
       "hidden": false,
       "frozen": false,
       "fixed": false
@@ -1931,7 +1931,7 @@
     },
     "rules": {
       "list": false,
-      "role": "tag",
+      "role": "cds",
       "hidden": false,
       "frozen": false,
       "fixed": false

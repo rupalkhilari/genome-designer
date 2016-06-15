@@ -31,7 +31,7 @@ const roleMap = {
   'Promoters': 'promoter',
   'RNA regulatory sequences': 'regulatory',
   'Site-specific recombinases recognition sites': 'restrictionSite',
-  'Peptide Tags': 'tag',
+  'Peptide Tags': '',
   'Site-specific recombinases': 'restrictionSite',
   'RNA-Binding proteins': '',
   'Fluorescent Reporter': 'reporter',
