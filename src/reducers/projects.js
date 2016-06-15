@@ -44,6 +44,9 @@ export default function projects(state = initialState, action) {
     return nextState;
   }
 
+  case ActionTypes.USER_SET_USER :
+    return Object.assign({}, initialState);
+
   default :
     return state;
   }

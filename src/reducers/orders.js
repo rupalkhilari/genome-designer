@@ -16,6 +16,9 @@ export default function orders(state = initialState, action) {
     }
     return Object.assign({}, state, { [order.id]: order });
 
+  case ActionTypes.USER_SET_USER :
+    return Object.assign({}, initialState);
+  
   default:
     return state;
   }

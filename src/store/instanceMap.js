@@ -2,6 +2,8 @@ import invariant from 'invariant';
 import Project from '../models/Project';
 import Block from '../models/Block';
 
+//NOTE - this cache is not reset when the user changes. That sucks up some memory. User should not be able to access though - this is used by middleware functoins etc., but everything in a newly signed-in user's information will have unique IDs and should not collide (until there is collaboration or something along those lines).
+
 /*
  Tracks a map of blocks / projects which have been loaded. Only contains the latest version. Serves as a place to store blocks / projects which do not need to be in the store.
 
