@@ -5,7 +5,7 @@ import { templates, blocks as templateBlocks } from './templates';
 import { examples, blocks as exampleBlocks } from './examples';
 
 //clone everything so that IDs are unique
-//even though blocks are frozen, they are not currently associated with a project, so should have unique IDs within this project
+//fixme - if clone the tempalte blocks and example blocks, need to update components: [] in list blocks
 const makeBlocks = () => {
   return {
     constructs: [
@@ -13,8 +13,8 @@ const makeBlocks = () => {
       ...examples.map(example => example.clone(false)),
     ],
     blocks: [
-      ...templateBlocks.map(block => block.clone(false)),
-      ...exampleBlocks.map(block => block.clone(false)),
+      ...templateBlocks,
+      ...exampleBlocks,
     ],
   };
 };
