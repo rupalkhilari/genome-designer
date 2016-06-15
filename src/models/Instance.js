@@ -60,10 +60,12 @@ export default class Instance {
 
     invariant(versionValidator(parentObject.version), 'must pass a valid version (SHA), got ' + parentObject.version);
 
-    const clone = merge(cloned, overwrites, {
-      parents: [parentObject].concat(cloned.parents),
-    });
+    const parents = [parentObject, ...cloned.parents];
+
+    //unclear why, but merging parents was not overwriting the clone, so shallow assign parents specifically
+    const clone = Object.assign(merge(cloned, overwrites), { parents });
     delete clone.id;
+
     return new this.constructor(clone);
   }
 }
