@@ -3,8 +3,8 @@
 
  call like this (from project root):
 
- babel-node ./src/inventory/andrea/convertCsv.js /path/to/parts.csv true forced/path/to/output.json
- babel-node ./src/inventory/andrea/convertCsv.js /path/to/connectors.csv false forced/path/to/output.json
+ babel-node ./data/egf_parts/convertCsv.js /path/to/parts.csv true forced/path/to/output.json
+ babel-node ./data/egf_parts/convertCsv.js /path/to/connectors.csv false forced/path/to/output.json
 
  do not import into client bundle. it will break it.
  */
@@ -19,7 +19,7 @@ import { templateSymbols } from './templateUtils';
 
 //edit these dependent on the spreadsheet
 const partFields = ['position', 'part', 'shortName', 'category', 'subCategory', 'sequence', 'description', 'id'];
-const connectorFields = ['connector', 'positions', 'sequence'];
+const connectorFields = ['connector', 'positions', 'sequence', 'id'];
 
 const headerRows = 2;
 
@@ -86,8 +86,7 @@ const mapPartFields = (imported) => {
 
 const mapConnectorFields = (imported) => {
   //fields based on array at top
-  const { connector, positions, sequence } = imported;
-  const id = connector;
+  const { connector, positions, sequence, id } = imported;
 
   return {
     metadata: {
@@ -112,6 +111,7 @@ export default function convertCsv(csvPath, isPartInput = 'true', outputPath) {
   invariant(csvPath, 'need a csv path as command line arg');
 
   const isPart = !(/^false$/i).test(isPartInput);
+  const md5sWritten = {}; //hash of md5s writing so don't try to open duplicate files
 
   return fileSystem.fileRead(csvPath, false)
     .then(contents => {
@@ -137,17 +137,23 @@ export default function convertCsv(csvPath, isPartInput = 'true', outputPath) {
       const untrimmed = part.sequence;
       const sequence = trimSequence(untrimmed);
       const sequenceMd5 = md5(sequence);
-      const filePath = path.join(__dirname, '../../../data/egf_parts/sequences', sequenceMd5);
+      const filePath = path.join(__dirname, './sequences', sequenceMd5);
+      const updatedPart = Object.assign(part, {
+        sequence: {
+          md5: sequenceMd5,
+          length: sequence.length,
+          initialBases: sequence.substr(0, 5),
+        },
+      });
 
+      if (md5sWritten[sequenceMd5] === true) {
+        return Promise.resolve(updatedPart);
+      }
+
+      md5sWritten[sequenceMd5] = true;
       return fileSystem.fileWrite(filePath, sequence, false)
         .then(() => {
-          return Object.assign(part, {
-            sequence: {
-              md5: sequenceMd5,
-              length: sequence.length,
-              initialBases: sequence.substr(0, 5),
-            },
-          });
+          return updatedPart;
         });
     })))
     //make blocks
