@@ -4,12 +4,14 @@ import Project from '../../src/models/Project';
 import { templates, blocks as templateBlocks } from './templates';
 import { examples, blocks as exampleBlocks } from './examples';
 
-//fixme - these should get new IDs for each user, at least for the list blocks that can be edited
+//clone everything so that IDs are unique
+//fixme - if clone the tempalte blocks and example blocks, need to update components: [] in list blocks
+//remember to set to frozen if clone them
 const makeBlocks = () => {
   return {
     constructs: [
-      ...templates,
-      ...examples,
+      ...templates.map(template => template.clone(false)),
+      ...examples.map(example => example.clone(false)),
     ],
     blocks: [
       ...templateBlocks,
@@ -27,6 +29,7 @@ const makeProject = (blockIds) => new Project({
 });
 
 //make the blocks, make the project, return the rollup
+//note that project ID will be set when write the rollup, so dont need to handle that here explicitly
 export default function makeEgfRollup() {
   const blocks = makeBlocks();
   const blockIds = blocks.constructs.map(block => block.id);

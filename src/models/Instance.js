@@ -47,22 +47,30 @@ export default class Instance {
   }
 
   //clone can accept just an ID (e.g. project), but likely want to pass an object (e.g. block, which also has field projectId in parent)
+  //if pass null to parentInfo, the block is simply cloned, and nothing is added to the history
   clone(parentInfo = {}, overwrites = {}) {
     const cloned = cloneDeep(this);
-    const inputObject = (typeof parentInfo === 'string') ?
-    { version: parentInfo } :
-      parentInfo;
+    let clone;
 
-    const parentObject = Object.assign({
-      id: cloned.id,
-      version: cloned.version,
-    }, inputObject);
+    if (parentInfo === null) {
+      clone = merge(cloned, overwrites);
+    } else {
+      const inputObject = (typeof parentInfo === 'string') ?
+      { version: parentInfo } :
+        parentInfo;
 
-    invariant(versionValidator(parentObject.version), 'must pass a valid version (SHA), got ' + parentObject.version);
+      const parentObject = Object.assign({
+        id: cloned.id,
+        version: cloned.version,
+      }, inputObject);
 
-    const clone = merge(cloned, overwrites, {
-      parents: [parentObject].concat(cloned.parents),
-    });
+      invariant(versionValidator(parentObject.version), 'must pass a valid version (SHA), got ' + parentObject.version);
+
+      clone = merge(cloned, overwrites, {
+        parents: [parentObject].concat(cloned.parents),
+      });
+    }
+
     delete clone.id;
     return new this.constructor(clone);
   }
