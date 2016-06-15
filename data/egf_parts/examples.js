@@ -48,15 +48,14 @@ const exampleOfTemplate = (template, options, toMerge = {}) => {
       return newListComponent.id;
     });
 
-  const cloned = cloneDeep(template);
-  delete cloned.id;
-
-  return new Block(merge(cloned, toMerge, {
+  const mergeWith = merge({}, toMerge, {
     components,
     rules: {
       frozen: true,
     },
-  }));
+  });
+
+  return template.clone(false, mergeWith);
 };
 
 export const examples = [

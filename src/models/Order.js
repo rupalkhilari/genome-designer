@@ -46,7 +46,7 @@ export default class Order extends Instance {
   }
 
   clone() {
-    invariant('cannot clone an order');
+    invariant(false, 'cannot clone an order');
   }
 
   /************
