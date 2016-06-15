@@ -38,9 +38,10 @@ export default class Project extends Instance {
   }
 
   //ideally, this would just return the same instance, would be much easier
-  updateVersion(sha) {
-    invariant(versionValidator(sha), 'must pass valid SHA to update version');
-    return this.mutate('version', sha);
+  updateVersion(version, lastSaved = Date.now()) {
+    invariant(versionValidator(version), 'must pass valid SHA to update version');
+    invariant(Number.isNumber(lastSaved), 'must pass valid time to update version');
+    return this.merge({ version, lastSaved });
   }
 
   addComponents(...components) {
