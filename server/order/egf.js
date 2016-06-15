@@ -1,5 +1,5 @@
 import { errorInvalidPart, errorOrderRejected } from '../utils/errors';
-import rejectingFetch from '../../src/middleware/rejectingFetch';
+import fetch from 'isomorphic-fetch';
 import { headersPost } from '../../src/middleware/headers';
 
 //testing
@@ -24,6 +24,7 @@ export const submit = (order, user) => {
       lastName: user.lastName,
       email: user.email,
     },
+    validationOnly: true, //todo - if we want to actually allow orders, set to false
   };
 
   //testing
@@ -31,7 +32,7 @@ export const submit = (order, user) => {
 
   const stringified = JSON.stringify(payload);
 
-  return rejectingFetch(url, headersPost(stringified))
+  return fetch(url, headersPost(stringified))
     .then(resp => resp.json())
     .then(response => {
       if (!(response.success === true || response.success === 'true')) {
@@ -43,8 +44,8 @@ export const submit = (order, user) => {
       console.log(response);
 
       return Promise.resolve({
-        jobId: response.egf_order_id,
-        cost: response.estimated_price,
+        jobId: `${response.egf_order_id}`,
+        cost: `${response.estimated_price}`,
       });
     });
 };
