@@ -5,6 +5,7 @@ import makeEgfRollup from '../../data/egf_parts/project';
 //create the EGF project for them
 const createInitialData = (user) => {
   const egfRollup = makeEgfRollup();
+  console.log('[EGF ROLLUP] making rollup ' + egfRollup.project.id + ' for user ' + user.uuid);
   return rollup.writeProjectRollup(egfRollup.project.id, egfRollup, user.uuid);
 };
 

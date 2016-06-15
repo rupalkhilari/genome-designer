@@ -60,7 +60,7 @@ export const findProjectFromBlock = (blockId) => {
 export const listProjectsWithAccess = (userId) => {
   const directory = filePaths.createProjectsDirectoryPath();
   return new Promise((resolve, reject) => {
-    exec(`cd ${directory} && grep --regexp='"${userId}"' --include=permissions.json -Rl .`, (err, output, stderr) => {
+    exec(`cd ${directory} && grep --regexp="${userId}" --include=permissions.json -Rl .`, (err, output, stderr) => {
       if (err) {
         console.log(err);
         return reject(err);
