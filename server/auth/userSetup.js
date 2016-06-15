@@ -1,9 +1,10 @@
 import * as rollup from '../data/rollup';
 import * as querying from '../data/querying';
-import egfRollup from '../../data/egf_parts/project';
+import makeEgfRollup from '../../data/egf_parts/project';
 
 //create the EGF project for them
 const createInitialData = (user) => {
+  const egfRollup = makeEgfRollup();
   return rollup.writeProjectRollup(egfRollup.project.id, egfRollup, user.uuid);
 };
 
