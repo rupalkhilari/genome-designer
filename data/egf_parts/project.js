@@ -6,6 +6,7 @@ import { examples, blocks as exampleBlocks } from './examples';
 
 //clone everything so that IDs are unique
 //fixme - if clone the tempalte blocks and example blocks, need to update components: [] in list blocks
+//remember to set to frozen if clone them
 const makeBlocks = () => {
   return {
     constructs: [
