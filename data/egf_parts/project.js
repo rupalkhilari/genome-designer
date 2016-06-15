@@ -6,12 +6,16 @@ import { examples, blocks as exampleBlocks } from './examples';
 
 //fixme - these should get new IDs for each user, at least for the list blocks that can be edited
 const makeBlocks = () => {
-  return [
-    ...templates,
-    ...templateBlocks,
-    ...examples,
-    ...exampleBlocks,
-  ];
+  return {
+    constructs: [
+      ...templates,
+      ...examples,
+    ],
+    blocks: [
+      ...templateBlocks,
+      ...exampleBlocks,
+    ],
+  };
 };
 
 const makeProject = (blockIds) => new Project({
@@ -25,11 +29,14 @@ const makeProject = (blockIds) => new Project({
 //make the blocks, make the project, return the rollup
 export default function makeEgfRollup() {
   const blocks = makeBlocks();
-  const blockIds = blocks.map(block => block.id);
+  const blockIds = blocks.constructs.map(block => block.id);
   const project = makeProject(blockIds);
 
   return {
     project,
-    blocks,
+    blocks: [
+      ...blocks.constructs,
+      ...blocks.blocks,
+    ],
   };
 }
