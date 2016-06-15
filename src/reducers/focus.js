@@ -13,7 +13,6 @@ export const initialState = {
 };
 
 export default function inventory(state = initialState, action) {
-  console.log(action);
   switch (action.type) {
   case ActionTypes.FOCUS_FORCE_PROJECT:
     const { project } = action;
