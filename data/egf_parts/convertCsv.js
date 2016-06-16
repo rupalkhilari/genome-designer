@@ -3,8 +3,8 @@
 
  call like this (from project root):
 
- babel-node ./src/inventory/andrea/convertCsv.js /path/to/parts.csv true forced/path/to/output.json
- babel-node ./src/inventory/andrea/convertCsv.js /path/to/connectors.csv false forced/path/to/output.json
+ babel-node ./data/egf_parts/convertCsv.js /path/to/parts.csv true forced/path/to/output.json
+ babel-node ./data/egf_parts/convertCsv.js /path/to/connectors.csv false forced/path/to/output.json
 
  do not import into client bundle. it will break it.
  */
@@ -15,23 +15,24 @@ import Block from '../../src/models/Block';
 import parse from 'csv-parse';
 import md5 from 'md5';
 import path from 'path';
+import { templateSymbols } from './templateUtils';
 
 //edit these dependent on the spreadsheet
-const partFields = ['position', 'part', 'shortName', 'category', 'subCategory', 'sequence', 'description'];
-const connectorFields = ['connector', 'positions', 'sequence'];
+const partFields = ['position', 'part', 'shortName', 'category', 'subCategory', 'sequence', 'description', 'id'];
+const connectorFields = ['connector', 'positions', 'sequence', 'id'];
 
 const headerRows = 2;
 
 //converting categories
 const roleMap = {
-  'Homology Arm': '',
+  'Homology Arm': 'structural',
   'inverted terminal repeat sequences (ITRs)': '',
   'Insulators': 'insulator',
   'Promoters': 'promoter',
   'RNA regulatory sequences': 'regulatory',
-  'Site-specific recombinases recognition sites': '',
-  'Peptide Tags': 'tag',
-  'Site-specific recombinases': '',
+  'Site-specific recombinases recognition sites': 'restrictionSite',
+  'Peptide Tags': '',
+  'Site-specific recombinases': 'restrictionSite',
   'RNA-Binding proteins': '',
   'Fluorescent Reporter': 'reporter',
   'Peptide Linker': 'structural',
@@ -43,7 +44,7 @@ const roleMap = {
   'Structural proteins': 'structural',
   'PolyA transcription terminators': 'terminator',
   'Transcription Factor': '',
-  'Episomal elements': '',
+  'Episomal elements': 'structural',
 };
 
 const trimSequence = (sequence, front = "5'-CGTCTCnNNNN".length, back = "NNNNnGAGACG-3'".length) => {
@@ -57,8 +58,8 @@ const zip = (keys, vals) => keys.reduce(
 
 const mapPartFields = (imported) => {
   //fields based on array at top
-  const { part, description, position, role, sequence, category, subCategory, shortName, ...rest } = imported;
-  const id = part;
+  const { id, part, description, position, role, sequence, category, subCategory, shortName, ...rest } = imported;
+  const roleWithBackup = role || templateSymbols[position];
 
   return {
     metadata: {
@@ -72,7 +73,7 @@ const mapPartFields = (imported) => {
       id,
     },
     rules: {
-      role: role,
+      role: roleWithBackup,
     },
     notes: {
       category,
@@ -85,8 +86,7 @@ const mapPartFields = (imported) => {
 
 const mapConnectorFields = (imported) => {
   //fields based on array at top
-  const { connector, positions, sequence} = imported;
-  const id = connector;
+  const { connector, positions, sequence, id } = imported;
 
   return {
     metadata: {
@@ -98,7 +98,7 @@ const mapConnectorFields = (imported) => {
       id,
     },
     rules: {
-      role: 'connector',
+      role: 'structural',
     },
     sequence: sequence, //this field is removed later to conform to schema
   };
@@ -111,6 +111,7 @@ export default function convertCsv(csvPath, isPartInput = 'true', outputPath) {
   invariant(csvPath, 'need a csv path as command line arg');
 
   const isPart = !(/^false$/i).test(isPartInput);
+  const md5sWritten = {}; //hash of md5s writing so don't try to open duplicate files
 
   return fileSystem.fileRead(csvPath, false)
     .then(contents => {
@@ -136,17 +137,23 @@ export default function convertCsv(csvPath, isPartInput = 'true', outputPath) {
       const untrimmed = part.sequence;
       const sequence = trimSequence(untrimmed);
       const sequenceMd5 = md5(sequence);
-      const filePath = path.join(__dirname, '../../../data/egf_parts/sequences', sequenceMd5);
+      const filePath = path.join(__dirname, './sequences', sequenceMd5);
+      const updatedPart = Object.assign(part, {
+        sequence: {
+          md5: sequenceMd5,
+          length: sequence.length,
+          initialBases: sequence.substr(0, 5),
+        },
+      });
 
+      if (md5sWritten[sequenceMd5] === true) {
+        return Promise.resolve(updatedPart);
+      }
+
+      md5sWritten[sequenceMd5] = true;
       return fileSystem.fileWrite(filePath, sequence, false)
         .then(() => {
-          return Object.assign(part, {
-            sequence: {
-              md5: sequenceMd5,
-              length: sequence.length,
-              initialBases: sequence.substr(0, 5),
-            },
-          });
+          return updatedPart;
         });
     })))
     //make blocks

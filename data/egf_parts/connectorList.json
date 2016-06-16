@@ -1,45 +1,13 @@
 [
   {
-    "id": "block-d399a740-7b88-48d8-9d1f-e5792e6f7628",
-    "parents": [],
-    "metadata": {
-      "name": "conn A-B",
-      "description": "",
-      "authors": [],
-      "tags": {},
-      "color": "#e7aaa9",
-      "egfPosition": "1"
-    },
-    "sequence": {
-      "md5": "05d82c21c4044eda4122852b38c7f781",
-      "length": 40,
-      "annotations": [],
-      "initialBases": "CCCAC"
-    },
-    "source": {
-      "source": "egf",
-      "id": "conn A-B"
-    },
-    "rules": {
-      "list": false,
-      "role": "connector",
-      "hidden": false,
-      
-      "fixed": false
-    },
-    "components": [],
-    "options": {},
-    "notes": {}
-  },
-  {
-    "id": "block-e356d285-e4a1-4c10-821d-def40144d230",
+    "id": "block-72c9097d-adaf-4a15-9fd7-54fe13c1bd60",
     "parents": [],
     "metadata": {
       "name": "conn A-C",
       "description": "",
       "authors": [],
       "tags": {},
-      "color": "#D28482",
+      "color": "#6DA19C",
       "egfPosition": "1-2"
     },
     "sequence": {
@@ -50,13 +18,13 @@
     },
     "source": {
       "source": "egf",
-      "id": "conn A-C"
+      "id": "EGF_ML_connac"
     },
     "rules": {
       "list": false,
-      "role": "connector",
+      "role": "structural",
       "hidden": false,
-      
+      "frozen": false,
       "fixed": false
     },
     "components": [],
@@ -64,14 +32,14 @@
     "notes": {}
   },
   {
-    "id": "block-f728f64e-95e3-4799-8da0-9b44ef9a4756",
+    "id": "block-d09acc91-e896-4457-96f9-b8507f53310d",
     "parents": [],
     "metadata": {
       "name": "conn B-C",
       "description": "",
       "authors": [],
       "tags": {},
-      "color": "#E9BA9b",
+      "color": "#B1CED0",
       "egfPosition": "2"
     },
     "sequence": {
@@ -82,13 +50,13 @@
     },
     "source": {
       "source": "egf",
-      "id": "conn B-C"
+      "id": "EGF_ML_connbc"
     },
     "rules": {
       "list": false,
-      "role": "connector",
+      "role": "structural",
       "hidden": false,
-      
+      "frozen": false,
       "fixed": false
     },
     "components": [],
@@ -96,14 +64,14 @@
     "notes": {}
   },
   {
-    "id": "block-638638b8-2e24-4b7d-9422-38fb87fd5b25",
+    "id": "block-85709e2c-08a5-468a-8ad9-bb682d03447c",
     "parents": [],
     "metadata": {
       "name": "conn B-F",
       "description": "",
       "authors": [],
       "tags": {},
-      "color": "#efac7e",
+      "color": "#65AAB1",
       "egfPosition": "2-5"
     },
     "sequence": {
@@ -114,13 +82,13 @@
     },
     "source": {
       "source": "egf",
-      "id": "conn B-F"
+      "id": "EGF_ML_connbf"
     },
     "rules": {
       "list": false,
-      "role": "connector",
+      "role": "structural",
       "hidden": false,
-      
+      "frozen": false,
       "fixed": false
     },
     "components": [],
@@ -128,14 +96,14 @@
     "notes": {}
   },
   {
-    "id": "block-786444af-6c12-4862-8363-32054267177a",
+    "id": "block-6aaf39c3-a9a5-4ef9-ac39-a37a1e38967a",
     "parents": [],
     "metadata": {
       "name": "conn B-L",
       "description": "",
       "authors": [],
       "tags": {},
-      "color": "#EFD79A",
+      "color": "#8EC78D",
       "egfPosition": "2-11"
     },
     "sequence": {
@@ -146,13 +114,13 @@
     },
     "source": {
       "source": "egf",
-      "id": "conn B-L"
+      "id": "EGF_ML_connbl"
     },
     "rules": {
       "list": false,
-      "role": "connector",
+      "role": "structural",
       "hidden": false,
-      
+      "frozen": false,
       "fixed": false
     },
     "components": [],
@@ -160,14 +128,14 @@
     "notes": {}
   },
   {
-    "id": "block-687f2853-9715-421b-b4d7-0a082245a5ad",
+    "id": "block-06e97b95-0b14-4bf6-86c6-e5476e675802",
     "parents": [],
     "metadata": {
       "name": "conn D-E",
       "description": "",
       "authors": [],
       "tags": {},
-      "color": "#F1D26C",
+      "color": "#53B15F",
       "egfPosition": "4"
     },
     "sequence": {
@@ -178,13 +146,13 @@
     },
     "source": {
       "source": "egf",
-      "id": "conn D-E"
+      "id": "EGF_ML_connde"
     },
     "rules": {
       "list": false,
-      "role": "connector",
+      "role": "structural",
       "hidden": false,
-      
+      "frozen": false,
       "fixed": false
     },
     "components": [],
@@ -192,14 +160,14 @@
     "notes": {}
   },
   {
-    "id": "block-7f0d949f-1c86-4703-a06d-f7044ba64831",
+    "id": "block-36c46ec8-e85d-46f1-a6f0-39aad0381013",
     "parents": [],
     "metadata": {
       "name": "conn D-F",
       "description": "",
       "authors": [],
       "tags": {},
-      "color": "#E4E480",
+      "color": "#C5C4C1",
       "egfPosition": "4-5"
     },
     "sequence": {
@@ -210,13 +178,13 @@
     },
     "source": {
       "source": "egf",
-      "id": "conn D-F"
+      "id": "EGF_ML_conndf"
     },
     "rules": {
       "list": false,
-      "role": "connector",
+      "role": "structural",
       "hidden": false,
-      
+      "frozen": false,
       "fixed": false
     },
     "components": [],
@@ -224,14 +192,14 @@
     "notes": {}
   },
   {
-    "id": "block-1a3760e0-01fd-4f6c-b547-cf71fd8754d7",
+    "id": "block-f716bfa0-0be2-4b98-a8e5-385d82eacee9",
     "parents": [],
     "metadata": {
       "name": "conn E-F",
       "description": "",
       "authors": [],
       "tags": {},
-      "color": "#D3D34F",
+      "color": "#A5A6A2",
       "egfPosition": "5"
     },
     "sequence": {
@@ -242,13 +210,13 @@
     },
     "source": {
       "source": "egf",
-      "id": "conn E-F"
+      "id": "EGF_ML_connef"
     },
     "rules": {
       "list": false,
-      "role": "connector",
+      "role": "structural",
       "hidden": false,
-      
+      "frozen": false,
       "fixed": false
     },
     "components": [],
@@ -256,14 +224,14 @@
     "notes": {}
   },
   {
-    "id": "block-b17c6041-3a68-4336-855b-6d9cec0cf209",
+    "id": "block-7cd54750-1e41-4c93-8cfd-2dd1e144c69d",
     "parents": [],
     "metadata": {
       "name": "conn H-Ha",
       "description": "",
       "authors": [],
       "tags": {},
-      "color": "#9CC6C0",
+      "color": "#e7aaa9",
       "egfPosition": "8a"
     },
     "sequence": {
@@ -274,13 +242,13 @@
     },
     "source": {
       "source": "egf",
-      "id": "conn H-Ha"
+      "id": "EGF_ML_connhha"
     },
     "rules": {
       "list": false,
-      "role": "connector",
+      "role": "structural",
       "hidden": false,
-      
+      "frozen": false,
       "fixed": false
     },
     "components": [],
@@ -288,14 +256,14 @@
     "notes": {}
   },
   {
-    "id": "block-77dbdcbe-399b-439d-b55a-24911c4ec803",
+    "id": "block-b47e3060-7d55-4253-addd-593b1792e710",
     "parents": [],
     "metadata": {
       "name": "conn H-J",
       "description": "",
       "authors": [],
       "tags": {},
-      "color": "#6DA19C",
+      "color": "#D28482",
       "egfPosition": "8-9"
     },
     "sequence": {
@@ -306,13 +274,13 @@
     },
     "source": {
       "source": "egf",
-      "id": "conn H-J"
+      "id": "EGF_ML_connhj"
     },
     "rules": {
       "list": false,
-      "role": "connector",
+      "role": "structural",
       "hidden": false,
-      
+      "frozen": false,
       "fixed": false
     },
     "components": [],
@@ -320,14 +288,14 @@
     "notes": {}
   },
   {
-    "id": "block-7f1c7e17-3875-4221-b991-e4e26f7e00ce",
+    "id": "block-fa5b5a66-118e-4cae-b65d-cc8a96e08acc",
     "parents": [],
     "metadata": {
       "name": "conn H-K",
       "description": "",
       "authors": [],
       "tags": {},
-      "color": "#B1CED0",
+      "color": "#E9BA9b",
       "egfPosition": "8-10"
     },
     "sequence": {
@@ -338,13 +306,13 @@
     },
     "source": {
       "source": "egf",
-      "id": "conn H-K"
+      "id": "EGF_ML_connhk"
     },
     "rules": {
       "list": false,
-      "role": "connector",
+      "role": "structural",
       "hidden": false,
-      
+      "frozen": false,
       "fixed": false
     },
     "components": [],
@@ -352,14 +320,14 @@
     "notes": {}
   },
   {
-    "id": "block-d6303394-cb48-406a-8f31-46af1d1cf811",
+    "id": "block-9155e80b-a018-4278-b3b6-a76882b249c5",
     "parents": [],
     "metadata": {
       "name": "conn Ha-J",
       "description": "",
       "authors": [],
       "tags": {},
-      "color": "#65AAB1",
+      "color": "#efac7e",
       "egfPosition": "8b-9"
     },
     "sequence": {
@@ -370,13 +338,13 @@
     },
     "source": {
       "source": "egf",
-      "id": "conn Ha-J"
+      "id": "EGF_ML_connhaj"
     },
     "rules": {
       "list": false,
-      "role": "connector",
+      "role": "structural",
       "hidden": false,
-      
+      "frozen": false,
       "fixed": false
     },
     "components": [],
@@ -384,14 +352,14 @@
     "notes": {}
   },
   {
-    "id": "block-4684331e-302f-468a-990d-651b3b8ffa49",
+    "id": "block-94621ef0-3758-4972-becc-4865c8a56bb4",
     "parents": [],
     "metadata": {
       "name": "conn Ha-K",
       "description": "",
       "authors": [],
       "tags": {},
-      "color": "#8EC78D",
+      "color": "#EFD79A",
       "egfPosition": "8b-10"
     },
     "sequence": {
@@ -402,13 +370,13 @@
     },
     "source": {
       "source": "egf",
-      "id": "conn Ha-K"
+      "id": "EGF_ML_connhak"
     },
     "rules": {
       "list": false,
-      "role": "connector",
+      "role": "structural",
       "hidden": false,
-      
+      "frozen": false,
       "fixed": false
     },
     "components": [],
@@ -416,14 +384,14 @@
     "notes": {}
   },
   {
-    "id": "block-404a4302-f561-41b6-842a-b4ca7e1a55e3",
+    "id": "block-8a6b33b5-66a0-4154-9de7-abbf7d9cd54b",
     "parents": [],
     "metadata": {
       "name": "conn J-K",
       "description": "",
       "authors": [],
       "tags": {},
-      "color": "#53B15F",
+      "color": "#F1D26C",
       "egfPosition": "10"
     },
     "sequence": {
@@ -434,13 +402,13 @@
     },
     "source": {
       "source": "egf",
-      "id": "conn J-K"
+      "id": "EGF_ML_connjk"
     },
     "rules": {
       "list": false,
-      "role": "connector",
+      "role": "structural",
       "hidden": false,
-      
+      "frozen": false,
       "fixed": false
     },
     "components": [],
@@ -448,14 +416,14 @@
     "notes": {}
   },
   {
-    "id": "block-2fa22953-b1d1-405f-a8c1-a0ec73fa5efe",
+    "id": "block-58823070-e218-414f-b428-6a3ecc9bbf74",
     "parents": [],
     "metadata": {
       "name": "conn L-M",
       "description": "",
       "authors": [],
       "tags": {},
-      "color": "#C5C4C1",
+      "color": "#E4E480",
       "egfPosition": "12"
     },
     "sequence": {
@@ -466,13 +434,13 @@
     },
     "source": {
       "source": "egf",
-      "id": "conn L-M"
+      "id": "EGF_ML_connlm"
     },
     "rules": {
       "list": false,
-      "role": "connector",
+      "role": "structural",
       "hidden": false,
-      
+      "frozen": false,
       "fixed": false
     },
     "components": [],
@@ -480,14 +448,14 @@
     "notes": {}
   },
   {
-    "id": "block-1d842b55-a1bf-469c-8558-f6d2e06c9e95",
+    "id": "block-f24c33c4-0092-4cec-8ff3-3d028e96dfa6",
     "parents": [],
     "metadata": {
       "name": "conn L-N",
       "description": "",
       "authors": [],
       "tags": {},
-      "color": "#A5A6A2",
+      "color": "#D3D34F",
       "egfPosition": "12-13"
     },
     "sequence": {
@@ -498,13 +466,13 @@
     },
     "source": {
       "source": "egf",
-      "id": "conn L-N"
+      "id": "EGF_ML_connln"
     },
     "rules": {
       "list": false,
-      "role": "connector",
+      "role": "structural",
       "hidden": false,
-      
+      "frozen": false,
       "fixed": false
     },
     "components": [],
@@ -512,14 +480,14 @@
     "notes": {}
   },
   {
-    "id": "block-38760868-d543-47fb-8c03-f7f92beaf84c",
+    "id": "block-d22914ec-e29b-497d-885a-ada65384260a",
     "parents": [],
     "metadata": {
       "name": "conn L-R",
       "description": "",
       "authors": [],
       "tags": {},
-      "color": "#e7aaa9",
+      "color": "#9CC6C0",
       "egfPosition": "12-17"
     },
     "sequence": {
@@ -530,13 +498,13 @@
     },
     "source": {
       "source": "egf",
-      "id": "conn L-R"
+      "id": "EGF_ML_connlr"
     },
     "rules": {
       "list": false,
-      "role": "connector",
+      "role": "structural",
       "hidden": false,
-      
+      "frozen": false,
       "fixed": false
     },
     "components": [],
@@ -544,14 +512,14 @@
     "notes": {}
   },
   {
-    "id": "block-d7bcf718-ecff-4547-a166-cacabe455684",
+    "id": "block-253659e6-2dc5-4487-9ab4-ceec999db47c",
     "parents": [],
     "metadata": {
       "name": "conn L-W",
       "description": "",
       "authors": [],
       "tags": {},
-      "color": "#D28482",
+      "color": "#6DA19C",
       "egfPosition": "12-22"
     },
     "sequence": {
@@ -562,13 +530,13 @@
     },
     "source": {
       "source": "egf",
-      "id": "conn L-W"
+      "id": "EGF_ML_connlw"
     },
     "rules": {
       "list": false,
-      "role": "connector",
+      "role": "structural",
       "hidden": false,
-      
+      "frozen": false,
       "fixed": false
     },
     "components": [],
@@ -576,14 +544,14 @@
     "notes": {}
   },
   {
-    "id": "block-fe695d49-ae16-4fb3-a1c9-2a789827d718",
+    "id": "block-8d63a118-ffaa-4667-8a77-8acb53f15d9e",
     "parents": [],
     "metadata": {
       "name": "conn L-Y",
       "description": "",
       "authors": [],
       "tags": {},
-      "color": "#E9BA9b",
+      "color": "#B1CED0",
       "egfPosition": "12-24"
     },
     "sequence": {
@@ -594,13 +562,13 @@
     },
     "source": {
       "source": "egf",
-      "id": "conn L-Y"
+      "id": "EGF_ML_connly"
     },
     "rules": {
       "list": false,
-      "role": "connector",
+      "role": "structural",
       "hidden": false,
-      
+      "frozen": false,
       "fixed": false
     },
     "components": [],
@@ -608,14 +576,14 @@
     "notes": {}
   },
   {
-    "id": "block-340f5091-c5ed-4751-a2b3-6fa239904edc",
+    "id": "block-30babcaa-b69d-41ea-8a16-0dba1bcc8152",
     "parents": [],
     "metadata": {
       "name": "conn M-R",
       "description": "",
       "authors": [],
       "tags": {},
-      "color": "#efac7e",
+      "color": "#65AAB1",
       "egfPosition": "13-17"
     },
     "sequence": {
@@ -626,13 +594,13 @@
     },
     "source": {
       "source": "egf",
-      "id": "conn M-R"
+      "id": "EGF_ML_connmr"
     },
     "rules": {
       "list": false,
-      "role": "connector",
+      "role": "structural",
       "hidden": false,
-      
+      "frozen": false,
       "fixed": false
     },
     "components": [],
@@ -640,14 +608,14 @@
     "notes": {}
   },
   {
-    "id": "block-aebce21f-ec75-47bc-b86b-10d32832a2dc",
+    "id": "block-8174a66b-b38f-4c2f-92eb-61e7b5a77ccb",
     "parents": [],
     "metadata": {
       "name": "conn N-R",
       "description": "",
       "authors": [],
       "tags": {},
-      "color": "#EFD79A",
+      "color": "#8EC78D",
       "egfPosition": "14-17"
     },
     "sequence": {
@@ -658,13 +626,13 @@
     },
     "source": {
       "source": "egf",
-      "id": "conn N-R"
+      "id": "EGF_ML_connnr"
     },
     "rules": {
       "list": false,
-      "role": "connector",
+      "role": "structural",
       "hidden": false,
-      
+      "frozen": false,
       "fixed": false
     },
     "components": [],
@@ -672,14 +640,14 @@
     "notes": {}
   },
   {
-    "id": "block-f6574aa8-f062-45c0-ba6a-41b4dcb68dbc",
+    "id": "block-a9f416e5-d640-47b7-a12c-a68c54e2b59e",
     "parents": [],
     "metadata": {
       "name": "conn Q-R",
       "description": "",
       "authors": [],
       "tags": {},
-      "color": "#F1D26C",
+      "color": "#53B15F",
       "egfPosition": "17"
     },
     "sequence": {
@@ -690,13 +658,13 @@
     },
     "source": {
       "source": "egf",
-      "id": "conn Q-R"
+      "id": "EGF_ML_connqr"
     },
     "rules": {
       "list": false,
-      "role": "connector",
+      "role": "structural",
       "hidden": false,
-      
+      "frozen": false,
       "fixed": false
     },
     "components": [],
@@ -704,14 +672,14 @@
     "notes": {}
   },
   {
-    "id": "block-d7674c49-0313-432e-8182-45c3397933a8",
+    "id": "block-602e1374-1e08-41ff-9a88-ec66a9364d95",
     "parents": [],
     "metadata": {
       "name": "conn Q-W",
       "description": "",
       "authors": [],
       "tags": {},
-      "color": "#E4E480",
+      "color": "#C5C4C1",
       "egfPosition": "17-22"
     },
     "sequence": {
@@ -722,13 +690,13 @@
     },
     "source": {
       "source": "egf",
-      "id": "conn Q-W"
+      "id": "EGF_ML_connqw"
     },
     "rules": {
       "list": false,
-      "role": "connector",
+      "role": "structural",
       "hidden": false,
-      
+      "frozen": false,
       "fixed": false
     },
     "components": [],
@@ -736,14 +704,14 @@
     "notes": {}
   },
   {
-    "id": "block-c4c9fa00-2c88-4968-99a2-f92ad0e5ac1c",
+    "id": "block-b07890ef-a138-420e-8f78-6a40ee1c2ecd",
     "parents": [],
     "metadata": {
       "name": "conn R-W",
       "description": "",
       "authors": [],
       "tags": {},
-      "color": "#D3D34F",
+      "color": "#A5A6A2",
       "egfPosition": "18-22"
     },
     "sequence": {
@@ -754,13 +722,13 @@
     },
     "source": {
       "source": "egf",
-      "id": "conn R-W"
+      "id": "EGF_ML_connrw"
     },
     "rules": {
       "list": false,
-      "role": "connector",
+      "role": "structural",
       "hidden": false,
-      
+      "frozen": false,
       "fixed": false
     },
     "components": [],
@@ -768,14 +736,14 @@
     "notes": {}
   },
   {
-    "id": "block-90822cbf-5f2c-4543-831b-023b76a8c312",
+    "id": "block-1e7db5c6-a118-4d84-834b-1fb16d3d2426",
     "parents": [],
     "metadata": {
       "name": "conn T-V",
       "description": "",
       "authors": [],
       "tags": {},
-      "color": "#9CC6C0",
+      "color": "#e7aaa9",
       "egfPosition": "20-21"
     },
     "sequence": {
@@ -786,13 +754,13 @@
     },
     "source": {
       "source": "egf",
-      "id": "conn T-V"
+      "id": "EGF_ML_conntv"
     },
     "rules": {
       "list": false,
-      "role": "connector",
+      "role": "structural",
       "hidden": false,
-      
+      "frozen": false,
       "fixed": false
     },
     "components": [],
@@ -800,14 +768,14 @@
     "notes": {}
   },
   {
-    "id": "block-c70dc166-59ea-43ac-81f1-6d2163d5e796",
+    "id": "block-94ffc585-46ae-41e6-8e87-e1b02c1a4fac",
     "parents": [],
     "metadata": {
       "name": "conn U-V",
       "description": "",
       "authors": [],
       "tags": {},
-      "color": "#6DA19C",
+      "color": "#D28482",
       "egfPosition": "21"
     },
     "sequence": {
@@ -818,13 +786,13 @@
     },
     "source": {
       "source": "egf",
-      "id": "conn U-V"
+      "id": "EGF_ML_connuv"
     },
     "rules": {
       "list": false,
-      "role": "connector",
+      "role": "structural",
       "hidden": false,
-      
+      "frozen": false,
       "fixed": false
     },
     "components": [],
@@ -832,14 +800,14 @@
     "notes": {}
   },
   {
-    "id": "block-f1140ad2-7055-4be6-948f-3dd8a839b258",
+    "id": "block-c2b907f1-b459-48a8-98f0-95da9de54481",
     "parents": [],
     "metadata": {
       "name": "conn W-X",
       "description": "",
       "authors": [],
       "tags": {},
-      "color": "#B1CED0",
+      "color": "#E9BA9b",
       "egfPosition": "23"
     },
     "sequence": {
@@ -850,13 +818,13 @@
     },
     "source": {
       "source": "egf",
-      "id": "conn W-X"
+      "id": "EGF_ML_connwx"
     },
     "rules": {
       "list": false,
-      "role": "connector",
+      "role": "structural",
       "hidden": false,
-      
+      "frozen": false,
       "fixed": false
     },
     "components": [],
@@ -864,14 +832,14 @@
     "notes": {}
   },
   {
-    "id": "block-b19ebf91-92d8-493d-af67-0d99719c83cc",
+    "id": "block-1e39ebeb-0098-4974-b8e2-3bd3c53c6280",
     "parents": [],
     "metadata": {
       "name": "conn W-Y",
       "description": "",
       "authors": [],
       "tags": {},
-      "color": "#65AAB1",
+      "color": "#efac7e",
       "egfPosition": "23-24"
     },
     "sequence": {
@@ -882,13 +850,13 @@
     },
     "source": {
       "source": "egf",
-      "id": "conn W-Y"
+      "id": "EGF_ML_connwy"
     },
     "rules": {
       "list": false,
-      "role": "connector",
+      "role": "structural",
       "hidden": false,
-      
+      "frozen": false,
       "fixed": false
     },
     "components": [],
@@ -896,14 +864,14 @@
     "notes": {}
   },
   {
-    "id": "block-3caab3a4-4a54-4a65-91b7-67cf9872fe3c",
+    "id": "block-d872b68b-eb54-4e92-88be-919e40d72321",
     "parents": [],
     "metadata": {
       "name": "conn W-Z",
       "description": "",
       "authors": [],
       "tags": {},
-      "color": "#8EC78D",
+      "color": "#EFD79A",
       "egfPosition": "23-25"
     },
     "sequence": {
@@ -914,13 +882,13 @@
     },
     "source": {
       "source": "egf",
-      "id": "conn W-Z"
+      "id": "EGF_ML_connwz"
     },
     "rules": {
       "list": false,
-      "role": "connector",
+      "role": "structural",
       "hidden": false,
-      
+      "frozen": false,
       "fixed": false
     },
     "components": [],
@@ -928,14 +896,14 @@
     "notes": {}
   },
   {
-    "id": "block-4cd19468-ad6c-49f6-bdb4-dff9e7fadfa2",
+    "id": "block-781dacba-64ce-44d7-8eb4-f02bf5657f78",
     "parents": [],
     "metadata": {
       "name": "conn Y-Z",
       "description": "",
       "authors": [],
       "tags": {},
-      "color": "#53B15F",
+      "color": "#F1D26C",
       "egfPosition": "25"
     },
     "sequence": {
@@ -946,13 +914,13 @@
     },
     "source": {
       "source": "egf",
-      "id": "conn Y-Z"
+      "id": "EGF_ML_connyz"
     },
     "rules": {
       "list": false,
-      "role": "connector",
+      "role": "structural",
       "hidden": false,
-      
+      "frozen": false,
       "fixed": false
     },
     "components": [],
@@ -960,14 +928,14 @@
     "notes": {}
   },
   {
-    "id": "block-36302660-f47a-4232-bc12-375db4d8e05e",
+    "id": "block-f049c2ca-3924-4060-98f9-b65f71475693",
     "parents": [],
     "metadata": {
       "name": "conn A-B BsaI-X",
       "description": "",
       "authors": [],
       "tags": {},
-      "color": "#C5C4C1",
+      "color": "#E4E480",
       "egfPosition": "1"
     },
     "sequence": {
@@ -978,13 +946,13 @@
     },
     "source": {
       "source": "egf",
-      "id": "conn A-B BsaI-X"
+      "id": "EGF_ML_connabbsaix"
     },
     "rules": {
       "list": false,
-      "role": "connector",
+      "role": "structural",
       "hidden": false,
-      
+      "frozen": false,
       "fixed": false
     },
     "components": [],
@@ -992,14 +960,14 @@
     "notes": {}
   },
   {
-    "id": "block-06331a43-44c3-4fea-bcbb-89319eacee8b",
+    "id": "block-ed8baa39-6bd2-4867-918b-9df2e7aff2bb",
     "parents": [],
     "metadata": {
       "name": "conn A-B BsaI-1",
       "description": "",
       "authors": [],
       "tags": {},
-      "color": "#A5A6A2",
+      "color": "#D3D34F",
       "egfPosition": "1"
     },
     "sequence": {
@@ -1010,13 +978,13 @@
     },
     "source": {
       "source": "egf",
-      "id": "conn A-B BsaI-1"
+      "id": "EGF_ML_connabbsai1"
     },
     "rules": {
       "list": false,
-      "role": "connector",
+      "role": "structural",
       "hidden": false,
-      
+      "frozen": false,
       "fixed": false
     },
     "components": [],
@@ -1024,14 +992,14 @@
     "notes": {}
   },
   {
-    "id": "block-09a01ef9-9a41-4b42-9074-f83ecb683801",
+    "id": "block-96c88490-2a32-4d3d-acc9-77b502a0177c",
     "parents": [],
     "metadata": {
       "name": "conn Y-Z BsaI-1",
       "description": "",
       "authors": [],
       "tags": {},
-      "color": "#e7aaa9",
+      "color": "#9CC6C0",
       "egfPosition": "25"
     },
     "sequence": {
@@ -1042,13 +1010,13 @@
     },
     "source": {
       "source": "egf",
-      "id": "conn Y-Z BsaI-1"
+      "id": "EGF_ML_connyzbsai1"
     },
     "rules": {
       "list": false,
-      "role": "connector",
+      "role": "structural",
       "hidden": false,
-      
+      "frozen": false,
       "fixed": false
     },
     "components": [],
@@ -1056,14 +1024,14 @@
     "notes": {}
   },
   {
-    "id": "block-5db7a0a1-59f9-485f-9cee-64ab6812248c",
+    "id": "block-6284e46b-50ce-471f-b723-d50af11a446b",
     "parents": [],
     "metadata": {
       "name": "conn Y-Z BsaI-Y",
       "description": "",
       "authors": [],
       "tags": {},
-      "color": "#D28482",
+      "color": "#6DA19C",
       "egfPosition": "25"
     },
     "sequence": {
@@ -1074,13 +1042,13 @@
     },
     "source": {
       "source": "egf",
-      "id": "conn Y-Z BsaI-Y"
+      "id": "EGF_ML_connyzbsaiy"
     },
     "rules": {
       "list": false,
-      "role": "connector",
+      "role": "structural",
       "hidden": false,
-      
+      "frozen": false,
       "fixed": false
     },
     "components": [],

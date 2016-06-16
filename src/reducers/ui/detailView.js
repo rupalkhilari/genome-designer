@@ -21,6 +21,7 @@ export default function detailView(state = initialState, action) {
     invariant(manifest.name && typeof manifest.render === 'function', 'must pass the extension manifest, which has a name and render()');
     return Object.assign({}, state, { currentExtension: manifest });
 
+  case ActionTypes.USER_SET_USER :
   case LOCATION_CHANGE :
     return Object.assign({}, initialState);
 

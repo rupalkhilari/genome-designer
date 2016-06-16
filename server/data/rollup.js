@@ -24,6 +24,9 @@ export const getProjectRollup = (projectId) => {
 };
 
 export const writeProjectRollup = (projectId, rollup, userId) => {
+  invariant(projectId, 'must pass a projectId');
+  invariant(rollup && rollup.project && rollup.blocks, 'must pass a projectId');
+
   const { project, blocks } = rollup;
   const newBlockIds = blocks.map(block => block.id);
 
@@ -114,7 +117,7 @@ export const getContents = (rootId, forceProjectId) => {
  */
 export const getComponents = (rootId, forceProjectId) => {
   return getContents(rootId, forceProjectId)
-    .then(({components}) => components);
+    .then(({ components }) => components);
 };
 
 /**
@@ -125,7 +128,7 @@ export const getComponents = (rootId, forceProjectId) => {
  */
 export const getOptions = (rootId, forceProjectId) => {
   return getContents(rootId, forceProjectId)
-    .then(({options}) => options);
+    .then(({ options }) => options);
 };
 
 //future - function which only returns the components of a project, not the list options? not sure what use case is though....

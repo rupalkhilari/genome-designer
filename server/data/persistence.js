@@ -391,7 +391,10 @@ export const projectSave = (projectId, userId, messageAddition) => {
     .then(commit => {
       //not only create the commit, but then save the project so that is has the right commit (but dont commit again)
       //but still return the commit
-      return projectMerge(projectId, { version: commit.sha }, userId)
+      return projectMerge(projectId, {
+        version: commit.sha,
+        lastSaved: commit.time,
+      }, userId)
         .then(() => commit);
     });
 };

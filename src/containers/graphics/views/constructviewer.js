@@ -367,7 +367,7 @@ export class ConstructViewer extends Component {
    * menu items for the construct context menu
    */
   constructContextMenuItems = () => {
-    const typeName = this.props.construct.isTemplate() ? "Template" : "Construct";
+    const typeName = this.props.construct.getType('Construct');
     return [
       {
         text: `Inspect ${typeName}`,
@@ -529,7 +529,7 @@ export class ConstructViewer extends Component {
   }
 
   lockIcon() {
-    const locked = this.props.construct.isTemplate() && this.props.construct.isFrozen();
+    const locked = this.props.construct.isFrozen();
     if (!locked) {
       return null;
     }

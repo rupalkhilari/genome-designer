@@ -13,7 +13,6 @@ export const initialState = {
 };
 
 export default function inventory(state = initialState, action) {
-  console.log(action);
   switch (action.type) {
   case ActionTypes.FOCUS_FORCE_PROJECT:
     const { project } = action;
@@ -77,6 +76,7 @@ export default function inventory(state = initialState, action) {
       options,
     });
 
+  case ActionTypes.USER_SET_USER :
   case LOCATION_CHANGE :
     //project page sets project ID properly, running after the state changes
     return Object.assign({}, initialState);
