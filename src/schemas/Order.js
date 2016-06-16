@@ -34,6 +34,11 @@ const orderFields = {
     `IDs of constructs in project involved in order`,
   ],
 
+  numberCombinations: [
+    fields.number(validators.id()).required,
+    `Number of possible combinations, determined when making the order`,
+  ],
+
   constructs: [
     fields.arrayOf(construct => OrderConstructSchema.validate(construct)).required,
     `Array of arrays to order - all the constructs with a parts list`,

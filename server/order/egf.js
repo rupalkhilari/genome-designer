@@ -7,13 +7,22 @@ import { fileWrite } from '../utils/fileSystem';
 
 const url = 'http://ec2-52-30-192-126.eu-west-1.compute.amazonaws.com:8010/api/order/';
 
-export const submit = (order, user) => {
+export const submit = (order, user, blockMap) => {
+  const constructsWithBlockComponents = order.constructs
+    .filter(construct => construct.active)
+    .map(orderConstruct => orderConstruct.componentIds.map(componentId => blockMap[componentId]));
+
+  //console.log(blockMap);
+  //console.log(order.constructs);
+  //console.log(constructsWithBlockComponents);
+
   //for now, only accept EGF Parts -- need to relay this to the client
-  if (!order.constructs.every(construct => construct.components.every(component => component.source.source === 'egf'))) {
+  if (!constructsWithBlockComponents.every(construct => construct.every(component => component.source.source === 'egf'))) {
     return Promise.reject(errorInvalidPart);
   }
 
-  const constructs2d = order.constructs.map(orderConstruct => orderConstruct.components.map(component => component.source.id));
+  const constructs2d = constructsWithBlockComponents
+    .map(constructWithComponents => constructWithComponents.map(block => block.source.id));
 
   const payload = {
     orderId: order.id,

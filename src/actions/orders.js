@@ -8,8 +8,7 @@ import * as blockActions from './blocks';
 import * as blockSelectors from '../selectors/blocks';
 import * as projectActions from './projects';
 import * as projectSelectors from '../selectors/projects';
-import { merge, flatten, sampleSize } from 'lodash';
-import OrderConstructSchema from '../schemas/OrderConstruct';
+import { merge, flatten, sampleSize, range, shuffle } from 'lodash';
 
 export const orderList = (projectId) => {
   return (dispatch, getState) => {
@@ -53,10 +52,13 @@ export const orderCreate = (projectId, constructIds = [], parameters = {}) => {
     invariant(typeof parameters === 'object', 'paramaters must be object');
     invariant(!Object.keys(parameters).length || Order.validateParameters(parameters), 'parameters must pass validation if you pass them in on creation');
 
+    const numberCombinations = constructIds.reduce((acc, constructId) => acc + dispatch(blockSelectors.blockGetNumberCombinations(constructId, false)), 0);
+
     const order = new Order({
       projectId,
       constructIds,
       parameters,
+      numberCombinations,
     });
 
     //add order to the store
@@ -66,7 +68,9 @@ export const orderCreate = (projectId, constructIds = [], parameters = {}) => {
     });
 
     //generate constructs and return
-    return dispatch(orderGenerateConstructs(order.id)); //eslint-disable-line no-use-before-define
+    const orderWithConstructs = dispatch(orderGenerateConstructs(order.id)); //eslint-disable-line no-use-before-define
+
+    return orderWithConstructs;
   };
 };
 
@@ -79,32 +83,35 @@ export const orderGenerateConstructs = (orderId) => {
 
     //for each constructId, get construct combinations as blocks
     //flatten all combinations into a single list of combinations
-    const allConstructs = flatten(constructIds.map(constructId => dispatch(blockSelectors.blockGetCombinations(constructId, parameters))))
-    //convert each combination construct (currently blocks) into schema-conforming form
-      .map(construct => {
-        //each construct comforms ot OrderConstruct
-        return merge(OrderConstructSchema.scaffold(), {
-          //each construct component conforms to OrderConstructComponent
-          components: construct.map(component => ({
-            componentId: component.id,
-            source: component.source,
-          })),
-        });
-      });
+    const combinations = flatten(constructIds.map(constructId => dispatch(blockSelectors.blockGetCombinations(constructId, true))));
 
-    let constructs = allConstructs;
+    const allConstructs = combinations.map((construct, index) => ({
+      index,
+      active: true,
+      componentIds: construct,
+    }));
+
     if (!parameters.onePot && parameters.permutations < allConstructs.length) {
       if (parameters.combinatorialMethod === 'Maximum Unique Set') {
         //this may not be the most exlucsive set.... should actually think through this (and dependent on how generated)
         //also not exact, so trim to make sure correct length
-        constructs = sampleSize(allConstructs.filter((el, idx, arr) => idx % Math.floor(allConstructs.length / parameters.permutations) === 0), parameters.permutations);
+        //todo - verify this yields the correct number
+        allConstructs.forEach((el, idx, arr) => {
+          el.active = (idx % Math.floor(allConstructs.length / parameters.permutations) === 0);
+        });
       } else {
-        //default to random subset
-        constructs = sampleSize(allConstructs, parameters.permutations);
+        //map of indices to keep
+        const keepers = shuffle(range(allConstructs.length))
+          .slice(0, parameters.permutations)
+          .reduce((acc, idx) => Object.assign(acc, {[idx]: true}), {});
+
+        allConstructs.forEach((el, idx, arr) => {
+          el.active = keepers[idx] === true;
+        });
       }
     }
 
-    const order = oldOrder.setConstructs(constructs);
+    const order = oldOrder.setConstructs(allConstructs);
 
     dispatch({
       type: ActionTypes.ORDER_STASH,
@@ -178,5 +185,19 @@ export const orderSubmit = (orderId, foundry) => {
 
         return order;
       });
+  };
+};
+
+export const orderDetach = (orderId) => {
+  return (dispatch, getState) => {
+    const order = getState().orders[orderId];
+
+    invariant(!order.isSubmitted(), 'cannot delete a submitted order');
+
+    dispatch({
+      type: ActionTypes.ORDER_DETACH,
+      orderId,
+    });
+    return orderId;
   };
 };

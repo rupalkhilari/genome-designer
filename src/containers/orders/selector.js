@@ -11,17 +11,20 @@ export default class Selector extends Component {
   };
 
   render() {
+    const options = this.props.options.map(option => {
+      return (
+        <option value={option.value}
+                key={option.label}>
+          {option.label}
+        </option>
+      );
+    });
+
     return (
-      <select
-        onChange={evt => {
-          this.props.onChange(evt.target.value);
-        }}
-        defaultValue={this.props.value}
-        disabled={this.props.disabled}
-      >
-        {this.props.disabled ? null : this.props.options.map(option => {
-          return (<option value={option.value}>{option.label}</option>);
-        })}
+      <select onChange={evt => {this.props.onChange(evt.target.value)}}
+              defaultValue={this.props.value}
+              disabled={this.props.disabled}>
+        {this.props.disabled ? null : options}
       </select>
     );
   }
