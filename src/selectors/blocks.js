@@ -157,7 +157,7 @@ export const blockGetContentsRecursive = (blockId) => {
   return (dispatch, getState) => {
     const state = getState();
     const options = _getAllOptions(blockId, state);
-    const components = _getAllComponents(blockId, state).reduce((acc, block) => Object.assign(acc, { [block.id] : block }), {});
+    const components = _getAllComponents(blockId, state).reduce((acc, block) => Object.assign(acc, { [block.id]: block }), {});
     return Object.assign(options, components);
   };
 };
@@ -302,21 +302,31 @@ export const blockFlattenConstruct = (blockId) => {
  [block6],
  ]
  */
-export const blockGetPositionalCombinations = (blockId, includeUnselected = false) => {
+export const blockGetPositionalCombinations = (blockId, onlyIds = false, includeUnselected = false) => {
   return (dispatch, getState) => {
     invariant(dispatch(blockIsSpec(blockId)), 'block must be a spec to get combinations');
 
     const state = getState();
 
     //generate 2D array, outer array for positions, inner array with lists of parts
-    return _flattenConstruct(blockId, state)
+    const combinations = _flattenConstruct(blockId, state)
       .map(block => block.isList() ?
         values(_getOptions(block.id, state, includeUnselected)) :
         [block]
       );
+
+    return (onlyIds === true) ?
+      combinations.map(combo => combo.map(part => part.id)) :
+      combinations;
   };
 };
 
+export const blockGetNumberCombinations = (blockId, includeUnselected = false) => {
+  return (dispatch, getState) => {
+    const positions = dispatch(blockGetPositionalCombinations(blockId, includeUnselected));
+    return positions.reduce((acc, position) => acc * position.length, 1);
+  };
+};
 /*
  returns 2D array of all possible constructs, flattened, and with options unfurled, including hidden blocks
 
@@ -332,20 +342,20 @@ export const blockGetPositionalCombinations = (blockId, includeUnselected = fals
  [A, block4, block6],
  ]
  */
-//todo - parameters for limiting number combinations, how to select them
-export const blockGetCombinations = (blockId, parameters = {}) => {
+export const blockGetCombinations = (blockId, onlyIds, includeUnselected) => {
   return (dispatch, getState) => {
-    const positions = dispatch(blockGetPositionalCombinations(blockId, false));
+    const positions = dispatch(blockGetPositionalCombinations(blockId, onlyIds, includeUnselected));
 
     //guarantee both accumulator (and positions) array have at least one item to map over
     const last = positions.pop();
 
     //iterate through positions, essentially generating tree with * N branches for N options at position
-    return positions.reduceRight((acc, position) => {
+    const combos = positions.reduceRight((acc, position) => {
       // for each extant construct, create one variant which adds each part respectively
       // flatten them for return and repeat!
       return flatten(position.map(option => acc.map(partialConstruct => [option].concat(partialConstruct))));
     }, [last]);
+    return combos;
   };
 };
 

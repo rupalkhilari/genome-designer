@@ -55,6 +55,14 @@ router.route('/:projectId/:orderId?')
       return res.status(501).send('foundry must be EGF');
     }
 
+    console.log(`
+Valid Order request
+Order ID ${order.id}
+Project ID ${order.projectId}
+Constructs ${order.constructIds.join(', ')}
+User ${user.uuid}
+`);
+
     //assign user to the order
     merge(order, {
       user: user.uuid,
@@ -63,20 +71,31 @@ router.route('/:projectId/:orderId?')
     // outerscope, to assign to the order
     const constructNames = [];
 
-    //future - this should be dynamic, based on the foundry, pulling from a registry
-    submit(order, user)
-      .then(response => {
-        // freeze all the blocks in the construct
-        return Promise.all(order.constructIds.map((constructId) => rollup.getContents(constructId, projectId)))
+    //NOTE - in future, need to do this based on the project version. For now, assume that only interested in the current state of the project.
+    rollup.getProjectRollup(order.projectId)
+      .then(projectRollup => {
+        //create a map of all the blocks involved in the order
+        return Promise.all(order.constructIds.map(constructId => rollup.getContentsRecursivelyGivenRollup(constructId, projectRollup)))
           .then(blockMaps => blockMaps.reduce((acc, map) => Object.assign(acc, map.components, map.options), {}))
           .then(blockMap => {
             constructNames.push(...order.constructIds.map(constructId => blockMap[constructId].metadata.name));
             return blockMap;
-          })
-          .then(blockMap => Object.keys(blockMap).map(key => blockMap[key]))
-          .then(blocks => blocks.map(block => merge(block, { rules: { frozen: true } })))
-          .then(blocks => Promise.all(blocks.map(block => persistence.blockWrite(block.id, block, projectId))))
-          .then(() => response);
+          });
+      })
+      .then(blockMap => {
+        //future - this should be dynamic, based on the foundry, pulling from a registry
+        return submit(order, user, blockMap)
+          .then(response => {
+            // freeze all the blocks in the construct, given blockMap
+
+            const frozenBlocks = Object.keys(blockMap)
+              .map(key => blockMap[key])
+              .map(block => merge(block, { rules: { frozen: true } }));
+
+            //todo - should not write individually, especially when all blocks in same file
+            return Promise.all(frozenBlocks.map(block => persistence.blockWrite(block.id, block, projectId)))
+              .then(() => response);
+          });
       })
       .then(response => {
         //snapshot, return the order to the client

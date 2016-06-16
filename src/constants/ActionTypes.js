@@ -72,3 +72,4 @@ export const ORDER_CREATE = 'ORDER_CREATE';
 export const ORDER_STASH = 'ORDER_STASH';
 export const ORDER_SUBMIT = 'ORDER_SUBMIT';
 export const ORDER_SET_NAME = 'ORDER_SET_NAME';
+export const ORDER_DETACH = 'ORDER_DETACH';

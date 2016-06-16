@@ -73,7 +73,10 @@ const getBlockInRollById = (id, roll) => roll.blocks.find(block => block.id === 
 const getOptionsGivenRollup = (id, roll) => {
   const block = getBlockInRollById(id, roll);
   const { options } = block;
-  return Object.keys(options).map(optionId => getBlockInRollById(id, roll));
+
+  return Object.keys(options)
+    .map(optionId => getBlockInRollById(optionId, roll))
+    .reduce((acc, option) => Object.assign(acc, { [option.id]: option }), {});
 };
 
 //given a rollup and rootId, recursively gets components of root block (and root block itself)
@@ -87,6 +90,23 @@ const getComponentsRecursivelyGivenRollup = (rootId, projectRollup, acc = {}) =>
   return acc;
 };
 
+export const getContentsRecursivelyGivenRollup = (rootId, rollup) => {
+  const components = getComponentsRecursivelyGivenRollup(rootId, rollup);
+
+  const options = Object.keys(components)
+    .map(compId => components[compId])
+    .filter(comp => comp.rules.list === true)
+    .reduce((optionsAcc, component) => {
+      const componentOptions = getOptionsGivenRollup(component.id, rollup);
+      return Object.assign(optionsAcc, componentOptions);
+    }, {});
+
+  return {
+    components,
+    options,
+  };
+};
+
 export const getContents = (rootId, forceProjectId) => {
   const projectIdPromise = forceProjectId ?
     Promise.resolve(forceProjectId) :
@@ -94,19 +114,7 @@ export const getContents = (rootId, forceProjectId) => {
 
   return projectIdPromise
     .then(projectId => getProjectRollup(projectId))
-    .then(rollup => {
-      const components = getComponentsRecursivelyGivenRollup(rootId, rollup);
-
-      const options = Object.keys(components)
-        .map(compId => components[compId])
-        .filter(comp => comp.rules.list === true)
-        .reduce((acc, component) => acc.concat(getOptionsGivenRollup(component.id, rollup)), []);
-
-      return {
-        components,
-        options,
-      };
-    });
+    .then(rollup => getContentsRecursivelyGivenRollup(rootId, rollup));
 };
 
 /**
