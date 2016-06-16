@@ -47,8 +47,8 @@ var registerViaHomepage = function(browser) {
     .pause(1000)
     .submitForm('#auth-signup')
     .pause(1000)
-    .waitForElementNotPresent('#auth-signup', 5000, 'expected form to be dismissed')
-    .waitForElementPresent('.userwidget', 5000, 'expected to land on page with the user widget visible')
+    .waitForElementNotPresent('#auth-signup', 10000, 'expected form to be dismissed')
+    .waitForElementPresent('.userwidget', 10000, 'expected to land on page with the user widget visible')
     // wait for inventory and inspector to be present to ensure we are on a project page
     .waitForElementPresent('.SidePanel.Inventory', 10000, 'Expected Inventory Groups')
     .waitForElementPresent('.SidePanel.Inspector', 10000, 'Expected Inspector')
