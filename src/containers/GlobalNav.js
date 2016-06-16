@@ -1,4 +1,3 @@
-
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import invariant from 'invariant';
@@ -11,6 +10,8 @@ import {
   projectSave,
   projectOpen,
   projectDelete,
+  projectList,
+  projectLoad,
 } from '../actions/projects';
 import {
   focusBlocks,
@@ -65,6 +66,9 @@ class GlobalNav extends Component {
     projectCreate: PropTypes.func.isRequired,
     projectAddConstruct: PropTypes.func.isRequired,
     projectSave: PropTypes.func.isRequired,
+    projectDelete: PropTypes.func.isRequired,
+    projectList: PropTypes.func.isRequired,
+    projectLoad: PropTypes.func.isRequired,
     currentProjectId: PropTypes.string,
     blockCreate: PropTypes.func.isRequired,
     showMenu: PropTypes.bool.isRequired,
@@ -217,18 +221,33 @@ class GlobalNav extends Component {
   queryDeleteProject() {
     this.setState({
       showDeleteProject: true,
-    })
+    });
   }
 
   /**
-   * delete the current project and create and open a new project.
+   * delete the current project and open a different one
    */
   deleteProject() {
     if (this.props.project.isSample) {
       this.props.uiSetGrunt('This is a sample project and cannot be deleted.');
     } else {
-      this.props.projectDelete(this.props.currentProjectId);
-      this.newProject();
+      this.props.projectDelete(this.props.currentProjectId)
+        //todo - this is copied from projectPage. should de-dupe
+        .then(() => this.props.projectList())
+        .then(manifests => {
+          if (manifests.length) {
+            const nextId = manifests[0].id;
+            //need to fully load the project, as we just have the manifest right now...
+            //otherwise no blocks will show
+            //ideally, this would just get ids
+            this.props.projectLoad(nextId)
+              .then(() => this.props.projectOpen(nextId));
+          } else {
+            //if no manifests, create a new project
+            const newProject = this.props.projectCreate();
+            this.props.projectOpen(newProject.id);
+          }
+        });
     }
   }
 
@@ -652,7 +671,7 @@ class GlobalNav extends Component {
           cancel={() => {
             this.setState({showDeleteProject: false});
           }}
-          />
+        />
       </div>
     );
   }
@@ -677,6 +696,8 @@ export default connect(mapStateToProps, {
   projectSave,
   projectOpen,
   projectDelete,
+  projectList,
+  projectLoad,
   projectGetVersion,
   blockCreate,
   blockClone,

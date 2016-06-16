@@ -15,6 +15,11 @@ const fieldDefs = {
     fields.arrayOf(validators.id(), { required: true }).required,
     'IDs of authors',
   ],
+  created: [
+    fields.number(),
+    'POSIX time when object was created',
+    { scaffold: () => Date.now() },
+  ],
   tags: [
     fields.object().required,
     'Dictionary of tags defining object',

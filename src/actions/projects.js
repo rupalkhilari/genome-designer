@@ -70,11 +70,12 @@ export const projectSave = (inputProjectId) => {
           });
         }
 
-        const { sha } = commitInfo;
+        const { sha, time } = commitInfo;
         dispatch({
           type: ActionTypes.PROJECT_SAVE,
           projectId,
           sha,
+          time,
         });
         return sha;
       });

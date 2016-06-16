@@ -64,7 +64,7 @@ describe('Middleware', () => {
             persistence.blockGet(blockE.id, projectId),
           ])
           .then(([gotProject, gotA, gotE]) => {
-            expect(gotProject).to.eql(Object.assign({}, project, { version: commit.sha }));
+            expect(gotProject).to.eql(Object.assign({}, project, { version: commit.sha, lastSaved: commit.time }));
             expect(gotA).to.eql(blockA);
             expect(gotE).to.eql(blockE);
           }));

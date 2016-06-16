@@ -24,9 +24,9 @@ export default function projects(state = initialState, action) {
 
   case ActionTypes.PROJECT_SNAPSHOT :
   case ActionTypes.PROJECT_SAVE :
-    const { projectId, sha } = action;
+    const { projectId, sha, time } = action;
     const gotProject = state[projectId];
-    const updatedProject = gotProject.updateVersion(sha);
+    const updatedProject = gotProject.updateVersion(sha, time);
     instanceMap.saveProject(updatedProject);
     return Object.assign({}, state, { [projectId]: updatedProject });
 
