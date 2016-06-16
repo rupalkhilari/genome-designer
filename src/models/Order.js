@@ -1,6 +1,6 @@
-import Instance from './Instance';
 import invariant from 'invariant';
-import { merge, cloneDeep } from 'lodash';
+import InstanceSchema from '../schemas/Instance';
+import { set as pathSet, merge, cloneDeep } from 'lodash';
 import OrderDefinition from '../schemas/Order';
 import OrderParametersSchema from '../schemas/OrderParameters';
 import OrderConstructSchema from '../schemas/OrderConstruct';
@@ -10,11 +10,18 @@ import { submitOrder, getQuote } from '../middleware/order';
 
 const idValidator = (id) => safeValidate(validators.id(), true, id);
 
-export default class Order extends Instance {
+//due to issues with freezing, not extending Instance. This is a hack. Ideally, could have InstanceUnfrozen schema or something to extend
+export default class Order  {
   constructor(input = {}) {
     invariant(input.projectId, 'project Id is required to make an order');
 
-    super(input, OrderDefinition.scaffold());
+    //lets not deep freeze these
+    merge(
+      this,
+      InstanceSchema.scaffold(),
+      OrderDefinition.scaffold(),
+      input,
+    );
   }
 
   /************
@@ -49,6 +56,14 @@ export default class Order extends Instance {
     invariant(false, 'cannot clone an order');
   }
 
+  mutate(path, value) {
+    return pathSet(this, path, value);
+  }
+
+  merge(toMerge) {
+    return merge(this, toMerge);
+  }
+
   /************
    metadata etc
    ************/
@@ -58,8 +73,7 @@ export default class Order extends Instance {
   }
 
   setName(newName) {
-    const renamed = this.mutate('metadata.name', newName);
-    return renamed;
+    return this.mutate('metadata.name', newName);
   }
 
   isSubmitted() {
@@ -86,9 +100,13 @@ export default class Order extends Instance {
 
   setConstructs(constructs = []) {
     invariant(Array.isArray(constructs), 'must pass an array of constructs');
-    invariant(constructs.every(construct => OrderConstructSchema.validate(construct)), 'must pass valid constructs. See OrderConstruct schema');
+    //validation takes a long time, ignore for now...
+    //invariant(constructs.every(construct => OrderConstructSchema.validate(construct)), 'must pass valid constructs. See OrderConstruct schema');
 
-    return this.merge({ constructs });
+    console.time('mutate');
+    const mutated = this.mutate('constructs', constructs);
+    console.timeEnd('mutate');
+    return mutated;
   }
 
   constructsAdd(...constructs) {

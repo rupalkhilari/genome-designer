@@ -157,7 +157,7 @@ export const blockGetContentsRecursive = (blockId) => {
   return (dispatch, getState) => {
     const state = getState();
     const options = _getAllOptions(blockId, state);
-    const components = _getAllComponents(blockId, state).reduce((acc, block) => Object.assign(acc, { [block.id] : block }), {});
+    const components = _getAllComponents(blockId, state).reduce((acc, block) => Object.assign(acc, { [block.id]: block }), {});
     return Object.assign(options, components);
   };
 };
@@ -335,17 +335,22 @@ export const blockGetPositionalCombinations = (blockId, includeUnselected = fals
 //todo - parameters for limiting number combinations, how to select them
 export const blockGetCombinations = (blockId, parameters = {}) => {
   return (dispatch, getState) => {
+    console.time('positions');
     const positions = dispatch(blockGetPositionalCombinations(blockId, false));
+    console.timeEnd('positions');
 
     //guarantee both accumulator (and positions) array have at least one item to map over
     const last = positions.pop();
 
+    console.time('combinatinos');
     //iterate through positions, essentially generating tree with * N branches for N options at position
-    return positions.reduceRight((acc, position) => {
+    const combos = positions.reduceRight((acc, position) => {
       // for each extant construct, create one variant which adds each part respectively
       // flatten them for return and repeat!
       return flatten(position.map(option => acc.map(partialConstruct => [option].concat(partialConstruct))));
     }, [last]);
+    console.timeEnd('combinatinos');
+    return combos
   };
 };
 

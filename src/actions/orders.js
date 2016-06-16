@@ -8,7 +8,7 @@ import * as blockActions from './blocks';
 import * as blockSelectors from '../selectors/blocks';
 import * as projectActions from './projects';
 import * as projectSelectors from '../selectors/projects';
-import { merge, flatten, sampleSize } from 'lodash';
+import _, { merge, flatten, sampleSize } from 'lodash';
 import OrderConstructSchema from '../schemas/OrderConstruct';
 
 export const orderList = (projectId) => {
@@ -77,22 +77,30 @@ export const orderGenerateConstructs = (orderId) => {
     const { constructIds, parameters } = oldOrder;
     invariant(Order.validateParameters(parameters), 'parameters must pass validation');
 
+    console.time('generateConstructs');
     //for each constructId, get construct combinations as blocks
     //flatten all combinations into a single list of combinations
-    const allConstructs = flatten(constructIds.map(constructId => dispatch(blockSelectors.blockGetCombinations(constructId, parameters))))
-    //convert each combination construct (currently blocks) into schema-conforming form
-      .map(construct => {
-        //each construct comforms ot OrderConstruct
-        return merge(OrderConstructSchema.scaffold(), {
-          //each construct component conforms to OrderConstructComponent
-          components: construct.map(component => ({
-            componentId: component.id,
-            source: component.source,
-          })),
-        });
-      });
+    console.time('combos');
+    const combinations = flatten(constructIds.map(constructId => dispatch(blockSelectors.blockGetCombinations(constructId, parameters))));
+    console.timeEnd('combos');
 
+    console.time('mapping2');
+    //convert each combination construct (currently blocks) into schema-conforming form
+    //each construct comforms ot OrderConstruct
+    const allConstructs = combinations.map(construct => ({
+      active: true,
+      //each construct component conforms to OrderConstructComponent
+      components: construct.map(component => ({
+        componentId: component.id,
+        source: component.source,
+      })),
+    }));
+    console.timeEnd('mapping2');
+    console.timeEnd('generateConstructs');
+
+    console.time('filterConstructs');
     let constructs = allConstructs;
+    //todo - should use the active field, not remove from list
     if (!parameters.onePot && parameters.permutations < allConstructs.length) {
       if (parameters.combinatorialMethod === 'Maximum Unique Set') {
         //this may not be the most exlucsive set.... should actually think through this (and dependent on how generated)
@@ -103,8 +111,11 @@ export const orderGenerateConstructs = (orderId) => {
         constructs = sampleSize(allConstructs, parameters.permutations);
       }
     }
+    console.timeEnd('filterConstructs');
 
+    console.time('setConstructs');
     const order = oldOrder.setConstructs(constructs);
+    console.timeEnd('setConstructs');
 
     dispatch({
       type: ActionTypes.ORDER_STASH,
