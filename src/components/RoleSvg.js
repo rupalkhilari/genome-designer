@@ -70,6 +70,6 @@ export default class RoleSvg extends Component {
     if (this.props.height) {
       style.height = this.props.height;
     }
-    return <div style={style} dangerouslySetInnerHTML={{__html: this.markup}}/>;
+    return <div style={style} className="RoleSvg" dangerouslySetInnerHTML={{__html: this.markup}}/>;
   }
 }

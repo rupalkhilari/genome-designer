@@ -138,8 +138,8 @@ export class InventoryItem extends Component {
     );
   }
 }
-1
-1
+
+
 export default connect((state) => {
   return {
     forceBlocks: state.focus.forceBlocks,
