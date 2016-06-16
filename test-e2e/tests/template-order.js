@@ -12,13 +12,13 @@ module.exports = {
     newProject(browser);
     myProjects(browser);
     browser
-      .expect.element('[data-inventory~="project"]:nth-of-type(1)').text.to.equal('EGF Sample Templates');
+      .expect.element('[data-inventory~="project"]:nth-of-type(2)').text.to.equal('EGF Sample Templates');
     browser
-      .click('[data-inventory~="project"]:nth-of-type(1)')
+      .click('[data-inventory~="project"]:nth-of-type(2)')
       .waitForElementPresent('[data-inventory~="template"]', 5000, 'expected all available templates to appear')
       .assert.countelements('.order-button', 29);
 
-    for(var i = 1; i <= 29; i += 1) {
+    for(var i = 1; i <= 3; i += 1) {
       browser
         .pause(1000)
         .click('.construct-viewer:nth-of-type(' + (i + 1) + ') .order-button')
