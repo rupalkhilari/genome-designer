@@ -46,17 +46,20 @@ export class Page1 extends Component {
       combinatorialMethod: 'Random Subset',
       onePot,
     }, true);
+    this.forceUpdate();
   };
 
   _labelChanged = (newLabel) => {
     this.props.orderSetName(this.props.order.id, newLabel);
   };
 
+  //todo - debounce or only trigger on blur
   numberOfAssembliesChanged = (newValue) => {
     const total = parseInt(newValue, 10);
     this.props.orderSetParameters(this.props.order.id, {
       permutations: Number.isInteger(total) ? Math.min(this.props.numberConstructs, Math.max(1, total)) : 1,
     }, true);
+    this.forceUpdate();
   };
 
   methodOptions() {
@@ -70,12 +73,14 @@ export class Page1 extends Component {
     this.props.orderSetParameters(this.props.order.id, {
       combinatorialMethod: newMethod,
     }, true);
+    this.forceUpdate();
   };
 
   sequenceAssemblies = (state) => {
     this.props.orderSetParameters(this.props.order.id, {
       sequenceAssemblies: state,
     }, true);
+    this.forceUpdate();
   };
 
   render() {

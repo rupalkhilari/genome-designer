@@ -8,8 +8,7 @@ import * as blockActions from './blocks';
 import * as blockSelectors from '../selectors/blocks';
 import * as projectActions from './projects';
 import * as projectSelectors from '../selectors/projects';
-import _, { merge, flatten, sampleSize } from 'lodash';
-import OrderConstructSchema from '../schemas/OrderConstruct';
+import { merge, flatten, sampleSize, range, shuffle } from 'lodash';
 
 export const orderList = (projectId) => {
   return (dispatch, getState) => {
@@ -44,7 +43,6 @@ export const orderGet = (projectId, orderId) => {
 //create an order with basic fields
 export const orderCreate = (projectId, constructIds = [], parameters = {}) => {
   return (dispatch, getState) => {
-    console.time('orderCreate');
     invariant(projectId, 'must pass project ID');
 
     invariant(Array.isArray(constructIds) && constructIds.length, 'must pass array of construct IDs to use in order');
@@ -71,7 +69,6 @@ export const orderCreate = (projectId, constructIds = [], parameters = {}) => {
 
     //generate constructs and return
     const orderWithConstructs = dispatch(orderGenerateConstructs(order.id)); //eslint-disable-line no-use-before-define
-    console.timeEnd('orderCreate');
 
     return orderWithConstructs;
   };
@@ -84,56 +81,37 @@ export const orderGenerateConstructs = (orderId) => {
     const { constructIds, parameters } = oldOrder;
     invariant(Order.validateParameters(parameters), 'parameters must pass validation');
 
-    //console.time('generateConstructs');
     //for each constructId, get construct combinations as blocks
     //flatten all combinations into a single list of combinations
-    //console.time('combos');
     const combinations = flatten(constructIds.map(constructId => dispatch(blockSelectors.blockGetCombinations(constructId, true))));
-    //console.log(combinations.length);
-    //console.timeEnd('combos');
 
-    //console.time('mappigng1');
     const allConstructs = combinations.map((construct, index) => ({
       index,
       active: true,
       componentIds: construct,
     }));
-    //console.timeEnd('mappigng1');
 
-    /*
-     console.time('mapping2');
-     //convert each combination construct (currently blocks) into schema-conforming form
-     //each construct comforms ot OrderConstruct
-     const allConstructs = combinations.map(construct => ({
-     active: true,
-     //each construct component conforms to OrderConstructComponent
-     components: construct.map(component => ({
-     componentId: component.id,
-     source: component.source,
-     })),
-     }));
-     console.timeEnd('mapping2');
-     */
-    //console.timeEnd('generateConstructs');
-
-    //console.time('filterConstructs');
-    let constructs = allConstructs;
-    //todo - should use the active field, not remove from list
     if (!parameters.onePot && parameters.permutations < allConstructs.length) {
       if (parameters.combinatorialMethod === 'Maximum Unique Set') {
         //this may not be the most exlucsive set.... should actually think through this (and dependent on how generated)
         //also not exact, so trim to make sure correct length
-        constructs = sampleSize(allConstructs.filter((el, idx, arr) => idx % Math.floor(allConstructs.length / parameters.permutations) === 0), parameters.permutations);
+        //todo - verify this yields the correct number
+        allConstructs.forEach((el, idx, arr) => {
+          el.active = (idx % Math.floor(allConstructs.length / parameters.permutations) === 0);
+        });
       } else {
-        //default to random subset
-        constructs = sampleSize(allConstructs, parameters.permutations);
+        //map of indices to keep
+        const keepers = shuffle(range(allConstructs.length))
+          .slice(0, parameters.permutations)
+          .reduce((acc, idx) => Object.assign(acc, {[idx]: true}), {});
+
+        allConstructs.forEach((el, idx, arr) => {
+          el.active = keepers[idx] === true;
+        });
       }
     }
-    //console.timeEnd('filterConstructs');
 
-    //console.time('setConstructs');
-    const order = oldOrder.setConstructs(constructs);
-    //console.timeEnd('setConstructs');
+    const order = oldOrder.setConstructs(allConstructs);
 
     dispatch({
       type: ActionTypes.ORDER_STASH,

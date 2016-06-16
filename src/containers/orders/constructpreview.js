@@ -106,7 +106,7 @@ class ConstructPreview extends Component {
 //break up construct preview so that the input and the preview element are separate and pass the index as a prop to this component, so that you can just pass "construct" instead of "constructs"
 function mapStateToProps(state, props) {
   return {
-    constructs: props.order.constructs,
+    constructs: props.order.constructs.filter(construct => construct.active),
     blocks: state.blocks,
   };
 }

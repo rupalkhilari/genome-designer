@@ -11,7 +11,8 @@ import { submitOrder, getQuote } from '../middleware/order';
 const idValidator = (id) => safeValidate(validators.id(), true, id);
 
 //due to issues with freezing, not extending Instance. This is a hack. Ideally, could have InstanceUnfrozen schema or something to extend
-export default class Order  {
+//NOTE that orders are not immutable because this can be very expensive when they are large. Note that this affects rendering in React
+export default class Order {
   constructor(input = {}) {
     invariant(input.projectId, 'project Id is required to make an order');
 
@@ -56,12 +57,16 @@ export default class Order  {
     invariant(false, 'cannot clone an order');
   }
 
-  mutate(path, value) {
-    return pathSet(this, path, value);
-  }
-
   merge(toMerge) {
     return merge(this, toMerge);
+  }
+
+  mutate(path, value) {
+    return Object.assign(this, { [path]: value });
+  }
+
+  pathSet(path, value) {
+    return pathSet(this, path, value);
   }
 
   /************
@@ -73,7 +78,7 @@ export default class Order  {
   }
 
   setName(newName) {
-    return this.mutate('metadata.name', newName);
+    return this.pathSet('metadata.name', newName);
   }
 
   isSubmitted() {
@@ -91,7 +96,7 @@ export default class Order  {
   setParameters(parameters = {}, shouldMerge = false) {
     const nextParameters = merge({}, (shouldMerge === true ? cloneDeep(this.parameters) : {}), parameters);
     // invariant(OrderParametersSchema.validate(parameters, false), 'parameters must pass validation');
-    return this.merge({ parameters: nextParameters });
+    return this.mutate('parameters', nextParameters);
   }
 
   /************
@@ -103,10 +108,7 @@ export default class Order  {
     //validation takes a long time, ignore for now...
     //invariant(constructs.every(construct => OrderConstructSchema.validate(construct)), 'must pass valid constructs. See OrderConstruct schema');
 
-    console.time('mutate');
-    const mutated = this.mutate('constructs', constructs);
-    console.timeEnd('mutate');
-    return mutated;
+    return this.mutate('constructs', constructs);
   }
 
   constructsAdd(...constructs) {

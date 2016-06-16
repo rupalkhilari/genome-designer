@@ -99,9 +99,7 @@ class OrderModal extends Component {
       open={this.props.open}
       title="Order DNA"
       closeOnClickOutside
-      closeModal={(buttonText) => {
-        this.props.uiShowOrderForm(false);
-      }}
+      closeModal={() => this.onClose()}
       payload={
           <form className="gd-form order-form" onSubmit={this.onSubmit}>
             <div className="title">{titleText}</div>
