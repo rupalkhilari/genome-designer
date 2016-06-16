@@ -22,12 +22,13 @@ module.exports = {
       browser
         .pause(1000)
         .click('.construct-viewer:nth-of-type(' + (i + 1) + ') .order-button')
-        .waitForElementPresent('.order-form .page1', 5000, 'expected order dialog to appear')
+        .waitForElementPresent('.order-form .page1', 10000, 'expected order dialog to appear')
         .pause(1000)
-        //.submitForm('.order-form')
-        // cancel button
-        .click('.order-form button:nth-of-type(2)')
-        .waitForElementNotPresent('.order-form', 5000, 'expected order dialog to go away')
+        .submitForm('.order-form')
+        .waitForElementPresent('.order-form .page3', 120000, 'expect summary page to appear')
+        // click done
+        .click('.order-form button:nth-of-type(1)')
+        .waitForElementNotPresent('.order-form', 10000, 'expected order dialog to go away')
     }
 
     browser.end();
