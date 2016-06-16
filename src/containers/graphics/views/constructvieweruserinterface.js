@@ -260,7 +260,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
   }
 
   metaKey(evt) {
-    return this.osType === 'mac' ? evt.metaKey : evt.ctrlKey;
+    return (this.osType === 'mac' ? evt.metaKey : evt.ctrlKey) || evt.altKey;
   }
 
   /**
@@ -335,10 +335,10 @@ export default class ConstructViewerUserInterface extends UserInterface {
       // the clicked block is just added to the selections, otherwise it replaces the selection.
       // Also, if the shift key is used the block is added and does not replace the selection
       let action = 'replace';
-      if (evt.shiftKey || (window.__gde2e && window.__gde2e.shiftKey)) {
+      if (evt.shiftKey) {
         action = 'add';
       }
-      if (this.metaKey(evt) || evt.altKey || (window.__gde2e && window.__gde2e.metaKey)) {
+      if (this.metaKey(evt)) {
         action = 'toggle';
       }
       // act according to region clicked

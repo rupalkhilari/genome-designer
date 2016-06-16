@@ -18,8 +18,6 @@ module.exports = function (browser, srcSelector, blockIndex) {
     b = result.value;
     browser
       .moveToElement('body', b.left + 30, b.top + 20)
-      .mouseButtonDown(0)
-      .pause(100)
-      .mouseButtonUp(0);
+      .mouseButtonClick('left')
   });
 }

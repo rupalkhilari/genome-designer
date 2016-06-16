@@ -3,7 +3,7 @@
 
 import invariant from 'invariant';
 import { cloneDeep, merge } from 'lodash';
-import { list } from './templateUtils';
+import { list, templateSymbols } from './templateUtils';
 import { templates, blocks as templateBlocks } from './templates';
 import Block from '../../src/models/Block';
 
@@ -48,15 +48,14 @@ const exampleOfTemplate = (template, options, toMerge = {}) => {
       return newListComponent.id;
     });
 
-  const cloned = cloneDeep(template);
-  delete cloned.id;
-
-  return new Block(merge(cloned, toMerge, {
+  const mergeWith = merge({}, toMerge, {
     components,
     rules: {
       frozen: true,
     },
-  }));
+  });
+
+  return template.clone(false, mergeWith);
 };
 
 export const examples = [

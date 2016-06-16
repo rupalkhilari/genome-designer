@@ -12,16 +12,7 @@ module.exports = {
 
     // maximize for graphical tests
     browser.windowSize('current', 1200, 1200);
-
-    // register via fixture
-    var credentials = homepageRegister(browser);
-
-    // now we can go to the project page
-    browser
-      // wait for inventory and inspector to be present
-      .waitForElementPresent('.SidePanel.Inventory', 5000, 'Expected Inventory Groups')
-      .waitForElementPresent('.SidePanel.Inspector', 5000, 'Expected Inspector');
-
+    homepageRegister(browser);
     newProject(browser);
     openInventory(browser);
 
@@ -53,12 +44,11 @@ module.exports = {
       // click to expand
       //.click('.InventoryListGroup-heading')
       .pause(1000)
-      // expect to see 4 projects including the combinatorial test project
-      .assert.countelements('[data-inventory~="project"]', 3)
+      // expect to see 2 projects
+      .assert.countelements('[data-inventory~="project"]', 2)
       // expand the 3rd project
       .click('[data-inventory~="project"]:nth-of-type(1) .Toggler')
       .click('[data-inventory~="project"]:nth-of-type(2) .Toggler')
-      .click('[data-inventory~="project"]:nth-of-type(3) .Toggler')
       .pause(2000)
       // expect to see 2 blocks that we added to the two constructs
       .assert.countelements('[data-inventory~="construct"]', 2)
@@ -68,7 +58,7 @@ module.exports = {
 
     // should have a new construct with a corresponding increase in numbers of blocks/role glyphs
     browser
-      .pause(250)
+      .pause(2000)
       // expect four constructs and three blocks
       .assert.countelements('.construct-viewer', 4)
       .assert.countelements('[data-nodetype="block"]', 3)

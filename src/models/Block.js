@@ -1,6 +1,6 @@
 import Instance from './Instance';
 import invariant from 'invariant';
-import cloneDeep from 'lodash.clonedeep';
+import { merge, cloneDeep } from 'lodash';
 import BlockSchema from '../schemas/Block';
 import { getSequence, writeSequence } from '../middleware/sequence';
 import AnnotationSchema from '../schemas/Annotation';
@@ -34,16 +34,26 @@ export default class Block extends Instance {
 
   // note that if you are cloning multiple blocks / blocks with components, you likely need to clone the components as well
   // need to re-map the IDs outside of this function. see blockClone action.
-  clone(parentInfo) {
+  // If pass parentInfo === null, will not add parent to history, just clone
+  clone(parentInfo = {}, overwrites = {}) {
     const [ firstParent ] = this.parents;
+
+    //unfreeze a clone by default, but allow overwriting if really want to
+    const mergeWith = merge({
+      rules: { frozen: false },
+    }, overwrites);
+
+    if (parentInfo === null) {
+      return super.clone(false, mergeWith);
+    }
+
     const parentObject = Object.assign({
       id: this.id,
       projectId: this.projectId,
       version: (firstParent && firstParent.projectId === this.projectId) ? firstParent.version : null,
     }, parentInfo);
 
-    //forcibly unfreeze a clone
-    return super.clone(parentObject, { rules: { frozen: false } });
+    return super.clone(parentObject, mergeWith);
   }
 
   mutate(...args) {
@@ -131,14 +141,12 @@ export default class Block extends Instance {
     return this.mutate('projectId', projectId);
   }
 
-  getName(defaultName = 'New Block') {
+  getName() {
     // called many K per second, no es6 fluffy stuff in here.
     if (this.metadata.name) return this.metadata.name;
     if (this.rules.role) return this.rules.role;
-    if (this.isTemplate()) return 'New Template';
-    if (this.components.length) return 'New Construct';
     if (this.isFiller() && this.metadata.initialBases) return this.metadata.initialBases;
-    return defaultName;
+    return 'New ' + this.getType();
   }
 
   setName(newName) {
@@ -148,6 +156,13 @@ export default class Block extends Instance {
       return renamed.setColor();
     }
     return renamed;
+  }
+
+  getType(defaultType = 'Block') {
+    if (this.isTemplate()) return 'Template';
+    if (this.isConstruct()) return 'Construct';
+    if (this.isFiller()) return 'Filler';
+    return defaultType;
   }
 
   setDescription(desc) {
