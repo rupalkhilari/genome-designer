@@ -16,6 +16,12 @@ export default function orders(state = initialState, action) {
     }
     return Object.assign({}, state, { [order.id]: order });
 
+  case ActionTypes.ORDER_DETACH :
+    const { orderId } = action;
+    const clone = Object.assign({}, state);
+    delete clone[orderId];
+    return clone;
+
   case ActionTypes.USER_SET_USER :
     return Object.assign({}, initialState);
   

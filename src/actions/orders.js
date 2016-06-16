@@ -44,6 +44,7 @@ export const orderGet = (projectId, orderId) => {
 //create an order with basic fields
 export const orderCreate = (projectId, constructIds = [], parameters = {}) => {
   return (dispatch, getState) => {
+    console.time('orderCreate');
     invariant(projectId, 'must pass project ID');
 
     invariant(Array.isArray(constructIds) && constructIds.length, 'must pass array of construct IDs to use in order');
@@ -53,10 +54,13 @@ export const orderCreate = (projectId, constructIds = [], parameters = {}) => {
     invariant(typeof parameters === 'object', 'paramaters must be object');
     invariant(!Object.keys(parameters).length || Order.validateParameters(parameters), 'parameters must pass validation if you pass them in on creation');
 
+    const numberCombinations = constructIds.reduce((acc, constructId) => acc + dispatch(blockSelectors.blockGetNumberCombinations(constructId, false)), 0);
+
     const order = new Order({
       projectId,
       constructIds,
       parameters,
+      numberCombinations,
     });
 
     //add order to the store
@@ -66,7 +70,10 @@ export const orderCreate = (projectId, constructIds = [], parameters = {}) => {
     });
 
     //generate constructs and return
-    return dispatch(orderGenerateConstructs(order.id)); //eslint-disable-line no-use-before-define
+    const orderWithConstructs = dispatch(orderGenerateConstructs(order.id)); //eslint-disable-line no-use-before-define
+    console.timeEnd('orderCreate');
+
+    return orderWithConstructs;
   };
 };
 
@@ -77,28 +84,39 @@ export const orderGenerateConstructs = (orderId) => {
     const { constructIds, parameters } = oldOrder;
     invariant(Order.validateParameters(parameters), 'parameters must pass validation');
 
-    console.time('generateConstructs');
+    //console.time('generateConstructs');
     //for each constructId, get construct combinations as blocks
     //flatten all combinations into a single list of combinations
-    console.time('combos');
-    const combinations = flatten(constructIds.map(constructId => dispatch(blockSelectors.blockGetCombinations(constructId, parameters))));
-    console.timeEnd('combos');
+    //console.time('combos');
+    const combinations = flatten(constructIds.map(constructId => dispatch(blockSelectors.blockGetCombinations(constructId, true))));
+    //console.log(combinations.length);
+    //console.timeEnd('combos');
 
-    console.time('mapping2');
-    //convert each combination construct (currently blocks) into schema-conforming form
-    //each construct comforms ot OrderConstruct
-    const allConstructs = combinations.map(construct => ({
+    //console.time('mappigng1');
+    const allConstructs = combinations.map((construct, index) => ({
+      index,
       active: true,
-      //each construct component conforms to OrderConstructComponent
-      components: construct.map(component => ({
-        componentId: component.id,
-        source: component.source,
-      })),
+      componentIds: construct,
     }));
-    console.timeEnd('mapping2');
-    console.timeEnd('generateConstructs');
+    //console.timeEnd('mappigng1');
 
-    console.time('filterConstructs');
+    /*
+     console.time('mapping2');
+     //convert each combination construct (currently blocks) into schema-conforming form
+     //each construct comforms ot OrderConstruct
+     const allConstructs = combinations.map(construct => ({
+     active: true,
+     //each construct component conforms to OrderConstructComponent
+     components: construct.map(component => ({
+     componentId: component.id,
+     source: component.source,
+     })),
+     }));
+     console.timeEnd('mapping2');
+     */
+    //console.timeEnd('generateConstructs');
+
+    //console.time('filterConstructs');
     let constructs = allConstructs;
     //todo - should use the active field, not remove from list
     if (!parameters.onePot && parameters.permutations < allConstructs.length) {
@@ -111,11 +129,11 @@ export const orderGenerateConstructs = (orderId) => {
         constructs = sampleSize(allConstructs, parameters.permutations);
       }
     }
-    console.timeEnd('filterConstructs');
+    //console.timeEnd('filterConstructs');
 
-    console.time('setConstructs');
+    //console.time('setConstructs');
     const order = oldOrder.setConstructs(constructs);
-    console.timeEnd('setConstructs');
+    //console.timeEnd('setConstructs');
 
     dispatch({
       type: ActionTypes.ORDER_STASH,
@@ -189,5 +207,19 @@ export const orderSubmit = (orderId, foundry) => {
 
         return order;
       });
+  };
+};
+
+export const orderDetach = (orderId) => {
+  return (dispatch, getState) => {
+    const order = getState().orders[orderId];
+
+    invariant(!order.isSubmitted(), 'cannot delete a submitted order');
+
+    dispatch({
+      type: ActionTypes.ORDER_DETACH,
+      orderId,
+    });
+    return orderId;
   };
 };

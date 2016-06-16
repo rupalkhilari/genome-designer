@@ -22,12 +22,13 @@ export class Page1 extends Component {
     order: PropTypes.object.isRequired,
     orderSetName: PropTypes.func.isRequired,
     orderSetParameters: PropTypes.func.isRequired,
-    project: PropTypes.object.isRequired,
-    constructs: PropTypes.array.isRequired,
+    blocks: PropTypes.object.isRequired,
+    numberConstructs: PropTypes.number.isRequired,
   };
 
   constructor() {
     super();
+    //todo - this should use a transaction + commit, not deboucne like this. See InputSimple
     this.labelChanged = debounce(value => this._labelChanged(value), 500, {leading: false, trailing: true});
   }
 
@@ -41,7 +42,7 @@ export class Page1 extends Component {
   assemblyContainerChanged = (newValue) => {
     const onePot = newValue === 'true';
     this.props.orderSetParameters(this.props.order.id, {
-      permutations: this.props.constructs.length,
+      permutations: this.props.numberConstructs,
       combinatorialMethod: 'Random Subset',
       onePot,
     }, true);
@@ -54,7 +55,7 @@ export class Page1 extends Component {
   numberOfAssembliesChanged = (newValue) => {
     const total = parseInt(newValue, 10);
     this.props.orderSetParameters(this.props.order.id, {
-      permutations: Number.isInteger(total) ? Math.min(this.props.constructs.length, Math.max(1, total)) : 1,
+      permutations: Number.isInteger(total) ? Math.min(this.props.numberConstructs, Math.max(1, total)) : 1,
     }, true);
   };
 
@@ -92,19 +93,20 @@ export class Page1 extends Component {
             <Input
               onChange={this.labelChanged}
               value={order.metadata.name}
-              placeholder="e.g. Construct A - Order #1"
+              placeholder="My Fantastic Order"
             />
           </Row>
           <Row text="Assembly Containers:">
             <Selector
               value={order.parameters.onePot}
               options={this.assemblyOptions()}
+              disabled={false}
               onChange={(val) => this.assemblyContainerChanged(val)}
             />
           </Row>
           <Row text="Number of assemblies:">
             <Permutations
-              total={this.props.constructs.length}
+              total={this.props.numberConstructs}
               value={order.parameters.permutations}
               editable={!order.parameters.onePot}
               onChange={(val) => this.numberOfAssembliesChanged(val)}
@@ -115,7 +117,7 @@ export class Page1 extends Component {
               value={order.parameters.combinatorialMethod}
               options={this.methodOptions()}
               onChange={this.methodChanged}
-              disabled={order.parameters.onePot || (!order.parameters.onePot && order.parameters.permutations === this.props.constructs.length) }
+              disabled={order.parameters.onePot || (!order.parameters.onePot && order.parameters.permutations === this.props.numberConstructs) }
             />
           </Row>
           <Row text="After fabrication:">
@@ -134,11 +136,8 @@ export class Page1 extends Component {
 
 function mapStateToProps(state, props) {
   return {
-    project: state.projects[props.projectId],
-    constructs: props.order.constructs.map(construct => construct.components
-                    .map(component => component.componentId)
-                    .map(componentId => state.blocks[componentId])),
-
+    blocks: state.blocks,
+    numberConstructs: props.order.constructs.length,
   };
 }
 

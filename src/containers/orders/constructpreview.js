@@ -55,25 +55,28 @@ class ConstructPreview extends Component {
   componentDidUpdate() {
     if (this.props.constructs.length) {
       this.containerEl.scrollTop = 0;
+      const construct = this.props.constructs[this.state.index - 1];
+      const constructIndex = construct.index;
+      const componentIds = construct.componentIds;
       this.layout.update({
         construct: {
           metadata: {
             color: 'lightgray',
           },
-          components: this.props.constructs[this.state.index - 1].map(block => block.id),
+          components: componentIds,
           // this fake construct should not be a template, so we don't get empty list block placeholders
           isTemplate: () => {return false;},
         },
         blocks: this.props.blocks,
         currentBlocks: [],
-        currentConstructId: this.props.constructs[this.state.index - 1],
+        currentConstructId: constructIndex,
       });
       this.sg.update();
     }
   }
 
   onChangeConstruct = (evt) => {
-    const index = parseInt(evt.target.value);
+    const index = parseInt(evt.target.value, 10);
     this.setState({ index: Number.isInteger(index) ? Math.min(this.props.constructs.length, Math.max(1, index)) : 1 });
   };
 
@@ -99,11 +102,11 @@ class ConstructPreview extends Component {
   }
 }
 
+//todo- it would be wonderful if the index was a property on this, so that only one needed to be loaded in
+//break up construct preview so that the input and the preview element are separate and pass the index as a prop to this component, so that you can just pass "construct" instead of "constructs"
 function mapStateToProps(state, props) {
   return {
-    constructs: props.order.constructs.map(construct => construct.components
-      .map(component => component.componentId)
-      .map(componentId => state.blocks[componentId])),
+    constructs: props.order.constructs,
     blocks: state.blocks,
   };
 }

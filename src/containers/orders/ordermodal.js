@@ -5,6 +5,7 @@ import {
 } from '../../actions/ui';
 import {
   orderSubmit,
+  orderDetach,
 } from '../../actions/orders';
 import ModalWindow from '../../components/modal/modalwindow';
 import Page1 from './page1';
@@ -22,7 +23,9 @@ class OrderModal extends Component {
     uiShowOrderForm: PropTypes.func.isRequired,
     open: PropTypes.bool.isRequired,
     projectId: PropTypes.string.isRequired,
+    orderDetach: PropTypes.func.isRequired,
     orderSubmit: PropTypes.func.isRequired,
+    order: PropTypes.object.isRequired,
   };
 
   state = {
@@ -57,6 +60,13 @@ class OrderModal extends Component {
     }
   };
 
+  onClose = (evt) => {
+    this.props.uiShowOrderForm(false);
+    if (!this.props.order.isSubmitted()) {
+      this.props.orderDetach(this.props.order.id);
+    }
+  };
+
   modalButtons() {
     if (!this.props.order.isSubmitted()) {
       return (
@@ -64,9 +74,7 @@ class OrderModal extends Component {
           <button type="submit">Submit Order</button>
           <button
             type="button"
-            onClick={() => {
-              this.props.uiShowOrderForm(false);
-            }}>Cancel
+            onClick={() => this.onClose()}>Cancel
           </button>
         </div>
       )
@@ -132,4 +140,5 @@ function mapStateToProps(state, props) {
 export default connect(mapStateToProps, {
   uiShowOrderForm,
   orderSubmit,
+  orderDetach,
 })(OrderModal);
