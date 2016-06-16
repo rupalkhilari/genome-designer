@@ -38,7 +38,7 @@ export default class InventoryItemBlock extends Component {
           svg={isFrozen ? 'lock' : null}
           svgProps={{width: '1em', height: '1em', fill: 'rgba(255,255,255,0.75)'}}
           item={block}
-          itemDetail={isTemplate ? 'template' : null}/>
+          itemDetail={isTemplate ? 'Template' : null}/>
       </div>
     );
   }

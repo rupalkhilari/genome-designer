@@ -31,32 +31,46 @@
     }
   }
 
-  &.selected {
-    background-color: var(--listItem-background);
-  }
-
-  &:hover{
-    background-color: var(--listItem-backgroundHover);
-  }
-
   &-item {
-    display: inline-block;
+    display: inline-flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
     cursor: pointer;
     padding: 2px 5px;
     margin: 1px 0;
     width: 100%;
+    max-width: 100%;
   }
 
   &-text {
     user-select: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    flex-shrink: 1;
   }
 
   &-detail {
     padding-left: 0.75em;
-    color: var(--colors-grey);
+    opacity: 0.5;
+    flex-shrink: 0;
   }
 
   &-glyph:not(:empty) {
+    flex-shrink: 0;
     padding-right: 0.5em;
+  }
+
+  &.selected {
+    background-color: var(--listItem-background);
+
+    .InventoryItem-text {
+      white-space: normal;
+    }
+  }
+
+  &:hover{
+    background-color: var(--listItem-backgroundHover);
   }
 }
