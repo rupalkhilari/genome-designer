@@ -15,7 +15,7 @@ module.exports = {
     testProject(browser);
 
     browser
-      .pause(1000)
+      .pause(3000)
       // start with six blocks in the project to be deleted
       .assert.countelements('[data-nodetype="block"]', 6);
 
