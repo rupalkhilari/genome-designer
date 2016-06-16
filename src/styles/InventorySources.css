@@ -8,6 +8,7 @@
     color: var(--colors-grey);
     transition: background-color var(--timing-fast) ease-out;
     padding: 0.5em 4px;
+    margin-bottom: 0.5em;
     border-radius: 2px;
 
     &-cog {
