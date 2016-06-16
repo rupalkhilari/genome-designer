@@ -44,12 +44,14 @@ var registerViaHomepage = function(browser) {
     .setValue('#auth-signup input:nth-of-type(5)', password)
     .setValue('#auth-signup input:nth-of-type(6)', password)
     .click('.checkbox input')
+    .pause(1000)
     .submitForm('#auth-signup')
-    .waitForElementNotPresent('#auth-signup', 5000, 'expected form to be dimmissed')
+    .pause(1000)
+    .waitForElementNotPresent('#auth-signup', 5000, 'expected form to be dismissed')
     .waitForElementPresent('.userwidget', 5000, 'expected to land on page with the user widget visible')
     // wait for inventory and inspector to be present to ensure we are on a project page
-    .waitForElementPresent('.SidePanel.Inventory', 5000, 'Expected Inventory Groups')
-    .waitForElementPresent('.SidePanel.Inspector', 5000, 'Expected Inspector')
+    .waitForElementPresent('.SidePanel.Inventory', 10000, 'Expected Inventory Groups')
+    .waitForElementPresent('.SidePanel.Inspector', 10000, 'Expected Inspector')
     .pause(1000)
 
   return {email, password, firstName, lastName};
