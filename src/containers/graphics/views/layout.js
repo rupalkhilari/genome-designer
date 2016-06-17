@@ -175,7 +175,11 @@ export default class Layout {
     // the node representing the parent block
     const parentNode = this.nodeFromElement(block.id);
     // get the focused list for this block, if any
-    const focusedOptionId = this.focusedOptions[block.id];
+    let focusedOptionId = this.focusedOptions[block.id];
+    // if nothing focused then default to the first option
+    if (!focusedOptionId && block.options.length) {
+      focusedOptionId = block.options[0].id;
+    }
     // get only the options that are enabled for this block
     const enabled = Object.keys(block.options).filter(opt => block.options[opt]);
     // if block list is empty add a single placeholder block
