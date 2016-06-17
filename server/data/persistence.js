@@ -331,7 +331,15 @@ export const orderWrite = (orderId, order, projectId, roll) => {
 
 //DELETE
 
-export const projectDelete = (projectId) => {
+export const projectDelete = (projectId, forceDelete = false) => {
+  const projectPath = filePaths.createProjectPath(projectId);
+  const trashPath = filePaths.createTrashPath(projectId);
+
+  if (forceDelete === true) {
+    return directoryDelete(projectPath)
+      .then(() => projectId);
+  }
+  
   return projectExists(projectId)
     .then(() => projectGet(projectId))
     .then(project => {
@@ -358,8 +366,6 @@ export const projectDelete = (projectId) => {
        */
 
       //MOVE TO TRASH FOLDER
-      const projectPath = filePaths.createProjectPath(projectId);
-      const trashPath = filePaths.createTrashPath(projectId);
       return directoryMove(projectPath, trashPath);
     })
     //no need to commit... its deleted (and permissions out of scope of data folder)

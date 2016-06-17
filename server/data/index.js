@@ -331,8 +331,9 @@ router.route('/:projectId')
   })
   .delete((req, res, next) => {
     const { projectId } = req;
+    const forceDelete = !!req.query.force
 
-    persistence.projectDelete(projectId)
+    persistence.projectDelete(projectId, forceDelete)
       .then(() => res.status(200).json({ projectId }))
       .catch(err => next(err));
   });
