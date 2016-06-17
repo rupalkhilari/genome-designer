@@ -609,7 +609,7 @@ class GlobalNav extends Component {
               text: 'Give Us Feedback',
               action: this.disgorgeDiscourse.bind(this, '/c/genetic-constructor/feedback'),
             }, {}, {
-              text: 'About Genome Designer',
+              text: 'About Genetic Constructor',
               action: () => {
                 this.props.uiShowAbout(true);
               },

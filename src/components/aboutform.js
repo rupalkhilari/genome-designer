@@ -30,7 +30,10 @@ class AboutForm extends Component {
           <div className="gd-form aboutform">
             <div className="image">
               <img className="background" src="/images/homepage/tiles.jpg"/>
-              <div className="name">Genetic Constructor</div>
+                <div className="name">
+                  <div className="lighter">Autodesk&nbsp;</div>
+                  <div>Genetic Constructor</div>
+                </div>
             </div>
             <div className="text">
               <div className="heading">
