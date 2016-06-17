@@ -1,28 +1,24 @@
 import invariant from 'invariant';
-import InstanceSchema from '../schemas/Instance';
-import { set as pathSet, merge, cloneDeep } from 'lodash';
+import Instance from '../models/Instance';
+import { merge, cloneDeep } from 'lodash';
 import OrderDefinition from '../schemas/Order';
 import OrderParametersSchema from '../schemas/OrderParameters';
-import OrderConstructSchema from '../schemas/OrderConstruct';
 import * as validators from '../schemas/fields/validators';
 import safeValidate from '../schemas/fields/safeValidate';
 import { submitOrder, getQuote } from '../middleware/order';
 
 const idValidator = (id) => safeValidate(validators.id(), true, id);
 
+//todo - end forceUpdate() on order dialog pages
+
 //due to issues with freezing, not extending Instance. This is a hack. Ideally, could have InstanceUnfrozen schema or something to extend
 //NOTE that orders are not immutable because this can be very expensive when they are large. Note that this affects rendering in React
-export default class Order {
+export default class Order extends Instance {
   constructor(input = {}) {
     invariant(input.projectId, 'project Id is required to make an order');
+    invariant(input.constructIds, 'constructIDs are required on creation for generating number of constructs');
 
-    //lets not deep freeze these
-    merge(
-      this,
-      InstanceSchema.scaffold(),
-      OrderDefinition.scaffold(),
-      input,
-    );
+    super(input, OrderDefinition.scaffold());
   }
 
   /************
@@ -57,16 +53,14 @@ export default class Order {
     invariant(false, 'cannot clone an order');
   }
 
-  merge(toMerge) {
-    return merge(this, toMerge);
-  }
-
   mutate(path, value) {
-    return Object.assign(this, { [path]: value });
+    invariant(!this.isSubmitted(), 'cannot change a submitted order');
+    return super.mutate(path, value)
   }
 
-  pathSet(path, value) {
-    return pathSet(this, path, value);
+  merge(...args) {
+    invariant(!this.isSubmitted(), 'cannot change a submitted order');
+    return super.merge(...args)
   }
 
   /************
@@ -78,7 +72,7 @@ export default class Order {
   }
 
   setName(newName) {
-    return this.pathSet('metadata.name', newName);
+    return this.mutate('metadata.name', newName);
   }
 
   isSubmitted() {
@@ -93,30 +87,14 @@ export default class Order {
    parameters, user, other information
    ************/
 
-  setParameters(parameters = {}, shouldMerge = false) {
-    const nextParameters = merge({}, (shouldMerge === true ? cloneDeep(this.parameters) : {}), parameters);
-    // invariant(OrderParametersSchema.validate(parameters, false), 'parameters must pass validation');
-    return this.mutate('parameters', nextParameters);
+  setParameters(parameters = {}) {
+    invariant(OrderParametersSchema.validate(parameters, false), 'parameters must pass validation');
+    return this.mutate('parameters', parameters);
   }
 
-  /************
-   constructs + filtering
-   ************/
-
-  setConstructs(constructs = []) {
-    invariant(Array.isArray(constructs), 'must pass an array of constructs');
-    //validation takes a long time, ignore for now...
-    //invariant(constructs.every(construct => OrderConstructSchema.validate(construct)), 'must pass valid constructs. See OrderConstruct schema');
-
-    return this.mutate('constructs', constructs);
-  }
-
-  constructsAdd(...constructs) {
-    //todo - update to expect ID
-  }
-
-  constructsRemove(...constructs) {
-    //todo - update to expect ID
+  onlySubset() {
+    const { parameters } = this;
+    return (!parameters.onePot && parameters.permutations < this.numberCombinations);
   }
 
   /************

@@ -8,7 +8,7 @@ import * as blockActions from './blocks';
 import * as blockSelectors from '../selectors/blocks';
 import * as projectActions from './projects';
 import * as projectSelectors from '../selectors/projects';
-import { merge, flatten, sampleSize, range, shuffle } from 'lodash';
+import { cloneDeep, merge, flatten, sampleSize, range, shuffle } from 'lodash';
 
 export const orderList = (projectId) => {
   return (dispatch, getState) => {
@@ -67,74 +67,59 @@ export const orderCreate = (projectId, constructIds = [], parameters = {}) => {
       order,
     });
 
-    //generate constructs and return
-    const orderWithConstructs = dispatch(orderGenerateConstructs(order.id)); //eslint-disable-line no-use-before-define
-
-    return orderWithConstructs;
+    return order;
   };
 };
 
-//should only call after parameters have been set
-export const orderGenerateConstructs = (orderId) => {
+//parameters must be valid. returns an array with the generated constructs, does not affect the order itself.
+//todo - selector
+//todo - ensure this code (generating constructs from order + rollup) is shared between client and server
+export const orderGenerateConstructs = (orderId, allPossibilities = false) => {
   return (dispatch, getState) => {
-    const oldOrder = getState().orders[orderId];
-    const { constructIds, parameters } = oldOrder;
+    const state = getState();
+    const order = state.orders[orderId];
+    const { projectId, constructIds, parameters } = order;
     invariant(Order.validateParameters(parameters), 'parameters must pass validation');
 
     //for each constructId, get construct combinations as blocks
     //flatten all combinations into a single list of combinations
     const combinations = flatten(constructIds.map(constructId => dispatch(blockSelectors.blockGetCombinations(constructId, true))));
 
-    const allConstructs = combinations.map((construct, index) => ({
-      index,
-      active: true,
-      componentIds: construct,
-    }));
-
-    if (!parameters.onePot && parameters.permutations < allConstructs.length) {
-      if (parameters.combinatorialMethod === 'Maximum Unique Set') {
-        //this may not be the most exlucsive set.... should actually think through this (and dependent on how generated)
-        //also not exact, so trim to make sure correct length
-        //todo - verify this yields the correct number
-        allConstructs.forEach((el, idx, arr) => {
-          el.active = (idx % Math.floor(allConstructs.length / parameters.permutations) === 0);
-        });
-      } else {
-        //map of indices to keep
-        const keepers = shuffle(range(allConstructs.length))
-          .slice(0, parameters.permutations)
-          .reduce((acc, idx) => Object.assign(acc, {[idx]: true}), {});
-
-        allConstructs.forEach((el, idx, arr) => {
-          el.active = keepers[idx] === true;
-        });
-      }
+    if (!order.onlySubset() || allPossibilities === true) {
+      return combinations;
     }
 
-    const order = oldOrder.setConstructs(allConstructs);
-
-    dispatch({
-      type: ActionTypes.ORDER_STASH,
-      order,
-    });
-    return order;
+    return combinations.filter((el, idx, arr) => parameters.activeIndices[idx] === true);
   };
 };
 
-export const orderSetParameters = (orderId, parameters = {}, shouldMerge = false) => {
+export const orderSetParameters = (orderId, inputParameters = {}, shouldMerge = false) => {
   return (dispatch, getState) => {
     const oldOrder = getState().orders[orderId];
-    const order = oldOrder.setParameters(parameters, shouldMerge);
+    const parameters = shouldMerge ? merge(cloneDeep(oldOrder.parameters), inputParameters) : inputParameters;
 
-    //validate afterwards in case merging
-    invariant(Order.validateParameters(order.parameters), 'parameters must pass validation');
+    const { numberCombinations } = oldOrder;
+    if (!parameters.onePot && parameters.permutations < numberCombinations) {
+      const keepers = (parameters.combinatorialMethod === 'Maximum Unique Set')
+        ?
+        range(numberCombinations.length)
+          .map(idx => idx % Math.floor(numberCombinations / parameters.permutations) === 0)
+        :
+        shuffle(range(numberCombinations))
+          .slice(0, parameters.permutations);
+
+      const map = keepers.reduce((acc, idx) => Object.assign(acc, { [idx]: true }), {});
+
+      parameters.activeIndices = map;
+    }
+
+    invariant(Order.validateParameters(parameters), 'parameters must pass validation');
+    const order = oldOrder.setParameters(parameters);
 
     dispatch({
-      type: ActionTypes.ORDER_STASH,
+      type: ActionTypes.ORDER_SET_PARAMETERS,
       order,
     });
-
-    return dispatch(orderGenerateConstructs(orderId));
   };
 };
 
@@ -166,7 +151,7 @@ export const orderSubmit = (orderId, foundry) => {
         dispatch(pauseAction());
         dispatch(undoActions.transact());
 
-        //todo - the order is also frozen on the server... maybe we should just send + save the project...
+        //todo - the order is also frozen on the server... this is for parity. maybe we should just send + save the project...
         order.constructIds.forEach(constructId => dispatch(blockActions.blockFreeze(constructId, true)));
 
         dispatch({
