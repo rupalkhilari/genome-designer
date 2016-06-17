@@ -283,7 +283,7 @@ class RegisterForm extends Component {
         <button
           type="button"
           onClick={() => {
-            this.props.uiShowAuthenticationForm('none');
+            this.props.uiShowAuthenticationForm('signin');
           }}>Cancel</button>
       </form>
     );
