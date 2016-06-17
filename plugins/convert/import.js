@@ -64,6 +64,7 @@ router.get('/:pluginId/file/:fileId', (req, res, next) => {
 // genbank without a project
 router.post('/:pluginId/convert', jsonParser, (req, resp, next) => {
   const { pluginId } = req.params;
+  const constructsOnly = !!req.query.constructsOnly;
 
   let buffer = '';
 
@@ -75,7 +76,12 @@ router.post('/:pluginId/convert', jsonParser, (req, resp, next) => {
     const inputFilePath = filePaths.createStorageUrl(pluginId, md5(buffer));
     return fileSystem.fileWrite(inputFilePath, buffer, false)
       .then(() => callImportFunction('convert', pluginId, inputFilePath))
-      .then(converted => resp.status(200).json(converted))
+      .then(converted => {
+        const roots = converted.roots;
+        const blocks = converted.blocks.filter(block => roots.indexOf(block.id) >= 0);
+        const payload = constructsOnly ? { roots, blocks } : converted;
+        resp.status(200).json(payload);
+      })
       .catch(err => next(err));
   });
 });
