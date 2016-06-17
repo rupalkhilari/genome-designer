@@ -57,10 +57,12 @@ class ImportGenBankModal extends Component {
       });
       const projectId = this.state.destination === 'current project' ? '/' + this.props.currentProjectId : '';
       const file = this.state.files[0];
+      debugger;
       importGenbankOrCSV(file, projectId)
         .then(projectId => {
           if (projectId === this.props.currentProjectId) {
-            this.props.projectLoad(projectId);
+            //true to forcibly reload the project, avoid our cache
+            this.props.projectLoad(projectId, true);
           } else {
             this.props.projectOpen(projectId);
           }
