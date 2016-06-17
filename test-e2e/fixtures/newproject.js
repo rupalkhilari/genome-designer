@@ -6,6 +6,7 @@ var newproject = function(browser) {
   browser
     .pause(3000)
     .waitForElementPresent('.construct-viewer', 5000, 'expect a construct for the new project')
+    .assert.countelements('.construct-viewer', 1);
 };
 
 module.exports = newproject;

@@ -393,7 +393,6 @@ export default class Layout {
       this.banner = new Node2D({
         sg: this.sceneGraph,
         glyph: 'construct-banner',
-        bounds: new Box2D(this.insetX, this.insetY, this.sceneGraph.availableWidth - this.insetX, kT.bannerHeight),
       });
       this.sceneGraph.root.appendChild(this.banner);
     }
@@ -401,6 +400,7 @@ export default class Layout {
       this.banner.set({
         fill: this.baseColor,
         stroke: this.baseColor,
+        bounds: new Box2D(this.insetX, this.insetY, this.sceneGraph.availableWidth - this.insetX, kT.bannerHeight),
       });
     }
   }
