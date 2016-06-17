@@ -59,7 +59,8 @@ export const importProject = (pluginId, input) => {
 };
 
 //convert without creating a project
-export const convertGenbank = (genbank) => {
-  return rejectingFetch(importPath(`genbank/convert`), headersPost(genbank, contentTypeTextHeader))
+export const convertGenbank = (genbank, constructsOnly = false) => {
+  const path = importPath(`genbank/convert${constructsOnly ? '?constructsOnly=true' : ''}`);
+  return rejectingFetch(path, headersPost(genbank, contentTypeTextHeader))
     .then(resp => resp.json());
 };

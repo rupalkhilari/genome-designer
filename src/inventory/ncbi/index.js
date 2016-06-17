@@ -13,8 +13,8 @@ export const name = 'NCBI';
 //convert genbank file to bunch of blocks
 //assume there is always one root construct
 //returns array in form [construct, ...blocks]
-const genbankToBlock = (gb) => {
-  return convertGenbank(gb)
+const genbankToBlock = (gb, onlyConstruct) => {
+  return convertGenbank(gb, onlyConstruct)
     .then(result => {
       const { blocks, roots } = result;
       const constructIndex = blocks.findIndex(block => block.id === roots[0]);
@@ -74,20 +74,19 @@ export const getSummary = (...ids) => {
 //note that these may be very very large, use getSummary unless you need the whole thing
 //!! important - Note that NCBI is moving to accession versions from UIDs
 //   this should be the accessionversion by this point, as it was set as source.id on parseSummary.
-export const get = (accessionVersion) => {
-  const parametersMapped = {
+export const get = (accessionVersion, parameters = {}) => {
+  const parametersMapped = Object.assign({
     format: 'gb',
-  };
+    onlyConstruct: false,
+  }, parameters);
 
   const { format } = parametersMapped;
 
   const url = `http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id=${accessionVersion}&rettype=${format}&retmode=text`;
 
-  //todo - this should use accessionversion
-
   return rejectingFetch(url)
     .then(resp => resp.text())
-    .then(genbankToBlock)
+    .then(genbank => genbankToBlock(genbank, parametersMapped.onlyConstruct))
     .then(blocks => blocks.map(block => wrapBlock(block, accessionVersion)));
 };
 

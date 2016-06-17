@@ -53,10 +53,14 @@ export class InventoryGroupSearch extends Component {
     this.props.inventoryShowSourcesToggling(false);
   };
 
-  getFullItem = (registryKey, item, shouldAddToStore) => {
+  getFullItem = (registryKey, item, onlyConstruct = false, shouldAddToStore = true) => {
     const { source, id } = item.source;
+    const parameters = {
+      onlyConstruct,
+    };
+
     if (source && id) {
-      return registry[source].get(id)
+      return registry[source].get(id, parameters)
         .then(result => {
           //if we have an array, first one is construct, and all other blocks should be added to the store
           if (Array.isArray(result)) {
@@ -83,11 +87,11 @@ export class InventoryGroupSearch extends Component {
   };
 
   handleListOnSelect = (registryKey, item) => {
-    return this.getFullItem(registryKey, item, false);
+    return this.getFullItem(registryKey, item, true, false);
   };
 
   handleListOnDrop = (registryKey, item, target, position) => {
-    return this.getFullItem(registryKey, item, true);
+    return this.getFullItem(registryKey, item, false, true);
   };
 
   render() {
