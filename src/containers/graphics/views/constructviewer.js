@@ -529,12 +529,13 @@ export class ConstructViewer extends Component {
   }
 
   lockIcon() {
-    const locked = this.props.construct.isFrozen();
-    if (!locked) {
+    if (!this.props.construct.isFrozen()) {
       return null;
     }
+    const isFocused = this.props.construct.id === this.props.focus.constructId;
+    const classes = `lockIcon${isFocused ? "" : " sceneGraph-dark"}`;
     return (
-      <div className="lockIcon">
+      <div className={classes}>
         <RoleSvg
           symbolName="lock"
           color={this.props.construct.metadata.color}
