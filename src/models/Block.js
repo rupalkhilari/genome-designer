@@ -9,6 +9,7 @@ import color from '../utils/generators/color';
 import { dnaStrict, dnaLoose } from '../utils/dna/dna';
 import * as validators from '../schemas/fields/validators';
 import safeValidate from '../schemas/fields/safeValidate';
+import { symbolMap } from '../inventory/roles';
 
 const idValidator = (id) => safeValidate(validators.id(), true, id);
 
@@ -106,6 +107,15 @@ export default class Block extends Instance {
 
   setRule(rule, value) {
     return this.mutate(`rules.${rule}`, value);
+  }
+
+  getRole(userFriendly = true) {
+    const role = this.rules.role;
+    const friendly = symbolMap[role];
+
+    return (userFriendly === true && friendly) ?
+      friendly :
+      role;
   }
 
   setFrozen(isFrozen) {
