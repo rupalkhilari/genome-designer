@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import ModalWindow from '../modal/modalwindow';
-import Balls from '../ui/balls';
 import Dropzone from 'react-dropzone';
 import { uiShowGenBankImport } from '../../actions/ui';
 import { projectGet, projectListAllBlocks } from '../../selectors/projects';
@@ -53,6 +52,9 @@ class ImportGenBankModal extends Component {
     });
 
     if (this.state.files.length) {
+      this.setState({
+        processing: true,
+      });
       const projectId = this.state.destination === 'current project' ? '/' + this.props.currentProjectId : '';
       const file = this.state.files[0];
       importGenbankOrCSV(file, projectId)
@@ -130,7 +132,6 @@ class ImportGenBankModal extends Component {
               </Dropzone>
               {this.showFiles()}
               {this.state.error ? <div className="error visible">{this.state.error}</div> : null}
-              <Balls running={this.state.processing} color={'lightgray'}/>
               <button type="submit" disabled={this.state.processing}>Upload</button>
               <button
                 type="button"
@@ -139,6 +140,10 @@ class ImportGenBankModal extends Component {
                   this.props.uiShowGenBankImport(false);
                 }}>Cancel
               </button>
+              <div className="link">
+                <span>Format documentation and same .CSV files can be found here</span>
+                <a className="blue-link" href="https://forum.bionano.autodesk.com/t/importing-data-using-csv-format" target="_blank">discourse.bionano.autodesk.com/genetic-constructor/formats</a>
+              </div>
             </form>
           )}
           closeOnClickOutside
