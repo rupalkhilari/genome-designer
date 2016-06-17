@@ -9,8 +9,6 @@ import { submitOrder, getQuote } from '../middleware/order';
 
 const idValidator = (id) => safeValidate(validators.id(), true, id);
 
-//todo - end forceUpdate() on order dialog pages
-
 //due to issues with freezing, not extending Instance. This is a hack. Ideally, could have InstanceUnfrozen schema or something to extend
 //NOTE that orders are not immutable because this can be very expensive when they are large. Note that this affects rendering in React
 export default class Order extends Instance {
@@ -40,8 +38,6 @@ export default class Order extends Instance {
     return idValidator(input.projectId) &&
       input.constructIds.length > 0 &&
       input.constructIds.every(id => idValidator(id)) &&
-      input.constructs.length > 0 &&
-      input.constructs.every(construct => OrderConstructSchema.validate(construct)) &&
       OrderParametersSchema.validate(input.parameters, throwOnError);
   }
 
@@ -55,12 +51,12 @@ export default class Order extends Instance {
 
   mutate(path, value) {
     invariant(!this.isSubmitted(), 'cannot change a submitted order');
-    return super.mutate(path, value)
+    return super.mutate(path, value);
   }
 
   merge(...args) {
     invariant(!this.isSubmitted(), 'cannot change a submitted order');
-    return super.merge(...args)
+    return super.merge(...args);
   }
 
   /************
@@ -105,8 +101,8 @@ export default class Order extends Instance {
     return getQuote(foundry, this);
   }
 
-  submit(foundry) {
+  submit(foundry, positionalCombinations) {
     //may want to just set the foundry on the order directly?
-    return submitOrder(this, foundry);
+    return submitOrder(this, foundry, positionalCombinations);
   }
 }

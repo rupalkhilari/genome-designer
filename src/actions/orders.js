@@ -143,8 +143,12 @@ export const orderSubmit = (orderId, foundry) => {
     const retrievedOrder = getState().orders[orderId];
     invariant(retrievedOrder, 'order not in the store...');
     invariant(!retrievedOrder.isSubmitted(), 'Cant submit an order twice');
+    
+    const positionalCombinations = retrievedOrder.constructIds.reduce((acc, constructId) => {
+      return Object.assign(acc, { [constructId]: dispatch(blockSelectors.blockGetPositionalCombinations(constructId, true)) });
+    }, {});
 
-    return retrievedOrder.submit(foundry)
+    return retrievedOrder.submit(foundry, positionalCombinations)
       .then(orderData => {
         const order = new Order(orderData);
 
