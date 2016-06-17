@@ -15,6 +15,7 @@ export default class Input extends Component {
       <div className="row-checkbox">
         <input onChange={evt => {this.props.onChange(evt.target.checked);}}
                type="checkbox"
+               disabled={this.props.disabled}
                defaultChecked={this.props.value} />
         {this.props.label}
       </div>
