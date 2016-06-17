@@ -108,6 +108,8 @@ export const blockClone = (blockInput, parentObjectInput = {}, shallowOnly = fal
     // we dont need to do anything in cloning for block.options, since these are just copied over from project to project
     // the assumption is that options will be fetched and stashed (not cloned) in the project as needed, but separate from cloning.
     // this is so the option IDs remain consistent, and projects are not huge with duplicate blocks that are just options (since they are static)
+    // NB - this is reliant on the expectation that the whole project has been loaded and all the list options are in the store
+    // this assumption is valid so long as the project is loaded when browsing templates
 
     //get the project ID to use for parent, considering the block may be detached from a project (e.g. inventory block)
     const parentProjectId = oldBlock.projectId || null;
