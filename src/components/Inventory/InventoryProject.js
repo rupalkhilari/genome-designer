@@ -103,6 +103,7 @@ export class InventoryProject extends Component {
                           dataAttribute={`project ${project.id}`}>
         {project.components.map(compId => {
           return (<InventoryConstruct key={compId}
+                                      depth={0}
                                       blockId={compId}/>);
         })}
       </InventoryListGroup>

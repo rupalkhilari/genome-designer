@@ -25,6 +25,11 @@ export class InventoryConstruct extends Component {
     isConstruct: PropTypes.bool.isRequired,
     isTemplate: PropTypes.bool.isRequired,
     focusForceBlocks: PropTypes.func.isRequired,
+    depth: PropTypes.number,
+  };
+  
+  static defaultProps = {
+    depth: 1, // 0 for 'New Construct'
   };
 
   shouldRenderAsConstruct(props = this.props) {
@@ -87,17 +92,19 @@ export class InventoryConstruct extends Component {
   }
 
   render() {
-    const { blockId, block, isConstruct, isTemplate, isActive, focusForceBlocks, ...rest } = this.props;
+    const { blockId, depth, block, isConstruct, isTemplate, isActive, focusForceBlocks, ...rest } = this.props;
+    const defaultName = depth < 1 ? 'New Construct' : 'New Block';
 
     //use !shouldRenderAsConstruct so short circuit, to avoid calling ref in InventoryListGroup (will be null if never mounted, cause errors when ref clause is called)
     const innerContent = !this.shouldRenderAsConstruct()
       ?
       <InventoryItemBlock block={block}
+                          defaultName={defaultName}
                           {...rest} />
       :
       //explicitly call connected component to handle recursion
       (
-        <InventoryListGroup title={block.getName()}
+        <InventoryListGroup title={block.getName(defaultName)}
                             isActive={isActive}
                             onSelect={() => focusForceBlocks([block])}
                             isSelectable
@@ -108,6 +115,7 @@ export class InventoryConstruct extends Component {
           {block.components.map(compId => (
             <InventoryConstructConnected {...rest}
               key={compId}
+              depth={depth + 1}
               blockId={compId}/>
           ))}
         </InventoryListGroup>

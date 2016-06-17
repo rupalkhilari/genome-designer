@@ -141,12 +141,12 @@ export default class Block extends Instance {
     return this.mutate('projectId', projectId);
   }
 
-  getName() {
+  getName(defaultName) {
     // called many K per second, no es6 fluffy stuff in here.
     if (this.metadata.name) return this.metadata.name;
     if (this.rules.role) return this.rules.role;
     if (this.isFiller() && this.metadata.initialBases) return this.metadata.initialBases;
-    return 'New ' + this.getType();
+    return defaultName || 'New ' + this.getType();
   }
 
   setName(newName) {
