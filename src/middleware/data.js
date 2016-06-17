@@ -31,6 +31,10 @@ export const listProjects = () => {
 
 //returns a rollup
 export const loadProject = (projectId, avoidCache = false) => {
+  if (!projectId) {
+    return Promise.reject(null);
+  }
+
   const isCached = instanceMap.projectLoaded(projectId);
 
   if (isCached && avoidCache !== true) {

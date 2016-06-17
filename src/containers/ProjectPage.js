@@ -75,7 +75,9 @@ class ProjectPage extends Component {
       this.props.projectLoad(projectId)
         .catch(err => {
           //if couldnt load project, load manifests and display the first one, or create a new project
-          this.props.uiSetGrunt(`Project with ID ${projectId} could not be loaded, loading another instead...`);
+          if (projectId) {
+            this.props.uiSetGrunt(`Project with ID ${projectId} could not be loaded, loading another instead...`);
+          }
 
           this.props.projectList().then(manifests => {
             if (manifests.length) {
