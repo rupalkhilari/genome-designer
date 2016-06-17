@@ -60,7 +60,8 @@ class ImportGenBankModal extends Component {
       importGenbankOrCSV(file, projectId)
         .then(projectId => {
           if (projectId === this.props.currentProjectId) {
-            this.props.projectLoad(projectId);
+            //true to forcibly reload the project, avoid our cache
+            this.props.projectLoad(projectId, true);
           } else {
             this.props.projectOpen(projectId);
           }
