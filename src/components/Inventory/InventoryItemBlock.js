@@ -15,6 +15,7 @@ export default class InventoryItemBlock extends Component {
         return new Error('must pass a real block (Block model) to InventoryItemBlock');
       }
     },
+    defaultName: PropTypes.string.isRequired,
   };
 
   componentDidMount() {
@@ -22,7 +23,7 @@ export default class InventoryItemBlock extends Component {
   }
 
   render() {
-    const { block, ...rest } = this.props;
+    const { block, defaultName, ...rest } = this.props;
 
     const isTemplate = block.isTemplate();
     const isFrozen = block.isFrozen();
@@ -34,7 +35,7 @@ export default class InventoryItemBlock extends Component {
         <InventoryItem {...rest}
           dataAttribute={`${type} ${block.id}`}
           inventoryType={blockDragType}
-          defaultName={block.getName()}
+          defaultName={defaultName || block.getName()}
           svg={isFrozen ? 'lock' : null}
           svgProps={{width: '1em', height: '1em', fill: 'rgba(255,255,255,0.75)'}}
           item={block}
