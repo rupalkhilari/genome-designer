@@ -6,7 +6,7 @@ import * as persistence from '../../../../server/data/persistence';
 import * as rollup from '../../../../server/data/rollup';
 import devServer from '../../../../server/server';
 import { createExampleRollup } from '../../../utils/rollup';
-import { range } from 'lodash';
+import { range, merge } from 'lodash';
 
 describe('Server', () => {
   describe('Data', () => {
@@ -19,7 +19,7 @@ describe('Server', () => {
 
         const project = roll.project;
         const projectId = project.id;
-        const [blockP, blockA, blockB, blockC, blockD, blockE] = roll.blocks;
+        const { blockP, blockA, blockB, blockC, blockD, blockE } = roll.blocks;
 
         //add 5 weird role type blocks to roll
         const numberEsotericRole = 5;
@@ -27,8 +27,9 @@ describe('Server', () => {
         const blocks = range(numberEsotericRole).map(() => new Block({
           projectId,
           rules: { role: esotericRole },
-        }));
-        roll.blocks.push(...blocks);
+        }))
+          .reduce((acc, block) => Object.assign(acc, { [block.id]: block }), {});
+        merge(roll.blocks, blocks);
 
         before(() => {
           return rollup.writeProjectRollup(projectId, roll, userId);
@@ -81,7 +82,7 @@ describe('Server', () => {
               const { body } = result;
               const keys = Object.keys(body);
               expect(keys.length).to.equal(6);
-              assert(keys.every(key => roll.blocks.find(block => block.id === key)), 'got wrong key, outside roll');
+              assert(keys.every(key => Object.keys(roll.blocks).indexOf(key) >= 0), 'got wrong key, outside roll');
             })
             .end(done);
         });

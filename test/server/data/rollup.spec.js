@@ -15,14 +15,14 @@ describe('Server', () => {
       const roll = createExampleRollup();
       const project = roll.project;
       const projectId = project.id;
-      const [blockP, blockA, blockB, blockC, blockD, blockE] = roll.blocks;
+      const { blockP, blockA, blockB, blockC, blockD, blockE } = roll.blocks;
       before(() => {
         return persistence.projectCreate(projectId, project, userId);
       });
 
-      it('createRollup() has structure { project: project, blocks: [...blocks] }', () => {
+      it('createRollupFromArray() has structure { project: project, blocks: [...blocks] }', () => {
         expect(roll.project).to.eql(project);
-        expect(roll.blocks.length).to.equal(6);
+        expect(Object.keys(roll.blocks).length).to.equal(6);
       });
 
       it('writeProjectRollup() writes a whole rollup', () => {
@@ -30,8 +30,8 @@ describe('Server', () => {
           .then(() => Promise
             .all([
               persistence.projectGet(projectId),
-              persistence.blockGet(blockA.id, projectId),
-              persistence.blockGet(blockE.id, projectId),
+              persistence.blocksGet(projectId, false, blockA.id).then(map => map[blockA.id]),
+              persistence.blocksGet(projectId, false, blockE.id).then(map => map[blockE.id]),
             ])
             .then(([gotProject, gotA, gotE]) => {
               expect(gotProject).to.eql(project);
@@ -45,7 +45,7 @@ describe('Server', () => {
         return rollup.getProjectRollup(projectId)
           .then(roll => {
             expect(roll.project).to.eql(project);
-            expect(roll.blocks.length).to.equal(6);
+            expect(Object.keys(roll.blocks).length).to.equal(6);
           });
       });
 
@@ -56,14 +56,14 @@ describe('Server', () => {
         newComponentsBlockA.push(blockF.id); //add F
         const editBlockA = Object.assign({}, blockA, {components: newComponentsBlockA});
 
-        const newRoll = rollup.createRollup(project, blockP, editBlockA, blockB, blockD, blockE, blockF);
+        const newRoll = rollup.createRollupFromArray(project, blockP, editBlockA, blockB, blockD, blockE, blockF);
         return rollup.writeProjectRollup(projectId, newRoll, userId)
           .then(() => Promise
             .all([
               persistence.projectGet(projectId),
-              persistence.blockGet(blockA.id, projectId),
-              persistence.blockGet(blockF.id, projectId),
-              persistence.blockGet(blockC.id, projectId),
+              persistence.blocksGet(projectId, false, blockA.id).then(map => map[blockA.id]),
+              persistence.blocksGet(projectId, false, blockF.id).then(map => map[blockF.id]),
+              persistence.blocksGet(projectId, false, blockC.id).then(map => map[blockC.id]),
             ])
             .then(([gotProject, gotA, gotF, gotC]) => {
               expect(gotProject).to.eql(project);

@@ -26,7 +26,7 @@ describe('Server', () => {
 
         before(() => {
           return persistence.projectCreate(projectId, projectData, userId)
-            .then(() => persistence.blockCreate(blockId, blockData, projectId));
+            .then(() => persistence.blockWrite(projectId, blockData));
         });
 
         beforeEach('server setup', () => {
@@ -71,8 +71,9 @@ describe('Server', () => {
               }
               expect(result.body).to.eql(blockData);
 
-              persistence.blockGet(blockId, projectId)
-                .then((result) => {
+              persistence.blocksGet(projectId, false, blockId)
+                .then(blockMap => {
+                  const result = blockMap[blockId];
                   expect(result).to.eql(blockData);
                   done();
                 })
@@ -94,8 +95,9 @@ describe('Server', () => {
               expect(result.body).to.eql(patchedBlock);
               expect(result.body).to.not.eql(blockData);
 
-              persistence.blockGet(blockId, projectId)
-                .then((result) => {
+              persistence.blocksGet(projectId, false, blockId)
+                .then((blockMap) => {
+                  const result = blockMap[blockId];
                   expect(result).to.eql(patchedBlock);
                   done();
                 })
@@ -131,8 +133,9 @@ describe('Server', () => {
               expect(result.body).to.eql(newBlock);
               expect(result.body).to.not.eql(blockData);
 
-              persistence.blockGet(blockId, projectId)
-                .then((result) => {
+              persistence.blocksGet(projectId, false, blockId)
+                .then((blockMap) => {
+                  const result = blockMap[blockId];
                   expect(result).to.eql(newBlock);
                   done();
                 })
@@ -163,8 +166,9 @@ describe('Server', () => {
               expect(result.body).to.not.eql(newBlock);
               expect(result.body).to.not.eql(blockData);
 
-              persistence.blockGet(blockId, projectId)
-                .then((result) => {
+              persistence.blocksGet(projectId, false, blockId)
+                .then((blockMap) => {
+                  const result = blockMap[blockId];
                   expect(result).to.eql(validator);
                   expect(result).to.not.eql(blockData);
                   done();
@@ -191,7 +195,7 @@ describe('Server', () => {
                 done(err);
               }
 
-              persistence.blockExists(blockId, projectId)
+              persistence.blocksExist(projectId, false, blockId)
                 .then(() => done(new Error('shouldnt exist')))
                 .catch(() => done());
             });

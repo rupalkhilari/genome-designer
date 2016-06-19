@@ -1,5 +1,6 @@
 import Block from '../../src/models/Block';
 import Project from '../../src/models/Project';
+import { createRollupFromArray } from '../../server/data/rollup';
 
 import { templates, blocks as templateBlocks } from './templates';
 import { examples, blocks as exampleBlocks } from './examples';
@@ -35,11 +36,5 @@ export default function makeEgfRollup() {
   const blockIds = blocks.constructs.map(block => block.id);
   const project = makeProject(blockIds);
 
-  return {
-    project,
-    blocks: [
-      ...blocks.constructs,
-      ...blocks.blocks,
-    ],
-  };
+  return createRollupFromArray(project, ...blocks.constructs, ...blocks.blocks);
 }

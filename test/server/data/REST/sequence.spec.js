@@ -30,7 +30,7 @@ describe('Server', () => {
 
         before(() => {
           return persistence.projectCreate(projectId, projectData, userId)
-            .then(() => persistence.blockCreate(blockId, blockData, projectId))
+            .then(() => persistence.blockWrite(projectId, blockData))
             .then(() => persistence.sequenceWrite(sequenceMd5, sequence));
         });
 

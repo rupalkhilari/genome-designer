@@ -8,6 +8,7 @@ import * as filePaths from '../../../server/utils/filePaths';
 import * as rollup from '../../../server/data/rollup';
 import * as persistence from '../../../server/data/persistence';
 import * as querying from '../../../server/data/querying';
+import { merge } from 'lodash';
 
 import { createExampleRollup } from '../../utils/rollup';
 
@@ -29,7 +30,7 @@ describe('Server', () => {
           metadata: { name: terminatorBlockName },
           rules: { role: 'terminator' },
         });
-        roll.blocks.push(promoter, terminator);
+        merge(roll.blocks, {[promoter.id]: promoter, [terminator.id]: terminator});
         roll.project.components.push(promoter.id, terminator.id);
         return roll;
       };
@@ -61,28 +62,6 @@ describe('Server', () => {
             assert(myRollIds.every(id => contents.indexOf(id) >= 0), 'my rolls not all written');
             assert(otherRollIds.every(id => contents.indexOf(id) >= 0), 'other rolls not all written');
           });
-      });
-
-      it('findProjectFromBlock() finds project ID given block ID', () => {
-        const firstRollup = myRolls[0];
-        const { project: firstProject, blocks: firstBlocks } = firstRollup;
-        const secondRollup = otherRolls[2];
-        const { project: secondProject, blocks: secondBlocks } = secondRollup;
-
-        return Promise.all([
-          ...firstBlocks.map(block => {
-            return querying.findProjectFromBlock(block.id)
-              .then(projectId => {
-                expect(projectId).to.equal(firstProject.id);
-              });
-          }),
-          ...secondBlocks.map(block => {
-            return querying.findProjectFromBlock(block.id)
-              .then(projectId => {
-                expect(projectId).to.equal(secondProject.id);
-              });
-          }),
-        ]);
       });
 
       it('listProjectsWithAccess() limits by user ID', () => {

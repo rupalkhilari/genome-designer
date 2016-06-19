@@ -2,11 +2,13 @@ import invariant from 'invariant';
 import { errorInvalidModel, errorDoesNotExist } from '../utils/errors';
 import * as persistence from './persistence';
 import { validateBlock, validateProject } from '../utils/validation';
-import { findProjectFromBlock, getAllBlockIdsInProject, getAllBlocksInProject } from './querying';
+import { getAllBlocksInProject } from './querying';
+import { values } from 'lodash';
 
-export const createRollup = (project, ...blocks) => ({
+//for use when want to pass an array of blocks
+export const createRollupFromArray = (project, ...blocks) => ({
   project,
-  blocks: [...new Set(blocks)],
+  blocks: blocks.reduce((acc, block) => Object.assign(acc, { [block.id]: block }), {}),
 });
 
 export const getProjectRollup = (projectId) => {
@@ -25,10 +27,10 @@ export const getProjectRollup = (projectId) => {
 
 export const writeProjectRollup = (projectId, rollup, userId) => {
   invariant(projectId, 'must pass a projectId');
-  invariant(rollup && rollup.project && rollup.blocks, 'must pass a projectId');
+  invariant(rollup && rollup.project && rollup.blocks, 'rollup must not be empty');
+  invariant(typeof rollup.blocks === 'object', 'rollup expects blocks to be an object');
 
   const { project, blocks } = rollup;
-  const newBlockIds = blocks.map(block => block.id);
 
   if (projectId !== project.id) {
     return Promise.reject('rollup project ID does not match');
@@ -47,29 +49,23 @@ export const writeProjectRollup = (projectId, rollup, userId) => {
     .then(() => {
       //validate all the blocks and project before we save
       const projectValid = validateProject(project);
-      const blocksValid = blocks.every(block => validateBlock(block));
+      const blocksValid = values(blocks).every(block => validateBlock(block));
       if (!projectValid || !blocksValid) {
         return Promise.reject(errorInvalidModel);
       }
     })
-    .then(() => getAllBlockIdsInProject(projectId))
-    .then(extantBlockIds => {
-      const differenceIds = extantBlockIds.filter(blockId => newBlockIds.indexOf(blockId) < 0);
-      return Promise.all([
-        ...differenceIds.map(blockId => persistence.blockDelete(blockId, projectId)),
-      ]);
-    })
     .then(() => Promise.all([
       persistence.projectWrite(projectId, project),
-      ...blocks.map(block => persistence.blockWrite(block.id, block, projectId)),
+      persistence.blocksWrite(projectId, blocks),
     ]))
     .then(() => rollup);
 };
 
 //helper
-const getBlockInRollById = (id, roll) => roll.blocks.find(block => block.id === id);
+const getBlockInRollById = (id, roll) => roll.blocks[id];
 
 //given block ID and rollup, gets all options
+//returns object
 const getOptionsGivenRollup = (id, roll) => {
   const block = getBlockInRollById(id, roll);
   const { options } = block;
@@ -80,6 +76,7 @@ const getOptionsGivenRollup = (id, roll) => {
 };
 
 //given a rollup and rootId, recursively gets components of root block (and root block itself)
+//returns object
 const getComponentsRecursivelyGivenRollup = (rootId, projectRollup, acc = {}) => {
   const root = getBlockInRollById(rootId, projectRollup);
   acc[rootId] = root;
@@ -90,6 +87,7 @@ const getComponentsRecursivelyGivenRollup = (rootId, projectRollup, acc = {}) =>
   return acc;
 };
 
+//returns object { components: <map> , options: <map> }
 export const getContentsRecursivelyGivenRollup = (rootId, rollup) => {
   const components = getComponentsRecursivelyGivenRollup(rootId, rollup);
 
@@ -107,35 +105,30 @@ export const getContentsRecursivelyGivenRollup = (rootId, rollup) => {
   };
 };
 
-export const getContents = (rootId, forceProjectId) => {
-  const projectIdPromise = forceProjectId ?
-    Promise.resolve(forceProjectId) :
-    findProjectFromBlock(rootId);
-
-  return projectIdPromise
-    .then(projectId => getProjectRollup(projectId))
+export const getContents = (rootId, projectId) => {
+  return getProjectRollup(projectId)
     .then(rollup => getContentsRecursivelyGivenRollup(rootId, rollup));
 };
 
 /**
  * @description Recursively get children of a block (and returns block itself)
  * @param rootId {ID} root to get components of
- * @param forceProjectId {ID=} Id of project, internal use (or force one)
+ * @param projectId {ID=} Id of project, internal use (or force one)
  * @returns {object} with keys of blocks
  */
-export const getComponents = (rootId, forceProjectId) => {
-  return getContents(rootId, forceProjectId)
+export const getComponents = (rootId, projectId) => {
+  return getContents(rootId, projectId)
     .then(({ components }) => components);
 };
 
 /**
  * @description Recursively get all options of a block and its components. Does not include block itself
  * @param rootId {ID} root to get components of
- * @param forceProjectId {ID=} Id of project, internal use (or force one)
+ * @param projectId {ID=} Id of project, internal use (or force one)
  * @returns {object} with keys of blocks
  */
-export const getOptions = (rootId, forceProjectId) => {
-  return getContents(rootId, forceProjectId)
+export const getOptions = (rootId, projectId) => {
+  return getContents(rootId, projectId)
     .then(({ options }) => options);
 };
 

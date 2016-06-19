@@ -4,56 +4,52 @@ import * as persistence from './persistence';
 import * as versioning from './versioning';
 import invariant from 'invariant';
 import { spawn, exec } from 'child_process';
-import { flatten } from 'lodash';
+import { merge, flatten } from 'lodash';
 import { errorDoesNotExist, errorCouldntFindProjectId } from '../utils/errors';
 
 // key for no role rule
 const untypedKey = 'none';
 
-//todo - these would be simplified if all were using maps. Update when convert blocks rollups to maps.
+//returns map
+export const getAllBlocksInProject = (projectId) => {
+  return persistence.blocksGet(projectId);
+};
 
+//returns array
 //note - expects the project to already exist.
 export const getAllBlockIdsInProject = (projectId) => {
-  const directory = filePaths.createBlockDirectoryPath(projectId);
-  return persistence.projectExists(projectId)
-    .then(() => fileSystem.directoryContents(directory));
+  return getAllBlocksInProject(projectId)
+    .then(blockMap => Object.keys(blockMap));
 };
 
-export const getAllBlocksInProject = (projectId) => {
-  return getAllBlockIdsInProject(projectId)
-    .then(blockIds => {
-      return Promise.all(blockIds.map(blockId => persistence.blockGet(blockId, projectId)));
-    });
-};
-
-//returns project ID
-export const findProjectFromBlock = (blockId) => {
-  if (!blockId) {
-    return Promise.reject(errorCouldntFindProjectId);
-  }
-
-  return new Promise((resolve, reject) => {
-    const storagePath = filePaths.createStorageUrl(filePaths.projectPath);
-    exec(`find ${storagePath} -type d -name ${blockId}`, (err, output) => {
-      if (err) {
-        return reject(err);
-      }
-
-      const lines = output.split('\n');
-      lines.pop(); //get rid of the last empty line
-      if (lines.length === 1) {
-        const [/* idBlock */,
-          /* blocks/ */,
-          /* data/ */,
-          idProject,
-        ] = lines[0].split('/').reverse();
-        resolve(idProject);
-      } else {
-        reject(errorCouldntFindProjectId);
-      }
-    });
-  });
-};
+////returns project ID
+//export const findProjectFromBlock = (blockId) => {
+//  if (!blockId) {
+//    return Promise.reject(errorCouldntFindProjectId);
+//  }
+//
+//  return new Promise((resolve, reject) => {
+//    const storagePath = filePaths.createStorageUrl(filePaths.projectPath);
+//    exec(`find ${storagePath} -type d -name ${blockId}`, (err, output) => {
+//      if (err) {
+//        return reject(err);
+//      }
+//
+//      const lines = output.split('\n');
+//      lines.pop(); //get rid of the last empty line
+//      if (lines.length === 1) {
+//        const [/* idBlock */,
+//          /* blocks/ */,
+//          /* data/ */,
+//          idProject,
+//        ] = lines[0].split('/').reverse();
+//        resolve(idProject);
+//      } else {
+//        reject(errorCouldntFindProjectId);
+//      }
+//    });
+//  });
+//};
 
 //fixme - this will error if the user has no projects
 //search each permissions.json by user ID to find projects they have access to
@@ -98,18 +94,16 @@ export const getProjectVersions = (projectId) => {
   return versioning.log(projectDataPath);
 };
 
+//returns array
+//todo - update all usages to expect object, not array
 export const getAllBlocks = (userId) => {
   return listProjectsWithAccess(userId)
     .then(projectIds => Promise.all(
       projectIds.map(projectId => getAllBlocksInProject(projectId))
     ))
-    .then(nested => flatten(nested))
-    //we need to make this a set because multiple projects may have blocks with the same ID... this is only the case when blocks are locked, so they will be identical.
-    //this is a shitty way of doing it, but cant just use a Set because instances are unique, just need to check the IDs
-    .then(array => {
-      const map = array.reduce((acc, block) => Object.assign(acc, { [block.id]: block}), {});
-      return Object.keys(map).map(key => map[key]);
-    });
+    //blockIds may be same across project, but only if they are frozen, so we can merge over each other
+    .then(projectBlockMaps => merge({}, ...projectBlockMaps))
+    .then(blockMap => Object.keys(blockMap).map(key => blockMap[key]));
 };
 
 export const getAllBlocksFiltered = (userId, blockFilter = () => true) => {

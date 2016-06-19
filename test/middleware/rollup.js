@@ -44,8 +44,8 @@ describe('Middleware', () => {
       return api.loadProject(projectId)
         .then(gotRoll => {
           expect(gotRoll.project).to.eql(project);
-          assert(gotRoll.blocks.every(block => {
-            return roll.blocks.some(initialBlock => initialBlock.id === block.id);
+          assert(Object.keys(gotRoll.blocks).every(blockId => {
+            return !!roll.blocks[blockId];
           }));
         });
     });
@@ -54,14 +54,14 @@ describe('Middleware', () => {
       const roll = createExampleRollup();
       const project = roll.project;
       const projectId = project.id;
-      const [blockP, blockA, blockB, blockC, blockD, blockE] = roll.blocks;
+      const  { blockP, blockA, blockB, blockC, blockD, blockE } = roll.blocks;
 
       return api.saveProject(projectId, roll)
         .then((commit) => Promise
           .all([
             persistence.projectGet(projectId),
-            persistence.blockGet(blockA.id, projectId),
-            persistence.blockGet(blockE.id, projectId),
+            persistence.blocksGet(projectId, false, blockA.id).then(map => map[blockA.id]),
+            persistence.blocksGet(projectId, false, blockE.id).then(map => map[blockE.id]),
           ])
           .then(([gotProject, gotA, gotE]) => {
             expect(gotProject).to.eql(Object.assign({}, project, { version: commit.sha, lastSaved: commit.time }));
@@ -108,9 +108,10 @@ describe('Middleware', () => {
       const roll = createExampleRollup();
       const project = roll.project;
 
-      const newBlocks = range(1000).map(() => new Block());
+      const newBlocks = range(1000).map(() => new Block())
+        .reduce((acc, block) => Object.assign(acc, { [block.id]: block }), {});
 
-      roll.blocks = roll.blocks.concat(newBlocks);
+      merge(roll.blocks, newBlocks);
 
       return api.saveProject(project.id, roll);
     });

@@ -56,7 +56,7 @@ export const loadProject = (projectId, avoidCache = false) => {
 export const saveProject = (projectId, rollup) => {
   invariant(projectId, 'Project ID required to snapshot');
   invariant(rollup, 'Rollup is required to save');
-  invariant(rollup.project && Array.isArray(rollup.blocks), 'rollup in wrong form');
+  invariant(rollup.project && typeof rollup.blocks === 'object', 'rollup in wrong form');
 
   //check if project is new, and save if it is
   if (!instanceMap.isRollupNew(rollup)) {
