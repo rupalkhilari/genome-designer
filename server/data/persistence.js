@@ -326,14 +326,14 @@ export const blockMerge = (projectId, blockId, patch) => {
         projectId,
         id: blockId,
       });
-      return blocksWrite(projectId, merged);
+      return blocksMerge(projectId, merged);
     })
     .then(blockMap => blockMap[blockId]);
 };
 
 //prefer blocksWrite, but for atomic operations this is ok
 export const blockWrite = (projectId, block) => {
-  return blocksWrite(projectId, { [ block.id]: block })
+  return blocksMerge(projectId, { [ block.id]: block })
     .then(blockMap => blockMap[block.id]);
 };
 
