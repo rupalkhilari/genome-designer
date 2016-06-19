@@ -122,8 +122,6 @@ router.route('/info/:type/:detail?/:additional?')
     const { user } = req;
     const { type, detail, additional } = req.params;
 
-    //todo - need to pass in the project Id on all of these so dont need to look it up each time...
-
     switch (type) {
     case 'role' :
       if (detail) {

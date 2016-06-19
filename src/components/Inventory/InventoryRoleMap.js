@@ -78,10 +78,12 @@ export class InventoryRoleMap extends Component {
 
     //loading
     this.setRoleType(type, false);
-
-    //returns an array of blocks
+    
     infoQuery('role', type)
-      .then(blocks => this.setRoleType(type, blocks));
+      .then(blockMap => {
+        const blocks = Object.keys(blockMap).map(blockId => blockMap[blockId]);
+        this.setRoleType(type, blocks);
+      });
   };
 
   onBlockDrop = (item, target) => {

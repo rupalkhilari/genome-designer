@@ -4,7 +4,7 @@ import * as persistence from './persistence';
 import * as versioning from './versioning';
 import invariant from 'invariant';
 import { spawn, exec } from 'child_process';
-import { merge, flatten } from 'lodash';
+import { merge, flatten, filter, values } from 'lodash';
 import { errorDoesNotExist, errorCouldntFindProjectId } from '../utils/errors';
 
 // key for no role rule
@@ -102,13 +102,12 @@ export const getAllBlocks = (userId) => {
       projectIds.map(projectId => getAllBlocksInProject(projectId))
     ))
     //blockIds may be same across project, but only if they are frozen, so we can merge over each other
-    .then(projectBlockMaps => merge({}, ...projectBlockMaps))
-    .then(blockMap => Object.keys(blockMap).map(key => blockMap[key]));
+    .then(projectBlockMaps => merge({}, ...projectBlockMaps));
 };
 
 export const getAllBlocksFiltered = (userId, blockFilter = () => true) => {
   return getAllBlocks(userId)
-    .then(blocks => blocks.filter(blockFilter));
+    .then(blocks => filter(blocks, blockFilter));
 };
 
 export const getAllBlocksWithName = (userId, name) => {
@@ -127,7 +126,8 @@ export const getAllBlocksWithRole = (userId, role) => {
 
 export const getAllBlockRoles = (userId) => {
   return getAllBlocks(userId)
-    .then(blocks => {
+    .then(blockMap => {
+      const blocks = values(blockMap);
       const obj = blocks.reduce((acc, block) => {
         const rule = block.rules.role;
         if (!rule) {

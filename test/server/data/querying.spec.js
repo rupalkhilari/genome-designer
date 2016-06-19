@@ -8,7 +8,7 @@ import * as filePaths from '../../../server/utils/filePaths';
 import * as rollup from '../../../server/data/rollup';
 import * as persistence from '../../../server/data/persistence';
 import * as querying from '../../../server/data/querying';
-import { merge } from 'lodash';
+import { merge, values } from 'lodash';
 
 import { createExampleRollup } from '../../utils/rollup';
 
@@ -85,7 +85,8 @@ describe('Server', () => {
 
       it('getAllBlocks() get all blocks for a user ID', () => {
         return querying.getAllBlocks(myUserId)
-          .then(blocks => {
+          .then(blockMap => {
+            const blocks = values(blockMap);
             expect(blocks.length).to.equal(myRolls.length * numberBlocksInCustomRollup);
             assert(blocks.every(block => BlockSchema.validate(block, true)), 'blocks not in valid format');
           });
@@ -93,7 +94,8 @@ describe('Server', () => {
 
       it('getAllBlocksByType() can get all blocks of type', () => {
         return querying.getAllBlocksWithRole(myUserId, 'promoter')
-          .then(blocks => {
+          .then(blockMap => {
+            const blocks = values(blockMap);
             expect(blocks.length).to.equal(myRolls.length);
             assert(blocks.every(block => block.rules.role === 'promoter'), 'got block with wrong role type');
           });
@@ -101,7 +103,8 @@ describe('Server', () => {
 
       it('getAllBlocksByType() can get all blocks by name', () => {
         return querying.getAllBlocksWithName(myUserId, terminatorBlockName)
-          .then(blocks => {
+          .then(blockMap => {
+            const blocks = values(blockMap);
             expect(blocks.length).to.equal(myRolls.length);
             assert(blocks.every(block => block.metadata.name === terminatorBlockName), 'got block with wrong name');
           });
