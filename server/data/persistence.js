@@ -44,10 +44,15 @@ const _blocksExist = (projectId, sha = false, ...blockIds) => {
 
   if (!sha) {
     return fileRead(manifestPath)
-      .then(blocks => blockIds.every(blockId => !!blocks[blockId]));
+      .then(blocks => {
+        if (blockIds.every(blockId => !!blocks[blockId])) {
+          return Promise.resolve(true);
+        }
+        return Promise.reject(errorDoesNotExist);
+      });
   }
 
-  versioning.checkout(projectDataPath, relativePath, sha)
+  return versioning.checkout(projectDataPath, relativePath, sha)
     .then(string => JSON.parse(string))
     .then(blocks => blockIds.every(blockId => !!blocks[blockId]));
 };
@@ -73,7 +78,7 @@ const _projectRead = (projectId, sha) => {
     .then(string => JSON.parse(string));
 };
 
-//if any block doesnt exist, then reject
+//if any block doesnt exist, then it just comes as undefined in the map
 const _blocksRead = (projectId, sha = false, ...blockIds) => {
   const manifestPath = filePaths.createBlockManifestPath(projectId);
   const projectDataPath = filePaths.createProjectDataPath(projectId);
@@ -82,10 +87,6 @@ const _blocksRead = (projectId, sha = false, ...blockIds) => {
   if (!sha) {
     return fileRead(manifestPath)
       .then(blocks => {
-        if (blockIds.length && !blockIds.every(blockId => !!blocks[blockId])) {
-          return Promise.reject(errorDoesNotExist);
-        }
-
         return blockIds.length ?
           blockIds.reduce((acc, blockId) => Object.assign(acc, { [blockId]: blocks[blockId] }), {}) :
           blocks;
@@ -115,11 +116,13 @@ const _projectSetup = (projectId, userId) => {
   const projectDataPath = filePaths.createProjectDataPath(projectId);
   const orderDirectory = filePaths.createOrderDirectoryPath(projectId);
   const blockDirectory = filePaths.createBlockDirectoryPath(projectId);
+  const blockManifestPath = filePaths.createBlockManifestPath(projectId);
 
   return directoryMake(projectPath)
     .then(() => directoryMake(projectDataPath))
     .then(() => directoryMake(orderDirectory))
     .then(() => directoryMake(blockDirectory))
+    .then(() => fileWrite(blockManifestPath, {})) //write an empty file in case try to merge with it
     .then(() => permissions.createProjectPermissions(projectId, userId))
     .then(() => versioning.initialize(projectDataPath, userId));
 };
@@ -175,6 +178,7 @@ export const projectExists = (projectId, sha) => {
   return _projectExists(projectId, sha);
 };
 
+//resolve if all blockIds exist, rejects if not
 export const blocksExist = (projectId, sha = false, ...blockIds) => {
   return _blocksExist(projectId, sha, ...blockIds);
 };
@@ -231,6 +235,7 @@ export const projectGet = (projectId, sha) => {
     });
 };
 
+//returns map, where blockMap.blockId === undefined if was missing
 export const blocksGet = (projectId, sha = false, ...blockIds) => {
   return _blocksRead(projectId, sha, ...blockIds)
     .catch(err => {
@@ -238,6 +243,19 @@ export const blocksGet = (projectId, sha = false, ...blockIds) => {
         return Promise.resolve(null);
       }
       return Promise.reject(err);
+    });
+};
+
+//prefer blocksGet, this is for atomic checks
+//rejects if the block is not present, and does not return a map (just the block), or null if doesnt exist
+export const blockGet = (projectId, sha = false, blockId) => {
+  return _blocksRead(projectId, sha, blockId)
+    .then(blockMap => {
+      const block = blockMap[blockId];
+      if (!block) {
+        return Promise.resolve(null);
+      }
+      return block;
     });
 };
 
@@ -290,6 +308,7 @@ export const projectMerge = (projectId, project, userId) => {
     });
 };
 
+//overwrite all blocks
 export const blocksWrite = (projectId, blockMap) => {
   if (!values(blockMap).every(block => validateBlock(block))) {
     return Promise.reject(errorInvalidModel);
@@ -299,9 +318,11 @@ export const blocksWrite = (projectId, blockMap) => {
   //force projectid
   //forIn(blockMap, (block, blockId) => Object.assign(block, { projectId }));
 
-  return _blocksWrite(projectId, blockMap, true);
+  return _blocksWrite(projectId, blockMap, true)
+    .then(() => blockMap);
 };
 
+//merge all blocks
 export const blocksMerge = (projectId, blockMap) => {
   if (!values(blockMap).every(block => validateBlock(block))) {
     return Promise.reject(errorInvalidModel);
@@ -311,9 +332,11 @@ export const blocksMerge = (projectId, blockMap) => {
   //force projectID
   //forIn(blockMap, (block, blockId) => Object.assign(block, { projectId }));
 
-  return _blocksWrite(projectId, blockMap, false);
+  return _blocksWrite(projectId, blockMap, false)
+    .then(() => blockMap);
 };
 
+//merge a single block
 //to write a single block... but in general you should write many at once using blocksMerge / blocksWrite
 export const blockMerge = (projectId, blockId, patch) => {
   return blocksGet(projectId, false, blockId)
@@ -323,14 +346,29 @@ export const blockMerge = (projectId, blockId, patch) => {
         projectId,
         id: blockId,
       });
-      return blocksMerge(projectId, merged);
+
+      if (!validateBlock(merged)) {
+        return Promise.reject(errorInvalidModel);
+      }
+
+      return blocksMerge(projectId, { [merged.id]: merged });
     })
     .then(blockMap => blockMap[blockId]);
 };
 
-//prefer blocksWrite, but for atomic operations this is ok
+//write/overwrite a single block
+//prefer blocksWrite / blocksMerge, but for atomic operations this is ok (or when want to just write on block)
 export const blockWrite = (projectId, block) => {
-  return blocksMerge(projectId, { [ block.id]: block })
+  if (!validateBlock(block)) {
+    return Promise.reject(errorInvalidModel);
+  }
+
+  return blocksGet(projectId)
+    .then(blockMap => {
+      //get the whole map, and overwrite the one we're interested in
+      Object.assign(blockMap, { [block.id]: block });
+      return blocksWrite(projectId, blockMap);
+    })
     .then(blockMap => blockMap[block.id]);
 };
 

@@ -36,7 +36,8 @@ const orderMap = new Map();
 //compares two rollups for effective changes
 //unforunately, the reducers run after the promise resolutions in these loading / saving functions, so project.version will increment immediately after the roll is set here, but that is ok - we handle that check below in isRollSame.
 const isRollDifferent = (oldRollup, newRollup) => {
-  //if (!oldRollup || !newRollup) return true;
+  //check for one not existing
+  if (!oldRollup || !newRollup) return true;
 
   //check projects same
   if (!Project.compare(oldRollup.project, newRollup.project)) return true;

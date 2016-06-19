@@ -238,9 +238,8 @@ router.route('/:projectId/:blockId')
   .get((req, res, next) => {
     const { projectId, blockId } = req;
 
-    persistence.blocksGet(projectId, false, blockId)
-      .then(blockMap => {
-        const result = blockMap[blockId];
+    persistence.blockGet(projectId, false, blockId)
+      .then(result => {
         if (!result) {
           return res.status(204).json(null);
         }

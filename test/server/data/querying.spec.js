@@ -34,7 +34,7 @@ describe('Server', () => {
         roll.project.components.push(promoter.id, terminator.id);
         return roll;
       };
-      const numberBlocksInCustomRollup = createCustomRollup().blocks.length;
+      const numberBlocksInCustomRollup = Object.keys(createCustomRollup().blocks).length;
 
       const myUserId = uuid.v4();
       const myRolls = [1, 2, 3, 4].map(createCustomRollup);

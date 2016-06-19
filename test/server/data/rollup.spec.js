@@ -1,12 +1,13 @@
 import { assert, expect } from 'chai';
 import uuid from 'node-uuid';
+import { merge } from 'lodash';
 import Block from '../../../src/models/Block';
 import Project from '../../../src/models/Project';
 import * as rollup from '../../../server/data/rollup';
 import * as persistence from '../../../server/data/persistence';
 import * as querying from '../../../server/data/querying';
 
-import { createExampleRollup } from '../../utils/rollup';
+import { numberBlocksInRollup, createExampleRollup } from '../../utils/rollup';
 
 describe('Server', () => {
   describe('Data', () => {
@@ -15,14 +16,22 @@ describe('Server', () => {
       const roll = createExampleRollup();
       const project = roll.project;
       const projectId = project.id;
-      const { blockP, blockA, blockB, blockC, blockD, blockE } = roll.blocks;
+      const blockKeys = Object.keys(roll.blocks);
+      const block1 = roll.blocks[blockKeys[0]];
+      const block2 = roll.blocks[blockKeys[3]];
+      const parentId = blockKeys.find(blockId => {
+        const block = roll.blocks[blockId];
+        return block.components.length === 3;
+      });
+
       before(() => {
         return persistence.projectCreate(projectId, project, userId);
       });
 
-      it('createRollupFromArray() has structure { project: project, blocks: [...blocks] }', () => {
+      it('createRollupFromArray() has structure { project: project, blocks: { <blockId>: block } }', () => {
         expect(roll.project).to.eql(project);
-        expect(Object.keys(roll.blocks).length).to.equal(6);
+        assert(typeof roll.blocks === 'object', 'blocks shoudl be object');
+        expect(Object.keys(roll.blocks).length).to.equal(numberBlocksInRollup);
       });
 
       it('writeProjectRollup() writes a whole rollup', () => {
@@ -30,13 +39,13 @@ describe('Server', () => {
           .then(() => Promise
             .all([
               persistence.projectGet(projectId),
-              persistence.blocksGet(projectId, false, blockA.id).then(map => map[blockA.id]),
-              persistence.blocksGet(projectId, false, blockE.id).then(map => map[blockE.id]),
+              persistence.blocksGet(projectId, false, block1.id).then(map => map[block1.id]),
+              persistence.blocksGet(projectId, false, block2.id).then(map => map[block2.id]),
             ])
             .then(([gotProject, gotA, gotE]) => {
               expect(gotProject).to.eql(project);
-              expect(gotA).to.eql(blockA);
-              expect(gotE).to.eql(blockE);
+              expect(gotA).to.eql(block1);
+              expect(gotE).to.eql(block2);
             })
           );
       });
@@ -45,41 +54,46 @@ describe('Server', () => {
         return rollup.getProjectRollup(projectId)
           .then(roll => {
             expect(roll.project).to.eql(project);
-            expect(Object.keys(roll.blocks).length).to.equal(6);
+            expect(Object.keys(roll.blocks).length).to.equal(numberBlocksInRollup);
           });
       });
 
-      it('writeProjectRollup() discards old blocks', () => {
-        const blockF = new Block({projectId});
-        const newComponentsBlockA = blockA.components.slice();
-        newComponentsBlockA.shift(); //remove C
-        newComponentsBlockA.push(blockF.id); //add F
-        const editBlockA = Object.assign({}, blockA, {components: newComponentsBlockA});
+      //this test is a little facetious, as now rollup creation is responsible for updating blocks in manifest
+      it('writeProjectRollup() overwrites, discarding old blocks', () => {
+        const blockG = new Block({ projectId });
+        const parent = roll.blocks[parentId];
+        const newComponentsParent = parent.components.slice();
+        const popped = newComponentsParent.pop(); //remove F
+        newComponentsParent.push(blockG.id); //add G
+        const newParent = Object.assign({}, parent, { components: newComponentsParent });
 
-        const newRoll = rollup.createRollupFromArray(project, blockP, editBlockA, blockB, blockD, blockE, blockF);
+        const newRoll = merge({}, roll, {
+          blocks: {
+            [parentId]: newParent,
+            [blockG.id]: blockG,
+          },
+        });
+        delete newRoll.blocks[popped];
+
         return rollup.writeProjectRollup(projectId, newRoll, userId)
           .then(() => Promise
             .all([
               persistence.projectGet(projectId),
-              persistence.blocksGet(projectId, false, blockA.id).then(map => map[blockA.id]),
-              persistence.blocksGet(projectId, false, blockF.id).then(map => map[blockF.id]),
-              persistence.blocksGet(projectId, false, blockC.id).then(map => map[blockC.id]),
+              persistence.blockGet(projectId, false, parentId),
             ])
-            .then(([gotProject, gotA, gotF, gotC]) => {
+            .then(([gotProject, gotParent]) => {
               expect(gotProject).to.eql(project);
-              expect(gotA).to.eql(editBlockA);
-              expect(gotF).to.eql(blockF);
-              expect(gotC).to.eql(null);
+              expect(gotParent).to.eql(newParent);
             })
             .then(() => querying.getAllBlockIdsInProject(projectId))
-            .then(ids => expect(ids.length).to.equal(6))
+            .then(ids => expect(ids.length).to.equal(numberBlocksInRollup))
           );
       });
 
       it('writeProjectRollup rejects if a block is invalid', (done) => {
-        const badBlock = Object.assign(Block.classless(), { parents: { sha: 'invalidSha'} });
+        const badBlock = Object.assign(Block.classless(), { parents: { sha: 'invalidSha' } });
         const badRoll = createExampleRollup();
-        badRoll.blocks.push(badBlock);
+        Object.assign(badRoll.blocks, { [badBlock.id]: badBlock });
 
         return rollup.writeProjectRollup(projectId, badRoll, userId)
           .catch(err => {
@@ -88,7 +102,7 @@ describe('Server', () => {
       });
 
       it('writeProjectRollup rejects if project is invalid', (done) => {
-        const badProject = Object.assign(Project.classless(), { parents: { sha: 'invalidSha'} });
+        const badProject = Object.assign(Project.classless(), { parents: { sha: 'invalidSha' } });
         const badRoll = createExampleRollup();
         badRoll.project = badProject;
 

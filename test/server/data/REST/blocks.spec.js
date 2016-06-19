@@ -143,44 +143,24 @@ describe('Server', () => {
             });
         });
 
-        it('PUT forces the block ID', (done) => {
+        it('PUT ensures the block ID matches', (done) => {
           const url = `/data/${projectId}/${blockId}`;
           const newBlock = new Block({
             id: 'randomId',
             projectId,
             notes: { field: 'value' },
           });
-          const validator = Object.assign({}, newBlock, { id: blockId });
 
           request(server)
             .put(url)
             .send(newBlock)
-            .expect(200)
-            .expect('Content-Type', /json/)
-            .end((err, result) => {
-              if (err) {
-                done(err);
-              }
-
-              expect(result.body).to.eql(validator);
-              expect(result.body).to.not.eql(newBlock);
-              expect(result.body).to.not.eql(blockData);
-
-              persistence.blocksGet(projectId, false, blockId)
-                .then((blockMap) => {
-                  const result = blockMap[blockId];
-                  expect(result).to.eql(validator);
-                  expect(result).to.not.eql(blockData);
-                  done();
-                })
-                .catch(done);
-            });
+            .expect(400, done);
         });
 
         it('PUT validates the block', (done) => {
           const url = `/data/${projectId}/${blockId}`;
           request(server)
-            .post(url)
+            .put(url)
             .send(invalidDataBlock)
             .expect(400, done);
         });

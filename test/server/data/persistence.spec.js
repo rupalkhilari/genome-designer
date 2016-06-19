@@ -22,8 +22,6 @@ import * as persistence from '../../../server/data/persistence';
 
 //todo - can probably de-dupe many of these setup / before() clauses, they are pretty similar
 
-//todo - any references to createBlockManifestPath need to be udpated. update the setup clause
-
 describe('Server', () => {
   describe('Data', () => {
     describe('persistence', function persistenceTests() {
@@ -38,7 +36,9 @@ describe('Server', () => {
         const blockName = 'blockA';
         const blockData = new Block({ projectId, metadata: { name: blockName } });
         const blockId = blockData.id;
-        const blockManifestPath = filePaths.createBlockManifestPath(blockId, projectId);
+        const blockFileContents = { [blockId]: blockData };
+        const blockDataPath = filePaths.createBlockDirectoryPath(projectId);
+        const blockManifestPath = filePaths.createBlockManifestPath(projectId);
 
         const blockSequence = 'acgtacgtacgatcgatcgac';
         const sequenceMd5 = md5(blockSequence);
@@ -48,8 +48,9 @@ describe('Server', () => {
           return directoryDelete(projectPath)
             .then(() => directoryMake(projectPath))
             .then(() => directoryMake(projectDataPath))
+            .then(() => directoryMake(blockDataPath))
             .then(() => fileWrite(projectManifestPath, projectData))
-            .then(() => fileWrite(blockManifestPath, blockData))
+            .then(() => fileWrite(blockManifestPath, blockFileContents))
             .then(() => fileWrite(sequenceFilePath, blockSequence, false));
         });
 
@@ -77,16 +78,28 @@ describe('Server', () => {
             .then((result) => expect(result).to.eql(projectData));
         });
 
-        //todo - update
         it('blockGet() returns null if doesnt exist', () => {
-          return persistence.blocksGet(projectId, false, 'notRealId')
-            .then((blockMap) => {
-              const result = blockMap['notRealId'];
-              assert(result === null)
+          return persistence.blockGet(projectId, false, 'notRealId')
+            .then((result) => {
+              assert(result === null, 'should be null if block doesnt exist')
             });
         });
 
         it('blockGet() returns block if does exist', () => {
+          return persistence.blockGet(projectId, false, blockId)
+            .then((result) => expect(result).to.eql(blockData));
+        });
+
+        it('blocksGet() returns map with key undefined if doesnt exist', () => {
+          const fakeId = 'notRealId';
+          return persistence.blocksGet(projectId, false, fakeId)
+            .then(blockMap => {
+              assert(typeof blockMap === 'object', 'should return a map');
+              assert(!blockMap[fakeId], 'value should not be defined');
+            });
+        });
+
+        it('blocksGet() returns map with block defined as value if does exist', () => {
           return persistence.blocksGet(projectId, false, blockId)
             .then(blockMap => blockMap[blockId])
             .then((result) => expect(result).to.eql(blockData));
@@ -160,7 +173,8 @@ describe('Server', () => {
 
         const blockData = new Block({ projectId });
         const blockId = blockData.id;
-        const blockManifestPath = filePaths.createBlockManifestPath(blockId, projectId);
+        const blockFileContents = { [blockId]: blockData };
+        const blockManifestPath = filePaths.createBlockManifestPath(projectId);
 
         const blockSequence = 'aaaaaccccccggggttttt';
         const sequenceMd5 = md5(blockSequence);
@@ -232,17 +246,18 @@ describe('Server', () => {
             .then(() => assert(false, 'should not have written successfully'))
             .catch(err => {
               console.log(err);
-              expect(err).to.equal(errorInvalidModel)
+              expect(err).to.equal(errorInvalidModel);
             })
             .then(() => fileRead(blockManifestPath))
-            .then(result => expect(result).to.eql(blockData));
+            .then(result => expect(result).to.eql(blockFileContents));
         });
 
         it('blockWrite() ovewrwrites the block', () => {
           const overwrite = blockData.merge(blockPatch);
+          const overwriteFileContents = { [blockId]: overwrite };
           return persistence.blockWrite(projectId, overwrite)
             .then(() => fileRead(blockManifestPath))
-            .then(result => expect(result).to.eql(overwrite));
+            .then(result => expect(result).to.eql(overwriteFileContents));
         });
 
         it('blockWrite() does not make the project commit', () => {
@@ -258,12 +273,13 @@ describe('Server', () => {
 
         it('blockMerge() accepts a partial block', () => {
           const merged = merge({}, blockData, blockPatch);
+          const mergedFileContents = { [merged.id] : merged };
           //start with write to reset
           return persistence.blockWrite(projectId, blockData)
             .then(() => persistence.blockMerge(projectId, blockId, blockPatch))
             .then(result => expect(result).to.eql(merged))
             .then(() => fileRead(blockManifestPath))
-            .then(result => expect(result).to.eql(merged));
+            .then(result => expect(result).to.eql(mergedFileContents));
         });
 
         it('blockMerge() validates the block', () => {
@@ -294,7 +310,8 @@ describe('Server', () => {
 
         const blockData = new Block({ projectId });
         const blockId = blockData.id;
-        const blockManifestPath = filePaths.createBlockManifestPath(blockId, projectId);
+        const blockFileContents = { [blockId]: blockData };
+        const blockManifestPath = filePaths.createBlockManifestPath(projectId, blockId);
 
         //hack(ish) - creating at beginning of each because chaining tests is hard, and beforeEach will encounter race condition
 
@@ -321,11 +338,11 @@ describe('Server', () => {
           return persistence.projectWrite(projectId, projectData, userId)
             .then(() => persistence.blockWrite(projectId, blockData))
             .then(() => fileRead(blockManifestPath))
-            .then(result => expect(result).to.eql(blockData))
+            .then(result => expect(result).to.eql(blockFileContents))
             .then(() => persistence.blocksDelete(projectId, blockId))
             .then(() => fileExists(blockManifestPath))
-            .then(result => assert(false))
-            .catch(err => expect(err).to.equal(errorDoesNotExist));
+            .then(() => fileRead(blockManifestPath))
+            .then(contents => expect(contents).to.eql({}));
         });
 
         it('blockDelete() does not create a commit', () => {

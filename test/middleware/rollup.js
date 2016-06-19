@@ -1,6 +1,6 @@
 import chai from 'chai';
 import * as api from '../../src/middleware/data';
-import { range } from 'lodash';
+import { merge, range } from 'lodash';
 const { assert, expect } = chai;
 import {
   fileExists,
@@ -54,19 +54,21 @@ describe('Middleware', () => {
       const roll = createExampleRollup();
       const project = roll.project;
       const projectId = project.id;
-      const  { blockP, blockA, blockB, blockC, blockD, blockE } = roll.blocks;
+      const blockKeys = Object.keys(roll.blocks);
+      const block1 = roll.blocks[blockKeys[0]];
+      const block2 = roll.blocks[blockKeys[3]];
 
       return api.saveProject(projectId, roll)
         .then((commit) => Promise
           .all([
             persistence.projectGet(projectId),
-            persistence.blocksGet(projectId, false, blockA.id).then(map => map[blockA.id]),
-            persistence.blocksGet(projectId, false, blockE.id).then(map => map[blockE.id]),
+            persistence.blocksGet(projectId, false, block1.id).then(map => map[block1.id]),
+            persistence.blocksGet(projectId, false, block2.id).then(map => map[block2.id]),
           ])
-          .then(([gotProject, gotA, gotE]) => {
+          .then(([gotProject, got1, got2]) => {
             expect(gotProject).to.eql(Object.assign({}, project, { version: commit.sha, lastSaved: commit.time }));
-            expect(gotA).to.eql(blockA);
-            expect(gotE).to.eql(blockE);
+            expect(got1).to.eql(block1);
+            expect(got2).to.eql(block2);
           }));
     });
 
