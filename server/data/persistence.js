@@ -140,9 +140,6 @@ const _blocksWrite = (projectId, blockMap = {}, replace = false) => {
   const manifestPath = filePaths.createBlockManifestPath(projectId);
   invariant(typeof blockMap === 'object', 'must pass a map of block ids to blocks');
 
-  console.log('_blocksWrite');
-  console.log(blockMap);
-
   return (replace === true) ?
     fileWrite(manifestPath, blockMap) :
     fileMerge(manifestPath, blockMap);
