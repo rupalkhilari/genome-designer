@@ -1,6 +1,10 @@
 import React, { Component, PropTypes } from 'react';
 import {connect} from 'react-redux';
-import { uiShowAuthenticationForm, uiSetGrunt } from '../../actions/ui';
+import {
+  uiShowAuthenticationForm,
+  uiSetGrunt,
+  uiSpin,
+} from '../../actions/ui';
 import invariant from 'invariant';
 import { userLogin } from '../../actions/user';
 import { projectOpen } from '../../actions/projects';
@@ -21,6 +25,7 @@ class SignInForm extends Component {
   static propTypes = {
     uiShowAuthenticationForm: PropTypes.func.isRequired,
     uiSetGrunt: PropTypes.func.isRequired,
+    uiSpin: PropTypes.func.isRequired,
     userLogin: PropTypes.func.isRequired,
     projectOpen: PropTypes.func.isRequired,
   };
@@ -40,14 +45,16 @@ class SignInForm extends Component {
   onSubmit(evt) {
     // submission occurs via REST not form submission
     evt.preventDefault();
-
+    this.props.uiSpin('Signing in... Please wait.');
     this.props.userLogin(this.emailAddress, this.password)
       .then(user => {
         // close the form
+        this.props.uiSpin();
         this.props.uiShowAuthenticationForm('none');
         this.props.projectOpen(null);
       })
       .catch((reason) => {
+        this.props.uiSpin();
         const defaultMessage = 'Email address or password are not recognized.';
         const { message = defaultMessage } = reason;
         this.showServerErrors({
@@ -142,6 +149,7 @@ function mapStateToProps(state) {
 export default connect(mapStateToProps, {
   uiShowAuthenticationForm,
   uiSetGrunt,
+  uiSpin,
   userLogin,
   projectOpen,
 })(SignInForm);

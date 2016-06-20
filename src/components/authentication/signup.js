@@ -1,6 +1,10 @@
 import React, { Component, PropTypes } from 'react';
 import {connect} from 'react-redux';
-import { uiShowAuthenticationForm, uiSetGrunt } from '../../actions/ui';
+import {
+  uiShowAuthenticationForm,
+  uiSetGrunt,
+  uiSpin,
+} from '../../actions/ui';
 import { projectOpen } from '../../actions/projects';
 import { userRegister } from '../../actions/user';
 import invariant from 'invariant';
@@ -42,6 +46,7 @@ class RegisterForm extends Component {
   static propTypes = {
     uiShowAuthenticationForm: PropTypes.func.isRequired,
     uiSetGrunt: PropTypes.func.isRequired,
+    uiSpin: PropTypes.func.isRequired,
     userRegister: PropTypes.func.isRequired,
     projectOpen: PropTypes.func.isRequired,
   };
@@ -60,7 +65,7 @@ class RegisterForm extends Component {
     if (this.clientValidation()) {
       return;
     }
-
+    this.props.uiSpin('Creating your account... Please wait.');
     this.props.userRegister({
       email: this.emailAddress,
       password: this.password,
@@ -68,11 +73,13 @@ class RegisterForm extends Component {
       lastName: this.lastName,
     })
     .then((json) => {
-      // close the form
+      // close the form / wait message
+      this.props.uiSpin();
       this.props.uiShowAuthenticationForm('none');
       this.props.projectOpen(null);
     })
     .catch((reason) => {
+      this.props.uiSpin();
       const defaultMessage = 'Unexpected error, please check your connection';
       const { message = defaultMessage } = reason;
       this.showServerErrors({
@@ -296,6 +303,7 @@ function mapStateToProps(state) {
 export default connect(mapStateToProps, {
   uiShowAuthenticationForm,
   uiSetGrunt,
+  uiSpin,
   userRegister,
   projectOpen,
 })(RegisterForm);

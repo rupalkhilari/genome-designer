@@ -54,7 +54,7 @@ class OrderModal extends Component {
     if (this.props.order.isSubmitted()) {
       this.props.uiShowOrderForm(false);
     } else {
-      this.props.uiSpin('Submitting your order, please wait.');
+      this.props.uiSpin('Submitting order... Please wait.');
       this.props.orderSubmit(this.props.order.id)
         .then(() => {
           this.props.uiSpin();
