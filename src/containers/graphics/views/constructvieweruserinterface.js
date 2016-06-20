@@ -65,6 +65,11 @@ export default class ConstructViewerUserInterface extends UserInterface {
     // so work backwards in the list and return the first
     // block found
     for (let i = hits.length - 1; i >= 0; i--) {
+      // hit the title node
+      if (hits[i].isNodeOrChildOf(this.layout.titleNode)) {
+        return hits[i];
+      }
+      // a block node
       if (this.layout.elementFromNode(hits[i])) {
         return hits[i];
       }
@@ -618,6 +623,9 @@ export default class ConstructViewerUserInterface extends UserInterface {
     if (this.construct.isFrozen() || this.construct.isFixed()) {
       return;
     }
+    if (payload.item.isConstruct && payload.item.isConstruct() && payload.item.isTemplate()) {
+      return;
+    }
     // convert global point to local space via our mousetrap
     const localPosition = this.mouseTrap.globalToLocal(globalPosition, this.el);
     // user might be targeting the edge or center of block, or no block at all
@@ -639,6 +647,10 @@ export default class ConstructViewerUserInterface extends UserInterface {
   onDrop(globalPosition, payload, event) {
     // no drop on frozen or fixed constructs
     if (this.construct.isFrozen() || this.construct.isFixed()) {
+      return;
+    }
+    // for now templates can only be dropped on the new construct target which is part of the canvas
+    if (payload.item.isConstruct && payload.item.isConstruct() && payload.item.isTemplate()) {
       return;
     }
 
