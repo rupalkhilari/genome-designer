@@ -15,6 +15,10 @@ export const getProjectRollup = (projectId) => {
   //dont use Promise.all so we can handle errors of project not existing better
   return persistence.projectGet(projectId)
     .then(project => {
+      if (!project) {
+        return Promise.reject(errorDoesNotExist);
+      }
+
       return getAllBlocksInProject(projectId)
         .then(blocks => {
           return {
