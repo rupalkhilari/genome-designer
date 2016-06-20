@@ -109,6 +109,7 @@ router.post('/:pluginId/:projectId?', jsonParser, (req, resp, next) => {
                     .then(() => persistence.projectSave(roll.project.id, req.user.uuid))
                     .then(commit => resp.status(200).json({ ProjectId: roll.project.id }))
                     .catch(err => {
+                      console.log('Error in Import 1: ' + err);
                       resp.status(400).send(err);
                     });
                 } else {
@@ -120,15 +121,18 @@ router.post('/:pluginId/:projectId?', jsonParser, (req, resp, next) => {
                         .then(() => persistence.projectSave(existingRoll.project.id, req.user.uuid))
                         .then(commit => resp.status(200).json({ ProjectId: existingRoll.project.id }))
                         .catch(err => {
+                          console.log('Error in Import 2: ' + err);
                           resp.status(400).send(err);
                         });
                     })
                     .catch(err => {
+                      console.log('Error in Import 3: ' + err);
                       resp.status(400).send(err);
                     });
                 }
               })
               .catch(err => {
+                console.log('Error in Import 4: ' + err);
                 resp.status(500).send(err);
               });
           });
