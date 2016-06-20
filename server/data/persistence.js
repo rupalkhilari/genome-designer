@@ -405,7 +405,7 @@ export const projectDelete = (projectId, forceDelete = false) => {
   return projectExists(projectId)
     .then(() => projectGet(projectId))
     .then(project => {
-      if (project.isSample) {
+      if (project && project.isSample) {
         return Promise.reject('cannot delete sample projects');
       }
     })
