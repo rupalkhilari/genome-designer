@@ -48,6 +48,8 @@ export default function blocks(state = initialState, action) {
     const { blockId, blockIds } = action;
     const nextState = Object.assign({}, state);
 
+    //don't remove from instanceMap as blocks may be shared across projects
+
     if (Array.isArray(blockIds)) {
       blockIds.forEach(blockId => { delete nextState[blockId]; });
       return nextState;
