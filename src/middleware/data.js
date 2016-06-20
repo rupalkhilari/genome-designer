@@ -125,7 +125,7 @@ export const deleteProject = (projectId) => {
 //   components : { <blockId> : <block> } //including the parent requested
 //   options: { <blockId> : <block> }
 // }
-export const loadBlock = (blockId, withContents = false, projectId) => {
+export const loadBlock = (blockId, projectId, withContents = false) => {
   invariant(projectId, 'Project ID is required');
   invariant(blockId, 'Block ID is required');
 

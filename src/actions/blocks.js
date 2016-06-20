@@ -13,19 +13,17 @@ import { pauseAction, resumeAction } from '../store/pausableStore';
 
 //Promise
 //retrieves a block, and its options and components if specified
-export const blockLoad = (blockId, withContents = false, skipIfContentsEmpty = false) => {
+export const blockLoad = (blockId, inputProjectId, withContents = false, skipIfContentsEmpty = false) => {
   return (dispatch, getState) => {
     const retrieved = getState().blocks[blockId];
     if (skipIfContentsEmpty === true && retrieved && !retrieved.components.length && !Object.keys(retrieved.options).length) {
       return Promise.resolve([retrieved]);
     }
 
-    let projectId;
-    if (retrieved && retrieved.projectId) {
-      projectId = retrieved.projectId;
-    }
+    const projectId = inputProjectId || (retrieved ? retrieved.projectId : null);
+    invariant(projectId, 'must pass a projectId to blockLoad if block not in store');
 
-    return loadBlock(blockId, withContents, projectId)
+    return loadBlock(blockId, projectId, withContents)
       .then(({ components, options }) => {
         const blockMap = Object.assign({}, options, components);
         const blocks = Object.keys(blockMap).map(key => new Block(blockMap[key]));

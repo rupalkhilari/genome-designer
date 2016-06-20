@@ -78,7 +78,7 @@ export class InventoryRoleMap extends Component {
 
     //loading
     this.setRoleType(type, false);
-    
+
     infoQuery('role', type)
       .then(blockMap => {
         const blocks = Object.keys(blockMap).map(blockId => blockMap[blockId]);
@@ -89,7 +89,7 @@ export class InventoryRoleMap extends Component {
   onBlockDrop = (item, target) => {
     //get components if its a construct and add blocks to the store
     //note - this may be a very large query
-    return this.props.blockLoad(item.id, true, true)
+    return this.props.blockLoad(item.id, item.projectId, true, true)
       .then(() => item);
   };
 
