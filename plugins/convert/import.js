@@ -8,6 +8,7 @@ import * as fileSystem from '../../server/utils/fileSystem';
 import * as filePaths from '../../server/utils/filePaths';
 import { errorDoesNotExist } from '../../server/utils/errors';
 import md5 from 'md5';
+import { merge, filter } from 'lodash';
 
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
@@ -78,15 +79,16 @@ router.post('/:pluginId/convert', jsonParser, (req, resp, next) => {
       .then(() => callImportFunction('convert', pluginId, inputFilePath))
       .then(converted => {
         const roots = converted.roots;
-        const blocks = converted.blocks.filter(block => roots.indexOf(block.id) >= 0);
-        const payload = constructsOnly ? { roots, blocks } : converted;
+        const rootBlocks = filter(converted.blocks, (block, blockId) => roots.indexOf(blockId) >= 0);
+        const payload = constructsOnly ?
+        { roots, blocks: rootBlocks } :
+          converted;
         resp.status(200).json(payload);
       })
       .catch(err => next(err));
   });
 });
 
-//can pass :projectId = 'convert' to just convert genbank file directly, and not write to memory
 router.post('/:pluginId/:projectId?', jsonParser, (req, resp, next) => {
   const { pluginId, projectId } = req.params;
 
@@ -113,7 +115,7 @@ router.post('/:pluginId/:projectId?', jsonParser, (req, resp, next) => {
                   rollup.getProjectRollup(projectId)
                     .then((existingRoll) => {
                       existingRoll.project.components = existingRoll.project.components.concat(roll.project.components);
-                      existingRoll.blocks = existingRoll.blocks.concat(roll.blocks);
+                      Object.assign(existingRoll.blocks, roll.blocks);
                       rollup.writeProjectRollup(existingRoll.project.id, existingRoll, req.user.uuid)
                         .then(() => persistence.projectSave(existingRoll.project.id, req.user.uuid))
                         .then(commit => resp.status(200).json({ ProjectId: existingRoll.project.id }))

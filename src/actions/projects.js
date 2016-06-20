@@ -120,7 +120,9 @@ export const projectLoad = (projectId, avoidCache = false) => {
 
         dispatch({
           type: ActionTypes.BLOCK_STASH,
-          blocks: blocks.map((blockObject) => new Block(blockObject)),
+          blocks: Object.keys(blocks)
+            .map(blockId => blocks[blockId])
+            .map((blockObject) => new Block(blockObject)),
         });
 
         dispatch({

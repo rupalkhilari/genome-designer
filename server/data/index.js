@@ -25,33 +25,35 @@ const jsonParser = bodyParser.json({
 
 router.use(jsonParser);
 
-// allow the route /block/<blockId> and find the projectId
-// not recommended e.g. for POST
-// dependent on param middleware below to assign IDs to req directly
-// does not know about SHA, but shouldn't be an issue, as blocks change IDs moving across projects
-//todo - should be able to look at block.projectId in many cases... likely easiest from the client when already have the block, here we'd have to fetch it
-const blockDeterminatorMiddleware = (req, res, next) => {
-  const { projectId, blockId } = req;
+/*
+ //deprecated - blocks should have a projectId on them, and this is expensive
+ // allow the route /block/<blockId> and find the projectId
+ // not recommended e.g. for POST
+ // dependent on param middleware below to assign IDs to req directly
+ // does not know about SHA, but shouldn't be an issue, as blocks change IDs moving across projects
+ const blockDeterminatorMiddleware = (req, res, next) => {
+ const { projectId, blockId } = req;
 
-  if (projectId === 'block' && blockId) {
-    querying.findProjectFromBlock(blockId)
-      .then(projectId => {
-        Object.assign(req, { projectId });
-        next();
-      })
-      .catch(err => {
-        if (err === errorCouldntFindProjectId) {
-          return res.status(404).send('Could not find project ID automatically for block ID ' + blockId);
-        }
-        return next(err);
-      });
-  } else if (projectId === 'block' && !blockId) {
-    // tried to access route /block without a block ID
-    res.status(404).send('Block ID required');
-  } else {
-    next();
-  }
-};
+ if (projectId === 'block' && blockId) {
+ querying.findProjectFromBlock(blockId)
+ .then(projectId => {
+ Object.assign(req, { projectId });
+ next();
+ })
+ .catch(err => {
+ if (err === errorCouldntFindProjectId) {
+ return res.status(404).send('Could not find project ID automatically for block ID ' + blockId);
+ }
+ return next(err);
+ });
+ } else if (projectId === 'block' && !blockId) {
+ // tried to access route /block without a block ID
+ res.status(404).send('Block ID required');
+ } else {
+ next();
+ }
+ };
+ */
 
 /***************************
  REST
@@ -114,14 +116,11 @@ router.route('/sequence/:md5/:blockId?')
     res.status(403).send('Not allowed to delete sequence');
   });
 
-router.route('/info/:type/:detail?')
+router.route('/info/:type/:detail?/:additional?')
   .all(jsonParser)
   .get((req, res, next) => {
     const { user } = req;
-    const { type, detail } = req.params;
-
-    //expect blockIds, not projectId
-    //todo - ideally would pass in the project on all of these so dont need to look it up each time... should have it when make the reuqest anyway
+    const { type, detail, additional } = req.params;
 
     switch (type) {
     case 'role' :
@@ -136,17 +135,17 @@ router.route('/info/:type/:detail?')
       }
       break;
     case 'contents' :
-      rollup.getContents(detail)
+      rollup.getContents(detail, additional)
         .then(info => res.status(200).json(info))
         .catch(err => next(err));
       break;
     case 'components' :
-      rollup.getComponents(detail)
+      rollup.getComponents(detail, additional)
         .then(info => res.status(200).json(info))
         .catch(err => next(err));
       break;
     case 'options' :
-      rollup.getOptions(detail)
+      rollup.getOptions(detail, additional)
         .then(info => res.status(200).json(info))
         .catch(err => next(err));
       break;
@@ -156,7 +155,7 @@ router.route('/info/:type/:detail?')
   });
 
 // routes for non-atomic operations
-// response/request with data in rollup format {project: {}, blocks: [], ...}
+// response/request with data in rollup format {project: {}, blocks: {}, ...}
 // e.g. used in autosave, loading / saving whole project
 router.route('/projects/:projectId')
   .all(jsonParser, permissionsMiddleware)
@@ -233,11 +232,11 @@ router.route('/:projectId/commit/:sha?')
   });
 
 router.route('/:projectId/:blockId')
-  .all(blockDeterminatorMiddleware, permissionsMiddleware)
+  .all(permissionsMiddleware)
   .get((req, res, next) => {
     const { projectId, blockId } = req;
 
-    persistence.blockGet(blockId, projectId)
+    persistence.blockGet(projectId, false, blockId)
       .then(result => {
         if (!result) {
           return res.status(204).json(null);
@@ -250,8 +249,14 @@ router.route('/:projectId/:blockId')
     const { projectId, blockId } = req;
     const block = req.body;
 
-    persistence.blockWrite(blockId, block, projectId)
-      .then(result => res.json(result))
+    if (!!block.id && block.id !== blockId) {
+      return res.status(400).send(errorInvalidModel);
+    }
+
+    persistence.blockWrite(projectId, block)
+      .then(result => {
+        res.json(result);
+      })
       .catch(err => {
         if (err === errorInvalidModel) {
           return res.status(400).send(errorInvalidModel);
@@ -267,8 +272,10 @@ router.route('/:projectId/:blockId')
       return res.status(400).send(errorInvalidModel);
     }
 
-    persistence.blockMerge(blockId, block, projectId)
-      .then(merged => res.json(merged))
+    persistence.blockMerge(projectId, blockId, block)
+      .then(result => {
+        res.json(result);
+      })
       .catch(err => {
         if (err === errorInvalidModel) {
           return res.status(400).send(errorInvalidModel);
@@ -279,7 +286,7 @@ router.route('/:projectId/:blockId')
   .delete((req, res, next) => {
     const { blockId, projectId } = req;
 
-    persistence.blockDelete(blockId, projectId)
+    persistence.blocksDelete(projectId, blockId)
       .then(() => res.status(200).send(blockId))
       .catch(err => next(err));
   });
@@ -331,7 +338,7 @@ router.route('/:projectId')
   })
   .delete((req, res, next) => {
     const { projectId } = req;
-    const forceDelete = !!req.query.force
+    const forceDelete = !!req.query.force;
 
     persistence.projectDelete(projectId, forceDelete)
       .then(() => res.status(200).json({ projectId }))

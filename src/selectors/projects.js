@@ -90,7 +90,8 @@ export const projectGetOptionWithSource = (projectId, sourceKey, sourceId) => {
 export const projectCreateRollup = (projectId) => {
   return (dispatch, getState) => {
     const project = _getProjectFromStore(projectId, getState());
-    const blocks = dispatch(projectListAllBlocks(projectId));
+    const blocks = dispatch(projectListAllBlocks(projectId))
+      .reduce((acc, block) => Object.assign(acc, { [block.id]: block }), {});
 
     return {
       project,

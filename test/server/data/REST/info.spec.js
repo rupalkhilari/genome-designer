@@ -5,8 +5,8 @@ import Block from '../../../../src/models/Block';
 import * as persistence from '../../../../server/data/persistence';
 import * as rollup from '../../../../server/data/rollup';
 import devServer from '../../../../server/server';
-import { createExampleRollup } from '../../../utils/rollup';
-import { range } from 'lodash';
+import { numberBlocksInRollup, createExampleRollup } from '../../../utils/rollup';
+import { range, merge } from 'lodash';
 
 describe('Server', () => {
   describe('Data', () => {
@@ -19,16 +19,22 @@ describe('Server', () => {
 
         const project = roll.project;
         const projectId = project.id;
-        const [blockP, blockA, blockB, blockC, blockD, blockE] = roll.blocks;
+        const blockKeys = Object.keys(roll.blocks);
+        const parentId = blockKeys.find(blockId => {
+          const block = roll.blocks[blockId];
+          return block.components.length === 3;
+        });
 
         //add 5 weird role type blocks to roll
         const numberEsotericRole = 5;
         const esotericRole = 'sdlfkjasdlfkjasdf';
-        const blocks = range(numberEsotericRole).map(() => new Block({
-          projectId,
-          rules: { role: esotericRole },
-        }));
-        roll.blocks.push(...blocks);
+        const blocks = range(numberEsotericRole)
+          .map(() => Block.classless({
+            projectId,
+            rules: { role: esotericRole },
+          }))
+          .reduce((acc, block) => Object.assign(acc, { [block.id]: block }), {});
+        merge(roll.blocks, blocks);
 
         before(() => {
           return rollup.writeProjectRollup(projectId, roll, userId);
@@ -56,7 +62,7 @@ describe('Server', () => {
             .expect(result => {
               const { body } = result;
               expect(typeof body).to.equal('object');
-              expect(body[esotericRole]).to.equal(5);
+              expect(body[esotericRole]).to.equal(numberEsotericRole);
             })
             .end(done);
         });
@@ -67,21 +73,21 @@ describe('Server', () => {
             .get(url)
             .expect(200)
             .expect(result => {
-              expect(result.body.length).to.equal(5);
+              expect(result.body.length).to.equal(numberEsotericRole);
             })
             .end(done);
         });
 
         it('/info/components/id returns map of components', (done) => {
-          const url = `/data/info/components/${blockP.id}`;
+          const url = `/data/info/components/${parentId}/${projectId}`;
           request(server)
             .get(url)
             .expect(200)
             .expect(result => {
               const { body } = result;
               const keys = Object.keys(body);
-              expect(keys.length).to.equal(6);
-              assert(keys.every(key => roll.blocks.find(block => block.id === key)), 'got wrong key, outside roll');
+              expect(keys.length).to.equal(numberBlocksInRollup);
+              assert(keys.every(key => Object.keys(roll.blocks).indexOf(key) >= 0), 'got wrong key, outside roll');
             })
             .end(done);
         });

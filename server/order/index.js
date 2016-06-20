@@ -112,13 +112,12 @@ User ${user.uuid}
         return submit(order, user, constructList, blockMap)
           .then(response => {
             // freeze all the blocks in the construct, given blockMap
-
-            const frozenBlocks = Object.keys(blockMap)
+            const frozenBlockMap = Object.keys(blockMap)
               .map(key => blockMap[key])
-              .map(block => merge(block, { rules: { frozen: true } }));
+              .map(block => merge(block, { rules: { frozen: true } }))
+              .reduce((acc, block) => Object.assign(acc, { [block.id]: block}), {});
 
-            //todo - should not write individually, especially when all blocks in same file
-            return Promise.all(frozenBlocks.map(block => persistence.blockWrite(block.id, block, projectId)))
+            return persistence.blocksMerge(projectId, frozenBlockMap)
               .then(() => response);
           });
       })
@@ -142,6 +141,8 @@ User ${user.uuid}
 
             return rollup.getProjectRollup(projectId)
               .then(roll => {
+                console.log(roll);
+
                 return persistence.orderWrite(order.id, order, projectId, roll);
               });
           });

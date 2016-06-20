@@ -8,6 +8,7 @@ import * as filePaths from '../../../server/utils/filePaths';
 import * as rollup from '../../../server/data/rollup';
 import * as persistence from '../../../server/data/persistence';
 import * as querying from '../../../server/data/querying';
+import { merge, values } from 'lodash';
 
 import { createExampleRollup } from '../../utils/rollup';
 
@@ -29,11 +30,11 @@ describe('Server', () => {
           metadata: { name: terminatorBlockName },
           rules: { role: 'terminator' },
         });
-        roll.blocks.push(promoter, terminator);
+        merge(roll.blocks, {[promoter.id]: promoter, [terminator.id]: terminator});
         roll.project.components.push(promoter.id, terminator.id);
         return roll;
       };
-      const numberBlocksInCustomRollup = createCustomRollup().blocks.length;
+      const numberBlocksInCustomRollup = Object.keys(createCustomRollup().blocks).length;
 
       const myUserId = uuid.v4();
       const myRolls = [1, 2, 3, 4].map(createCustomRollup);
@@ -63,28 +64,6 @@ describe('Server', () => {
           });
       });
 
-      it('findProjectFromBlock() finds project ID given block ID', () => {
-        const firstRollup = myRolls[0];
-        const { project: firstProject, blocks: firstBlocks } = firstRollup;
-        const secondRollup = otherRolls[2];
-        const { project: secondProject, blocks: secondBlocks } = secondRollup;
-
-        return Promise.all([
-          ...firstBlocks.map(block => {
-            return querying.findProjectFromBlock(block.id)
-              .then(projectId => {
-                expect(projectId).to.equal(firstProject.id);
-              });
-          }),
-          ...secondBlocks.map(block => {
-            return querying.findProjectFromBlock(block.id)
-              .then(projectId => {
-                expect(projectId).to.equal(secondProject.id);
-              });
-          }),
-        ]);
-      });
-
       it('listProjectsWithAccess() limits by user ID', () => {
         return querying.listProjectsWithAccess(myUserId)
           .then(projects => {
@@ -106,7 +85,8 @@ describe('Server', () => {
 
       it('getAllBlocks() get all blocks for a user ID', () => {
         return querying.getAllBlocks(myUserId)
-          .then(blocks => {
+          .then(blockMap => {
+            const blocks = values(blockMap);
             expect(blocks.length).to.equal(myRolls.length * numberBlocksInCustomRollup);
             assert(blocks.every(block => BlockSchema.validate(block, true)), 'blocks not in valid format');
           });
@@ -114,7 +94,8 @@ describe('Server', () => {
 
       it('getAllBlocksByType() can get all blocks of type', () => {
         return querying.getAllBlocksWithRole(myUserId, 'promoter')
-          .then(blocks => {
+          .then(blockMap => {
+            const blocks = values(blockMap);
             expect(blocks.length).to.equal(myRolls.length);
             assert(blocks.every(block => block.rules.role === 'promoter'), 'got block with wrong role type');
           });
@@ -122,7 +103,8 @@ describe('Server', () => {
 
       it('getAllBlocksByType() can get all blocks by name', () => {
         return querying.getAllBlocksWithName(myUserId, terminatorBlockName)
-          .then(blocks => {
+          .then(blockMap => {
+            const blocks = values(blockMap);
             expect(blocks.length).to.equal(myRolls.length);
             assert(blocks.every(block => block.metadata.name === terminatorBlockName), 'got block with wrong name');
           });

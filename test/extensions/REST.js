@@ -5,22 +5,6 @@ import devServer from '../../server/server';
 
 describe('Extensions', () => {
   describe('REST', () => {
-/*
-    let server;
-
-
-    before('server setup', () => {
-      server = devServer.listen(3000, 'localhost', function (err) {
-        if (err) {
-          console.log("server failure", err);
-          return done(err);
-        }
-      });
-    });
-    after(() => {
-      server.close();
-    });
-*/
     it('should list the extensions, manifests keyed by name', (done) => {
       const url = '/extensions/list';
       request(devServer)
