@@ -3,20 +3,25 @@ import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import SceneGraph2D from '../../containers/graphics/scenegraph2d/scenegraph2d';
 import Layout from '../../containers/graphics/views/layout';
+import { orderGenerateConstructs } from '../../actions/orders';
 
 import '../../../src/styles/ordermodal.css';
 import '../../../src/styles/SceneGraphPage.css';
 
 class ConstructPreview extends Component {
+  static propTypes = {
+    order: PropTypes.object.isRequired,
+    orderGenerateConstructs: PropTypes.func.isRequired,
+  };
 
-  static propTypes = {};
-
-  constructor() {
+  constructor(props) {
     super();
-    this.state = {
-      index: 1,
-    };
+    this.generateConstructs(props);
   }
+
+  state = {
+    index: 1,
+  };
 
   get dom() {
     return ReactDOM.findDOMNode(this);
@@ -50,14 +55,21 @@ class ConstructPreview extends Component {
       insetY: 10,
       baseColor: 'lightgray',
     });
+
+    //trigger a render because we've set components, and can't do it in the constructor
+    this.forceUpdate();
+  }
+
+  componentWillUpdate(nextProps) {
+    this.generateConstructs(nextProps);
   }
 
   componentDidUpdate() {
-    if (this.props.constructs.length) {
+    if (this.constructs.length) {
       this.containerEl.scrollTop = 0;
-      const construct = this.props.constructs[this.state.index - 1];
-      const constructIndex = construct.index;
-      const componentIds = construct.componentIds;
+      const construct = this.constructs[this.state.index - 1];
+      const constructIndex = this.state.index;
+      const componentIds = construct;
       this.layout.update({
         construct: {
           metadata: {
@@ -75,13 +87,17 @@ class ConstructPreview extends Component {
     }
   }
 
+  generateConstructs(props = this.props) {
+    this.constructs = props.orderGenerateConstructs(props.order.id);
+  }
+
   onChangeConstruct = (evt) => {
     const index = parseInt(evt.target.value, 10);
-    this.setState({ index: Number.isInteger(index) ? Math.min(this.props.constructs.length, Math.max(1, index)) : 1 });
+    this.setState({ index: Number.isInteger(index) ? Math.min(this.constructs.length, Math.max(1, index)) : 1 });
   };
 
   render() {
-    const label = `of ${this.props.constructs.length} combinations`;
+    const label = `of ${this.constructs.length} combinations`;
     return (
       <div className="preview">
         <label>Reviewing assembly</label>
@@ -90,7 +106,7 @@ class ConstructPreview extends Component {
           type="number"
           defaultValue="1"
           min="1"
-          max={this.props.constructs.length}
+          max={this.constructs.length}
           onChange={this.onChangeConstruct}
         />
         <label>{label}</label>
@@ -102,13 +118,12 @@ class ConstructPreview extends Component {
   }
 }
 
-//todo- it would be wonderful if the index was a property on this, so that only one needed to be loaded in
-//break up construct preview so that the input and the preview element are separate and pass the index as a prop to this component, so that you can just pass "construct" instead of "constructs"
 function mapStateToProps(state, props) {
   return {
-    constructs: props.order.constructs.filter(construct => construct.active),
     blocks: state.blocks,
   };
 }
 
-export default connect(mapStateToProps)(ConstructPreview);
+export default connect(mapStateToProps, {
+  orderGenerateConstructs,
+})(ConstructPreview);
