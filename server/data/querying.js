@@ -105,35 +105,33 @@ export const getAllBlocks = (userId) => {
     .then(projectBlockMaps => merge({}, ...projectBlockMaps));
 };
 
-export const getAllBlocksFiltered = (userId, blockFilter = () => true) => {
+export const getAllBlocksFiltered = (userId, ...filters) => {
   return getAllBlocks(userId)
-    .then(blocks => filter(blocks, blockFilter));
+    .then(blocks => filter(blocks, (block, key) => filters.every(filter => filter(block, key))));
+};
+
+const partsFilter = () => (block, key) => (!(block.components.length || Object.keys(block.options).length));
+const roleFilter = (role) => (block, key) => (!role || role === untypedKey) ? !block.rules.role : block.rules.role === role;
+const nameFilter = (name) => (block, key) => block.metadata.name === name;
+
+export const getAllParts = (userId) => {
+  return getAllBlocksFiltered(userId, partsFilter());
 };
 
 export const getAllBlocksWithName = (userId, name) => {
-  const filter = (block, index) => block.metadata.name === name;
-  return getAllBlocksFiltered(userId, filter);
+  return getAllBlocksFiltered(userId, nameFilter(name));
 };
 
-export const getAllBlocksWithRole = (userId, role) => {
-  const filter = (block, index) => {
-    return (role === untypedKey) ?
-      !block.rules.role :
-      block.rules.role === role;
-  };
-  return getAllBlocksFiltered(userId, filter);
+export const getAllPartsWithRole = (userId, role) => {
+  return getAllBlocksFiltered(userId, partsFilter(), roleFilter(role));
 };
 
 export const getAllBlockRoles = (userId) => {
-  return getAllBlocks(userId)
+  return getAllParts(userId)
     .then(blockMap => {
       const blocks = values(blockMap);
       const obj = blocks.reduce((acc, block) => {
-        const rule = block.rules.role;
-        if (!rule) {
-          acc[untypedKey] += 1;
-          return acc;
-        }
+        const rule = block.rules.role || untypedKey;
 
         if (acc[rule]) {
           acc[rule]++;
@@ -141,7 +139,7 @@ export const getAllBlockRoles = (userId) => {
           acc[rule] = 1;
         }
         return acc;
-      }, { [untypedKey]: 0 });
+      }, {});
       return obj;
     });
 };

@@ -125,7 +125,7 @@ router.route('/info/:type/:detail?/:additional?')
     switch (type) {
     case 'role' :
       if (detail) {
-        querying.getAllBlocksWithRole(user.uuid, detail)
+        querying.getAllPartsWithRole(user.uuid, detail)
           .then(info => res.status(200).json(info))
           .catch(err => next(err));
       } else {
