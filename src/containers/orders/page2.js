@@ -2,7 +2,6 @@ import React, { Component, PropTypes } from 'react';
 import ConstructPreview from './constructpreview';
 
 export default class Page2 extends Component {
-
   static propTypes = {
     open: PropTypes.bool.isRequired,
     order: PropTypes.object.isRequired,

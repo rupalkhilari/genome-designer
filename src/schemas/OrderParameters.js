@@ -24,6 +24,10 @@ const fieldDefs = {
     fields.oneOf(['Random Subset', 'Maximum Unique Set']),
     'Combinatorial Method',
   ],
+  activeIndices: [
+    fields.object(),
+    'If # permutations desired is less than number combinations possible, indices of constructs to keep',
+  ],
 };
 
 export class OrderParametersSchemaClass extends Schema {
@@ -38,10 +42,10 @@ export class OrderParametersSchemaClass extends Schema {
       return false;
     }
 
-    const hasFieldsIfNotOnePot = instance.onePot || (instance.combinatorialMethod && instance.permutations);
+    const hasFieldsIfNotOnePot = instance.onePot || (instance.combinatorialMethod && instance.permutations && instance.activeIndices); //todo - should make sure number active instances is correct
 
     if (!hasFieldsIfNotOnePot) {
-      const errorMessage = 'Combinatorial method and # permutations required if not one pot';
+      const errorMessage = 'Combinatorial method and # permutations required if not one pot, and activeInstances must be present and its length match # permutations';
       if (shouldThrow) {
         throw Error(errorMessage, instance);
       } else if (process.env.NODE_ENV !== 'production') {

@@ -7,6 +7,7 @@ export default function orders(state = initialState, action) {
   switch (action.type) {
   case ActionTypes.ORDER_CREATE:
   case ActionTypes.ORDER_STASH:
+  case ActionTypes.ORDER_SET_PARAMETERS:
   case ActionTypes.ORDER_SUBMIT:
   case ActionTypes.ORDER_SET_NAME:
     const { order, orders } = action;

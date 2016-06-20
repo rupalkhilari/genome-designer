@@ -7,10 +7,8 @@ import { fileWrite } from '../utils/fileSystem';
 
 const url = 'http://ec2-52-30-192-126.eu-west-1.compute.amazonaws.com:8010/api/order/';
 
-export const submit = (order, user, blockMap) => {
-  const constructsWithBlockComponents = order.constructs
-    .filter(construct => construct.active)
-    .map(orderConstruct => orderConstruct.componentIds.map(componentId => blockMap[componentId]));
+const createOrderPayload = (order, user, constructList, blockMap) => {
+  const constructsWithBlockComponents = constructList.map(blockIds => blockIds.map(blockId => blockMap[blockId]));
 
   //console.log(blockMap);
   //console.log(order.constructs);
@@ -33,12 +31,17 @@ export const submit = (order, user, blockMap) => {
       lastName: user.lastName,
       email: user.email,
     },
-    validationOnly: true, //todo - if we want to actually allow orders, set to false
+    validationOnly: false,
   };
 
   //testing
-  fileWrite('storage/test/lastOrder.json', payload);
+  //fileWrite('storage/test/lastOrder.json', payload);
 
+  return payload;
+};
+
+export const submit = (order, user, constructList, blockMap) => {
+  const payload = createOrderPayload(order, user, constructList, blockMap);
   const stringified = JSON.stringify(payload);
 
   return fetch(url, headersPost(stringified))
@@ -57,4 +60,15 @@ export const submit = (order, user, blockMap) => {
         cost: `${response.estimated_price}`,
       });
     });
+};
+
+export const validate = (order, user, constructList, blockMap) => {
+  const payload = createOrderPayload(order, user, constructList, blockMap);
+  payload.validationOnly = true;
+  const stringified = JSON.stringify(payload);
+
+  return fetch(url, headersPost(stringified))
+    .then(resp => resp.json())
+    .then(resp => resp.success)
+    .catch(err => err);
 };
