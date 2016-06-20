@@ -6,7 +6,7 @@ import json
 def is_filler(block):
     # It's a filler block when it has no name, it has a sequence, and no color
     return block["metadata"]["name"] == "" and (block["sequence"]["sequence"] and block["sequence"]["sequence"] != "") \
-           and ((not block["metadata"]["color"]) or block["metadata"]["color"] == "")
+           and ("initialBases" in block["metadata"] and block["metadata"]["initialBases"] != "")
 
 def add_features(block, allblocks, gb, start):
     # Disregard fillers... don't create features for them
@@ -43,7 +43,7 @@ def add_features(block, allblocks, gb, start):
     sf.qualifiers["GC_Id"] = block["id"]
 
     if len(block["components"]) > 0:
-        sf.qualifiers["GC_Children"] = json.dumps(block["components"]).replace("\"", "'")
+        sf.qualifiers["GC_Children"] = json.dumps(get_children_ids(block, allblocks)).replace("\"", "'")
 
     # And copy all the other qualifiers that came originally from genbank
     if "genbank" in block["metadata"]:
@@ -111,6 +111,15 @@ def build_sequence(block, allblocks):
             seq = block["sequence"]["sequence"]
     return seq
 
+def get_children_ids(block, allblocks):
+    # Remove filler blocks from the list of children ids! Then add the children ids to the genbank file
+    children = list(block["components"])
+    for child_id in block["components"]:
+        child_block = [b for b in allblocks if b["id"] == child_id][0]
+        if is_filler(child_block):
+            children.remove(child_id)
+    return children
+
 # Take a project structure and a list of all the current blocks, convert this data to a genbank file and store it
 # in filename.
 def project_to_genbank(filename, project, allblocks):
@@ -137,7 +146,7 @@ def project_to_genbank(filename, project, allblocks):
         sf.type = "source"
         sf.location = SeqFeature.FeatureLocation(0, len(seq_obj.seq))
         sf.qualifiers["GC_Id"] = block["id"]
-        sf.qualifiers["GC_Children"] = json.dumps(block["components"]).replace("\"", "'")
+        sf.qualifiers["GC_Children"] = json.dumps(get_children_ids(block, allblocks)).replace("\"", "'")
 
         if "genbank" in block["metadata"]:
             # Set up all the annotations in the genbank record. These came originally from genbank.
