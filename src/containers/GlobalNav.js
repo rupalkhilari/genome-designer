@@ -458,6 +458,12 @@ class GlobalNav extends Component {
               },
             },
             {
+              text: 'Delete Project',
+              action: () => {
+                this.queryDeleteProject();
+              },
+            },
+            {
               text: 'Open Project',
               shortcut: stringToShortcut('meta O'),
               action: () => {
@@ -479,12 +485,6 @@ class GlobalNav extends Component {
               shortcut: stringToShortcut('option N'),
               action: () => {
                 this.newProject();
-              },
-            },
-            {
-              text: 'Delete Project',
-              action: () => {
-                this.queryDeleteProject();
               },
             },
             {

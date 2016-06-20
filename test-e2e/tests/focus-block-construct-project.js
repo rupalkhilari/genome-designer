@@ -4,7 +4,6 @@ var signin = require('../fixtures/signin');
 var dragFromTo = require('../fixtures/dragfromto');
 var newProject = require('../fixtures/newproject');
 var newConstruct = require('../fixtures/newconstruct');
-var clickMainMenu = require('../fixtures/click-main-menu');
 var clickConstructTitle = require('../fixtures/click-construct-title');
 var openInventory = require('../fixtures/open-inventory');
 var openInspector = require('../fixtures/open-inspector');
