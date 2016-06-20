@@ -19,7 +19,7 @@ describe('Server', () => {
         const sequence = 'aaaaacccccccgggggggtttttt';
         const sequenceMd5 = md5(sequence);
 
-        const blockData = new Block({
+        const blockData = Block.classless({
           projectId,
           sequence: {
             md5: sequenceMd5,

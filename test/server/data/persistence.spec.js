@@ -34,7 +34,7 @@ describe('Server', () => {
         const projectManifestPath = path.resolve(projectDataPath, filePaths.manifestFilename);
 
         const blockName = 'blockA';
-        const blockData = new Block({ projectId, metadata: { name: blockName } });
+        const blockData = Block.classless({ projectId, metadata: { name: blockName } });
         const blockId = blockData.id;
         const blockFileContents = { [blockId]: blockData };
         const blockDataPath = filePaths.createBlockDirectoryPath(projectId);
@@ -130,7 +130,7 @@ describe('Server', () => {
         const projectRepoDataPath = filePaths.createProjectDataPath(projectId);
         const projectManifestPath = filePaths.createProjectManifestPath(projectId);
 
-        const blockData = new Block({ projectId });
+        const blockData = Block.classless({ projectId });
         const blockId = blockData.id;
         const blockManifestPath = filePaths.createBlockManifestPath(projectId, blockId);
 
@@ -171,7 +171,7 @@ describe('Server', () => {
         const projectRepoDataPath = filePaths.createProjectDataPath(projectId);
         const projectManifestPath = filePaths.createProjectManifestPath(projectId);
 
-        const blockData = new Block({ projectId });
+        const blockData = Block.classless({ projectId });
         const blockId = blockData.id;
         const blockFileContents = { [blockId]: blockData };
         const blockManifestPath = filePaths.createBlockManifestPath(projectId);
@@ -253,7 +253,7 @@ describe('Server', () => {
         });
 
         it('blockWrite() ovewrwrites the block', () => {
-          const overwrite = blockData.merge(blockPatch);
+          const overwrite = merge({}, blockData, blockPatch);
           const overwriteFileContents = { [blockId]: overwrite };
           return persistence.blockWrite(projectId, overwrite)
             .then(() => fileRead(blockManifestPath))
@@ -262,7 +262,7 @@ describe('Server', () => {
 
         it('blockWrite() does not make the project commit', () => {
           return versioning.log(projectRepoDataPath).then(firstResults => {
-            const overwrite = blockData.merge(blockPatch);
+            const overwrite = merge({}, blockData, blockPatch);
             return persistence.blockWrite(projectId, overwrite)
               .then(() => versioning.log(projectRepoDataPath))
               .then((secondResults) => {
@@ -308,7 +308,7 @@ describe('Server', () => {
         const trashPathProject = filePaths.createTrashPath(projectId);
         const trashPathProjectManifest = filePaths.createTrashPath(projectId, filePaths.projectDataPath, filePaths.manifestFilename);
 
-        const blockData = new Block({ projectId });
+        const blockData = Block.classless({ projectId });
         const blockId = blockData.id;
         const blockFileContents = { [blockId]: blockData };
         const blockManifestPath = filePaths.createBlockManifestPath(projectId, blockId);
@@ -372,9 +372,9 @@ describe('Server', () => {
         const projectRepoDataPath = filePaths.createProjectDataPath(projectId);
         const newProject = projectData.merge({ projectData: 'new stuff' });
 
-        const blockData = new Block({ projectId });
+        const blockData = Block.classless({ projectId });
         const blockId = blockData.id;
-        const newBlock = blockData.merge({ blockData: 'new data' });
+        const newBlock = merge({}, blockData, { blockData: 'new data' });
 
         const blockSequence = 'acgcggcgcgatatatatcgcgcg';
         const sequenceMd5 = md5(blockSequence);

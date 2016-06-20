@@ -4,6 +4,7 @@ import Project from '../../../../src/models/Project';
 import Block from '../../../../src/models/Block';
 import * as persistence from '../../../../server/data/persistence';
 import devServer from '../../../../server/server';
+import { merge } from 'lodash';
 
 describe('Server', () => {
   describe('Data', () => {
@@ -15,14 +16,14 @@ describe('Server', () => {
         const projectId = projectData.id;
 
         const initialFields = { initial: 'value', projectId };
-        const blockData = new Block(initialFields);
+        const blockData = Block.classless(initialFields);
         const blockId = blockData.id;
 
         const invalidIdBlock = Object.assign({}, blockData, { id: 'invalid' });
         const invalidDataBlock = Object.assign({}, blockData, { metadata: 'invalid' });
 
         const blockPatch = { some: 'field' };
-        const patchedBlock = blockData.merge(blockPatch);
+        const patchedBlock = merge({}, blockData, blockPatch);
 
         before(() => {
           return persistence.projectCreate(projectId, projectData, userId)
@@ -115,7 +116,7 @@ describe('Server', () => {
 
         it('PUT replaces the block', (done) => {
           const url = `/data/${projectId}/${blockId}`;
-          const newBlock = new Block({
+          const newBlock = Block.classless({
             id: blockId,
             projectId,
             notes: { field: 'value' },
@@ -145,7 +146,7 @@ describe('Server', () => {
 
         it('PUT ensures the block ID matches', (done) => {
           const url = `/data/${projectId}/${blockId}`;
-          const newBlock = new Block({
+          const newBlock = Block.classless({
             id: 'randomId',
             projectId,
             notes: { field: 'value' },

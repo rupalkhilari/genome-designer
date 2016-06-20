@@ -29,7 +29,7 @@ describe('Server', () => {
         const numberEsotericRole = 5;
         const esotericRole = 'sdlfkjasdlfkjasdf';
         const blocks = range(numberEsotericRole)
-          .map(() => new Block({
+          .map(() => Block.classless({
             projectId,
             rules: { role: esotericRole },
           }))

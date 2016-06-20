@@ -1,6 +1,6 @@
 import invariant from 'invariant';
 import path from 'path';
-import { merge, values, forIn } from 'lodash';
+import { merge, values, forEach } from 'lodash';
 import { errorDoesNotExist, errorAlreadyExists, errorInvalidModel, errorVersioningSystem } from '../utils/errors';
 import { validateBlock, validateProject, validateOrder } from '../utils/validation';
 import * as filePaths from './../utils/filePaths';
@@ -309,31 +309,21 @@ export const projectMerge = (projectId, project, userId) => {
 };
 
 //overwrite all blocks
-export const blocksWrite = (projectId, blockMap) => {
+export const blocksWrite = (projectId, blockMap, overwrite = true) => {
   if (!values(blockMap).every(block => validateBlock(block))) {
     return Promise.reject(errorInvalidModel);
   }
 
-  //todo - re-enable
   //force projectid
-  //forIn(blockMap, (block, blockId) => Object.assign(block, { projectId }));
+  forEach(blockMap, (block, blockId) => Object.assign(block, { projectId }));
 
-  return _blocksWrite(projectId, blockMap, true)
+  return _blocksWrite(projectId, blockMap, overwrite)
     .then(() => blockMap);
 };
 
 //merge all blocks
 export const blocksMerge = (projectId, blockMap) => {
-  if (!values(blockMap).every(block => validateBlock(block))) {
-    return Promise.reject(errorInvalidModel);
-  }
-
-  //todo - re-enable
-  //force projectID
-  //forIn(blockMap, (block, blockId) => Object.assign(block, { projectId }));
-
-  return _blocksWrite(projectId, blockMap, false)
-    .then(() => blockMap);
+  return blocksWrite(projectId, blockMap, false);
 };
 
 //merge a single block

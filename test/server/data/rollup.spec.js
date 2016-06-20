@@ -60,7 +60,7 @@ describe('Server', () => {
 
       //this test is a little facetious, as now rollup creation is responsible for updating blocks in manifest
       it('writeProjectRollup() overwrites, discarding old blocks', () => {
-        const blockG = new Block({ projectId });
+        const blockG = Block.classless({ projectId });
         const parent = roll.blocks[parentId];
         const newComponentsParent = parent.components.slice();
         const popped = newComponentsParent.pop(); //remove F
