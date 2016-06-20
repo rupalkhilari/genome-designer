@@ -41,7 +41,7 @@ export class ConstructViewerCanvas extends Component {
    * create a new construct, add dropped block to it
    */
   onDrop(globalPosition, payload, event) {
-    this.prop.uiSpin('Creating a new construct... Please wait.');
+    this.props.uiSpin('Creating a new construct... Please wait.');
     // clone construct and add to project if a construct from inventory otherwise
     // treat as a list of one or more blocks
     //if the block is from the inventory, we've cloned it and dont need to worry about forcing the projectId when we add the components
