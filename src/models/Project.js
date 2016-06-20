@@ -33,7 +33,6 @@ export default class Project extends Instance {
       lastSaved: one.lastSaved,
     });
 
-    console.log(two, massaged, one);
     return isEqual(one, massaged);
   }
 

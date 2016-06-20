@@ -36,7 +36,11 @@ export const loadProject = (projectId) => {
 
   const url = dataApiPath(`projects/${projectId}`);
   return rejectingFetch(url, headersGet())
-    .then(resp => resp.json());
+    .then(resp => resp.json())
+    .then(rollup => {
+      noteSave(rollup.project.id, rollup.project.version);
+      return rollup;
+    });
 };
 
 //expects a rollup

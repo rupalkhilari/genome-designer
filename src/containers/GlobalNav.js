@@ -56,6 +56,8 @@ import {
 } from '../utils/ui/uiapi';
 import AutosaveTracking from '../components/GlobalNav/autosaveTracking';
 import OkCancel from '../components/okcancel';
+import * as instanceMap from '../store/instanceMap';
+import { merge } from 'lodash';
 
 import '../styles/GlobalNav.css';
 
@@ -209,7 +211,17 @@ class GlobalNav extends Component {
     const project = this.props.projectCreate();
     // add a construct to the new project
     const block = this.props.blockCreate({ projectId: project.id });
-    this.props.projectAddConstruct(project.id, block.id);
+    const projectWithConstruct = this.props.projectAddConstruct(project.id, block.id);
+
+    //save this to the instanceMap as cached version, so that when projectSave(), will skip until the user has actually made changes
+    //do this outside the actions because we do some mutations after the project + construct are created (i.e., add the construct)
+    instanceMap.saveRollup({
+      project: projectWithConstruct,
+      blocks: {
+        [block.id]: block,
+      },
+    });
+
     this.props.focusConstruct(block.id);
     this.props.projectOpen(project.id);
   }
