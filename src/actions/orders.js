@@ -6,15 +6,21 @@ import * as undoActions from '../store/undo/actions';
 import { pauseAction, resumeAction } from '../store/pausableStore';
 import * as blockActions from './blocks';
 import * as blockSelectors from '../selectors/blocks';
-import * as projectActions from './projects';
-import * as projectSelectors from '../selectors/projects';
 import { cloneDeep, merge, flatten, sampleSize, range, shuffle } from 'lodash';
+import * as instanceMap from '../store/instanceMap';
 
-export const orderList = (projectId) => {
+export const orderList = (projectId, avoidCache = false) => {
   return (dispatch, getState) => {
+    const cached = instanceMap.projectOrdersLoaded(projectId);
+    if (cached && avoidCache !== true) {
+      return Promise.resolve(instanceMap.getProjectOrders(projectId));
+    }
+
     return getOrders(projectId)
       .then(ordersData => {
         const orders = ordersData.map(order => new Order(order));
+
+        instanceMap.saveProjectOrders(projectId, ...orders);
 
         dispatch({
           type: ActionTypes.ORDER_STASH,
@@ -25,11 +31,19 @@ export const orderList = (projectId) => {
   };
 };
 
-export const orderGet = (projectId, orderId) => {
+export const orderGet = (projectId, orderId, avoidCache = false) => {
   return (dispatch, getState) => {
+    const cached = instanceMap.orderLoaded(orderId);
+
+    if (cached && avoidCache !== true) {
+      return Promise.resolve(instanceMap.getOrder(orderId));
+    }
+
     return getOrder(projectId, orderId)
       .then(orderData => {
         const order = new Order(orderData);
+
+        instanceMap.saveOrder(order);
 
         dispatch({
           type: ActionTypes.ORDER_STASH,
@@ -143,7 +157,7 @@ export const orderSubmit = (orderId, foundry) => {
     const retrievedOrder = getState().orders[orderId];
     invariant(retrievedOrder, 'order not in the store...');
     invariant(!retrievedOrder.isSubmitted(), 'Cant submit an order twice');
-    
+
     const positionalCombinations = retrievedOrder.constructIds.reduce((acc, constructId) => {
       return Object.assign(acc, { [constructId]: dispatch(blockSelectors.blockGetPositionalCombinations(constructId, true)) });
     }, {});
