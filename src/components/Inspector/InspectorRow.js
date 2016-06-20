@@ -12,7 +12,7 @@ export default class InspectorRow extends Component {
     forceActive: PropTypes.bool,
     onToggle: PropTypes.func,
     condition: PropTypes.bool,
-    children: PropTypes.any.isRequired,
+    children: PropTypes.any,
   };
 
   static defaultProps = {
@@ -37,6 +37,10 @@ export default class InspectorRow extends Component {
 
   render() {
     const { heading, hasToggle, condition, children } = this.props;
+
+    if (!children) {
+      return null;
+    }
 
     if (!condition) {
       return (<div className="InspectorRow"></div>);
