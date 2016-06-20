@@ -180,7 +180,7 @@ export class InventoryGroupSearch extends Component {
                           onToggleVisible={(nextState) => inventoryShowSourcesToggling(nextState)}
                           onSourceToggle={(source) => this.onSourceToggle(source)}/>
 
-        {(!noSearchResults && !sourcesToggling) && (
+        {(!searching && !noSearchResults && !sourcesToggling) && (
           <InventoryTabs tabs={inventoryTabs}
                          activeTabKey={groupBy}
                          onTabSelect={(tab) => this.handleTabSelect(tab.key)}/>
