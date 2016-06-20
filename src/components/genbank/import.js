@@ -2,7 +2,10 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import ModalWindow from '../modal/modalwindow';
 import Dropzone from 'react-dropzone';
-import { uiShowGenBankImport } from '../../actions/ui';
+import {
+  uiShowGenBankImport,
+  uiSpin,
+} from '../../actions/ui';
 import { projectGet, projectListAllBlocks } from '../../selectors/projects';
 import { projectList, projectLoad, projectOpen } from '../../actions/projects';
 import { importGenbankOrCSV } from '../../middleware/genbank';
@@ -19,6 +22,7 @@ class ImportGenBankModal extends Component {
     currentProjectId: PropTypes.string.isRequired,
     open: PropTypes.bool.isRequired,
     uiShowGenBankImport: PropTypes.func.isRequired,
+    uiSpin: PropTypes.func.isRequired,
     projectLoad: PropTypes.func.isRequired,
   };
 
@@ -55,10 +59,12 @@ class ImportGenBankModal extends Component {
       this.setState({
         processing: true,
       });
+      this.props.uiSpin('Importing your file... Please wait');
       const projectId = this.state.destination === 'current project' ? '/' + this.props.currentProjectId : '';
       const file = this.state.files[0];
       importGenbankOrCSV(file, projectId)
         .then(projectId => {
+          this.props.uiSpin();
           if (projectId === this.props.currentProjectId) {
             //true to forcibly reload the project, avoid our cache
             this.props.projectLoad(projectId, true);
@@ -71,6 +77,7 @@ class ImportGenBankModal extends Component {
           this.props.uiShowGenBankImport(false);
         })
         .catch(error => {
+          this.props.uiSpin();
           this.setState({
             error: `Error uploading file: ${error}`,
             processing: false,
@@ -165,6 +172,7 @@ function mapStateToProps(state) {
 
 export default connect(mapStateToProps, {
   uiShowGenBankImport,
+  uiSpin,
   projectGet,
   projectListAllBlocks,
   projectList,

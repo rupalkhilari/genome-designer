@@ -143,3 +143,13 @@ export const uiSetGrunt = (gruntMessage) => {
     return gruntMessage;
   };
 };
+
+export const uiSpin = (spinMessage) => {
+  return (dispatch, getState) => {
+    dispatch({
+      type: ActionTypes.UI_SPIN,
+      spinMessage,
+    });
+    return spinMessage;
+  };
+};
