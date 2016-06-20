@@ -61,6 +61,7 @@ export const UI_SHOW_DNAIMPORT = 'UI_SHOW_DNAIMPORT';
 export const UI_SHOW_ORDER_FORM = 'UI_SHOW_ORDER_FORM';
 export const UI_SHOW_ABOUT = 'UI_SHOW_ABOUT';
 export const UI_SET_GRUNT = 'UI_SET_GRUNT';
+export const UI_SPIN = 'UI_SPIN';
 export const UI_SHOW_GENBANK_IMPORT = 'UI_SHOW_GENBANK_IMPORT';
 
 export const USER_SET_USER = 'USER_SET_USER';
