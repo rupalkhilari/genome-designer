@@ -37,6 +37,7 @@ export const blockLoad = (blockId, inputProjectId, withContents = false, skipIfC
 };
 
 //useDefaults e.g. to set the projectId automatically
+//do not use this if you are creating a block outside of a project (i.e. floating, not associated with project yet)
 export const blockCreate = (initialModel, useDefaults = true) => {
   return (dispatch, getState) => {
     const toMerge = (useDefaults === true) ?
