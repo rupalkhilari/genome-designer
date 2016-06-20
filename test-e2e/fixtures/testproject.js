@@ -28,7 +28,7 @@ var newproject = function(browser) {
   dragFromTo(browser, '.InventoryItemRole:nth-of-type(6)', 10, 10, '.construct-viewer:nth-of-type(2) .sceneGraph', 700, 30);
 
   browser
-    .pause(5000)
+    .pause(250)
     .assert.countelements('[data-nodetype="block"]', 6);
 
 };
