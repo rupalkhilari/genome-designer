@@ -176,7 +176,8 @@ export const projectLoad = (projectId, avoidCache = false) => {
 
 //Promise
 //default to most recent project if falsy
-export const projectOpen = (inputProjectId) => {
+//skip save if project is deleted
+export const projectOpen = (inputProjectId, skipSave = false) => {
   return (dispatch, getState) => {
     const currentProjectId = dispatch(projectSelectors.projectGetCurrentId());
     const projectId = inputProjectId || getItem(recentProjectKey);
@@ -185,42 +186,47 @@ export const projectOpen = (inputProjectId) => {
       return Promise.resolve();
     }
 
-    return dispatch(projectSave(currentProjectId))
-      .catch(err => {
-        if (currentProjectId) {
-          dispatch({
-            type: ActionTypes.UI_SET_GRUNT,
-            gruntMessage: `Project ${currentProjectId} couldn't be saved, but navigating anyway...`,
-          });
-        }
-      })
-      .then(() => {
-        /*
-         future - clear the store of blocks from the old project.
-         need to consider blocks in the inventory - loaded projects, search results, shown in onion etc. Probably means committing to using the instanceMap for mapping state to props in inventory.
+    const promise = (skipSave === true)
+      ?
+      Promise.resolve()
+      :
+      dispatch(projectSave(currentProjectId))
+        .catch(err => {
+          if (currentProjectId) {
+            dispatch({
+              type: ActionTypes.UI_SET_GRUNT,
+              gruntMessage: `Project ${currentProjectId} couldn't be saved, but navigating anyway...`,
+            });
+          }
+        });
 
-         const blockIds = dispatch(projectSelectors.projectListAllBlocks(currentProjectId)).map(block => block.id);
+    return promise.then(() => {
+      /*
+       future - clear the store of blocks from the old project.
+       need to consider blocks in the inventory - loaded projects, search results, shown in onion etc. Probably means committing to using the instanceMap for mapping state to props in inventory.
 
-         // pause action e.g. so dont get accidental redraws with blocks missing
-         dispatch(pauseAction());
+       const blockIds = dispatch(projectSelectors.projectListAllBlocks(currentProjectId)).map(block => block.id);
 
-         //remove prior projects blocks from the store
-         dispatch({
-         type: ActionTypes.BLOCK_DETACH,
-         blockIds,
-         });
+       // pause action e.g. so dont get accidental redraws with blocks missing
+       dispatch(pauseAction());
 
-         //projectPage will load the project + its blocks
-         //change the route
-         dispatch(push(`/project/${projectId}`));
+       //remove prior projects blocks from the store
+       dispatch({
+       type: ActionTypes.BLOCK_DETACH,
+       blockIds,
+       });
 
-         //dispatch(resumeAction());
-         */
+       //projectPage will load the project + its blocks
+       //change the route
+       dispatch(push(`/project/${projectId}`));
 
-        //projectPage will load the project + its blocks
-        //change the route
-        dispatch(push(`/project/${projectId}`));
-      });
+       //dispatch(resumeAction());
+       */
+
+      //projectPage will load the project + its blocks
+      //change the route
+      dispatch(push(`/project/${projectId}`));
+    });
   };
 };
 
