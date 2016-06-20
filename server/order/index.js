@@ -76,18 +76,15 @@ User ${user.uuid}
       .then(projectRollup => {
         //create a map of all the blocks involved in the order
         return Promise.all(order.constructIds.map(constructId => rollup.getContentsRecursivelyGivenRollup(constructId, projectRollup)))
-          .then(blockMaps => blockMaps.reduce((acc, map) => Object.assign(acc, map.components, map.options), {}))
-          .then(blockMap => {
-            constructNames.push(...order.constructIds.map(constructId => blockMap[constructId].metadata.name));
-            return blockMap;
-          });
+          .then(blockMaps => blockMaps.reduce((acc, map) => Object.assign(acc, map.components, map.options), {}));
       })
       .then(blockMap => {
+        constructNames.push(...order.constructIds.map(constructId => blockMap[constructId].metadata.name));
+
         //future - this should be dynamic, based on the foundry, pulling from a registry
         return submit(order, user, blockMap)
           .then(response => {
             // freeze all the blocks in the construct, given blockMap
-
             const frozenBlockMap = Object.keys(blockMap)
               .map(key => blockMap[key])
               .map(block => merge(block, { rules: { frozen: true } }))
