@@ -93,7 +93,7 @@ describe('Server', () => {
       });
 
       it('getAllBlocksByType() can get all blocks of type', () => {
-        return querying.getAllBlocksWithRole(myUserId, 'promoter')
+        return querying.getAllPartsWithRole(myUserId, 'promoter')
           .then(blockMap => {
             const blocks = values(blockMap);
             expect(blocks.length).to.equal(myRolls.length);
