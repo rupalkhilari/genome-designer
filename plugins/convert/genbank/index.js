@@ -115,7 +115,7 @@ const remapHierarchy = (blockArray) => {
       const newid = getNewId(blockArray, oldChildId);
       newBlock.components.push(newid);
     });
-    return new Block(newBlock);
+    return Block.classless(newBlock);
   });
 };
 
@@ -124,7 +124,7 @@ const handleProject = (outputProject, rootBlockIds) => {
   //just get fields we want using destructuring and use them to merge
   const { name, description } = outputProject;
 
-  return new Project(merge({}, ProjectSchema.scaffold(), {
+  return Project.classless(merge({}, ProjectSchema.scaffold(), {
     components: rootBlockIds,
     metadata: {
       name,
