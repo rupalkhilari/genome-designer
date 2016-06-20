@@ -79,6 +79,12 @@ const getOptionsGivenRollup = (id, roll) => {
 //returns object
 const getComponentsRecursivelyGivenRollup = (rootId, projectRollup, acc = {}) => {
   const root = getBlockInRollById(rootId, projectRollup);
+
+  if (!root) {
+    console.error(`couldnt find ${rootId} in rollup ${projectRollup.project.id}`);
+    throw new Error(errorDoesNotExist);
+  }
+
   acc[rootId] = root;
 
   //recurse
