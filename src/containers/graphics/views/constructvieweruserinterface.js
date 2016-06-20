@@ -65,6 +65,11 @@ export default class ConstructViewerUserInterface extends UserInterface {
     // so work backwards in the list and return the first
     // block found
     for (let i = hits.length - 1; i >= 0; i--) {
+      // hit the title node
+      if (hits[i].isNodeOrChildOf(this.layout.titleNode)) {
+        return hits[i];
+      }
+      // a block node
       if (this.layout.elementFromNode(hits[i])) {
         return hits[i];
       }
