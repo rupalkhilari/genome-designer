@@ -17,9 +17,10 @@ const genbankToBlock = (gb, onlyConstruct) => {
   return convertGenbank(gb, onlyConstruct)
     .then(result => {
       const { blocks, roots } = result;
-      const constructIndex = blocks.findIndex(block => block.id === roots[0]);
-      const construct = blocks.splice(constructIndex, 1);
-      return [...construct, ...blocks];
+      const blockArray = Object.keys(blocks).map(blockId => blocks[blockId]);
+      const constructIndex = blockArray.findIndex(block => block.id === roots[0]);
+      const construct = blockArray.splice(constructIndex, 1);
+      return [...construct, ...blockArray];
     });
 };
 

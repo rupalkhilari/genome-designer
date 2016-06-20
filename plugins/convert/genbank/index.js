@@ -1,3 +1,4 @@
+import invariant from 'invariant';
 import * as fileSystem from '../../../server/utils/fileSystem';
 import * as filePaths from '../../../server/utils/filePaths';
 import path from 'path';
@@ -169,7 +170,8 @@ const handleBlocks = (inputFilePath) => {
             const newRootBlocks = result.project.components.map((oldBlockId) => {
               return getNewId(blocksWithOldIds, oldBlockId);
             });
-            return {project: result.project, rootBlocks: newRootBlocks, blocks: remappedBlocksArray};
+            const blockMap = remappedBlocksArray.reduce((acc, block) => Object.assign(acc, { [block.id]: block}), {});
+            return {project: result.project, rootBlocks: newRootBlocks, blocks: blockMap};
           });
       }
       else {
@@ -217,6 +219,8 @@ export const convert = (inputFilePath) => {
 //////////////////////////////////////////////////////////////
 // Call Python to generate the genbank output for a project with a set of blocks
 const exportProjectStructure = (project, blocks) => {
+  invariant(Array.isArray(blocks), 'this function expects blocks to be an array');
+
   const inputFilePath = createTempFilePath();
   const outputFilePath = createTempFilePath();
   const input = {
@@ -247,7 +251,11 @@ const exportProjectStructure = (project, blocks) => {
 };
 
 // Load sequences from their MD5 in a set of block structures
-const loadSequences = (blocks) => {
+//expects an object in the format { block.id : block }
+const loadSequences = (blockMap) => {
+  invariant(typeof blockMap === 'object', 'passed rollup should be a block map');
+  
+  const blocks = _.values(blockMap);
   return Promise.all(
     blocks.map(block => {
       const sequencePromise = (block.sequence.md5 && !block.sequence.sequence) ?

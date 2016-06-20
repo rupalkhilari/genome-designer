@@ -11,8 +11,8 @@ import { noteSave, noteFailure } from '../store/saveState';
 
 /***** info query - low level API call *****/
 
-export const infoQuery = (type, detail) => {
-  const url = dataApiPath(`info/${type}${detail ? `/${detail}` : ''}`);
+export const infoQuery = (type, detail, additional) => {
+  const url = dataApiPath(`info/${type}${detail ? `/${detail}` : ''}${additional ? `/${additional}` : ''}`);
   return rejectingFetch(url, headersGet())
     .then(resp => resp.json());
 };
@@ -56,7 +56,7 @@ export const loadProject = (projectId, avoidCache = false) => {
 export const saveProject = (projectId, rollup) => {
   invariant(projectId, 'Project ID required to snapshot');
   invariant(rollup, 'Rollup is required to save');
-  invariant(rollup.project && Array.isArray(rollup.blocks), 'rollup in wrong form');
+  invariant(rollup.project && typeof rollup.blocks === 'object', 'rollup in wrong form');
 
   //check if project is new, and save if it is
   if (!instanceMap.isRollupNew(rollup)) {
@@ -125,12 +125,12 @@ export const deleteProject = (projectId) => {
 //   components : { <blockId> : <block> } //including the parent requested
 //   options: { <blockId> : <block> }
 // }
-export const loadBlock = (blockId, withContents = false, projectId = 'block') => {
+export const loadBlock = (blockId, projectId, withContents = false) => {
   invariant(projectId, 'Project ID is required');
   invariant(blockId, 'Block ID is required');
 
   if (withContents === true) {
-    return infoQuery('contents', blockId);
+    return infoQuery('contents', blockId, projectId);
   }
 
   const url = dataApiPath(`${projectId}/${blockId}`);

@@ -172,7 +172,8 @@ const handleBlocks = (inputFilePath) => {
             const newRootBlocks = result.project.components.map((oldBlockId) => {
               return getNewId(blocksWithOldIds, oldBlockId);
             });
-            return {project: result.project, rootBlocks: newRootBlocks, blocks: remappedBlocksArray};
+            const blockMap = remappedBlocksArray.reduce((acc, block) => Object.assign(acc, { [block.id]: block}), {});
+            return {project: result.project, rootBlocks: newRootBlocks, blocks: blockMap};
           });
       }
       else {

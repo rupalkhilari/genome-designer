@@ -1,3 +1,5 @@
+import invariant from 'invariant';
+import merge from 'lodash.merge';
 import { errorDoesNotExist, errorFileSystem } from './../utils/errors';
 import mkpath from 'mkpath';
 import rimraf from 'rimraf';
@@ -67,6 +69,14 @@ export const fileWrite = (path, contents, stringify = true) => {
       resolve(path);
     });
   });
+};
+
+//todo - test
+export const fileMerge = (path, toMerge) => {
+  invariant(typeof toMerge === 'object', 'must pass an object for file merge');
+
+  return fileRead(path)
+    .then(contents => fileWrite(path, merge(contents, toMerge)));
 };
 
 export const fileDelete = (path) => {

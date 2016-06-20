@@ -6,6 +6,7 @@ import * as filePaths from '../../../../server/utils/filePaths';
 import * as versioning from '../../../../server/data/versioning';
 import * as persistence from '../../../../server/data/persistence';
 import devServer from '../../../../server/server';
+import { merge } from 'lodash';
 
 describe('Server', () => {
   describe('Data', () => {
@@ -20,19 +21,19 @@ describe('Server', () => {
         const projectRepoDataPath = filePaths.createProjectDataPath(projectId);
         const newProject = projectData.merge({ projectData: 'new stuff' });
 
-        const blockData = new Block({
+        const blockData = Block.classless({
           projectId,
         });
         const blockId = blockData.id;
-        const newBlock = blockData.merge({ blockData: 'new data' });
+        const newBlock = merge({}, blockData, { blockData: 'new data' });
 
         before(() => {
           return persistence.projectCreate(projectId, projectData, userId) //0
-            .then(() => persistence.blockCreate(blockId, blockData, projectId))
+            .then(() => persistence.blockWrite(projectId, blockData))
             .then(() => persistence.projectSave(projectId, userId)) //1
             .then(() => persistence.projectWrite(projectId, newProject, userId))
             .then(() => persistence.projectSave(projectId, userId)) //2
-            .then(() => persistence.blockWrite(blockId, newBlock, projectId))
+            .then(() => persistence.blockWrite(projectId, newBlock))
             .then(() => persistence.projectSave(projectId, userId)) //3
             .then(() => versioning.log(projectRepoDataPath))
             .then(log => {

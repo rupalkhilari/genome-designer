@@ -8,11 +8,7 @@ import ProjectSchema from '../../src/schemas/Project';
 const fs = require('fs');
 
 const getBlock = (allBlocks, blockId) => {
-  for (let i = 0; i < allBlocks.length; i++) {
-    if (allBlocks[i].id === blockId) {
-      return allBlocks[i];
-    }
-  }
+  return allBlocks[blockId];
 };
 
 describe('Plugins', () => {
