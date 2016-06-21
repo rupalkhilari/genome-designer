@@ -12,8 +12,8 @@ import { examples, blocks as exampleBlocks } from './examples';
 const makeBlocks = () => {
   return {
     constructs: [
-      ...templates.map(template => template.clone(false)).map(block => Block.classless(block)),
-      ...examples.map(example => example.clone(false)).map(block => Block.classless(block)),
+      ...templates.map(template => template.clone(false, {rules: { frozen: true }})).map(block => Block.classless(block)),
+      ...examples.map(example => example.clone(false, {rules: { frozen: true }})).map(block => Block.classless(block)),
     ],
     blocks: [
       ...templateBlocks.map(block => Block.classless(block)),
@@ -26,6 +26,9 @@ const makeProject = (blockIds) => Project.classless({
   isSample: true,
   metadata: {
     name: 'EGF Sample Templates',
+    description: `This project includes a set of templates, constructed as combinatorial constructs with biological function, which can be fabricated at the Edinburgh Genome Foundry.
+
+This is a sample project, but you can clone these constructs into a project of your own by dragging from the inventory, and then order them.`,
   },
   components: blockIds,
 });

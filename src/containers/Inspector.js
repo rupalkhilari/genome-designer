@@ -87,12 +87,13 @@ function mapStateToProps(state, props) {
       readOnly = true;
     } else {
       focused = currentProject;
+      readOnly = currentProject.isSample;
     }
     type = 'project'; //need to override so dont try to show block inspector
   } else if (level === 'construct' || (constructId && !forceBlocks.length && !blockIds.length)) {
     const construct = state.blocks[constructId];
     focused = [construct];
-    readOnly = construct.isFrozen();
+    readOnly = focused.some(instance => instance.isFrozen());
   } else if (level === 'option' && blockIds.length === 1) {
     const optionId = options[blockIds[0]];
     focused = [state.blocks[optionId]];
