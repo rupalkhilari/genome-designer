@@ -12,8 +12,8 @@ import { examples, blocks as exampleBlocks } from './examples';
 const makeBlocks = () => {
   return {
     constructs: [
-      ...templates.map(template => template.clone(false, {rules: { frozen: true }})).map(block => Block.classless(block)),
-      ...examples.map(example => example.clone(false, {rules: { frozen: true }})).map(block => Block.classless(block)),
+      ...templates.map(template => template.clone(false, { rules: { frozen: true } })).map(block => Block.classless(block)),
+      ...examples.map(example => example.clone(false, { rules: { frozen: true } })).map(block => Block.classless(block)),
     ],
     blocks: [
       ...templateBlocks.map(block => Block.classless(block)),

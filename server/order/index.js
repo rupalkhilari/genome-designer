@@ -74,6 +74,11 @@ User ${user.uuid}
     //NOTE - in future, need to do this based on the project version. For now, assume that only interested in the current state of the project.
     rollup.getProjectRollup(order.projectId)
       .then(projectRollup => {
+        //block on sample project
+        if (projectRollup.project.isSample) {
+          return Promise.reject('Cannot order sample project');
+        }
+
         //create a map of all the blocks involved in the order
         return Promise.all(order.constructIds.map(constructId => rollup.getContentsRecursivelyGivenRollup(constructId, projectRollup)))
           .then(blockMaps => blockMaps.reduce((acc, map) => Object.assign(acc, map.components, map.options), {}))
