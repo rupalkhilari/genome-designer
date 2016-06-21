@@ -22,7 +22,7 @@ module.exports = {
         // save original project id
         var projectId = response.value.split('/').pop();
         // click delete project in the menu
-        clickMainMenu(browser, 1, 5);
+        clickMainMenu(browser, 1, 2);
         // wait for form to appear
         browser
           .waitForElementPresent('form.ok-cancel-form', 5000, 'expected confirmation dialog to appear')

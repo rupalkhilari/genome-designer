@@ -35,22 +35,29 @@ export default function inventory(state = initialState, action) {
   case ActionTypes.INVENTORY_SEARCH_RESOLVE : {
     const { searchTerm, sourceList, searchResults } = action;
 
-    return Object.assign({}, state, {
-      searching: false,
-      searchResults,
-      //we can assign just based on filter, because search already limited by which sources the user has allowed
-      sourcesVisible: createSourcesVisible((source) => searchResults[source] && searchResults[source].length > 0),
-      lastSearch: {
-        searchTerm,
-        sourceList,
-      },
-    });
+    if (searchTerm === state.searchTerm) {
+      return Object.assign({}, state, {
+        searching: false,
+        searchResults,
+        //we can assign just based on filter, because search already limited by which sources the user has allowed
+        sourcesVisible: createSourcesVisible((source) => searchResults[source] && searchResults[source].length > 0),
+        lastSearch: {
+          searchTerm,
+          sourceList,
+        },
+      });
+    }
+    return state;
   }
   case ActionTypes.INVENTORY_SEARCH_REJECT : {
-    return Object.assign({}, state, {
-      searching: false,
-      searchResults: defaultSearchResults,
-    });
+    const { searchTerm } = action;
+    if (searchTerm === state.searchTerm) {
+      return Object.assign({}, state, {
+        searching: false,
+        searchResults: defaultSearchResults,
+      });
+    }
+    return state;
   }
   case ActionTypes.INVENTORY_SET_SOURCES : {
     const { sourceList } = action;

@@ -342,7 +342,12 @@ router.route('/:projectId')
 
     persistence.projectDelete(projectId, forceDelete)
       .then(() => res.status(200).json({ projectId }))
-      .catch(err => next(err));
+      .catch(err => {
+        if (err === errorDoesNotExist) {
+          return res.status(404).send(errorDoesNotExist);
+        }
+        return next(err);
+      });
   });
 
 //default catch

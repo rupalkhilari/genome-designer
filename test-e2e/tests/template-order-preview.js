@@ -16,6 +16,7 @@ module.exports = {
     browser
       .click('[data-inventory~="project"]:nth-of-type(2)')
       .waitForElementPresent('[data-inventory~="template"]', 5000, 'expected all available templates to appear')
+      .pause(3000)
       .assert.countelements('.order-button', 29)
       .click('.construct-viewer:nth-of-type(2) .order-button')
       .waitForElementPresent('.order-form .page1', 10000, 'expected order dialog to appear')

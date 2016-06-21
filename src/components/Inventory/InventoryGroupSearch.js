@@ -10,6 +10,7 @@ import {
 import { blockStash } from '../../actions/blocks';
 import { block as blockDragType } from '../../constants/DragTypes';
 import { chain } from 'lodash';
+import Spinner from '../../components/ui/Spinner';
 
 import { registry } from '../../inventory/registry';
 
@@ -104,9 +105,17 @@ export class InventoryGroupSearch extends Component {
     //this is a bit ugly, and would be nice to break up more meaningfully... would require a lot of passing down though
     // could do this sorting when the results come in?
     //nested ternary - null if no lengths, then handle based on groupBy
-    const groupsContent = noSearchResults ?
-      ((!searching && searchTerm) && <div className="InventoryGroup-placeholderContent">No Results Found</div>) :
-      (groupBy === 'source')
+
+    let groupsContent;
+
+    if (searching) {
+      groupsContent = (<Spinner />);
+    } else if (!searchTerm) {
+      groupsContent = null;
+    } else if (searchTerm && noSearchResults) {
+      groupsContent = (<div className="InventoryGroup-placeholderContent">No Results Found</div>);
+    } else {
+      groupsContent = (groupBy === 'source')
         ?
         sourceList.map(key => {
           if (!searchResults[key]) {
@@ -157,6 +166,7 @@ export class InventoryGroupSearch extends Component {
             );
           })
           .value();
+    }
 
     return (
       <div className={'InventoryGroup-content InventoryGroupSearch'}>
@@ -170,7 +180,7 @@ export class InventoryGroupSearch extends Component {
                           onToggleVisible={(nextState) => inventoryShowSourcesToggling(nextState)}
                           onSourceToggle={(source) => this.onSourceToggle(source)}/>
 
-        {(!noSearchResults && !sourcesToggling) && (
+        {(!searching && !noSearchResults && !sourcesToggling) && (
           <InventoryTabs tabs={inventoryTabs}
                          activeTabKey={groupBy}
                          onTabSelect={(tab) => this.handleTabSelect(tab.key)}/>
