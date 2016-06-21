@@ -4,7 +4,7 @@ import { getItem, setItem } from '../../middleware/localStorageCache';
 
 export const initialState = {
   isVisible: getItem('inventoryVisibility') ? getItem('inventoryVisibility') === 'true' : false,
-  currentTab: getItem('inventoryTab'),
+  currentTab: getItem('inventoryTab') || 'projects',
 };
 
 export default function inventory(state = initialState, action) {
@@ -21,7 +21,7 @@ export default function inventory(state = initialState, action) {
 
   case ActionTypes.USER_SET_USER :
     return Object.assign({}, initialState);
-  
+
   default :
     return state;
   }
