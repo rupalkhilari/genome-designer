@@ -724,7 +724,7 @@ export default class Layout {
 
     // ensure final row has the final row width
     if (row) {
-      const rowStart = this.insetX;
+      const rowStart = this.insetX + 1;
       const rowEnd = rowIndex === 0 ? Math.max(xp, this.initialRowXLimit) : xp;
       const rowWidth = rowEnd - rowStart;
       row.set({translateX: rowStart + rowWidth / 2, width: rowWidth});
@@ -750,8 +750,13 @@ export default class Layout {
 
     // position and size vertical bar
     const heightUsed = yp - startY + kT.blockH;
+    let barHeight = heightUsed - kT.blockH + kT.rowBarH;
+    // if the height is small just make zero since its not needed
+    if (barHeight <= kT.rowBarH) {
+      barHeight = 0;
+    }
     this.vertical.set({
-      bounds: new Box2D(this.insetX, startY, kT.rowBarW, heightUsed - kT.blockH),
+      bounds: new Box2D(this.insetX, startY - kT.rowBarH, kT.rowBarW, barHeight),
     });
     // filter the selections so that we eliminate those block we don't contain
     let selectedNodes = [];
