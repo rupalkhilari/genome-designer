@@ -30,7 +30,7 @@ describe('Server', () => {
           metadata: { name: terminatorBlockName },
           rules: { role: 'terminator' },
         });
-        merge(roll.blocks, {[promoter.id]: promoter, [terminator.id]: terminator});
+        merge(roll.blocks, { [promoter.id]: promoter, [terminator.id]: terminator });
         roll.project.components.push(promoter.id, terminator.id);
         return roll;
       };
@@ -43,6 +43,8 @@ describe('Server', () => {
       const otherUserId = uuid.v4();
       const otherRolls = [1, 2, 3].map(createCustomRollup);
       const otherRollIds = otherRolls.map(roll => roll.project.id);
+
+      const randomUserId = uuid.v4();
 
       before(() => {
         return Promise.all([
@@ -69,6 +71,13 @@ describe('Server', () => {
           .then(projects => {
             expect(projects.length).to.equal(myRollIds.length);
             assert(projects.every(projectId => myRollIds.indexOf(projectId) >= 0), 'wrong project was returned..');
+          });
+      });
+
+      it('listProjectsWithAccess() doesnt fail when user has no projects', () => {
+        return querying.listProjectsWithAccess(randomUserId)
+          .then(projects => {
+            expect(projects.length).to.equal(0);
           });
       });
 
