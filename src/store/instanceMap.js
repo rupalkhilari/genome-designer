@@ -157,7 +157,7 @@ export const saveBlock = (...blocks) => {
 
 export const saveOrder = (...orders) => {
   orders.forEach(order => {
-    invariant(order instanceof order, 'should only save class instances');
+    invariant(order instanceof Order, 'should only save class instances');
     orderMap.set(order.id, order);
   });
 };
