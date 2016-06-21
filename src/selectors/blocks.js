@@ -368,7 +368,9 @@ export const blockFlattenConstructAndLists = (blockId) => {
       const options = block.getOptions();
       const preference = optionPreferences[block.id];
       return (block.isList() && options.length) ?
-        state.blocks[preference || options[0]] :
+        //give the block a color if in a list - technically the block in the store but all immutable so whatever
+        //hack - clone it because technically frozen
+        state.blocks[preference || options[0]].clone(false).merge({ metadata: { color: block.metadata.color } }) :
         block;
     });
   };
