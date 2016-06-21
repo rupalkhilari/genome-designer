@@ -28,7 +28,7 @@ export const search = (term, options = {}) => {
     });
 };
 
-export const get = (id) => {
+export const get = (id, parameters = {}) => {
   return fetch(`${url}/${collection}/parts/${id}`)
     .then(resp => resp.json())
     .then(result => parseFullResult(result));

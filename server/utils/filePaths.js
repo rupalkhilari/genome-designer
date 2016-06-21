@@ -68,16 +68,8 @@ export const createBlockDirectoryPath = (projectId, ...rest) => {
   return createProjectDataPath(projectId, blockPath, ...rest);
 };
 
-export const createBlockPath = (blockId, projectId, ...rest) => {
-  invariant(blockId, 'Block ID required');
-  //future, may automatically fetch projectId somehow
-  invariant(projectId, 'Project ID required');
-
-  return createBlockDirectoryPath(projectId, blockId, ...rest);
-};
-
-export const createBlockManifestPath = (blockId, projectId) => {
-  return createBlockPath(blockId, projectId, manifestFilename);
+export const createBlockManifestPath = (projectId, blockId) => {
+  return createBlockDirectoryPath(projectId, manifestFilename);
 };
 
 //ORDERS

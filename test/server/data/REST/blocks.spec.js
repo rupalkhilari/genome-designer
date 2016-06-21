@@ -4,6 +4,7 @@ import Project from '../../../../src/models/Project';
 import Block from '../../../../src/models/Block';
 import * as persistence from '../../../../server/data/persistence';
 import devServer from '../../../../server/server';
+import { merge } from 'lodash';
 
 describe('Server', () => {
   describe('Data', () => {
@@ -15,18 +16,18 @@ describe('Server', () => {
         const projectId = projectData.id;
 
         const initialFields = { initial: 'value', projectId };
-        const blockData = new Block(initialFields);
+        const blockData = Block.classless(initialFields);
         const blockId = blockData.id;
 
         const invalidIdBlock = Object.assign({}, blockData, { id: 'invalid' });
         const invalidDataBlock = Object.assign({}, blockData, { metadata: 'invalid' });
 
         const blockPatch = { some: 'field' };
-        const patchedBlock = blockData.merge(blockPatch);
+        const patchedBlock = merge({}, blockData, blockPatch);
 
         before(() => {
           return persistence.projectCreate(projectId, projectData, userId)
-            .then(() => persistence.blockCreate(blockId, blockData, projectId));
+            .then(() => persistence.blockWrite(projectId, blockData));
         });
 
         beforeEach('server setup', () => {
@@ -71,8 +72,9 @@ describe('Server', () => {
               }
               expect(result.body).to.eql(blockData);
 
-              persistence.blockGet(blockId, projectId)
-                .then((result) => {
+              persistence.blocksGet(projectId, false, blockId)
+                .then(blockMap => {
+                  const result = blockMap[blockId];
                   expect(result).to.eql(blockData);
                   done();
                 })
@@ -94,8 +96,9 @@ describe('Server', () => {
               expect(result.body).to.eql(patchedBlock);
               expect(result.body).to.not.eql(blockData);
 
-              persistence.blockGet(blockId, projectId)
-                .then((result) => {
+              persistence.blocksGet(projectId, false, blockId)
+                .then((blockMap) => {
+                  const result = blockMap[blockId];
                   expect(result).to.eql(patchedBlock);
                   done();
                 })
@@ -113,7 +116,7 @@ describe('Server', () => {
 
         it('PUT replaces the block', (done) => {
           const url = `/data/${projectId}/${blockId}`;
-          const newBlock = new Block({
+          const newBlock = Block.classless({
             id: blockId,
             projectId,
             notes: { field: 'value' },
@@ -131,8 +134,9 @@ describe('Server', () => {
               expect(result.body).to.eql(newBlock);
               expect(result.body).to.not.eql(blockData);
 
-              persistence.blockGet(blockId, projectId)
-                .then((result) => {
+              persistence.blocksGet(projectId, false, blockId)
+                .then((blockMap) => {
+                  const result = blockMap[blockId];
                   expect(result).to.eql(newBlock);
                   done();
                 })
@@ -140,43 +144,24 @@ describe('Server', () => {
             });
         });
 
-        it('PUT forces the block ID', (done) => {
+        it('PUT ensures the block ID matches', (done) => {
           const url = `/data/${projectId}/${blockId}`;
-          const newBlock = new Block({
+          const newBlock = Block.classless({
             id: 'randomId',
             projectId,
             notes: { field: 'value' },
           });
-          const validator = Object.assign({}, newBlock, { id: blockId });
 
           request(server)
             .put(url)
             .send(newBlock)
-            .expect(200)
-            .expect('Content-Type', /json/)
-            .end((err, result) => {
-              if (err) {
-                done(err);
-              }
-
-              expect(result.body).to.eql(validator);
-              expect(result.body).to.not.eql(newBlock);
-              expect(result.body).to.not.eql(blockData);
-
-              persistence.blockGet(blockId, projectId)
-                .then((result) => {
-                  expect(result).to.eql(validator);
-                  expect(result).to.not.eql(blockData);
-                  done();
-                })
-                .catch(done);
-            });
+            .expect(400, done);
         });
 
         it('PUT validates the block', (done) => {
           const url = `/data/${projectId}/${blockId}`;
           request(server)
-            .post(url)
+            .put(url)
             .send(invalidDataBlock)
             .expect(400, done);
         });
@@ -191,7 +176,7 @@ describe('Server', () => {
                 done(err);
               }
 
-              persistence.blockExists(blockId, projectId)
+              persistence.blocksExist(projectId, false, blockId)
                 .then(() => done(new Error('shouldnt exist')))
                 .catch(() => done());
             });

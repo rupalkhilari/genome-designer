@@ -24,13 +24,15 @@ export default class Project extends Instance {
 
   //compares two projects, checking if they are the same (ignoring project version)
   static compare(one, two) {
+    if (!one || !two) return false;
     if (one === two) return true;
 
     //massage two into a temp object with fields from one that we dont want to compare
-    const massaged = Object.assign(cloneDeep(two), {
+    const massaged = two.merge({
       version: one.version,
       lastSaved: one.lastSaved,
     });
+
     return isEqual(one, massaged);
   }
 

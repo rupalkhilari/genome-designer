@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import {
   uiShowOrderForm,
+  uiSpin,
 } from '../../actions/ui';
 import {
   orderSubmit,
@@ -53,9 +54,11 @@ class OrderModal extends Component {
     if (this.props.order.isSubmitted()) {
       this.props.uiShowOrderForm(false);
     } else {
+      this.props.uiSpin('Submitting order... Please wait.');
       this.props.orderSubmit(this.props.order.id)
         .then(() => {
-          this.setState({page: 3})
+          this.props.uiSpin();
+          this.setState({page: 3});
         });
     }
   };
@@ -137,6 +140,7 @@ function mapStateToProps(state, props) {
 
 export default connect(mapStateToProps, {
   uiShowOrderForm,
+  uiSpin,
   orderSubmit,
   orderDetach,
 })(OrderModal);

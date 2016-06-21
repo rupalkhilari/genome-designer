@@ -9,6 +9,7 @@ import {
   blockClone,
   blockRename,
 } from '../../../actions/blocks';
+import { uiSpin } from '../../../actions/ui';
 import { focusConstruct, focusBlocks } from '../../../actions/focus';
 import { projectGetVersion } from '../../../selectors/projects';
 import DnD from '../dnd/dnd';
@@ -21,6 +22,7 @@ import '../../../styles/constructviewercanvas.css';
 export class ConstructViewerCanvas extends Component {
 
   static propTypes = {
+    uiSpin: PropTypes.func.isRequired,
     blockCreate: PropTypes.func.isRequired,
     blockClone: PropTypes.func.isRequired,
     blockRename: PropTypes.func.isRequired,
@@ -39,11 +41,11 @@ export class ConstructViewerCanvas extends Component {
    * create a new construct, add dropped block to it
    */
   onDrop(globalPosition, payload, event) {
+    this.props.uiSpin('Creating a new construct... Please wait.');
     // clone construct and add to project if a construct from inventory otherwise
     // treat as a list of one or more blocks
     //if the block is from the inventory, we've cloned it and dont need to worry about forcing the projectId when we add the components
     const fromInventory = payload.source.indexOf('inventory') >= 0;
-
     //dont need to check if array, since inventory drags always are single items
     if (fromInventory && payload.type === blockDragType && payload.item.isConstruct()) {
       const construct = this.props.blockClone(payload.item.id);
@@ -57,6 +59,7 @@ export class ConstructViewerCanvas extends Component {
       constructViewer.addItemAtInsertionPoint(payload, null, null);
       this.props.focusConstruct(construct.id);
     }
+    this.props.uiSpin();
   }
 
   /**
@@ -201,6 +204,7 @@ function mapStateToProps(state, props) {
 }
 
 export default connect(mapStateToProps, {
+  uiSpin,
   focusConstruct,
   focusBlocks,
   projectAddConstruct,

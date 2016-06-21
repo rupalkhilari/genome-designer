@@ -109,7 +109,7 @@ export default class InputSimple extends Component {
 
   render() {
     return (
-      <div className={'InputSimple' +
+      <div className={'InputSimple no-vertical-scroll' +
       (this.props.readOnly ? ' readOnly' : '')}>
         {(this.props.useTextarea) &&
         <textarea

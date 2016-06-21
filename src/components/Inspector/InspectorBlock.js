@@ -171,6 +171,7 @@ export class InspectorBlock extends Component {
     const isTemplate = singleInstance && instances[0].isTemplate();
     const isConstruct = singleInstance && instances[0].isConstruct();
     const inputKey = instances.map(inst => inst.id).join(',');
+    const anyIsConstructOrTemplateOrList = instances.some(instance => instance.isConstruct() || instance.isTemplate() || instance.isList());
 
     const name = singleInstance ? instances[0].getType() : 'Block';
 
@@ -245,7 +246,7 @@ export class InspectorBlock extends Component {
                          onSelect={this.selectColor}/>
 
             <SymbolPicker current={this.currentRoleSymbol()}
-                          readOnly={readOnly || isConstruct || isTemplate || isList || forceIsConstruct}
+                          readOnly={readOnly || isConstruct || isTemplate || isList || forceIsConstruct || anyIsConstructOrTemplateOrList }
                           onSelect={this.selectSymbol}/>
           </div>
         </InspectorRow>

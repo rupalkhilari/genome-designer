@@ -61,6 +61,7 @@ export const UI_SHOW_DNAIMPORT = 'UI_SHOW_DNAIMPORT';
 export const UI_SHOW_ORDER_FORM = 'UI_SHOW_ORDER_FORM';
 export const UI_SHOW_ABOUT = 'UI_SHOW_ABOUT';
 export const UI_SET_GRUNT = 'UI_SET_GRUNT';
+export const UI_SPIN = 'UI_SPIN';
 export const UI_SHOW_GENBANK_IMPORT = 'UI_SHOW_GENBANK_IMPORT';
 
 export const USER_SET_USER = 'USER_SET_USER';
@@ -69,6 +70,7 @@ export const USER_LOGIN = 'USER_LOGIN';
 export const CLIPBOARD_SET_DATA = 'CLIPBOARD-SET-DATA';
 
 export const ORDER_CREATE = 'ORDER_CREATE';
+export const ORDER_SET_PARAMETERS = 'ORDER_SET_PARAMETERS';
 export const ORDER_STASH = 'ORDER_STASH';
 export const ORDER_SUBMIT = 'ORDER_SUBMIT';
 export const ORDER_SET_NAME = 'ORDER_SET_NAME';

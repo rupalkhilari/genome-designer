@@ -5,12 +5,15 @@ import * as projectSelectors from '../selectors/projects';
 import * as undoActions from '../store/undo/actions';
 import { push } from 'react-router-redux';
 
+import * as instanceMap from '../store/instanceMap';
 import Block from '../models/Block';
 import Project from '../models/Project';
 import { pauseAction, resumeAction } from '../store/pausableStore';
 
 import { getItem, setItem } from '../middleware/localStorageCache';
 const recentProjectKey = 'mostRecentProject';
+
+const rollupDefined = (roll) => roll && roll.project && roll.blocks;
 
 //Promise
 export const projectList = () => {
@@ -34,6 +37,7 @@ export const projectDelete = (projectId) => {
   return (dispatch, getState) => {
     return deleteProject(projectId)
       .then(() => {
+        //don't delete the blocks, as they may be shared between projects (or, could delete and then force loading for next / current project)
         dispatch({
           type: ActionTypes.PROJECT_DELETE,
           projectId,
@@ -45,7 +49,7 @@ export const projectDelete = (projectId) => {
 
 //Promise
 //this is a background save (e.g. autosave)
-export const projectSave = (inputProjectId) => {
+export const projectSave = (inputProjectId, forceSave = false) => {
   return (dispatch, getState) => {
     const currentProjectId = dispatch(projectSelectors.projectGetCurrentId());
     const projectId = !!inputProjectId ? inputProjectId : currentProjectId;
@@ -54,13 +58,20 @@ export const projectSave = (inputProjectId) => {
     }
 
     const roll = dispatch(projectSelectors.projectCreateRollup(projectId));
-    setItem(recentProjectKey, projectId);
+    if (!rollupDefined(roll)) {
+      return Promise.reject('attempting to save project which is not loaded');
+    }
+
+    //check if project is new, and save only if it is (or forcing the save)
+    if (!instanceMap.isRollupNew(roll) && forceSave !== true) {
+      return Promise.resolve(null);
+    }
+
+    instanceMap.saveRollup(roll);
 
     return saveProject(projectId, roll)
       .then(commitInfo => {
-        if (!commitInfo) {
-          return null;
-        }
+        setItem(recentProjectKey, projectId);
 
         //if no version => first time saving, show a grunt
         if (!roll.project.version) {
@@ -90,6 +101,14 @@ export const projectSnapshot = (projectId, message, withRollup = true) => {
       dispatch(projectSelectors.projectCreateRollup(projectId)) :
     {};
 
+    if (withRollup) {
+      if (rollupDefined(roll)) {
+        instanceMap.saveRollup(roll);
+      } else {
+        return Promise.reject('attempting to save project which is not loaded');
+      }
+    }
+
     return snapshot(projectId, message, roll)
       .then(commitInfo => {
         if (!commitInfo) {
@@ -110,35 +129,55 @@ export const projectSnapshot = (projectId, message, withRollup = true) => {
 //Promise
 export const projectLoad = (projectId, avoidCache = false) => {
   return (dispatch, getState) => {
-    return loadProject(projectId, avoidCache)
-      .then(rollup => {
-        const { project, blocks } = rollup;
-        const projectModel = new Project(project);
+    const isCached = instanceMap.projectLoaded(projectId);
+    const promise = (avoidCache !== true && isCached)
+      ?
+      Promise.resolve(instanceMap.getRollup(projectId))
+      :
+      loadProject(projectId)
+        .then(rollup => {
+          const { project, blocks } = rollup;
+          const projectModel = new Project(project);
+          const blockMap = Object.keys(blocks)
+            .map(blockId => blocks[blockId])
+            .map((blockObject) => new Block(blockObject))
+            .reduce((acc, block) => Object.assign(acc, { [block.id]: block }), {});
 
-        dispatch(pauseAction());
-        dispatch(undoActions.transact());
-
-        dispatch({
-          type: ActionTypes.BLOCK_STASH,
-          blocks: blocks.map((blockObject) => new Block(blockObject)),
+          return {
+            project: projectModel,
+            blocks: blockMap,
+          };
         });
 
-        dispatch({
-          type: ActionTypes.PROJECT_LOAD,
-          project: projectModel,
-        });
+    //rollup by this point has been converted to class instances
+    return promise.then((rollup) => {
+      instanceMap.saveRollup(rollup);
 
-        dispatch(undoActions.commit());
-        dispatch(resumeAction());
+      dispatch(pauseAction());
+      dispatch(undoActions.transact());
 
-        return project;
+      dispatch({
+        type: ActionTypes.BLOCK_STASH,
+        blocks: Object.keys(rollup.blocks).map(blockId => rollup.blocks[blockId]),
       });
+
+      dispatch({
+        type: ActionTypes.PROJECT_LOAD,
+        project: rollup.project,
+      });
+
+      dispatch(undoActions.commit());
+      dispatch(resumeAction());
+
+      return rollup.project;
+    });
   };
 };
 
 //Promise
 //default to most recent project if falsy
-export const projectOpen = (inputProjectId) => {
+//skip save if project is deleted
+export const projectOpen = (inputProjectId, skipSave = false) => {
   return (dispatch, getState) => {
     const currentProjectId = dispatch(projectSelectors.projectGetCurrentId());
     const projectId = inputProjectId || getItem(recentProjectKey);
@@ -147,42 +186,47 @@ export const projectOpen = (inputProjectId) => {
       return Promise.resolve();
     }
 
-    return dispatch(projectSave(currentProjectId))
-      .catch(err => {
-        if (currentProjectId) {
-          dispatch({
-            type: ActionTypes.UI_SET_GRUNT,
-            gruntMessage: `Project ${currentProjectId} couldn't be saved, but navigating anyway...`,
-          });
-        }
-      })
-      .then(() => {
-        /*
-        future - clear the store of blocks from the old project.
-        need to consider blocks in the inventory - loaded projects, search results, shown in onion etc. Probably means committing to using the instanceMap for mapping state to props in inventory.
-
-        const blockIds = dispatch(projectSelectors.projectListAllBlocks(currentProjectId)).map(block => block.id);
-
-        // pause action e.g. so dont get accidental redraws with blocks missing
-        dispatch(pauseAction());
-
-        //remove prior projects blocks from the store
-        dispatch({
-          type: ActionTypes.BLOCK_DETACH,
-          blockIds,
+    const promise = (skipSave === true)
+      ?
+      Promise.resolve()
+      :
+      dispatch(projectSave(currentProjectId))
+        .catch(err => {
+          if (currentProjectId) {
+            dispatch({
+              type: ActionTypes.UI_SET_GRUNT,
+              gruntMessage: `Project ${currentProjectId} couldn't be saved, but navigating anyway...`,
+            });
+          }
         });
 
-        //projectPage will load the project + its blocks
-        //change the route
-        dispatch(push(`/project/${projectId}`));
+    return promise.then(() => {
+      /*
+       future - clear the store of blocks from the old project.
+       need to consider blocks in the inventory - loaded projects, search results, shown in onion etc. Probably means committing to using the instanceMap for mapping state to props in inventory.
 
-        //dispatch(resumeAction());
-         */
+       const blockIds = dispatch(projectSelectors.projectListAllBlocks(currentProjectId)).map(block => block.id);
 
-        //projectPage will load the project + its blocks
-        //change the route
-        dispatch(push(`/project/${projectId}`));
-      });
+       // pause action e.g. so dont get accidental redraws with blocks missing
+       dispatch(pauseAction());
+
+       //remove prior projects blocks from the store
+       dispatch({
+       type: ActionTypes.BLOCK_DETACH,
+       blockIds,
+       });
+
+       //projectPage will load the project + its blocks
+       //change the route
+       dispatch(push(`/project/${projectId}`));
+
+       //dispatch(resumeAction());
+       */
+
+      //projectPage will load the project + its blocks
+      //change the route
+      dispatch(push(`/project/${projectId}`));
+    });
   };
 };
 

@@ -42,9 +42,16 @@ class DNAImportForm extends Component {
         this.props.uiSetGrunt(`Sequence data must be added to a selected block. Please select a block and try again.`);
         return;
       }
-      if (nextProps.currentConstruct.isFrozen() || nextProps.currentConstruct.isFixed()) {
+      if (nextProps.currentConstruct.isFrozen() || nextProps.currentConstruct.isFixed() || nextProps.currentConstruct.isTemplate()) {
         this.props.uiShowDNAImport(false);
         this.props.uiSetGrunt(`You cannot add sequence to a template block.`);
+        return;
+      }
+      const block = this.props.blocks[this.props.focusedBlocks[0]];
+      if (block.components.length) {
+        this.props.uiShowDNAImport(false);
+        this.props.uiSetGrunt(`You cannot add sequence to a block with child components.`);
+        return;
       }
     }
   }
@@ -171,6 +178,7 @@ function mapStateToProps(state) {
     open: state.ui.modals.showDNAImport,
     focusedBlocks: state.focus.blockIds,
     currentConstruct: state.blocks[state.focus.constructId],
+    blocks: state.blocks,
   };
 }
 

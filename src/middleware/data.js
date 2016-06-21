@@ -2,7 +2,6 @@ import rejectingFetch from './rejectingFetch';
 import invariant from 'invariant';
 import { headersGet, headersPost, headersPut, headersDelete } from './headers';
 import { dataApiPath } from './paths';
-import * as instanceMap from '../store/instanceMap';
 import { noteSave, noteFailure } from '../store/saveState';
 
 /******
@@ -11,8 +10,8 @@ import { noteSave, noteFailure } from '../store/saveState';
 
 /***** info query - low level API call *****/
 
-export const infoQuery = (type, detail) => {
-  const url = dataApiPath(`info/${type}${detail ? `/${detail}` : ''}`);
+export const infoQuery = (type, detail, additional) => {
+  const url = dataApiPath(`info/${type}${detail ? `/${detail}` : ''}${additional ? `/${additional}` : ''}`);
   return rejectingFetch(url, headersGet())
     .then(resp => resp.json());
 };
@@ -30,18 +29,16 @@ export const listProjects = () => {
 /***** rollups - loading + saving projects *****/
 
 //returns a rollup
-export const loadProject = (projectId, avoidCache = false) => {
-  const isCached = instanceMap.projectLoaded(projectId);
-
-  if (isCached && avoidCache !== true) {
-    return Promise.resolve(instanceMap.getRollup(projectId));
+export const loadProject = (projectId) => {
+  if (!projectId) {
+    return Promise.reject(null);
   }
 
   const url = dataApiPath(`projects/${projectId}`);
   return rejectingFetch(url, headersGet())
     .then(resp => resp.json())
     .then(rollup => {
-      instanceMap.saveRollup(rollup);
+      noteSave(rollup.project.id, rollup.project.version);
       return rollup;
     });
 };
@@ -49,17 +46,11 @@ export const loadProject = (projectId, avoidCache = false) => {
 //expects a rollup
 //autosave
 //returns the commit with sha, message, or null if no need to save
+//resolves to null if the project has not changed
 export const saveProject = (projectId, rollup) => {
   invariant(projectId, 'Project ID required to snapshot');
   invariant(rollup, 'Rollup is required to save');
-  invariant(rollup.project && Array.isArray(rollup.blocks), 'rollup in wrong form');
-
-  //check if project is new, and save if it is
-  if (!instanceMap.isRollupNew(rollup)) {
-    return Promise.resolve(null);
-  }
-
-  instanceMap.saveRollup(rollup);
+  invariant(rollup.project && typeof rollup.blocks === 'object', 'rollup in wrong form');
 
   const url = dataApiPath(`projects/${projectId}`);
   const stringified = JSON.stringify(rollup);
@@ -84,10 +75,6 @@ export const snapshot = (projectId, message = 'Project Snapshot', rollup = {}) =
   invariant(projectId, 'Project ID required to snapshot');
   invariant(!message || typeof message === 'string', 'optional message for snapshot must be a string');
 
-  if (rollup.project && rollup.blocks) {
-    instanceMap.saveRollup(rollup);
-  }
-
   const stringified = JSON.stringify({ message, rollup });
   const url = dataApiPath(`${projectId}/commit`);
 
@@ -104,7 +91,6 @@ export const snapshot = (projectId, message = 'Project Snapshot', rollup = {}) =
     });
 };
 
-//todo - remove from cache? impact on undo? this should probably change the route, which would kill undo stack, which is probably not ok.
 export const deleteProject = (projectId) => {
   invariant(projectId, 'Project ID required to delete');
 
@@ -121,12 +107,12 @@ export const deleteProject = (projectId) => {
 //   components : { <blockId> : <block> } //including the parent requested
 //   options: { <blockId> : <block> }
 // }
-export const loadBlock = (blockId, withContents = false, projectId = 'block') => {
+export const loadBlock = (blockId, projectId, withContents = false) => {
   invariant(projectId, 'Project ID is required');
   invariant(blockId, 'Block ID is required');
 
   if (withContents === true) {
-    return infoQuery('contents', blockId);
+    return infoQuery('contents', blockId, projectId);
   }
 
   const url = dataApiPath(`${projectId}/${blockId}`);

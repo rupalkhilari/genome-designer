@@ -41,6 +41,7 @@ export default function projects(state = initialState, action) {
     const { projectId } = action;
     const nextState = Object.assign({}, state);
     delete nextState[projectId];
+    instanceMap.removeProject(projectId);
     return nextState;
   }
 

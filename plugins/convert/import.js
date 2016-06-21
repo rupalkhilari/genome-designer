@@ -8,6 +8,7 @@ import * as fileSystem from '../../server/utils/fileSystem';
 import * as filePaths from '../../server/utils/filePaths';
 import { errorDoesNotExist } from '../../server/utils/errors';
 import md5 from 'md5';
+import { merge, filter } from 'lodash';
 
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
@@ -64,6 +65,7 @@ router.get('/:pluginId/file/:fileId', (req, res, next) => {
 // genbank without a project
 router.post('/:pluginId/convert', jsonParser, (req, resp, next) => {
   const { pluginId } = req.params;
+  const constructsOnly = !!req.query.constructsOnly;
 
   let buffer = '';
 
@@ -75,12 +77,18 @@ router.post('/:pluginId/convert', jsonParser, (req, resp, next) => {
     const inputFilePath = filePaths.createStorageUrl(pluginId, md5(buffer));
     return fileSystem.fileWrite(inputFilePath, buffer, false)
       .then(() => callImportFunction('convert', pluginId, inputFilePath))
-      .then(converted => resp.status(200).json(converted))
+      .then(converted => {
+        const roots = converted.roots;
+        const rootBlocks = filter(converted.blocks, (block, blockId) => roots.indexOf(blockId) >= 0);
+        const payload = constructsOnly ?
+        { roots, blocks: rootBlocks } :
+          converted;
+        resp.status(200).json(payload);
+      })
       .catch(err => next(err));
   });
 });
 
-//can pass :projectId = 'convert' to just convert genbank file directly, and not write to memory
 router.post('/:pluginId/:projectId?', jsonParser, (req, resp, next) => {
   const { pluginId, projectId } = req.params;
 
@@ -101,26 +109,30 @@ router.post('/:pluginId/:projectId?', jsonParser, (req, resp, next) => {
                     .then(() => persistence.projectSave(roll.project.id, req.user.uuid))
                     .then(commit => resp.status(200).json({ ProjectId: roll.project.id }))
                     .catch(err => {
+                      console.log('Error in Import 1: ' + err);
                       resp.status(400).send(err);
                     });
                 } else {
                   rollup.getProjectRollup(projectId)
                     .then((existingRoll) => {
                       existingRoll.project.components = existingRoll.project.components.concat(roll.project.components);
-                      existingRoll.blocks = existingRoll.blocks.concat(roll.blocks);
+                      Object.assign(existingRoll.blocks, roll.blocks);
                       rollup.writeProjectRollup(existingRoll.project.id, existingRoll, req.user.uuid)
                         .then(() => persistence.projectSave(existingRoll.project.id, req.user.uuid))
                         .then(commit => resp.status(200).json({ ProjectId: existingRoll.project.id }))
                         .catch(err => {
+                          console.log('Error in Import 2: ' + err);
                           resp.status(400).send(err);
                         });
                     })
                     .catch(err => {
+                      console.log('Error in Import 3: ' + err);
                       resp.status(400).send(err);
                     });
                 }
               })
               .catch(err => {
+                console.log('Error in Import 4: ' + err);
                 resp.status(500).send(err);
               });
           });

@@ -40,7 +40,7 @@ router.route('/:projectId/:orderId?')
   })
   .post((req, res, next) => {
     const { user, projectId } = req;
-    const { foundry, order } = req.body;
+    const { foundry, order, positionalCombinations } = req.body;
 
     if (projectId !== order.projectId) {
       return res.status(401).send('project ID and order.projectId must match');
@@ -83,17 +83,41 @@ User ${user.uuid}
           });
       })
       .then(blockMap => {
+        //todo - should share this logic with the client, not recompute here
+        //2D array, where inner array is just array of blockIds
+        const allConstructs = [];
+
+        //todo - may need to make this more efficent = call stack size exceeded for very large orders.
+        order.constructIds.forEach(constructId => {
+          const constructPositionalCombinations = positionalCombinations[constructId];
+          //guarantee both accumulator (and positions) array have at least one item to map over
+          const last = constructPositionalCombinations.pop();
+
+          //iterate through positions, essentially generating tree with * N branches for N options at position
+          const combinations = constructPositionalCombinations.reduceRight((acc, position) => {
+            // for each extant construct, create one variant which adds each part respectively
+            // flatten them for return and repeat!
+            return flatten(position.map(option => acc.map(partialConstruct => [option].concat(partialConstruct))));
+          }, [last]);
+
+          allConstructs.push(...combinations);
+        });
+
+        //prune the list based on the parameters
+        const constructList = (!order.parameters.onePot && order.parameters.permutations < order.numberCombinations) ?
+          allConstructs.filter((el, idx, arr) => order.parameters.activeIndices[idx] === true) :
+          allConstructs;
+
         //future - this should be dynamic, based on the foundry, pulling from a registry
-        return submit(order, user, blockMap)
+        return submit(order, user, constructList, blockMap)
           .then(response => {
             // freeze all the blocks in the construct, given blockMap
-
-            const frozenBlocks = Object.keys(blockMap)
+            const frozenBlockMap = Object.keys(blockMap)
               .map(key => blockMap[key])
-              .map(block => merge(block, { rules: { frozen: true } }));
+              .map(block => merge(block, { rules: { frozen: true } }))
+              .reduce((acc, block) => Object.assign(acc, { [block.id]: block}), {});
 
-            //todo - should not write individually, especially when all blocks in same file
-            return Promise.all(frozenBlocks.map(block => persistence.blockWrite(block.id, block, projectId)))
+            return persistence.blocksMerge(projectId, frozenBlockMap)
               .then(() => response);
           });
       })
@@ -117,6 +141,8 @@ User ${user.uuid}
 
             return rollup.getProjectRollup(projectId)
               .then(roll => {
+                console.log(roll);
+
                 return persistence.orderWrite(order.id, order, projectId, roll);
               });
           });

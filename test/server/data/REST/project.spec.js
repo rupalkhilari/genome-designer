@@ -1,4 +1,5 @@
 import { expect, assert } from 'chai';
+import uuid from 'node-uuid';
 import request from 'supertest';
 import Project from '../../../../src/models/Project';
 import * as persistence from '../../../../server/data/persistence';
@@ -41,8 +42,19 @@ describe('Server', () => {
             .end(done);
         });
 
-        it('GET a not real project returns {} and a 204', (done) => {
+        it('GET invalid project ID returns a 400', (done) => {
           const url = `/data/fakeId`;
+          request(server)
+            .get(url)
+            .expect(400)
+            .expect(result => {
+              expect(result.body).to.be.empty;
+            })
+            .end(done);
+        });
+
+        it('GET a not real project returns {} and a 204', (done) => {
+          const url = `/data/${uuid.v4()}`;
           request(server)
             .get(url)
             .expect(204)

@@ -6,6 +6,7 @@ import ImportGenBankModal from '../components/genbank/import';
 import ImportDNAForm from '../components/importdna/importdnaform';
 import AboutForm from '../components/aboutform';
 import OrderModal from '../containers/orders/ordermodal';
+import ModalSpinner from '../components/modal/modalspinner';
 
 import '../styles/App.css';
 
@@ -56,6 +57,7 @@ class App extends Component {
         <div className="App-pageContent">
           {this.props.children}
         </div>
+        <ModalSpinner spinMessage={this.props.spinMessage}/>
         <DevTools />
       </div>
     );
@@ -66,6 +68,7 @@ function mapStateToProps(state, ownProps) {
   return {
     currentProjectId: ownProps.params.projectId,
     user: state.user,
+    spinMessage: state.ui.modals.spinMessage,
   };
 }
 

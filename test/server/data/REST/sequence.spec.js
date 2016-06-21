@@ -19,7 +19,7 @@ describe('Server', () => {
         const sequence = 'aaaaacccccccgggggggtttttt';
         const sequenceMd5 = md5(sequence);
 
-        const blockData = new Block({
+        const blockData = Block.classless({
           projectId,
           sequence: {
             md5: sequenceMd5,
@@ -30,7 +30,7 @@ describe('Server', () => {
 
         before(() => {
           return persistence.projectCreate(projectId, projectData, userId)
-            .then(() => persistence.blockCreate(blockId, blockData, projectId))
+            .then(() => persistence.blockWrite(projectId, blockData))
             .then(() => persistence.sequenceWrite(sequenceMd5, sequence));
         });
 

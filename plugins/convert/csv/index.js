@@ -116,7 +116,7 @@ const remapHierarchy = (blockArray) => {
       const newid = getNewId(blockArray, oldChildId);
       newBlock.components.push(newid);
     });
-    return new Block(newBlock);
+    return Block.classless(newBlock);
   });
 };
 
@@ -127,7 +127,7 @@ const handleProject = (outputProject, rootBlockIds) => {
   const projectName = 'CSV Import ' + d.toLocaleString();
   const { name } = projectName;
 
-  return new Project(merge({}, ProjectSchema.scaffold(), {
+  return Project.classless(merge({}, ProjectSchema.scaffold(), {
     components: rootBlockIds,
     metadata: {
       name,
@@ -172,7 +172,8 @@ const handleBlocks = (inputFilePath) => {
             const newRootBlocks = result.project.components.map((oldBlockId) => {
               return getNewId(blocksWithOldIds, oldBlockId);
             });
-            return {project: result.project, rootBlocks: newRootBlocks, blocks: remappedBlocksArray};
+            const blockMap = remappedBlocksArray.reduce((acc, block) => Object.assign(acc, { [block.id]: block}), {});
+            return {project: result.project, rootBlocks: newRootBlocks, blocks: blockMap};
           });
       }
       else {

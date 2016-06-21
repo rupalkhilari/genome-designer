@@ -5,25 +5,28 @@ import { LOCATION_CHANGE } from 'react-router-redux';
 const purgeEvents = [
   //ActionTypes.PROJECT_SAVE, //dont purge on this, since call it on save, will never throttle
   ActionTypes.PROJECT_SNAPSHOT,
-  //LOCATION_CHANGE, //forceOn will handle purging for us, do not needed here
+  LOCATION_CHANGE, //we handle saving in projectOpen, which changes the route, so purge when the route changes
 ];
 
 const simulateEvents = [
   ActionTypes.PROJECT_SAVE,
   ActionTypes.PROJECT_SNAPSHOT,
+  LOCATION_CHANGE,
 ];
 
 const autosave = autosaveCreator({
   //filter to undoable actions, which basically are the ones that are state changes (undoable reducer relies on these)
   filter: (action, alreadyDirty, nextState, lastState) => !!action.undoable,
 
-  //also, force on location change
+  //no longer need to autosave when route changes, since projectOpen does this
+  //however, if change route with something other than projectOpen then should re-enable
+  //
   //want this to run prior to route change -- note if have other middleware to prune store
   //only run if this reducer was updated so compare states
   //if dont compare states, will likely trigger on all route changes (including init, which will not find window.gd.api
-  forceOn: ({ type }, alreadyDirty) => {
-    return type === LOCATION_CHANGE && alreadyDirty;
-  },
+  //forceOn: ({ type }, alreadyDirty) => {
+  //  return type === LOCATION_CHANGE && alreadyDirty;
+  //},
 
   //this is pretty hack, but want to rely on action to do this (and actions have a dependency on the store, so cant import directly or create circular dependency. just need to be sure this doesnt run until after everything has been set up...
   onSave: () => {

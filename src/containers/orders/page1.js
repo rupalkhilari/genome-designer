@@ -46,7 +46,6 @@ export class Page1 extends Component {
       combinatorialMethod: 'Random Subset',
       onePot,
     }, true);
-    this.forceUpdate();
   };
 
   _labelChanged = (newLabel) => {
@@ -59,7 +58,6 @@ export class Page1 extends Component {
     this.props.orderSetParameters(this.props.order.id, {
       permutations: Number.isInteger(total) ? Math.min(this.props.numberConstructs, Math.max(1, total)) : 1,
     }, true);
-    this.forceUpdate();
   };
 
   methodOptions() {
@@ -73,14 +71,12 @@ export class Page1 extends Component {
     this.props.orderSetParameters(this.props.order.id, {
       combinatorialMethod: newMethod,
     }, true);
-    this.forceUpdate();
   };
 
   sequenceAssemblies = (state) => {
     this.props.orderSetParameters(this.props.order.id, {
       sequenceAssemblies: state,
     }, true);
-    this.forceUpdate();
   };
 
   render() {
@@ -143,7 +139,7 @@ export class Page1 extends Component {
 function mapStateToProps(state, props) {
   return {
     blocks: state.blocks,
-    numberConstructs: props.order.constructs.length,
+    numberConstructs: props.order.numberCombinations,
   };
 }
 

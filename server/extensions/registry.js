@@ -5,6 +5,11 @@ const { dependencies } = manifest;
 
 const registry = Object.keys(dependencies).reduce((acc, dep) => {
   try {
+    //skip the simple extension unless we're in the test environment
+    if (dep === 'simple' && process.env.NODE_ENV !== 'test') {
+      return acc;
+    }
+
     let depManifest;
     //building in webpack requires static paths, dynamic requires are really tricky
     if (process.env.BUILD) {

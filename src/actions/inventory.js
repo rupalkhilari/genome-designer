@@ -7,7 +7,7 @@ const searchSources = getSources('search');
 //if immediate, call on leading edge, prevent subsequence calls until timeout clears
 //will not resolve when debounced. note that not rejected, could probably write to handle that with a pending state
 let timeout;
-function debouncer(wait = 200, immediate = false) {
+function debouncer(wait = 250, immediate = false) {
   return new Promise((resolve, reject) => {
     const later = () => {
       timeout = null;
@@ -15,14 +15,14 @@ function debouncer(wait = 200, immediate = false) {
         resolve();
       }
     };
-    const callNow = immediate === true || !timeout;
+    const callNow = immediate === true; // || !timeout; --- un comment to enable on leading edge
     clearTimeout(timeout);
     timeout = setTimeout(later, wait);
     if (callNow) resolve();
   });
 }
 
-//doesnt run a search
+//doesnt run a search, just set the term (without setting state.searching to true)
 export const inventorySetSearchTerm = (searchTerm) => {
   return (dispatch, getState) => {
     dispatch({
@@ -39,24 +39,19 @@ export const inventorySearch = (inputTerm = '', options = null, skipDebounce = f
     const { sourceList } = state.inventory;
     const searchTerm = (typeof inputTerm !== 'undefined') ? inputTerm : state.inventory.searchTerm;
 
-    //update the search term even if not actually running the search
-    dispatch(inventorySetSearchTerm(searchTerm));
+    dispatch({
+      type: ActionTypes.INVENTORY_SEARCH,
+      sourceList,
+      searchTerm,
+    });
 
     if (!inputTerm.length) {
       return Promise.resolve();
     }
 
-    const promise = skipDebounce === true ? Promise.resolve() : debouncer();
-
-    return promise
-      .then(() => {
-        dispatch({
-          type: ActionTypes.INVENTORY_SEARCH,
-          sourceList,
-          searchTerm,
-        });
-        return searchApi.search(searchTerm, options, sourceList);
-      })
+    //debounce initiation of searches
+    return debouncer(500, skipDebounce)
+      .then(() => searchApi.search(searchTerm, options, sourceList))
       .then(searchResults => {
         dispatch({
           type: ActionTypes.INVENTORY_SEARCH_RESOLVE,
@@ -69,6 +64,7 @@ export const inventorySearch = (inputTerm = '', options = null, skipDebounce = f
       .catch(err => {
         dispatch({
           type: ActionTypes.INVENTORY_SEARCH_REJECT,
+          searchTerm,
         });
         return null;
       });

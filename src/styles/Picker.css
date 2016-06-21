@@ -75,6 +75,7 @@
 
   &-item {
     float: left;
+    display: block;
     width: 54px;
     height: 54px;
     margin: 2px;

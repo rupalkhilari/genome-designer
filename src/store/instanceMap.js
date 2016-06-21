@@ -1,6 +1,7 @@
 import invariant from 'invariant';
 import Project from '../models/Project';
 import Block from '../models/Block';
+import Order from '../models/Order';
 
 //NOTE - this cache is not reset when the user changes. That sucks up some memory. User should not be able to access though - this is used by middleware functoins etc., but everything in a newly signed-in user's information will have unique IDs and should not collide (until there is collaboration or something along those lines).
 
@@ -11,7 +12,7 @@ import Block from '../models/Block';
 
  However, as long as the undo stack is erased on location change, the store only needs to contain the blocks / project that is open and being edited.
 
- NOTE! Instances in these maps are just objects. They are not class instances. Middleware is not responsible for converting into class instances. Actions are in general responsible for this conversion. Since Actions call middleware, which in turn checks this cache, there is no change to the flow of generating class instances.
+ NOTE! Instances in these maps should be class instances. Middleware is not responsible for converting into class instances. Actions are in general responsible for this conversion. Since Actions call middleware, which in turn checks this cache, there is no change to the flow of generating class instances. However, reducers will update the instanceMaps with instances of models. So, we coerce all objects to plain objects when doing comparisons. But what's in the Map may be and object or a class instance.
  */
 
 //tracks rolls, so keep blocks at their state when last saved
@@ -36,14 +37,18 @@ const orderMap = new Map();
 //compares two rollups for effective changes
 //unforunately, the reducers run after the promise resolutions in these loading / saving functions, so project.version will increment immediately after the roll is set here, but that is ok - we handle that check below in isRollSame.
 const isRollDifferent = (oldRollup, newRollup) => {
+  //check for one not existing
   if (!oldRollup || !newRollup) return true;
 
   //check projects same
   if (!Project.compare(oldRollup.project, newRollup.project)) return true;
 
+  if (Object.keys(oldRollup.blocks).length !== Object.keys(newRollup.blocks).length) return true;
+
   //check all blocks same
-  return oldRollup.blocks.some(oldBlock => {
-    const analog = newRollup.blocks.find(newBlock => newBlock.id === oldBlock.id);
+  return Object.keys(oldRollup.blocks).some(oldBlockId => {
+    const oldBlock = oldRollup.blocks[oldBlockId];
+    const analog = newRollup.blocks[oldBlockId];
     return !analog || analog !== oldBlock;
   });
 };
@@ -58,8 +63,8 @@ export const getOrder = (orderId) => orderMap.get(orderId);
 
 /* recursing */
 
-//returns map of components if all present, or null otherwise
-const getBlockComponents = (acc = {}, ...blockIds) => {
+//returns map of contents if all present, or null otherwise
+const getBlockContents = (acc = {}, ...blockIds) => {
   if (acc === null) {
     return null;
   }
@@ -73,22 +78,21 @@ const getBlockComponents = (acc = {}, ...blockIds) => {
 
     //check components
     if (block.components.length) {
-      return getBlockComponents(acc, ...block.components);
+      return getBlockContents(acc, ...block.components);
     }
 
-    //check options
+    //check options for hierarchical options
     const optionsArray = Object.keys(block.options);
     if (optionsArray.length) {
-      return getBlockComponents(acc, ...optionsArray);
+      return getBlockContents(acc, ...optionsArray);
     }
   });
   return acc;
 };
 
-const getProjectComponents = (projectId) => {
+const getProjectContents = (projectId) => {
   const project = getProject(projectId);
-  const componentMap = getBlockComponents({}, ...project.components);
-  return Object.keys(componentMap).map(compId => componentMap[compId]);
+  return getBlockContents({}, ...project.components);
 };
 
 //recursively check blocks' presence + their components / options
@@ -138,15 +142,24 @@ export const orderLoaded = (orderId) => {
 /* save */
 
 export const saveProject = (...projects) => {
-  projects.forEach(project => projectMap.set(project.id, project));
+  projects.forEach(project => {
+    invariant(project instanceof Project, 'should only save class instances');
+    projectMap.set(project.id, project);
+  });
 };
 
 export const saveBlock = (...blocks) => {
-  blocks.forEach(block => blockMap.set(block.id, block));
+  blocks.forEach(block => {
+    invariant(block instanceof Block, 'should only save class instances');
+    blockMap.set(block.id, block);
+  });
 };
 
 export const saveOrder = (...orders) => {
-  orders.forEach(order => orderMap.set(order.id, order));
+  orders.forEach(order => {
+    invariant(order instanceof Order, 'should only save class instances');
+    orderMap.set(order.id, order);
+  });
 };
 
 /* remove */
@@ -166,17 +179,25 @@ export const removeOrder = (...orderIds) => {
 
 /* rollups */
 
+//saved rollups are different than generating the rollup - it has specific objects in it, computing on the fly would return the current versinos of each object and would appear the same even when the prior save used prior states
 const getSavedRollup = (projectId) => rollMap.get(projectId);
 
-export const getRollup = (projectId) => ({
-  project: getProject(projectId),
-  blocks: getProjectComponents(projectId),
-});
+//should only call after making sure the project has been loaded
+export const getRollup = (projectId) => {
+  const project = getProject(projectId);
+  const blocks = getProjectContents(projectId);
+  invariant(blocks, 'project was not fully loaded');
+
+  return {
+    project,
+    blocks,
+  };
+};
 
 export const saveRollup = (rollup) => {
   rollMap.set(rollup.project.id, rollup);
   saveProject(rollup.project);
-  rollup.blocks.forEach(block => saveBlock(block));
+  saveBlock(...Object.keys(rollup.blocks).map(blockId => rollup.blocks[blockId]));
 };
 
 export const isRollupNew = (rollup) => {
