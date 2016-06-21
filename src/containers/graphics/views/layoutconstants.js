@@ -8,7 +8,7 @@ const rowH = 60;
 // row header bar height
 const rowBarH = 4;
 // vertical bar width
-const rowBarW = 4;
+const rowBarW = 1;
 // padding around text on blocks
 const textPad = 8;
 // width of context menu 3 dots

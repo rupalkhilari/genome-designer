@@ -65,8 +65,8 @@
   .edge-insertion-point {
     position: absolute;
     box-sizing: border-box;
-    height: 50px;
-    width: 8px;
+    height: 46px;
+    width: 6px;
     background-color: var(--colors-selected);
     z-index: 1;
   }
@@ -74,7 +74,7 @@
   .block-insertion-point {
     position: absolute;
     box-sizing: content-box;
-    border: 8px solid var(--colors-selected);
+    border: 6px solid var(--colors-selected);
     background-color: transparent;
     z-index: 1;
   }
@@ -155,7 +155,8 @@
   height: 0;
   border-top-width: 12px;
   border-top-style: solid;
-  border-top-color: --colors-bluegrey;
+  /*border-top-color: --colors-bluegrey;*/
+  border-top-color: rgba(0, 0, 0, 0.6);
   border-right: 12px solid transparent;
 }
 /*selected option in a list block, size is set programmatically*/
