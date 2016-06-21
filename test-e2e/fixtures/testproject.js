@@ -8,7 +8,7 @@ var newproject = function(browser) {
     // make sure inventory is present
     .waitForElementPresent('.SidePanel.Inventory', 5000, 'Expected Inventory Groups');
     // click new project, which adds a new construct
-  clickMainMenu(browser, 1, 4);
+  clickMainMenu(browser, 1, 5);
   browser
     .waitForElementPresent('.construct-viewer', 5000, 'expect a construct for the new project');
   // ensure inventory open

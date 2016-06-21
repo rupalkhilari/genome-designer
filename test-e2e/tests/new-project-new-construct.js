@@ -4,7 +4,6 @@ var signin = require('../fixtures/signin');
 var dragFromTo = require('../fixtures/dragfromto');
 var newProject = require('../fixtures/newproject');
 var newConstruct = require('../fixtures/newconstruct');
-var clickMainMenu = require('../fixtures/click-main-menu');
 
 module.exports = {
   'Test that when creating a new project we get a new focused construct' : function (browser) {
