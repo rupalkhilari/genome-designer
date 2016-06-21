@@ -246,6 +246,8 @@ class GlobalNav extends Component {
       const projectId = this.props.currentProjectId;
       //load another project, avoiding this one
       this.props.projectLoad(null, false, [projectId])
+        //open the new project, skip saving the previous one
+        .then(project => this.props.projectOpen(project.id, true))
         //delete after we've navigated so dont trigger project page to complain about not being able to laod the project
         .then(() => this.props.projectDelete(projectId));
     }

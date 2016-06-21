@@ -4,6 +4,7 @@ import ConstructViewer from './graphics/views/constructviewer';
 import ConstructViewerCanvas from './graphics/views/constructViewerCanvas';
 import ProjectDetail from '../components/ProjectDetail';
 import ProjectHeader from '../components/ProjectHeader';
+import Spinner from '../components/ui/Spinner';
 import Inventory from './Inventory';
 import Inspector from './Inspector';
 import { projectList, projectLoad, projectCreate, projectOpen } from '../actions/projects';
@@ -72,13 +73,14 @@ class ProjectPage extends Component {
 
     //handle project not loaded
     if (!project || !project.metadata) {
-      this.props.projectLoad(projectId, false, [])
+      debugger;
+      this.props.projectLoad(projectId, false, true)
         .then(project => {
           if (project.id !== projectId) {
             this.props.projectOpen(project.id);
           }
         });
-      return (<p>loading project...</p>);
+      return (<Spinner />);
     }
 
     // build a list of construct viewers

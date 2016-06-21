@@ -161,48 +161,56 @@ export const projectCreate = (initialModel) => {
   };
 };
 
+const _projectLoad = (projectId, loadMoreOnFail = false, dispatch) => {
+  return loadProject(projectId)
+    .then(rollup => {
+      const { project, blocks } = rollup;
+      const projectModel = new Project(project);
+      const blockMap = Object.keys(blocks)
+        .map(blockId => blocks[blockId])
+        .map((blockObject) => new Block(blockObject))
+        .reduce((acc, block) => Object.assign(acc, { [block.id]: block }), {});
+
+      return {
+        project: projectModel,
+        blocks: blockMap,
+      };
+    })
+    .catch(resp => {
+      if ((resp === null || resp.status === 404) && loadMoreOnFail !== true && !Array.isArray(loadMoreOnFail)) {
+        return Promise.reject(resp);
+      }
+
+      const ignores = Array.isArray(loadMoreOnFail) ? loadMoreOnFail : [];
+      if (typeof projectId === 'string') {
+        ignores.push(projectId);
+      }
+
+      return dispatch(projectList())
+        .then(manifests => manifests
+          .filter(manifest => !ignores.includes(manifest.id))
+          .sort((one, two) => two.lastSaved - one.lastSaved)
+        )
+        .then(manifests => {
+          if (manifests.length) {
+            const nextId = manifests[0].id;
+            //recurse, ignoring this projectId
+            return _projectLoad(nextId, ignores);
+          }
+          //if no manifests, create a new rollup - shouldnt happen while users have sample projects
+          return rollupWithConstruct();
+        });
+    });
+};
+
 //Promise
 //loadMoreOnFail - pass array for true, with IDs to skip
 export const projectLoad = (projectId, avoidCache = false, loadMoreOnFail = false) => {
   return (dispatch, getState) => {
-    const isCached = instanceMap.projectLoaded(projectId);
-    const promise = (avoidCache !== true && isCached)
-      ?
-      Promise.resolve(instanceMap.getRollup(projectId))
-      :
-      loadProject(projectId)
-        .then(rollup => {
-          const { project, blocks } = rollup;
-          const projectModel = new Project(project);
-          const blockMap = Object.keys(blocks)
-            .map(blockId => blocks[blockId])
-            .map((blockObject) => new Block(blockObject))
-            .reduce((acc, block) => Object.assign(acc, { [block.id]: block }), {});
-
-          return {
-            project: projectModel,
-            blocks: blockMap,
-          };
-        })
-        .catch(err => {
-          if (loadMoreOnFail === true || !Array.isArray(loadMoreOnFail)) {
-            return Promise.reject(err);
-          }
-
-          return dispatch(projectList())
-            .then(manifests => manifests.filter(manifest => !loadMoreOnFail.indexOf(projectId) >= 0))
-            .then(manifests => {
-              if (manifests.length) {
-                const nextId = manifests[0].id;
-                //recurse, ignoring this projectId
-                const ignores = Array.isArray(loadMoreOnFail) ? [projectId, ...loadMoreOnFail] : [projectId];
-                //todo - return the rollup not the project
-                return dispatch(projectLoad(nextId, avoidCache, ignores));
-              }
-              //if no manifests, create a new rollup - shouldnt happen while users have sample projects
-              return rollupWithConstruct();
-            });
-        });
+    const isCached = !!projectId && instanceMap.projectLoaded(projectId);
+    const promise = (avoidCache !== true && isCached) ?
+      Promise.resolve(instanceMap.getRollup(projectId)) :
+      _projectLoad(projectId, loadMoreOnFail, dispatch);
 
     //rollup by this point has been converted to class instances
     return promise.then((rollup) => {
