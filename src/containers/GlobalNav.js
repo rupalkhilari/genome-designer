@@ -244,23 +244,8 @@ class GlobalNav extends Component {
       this.props.uiSetGrunt('This is a sample project and cannot be deleted.');
     } else {
       const projectId = this.props.currentProjectId;
-      //todo - this is copied from projectPage - should de-dupe
-      this.props.projectList()
-        .then(manifests => manifests.filter(manifest => manifest.id !== projectId))
-        .then(manifests => {
-          if (manifests.length) {
-            const nextId = manifests[0].id;
-            //need to fully load the project, as we just have the manifest right now...
-            //otherwise no blocks will show
-            //ideally, this would just get ids
-            this.props.projectLoad(nextId)
-              .then(() => this.props.projectOpen(nextId, true));
-          } else {
-            //if no manifests, create a new project
-            const newProject = this.props.projectCreate();
-            this.props.projectOpen(newProject.id, true);
-          }
-        })
+      //load another project, avoiding this one
+      this.props.projectLoad(null, false, [projectId])
         //delete after we've navigated so dont trigger project page to complain about not being able to laod the project
         .then(() => this.props.projectDelete(projectId));
     }

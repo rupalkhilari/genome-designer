@@ -8,12 +8,27 @@ import { push } from 'react-router-redux';
 import * as instanceMap from '../store/instanceMap';
 import Block from '../models/Block';
 import Project from '../models/Project';
+import rollupWithConstruct from '../utils/rollup/rollupWithConstruct';
 import { pauseAction, resumeAction } from '../store/pausableStore';
 
 import { getItem, setItem } from '../middleware/localStorageCache';
 const recentProjectKey = 'mostRecentProject';
 
 const rollupDefined = (roll) => roll && roll.project && roll.blocks;
+
+//this is a backup for performing arbitrary mutations
+export const projectMerge = (projectId, toMerge) => {
+  return (dispatch, getState) => {
+    const oldProject = getState().projects[projectId];
+    const project = oldProject.merge(toMerge);
+    dispatch({
+      type: ActionTypes.PROJECT_MERGE,
+      undoable: true,
+      project,
+    });
+    return project;
+  };
+};
 
 //Promise
 export const projectList = () => {
@@ -36,7 +51,7 @@ export const projectList = () => {
 export const projectDelete = (projectId) => {
   return (dispatch, getState) => {
     return deleteProject(projectId)
-      //catch deleting a project that is not saved (will 404)
+    //catch deleting a project that is not saved (will 404)
       .catch(resp => {
         if (resp.status === 404) {
           return null;
@@ -133,8 +148,22 @@ export const projectSnapshot = (projectId, message, withRollup = true) => {
   };
 };
 
+//create a new project
+export const projectCreate = (initialModel) => {
+  return (dispatch, getState) => {
+    const project = new Project(initialModel);
+    dispatch({
+      type: ActionTypes.PROJECT_CREATE,
+      project,
+    });
+
+    return project;
+  };
+};
+
 //Promise
-export const projectLoad = (projectId, avoidCache = false) => {
+//loadMoreOnFail - pass array for true, with IDs to skip
+export const projectLoad = (projectId, avoidCache = false, loadMoreOnFail = false) => {
   return (dispatch, getState) => {
     const isCached = instanceMap.projectLoaded(projectId);
     const promise = (avoidCache !== true && isCached)
@@ -154,6 +183,25 @@ export const projectLoad = (projectId, avoidCache = false) => {
             project: projectModel,
             blocks: blockMap,
           };
+        })
+        .catch(err => {
+          if (loadMoreOnFail === true || !Array.isArray(loadMoreOnFail)) {
+            return Promise.reject(err);
+          }
+
+          return dispatch(projectList())
+            .then(manifests => manifests.filter(manifest => !loadMoreOnFail.indexOf(projectId) >= 0))
+            .then(manifests => {
+              if (manifests.length) {
+                const nextId = manifests[0].id;
+                //recurse, ignoring this projectId
+                const ignores = Array.isArray(loadMoreOnFail) ? [projectId, ...loadMoreOnFail] : [projectId];
+                //todo - return the rollup not the project
+                return dispatch(projectLoad(nextId, avoidCache, ignores));
+              }
+              //if no manifests, create a new rollup - shouldnt happen while users have sample projects
+              return rollupWithConstruct();
+            });
         });
 
     //rollup by this point has been converted to class instances
@@ -234,37 +282,6 @@ export const projectOpen = (inputProjectId, skipSave = false) => {
       //change the route
       dispatch(push(`/project/${projectId}`));
     });
-  };
-};
-
-//create a new project
-export const projectCreate = (initialModel) => {
-  return (dispatch, getState) => {
-    const project = new Project(initialModel);
-    dispatch({
-      type: ActionTypes.PROJECT_CREATE,
-      project,
-    });
-
-    //after we've created it, let's save it real quick so it persists + gets a version
-    //we can do this in the background
-    projectSave(project.id);
-
-    return project;
-  };
-};
-
-//this is a backup for performing arbitrary mutations
-export const projectMerge = (projectId, toMerge) => {
-  return (dispatch, getState) => {
-    const oldProject = getState().projects[projectId];
-    const project = oldProject.merge(toMerge);
-    dispatch({
-      type: ActionTypes.PROJECT_MERGE,
-      undoable: true,
-      project,
-    });
-    return project;
   };
 };
 
