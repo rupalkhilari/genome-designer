@@ -62,7 +62,7 @@ def relationship(block1, block2, full_size):
 def convert_block_to_feature(all_blocks, to_convert, parent, to_remove_list):
     feature = { "name": "", "notes": {} }
     for key, value in to_convert["metadata"].iteritems():
-        if key in ["name", "description", "start", "end", "tags"]:
+        if key in ["name", "description", "start", "end", "tags", "color"]:
             feature[key] = value
         elif key == "strand":
             feature["isForward"] = (value == 1)

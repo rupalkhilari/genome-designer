@@ -136,7 +136,7 @@ def project_to_genbank(filename, project, allblocks):
         if "genbank" in block["metadata"] and "id" in block["metadata"]["genbank"]:
             genbank_id = block["metadata"]["genbank"]["id"]
         else:
-            genbank_id = block["metadata"]["name"].replace(" ", "")
+            genbank_id = "GC_DNA"
 
         sequence = build_sequence(block, allblocks)
         seq_obj = SeqIO.SeqRecord(Seq.Seq(sequence,Seq.Alphabet.DNAAlphabet()), genbank_id)
@@ -177,7 +177,7 @@ def project_to_genbank(filename, project, allblocks):
         if "description" in block["metadata"]:
             seq_obj.description = block["metadata"]["description"]
         if "name" in block["metadata"]:
-            seq_obj.name = block["metadata"]["name"].replace(" ", "")
+            seq_obj.name = block["metadata"]["name"].replace(" ", "")[:5]
 
         convert_annotations(block, seq_obj)
 
