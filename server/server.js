@@ -54,11 +54,9 @@ app.set('view engine', 'jade');
 // insert some form of user authentication
 // the auth routes are currently called from the client and expect JSON responses
 if (process.env.BIO_NANO_AUTH) {
-  console.log("real user authentication enabled");
+  console.log('real user authentication enabled');
   const initAuthMiddleware = require('bio-user-platform').initAuthMiddleware;
 
-  // TODO load a custom configuration here
-  // disable all redirects
   const authConfig = {
     logoutLanding: false,
     loginLanding: false,
@@ -68,7 +66,11 @@ if (process.env.BIO_NANO_AUTH) {
     onLogin: (req, res, next) => {
       return checkUserSetup(req.user)
         //note this expects an abnormal return of req and res to the next function
-        .then(() => next(req, res));
+        .then((projectId) => {
+          //todo - pass this projectId on the response so the client knows which project to load
+          console.log('made projects for user. Empty project is ' + projectId);
+          return next(req, res);
+        });
     },
     registerRedirect: false,
   };
