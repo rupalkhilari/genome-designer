@@ -1,0 +1,10 @@
+{
+  "name": "hello",
+  "version": "1.0.0",
+  "description": "Hello World",
+  "region": "sequenceDetail",
+  "readable": "Hello",
+  "scripts" : {
+    "build" : "npm install && webpack -d main.js index.js"
+  }
+}
