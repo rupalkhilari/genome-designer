@@ -751,7 +751,7 @@ export default class Layout {
     // position and size vertical bar
     const heightUsed = yp - startY + kT.blockH;
     this.vertical.set({
-      bounds: new Box2D(this.insetX, startY, kT.rowBarW, heightUsed),
+      bounds: new Box2D(this.insetX, startY, kT.rowBarW, heightUsed - kT.blockH),
     });
     // filter the selections so that we eliminate those block we don't contain
     let selectedNodes = [];
