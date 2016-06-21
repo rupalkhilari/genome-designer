@@ -76,6 +76,19 @@ export default function inventory(state = initialState, action) {
       options,
     });
 
+  case ActionTypes.BLOCK_OPTION_TOGGLE :
+    const { block } = action;
+    const currentOption = state.options[block.id];
+    if (currentOption && !block.options[currentOption]) {
+      const nextOptions = Object.assign({}, state.options);
+      delete nextOptions[block.id];
+
+      return Object.assign({}, state, {
+        options: nextOptions,
+      });
+    }
+    return state;
+
   case ActionTypes.USER_SET_USER :
   case LOCATION_CHANGE :
     //project page sets project ID properly, running after the state changes
