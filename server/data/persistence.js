@@ -418,7 +418,8 @@ export const projectDelete = (projectId, forceDelete = false) => {
        */
 
       //MOVE TO TRASH FOLDER
-      return directoryMove(projectPath, trashPath);
+      return directoryDelete(trashPath)
+        .then(() => directoryMove(projectPath, trashPath));
     })
     //no need to commit... its deleted (and permissions out of scope of data folder)
     .then(() => projectId);

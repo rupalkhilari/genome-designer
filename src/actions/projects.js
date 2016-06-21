@@ -36,6 +36,13 @@ export const projectList = () => {
 export const projectDelete = (projectId) => {
   return (dispatch, getState) => {
     return deleteProject(projectId)
+      //catch deleting a project that is not saved (will 404)
+      .catch(resp => {
+        if (resp.status === 404) {
+          return null;
+        }
+        return Promise.reject(resp);
+      })
       .then(() => {
         //don't delete the blocks, as they may be shared between projects (or, could delete and then force loading for next / current project)
         dispatch({
