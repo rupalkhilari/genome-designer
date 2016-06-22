@@ -5,12 +5,6 @@ import { validateBlock, validateProject } from '../utils/validation';
 import { getAllBlocksInProject } from './querying';
 import { values } from 'lodash';
 
-//for use when want to pass an array of blocks
-export const createRollupFromArray = (project, ...blocks) => ({
-  project,
-  blocks: blocks.reduce((acc, block) => Object.assign(acc, { [block.id]: block }), {}),
-});
-
 export const getProjectRollup = (projectId) => {
   //dont use Promise.all so we can handle errors of project not existing better
   return persistence.projectGet(projectId)

@@ -4,6 +4,7 @@ import ConstructViewer from './graphics/views/constructviewer';
 import ConstructViewerCanvas from './graphics/views/constructViewerCanvas';
 import ProjectDetail from '../components/ProjectDetail';
 import ProjectHeader from '../components/ProjectHeader';
+import Spinner from '../components/ui/Spinner';
 import Inventory from './Inventory';
 import Inspector from './Inspector';
 import { projectList, projectLoad, projectCreate, projectOpen } from '../actions/projects';
@@ -72,29 +73,14 @@ class ProjectPage extends Component {
 
     //handle project not loaded
     if (!project || !project.metadata) {
-      this.props.projectLoad(projectId)
-        .catch(err => {
-          //if couldnt load project, load manifests and display the first one, or create a new project
-          if (projectId) {
-            this.props.uiSetGrunt(`Project with ID ${projectId} could not be loaded, loading another instead...`);
+      debugger;
+      this.props.projectLoad(projectId, false, true)
+        .then(project => {
+          if (project.id !== projectId) {
+            this.props.projectOpen(project.id);
           }
-
-          this.props.projectList().then(manifests => {
-            if (manifests.length) {
-              const nextId = manifests[0].id;
-              //need to fully load the project, as we just have the manifest right now...
-              //otherwise no blocks will show
-              //ideally, this would just get ids
-              this.props.projectLoad(nextId)
-                .then(() => this.props.projectOpen(nextId));
-            } else {
-              //if no manifests, create a new project
-              const newProject = this.props.projectCreate();
-              this.props.projectOpen(newProject.id);
-            }
-          });
         });
-      return (<p>loading project...</p>);
+      return (<Spinner />);
     }
 
     // build a list of construct viewers

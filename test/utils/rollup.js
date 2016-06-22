@@ -1,7 +1,6 @@
 import Project from '../../src/models/Project';
 import Block from '../../src/models/Block';
-
-import * as rollup from '../../server/data/rollup';
+import rollupFromArray from '../../src/utils/rollup/rollupFromArray';
 
 export const numberBlocksInRollup = 7;
 
@@ -43,6 +42,6 @@ export const createExampleRollup = () => {
   //assign the project ID, as it should be there anyway, and will be there after writing
   blocks.forEach(block => Object.assign(block, { projectId: project.id }));
 
-  const roll = rollup.createRollupFromArray(project, ...blocks);
+  const roll = rollupFromArray(project, ...blocks);
   return roll;
 };
