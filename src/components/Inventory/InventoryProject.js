@@ -59,7 +59,6 @@ export class InventoryProject extends Component {
   loadProject = (projectId) => {
     //for now, just load the whole project and stick it in the store
     //need to ensure things like blockClone will work on drag. Simplifies browsing of project.
-    //todo - caching, at top level, only load blocks into store when needed
     //could delegate loading of construct components to InventoryConstruct, and load only one level deep
     return this.props.projectLoad(projectId);
   };

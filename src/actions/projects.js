@@ -8,12 +8,27 @@ import { push } from 'react-router-redux';
 import * as instanceMap from '../store/instanceMap';
 import Block from '../models/Block';
 import Project from '../models/Project';
+import rollupWithConstruct from '../utils/rollup/rollupWithConstruct';
 import { pauseAction, resumeAction } from '../store/pausableStore';
 
 import { getItem, setItem } from '../middleware/localStorageCache';
 const recentProjectKey = 'mostRecentProject';
 
 const rollupDefined = (roll) => roll && roll.project && roll.blocks;
+
+//this is a backup for performing arbitrary mutations
+export const projectMerge = (projectId, toMerge) => {
+  return (dispatch, getState) => {
+    const oldProject = getState().projects[projectId];
+    const project = oldProject.merge(toMerge);
+    dispatch({
+      type: ActionTypes.PROJECT_MERGE,
+      undoable: true,
+      project,
+    });
+    return project;
+  };
+};
 
 //Promise
 export const projectList = () => {
@@ -36,7 +51,7 @@ export const projectList = () => {
 export const projectDelete = (projectId) => {
   return (dispatch, getState) => {
     return deleteProject(projectId)
-      //catch deleting a project that is not saved (will 404)
+    //catch deleting a project that is not saved (will 404)
       .catch(resp => {
         if (resp.status === 404) {
           return null;
@@ -133,28 +148,69 @@ export const projectSnapshot = (projectId, message, withRollup = true) => {
   };
 };
 
-//Promise
-export const projectLoad = (projectId, avoidCache = false) => {
+//create a new project
+export const projectCreate = (initialModel) => {
   return (dispatch, getState) => {
-    const isCached = instanceMap.projectLoaded(projectId);
-    const promise = (avoidCache !== true && isCached)
-      ?
-      Promise.resolve(instanceMap.getRollup(projectId))
-      :
-      loadProject(projectId)
-        .then(rollup => {
-          const { project, blocks } = rollup;
-          const projectModel = new Project(project);
-          const blockMap = Object.keys(blocks)
-            .map(blockId => blocks[blockId])
-            .map((blockObject) => new Block(blockObject))
-            .reduce((acc, block) => Object.assign(acc, { [block.id]: block }), {});
+    const project = new Project(initialModel);
+    dispatch({
+      type: ActionTypes.PROJECT_CREATE,
+      project,
+    });
 
-          return {
-            project: projectModel,
-            blocks: blockMap,
-          };
+    return project;
+  };
+};
+
+const _projectLoad = (projectId, loadMoreOnFail = false, dispatch) => {
+  return loadProject(projectId)
+    .then(rollup => {
+      const { project, blocks } = rollup;
+      const projectModel = new Project(project);
+      const blockMap = Object.keys(blocks)
+        .map(blockId => blocks[blockId])
+        .map((blockObject) => new Block(blockObject))
+        .reduce((acc, block) => Object.assign(acc, { [block.id]: block }), {});
+
+      return {
+        project: projectModel,
+        blocks: blockMap,
+      };
+    })
+    .catch(resp => {
+      if ((resp === null || resp.status === 404) && loadMoreOnFail !== true && !Array.isArray(loadMoreOnFail)) {
+        return Promise.reject(resp);
+      }
+
+      const ignores = Array.isArray(loadMoreOnFail) ? loadMoreOnFail : [];
+      if (typeof projectId === 'string') {
+        ignores.push(projectId);
+      }
+
+      return dispatch(projectList())
+        .then(manifests => manifests
+          .filter(manifest => !ignores.includes(manifest.id))
+          .sort((one, two) => two.lastSaved - one.lastSaved)
+        )
+        .then(manifests => {
+          if (manifests.length) {
+            const nextId = manifests[0].id;
+            //recurse, ignoring this projectId
+            return _projectLoad(nextId, ignores);
+          }
+          //if no manifests, create a new rollup - shouldnt happen while users have sample projects
+          return rollupWithConstruct();
         });
+    });
+};
+
+//Promise
+//loadMoreOnFail - pass array for true, with IDs to skip
+export const projectLoad = (projectId, avoidCache = false, loadMoreOnFail = false) => {
+  return (dispatch, getState) => {
+    const isCached = !!projectId && instanceMap.projectLoaded(projectId);
+    const promise = (avoidCache !== true && isCached) ?
+      Promise.resolve(instanceMap.getRollup(projectId)) :
+      _projectLoad(projectId, loadMoreOnFail, dispatch);
 
     //rollup by this point has been converted to class instances
     return promise.then((rollup) => {
@@ -234,37 +290,6 @@ export const projectOpen = (inputProjectId, skipSave = false) => {
       //change the route
       dispatch(push(`/project/${projectId}`));
     });
-  };
-};
-
-//create a new project
-export const projectCreate = (initialModel) => {
-  return (dispatch, getState) => {
-    const project = new Project(initialModel);
-    dispatch({
-      type: ActionTypes.PROJECT_CREATE,
-      project,
-    });
-
-    //after we've created it, let's save it real quick so it persists + gets a version
-    //we can do this in the background
-    projectSave(project.id);
-
-    return project;
-  };
-};
-
-//this is a backup for performing arbitrary mutations
-export const projectMerge = (projectId, toMerge) => {
-  return (dispatch, getState) => {
-    const oldProject = getState().projects[projectId];
-    const project = oldProject.merge(toMerge);
-    dispatch({
-      type: ActionTypes.PROJECT_MERGE,
-      undoable: true,
-      project,
-    });
-    return project;
   };
 };
 

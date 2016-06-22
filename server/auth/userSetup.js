@@ -1,27 +1,15 @@
-import Block from '../../src/models/Block';
-import Project from '../../src/models/Project';
 import * as rollup from '../data/rollup';
 import * as querying from '../data/querying';
 import makeEgfRollup from '../../data/egf_parts/project';
-import { createRollupFromArray } from '../../server/data/rollup';
-
-const makeEmptyRollup = () => {
-  //use classless when creating so they are not frozen. If they are frozen, may run into issues when writing
-  const construct = Block.classless();
-  const project = Project.classless({
-    components: [construct.id],
-  });
-
-  return createRollupFromArray(project, construct);
-};
+import rollupWithConstruct from '../../src/utils/rollup/rollupWithConstruct';
 
 //create the EGF project for them
 const createInitialData = (user) => {
-  console.log('[EGF ROLLUP] making rollup ' + egfRollup.project.id + ' for user ' + user.uuid);
   const egfRollup = makeEgfRollup();
+  console.log('[EGF ROLLUP] made rollup ' + egfRollup.project.id + ' for user ' + user.uuid);
   //console.log(egfRollup);
 
-  const emptyProjectRollup = makeEmptyRollup();
+  const emptyProjectRollup = rollupWithConstruct(true);
 
   return Promise.all([
     rollup.writeProjectRollup(emptyProjectRollup.project.id, emptyProjectRollup, user.uuid),
