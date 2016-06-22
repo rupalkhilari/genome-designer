@@ -51,19 +51,21 @@ export const getAllBlockIdsInProject = (projectId) => {
 //  });
 //};
 
-//fixme - this will error if the user has no projects
 //search each permissions.json by user ID to find projects they have access to
 export const listProjectsWithAccess = (userId) => {
   const directory = filePaths.createProjectsDirectoryPath();
   return new Promise((resolve, reject) => {
-    exec(`cd ${directory} && grep --regexp="${userId}" --include=permissions.json -Rl .`, (err, output, stderr) => {
-      if (err) {
-        console.log(err);
-        return reject(err);
-      }
+    const allIds = [];
 
-      const lines = output.split('\n');
-      lines.pop(); //get rid of the last empty line
+    //spawn because exec has weird string issues, spawn avoids them
+    const grep = spawn('grep', [`--regexp="${userId}"`, '--include=permissions.json', '-Rl', '.'], {
+      cwd: directory,
+    });
+
+    grep.stdout.on('data', (data) => {
+      //get a buffer so coerce to a string
+      const lines = `${data}`.split('\n');
+      lines.pop(); //skip the last line
       const projectIds = lines.map(line => {
         const [/*permissions.json*/,
           projectId,
@@ -71,7 +73,20 @@ export const listProjectsWithAccess = (userId) => {
         ] = line.split('/').reverse();
         return projectId;
       });
-      return resolve(projectIds);
+      allIds.push(...projectIds);
+    });
+
+    grep.stderr.on('data', (data) => {
+      console.error(`[listProjectsWithAccess] stderr: ${data}`);
+    });
+
+    grep.on('error', (err) => {
+      console.error('[listProjectsWithAccess] Failed to start child process.');
+      console.error(err);
+    });
+
+    grep.on('close', (code) => {
+      resolve(allIds);
     });
   });
 };
