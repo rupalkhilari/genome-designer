@@ -70,7 +70,7 @@ class UserWidget extends Component {
             classes: 'blue-menu-items',
           },
           {
-            text: 'My Account',
+            text: 'Account Settings',
             action: () => {
               this.props.uiShowAuthenticationForm('account');
             },

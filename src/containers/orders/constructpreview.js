@@ -70,7 +70,7 @@ class ConstructPreview extends Component {
       this.containerEl.scrollTop = 0;
       invariant(this.props.order.constructIds.length === 1, 'expect exactly 1 construct per order');
       const parentConstruct = this.props.blocks[this.props.order.constructIds[0]];
-      const construct = this.constructs[this.state.index - 1];
+      const construct = this.constructs[this.getIndex() - 1];
       const constructIndex = this.state.index;
       const componentIds = construct;
       this.layout.update({
@@ -120,24 +120,63 @@ class ConstructPreview extends Component {
   }
 
   onChangeConstruct = (evt) => {
-    const index = parseInt(evt.target.value, 10);
-    this.setState({ index: Number.isInteger(index) ? Math.min(this.constructs.length, Math.max(1, index)) : 1 });
+    this.setState({ index: evt.target.value});
   };
+
+  /**
+   * get the index in the up down ( or 1 if it is invalid )
+   */
+  getIndex() {
+    let val = parseInt(this.refs.updown.value);
+    return isNaN(val) || val < 1 || val > this.constructs.length ? 1 : val;
+  }
+
+  up = () => {
+    const index = Math.min(this.getIndex() + 1, this.constructs.length);
+    this.setState({index});
+  }
+  down = () => {
+    const index = Math.max(this.getIndex() - 1, 1);
+    this.setState({index});
+  }
+
+  onKeyDown = (evt) => {
+    switch (evt.keyCode) {
+      // up arrow
+      case 38:
+        this.up();
+        evt.preventDefault();
+        break;
+      // down arrow
+      case 40:
+        this.down();
+        evt.preventDefault();
+        break;
+    }
+  }
 
   render() {
     const label = `of ${this.constructs.length} combinations`;
     return (
       <div className="preview">
-        <label>Reviewing assembly</label>
-        <input
-          className="input-updown"
-          type="number"
-          defaultValue="1"
-          min="1"
-          max={this.constructs.length}
-          onChange={this.onChangeConstruct}
-        />
-        <label>{label}</label>
+        <div className="top-row">
+          <label className="review">Reviewing assembly</label>
+          <input
+            className="input-updown"
+            value={this.state.index}
+            ref="updown"
+            maxLength={this.constructs.length.toString().length}
+            onKeyDown={this.onKeyDown}
+            onChange={this.onChangeConstruct}
+          />
+          <div className="buttons-updown">
+            <div className="arrow-container">
+              <div className="updown-arrows up" onClick={this.up}/>
+              <div className="updown-arrows down" onClick={this.down}/>
+            </div>
+          </div>
+          <label className="of">{label}</label>
+        </div>
         <div className="container">
           <div className="scenegraph"></div>
         </div>
@@ -155,3 +194,8 @@ function mapStateToProps(state, props) {
 export default connect(mapStateToProps, {
   orderGenerateConstructs,
 })(ConstructPreview);
+
+/*
+<div className="update-arrows up"/>
+<div className="update-arrows down"/>
+ */
