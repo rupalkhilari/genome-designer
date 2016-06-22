@@ -1,12 +1,18 @@
 /*
- need to install npm package csv-parse
+ need to install npm package csv-parse (not listed in package json)
+
+ Take the spreadsheet andrea has and export as csv files - one file for parts, one file for connectors
+
+ Ensure that the header rows match those below. After importing, verify that the sample project loads without problem, and ideally that all constructs can be ordered.
 
  call like this (from project root):
+ - note you can skip the forced path and they will update here
+ - note you will need babel-node installed globally to run this, or just add it to your path temproarily from package's node modules
 
  babel-node ./data/egf_parts/convertCsv.js /path/to/parts.csv true forced/path/to/output.json
  babel-node ./data/egf_parts/convertCsv.js /path/to/connectors.csv false forced/path/to/output.json
 
- do not import into client bundle. it will break it.
+ do not import this file into client bundle. it will break it.
  */
 
 import * as fileSystem from '../../server/utils/fileSystem';
