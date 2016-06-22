@@ -523,7 +523,7 @@ export class ConstructViewer extends Component {
     let order = this.props.orderCreate(this.props.currentProjectId, [this.props.construct.id]);
     this.props.orderList(this.props.currentProjectId)
       .then((orders) => {
-        order = this.props.orderSetName(order.id, `Order - ${orders.length}`);
+        order = this.props.orderSetName(order.id, `Order ${orders.length}`);
         this.props.uiShowOrderForm(true, order.id);
       });
   };
