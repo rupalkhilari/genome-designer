@@ -184,6 +184,7 @@ export class ConstructViewerCanvas extends Component {
       return React.cloneElement(constructViewer, {
         mouseScroll: this.mouseScroll.bind(this),
         endMouseScroll: this.endMouseScroll.bind(this),
+        currentProjectId: this.props.currentProjectId,
       });
     });
 

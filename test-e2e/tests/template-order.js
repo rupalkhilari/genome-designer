@@ -16,6 +16,7 @@ module.exports = {
     browser
       .click('[data-inventory~="project"]:nth-of-type(2)')
       .waitForElementPresent('[data-inventory~="template"]', 5000, 'expected all available templates to appear')
+      .pause(5000)
       .assert.countelements('.order-button', 29);
 
     for(var i = 1; i <= 3; i += 1) {

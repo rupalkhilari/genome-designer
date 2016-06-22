@@ -319,6 +319,11 @@ export default class Layout {
   fillColor(part) {
     const block = this.blocks[part];
     if (block.isFiller()) return '#4B505E';
+    // allow an optional blockColor method to override the block color
+    if (this.blockColor) {
+      return this.blockColor(part);
+    }
+    // use color in meta data
     return block.metadata.color || 'lightgray';
   }
   /**
@@ -529,6 +534,7 @@ export default class Layout {
     this.currentConstructId = options.currentConstructId;
     this.currentBlocks = options.currentBlocks;
     this.focusedOptions = options.focusedOptions || {};
+    this.blockColor = options.blockColor;
     invariant(this.construct && this.blocks && this.currentBlocks && this.focusedOptions, 'missing required options');
 
     this.baseColor = this.construct.metadata.color;
