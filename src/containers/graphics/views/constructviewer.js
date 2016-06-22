@@ -43,6 +43,7 @@ import {
 import invariant from 'invariant';
 import {
   projectGetVersion,
+  projectGet,
 } from '../../../selectors/projects';
 import {
   projectRemoveConstruct,
@@ -82,6 +83,7 @@ export class ConstructViewer extends Component {
     blockRemoveComponent: PropTypes.func,
     blockGetParents: PropTypes.func,
     projectGetVersion: PropTypes.func,
+    projectGet: PropTypes.func,
     projectRemoveConstruct: PropTypes.func,
     projectAddConstruct: PropTypes.func,
     blocks: PropTypes.object,
@@ -519,10 +521,10 @@ export class ConstructViewer extends Component {
   };
 
   /**
-   * only visible on templates for now
+   * only visible on templates that are not part of the sample(s) project
    */
   orderButton() {
-    if (this.props.construct.isTemplate()) {
+    if (this.props.construct.isTemplate() && !this.props.projectGet(this.props.currentProjectId).isSample) {
       return <button onClick={this.onOrderDNA} className="order-button">Order DNA</button>;
     }
     return null;
@@ -591,6 +593,7 @@ export default connect(mapStateToProps, {
   focusBlockOption,
   focusConstruct,
   projectGetVersion,
+  projectGet,
   projectRemoveConstruct,
   projectAddConstruct,
   inspectorToggleVisibility,

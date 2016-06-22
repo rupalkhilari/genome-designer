@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import SceneGraph2D from '../../containers/graphics/scenegraph2d/scenegraph2d';
 import Layout from '../../containers/graphics/views/layout';
 import { orderGenerateConstructs } from '../../actions/orders';
+import invariant from 'invariant';
 
 import '../../../src/styles/ordermodal.css';
 import '../../../src/styles/SceneGraphPage.css';
@@ -67,13 +68,15 @@ class ConstructPreview extends Component {
   componentDidUpdate() {
     if (this.constructs.length) {
       this.containerEl.scrollTop = 0;
+      invariant(this.props.order.constructIds.length === 1, 'expect exactly 1 construct per order');
+      const parentConstruct = this.props.blocks[this.props.order.constructIds[0]];
       const construct = this.constructs[this.state.index - 1];
       const constructIndex = this.state.index;
       const componentIds = construct;
       this.layout.update({
         construct: {
           metadata: {
-            color: 'lightgray',
+            color: parentConstruct.metadata.color || 'lightgray',
           },
           components: componentIds,
           // this fake construct should not be a template, so we don't get empty list block placeholders
@@ -82,9 +85,34 @@ class ConstructPreview extends Component {
         blocks: this.props.blocks,
         currentBlocks: [],
         currentConstructId: constructIndex,
+        blockColor: (blockId) => {
+          return this.blockColor(blockId);
+        },
       });
       this.sg.update();
     }
+  }
+
+  /**
+   * gets called with the id of an option. Return the color for the owning block
+   */
+  blockColor(optionId) {
+    this.optionColorHash = this.optionColorHash || {};
+    const hashedColor = this.optionColorHash[optionId];
+    if (hashedColor) {
+      return hashedColor;
+    }
+    const parentConstruct = this.props.blocks[this.props.order.constructIds[0]];
+    const blockIndex = parentConstruct.components.findIndex((blockId, index) => {
+      const block = this.props.blocks[blockId];
+      const optionIds = Object.keys(block.options);
+      return optionIds.indexOf(optionId) >= 0;
+    });
+    if (blockIndex >= 0) {
+      // we have the index of the parent block
+      return this.optionColorHash[optionId] = this.props.blocks[parentConstruct.components[blockIndex]].metadata.color;
+    }
+    return 'lightgray';
   }
 
   generateConstructs(props = this.props) {
