@@ -127,7 +127,7 @@ export class InventoryItem extends Component {
            data-inventory={dataAttr}>
         <a className="InventoryItem-item"
            onClick={this.handleClick}>
-          {svg ? <RoleSvg symbolName={svg} color="white" {...svgProps}/> : null}
+          {svg ? <RoleSvg symbolName={svg} color="white" {...svgProps} styles={{marginTop: '-0.25em'}}/> : null}
           <span className="InventoryItem-text">
             {itemName}
           </span>
