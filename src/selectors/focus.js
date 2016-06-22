@@ -7,7 +7,7 @@ export const _getFocused = (state, defaultToConstruct = true, defaultProjectId =
   //focus doesnt update on undo, just the blocks... so need to filter / make sure defined
   const project = forceProject || state.projects[projectId || defaultProjectId];
   const construct = state.blocks[constructId];
-  const blocks = forceBlocks.length ?
+  const blocks = !!forceBlocks.length ?
     forceBlocks :
     blockIds.map(blockId => state.blocks[blockId]).filter(block => !!block);
   const option = blockIds.length === 1 ? state.blocks[options[blockIds[0]]] : null;
@@ -28,7 +28,7 @@ export const _getFocused = (state, defaultToConstruct = true, defaultProjectId =
     readOnly = true;
   } else {
     focused = blocks;
-    readOnly = forceBlocks.length || focused.some(instance => instance.isFrozen());
+    readOnly = !!forceBlocks.length || focused.some(instance => instance.isFrozen());
   }
 
   return {
