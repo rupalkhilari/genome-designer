@@ -73,7 +73,6 @@ class ProjectPage extends Component {
 
     //handle project not loaded
     if (!project || !project.metadata) {
-      debugger;
       this.props.projectLoad(projectId, false, true)
         .then(project => {
           if (project.id !== projectId) {
