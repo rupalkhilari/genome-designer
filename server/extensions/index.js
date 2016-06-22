@@ -30,14 +30,14 @@ router.get('/manifest/:extension', (req, res, next) => {
 
 if (process.env.NODE_ENV !== 'production') {
   //make the whole extension available
-  router.get('/load/:extension/:filePath?', (req, res) => {
+  router.get('/load/:extension/:filePath?', (req, res, next) => {
     const { filePath = 'index.js', extension } = req.params;
     const extensionFile = getExtensionInternalPath(extension, filePath);
 
     res.sendFile(extensionFile, (err) => {
       if (err) {
         console.log('got an error sending extension!', err);
-        res.status(err.status).end();
+        return res.status(404).end();
       }
     });
   });
