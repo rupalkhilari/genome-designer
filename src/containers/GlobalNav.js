@@ -314,7 +314,9 @@ class GlobalNav extends Component {
 
   // copy the focused blocks to the clipboard using a deep clone
   copyFocusedBlocksToClipboard() {
-    if (this.props.focus.blockIds.length) {
+    // we don't currently allow copying from frozen / fixed constructs since that would allow copy ( and then pasting )
+    // of list blocks from temlates.
+    if (this.props.focus.blockIds.length  && !this.focusedConstruct().isFixed() && !this.focusedConstruct().isFrozen()) {
       // sort selected blocks so they are pasted in the same order as they exist now.
       // NOTE: we don't copy the children of any selected parents since they will
       // be cloned along with their parent
@@ -389,7 +391,6 @@ class GlobalNav extends Component {
   // cut focused blocks to the clipboard, no clone required since we are removing them.
   cutFocusedBlocksToClipboard() {
     if (this.props.focus.blockIds.length && !this.focusedConstruct().isFixed() && !this.focusedConstruct().isFrozen()) {
-      // TODO, cut must be prevents on fixed or frozen blocks
       const blockIds = this.props.blockDetach(...this.props.focus.blockIds);
       this.props.clipboardSetData([clipboardFormats.blocks], [blockIds.map(blockId => this.props.blocks[blockId])]);
       this.props.focusBlocks([]);
@@ -528,7 +529,7 @@ class GlobalNav extends Component {
             }, {
               text: 'Copy',
               shortcut: stringToShortcut('meta C'),
-              disabled: !this.props.focus.blockIds.length,
+              disabled: !this.props.focus.blockIds.length || !this.focusedConstruct() || this.focusedConstruct().isFixed() || this.focusedConstruct().isFrozen(),
               action: () => {
                 this.copyFocusedBlocksToClipboard();
               },
