@@ -16,3 +16,6 @@
   background-color: var(--colors-blueGreyMed);
   color: var(--colors-blueGreyLighter);
 }
+.cvc-hidden {
+  display: none;
+}

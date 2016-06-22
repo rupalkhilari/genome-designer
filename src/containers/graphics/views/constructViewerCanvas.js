@@ -11,7 +11,10 @@ import {
 } from '../../../actions/blocks';
 import { uiSpin } from '../../../actions/ui';
 import { focusConstruct, focusBlocks } from '../../../actions/focus';
-import { projectGetVersion } from '../../../selectors/projects';
+import {
+  projectGetVersion,
+  projectGet,
+ } from '../../../selectors/projects';
 import DnD from '../dnd/dnd';
 import ConstructViewer from './constructviewer';
 import MouseTrap from '../mousetrap';
@@ -60,6 +63,13 @@ export class ConstructViewerCanvas extends Component {
       this.props.focusConstruct(construct.id);
     }
     this.props.uiSpin();
+  }
+
+  /**
+   * true if current project is a sample project
+   */
+  isSampleProject() {
+    return this.props.projectGet(this.props.currentProjectId).isSample;
   }
 
   /**
@@ -188,10 +198,13 @@ export class ConstructViewerCanvas extends Component {
       });
     });
 
+    // get class name for drop target which might hide it
+    const dropClasses = `cvc-drop-target${this.isSampleProject() ? ' cvc-hidden' : ''}`;
+
     // map construct viewers so we can propagate projectId and any recently dropped blocks
     return (
       <div className="ProjectPage-constructs no-vertical-scroll" onClick={this.onClick}>
-        <div className="cvc-drop-target" ref="dropTarget" key="dropTarget">Drop blocks here to create a new construct.</div>
+        <div className={dropClasses} ref="dropTarget" key="dropTarget">Drop blocks here to create a new construct.</div>;
         {constructViewers}
       </div>
     );
@@ -213,5 +226,6 @@ export default connect(mapStateToProps, {
   blockRename,
   blockAddComponent,
   projectGetVersion,
+  projectGet,
   blockClone,
 })(ConstructViewerCanvas);
