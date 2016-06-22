@@ -74,7 +74,10 @@ class OrderModal extends Component {
     if (!this.props.order.isSubmitted()) {
       return (
         <div className="buttons">
-          <button type="submit">Submit Order</button>
+          <button
+            disabled={!this.props.order.metadata.name}
+            type="submit">Submit Order
+          </button>
           <button
             type="button"
             onClick={() => this.onClose()}>Cancel

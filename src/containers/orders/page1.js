@@ -9,7 +9,8 @@ import Permutations from './permutations';
 import debounce from 'lodash.debounce';
 import {
   orderSetName,
-  orderSetParameters
+  orderSetParameters,
+  orderList,
 } from '../../actions/orders';
 import OrderParameters from '../../schemas/OrderParameters';
 
@@ -22,6 +23,7 @@ export class Page1 extends Component {
     order: PropTypes.object.isRequired,
     orderSetName: PropTypes.func.isRequired,
     orderSetParameters: PropTypes.func.isRequired,
+    orderList: PropTypes.func.isRequired,
     blocks: PropTypes.object.isRequired,
     numberConstructs: PropTypes.number.isRequired,
   };
@@ -30,6 +32,7 @@ export class Page1 extends Component {
     super();
     //todo - this should use a transaction + commit, not deboucne like this. See InputSimple
     this.labelChanged = debounce(value => this._labelChanged(value), 500, {leading: false, trailing: true});
+
   }
 
   assemblyOptions() {
@@ -93,8 +96,7 @@ export class Page1 extends Component {
           <Row text="Label:">
             <Input
               onChange={this.labelChanged}
-              value={order.metadata.name}
-              placeholder="My Fantastic Order"
+              value={this.props.order.metadata.name}
             />
           </Row>
           <Row text="Assembly Containers:">
@@ -146,4 +148,5 @@ function mapStateToProps(state, props) {
 export default connect(mapStateToProps, {
   orderSetName,
   orderSetParameters,
+  orderList,
 })(Page1);
