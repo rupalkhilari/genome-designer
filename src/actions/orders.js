@@ -116,13 +116,14 @@ export const orderSetParameters = (orderId, inputParameters = {}, shouldMerge = 
     if (!parameters.onePot && parameters.permutations < numberCombinations) {
       const keepers = (parameters.combinatorialMethod === 'Maximum Unique Set')
         ?
-        range(numberCombinations.length)
-          .map(idx => idx % Math.floor(numberCombinations / parameters.permutations) === 0)
+        //may generate extras so slice at the end
+        range(numberCombinations)
+          .filter(idx => idx % Math.floor(numberCombinations / parameters.permutations) === 0)
         :
-        shuffle(range(numberCombinations))
-          .slice(0, parameters.permutations);
+        shuffle(range(numberCombinations));
 
-      const map = keepers.reduce((acc, idx) => Object.assign(acc, { [idx]: true }), {});
+      const map = keepers.slice(0, parameters.permutations)
+        .reduce((acc, idx) => Object.assign(acc, { [idx]: true }), {});
 
       parameters.activeIndices = map;
     }
