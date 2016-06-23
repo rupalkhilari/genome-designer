@@ -30,6 +30,7 @@ export class InventoryItem extends Component {
     onDragComplete: PropTypes.func, //commit
     onSelect: PropTypes.func, //e.g. when clicked
     forceBlocks: PropTypes.array.isRequired,
+    focusBlocks: PropTypes.array.isRequired,
     inspectorToggleVisibility: PropTypes.func.isRequired,
     focusForceBlocks: PropTypes.func.isRequired,
     uiSetGrunt: PropTypes.func.isRequired,
@@ -112,8 +113,8 @@ export class InventoryItem extends Component {
   };
 
   render() {
-    const { item, itemDetail, svg, svgProps, defaultName, inventoryType, dataAttribute } = this.props;
-    const isSelected = this.props.forceBlocks.indexOf(item) >= 0;
+    const { item, itemDetail, svg, svgProps, defaultName, inventoryType, dataAttribute, forceBlocks, focusBlocks } = this.props;
+    const isSelected = forceBlocks.indexOf(item) >= 0 || focusBlocks.some(focusId => item.id === focusId);
 
     const hasSequence = item.sequence && item.sequence.length > 0;
     const itemName = item.metadata.name || defaultName || 'Unnamed';
@@ -127,7 +128,7 @@ export class InventoryItem extends Component {
            data-inventory={dataAttr}>
         <a className="InventoryItem-item"
            onClick={this.handleClick}>
-          {svg ? <RoleSvg symbolName={svg} color="white" {...svgProps}/> : null}
+          {svg ? <RoleSvg symbolName={svg} color="white" {...svgProps} styles={{marginTop: '-0.25em'}}/> : null}
           <span className="InventoryItem-text">
             {itemName}
           </span>
@@ -139,9 +140,9 @@ export class InventoryItem extends Component {
   }
 }
 
-
 export default connect((state) => {
   return {
+    focusBlocks: state.focus.blockIds,
     forceBlocks: state.focus.forceBlocks,
   };
 }, {

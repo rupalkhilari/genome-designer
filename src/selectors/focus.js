@@ -1,46 +1,48 @@
 import * as BlockSelector from './blocks';
 
+//todo - this should not be exposed as part of 3rd party API... exported so inspector can share
+export const _getFocused = (state, defaultToConstruct = true, defaultProjectId = null) => {
+  const { level, forceProject, forceBlocks, projectId, constructId, blockIds, options } = state.focus;
+
+  //focus doesnt update on undo, just the blocks... so need to filter / make sure defined
+  const project = forceProject || state.projects[projectId || defaultProjectId];
+  const construct = state.blocks[constructId];
+  const blocks = !!forceBlocks.length ?
+    forceBlocks :
+    blockIds.map(blockId => state.blocks[blockId]).filter(block => !!block);
+  const option = blockIds.length === 1 ? state.blocks[options[blockIds[0]]] : null;
+
+  let focused;
+  let readOnly = false;
+  let type = level;
+
+  if (level === 'project' || (!construct && !blocks.length)) {
+    focused = project;
+    readOnly = !!forceProject || project.isSample;
+    type = 'project'; //override in case here because construct / blocks unspecified
+  } else if (level === 'construct' || (defaultToConstruct === true && construct && !blocks.length)) {
+    focused = [construct];
+    readOnly = construct.isFrozen();
+  } else if (level === 'option' && option) {
+    focused = [option];
+    readOnly = true;
+  } else {
+    focused = blocks;
+    readOnly = !!forceBlocks.length || focused.some(instance => instance.isFrozen());
+  }
+
+  return {
+    type,
+    readOnly,
+    focused,
+  };
+};
+
 //primary way to get focused things for the inspector
-//todo - should share code there
-export const focusGetFocused = (defaultToConstruct = true) => {
+export const focusGetFocused = (defaultToConstruct = true, defaultProjectId = null) => {
   return (dispatch, getState) => {
     const state = getState();
-    const { level, forceProject, forceBlocks, projectId, constructId, blockIds, options } = state.focus;
-    let focused;
-    let readOnly = false;
-    let type = level;
-
-    if (level === 'project' || (!constructId && !forceBlocks.length && !blockIds.length)) {
-      if (forceProject) {
-        focused = forceProject;
-        readOnly = true;
-      } else {
-        focused = state.projects[projectId];
-      }
-      type = 'project'; //need to override so dont try to show block inspector
-    } else if (level === 'construct' || (defaultToConstruct === true && constructId && !forceBlocks.length && !blockIds.length)) {
-      const construct = state.blocks[constructId];
-      focused = [construct];
-      readOnly = construct.isFrozen();
-    } else if (level === 'option' && blockIds.length === 1) {
-      const optionId = options[blockIds[0]];
-      focused = [state.blocks[optionId]];
-      readOnly = true;
-    } else {
-      if (forceBlocks.length) {
-        focused = forceBlocks;
-        readOnly = true;
-      } else {
-        focused = blockIds.map(blockId => state.blocks[blockId]);
-        readOnly = focused.some(instance => instance.isFrozen());
-      }
-    }
-
-    return {
-      type,
-      readOnly,
-      focused,
-    };
+    return _getFocused(state, defaultToConstruct, defaultProjectId);
   };
 };
 

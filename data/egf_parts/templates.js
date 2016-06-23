@@ -50,7 +50,7 @@ export const templates = [
     components1A,
     {
       metadata: {
-        name: 'Template 1A',
+        name: '1A - Episomal, single tagged protein',
         description: 'Episomal vector with one transcription unit for expression of a tagged protein',
       },
       notes: {
@@ -69,7 +69,7 @@ export const templates = [
     components1B,
     {
       metadata: {
-        name: 'Template 1B',
+        name: '1B - Single tagged protein',
         description: 'Vector with one transcription unit for expression of a tagged protein',
       },
       notes: {
@@ -87,7 +87,7 @@ export const templates = [
     components2A,
     {
       metadata: {
-        name: `Template 2A`,
+        name: `2A - Episomal, single tagged fusion protein`,
         description: `Episomal vector with one transcription unit for expression of a tagged fusion protein`,
       },
       notes: {
@@ -106,7 +106,7 @@ export const templates = [
     components2B,
     {
       metadata: {
-        name: `Template 2B`,
+        name: `2B - Single tagged fusion protein`,
         description: `Vector with one transcription unit for expression of a tagged fusion protein`,
       },
       notes: {
@@ -129,7 +129,7 @@ export const templates = [
     components5,
     {
       metadata: {
-        name: `Template 5`,
+        name: `5 - Episomal, single biscistronic unit`,
         description: `Episomal vector with one bicistronic transcription unit (IRES)`,
       },
       notes: {
@@ -148,7 +148,7 @@ export const templates = [
     components6A,
     {
       metadata: {
-        name: `Template 6A`,
+        name: `6A - Episomal, Two bicistronic units`,
         description: `Episomal vector with two bicistronic transcription units`,
       },
       notes: {
@@ -167,7 +167,7 @@ export const templates = [
     components6B,
     {
       metadata: {
-        name: `Template 6B`,
+        name: `6B - Two proteins, no selection`,
         description: `Vector with two transcription units (without selection cassette) for genomic integration`,
       },
       notes: {
@@ -186,7 +186,7 @@ export const templates = [
     components7,
     {
       metadata: {
-        name: `Template 7`,
+        name: `7 - Two tagged proteins, selection marker`,
         description: `Vector with two transcription units and selection cassette for genomic integration and expression of tagged proteins`,
       },
       notes: {
@@ -205,7 +205,7 @@ export const templates = [
     components8,
     {
       metadata: {
-        name: `Template 8`,
+        name: `8 - Two fusion proteins, selection marker`,
         description: `Vector with two transcription units and selection cassette for genomic integration and expression of fusion proteins`,
       },
       notes: {
@@ -224,8 +224,8 @@ export const templates = [
     components9,
     {
       metadata: {
-        name: 'Template 9',
-        description: 'Homologus recombination–mediated Genome targeting',
+        name: '9 - Homologous recombination target vector',
+        description: 'Homologous recombination–mediated Genome targeting',
       },
       notes: {
         Category: 'Stable transfection',
@@ -264,7 +264,7 @@ export const templates = [
     components11A,
     {
       metadata: {
-        name: `Template 11A`,
+        name: `11A - Hierarchical assembly vector, part A `,
         description: `Hierarchical assembly vector, used with Template 11B`,
       },
       notes: {
@@ -283,7 +283,7 @@ export const templates = [
     components11B,
     {
       metadata: {
-        name: `Template 11B`,
+        name: `11B - Hierarchical assembly vector, part 2`,
         description: `Hierarchical assembly vector, used with Template 11A`,
       },
       notes: {
@@ -302,7 +302,7 @@ export const templates = [
     components13A,
     {
       metadata: {
-        name: `Template 13A`,
+        name: `13A - Two proteins, one bicistronic unit (p2A), selection marker`,
         description: `Vector with one bicistronic transcription unit (p2a) and selection cassette for genomic integration`,
       },
       notes: {
@@ -321,7 +321,7 @@ export const templates = [
     components13B,
     {
       metadata: {
-        name: `Template 13B`,
+        name: `13B - Two proteins, bicistronic unit (IRES), selection marker`,
         description: `Vector with one bicistronic transcription unit (IRES) and selection cassette for genomic integration`,
       },
       notes: {
