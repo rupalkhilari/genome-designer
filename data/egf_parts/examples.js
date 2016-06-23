@@ -10,7 +10,7 @@ import Block from '../../src/models/Block';
 //list of list blocks created while creating our examples
 const created = [];
 
-const getTemplate = (name) => templates.find(tmpl => tmpl.metadata.name.toLowerCase() === `template ${name}`.toLowerCase());
+const getTemplate = (name) => templates.find(tmpl => tmpl.metadata.name.toLowerCase().indexOf(`${name}`.toLowerCase()) === 0);
 
 //need to find the specific one for this position, not just by name, because dependent on position
 const exampleOfTemplate = (template, options, toMerge = {}) => {
