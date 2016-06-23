@@ -61,8 +61,11 @@ class ConstructPreview extends Component {
     this.forceUpdate();
   }
 
-  componentWillUpdate(nextProps) {
-    this.generateConstructs(nextProps);
+  componentWillUpdate(nextProps, nextState) {
+    //if the props changed... valid so long as state is only the page
+    if (this.state === nextState) {
+      this.generateConstructs(nextProps);
+    }
   }
 
   componentDidUpdate() {
@@ -116,6 +119,7 @@ class ConstructPreview extends Component {
   }
 
   generateConstructs(props = this.props) {
+    console.log('generating');
     this.constructs = props.orderGenerateConstructs(props.order.id);
   }
 

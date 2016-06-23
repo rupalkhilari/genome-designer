@@ -1,6 +1,7 @@
 import invariant from 'invariant';
 import BlockSchema from '../schemas/Block';
 import { values, flatten } from 'lodash';
+import saveCombinations from '../utils/generators/orderConstructs';
 
 /***************************************
  * Parent accessing / store knowledge-requiring
@@ -346,9 +347,9 @@ export const blockGetCombinations = (blockId, onlyIds, includeUnselected) => {
   return (dispatch, getState) => {
     const positions = dispatch(blockGetPositionalCombinations(blockId, onlyIds, includeUnselected));
 
+    /*
     //guarantee both accumulator (and positions) array have at least one item to map over
     const last = positions.pop();
-
     //iterate through positions, essentially generating tree with * N branches for N options at position
     const combos = positions.reduceRight((acc, position) => {
       // for each extant construct, create one variant which adds each part respectively
@@ -356,6 +357,11 @@ export const blockGetCombinations = (blockId, onlyIds, includeUnselected) => {
       return flatten(position.map(option => acc.map(partialConstruct => [option].concat(partialConstruct))));
     }, [last]);
     return combos;
+    */
+
+    const combinations = [];
+    saveCombinations(positions, combinations);
+    return combinations;
   };
 };
 

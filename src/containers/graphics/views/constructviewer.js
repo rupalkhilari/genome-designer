@@ -25,6 +25,8 @@ import {
 import {
   orderCreate,
   orderGenerateConstructs,
+  orderList,
+  orderSetName,
 } from '../../../actions/orders';
 import {
   blockGetParents,
@@ -80,6 +82,8 @@ export class ConstructViewer extends Component {
     uiShowOrderForm: PropTypes.func.isRequired,
     orderCreate: PropTypes.func.isRequired,
     orderGenerateConstructs: PropTypes.func.isRequired,
+    orderList: PropTypes.func.isRequired,
+    orderSetName: PropTypes.func.isRequired,
     blockRemoveComponent: PropTypes.func,
     blockGetParents: PropTypes.func,
     projectGetVersion: PropTypes.func,
@@ -518,8 +522,12 @@ export class ConstructViewer extends Component {
    * launch DNA form for this construct
    */
   onOrderDNA = () => {
-    const order = this.props.orderCreate(this.props.projectId, [this.props.construct.id]);
-    this.props.uiShowOrderForm(true, order.id);
+    let order = this.props.orderCreate(this.props.currentProjectId, [this.props.construct.id]);
+    this.props.orderList(this.props.currentProjectId)
+      .then((orders) => {
+        order = this.props.orderSetName(order.id, `Order ${orders.length}`);
+        this.props.uiShowOrderForm(true, order.id);
+      });
   };
 
   /**
@@ -608,4 +616,6 @@ export default connect(mapStateToProps, {
   uiToggleDetailView,
   orderCreate,
   orderGenerateConstructs,
+  orderList,
+  orderSetName,
 })(ConstructViewer);
