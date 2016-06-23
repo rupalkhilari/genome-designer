@@ -8,6 +8,7 @@ import {
   orderSubmit,
   orderDetach,
 } from '../../actions/orders';
+import { projectSave } from '../../actions/projects';
 import ModalWindow from '../../components/modal/modalwindow';
 import Page1 from './page1';
 import Page2 from './page2';
@@ -55,7 +56,8 @@ class OrderModal extends Component {
       this.props.uiShowOrderForm(false);
     } else {
       this.props.uiSpin('Submitting order... Please wait.');
-      this.props.orderSubmit(this.props.order.id)
+      this.props.projectSave(this.props.order.projectId)
+        .then(() => this.props.orderSubmit(this.props.order.id))
         .then(() => {
           this.props.uiSpin();
           this.setState({page: 3});
@@ -144,6 +146,7 @@ function mapStateToProps(state, props) {
 export default connect(mapStateToProps, {
   uiShowOrderForm,
   uiSpin,
+  projectSave,
   orderSubmit,
   orderDetach,
 })(OrderModal);
