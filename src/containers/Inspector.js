@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { inspectorToggleVisibility } from '../actions/ui';
+import { _getFocused } from '../selectors/focus';
 
 import InspectorBlock from '../components/Inspector/InspectorBlock';
 import InspectorProject from '../components/Inspector/InspectorProject';
@@ -72,48 +73,19 @@ function mapStateToProps(state, props) {
   //UI adjustment
   const showingGrunt = !!state.ui.modals.gruntMessage;
 
-  // todo - maybe should move to focus selector, and just run this in render, to share code. this is kinda gnar.
-
-  const { level, forceProject, forceBlocks, projectId, constructId, blockIds, options } = state.focus;
-  let focused;
-  let readOnly = false;
-  let type = level;
+  const { level, projectId, blockIds } = state.focus;
   //if projectId is not set in store, ProjectPage is passing it in, so lets default to it
   const currentProject = state.projects[projectId || props.projectId];
 
-  if (level === 'project' || (!constructId && !forceBlocks.length && !blockIds.length)) {
-    if (forceProject) {
-      focused = forceProject;
-      readOnly = true;
-    } else {
-      focused = currentProject;
-      readOnly = currentProject.isSample;
-    }
-    type = 'project'; //need to override so dont try to show block inspector
-  } else if (level === 'construct' || (constructId && !forceBlocks.length && !blockIds.length)) {
-    const construct = state.blocks[constructId];
-    focused = [construct];
-    readOnly = focused.some(instance => instance.isFrozen());
-  } else if (level === 'option' && blockIds.length === 1) {
-    const optionId = options[blockIds[0]];
-    focused = [state.blocks[optionId]];
-    readOnly = true;
-  } else {
-    if (forceBlocks.length) {
-      focused = forceBlocks;
-      readOnly = true;
-    } else {
-      focused = blockIds.map(blockId => state.blocks[blockId]);
-      readOnly = focused.some(instance => instance.isFrozen());
-    }
-  }
+  //delegate handling of focus state handling to selector
+  const { type, readOnly, focused } = _getFocused(state, true, props.projectId);
 
   const forceIsConstruct = (level === 'construct') ||
     blockIds.some(blockId => currentProject.components.indexOf(blockId) >= 0);
 
   const orders = Object.keys(state.orders)
     .map(orderId => state.orders[orderId])
-    .filter(order => order.projectId === projectId && order.isSubmitted())
+    .filter(order => order.projectId === currentProject.id && order.isSubmitted())
     .sort((one, two) => one.status.timeSent - two.status.timeSent);
 
   return {
