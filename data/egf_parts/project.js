@@ -26,9 +26,7 @@ const makeProject = (blockIds) => Project.classless({
   isSample: true,
   metadata: {
     name: 'EGF Sample Templates',
-    description: `This project includes a set of templates, constructed as combinatorial constructs with biological function, which can be fabricated at the Edinburgh Genome Foundry.
-
-This is a sample project, but you can clone these constructs into a project of your own by dragging from the inventory, and then order them.`,
+    description: `This project includes a set of templates - combinatorial constructs with biological function - which can be fabricated at the Edinburgh Genome Foundry. This sample project is locked. To use the templates, drag them from the inventory list on the left, into one of your own projects.`,
   },
   components: blockIds,
 });
