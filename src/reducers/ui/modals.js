@@ -11,6 +11,7 @@ export const initialState = {
   showGenBankImport: false,
   userWidgetVisible: true,
   spinMessage: null,
+  showSaveError: false,
 };
 
 export default function modals(state = initialState, action) {
@@ -48,8 +49,11 @@ export default function modals(state = initialState, action) {
     return Object.assign({}, state, { gruntMessage });
 
   case ActionTypes.UI_SPIN:
-  const { spinMessage } = action;
-  return Object.assign({}, state, { spinMessage });
+    const { spinMessage } = action;
+    return Object.assign({}, state, { spinMessage });
+
+  case ActionTypes.UI_SAVE_ERROR:
+    return Object.assign({}, state, { showSaveError: true });
 
   case LOCATION_CHANGE :
     const toKeep = ['gruntMessage'].reduce((acc, field) => Object.assign(acc, { [field]: state[field] }), {});

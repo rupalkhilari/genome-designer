@@ -7,6 +7,7 @@ import ImportDNAForm from '../components/importdna/importdnaform';
 import AboutForm from '../components/aboutform';
 import OrderModal from '../containers/orders/ordermodal';
 import ModalSpinner from '../components/modal/modalspinner';
+import SaveErrorModal from '../components/modal/SaveErrorModal';
 
 import '../styles/App.css';
 
@@ -53,6 +54,7 @@ class App extends Component {
         <ImportGenBankModal currentProjectId={this.props.currentProjectId}/>
         <ImportDNAForm />
         <AboutForm />
+        <SaveErrorModal />
         <OrderModal projectId={this.props.currentProjectId} />
         <div className="App-pageContent">
           {this.props.children}
