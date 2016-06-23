@@ -137,8 +137,7 @@ User ${user.uuid}
 
             return rollup.getProjectRollup(projectId)
               .then(roll => {
-                console.log(roll);
-
+                //console.log(roll);
                 return persistence.orderWrite(order.id, order, projectId, roll);
               });
           });
