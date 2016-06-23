@@ -53,7 +53,7 @@ export function parseFullResult(result) {
     metadata: {
       description: result.metadata.part_short_desc,
       author: result.metadata.part_author,
-      created: Date(result.metadata.part_entered).valueOf(),
+      created: (new Date(result.metadata.part_entered)).valueOf(),
     },
     sequence: {
       annotations,
