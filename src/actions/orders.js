@@ -127,6 +127,10 @@ export const orderSetParameters = (orderId, inputParameters = {}, shouldMerge = 
       parameters.activeIndices = map;
     }
 
+    if (parameters.onePot) {
+      parameters.sequenceAssemblies = false;
+    }
+
     invariant(Order.validateParameters(parameters), 'parameters must pass validation');
     const order = oldOrder.setParameters(parameters);
 

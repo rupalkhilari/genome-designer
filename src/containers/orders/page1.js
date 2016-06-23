@@ -43,7 +43,7 @@ export class Page1 extends Component {
   }
 
   assemblyContainerChanged = (newValue) => {
-    const onePot = newValue === 'true';
+    const onePot = newValue === true || newValue === 'true';
     this.props.orderSetParameters(this.props.order.id, {
       permutations: this.props.numberConstructs,
       combinatorialMethod: 'Random Subset',
@@ -128,7 +128,7 @@ export class Page1 extends Component {
               onChange={this.sequenceAssemblies}
               label="Sequence Assemblies"
               value={order.parameters.sequenceAssemblies}
-              disabled={true}
+              disabled={order.parameters.onePot}
             />
           </Row>
           <br/>
