@@ -14,11 +14,19 @@ export default class UpDown extends Component {
 
   up = () => {
     const value = Math.min(this.getValue() + 1, this.props.max);
-    this.props.onChange(value);
+    if (this.props.onChange) {
+      this.props.onChange(value);
+    } else {
+      this.props.onBlur(value);
+    }
   }
   down = () => {
     const value = Math.max(this.getValue() - 1, this.props.min);
-    this.props.onChange(value);
+    if (this.props.onChange) {
+      this.props.onChange(value);
+    } else {
+      this.props.onBlur(value);
+    }
   }
 
   /**
@@ -56,9 +64,20 @@ export default class UpDown extends Component {
   onInputChanged = (evt) => {
     const value = this.getValue();
     if (value !== this.props.value) {
-      this.props.onChange(value);
+      if (this.props.onChange) {
+        this.props.onChange(value);
+      }
     }
-  };
+  }
+
+  onBlur = (evt) => {
+    const value = this.getValue();
+    if (value !== this.props.value) {
+      if (this.props.onBlur) {
+        this.props.onBlur(value);
+      }
+    }
+  }
 
   render() {
     return (
@@ -70,6 +89,7 @@ export default class UpDown extends Component {
           maxLength={this.props.max.toString().length}
           onKeyDown={this.onKeyDown}
           onChange={this.onInputChanged}
+          onBlur={this.onBlur}
         />
         <div className="updown-spinner">
           <div className="arrow-container">

@@ -6,23 +6,25 @@ export default class Permutations extends Component {
     total: PropTypes.number.isRequired,
     value: PropTypes.number,
     editable: PropTypes.bool.isRequired,
-    onChange: PropTypes.func.isRequired,
+    onBlur: PropTypes.func.isRequired,
   };
+
+  onBlur = (evt) => {
+    let value = parseInt(evt.target.value);
+    if (isNaN(value) || value < 1 || value > this.props.total) {
+      value = 1;
+    }
+    this.props.onBlur(value);
+  }
 
   render() {
     // if editable show input + permutations
     if (this.props.editable) {
       return (
-        <div>
+        <div className="permutations">
           <input
-            className="permutations-input"
-            type="number"
             defaultValue={this.props.value}
-            min="1"
-            max={this.props.total}
-            onChange={evt => {
-              this.props.onChange(evt.target.value);
-            }} defaultValue={this.props.value}
+            onBlur={this.onBlur}
           />
           <span> of <b>{this.props.total} </b>possibilities</span>
         </div>

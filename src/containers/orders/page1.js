@@ -32,7 +32,6 @@ export class Page1 extends Component {
     super();
     //todo - this should use a transaction + commit, not deboucne like this. See InputSimple
     this.labelChanged = debounce(value => this._labelChanged(value), 500, {leading: false, trailing: true});
-
   }
 
   assemblyOptions() {
@@ -55,16 +54,16 @@ export class Page1 extends Component {
     this.props.orderSetName(this.props.order.id, newLabel);
   };
 
-  //todo - debounce or only trigger on blur
-  numberOfAssembliesChanged = (newValue) => {
-    const total = parseInt(newValue, 10);
+  /**
+   * debounced for performance
+   */
+  numberOfAssembliesChanged = (total) => {
     this.props.orderSetParameters(this.props.order.id, {
-      permutations: Number.isInteger(total) ? Math.min(this.props.numberConstructs, Math.max(1, total)) : 1,
+      permutations: total,
     }, true);
-  };
+  }
 
   methodOptions() {
-    //return ['Random Subset', 'Maximum Unique Set', 'All Combinations'].map(item => {
     return ['Random Subset', 'Maximum Unique Set'].map(item => {
       return {value: item, label: item};
     });
@@ -110,9 +109,11 @@ export class Page1 extends Component {
           <Row text="Number of assemblies:">
             <Permutations
               total={this.props.numberConstructs}
-              value={order.parameters.permutations}
+              value={this.props.order.parameters.permutations}
               editable={!order.parameters.onePot}
-              onChange={(val) => this.numberOfAssembliesChanged(val)}
+              onBlur={(val) => {
+                this.numberOfAssembliesChanged(val);
+              }}
             />
           </Row>
           <Row text="Combinatorial method:">
