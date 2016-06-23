@@ -13,6 +13,7 @@ import { permissionsMiddleware } from './../data/permissions';
 
 import Order from '../../src/models/Order';
 import { submit } from './egf';
+import saveCombinations from '../../src/utils/generators/orderConstructs';
 
 const router = express.Router(); //eslint-disable-line new-cap
 
@@ -88,25 +89,15 @@ User ${user.uuid}
           });
       })
       .then(blockMap => {
-        //todo - should share this logic with the client, not recompute here
-        //2D array, where inner array is just array of blockIds
         const allConstructs = [];
-
-        //todo - may need to make this more efficent = call stack size exceeded for very large orders.
         order.constructIds.forEach(constructId => {
           const constructPositionalCombinations = positionalCombinations[constructId];
-          //guarantee both accumulator (and positions) array have at least one item to map over
-          const last = constructPositionalCombinations.pop();
-
-          //iterate through positions, essentially generating tree with * N branches for N options at position
-          const combinations = constructPositionalCombinations.reduceRight((acc, position) => {
-            // for each extant construct, create one variant which adds each part respectively
-            // flatten them for return and repeat!
-            return flatten(position.map(option => acc.map(partialConstruct => [option].concat(partialConstruct))));
-          }, [last]);
-
-          allConstructs.push(...combinations);
+          saveCombinations(constructPositionalCombinations, allConstructs);
         });
+
+        //debugging:
+        //console.log('constructs generated!');
+        //console.log(allConstructs);
 
         //prune the list based on the parameters
         const constructList = (!order.parameters.onePot && order.parameters.permutations < order.numberCombinations) ?
@@ -120,7 +111,7 @@ User ${user.uuid}
             const frozenBlockMap = Object.keys(blockMap)
               .map(key => blockMap[key])
               .map(block => merge(block, { rules: { frozen: true } }))
-              .reduce((acc, block) => Object.assign(acc, { [block.id]: block}), {});
+              .reduce((acc, block) => Object.assign(acc, { [block.id]: block }), {});
 
             return persistence.blocksMerge(projectId, frozenBlockMap)
               .then(() => response);
