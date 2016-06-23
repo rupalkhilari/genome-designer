@@ -13,6 +13,7 @@ import checkUserSetup from './auth/userSetup';
 
 import importRouter from '../plugins/convert/import';
 import exportRouter from '../plugins/convert/export';
+import fsRouter from '../plugins/compile/index';
 
 const DEFAULT_PORT = 3000;
 const port = parseInt(process.argv[2], 10) || process.env.PORT || DEFAULT_PORT;
@@ -90,6 +91,7 @@ app.use('/extensions', extensionsRouter);
 //extensions
 app.use('/import', importRouter);
 app.use('/export', exportRouter);
+app.use('/compile', fsRouter);
 
 // Register Client Requests, delegate routing to client
 // ----------------------------------------------------

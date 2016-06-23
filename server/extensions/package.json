@@ -5,7 +5,7 @@
   "dependencies": {
     "simple" : "../../extensions/simple",
     "SequenceDetail" : "IsaacLuo/onion2#deploy",
-    "hello" : "../../extensions/hello",
-    "fsharp" : "../../extensions/fsharp"
+    "CodeCompilerEditor" : "../../extensions/CodeCompilerEditor",
+    "CodeCompiler" : "../../extensions/CodeCompiler"
   }
 }

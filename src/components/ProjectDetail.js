@@ -30,6 +30,7 @@ export class ProjectDetail extends Component {
       if (!this.props.currentExtension && this.extensions.length) {
         this.setCurrentExtension(this.extensions[0]);
       }
+      this.forceUpdate();
     });
   }
 
