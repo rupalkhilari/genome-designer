@@ -79,7 +79,7 @@ class ProjectPage extends Component {
             this.props.projectOpen(project.id);
           }
         });
-      return (<Spinner />);
+      return (<Spinner styles={{fontSize: '40px', margin: '2em auto'}}/>);
     }
 
     // build a list of construct viewers
