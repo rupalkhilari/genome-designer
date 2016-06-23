@@ -14,12 +14,14 @@ export default class RoleSvg extends Component {
     fill: PropTypes.string,
     width: PropTypes.string,
     height: PropTypes.string,
+    styles: PropTypes.object,
     stroke: PropTypes.number,
   };
 
   static defaultProps = {
     color: 'white',
     fill: null,
+    styles: {},
   };
 
   render() {
@@ -61,9 +63,9 @@ export default class RoleSvg extends Component {
       }
     }
 
-    const style = {
+    const style = Object.assign({
       display: 'inline-block',
-    };
+    }, this.props.styles);
     if (this.props.width) {
       style.width = this.props.width;
     }
