@@ -385,12 +385,14 @@ export class ConstructViewer extends Component {
       },
       {
         text: `Delete ${typeName}`,
+        disabled: this.isSampleProject(),
         action: () => {
           this.props.projectRemoveConstruct(this.props.projectId, this.props.constructId);
         },
       },
       {
         text: `Duplicate ${typeName}`,
+        disabled: this.isSampleProject(),
         action: () => {
           // clone the our construct/template and then add to project and ensure focused
           let clone = this.props.blockClone(this.props.construct);
@@ -532,10 +534,14 @@ export class ConstructViewer extends Component {
    * only visible on templates that are not part of the sample(s) project
    */
   orderButton() {
-    if (this.props.construct.isTemplate() && !this.props.projectGet(this.props.currentProjectId).isSample) {
+    if (this.props.construct.isTemplate() && !this.isSampleProject()) {
       return <button onClick={this.onOrderDNA} className="order-button">Order DNA</button>;
     }
     return null;
+  }
+
+  isSampleProject() {
+    return this.props.projectGet(this.props.currentProjectId).isSample;
   }
 
   lockIcon() {
