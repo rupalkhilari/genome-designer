@@ -387,7 +387,7 @@ export default class Layout {
    * If the part is an SBOL symbol then use the symbol name preferentially
    */
   partName(part) {
-    return this.blocks[part].getName();
+    return this.blocks[part].getName('Block', true);
   }
   /**
    * create the banner / bar for the construct ( contains the triangle )
