@@ -125,7 +125,7 @@ export class InspectorBlock extends Component {
   }
 
   allBlocksWithSequence() {
-    return this.props.instances.every(instance => instance.sequence.length);
+    return this.props.instances.every(instance => !!instance.sequence.length);
   }
 
   currentSequenceLength() {
