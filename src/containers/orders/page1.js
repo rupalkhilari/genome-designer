@@ -36,13 +36,13 @@ export class Page1 extends Component {
 
   assemblyOptions() {
     return [
-      {value: true, label: 'All in a single container'},
-      {value: false, label: 'Each in an individual container'},
+      {checked: true, text: 'All in a single container'},
+      {checked: false, text: 'Each in an individual container'},
     ];
   }
 
   assemblyContainerChanged = (newValue) => {
-    const onePot = newValue === 'true';
+    const onePot = newValue === 'All in a single container';
     this.props.orderSetParameters(this.props.order.id, {
       permutations: this.props.numberConstructs,
       combinatorialMethod: 'Random Subset',

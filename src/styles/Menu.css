@@ -31,11 +31,12 @@
 /*interaction blocker for popup menus, when visible or hidden*/
 .menu-popup-blocker-visible {
   position: fixed;
-  width: 100vw;
-  height: 100vh;
+  width: 100vw !important;
+  height: 100vh !important;
   left: 0;
   top: 0;
-  background-color: transparent;
+  /*background-color: transparent;*/
+  background-color: rgba(255, 0, 0, 0.25);
   z-index: var(--zMenu);
 }
 .menu-popup-blocker-hidden {

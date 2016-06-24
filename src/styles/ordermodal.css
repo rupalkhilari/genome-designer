@@ -11,6 +11,9 @@
     height: 24rem;
   }
 
+  .menu-popup-blocker-visible {
+    margin-left: -15rem;
+  }
   select {
     font-size: var(--fontsize);
     height: 3rem;
@@ -24,6 +27,14 @@
     input {
       width: 10rem;
       margin-right: 1rem;
+    }
+  }
+
+  .dropdown {
+    display: inline-block;
+    cursor: pointer;
+    &:hover {
+      color: var(--colors-bluetext);
     }
   }
 
