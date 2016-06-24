@@ -64,9 +64,10 @@ export default class Selector extends Component {
             className="dropdown"
             onClick={this.onShowMenu}
             onMouseLeave={this.onMouseLeave}
-          >{this.props.value}&nbsp;&#x2193;
+          >{this.props.value}
           {menu}
         </div>
+        <div className="selector-arrow"/>
       </div>
     );
   }
