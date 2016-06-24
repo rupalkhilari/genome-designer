@@ -33,7 +33,7 @@ export class InventoryProject extends Component {
     errorLoading: false,
   };
 
-  //handle double-click to open
+  //handle click to open
   onToggleProject = (nextState, projectId) => {
     const { isActive } = this.props;
 
@@ -88,7 +88,8 @@ export class InventoryProject extends Component {
     const { project, isActive } = this.props;
     const { isLoading, isExpanded, errorLoading } = this.state;
     const projectId = project.id;
-    const canToggle = project.components.length > 0;
+    //const canToggle = project.components.length > 0;
+    const canToggle = true;
 
     return (
       <InventoryListGroup title={project.getName()}
@@ -100,11 +101,16 @@ export class InventoryProject extends Component {
                           onSelect={(nextState) => this.onToggleProject(nextState, projectId)}
                           isActive={isActive}
                           dataAttribute={`project ${project.id}`}>
-        {project.components.map(compId => {
-          return (<InventoryConstruct key={compId}
-                                      depth={0}
-                                      blockId={compId}/>);
-        })}
+        {project.components.length > 0
+          ?
+          project.components.map(compId => {
+            return (<InventoryConstruct key={compId}
+                                        depth={0}
+                                        blockId={compId}/>);
+          })
+          :
+          (<div style={{padding: '0.25em 0.5em', userSelect: 'none', opacity: 0.5}}>No constructs</div>)
+        }
       </InventoryListGroup>
     );
   }

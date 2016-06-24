@@ -119,7 +119,6 @@ class ConstructPreview extends Component {
   }
 
   generateConstructs(props = this.props) {
-    console.log('generating');
     this.constructs = props.orderGenerateConstructs(props.order.id);
   }
 

@@ -8,7 +8,7 @@ export default function Spinner({ hidden, styles }) {
     return <noscript />;
   }
 
-  return (<div className="Spinner" styles={styles}/>);
+  return (<div className="Spinner" style={styles}/>);
 }
 
 Spinner.propTypes = {
