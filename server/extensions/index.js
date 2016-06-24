@@ -37,8 +37,11 @@ if (process.env.NODE_ENV !== 'production') {
     res.sendFile(extensionFile, (err) => {
       if (err) {
         console.log('got an error sending extension!', err);
-        return res.status(404).end();
+        console.log(err.stack);
+        //don't write headers because express may complain about them already being set
       }
+      //force ending of response, since lib/response seems not to if we provide a callback
+      return res.end();
     });
   });
 } else {
@@ -52,14 +55,17 @@ if (process.env.NODE_ENV !== 'production') {
         const filePath = getExtensionInternalPath(extension);
         res.sendFile(filePath, (err) => {
           if (err) {
-            res.status(err.status).end();
+            console.log('error sending extension!', err);
+            console.log(err.stack);
+            //don't write headers because express may complain about them already being set
           }
-          //otherwise, sent successfully
+          //force ending of response, since lib/response seems not to if we provide a callback
+          return res.end();
         });
       })
       .catch(err => {
         if (err === errorDoesNotExist) {
-          return res.status(400).send(errorDoesNotExist);
+          return res.status(404).send(errorDoesNotExist);
         }
         next(err);
       });
