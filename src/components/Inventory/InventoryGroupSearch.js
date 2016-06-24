@@ -61,7 +61,7 @@ export class InventoryGroupSearch extends Component {
     };
 
     if (source && id) {
-      return registry[source].get(id, parameters)
+      return registry[source].get(id, parameters, item)
         .then(result => {
           //if we have an array, first one is construct, and all other blocks should be added to the store
           if (Array.isArray(result)) {

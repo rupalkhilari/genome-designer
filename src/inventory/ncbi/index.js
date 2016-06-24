@@ -8,6 +8,8 @@ import { convertGenbank } from '../../middleware/genbank';
 // NCBI limits number of requests per user/ IP, so better to initate from the client and I support process on client...
 export const name = 'NCBI';
 
+const makeFastaUrl = (id) => `http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id=${id}&rettype=fasta&retmode=text`;
+
 //todo - handle RNA
 
 //convert genbank file to bunch of blocks
@@ -34,6 +36,8 @@ const wrapBlock = (block, id) => {
 };
 
 const parseSummary = (summary) => {
+  const fastaUrl = makeFastaUrl(summary.accessionversion);
+
   return new Block({
     metadata: {
       name: summary.caption,
@@ -42,6 +46,9 @@ const parseSummary = (summary) => {
     },
     sequence: {
       length: summary.slen,
+      download: () => rejectingFetch(fastaUrl)
+        .then(resp => resp.text())
+        .then(fasta => fasta.split('\n').slice(1).join('')),
     },
     source: {
       source: 'ncbi',
@@ -75,7 +82,7 @@ export const getSummary = (...ids) => {
 //note that these may be very very large, use getSummary unless you need the whole thing
 //!! important - Note that NCBI is moving to accession versions from UIDs
 //   this should be the accessionversion by this point, as it was set as source.id on parseSummary.
-export const get = (accessionVersion, parameters = {}) => {
+export const get = (accessionVersion, parameters = {}, summary) => {
   const parametersMapped = Object.assign({
     format: 'gb',
     onlyConstruct: false,
@@ -88,7 +95,17 @@ export const get = (accessionVersion, parameters = {}) => {
   return rejectingFetch(url)
     .then(resp => resp.text())
     .then(genbank => genbankToBlock(genbank, parametersMapped.onlyConstruct))
-    .then(blocks => blocks.map(block => wrapBlock(block, accessionVersion)));
+    .then(blocks => blocks.map(block => wrapBlock(block, accessionVersion)))
+    .then(blockModels => {
+      if (parametersMapped.onlyConstruct) {
+        const first = blockModels[0];
+        const merged = first.merge({
+          sequence: summary.sequence,
+        });
+        return [merged];
+      }
+      return blockModels;
+    });
 };
 
 // http://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.ESearch
@@ -117,6 +134,6 @@ export const search = (query, options = {}) => {
     .then(ids => getSummary(...ids));
 };
 
-export const sourceUrl = ({id}) => {
+export const sourceUrl = ({ id }) => {
   return `http://www.ncbi.nlm.nih.gov/nuccore/${id}`;
 };
