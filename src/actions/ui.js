@@ -153,3 +153,13 @@ export const uiSpin = (spinMessage) => {
     return spinMessage;
   };
 };
+
+//cannot be dismissed
+export const uiSaveFailure = () => {
+  return (dispatch, getState) => {
+    dispatch({
+      type: ActionTypes.UI_SAVE_ERROR,
+    });
+    return null;
+  };
+};
