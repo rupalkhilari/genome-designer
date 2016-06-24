@@ -94,6 +94,7 @@ def create_root_block_from_genbank(gb, sequence):
     root_block = create_block_json(root_id, sequence, [])
     root_block["metadata"]["description"] = gb.description
     root_block["metadata"]["name"] = gb.name
+    root_block["metadata"]["genbank"]["name"] = gb.name
     root_block["metadata"]["start"] = 0
     root_block["metadata"]["end"] = full_length - 1
     root_block["metadata"]["genbank"]["id"] = gb.id
