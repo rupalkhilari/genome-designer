@@ -32,6 +32,7 @@ class OrderModal extends Component {
 
   state = {
     page: 1,
+    error: null,
   };
 
   nav(inc) {
@@ -55,18 +56,24 @@ class OrderModal extends Component {
     if (this.props.order.isSubmitted()) {
       this.props.uiShowOrderForm(false);
     } else {
+      this.setState({error: null});
       this.props.uiSpin('Submitting order... Please wait.');
       this.props.projectSave(this.props.order.projectId)
         .then(() => this.props.orderSubmit(this.props.order.id))
         .then(() => {
           this.props.uiSpin();
           this.setState({page: 3});
+        })
+        .catch((response) => {
+          this.props.uiSpin();
+          this.setState({error: response.statusText || 'Unknown'});
         });
     }
   };
 
   onClose = (evt) => {
     this.props.uiShowOrderForm(false);
+    this.setState({error: null});
     if (!this.props.order.isSubmitted()) {
       this.props.orderDetach(this.props.order.id);
     }
@@ -103,6 +110,8 @@ class OrderModal extends Component {
     const rightText = ['Review Assemblies', 'Order Details', ''][this.state.page - 1];
     const titleText = ['Order DNA', 'Review Assemblies', 'Order Details'][this.state.page -1];
 
+    const error = this.state.error ? <label className="error">{"Order Error: " + this.state.error.substr(0, 1024)}</label> : null;
+
     return (<ModalWindow
       open={this.props.open}
       title="Order DNA"
@@ -116,6 +125,7 @@ class OrderModal extends Component {
               <Page2 open={this.state.page === 2} order={this.props.order}/>
               <Page3 open={this.state.page === 3} order={this.props.order}/>
             </div>
+            {error}
             <div className="actions">
               <NavLeftRight
                 onClick={this.nav.bind(this, -1)}

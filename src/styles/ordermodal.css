@@ -22,6 +22,10 @@
     }
   }
 
+  .error {
+    color: red !important;
+  }
+
   .dropdown {
     display: inline-block;
     position: relative;
