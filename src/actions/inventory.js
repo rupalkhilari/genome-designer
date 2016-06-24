@@ -84,7 +84,7 @@ export const inventoryShowSourcesToggling = (forceState) => {
 
     //if not toggling any more, check if need to run a new search
     if (!nextState) {
-      if (sourceList.some(source => !lastSearch.sourceList.indexOf(source) < 0)) {
+      if (sourceList.some(source => lastSearch.sourceList.indexOf(source) < 0)) {
         dispatch(inventorySearch(searchTerm, null, true));
       }
     }
