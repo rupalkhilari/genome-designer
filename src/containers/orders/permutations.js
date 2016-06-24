@@ -9,12 +9,34 @@ export default class Permutations extends Component {
     onBlur: PropTypes.func.isRequired,
   };
 
-  onBlur = (evt) => {
-    let value = parseInt(evt.target.value);
-    if (isNaN(value) || value < 1 || value > this.props.total) {
+  constructor() {
+    super();
+    this.state = {
+      value: 1,
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.setState({value: nextProps.value});
+  }
+
+  onBlur = () => {
+    let value = parseInt(this.state.value);
+    if (value < 1) {
       value = 1;
+      this.setState({value});
+    }
+    if (isNaN(value) || value > this.props.total) {
+      value = this.props.total;
+      this.setState({value});
     }
     this.props.onBlur(value);
+  }
+
+  onChange = (evt) => {
+    this.setState({
+      value: evt.target.value,
+    });
   }
 
   render() {
@@ -23,7 +45,8 @@ export default class Permutations extends Component {
       return (
         <div className="permutations">
           <input
-            defaultValue={this.props.value}
+            onChange={this.onChange}
+            value={this.state.value}
             onBlur={this.onBlur}
           />
           <span> of <b>{this.props.total} </b>possibilities</span>
