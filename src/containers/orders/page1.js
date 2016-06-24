@@ -17,6 +17,17 @@ import OrderParameters from '../../schemas/OrderParameters';
 import '../../../src/styles/form.css';
 import '../../../src/styles/ordermodal.css';
 
+const assemblyOptions = [
+  'All in a single container',
+  'Each in an individual container',
+];
+
+const methodOptions = [
+  'Random Subset',
+  'Maximum Unique Set',
+];
+
+
 export class Page1 extends Component {
   static propTypes = {
     open: PropTypes.bool.isRequired,
@@ -34,15 +45,8 @@ export class Page1 extends Component {
     this.labelChanged = debounce(value => this._labelChanged(value), 500, {leading: false, trailing: true});
   }
 
-  assemblyOptions() {
-    return [
-      {checked: true, text: 'All in a single container'},
-      {checked: false, text: 'Each in an individual container'},
-    ];
-  }
-
   assemblyContainerChanged = (newValue) => {
-    const onePot = newValue === 'All in a single container';
+    const onePot = newValue === assemblyOptions[0];
     this.props.orderSetParameters(this.props.order.id, {
       permutations: this.props.numberConstructs,
       combinatorialMethod: 'Random Subset',
@@ -61,12 +65,6 @@ export class Page1 extends Component {
     this.props.orderSetParameters(this.props.order.id, {
       permutations: total,
     }, true);
-  }
-
-  methodOptions() {
-    return ['Random Subset', 'Maximum Unique Set'].map(item => {
-      return {value: item, label: item};
-    });
   }
 
   methodChanged = (newMethod) => {
@@ -89,6 +87,14 @@ export class Page1 extends Component {
 
     const { order } = this.props;
 
+    let method = <label>All Combinations</label>;
+    if (!order.parameters.onePot) {
+      method = (<Selector
+                  value={order.parameters.combinatorialMethod}
+                  options={methodOptions}
+                  onChange={this.methodChanged}
+                />)
+    }
     return (
       <div className="order-page page1">
         <fieldset disabled={order.isSubmitted()}>
@@ -100,9 +106,8 @@ export class Page1 extends Component {
           </Row>
           <Row text="Assembly Containers:">
             <Selector
-              value={order.parameters.onePot}
-              options={this.assemblyOptions()}
-              disabled={false}
+              value={assemblyOptions[order.parameters.onePot ? 0 : 1]}
+              options={assemblyOptions}
               onChange={(val) => this.assemblyContainerChanged(val)}
             />
           </Row>
@@ -117,12 +122,7 @@ export class Page1 extends Component {
             />
           </Row>
           <Row text="Combinatorial method:">
-            <Selector
-              value={order.parameters.combinatorialMethod}
-              options={this.methodOptions()}
-              onChange={this.methodChanged}
-              disabled={order.parameters.onePot || (!order.parameters.onePot && order.parameters.permutations === this.props.numberConstructs) }
-            />
+            {method}
           </Row>
           <Row text="After fabrication:">
             <Checkbox
