@@ -37,8 +37,10 @@ if (process.env.NODE_ENV !== 'production') {
     res.sendFile(extensionFile, (err) => {
       if (err) {
         console.log('got an error sending extension!', err);
-        return res.status(404).end();
+        return res.status(err.status).end();
       }
+      //otherwise, successful
+      res.end();
     });
   });
 } else {
@@ -55,11 +57,12 @@ if (process.env.NODE_ENV !== 'production') {
             res.status(err.status).end();
           }
           //otherwise, sent successfully
+          res.end();
         });
       })
       .catch(err => {
         if (err === errorDoesNotExist) {
-          return res.status(400).send(errorDoesNotExist);
+          return res.status(404).send(errorDoesNotExist);
         }
         next(err);
       });
