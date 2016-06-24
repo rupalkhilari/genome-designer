@@ -195,7 +195,7 @@ const _projectLoad = (projectId, loadMoreOnFail = false, dispatch) => {
           if (manifests.length) {
             const nextId = manifests[0].id;
             //recurse, ignoring this projectId
-            return _projectLoad(nextId, ignores);
+            return _projectLoad(nextId, ignores, dispatch);
           }
           //if no manifests, create a new rollup - shouldnt happen while users have sample projects
           return rollupWithConstruct();

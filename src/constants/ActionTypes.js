@@ -63,6 +63,7 @@ export const UI_SHOW_ABOUT = 'UI_SHOW_ABOUT';
 export const UI_SET_GRUNT = 'UI_SET_GRUNT';
 export const UI_SPIN = 'UI_SPIN';
 export const UI_SHOW_GENBANK_IMPORT = 'UI_SHOW_GENBANK_IMPORT';
+export const UI_SAVE_ERROR = 'UI_SAVE_ERROR';
 
 export const USER_SET_USER = 'USER_SET_USER';
 export const USER_LOGIN = 'USER_LOGIN';

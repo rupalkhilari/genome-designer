@@ -5,7 +5,8 @@ import '../../../src/styles/ordermodal.css';
 
 export default class Input extends Component {
   static propTypes = {
-    value: PropTypes.string.isRequired,
+    value: PropTypes.bool.isRequired,
+    disabled: PropTypes.bool,
     onChange: PropTypes.func.isRequired,
     label: PropTypes.string.isRequired,
   };
@@ -16,7 +17,7 @@ export default class Input extends Component {
         <input onChange={evt => {this.props.onChange(evt.target.checked);}}
                type="checkbox"
                disabled={this.props.disabled}
-               defaultChecked={this.props.value} />
+               checked={this.props.value} />
         {this.props.label}
       </div>
     );

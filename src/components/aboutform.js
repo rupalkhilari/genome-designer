@@ -4,7 +4,7 @@ import { uiShowAbout } from '../actions/ui';
 import ModalWindow from './modal/modalwindow';
 
 import '../../src/styles/form.css';
-import '../..//src/styles/aboutform.css';
+import '../../src/styles/aboutform.css';
 
 class AboutForm extends Component {
 

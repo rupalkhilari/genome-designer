@@ -181,6 +181,9 @@ export const blockGetSiblings = (blockId) => {
 //this could be optimized...
 const _getBoundingBlocks = (state, ...blockIds) => {
   const construct = _getParentFromStore(blockIds[0], state);
+  if (!construct) {
+    return null;
+  }
   const depthMap = _getAllComponentsByDepth(construct.id, state);
   const idsToDepth = blockIds.reduce((acc, id) => Object.assign(acc, { [id]: depthMap[id] }), {});
   const highestLevel = blockIds.reduce((acc, id) => Math.min(acc, idsToDepth[id]), Number.MAX_VALUE);
@@ -214,6 +217,9 @@ export const blockGetRange = (...blockIds) => {
   return (dispatch, getState) => {
     const state = getState();
     const bounds = _getBoundingBlocks(state, ...blockIds);
+    if (!bounds) {
+      return null;
+    }
     const siblings = _getSiblings(bounds[0].id, state);
     const [boundStart, boundEnd] = bounds.map(boundBlock => siblings.findIndex(sibling => sibling.id === boundBlock.id));
     return siblings.slice(boundStart, boundEnd + 1);

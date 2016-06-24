@@ -3,6 +3,12 @@ import * as querying from '../data/querying';
 import makeEgfRollup from '../../data/egf_parts/project';
 import rollupWithConstruct from '../../src/utils/rollup/rollupWithConstruct';
 
+/*
+This file creates starting content for users
+
+NOTE - create instances using Block.classless and Project.classless - the server is expect JSON blobs that it can assign to, and instances of classes are frozen.
+ */
+
 //create the EGF project for them
 const createInitialData = (user) => {
   const egfRollup = makeEgfRollup();

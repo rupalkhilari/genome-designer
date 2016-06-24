@@ -135,6 +135,8 @@ def project_to_genbank(filename, project, allblocks):
         # Grab the original ID that came from genbank before if available, otherwise the GD Name as the name
         if "genbank" in block["metadata"] and "id" in block["metadata"]["genbank"]:
             genbank_id = block["metadata"]["genbank"]["id"]
+        elif "genbank" in block["metadata"] and "name" in block["metadata"]["genbank"]:
+            genbank_id = block["metadata"]["genbank"]["name"]
         else:
             genbank_id = "GC_DNA"
 
@@ -176,8 +178,12 @@ def project_to_genbank(filename, project, allblocks):
 
         if "description" in block["metadata"]:
             seq_obj.description = block["metadata"]["description"]
-        if "name" in block["metadata"]:
+        if "genbank" in block["metadata"] and "name" in block["metadata"]["genbank"]:
+            seq_obj.name = block["metadata"]["genbank"]["name"]
+        elif "name" in block["metadata"]:
             seq_obj.name = block["metadata"]["name"].replace(" ", "")[:5]
+        else:
+            seq_obj.name = "GC_DNA"
 
         convert_annotations(block, seq_obj)
 

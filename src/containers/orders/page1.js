@@ -129,7 +129,7 @@ export class Page1 extends Component {
               onChange={this.sequenceAssemblies}
               label="Sequence Assemblies"
               value={order.parameters.sequenceAssemblies}
-              disabled={true}
+              disabled={order.parameters.onePot}
             />
           </Row>
           <br/>

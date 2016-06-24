@@ -11,9 +11,6 @@
     height: 24rem;
   }
 
-  .menu-popup-blocker-visible {
-    margin-left: -15rem;
-  }
   select {
     font-size: var(--fontsize);
     height: 3rem;

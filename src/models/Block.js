@@ -151,11 +151,11 @@ export default class Block extends Instance {
     return this.mutate('projectId', projectId);
   }
 
-  getName(defaultName) {
+  getName(defaultName, defaultToBases) {
     // called many K per second, no es6 fluffy stuff in here.
     if (this.metadata.name) return this.metadata.name;
     if (this.rules.role) return this.getRole();
-    if (this.isFiller() && this.metadata.initialBases) return this.metadata.initialBases;
+    if ((!!defaultToBases || this.isFiller()) && this.metadata.initialBases) return this.metadata.initialBases;
     return defaultName || 'New ' + this.getType();
   }
 
@@ -297,11 +297,15 @@ export default class Block extends Instance {
    * @returns {Promise} Promise which resolves with the sequence value, or (resolves) with null if no sequence is associated.
    */
   getSequence(format = 'raw') {
-    const sequenceMd5 = this.sequence.md5;
-    if (!sequenceMd5) {
+    const { md5, download } = this.sequence;
+    if (!md5) {
+      if (typeof download === 'function') {
+        return download();
+      }
+
       return Promise.resolve(null);
     }
-    return getSequence(sequenceMd5, format);
+    return getSequence(md5, format);
   }
 
   /**

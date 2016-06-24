@@ -27,7 +27,10 @@ export default function BlockSource({ block, ...rest }) {
   return (<a className="BlockSource"
              href={url}
              key={url ? 'y' : 'n'}
-             target="_blank" {...rest}>{name}</a>);
+             target="_blank" {...rest}>
+    <span className="BlockSource-name">{name}</span>
+    {url && (<span className="BlockSource-icon"/>)}
+  </a>);
 }
 
 BlockSource.propTypes = {

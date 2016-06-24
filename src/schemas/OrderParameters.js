@@ -14,7 +14,7 @@ const fieldDefs = {
   sequenceAssemblies: [
     fields.bool(),
     'Whether to sequence all assemblies after production',
-    { scaffold : () => true },
+    { scaffold: () => false },
   ],
   permutations: [
     fields.number(),
