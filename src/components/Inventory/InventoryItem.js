@@ -5,7 +5,11 @@ import MouseTrap from '../../containers/graphics/mousetrap';
 import RoleSvg from '../RoleSvg';
 import BasePairCount from '../ui/BasePairCount';
 
-import { inspectorToggleVisibility, uiSetGrunt } from '../../actions/ui';
+import {
+  inspectorToggleVisibility,
+  uiSetGrunt,
+  uiSpin,
+ } from '../../actions/ui';
 import { focusForceBlocks } from '../../actions/focus';
 
 import '../../styles/InventoryItem.css';
@@ -34,6 +38,7 @@ export class InventoryItem extends Component {
     inspectorToggleVisibility: PropTypes.func.isRequired,
     focusForceBlocks: PropTypes.func.isRequired,
     uiSetGrunt: PropTypes.func.isRequired,
+    uiSpin: PropTypes.func.isRequired,
   };
 
   static defaultProps = {
@@ -72,7 +77,7 @@ export class InventoryItem extends Component {
       },
       onDropFailure: (error, target) => {
         this.props.uiSetGrunt(`There was an error creating a block for ${this.props.item.metadata.name}`);
-
+        this.props.uiSpin();
         if (this.props.onDropFailure) {
           return this.props.onDropFailure(error, target);
         }
@@ -149,4 +154,5 @@ export default connect((state) => {
   focusForceBlocks,
   inspectorToggleVisibility,
   uiSetGrunt,
+  uiSpin,
 })(InventoryItem);

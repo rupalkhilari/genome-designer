@@ -11,7 +11,7 @@ export default class OkCancel extends Component {
   static propTypes = {
     open: PropTypes.bool.isRequired,
     titleText: PropTypes.string.isRequired,
-    messageHTML: PropTypes.string.isRequired,
+    messageHTML: PropTypes.string,
     okText: PropTypes.string,
     cancelText: PropTypes.string,
     ok: PropTypes.func.isRequired,

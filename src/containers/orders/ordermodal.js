@@ -27,7 +27,7 @@ class OrderModal extends Component {
     projectId: PropTypes.string.isRequired,
     orderDetach: PropTypes.func.isRequired,
     orderSubmit: PropTypes.func.isRequired,
-    order: PropTypes.object.isRequired,
+    order: PropTypes.object,
   };
 
   state = {
