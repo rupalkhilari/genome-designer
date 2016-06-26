@@ -13,7 +13,7 @@ import '../../../src/styles/modalspinner.css';
 export default class ModalSpinner extends Component {
 
   static propTypes = {
-    open: PropTypes.number.isRequired,
+    open: PropTypes.number,
   };
 
   /*

@@ -31,6 +31,7 @@ export default class Menu extends Component {
       <div
         onMouseDown={this.onMouseDown.bind(this)}
         className={this.props.open ? 'menu-popup-blocker-visible' : 'menu-popup-blocker-hidden'}
+        style={this.props.style || {}}
         ref="blocker"
       >
         <div className="menu-popup-container" style={position}>

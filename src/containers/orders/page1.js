@@ -17,6 +17,17 @@ import OrderParameters from '../../schemas/OrderParameters';
 import '../../../src/styles/form.css';
 import '../../../src/styles/ordermodal.css';
 
+const assemblyOptions = [
+  'All in a single container',
+  'Each in an individual container',
+];
+
+const methodOptions = [
+  'Random Subset',
+  'Maximum Unique Set',
+];
+
+
 export class Page1 extends Component {
   static propTypes = {
     open: PropTypes.bool.isRequired,
@@ -32,18 +43,10 @@ export class Page1 extends Component {
     super();
     //todo - this should use a transaction + commit, not deboucne like this. See InputSimple
     this.labelChanged = debounce(value => this._labelChanged(value), 500, {leading: false, trailing: true});
-
-  }
-
-  assemblyOptions() {
-    return [
-      {value: true, label: 'All in a single container'},
-      {value: false, label: 'Each in an individual container'},
-    ];
   }
 
   assemblyContainerChanged = (newValue) => {
-    const onePot = newValue === true || newValue === 'true';
+    const onePot = newValue === assemblyOptions[0];
     this.props.orderSetParameters(this.props.order.id, {
       permutations: this.props.numberConstructs,
       combinatorialMethod: 'Random Subset',
@@ -55,19 +58,13 @@ export class Page1 extends Component {
     this.props.orderSetName(this.props.order.id, newLabel);
   };
 
-  //todo - debounce or only trigger on blur
-  numberOfAssembliesChanged = (newValue) => {
-    const total = parseInt(newValue, 10);
+  /**
+   * debounced for performance
+   */
+  numberOfAssembliesChanged = (total) => {
     this.props.orderSetParameters(this.props.order.id, {
-      permutations: Number.isInteger(total) ? Math.min(this.props.numberConstructs, Math.max(1, total)) : 1,
+      permutations: total,
     }, true);
-  };
-
-  methodOptions() {
-    //return ['Random Subset', 'Maximum Unique Set', 'All Combinations'].map(item => {
-    return ['Random Subset', 'Maximum Unique Set'].map(item => {
-      return {value: item, label: item};
-    });
   }
 
   methodChanged = (newMethod) => {
@@ -90,6 +87,14 @@ export class Page1 extends Component {
 
     const { order } = this.props;
 
+    let method = <label>All Combinations</label>;
+    if (!order.parameters.onePot) {
+      method = (<Selector
+                  value={order.parameters.combinatorialMethod}
+                  options={methodOptions}
+                  onChange={this.methodChanged}
+                />)
+    }
     return (
       <div className="order-page page1">
         <fieldset disabled={order.isSubmitted()}>
@@ -101,27 +106,23 @@ export class Page1 extends Component {
           </Row>
           <Row text="Assembly Containers:">
             <Selector
-              value={order.parameters.onePot}
-              options={this.assemblyOptions()}
-              disabled={false}
+              value={assemblyOptions[order.parameters.onePot ? 0 : 1]}
+              options={assemblyOptions}
               onChange={(val) => this.assemblyContainerChanged(val)}
             />
           </Row>
           <Row text="Number of assemblies:">
             <Permutations
               total={this.props.numberConstructs}
-              value={order.parameters.permutations}
+              value={this.props.order.parameters.permutations}
               editable={!order.parameters.onePot}
-              onChange={(val) => this.numberOfAssembliesChanged(val)}
+              onBlur={(val) => {
+                this.numberOfAssembliesChanged(val);
+              }}
             />
           </Row>
           <Row text="Combinatorial method:">
-            <Selector
-              value={order.parameters.combinatorialMethod}
-              options={this.methodOptions()}
-              onChange={this.methodChanged}
-              disabled={order.parameters.onePot || (!order.parameters.onePot && order.parameters.permutations === this.props.numberConstructs) }
-            />
+            {method}
           </Row>
           <Row text="After fabrication:">
             <Checkbox

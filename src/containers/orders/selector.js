@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import ReactDOM from 'react-dom';
 
 import '../../../src/styles/ordermodal.css';
 
@@ -10,22 +11,64 @@ export default class Selector extends Component {
     disabled: PropTypes.bool.isRequired,
   };
 
-  render() {
-    const options = this.props.options.map(option => {
-      return (
-        <option value={option.value}
-                key={option.label}>
-          {option.label}
-        </option>
-      );
+  state = {
+    menuOpen: false,
+  }
+
+  onClick = () => {
+
+  }
+
+  onShowMenu = () => {
+    this.setState({
+      menuOpen: true,
     });
+  }
+
+  closeMenu = () => {
+    this.setState({
+      menuOpen: false,
+    });
+  }
+
+  onMouseLeave = () => {
+    if (this.state.menuOpen) {
+      this.setState({menuOpen: false});
+    }
+  }
+
+  render() {
+    let menu = null;
+    if (this.state.menuOpen) {
+      const items = this.props.options.map(item => {
+        return (
+          <div
+            className="menu-item"
+            onClick={(evt) => {
+              evt.preventDefault();
+              evt.stopPropagation();
+              this.setState({menuOpen: false});
+              this.props.onChange(item);
+            }}
+          >{item}</div>
+        )
+      });
+      menu = (
+        <div className="selector-menu" children={items}/>
+      )
+    }
 
     return (
-      <select onChange={evt => {this.props.onChange(evt.target.value)}}
-              defaultValue={this.props.value}
-              disabled={this.props.disabled}>
-        {this.props.disabled ? null : options}
-      </select>
+      <div>
+        <div
+            className="dropdown"
+            onClick={this.onShowMenu}
+            onMouseLeave={this.onMouseLeave}
+          >{this.props.value}
+          {menu}
+        </div>
+        <div className="selector-arrow"/>
+      </div>
     );
   }
 }

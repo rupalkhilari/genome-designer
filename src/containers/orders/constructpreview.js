@@ -5,6 +5,7 @@ import SceneGraph2D from '../../containers/graphics/scenegraph2d/scenegraph2d';
 import Layout from '../../containers/graphics/views/layout';
 import { orderGenerateConstructs } from '../../actions/orders';
 import invariant from 'invariant';
+import UpDown from './updown';
 
 import '../../../src/styles/ordermodal.css';
 import '../../../src/styles/SceneGraphPage.css';
@@ -122,25 +123,28 @@ class ConstructPreview extends Component {
     this.constructs = props.orderGenerateConstructs(props.order.id);
   }
 
-  onChangeConstruct = (evt) => {
-    const index = parseInt(evt.target.value, 10);
-    this.setState({ index: Number.isInteger(index) ? Math.min(this.constructs.length, Math.max(1, index)) : 1 });
+  /**
+   * when the value is changed in the up down
+   */
+  onChangeConstruct = (index) => {
+    this.setState({index});
   };
 
   render() {
-    const label = `of ${this.constructs.length} combinations`;
+    const label = `of ${this.constructs ? this.constructs.length : 1} combinations`;
     return (
       <div className="preview">
-        <label>Reviewing assembly</label>
-        <input
-          className="input-updown"
-          type="number"
-          defaultValue="1"
-          min="1"
-          max={this.constructs.length}
-          onChange={this.onChangeConstruct}
-        />
-        <label>{label}</label>
+        <div className="top-row">
+          <label className="review">Reviewing assembly</label>
+          <UpDown
+            min={1}
+            max={this.constructs ? this.constructs.length : 1}
+            value={this.state.index}
+            enabled={this.constructs}
+            onChange={this.onChangeConstruct}
+          />
+          <label className="of">{label}</label>
+        </div>
         <div className="container">
           <div className="scenegraph"></div>
         </div>
