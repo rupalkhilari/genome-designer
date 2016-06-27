@@ -104,7 +104,7 @@ export class ConstructViewer extends Component {
       menuPosition: new Vector2D(),  // position for any popup menu,
       modalOpen: false,              // controls visibility of test modal window
     };
-    this.update = debounce(this._update.bind(this), 1);
+    this.update = debounce(this._update.bind(this), 16);
   }
 
   /**
