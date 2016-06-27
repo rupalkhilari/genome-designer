@@ -5,6 +5,7 @@ export default class CodeEditor extends Component {
 
   static propTypes = {
     callbackParent: PropTypes.func.isRequired,
+    value: PropTypes.string,
   };
   handleChange = (e) => {
     this.props.callbackParent(e.target.value);
@@ -20,7 +21,9 @@ export default class CodeEditor extends Component {
         <textarea id="editor"
                   style={textCodeStyle}
                   placeholder="F# code here"
-                  onChange={this.handleChange}/>
+                  onChange={this.handleChange}
+                  value={this.props.value}
+        />
     );
   }
 }

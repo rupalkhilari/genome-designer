@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import CodeEditor from './CodeEditor';
 import ResultViewer from './ResultViewer';
+import CodeEditorAce from './CodeEditorAce';
 import { sendToCompile } from '../code';
 
 // Integrated Code compiler UI
@@ -16,7 +17,7 @@ export default class CompilerLayout extends Component {
   }
 
   onEditorContentChange = (content) => {
-    this.setState({editorcontent: content});
+    this.setState({ editorcontent: content });
   };
 
   handleSubmit = (e) => {
@@ -44,7 +45,7 @@ export default class CompilerLayout extends Component {
 
     return (
         <div style={divStyle}>
-          <CodeEditor callbackParent={this.onEditorContentChange}/>
+          <CodeEditor callbackParent={this.onEditorContentChange} value={this.state.editorcontent}/>
           <ResultViewer resultContent={this.state.resultcontent}/>
           <input type="button" value="Submit" onClick={this.handleSubmit}/>
           <input type="button" value="Clear" onClick={this.clearContents}/>
@@ -52,3 +53,6 @@ export default class CompilerLayout extends Component {
     );
   }
 }
+//  <CodeEditorAce callbackParent={this.onEditorContentChange} />
+// <CodeEditor callbackParent={this.onEditorContentChange}/>
+//  <CodeEditorAce callbackParent={this.onEditorContentChange} value={this.state.editorcontent}/>
