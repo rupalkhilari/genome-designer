@@ -13,8 +13,10 @@ export default class CodeEditor extends Component {
 
   render() {
     const textCodeStyle = {
-      width: '50%',
-      height: '80%',
+      width: '100%',
+      height: '250px',
+      display: 'inline-block',
+      padding: '10px 0px 5px 10px',
     };
     // Find a better way to do this since it is definitely one.
     return (

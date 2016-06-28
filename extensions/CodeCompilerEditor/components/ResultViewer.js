@@ -17,8 +17,9 @@ export default class ResultViewer extends Component {
 
   render() {
     const textResultStyle = {
-      width: '50%',
-      height: '80%',
+      width: '100%',
+      height: '250px',
+      display: 'inline-block',
     };
 
     return (
