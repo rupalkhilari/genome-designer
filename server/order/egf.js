@@ -5,7 +5,7 @@ import { headersPost } from '../../src/middleware/headers';
 //testing
 import { fileWrite } from '../utils/fileSystem';
 
-const url = 'http://ec2-52-30-192-126.eu-west-1.compute.amazonaws.com:8010/api/order/';
+const url = 'http://synnp.org:8010/api/order/';
 
 const createOrderPayload = (order, user, constructList, blockMap) => {
   const constructsWithBlockComponents = constructList.map(blockIds => blockIds.map(blockId => blockMap[blockId]));
