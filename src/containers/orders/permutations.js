@@ -21,6 +21,9 @@ export default class Permutations extends Component {
   }
 
   onBlur = () => {
+    if (this.props.disabled) {
+      return;
+    }
     let value = parseInt(this.state.value);
     if (value < 1) {
       value = 1;
@@ -45,6 +48,7 @@ export default class Permutations extends Component {
       return (
         <div className="permutations">
           <input
+            disabled={this.props.disabled}
             onChange={this.onChange}
             value={this.state.value}
             onBlur={this.onBlur}

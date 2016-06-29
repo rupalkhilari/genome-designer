@@ -34,6 +34,9 @@ export default class UpDown extends Component {
    * The default behavior or moving the caret to start/end of text is prevented.
    */
   onKeyDown = (evt) => {
+    if (this.props.disabled) {
+      return;
+    }
     switch (evt.keyCode) {
       // up arrow
       case 38:
@@ -62,6 +65,9 @@ export default class UpDown extends Component {
    * valid numbers between min <= value <= max
    */
   onInputChanged = (evt) => {
+    if (this.props.disabled) {
+      return;
+    }
     const value = this.getValue();
     if (value !== this.props.value) {
       if (this.props.onChange) {
@@ -71,6 +77,9 @@ export default class UpDown extends Component {
   }
 
   onBlur = (evt) => {
+    if (this.props.disabled) {
+      return;
+    }
     const value = this.getValue();
     if (value !== this.props.value) {
       if (this.props.onBlur) {

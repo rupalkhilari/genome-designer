@@ -20,6 +20,9 @@ export default class Selector extends Component {
   }
 
   onShowMenu = () => {
+    if (this.props.disabled) {
+      return;
+    }
     this.setState({
       menuOpen: true,
     });
