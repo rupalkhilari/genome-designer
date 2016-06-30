@@ -71,6 +71,18 @@ class OrderModal extends Component {
     if (this.props.order.isSubmitted()) {
       this.props.uiShowOrderForm(false);
     } else {
+
+      // currently we allow a max of 10K combinations
+      const count = this.props.order.parameters.onePot
+      ? this.props.order.numberCombinations
+      : this.props.order.parameters.permutations;
+
+      console.log('PERM:', count);
+      if (count > 10000) {
+        this.setState({error: 'The maximum number of assemblies is 10,000'});
+        return;
+      }
+
       this.setState({error: null});
       this.props.uiSpin('Submitting order... Please wait.');
       this.props.projectSave(this.props.order.projectId)
