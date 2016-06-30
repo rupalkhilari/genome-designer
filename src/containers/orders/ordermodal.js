@@ -77,7 +77,6 @@ class OrderModal extends Component {
       ? this.props.order.numberCombinations
       : this.props.order.parameters.permutations;
 
-      console.log('PERM:', count);
       if (count > 10000) {
         this.setState({error: 'The maximum number of assemblies is 10,000'});
         return;
