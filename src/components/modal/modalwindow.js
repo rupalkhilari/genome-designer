@@ -43,7 +43,7 @@ export default class ModalWindow extends Component {
   render() {
     // only render contents if open
     const contents = this.props.open
-    ? (<div ref="window" className="modal-window">
+    ? (<div ref="window" className="modal-window no-vertical-scroll">
         {this.props.payload}
       </div>)
     : null;

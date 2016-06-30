@@ -35,13 +35,27 @@ class AboutForm extends Component {
                   <div>Genetic Constructor</div>
                 </div>
             </div>
-            <div className="text">
+            <div className="text no-vertical-scroll">
               <div className="heading">
-                © 2016 Autodesk, Inc. All rights reserved.
+                Copyright 2016 Autodesk,Inc.
               </div>
-              All use of this Service is subject to the terms and conditions of the A360 Terms of Service and Privacy Statement accepted upon access of this Service.
-              This service may incorporate or use background Autodesk technology components. For information about these components, click here:
-              <a target="_blank" href="http://www.autodesk.com/cloud-platform-components">&nbsp;www.autodesk.com/cloud-platform-components</a>
+              <span>
+              Licensed under the Apache License, Version 2.0 (the "License");
+              you may not use this file except in compliance with the License.
+              You may obtain a copy of the License at
+              </span>
+              <br/>
+              <br/>
+              <a target="_blank" href="http://www.apache.org/licenses/LICENSE-2.0">&nbsp;www.apache.org/licenses/LICENSE-2.0</a>
+              <br/>
+              <br/>
+              <span>
+              Unless required by applicable law or agreed to in writing, software
+              distributed under the License is distributed on an "AS IS" BASIS,
+              WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+              See the License for the specific language governing permissions and
+              limitations under the License.
+              </span>
               <div className="heading">
                 Trademarks
               </div>
