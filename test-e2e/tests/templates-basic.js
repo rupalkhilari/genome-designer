@@ -10,14 +10,13 @@ module.exports = {
     // maximize for graphical tests
     size(browser);
     homepageRegister(browser);
-    newProject(browser);
     myProjects(browser);
     browser
       .expect.element('[data-inventory~="project"]:nth-of-type(2)').text.to.equal('EGF Sample Templates');
     browser
       .click('[data-inventory~="project"]:nth-of-type(2)')
       .waitForElementPresent('[data-inventory~="template"]', 5000, 'expected all available templates to appear')
-      .pause(3000)
+      .pause(10000)
       .assert.countelements('[data-inventory~="template"]', 29)
       .assert.countelements('.construct-viewer', 29)
       .assert.countelements('[data-nodetype="block"]', 277)
