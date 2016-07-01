@@ -44,8 +44,8 @@ module.exports = {
       // click to expand
       //.click('.InventoryListGroup-heading')
       .pause(1000)
-      // expect to see 2 projects
-      .assert.countelements('[data-inventory~="project"]', 2)
+      // expect to see 3 projects
+      .assert.countelements('[data-inventory~="project"]', 3)
       // expand the 3rd project
       .click('[data-inventory~="project"]:nth-of-type(1) .Toggler')
       .click('[data-inventory~="project"]:nth-of-type(2) .Toggler')
