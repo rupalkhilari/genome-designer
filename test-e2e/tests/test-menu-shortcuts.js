@@ -16,9 +16,11 @@ module.exports = {
 
     browser
       .keys([browser.Keys.COMMAND, 'a'])
+      .pause(1000)
       .assert.countelements(".scenegraph-userinterface-selection", 6)
       // cut all selected blocks
       .keys([browser.Keys.NULL, browser.Keys.COMMAND, 'x'])
+      .pause(1000)
       // expect all selections and blocks to be removed
       .assert.countelements(".scenegraph-userinterface-selection", 0)
       .assert.countelements('[data-nodetype="block"]', 0)
