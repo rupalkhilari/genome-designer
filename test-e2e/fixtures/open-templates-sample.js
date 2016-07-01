@@ -1,5 +1,6 @@
 var myProjects = require('./myprojects.js');
 
+
 var openTemplatesSample = function(browser) {
   myProjects(browser);
   browser.elements('css selector', '[data-inventory~="project"]', function (resultValues) {
