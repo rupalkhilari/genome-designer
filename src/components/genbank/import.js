@@ -75,7 +75,7 @@ class ImportGenBankModal extends Component {
         processing: true,
       });
       this.props.uiSpin('Importing your file... Please wait');
-      const projectId = this.state.destination === 'current project' ? '/' + this.props.currentProjectId : '';
+      const projectId = this.state.destination === 'current project' ? this.props.currentProjectId : '';
       const file = this.state.files[0];
       importGenbankOrCSV(file, projectId)
         .then(projectId => {
