@@ -77,10 +77,9 @@ export default class Selector extends Component {
     }
 
     return (
-      <div>
+      <div onClick={this.onShowMenu} className="dropdown-container">
         <div
             className="dropdown"
-            onClick={this.onShowMenu}
             onMouseLeave={this.onMouseLeave}
           >{this.props.value}
           {menu}

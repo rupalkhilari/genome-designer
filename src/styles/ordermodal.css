@@ -26,16 +26,18 @@
     color: red !important;
   }
 
+  .dropdown-container {
+
+  }
+
   .dropdown {
     display: inline-block;
     position: relative;
     cursor: pointer;
     width: 20rem;
-    &:hover {
-      color: var(--colors-bluetext);
-    }
 
     .selector-menu {
+      width: 20rem;
       position: absolute;
       left: 0;
       top: 0;
@@ -46,7 +48,7 @@
       width: auto !important;
       background-color: white;
       .menu-item {
-        width: auto !important;
+        width: 20rem;
         white-space: nowrap;
         padding: 0.25rem;
       }
