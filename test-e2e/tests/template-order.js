@@ -10,7 +10,6 @@ module.exports = {
 
     size(browser);
     homepageRegister(browser);
-    newProject(browser);
     myProjects(browser);
     browser
       .expect.element('[data-inventory~="project"]:nth-of-type(2)').text.to.equal('EGF Sample Templates');
