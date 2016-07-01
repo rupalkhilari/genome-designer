@@ -189,8 +189,8 @@ export default class Layout {
     }
     // the node representing the parent block
     const parentNode = this.nodeFromElement(block.id);
-    // get the focused list for this block, or default to first one
-    let focusedOptionId = this.focusedOptions[block.id] || Object.keys(block.options)[0];
+    // get the focused list for this block
+    let focusedOptionId = this.focusedOptions[block.id];
     // get only the options that are enabled for this block
     const enabled = Object.keys(block.options).filter(opt => block.options[opt]);
     // if block list is empty add a single placeholder block
@@ -205,6 +205,7 @@ export default class Layout {
         });
     } else {
       // update all the list items
+      let focusedOptionRendered = false;
       enabled.forEach((blockId, index) => {
         // ensure we have a hash of list nodes for this block.
         let nodes = this.listNodes[block.id];
@@ -232,7 +233,16 @@ export default class Layout {
           listBlock,
           optionSelected: focusedOptionId === blockId,
         });
+        if (focusedOptionId === blockId) {
+          focusedOptionRendered = true;
+        }
       });
+      // if the enabled set of options does not contain the focused option
+      // then focus the first option. This will cause a re-render and would be
+      // better performed in the data store but here will do for now.
+      if (!focusedOptionRendered) {
+        this.constructViewer.optionSelected(block.id, enabled[0])
+      }
     }
   }
 
