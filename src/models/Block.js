@@ -350,7 +350,7 @@ export default class Block extends Instance {
         const updatedSequence = {
           md5: sequenceMd5,
           length: sequenceLength,
-          initialBases: sequence.substr(0, 5),
+          initialBases: sequence.substr(0, 3) + '...',
         };
 
         return this.merge({

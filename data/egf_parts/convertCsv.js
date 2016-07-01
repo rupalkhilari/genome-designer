@@ -148,7 +148,7 @@ export default function convertCsv(csvPath, isPartInput = 'true', outputPath) {
         sequence: {
           md5: sequenceMd5,
           length: sequence.length,
-          initialBases: sequence.substr(0, 5),
+          initialBases: sequence.substr(0, 3) + '...',
         },
       });
 
