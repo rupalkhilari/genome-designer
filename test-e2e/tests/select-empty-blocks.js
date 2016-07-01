@@ -6,12 +6,12 @@ var newProject = require('../fixtures/newproject');
 var newConstruct = require('../fixtures/newconstruct');
 var clickMainMenu = require('../fixtures/click-main-menu');
 var testProject = require('../fixtures/testproject');
+var size = require('../fixtures/size');
 
 module.exports = {
   'Test that we can select empty blocks from the edit menu' : function (browser) {
 
-    // maximize for graphical tests
-    browser.windowSize('current', 1200, 900);
+    size(browser);
     homepageRegister(browser);
     testProject(browser);
     clickMainMenu(browser, 2, 8);

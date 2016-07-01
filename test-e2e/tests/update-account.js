@@ -1,9 +1,11 @@
 var homepageRegister = require('../fixtures/homepage-register');
 var signout = require('../fixtures/signout');
 var signin = require('../fixtures/signin');
+var size = require('../fixtures/size');
 
 module.exports = {
   'Test account updating.' : function (browser) {
+    size(browser);
     // register via fixture and get credentials used
     var credentials = homepageRegister(browser);
     browser

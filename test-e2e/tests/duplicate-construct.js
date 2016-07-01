@@ -4,9 +4,12 @@ var testProject = require('../fixtures/testproject');
 var clickAt = require('../fixtures/clickAt');
 var rightClickAt = require('../fixtures/rightClickAt');
 var clickContextMenu = require('../fixtures/click-popmenu-nth-item.js');
+var size = require('../fixtures/size');
 
 module.exports = {
   'Test duplicating a construct/template via context menu on title' : function (browser) {
+
+    size(browser);
     homepageRegister(browser);
     testProject(browser);
     browser

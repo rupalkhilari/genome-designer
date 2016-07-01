@@ -6,12 +6,12 @@ var newProject = require('../fixtures/newproject');
 var newConstruct = require('../fixtures/newconstruct');
 var clickMainMenu = require('../fixtures/click-main-menu');
 var openInventory = require('../fixtures/open-inventory');
+var size = require('../fixtures/size');
 
 module.exports = {
   'Create a construct, save to inventory, drag out to create a new construct' : function (browser) {
 
-    // maximize for graphical tests
-    browser.windowSize('current', 1200, 1200);
+    size(browser);
     homepageRegister(browser);
     newProject(browser);
     openInventory(browser);

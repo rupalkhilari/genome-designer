@@ -7,10 +7,12 @@ var newConstruct = require('../fixtures/newconstruct');
 var clickMainMenu = require('../fixtures/click-main-menu');
 var http = require("http");
 var path = require('path');
-
+var size = require('../fixtures/size');
 module.exports = {
   'Import a genbank file as a project then export project as a genbank file' : function (browser) {
 
+    size(browser);
+    
     // register via fixture
     var credentials = homepageRegister(browser);
 

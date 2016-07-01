@@ -5,12 +5,13 @@ var dragFromTo = require('../fixtures/dragfromto');
 var newProject = require('../fixtures/newproject');
 var newConstruct = require('../fixtures/newconstruct');
 var openInventory = require('../fixtures/open-inventory');
+var size = require('../fixtures/size');
+
 
 module.exports = {
   'Test drag and drop on test project.' : function (browser) {
 
-    // maximize for graphical tests
-    browser.windowSize('current', 1200, 900);
+    size(browser);
     homepageRegister(browser);
 
     // create three new constructs

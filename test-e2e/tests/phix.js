@@ -7,11 +7,12 @@ var newConstruct = require('../fixtures/newconstruct');
 var clickMainMenu = require('../fixtures/click-main-menu');
 var http = require("http");
 var path = require('path');
+var size = require('../fixtures/size');
 
 module.exports = {
   'Import PHI-X virus' : function (browser) {
 
-    browser.windowSize('current', 1200, 900);
+    size(browser);
     homepageRegister(browser);
     newProject(browser);
 

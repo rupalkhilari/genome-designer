@@ -4,12 +4,12 @@ var signin = require('../fixtures/signin');
 var dragFromTo = require('../fixtures/dragfromto');
 var newProject = require('../fixtures/newproject');
 var newConstruct = require('../fixtures/newconstruct');
-
+var size = require('../fixtures/size');
 module.exports = {
   'Test that when creating a new project we get a new focused construct' : function (browser) {
 
     // maximize for graphical tests
-    browser.windowSize('current', 1200, 900);
+    size(browser);
     homepageRegister(browser);
     newProject(browser);
 

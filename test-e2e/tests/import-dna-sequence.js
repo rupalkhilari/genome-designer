@@ -8,12 +8,12 @@ var clickNthContextMenuItem = require('../fixtures/click-popmenu-nth-item');
 var openInventory = require('../fixtures/open-inventory');
 var clickMainMenu = require('../fixtures/click-main-menu');
 var newProject = require('../fixtures/newproject');
+var size = require('../fixtures/size');
 
 module.exports = {
   'Import a DNA sequence into a sketch block' : function (browser) {
 
-    // maximize for graphical tests
-    browser.windowSize('current', 1200, 900);
+    size(browser);
 
     // register via fixture
     var credentials = homepageRegister(browser);

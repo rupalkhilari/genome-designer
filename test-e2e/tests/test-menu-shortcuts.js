@@ -5,11 +5,12 @@ var dragFromTo = require('../fixtures/dragfromto');
 var newProject = require('../fixtures/newproject');
 var newConstruct = require('../fixtures/newconstruct');
 var testProject = require('../fixtures/testproject');
+var size = require('../fixtures/size');
 
 module.exports = {
   'Test menu shortcuts' : function (browser) {
 
-    browser.windowSize('current', 1200, 900);
+    size(browser);
     homepageRegister(browser);
     testProject(browser);
 

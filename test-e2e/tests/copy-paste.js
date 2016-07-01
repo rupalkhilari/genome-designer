@@ -5,12 +5,11 @@ var dragFromTo = require('../fixtures/dragfromto');
 var newProject = require('../fixtures/newproject');
 var newConstruct = require('../fixtures/newconstruct');
 var testProject = require('../fixtures/testproject');
+var size = require('../fixtures/size');
 
 module.exports = {
   'Test copy and paste via keyboard for nested test project' : function (browser) {
-
-    // maximize for graphical tests
-    browser.windowSize('current', 1200, 900);
+    size(browser);
 
     // register via fixture
     var credentials = homepageRegister(browser);

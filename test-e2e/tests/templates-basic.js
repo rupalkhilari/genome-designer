@@ -2,12 +2,13 @@ var homepageRegister = require('../fixtures/homepage-register');
 var openInventory = require('../fixtures/open-inventory');
 var newProject = require('../fixtures/newproject');
 var myProjects = require('../fixtures/myprojects');
+var size = require('../fixtures/size');
 
 module.exports = {
   'Verify all templates are available' : function (browser) {
 
     // maximize for graphical tests
-    browser.windowSize('current', 2000, 1100);
+    size(browser);
     homepageRegister(browser);
     newProject(browser);
     myProjects(browser);
