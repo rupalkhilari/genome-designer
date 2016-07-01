@@ -11,3 +11,4 @@ genome-designer:
     HOST_URL: http://genome-designer${AUTH_ENV_TAG}.bionano.autodesk.com
   command:
     npm run server-auth
+  log_driver: json-file
