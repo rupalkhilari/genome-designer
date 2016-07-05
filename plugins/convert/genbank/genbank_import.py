@@ -166,7 +166,7 @@ def create_child_block_from_feature(f, all_blocks, root_block, sequence):
                     pass
         child_block["metadata"]["start"] = start
         child_block["metadata"]["end"] = end - 1
-        child_block["sequence"]["length"] = end - start
+        child_block["sequence"]["length"] = len(child_block["sequence"]["sequence"])
         child_block["metadata"]["strand"] = strand
         child_block["metadata"]["genbank"]["type"] = f.type
 
@@ -295,7 +295,7 @@ def create_filler_blocks_for_holes(all_blocks, sequence):
                 filler_block["metadata"]["color"] = None
                 filler_block["metadata"]["start"] = current_position
                 filler_block["metadata"]["end"] = child["metadata"]["start"] - 1
-                filler_block["sequence"]["length"] = filler_block["metadata"]["end"] - filler_block["metadata"]["start"]
+                filler_block["sequence"]["length"] = len(filler_block["sequence"]["sequence"])
                 all_blocks[block_id] = filler_block
                 block["components"].insert(i, block_id)
             current_position = child["metadata"]["end"] + 1
@@ -307,7 +307,7 @@ def create_filler_blocks_for_holes(all_blocks, sequence):
             filler_block["metadata"]["color"] = None
             filler_block["metadata"]["start"] = current_position
             filler_block["metadata"]["end"] = block["metadata"]["end"]
-            filler_block["sequence"]["length"] = filler_block["metadata"]["end"] - filler_block["metadata"]["start"]
+            filler_block["sequence"]["length"] = len(filler_block["sequence"]["sequence"])
             all_blocks[block_id] = filler_block
             block["components"].insert(i + 1, block_id)
 
