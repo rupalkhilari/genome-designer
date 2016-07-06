@@ -6,12 +6,12 @@ var newProject = require('../fixtures/newproject');
 var newConstruct = require('../fixtures/newconstruct');
 var clickMainMenu = require('../fixtures/click-main-menu');
 var openInventory = require('../fixtures/open-inventory');
+var size = require('../fixtures/size');
 
 module.exports = {
   'Create a construct, save to inventory, drag out to create a new construct' : function (browser) {
 
-    // maximize for graphical tests
-    browser.windowSize('current', 1200, 1200);
+    size(browser);
     homepageRegister(browser);
     newProject(browser);
     openInventory(browser);
@@ -44,8 +44,8 @@ module.exports = {
       // click to expand
       //.click('.InventoryListGroup-heading')
       .pause(1000)
-      // expect to see 2 projects
-      .assert.countelements('[data-inventory~="project"]', 2)
+      // expect to see 3 projects
+      .assert.countelements('[data-inventory~="project"]', 3)
       // expand the 3rd project
       .click('[data-inventory~="project"]:nth-of-type(1) .Toggler')
       .click('[data-inventory~="project"]:nth-of-type(2) .Toggler')

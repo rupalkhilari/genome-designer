@@ -4,9 +4,11 @@ var newProject = require('../fixtures/newproject');
 var clickAt = require('../fixtures/clickAt');
 var rightClickAt = require('../fixtures/rightClickAt');
 var clickContextMenu = require('../fixtures/click-popmenu-nth-item.js');
+var size = require('../fixtures/size');
 
 module.exports = {
   'Test deleting a construct using construct menu in header' : function (browser) {
+    size(browser);
     homepageRegister(browser);
     newProject(browser);
 

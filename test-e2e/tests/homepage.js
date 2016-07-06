@@ -1,9 +1,9 @@
+var size = require('../fixtures/size');
 
 module.exports = {
   'Test homepage.' : function (browser) {
+    size(browser);
     browser
-      // specify size for image comparisons
-      .windowSize('current', 1200, 900)
       .url('http://localhost:3001/homepage')
       // wait for homepage to be present before starting
       .waitForElementPresent('.homepage', 5000, 'Expected homepage element to be present')

@@ -6,14 +6,10 @@ var newProject = require('../fixtures/newproject');
 var newConstruct = require('../fixtures/newconstruct');
 var openInventory = require('../fixtures/open-inventory');
 var testProject = require('../fixtures/testproject');
-
+var size = require('../fixtures/size');
 module.exports = {
   'Test that dropping on the project canvas creates a new construct.' : function (browser) {
-
-    // maximize for graphical tests
-    browser.windowSize('current', 1200, 900);
-
-    // register via fixture
+    size(browser);
     var credentials = homepageRegister(browser);
 
     // now we can go to the project page

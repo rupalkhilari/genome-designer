@@ -7,12 +7,12 @@ var newConstruct = require('../fixtures/newconstruct');
 var clickConstructTitle = require('../fixtures/click-construct-title');
 var openInventory = require('../fixtures/open-inventory');
 var openInspector = require('../fixtures/open-inspector');
+var size = require('../fixtures/size');
 
 module.exports = {
   'Test that when creating a new project we get a new focused construct' : function (browser) {
 
-    // maximize for graphical tests
-    browser.windowSize('current', 1200, 900);
+    size(browser);
 
     // register via fixture
     var credentials = homepageRegister(browser);

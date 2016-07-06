@@ -8,11 +8,11 @@ var newConstruct = require('../fixtures/newconstruct');
 var clickNthBlock = require('../fixtures/click-nth-block-bounds');
 var clickAt = require('../fixtures/clickAt');
 var openInventory = require('../fixtures/open-inventory');
+var size = require('../fixtures/size');
 
 module.exports = {
   'Test that you can shift/meta/fence select blocks' : function (browser) {
-
-    browser.windowSize('current', 1200, 900);
+    size(browser);
     homepageRegister(browser);
     testProject(browser);
 
@@ -41,6 +41,7 @@ module.exports = {
     // meta key select 1 block to toggle it
     browser.keys([browser.Keys.META]);
     clickNthBlock(browser, '.sceneGraph', 0);
+    browser.pause(1000)
     browser.assert.countelements(".scenegraph-userinterface-selection", 5);
 
       // click outside the blocks to deselect them all
@@ -48,7 +49,7 @@ module.exports = {
     browser.pause(1000);
     browser.assert.countelements(".scenegraph-userinterface-selection", 0);
 
-    dragRegion(browser, '.scenegraph-userinterface', 10, 10, 870, 160, 100);
+    dragRegion(browser, '.scenegraph-userinterface', 10, 10, 870, 80, 100);
     browser
       .waitForElementPresent('.scenegraph-userinterface-selection', 5000, 'expected selections')
       // ensure we have all elements selected

@@ -1,11 +1,14 @@
 var homepageRegister = require('../fixtures/homepage-register');
 var signout = require('../fixtures/signout');
 var signin = require('../fixtures/signin');
+var size = require('../fixtures/size');
+
 
 // NOTE: Doesn't check the full pathway since getting the email is impossible.
 // just that we can make the forms appear
 module.exports = {
   'Test forgot password and reset password form' : function (browser) {
+  size(browser);
   browser
     .url('http://localhost:3001/homepage/forgot')
     .waitForElementPresent('#forgot-form', 5000, 'Expected form to be present')
