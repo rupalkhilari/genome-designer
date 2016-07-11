@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react';
+import Block from '../../models/Block';
 import { connect } from 'react-redux';
 import { blockLoad, blockStash } from '../../actions/blocks';
 import { block as blockDragType } from '../../constants/DragTypes';
@@ -96,7 +97,7 @@ export class InventoryRoleMap extends Component {
 
     infoQuery('role', type)
       .then(blockMap => {
-        const blocks = Object.keys(blockMap).map(blockId => blockMap[blockId]);
+        const blocks = Object.keys(blockMap).map(blockId => new Block(blockMap[blockId]));
         this.setRoleType(type, blocks);
       });
   };
