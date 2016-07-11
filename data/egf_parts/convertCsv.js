@@ -55,12 +55,13 @@ const roleMap = {
 };
 
 //this version entirely removes the linkers
-//const trimSequence = (sequence, front = "5'-CGTCTCnNNNN".length, back = "NNNNnGAGACG-3'".length) => {
+//const trimSequence = (sequence, isAtStart = false, front = "5'-CGTCTCnNNNN".length, back = "NNNNnGAGACG-3'".length) => {
 
 //this version keeps the last 4 base pairs of overhang so linkers exist between the parts
-const trimSequence = (sequence, front = "5'-CGTCTCnNNNN".length, back = "nGAGACG-3'".length) => {
+const trimSequence = (sequence, isAtStart = false, front = "5'-CGTCTCnNNNN".length, back = "nGAGACG-3'".length) => {
   const len = sequence.length;
-  return sequence.substring(front, len - back);
+  const frontTrim = isAtStart ? front - 4 : front;
+  return sequence.substring(frontTrim, len - back);
 };
 
 const zip = (keys, vals) => keys.reduce(
@@ -146,7 +147,8 @@ export default function convertCsv(csvPath, isPartInput = 'true', outputPath) {
     //write sequences to /data/, update sequence field
     .then(parts => Promise.all(parts.map(part => {
       const untrimmed = part.sequence;
-      const sequence = trimSequence(untrimmed);
+      const isFirstPosition = part.metadata.egfPosition === '1' || part.metadata.egfPosition.substring(0, 2) === '1-';
+      const sequence = trimSequence(untrimmed, isFirstPosition);
       const sequenceMd5 = md5(sequence);
       const filePath = path.join(__dirname, './sequences', sequenceMd5);
       const updatedPart = Object.assign(part, {
