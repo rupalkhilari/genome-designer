@@ -86,6 +86,11 @@ export default class Block extends Instance {
    type checks
    ************/
 
+  //has components or list options
+  hasContents() {
+    return this.components.length || Object.keys(this.options).length;
+  }
+
   //isSpec() can't exist here, since dependent on children. use selector blockIsSpec instead.
 
   isConstruct() {

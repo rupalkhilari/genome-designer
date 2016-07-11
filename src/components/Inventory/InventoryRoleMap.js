@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import React, { Component, PropTypes } from 'react';
+import Block from '../../models/Block';
 import { connect } from 'react-redux';
 import { blockLoad, blockStash } from '../../actions/blocks';
 import { block as blockDragType } from '../../constants/DragTypes';
@@ -96,7 +97,7 @@ export class InventoryRoleMap extends Component {
 
     infoQuery('role', type)
       .then(blockMap => {
-        const blocks = Object.keys(blockMap).map(blockId => blockMap[blockId]);
+        const blocks = Object.keys(blockMap).map(blockId => new Block(blockMap[blockId]));
         this.setRoleType(type, blocks);
       });
   };
@@ -105,7 +106,7 @@ export class InventoryRoleMap extends Component {
     //get components if its a construct and add blocks to the store
     //note - this may be a very large query
     return this.props.blockLoad(item.id, item.projectId, true, true)
-      .then(() => item);
+      .then(() => item.setRule('hidden', false));
   };
 
   render() {
@@ -113,7 +114,7 @@ export class InventoryRoleMap extends Component {
 
     const content = loadingMap ?
       <Spinner /> :
-      Object.keys(typeMap).map(type => {
+      Object.keys(typeMap).sort().map(type => {
         const count = typeMap[type];
         const name = symbolMap[type] || type;
         const items = loadedTypes[type] || [];
