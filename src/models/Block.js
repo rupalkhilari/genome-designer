@@ -170,7 +170,7 @@ export default class Block extends Instance {
     // called many K per second, no es6 fluffy stuff in here.
     if (this.metadata.name) return this.metadata.name;
     if (this.rules.role) return this.getRole();
-    if ((!!defaultToBases || this.isFiller()) && this.metadata.initialBases) return this.metadata.initialBases;
+    if ((!!defaultToBases || this.isFiller()) && this.metadata.initialBases) return this.metadata.initialBases.substring(0, 3) + '...';
     return defaultName || 'New ' + this.getType();
   }
 
