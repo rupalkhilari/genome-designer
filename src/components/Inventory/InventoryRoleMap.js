@@ -105,7 +105,7 @@ export class InventoryRoleMap extends Component {
     //get components if its a construct and add blocks to the store
     //note - this may be a very large query
     return this.props.blockLoad(item.id, item.projectId, true, true)
-      .then(() => item);
+      .then(() => item.setRule('hidden', false));
   };
 
   render() {

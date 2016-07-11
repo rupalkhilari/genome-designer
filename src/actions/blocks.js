@@ -31,7 +31,7 @@ import { pauseAction, resumeAction } from '../store/pausableStore';
 export const blockLoad = (blockId, inputProjectId, withContents = false, skipIfContentsEmpty = false) => {
   return (dispatch, getState) => {
     const retrieved = getState().blocks[blockId];
-    if (skipIfContentsEmpty === true && retrieved && !retrieved.components.length && !Object.keys(retrieved.options).length) {
+    if (skipIfContentsEmpty === true && retrieved && !retrieved.hasContents()) {
       return Promise.resolve([retrieved]);
     }
 
