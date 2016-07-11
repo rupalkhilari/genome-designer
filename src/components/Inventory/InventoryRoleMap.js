@@ -114,7 +114,7 @@ export class InventoryRoleMap extends Component {
 
     const content = loadingMap ?
       <Spinner /> :
-      Object.keys(typeMap).map(type => {
+      Object.keys(typeMap).sort().map(type => {
         const count = typeMap[type];
         const name = symbolMap[type] || type;
         const items = loadedTypes[type] || [];
