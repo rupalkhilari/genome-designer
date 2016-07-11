@@ -68,6 +68,11 @@ class DNAImportForm extends Component {
         this.props.uiSetGrunt(`You cannot add sequence to a block with child components.`);
         return;
       }
+      this.setState({
+        inputValid: true,
+        validLength: 0,
+        sequence: null,        
+      });
     }
   }
 
