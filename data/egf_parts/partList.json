@@ -1,32 +1,29 @@
 [
   {
-    "id": "block-38e740db-8929-474a-92e4-c1c40c8e1aaa",
+    "id": "block-b47cc03f-31f3-4ad7-b8b6-79f0c8d84389",
     "parents": [],
     "metadata": {
       "name": "5'HA-hAAVS1",
       "description": "Homology arm for targeting of hAVVS1 locus",
       "authors": [],
+      "created": 1468258798254,
       "tags": {},
-      "color": "#B1CED0",
+      "color": "#6DA19C",
       "shortName": "",
       "egfPosition": "1"
     },
     "sequence": {
-      "md5": "448ef159d7280f71ffb2b2910b5c2ec5",
-      "length": 910,
+      "md5": "4be7f57bac29637629b31b289bee495d",
+      "length": 914,
       "annotations": [],
-      "initialBases": "gcacc"
+      "initialBases": "gcacct"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_1_5hahaavs1"
     },
     "rules": {
-      "list": false,
-      "role": "structural",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "structural"
     },
     "components": [],
     "options": {},
@@ -36,33 +33,30 @@
     }
   },
   {
-    "id": "block-ddf6b968-a4f4-4ddb-96f2-daaa29ad8106",
+    "id": "block-98e38350-bc61-47f5-a854-ea5eadde69b0",
     "parents": [],
     "metadata": {
       "name": "5'-ITR-PB",
       "description": "transposon-specific inverted terminal repeat sequences (ITRs) recognized by PiggyBac transposase",
       "authors": [],
+      "created": 1468258798255,
       "tags": {},
-      "color": "#65AAB1",
+      "color": "#B1CED0",
       "shortName": "",
       "egfPosition": "1"
     },
     "sequence": {
-      "md5": "de85e26aee9edc4f6033c5e7249fea9b",
-      "length": 350,
+      "md5": "371b64d88c8bd93ef508341b9e183cba",
+      "length": 354,
       "annotations": [],
-      "initialBases": "ACTAT"
+      "initialBases": "ACTATC"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_1_5itrpb"
     },
     "rules": {
-      "list": false,
-      "role": "structural",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "structural"
     },
     "components": [],
     "options": {},
@@ -72,33 +66,30 @@
     }
   },
   {
-    "id": "block-9a33395e-1a56-4fbc-ba7f-51cbc75dc414",
+    "id": "block-921fddcd-9c20-4cb1-acf6-39be9ece347e",
     "parents": [],
     "metadata": {
       "name": "Insulator_FB",
       "description": "FII/BEAD-A (FB) element. (STEMCELLS2008;26:3257–3266 ). FII/BEAD-A (FB) contains the minimal enhancer-blocking components of the chicken b-globin 5'HS4 insulator and a homologous region from the human T-cell receptor  BEAD-1 insulator ",
       "authors": [],
+      "created": 1468258798255,
       "tags": {},
-      "color": "#8EC78D",
+      "color": "#65AAB1",
       "shortName": "IS_FB",
       "egfPosition": "2"
     },
     "sequence": {
-      "md5": "29c089067c1d3baf030143274e69d2d1",
-      "length": 141,
+      "md5": "62fd32e4447a80de3dd80dbe7dd0bdad",
+      "length": 145,
       "annotations": [],
-      "initialBases": "GGCCG"
+      "initialBases": "GGCCGC"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_2_insulatorfb"
     },
     "rules": {
-      "list": false,
-      "role": "insulator",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "insulator"
     },
     "components": [],
     "options": {},
@@ -108,33 +99,30 @@
     }
   },
   {
-    "id": "block-032a6ab3-7809-4547-b3f4-8c0bfc5b011a",
+    "id": "block-5d3da0b1-d079-470b-ad6f-ef2141d80b7e",
     "parents": [],
     "metadata": {
       "name": "CAGp",
       "description": "strong synthetic promoter used to drive high levels of gene expression in mammalian expression vectors. constructed in the lab of Dr Jun-ichi Miyazaki [3][4] from the following sequences: (C) the cytomegalovirus (CMV) early enhancer element + (A) the promoter, the first exon and the first intron of chicken beta-actin gene + (G) the splice acceptor of the rabbit beta-globin gene. ",
       "authors": [],
+      "created": 1468258798256,
       "tags": {},
-      "color": "#53B15F",
+      "color": "#8EC78D",
       "shortName": "",
       "egfPosition": "3"
     },
     "sequence": {
-      "md5": "37e79e60986bfc41a253c0c63467da0a",
-      "length": 690,
+      "md5": "1e7f9009090a158f9c14aa8fb978d23b",
+      "length": 694,
       "annotations": [],
-      "initialBases": "GGATC"
+      "initialBases": "GGATCT"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_3_cagp"
     },
     "rules": {
-      "list": false,
-      "role": "promoter",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "promoter"
     },
     "components": [],
     "options": {},
@@ -144,33 +132,30 @@
     }
   },
   {
-    "id": "block-2ee8a7fa-168d-4b9d-9593-28ba90637163",
+    "id": "block-03406dc1-23b6-46da-8a1a-4b02f017667e",
     "parents": [],
     "metadata": {
       "name": "CMVp_Tet",
       "description": "Tetracycline repressible CMV promoter. CMV promoter with downstream operator sequences for TetRepressor.",
       "authors": [],
+      "created": 1468258798257,
       "tags": {},
-      "color": "#C5C4C1",
+      "color": "#53B15F",
       "shortName": "",
       "egfPosition": "3"
     },
     "sequence": {
-      "md5": "f6b4bc5ed816895e82b55f4445ade240",
-      "length": 627,
+      "md5": "25125e221164ec3ba801daca8f978bff",
+      "length": 631,
       "annotations": [],
-      "initialBases": "GACAT"
+      "initialBases": "GACATT"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_3_cmvptet"
     },
     "rules": {
-      "list": false,
-      "role": "promoter",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "promoter"
     },
     "components": [],
     "options": {},
@@ -180,33 +165,30 @@
     }
   },
   {
-    "id": "block-ec456a0d-9998-4888-b97c-17786c91e383",
+    "id": "block-67a5bd70-53ce-4973-a258-9ed6ce5a9d57",
     "parents": [],
     "metadata": {
       "name": "EF1ap",
       "description": "strong constitutive promoter derived from  endogenous promoter of human elongation factor EF-1α . EF-1 alpha is often useful in conditions where other promoters (such as CMV) have diminished activity or have been silenced (as in embryonic stem cells)",
       "authors": [],
+      "created": 1468258798259,
       "tags": {},
-      "color": "#A5A6A2",
+      "color": "#C5C4C1",
       "shortName": "",
       "egfPosition": "3"
     },
     "sequence": {
-      "md5": "5fa85522433d4cc8a68d6b6377131bdf",
-      "length": 1224,
+      "md5": "9cabf76ab63f5ad5e72beec90b407846",
+      "length": 1228,
       "annotations": [],
-      "initialBases": "GGCTC"
+      "initialBases": "GGCTCC"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_3_ef1ap"
     },
     "rules": {
-      "list": false,
-      "role": "promoter",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "promoter"
     },
     "components": [],
     "options": {},
@@ -216,33 +198,30 @@
     }
   },
   {
-    "id": "block-5dd46cdf-260e-433f-9542-3976bd0caa4a",
+    "id": "block-689428b0-f874-4ab1-8452-7eb7b78cea4b",
     "parents": [],
     "metadata": {
       "name": "TRE3Gp",
       "description": "3rd-generation Tet-responsive promoter that can be activated by binding of Tet-On® 3G",
       "authors": [],
+      "created": 1468258798259,
       "tags": {},
-      "color": "#e7aaa9",
+      "color": "#A5A6A2",
       "shortName": "",
       "egfPosition": "3"
     },
     "sequence": {
-      "md5": "eda2e401ecde95233b2250c932d6de9b",
-      "length": 396,
+      "md5": "7307a4b25d0ea1059e818d8aa798b9a9",
+      "length": 400,
       "annotations": [],
-      "initialBases": "TTATA"
+      "initialBases": "TTATAC"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_3_tre3gp"
     },
     "rules": {
-      "list": false,
-      "role": "promoter",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "promoter"
     },
     "components": [],
     "options": {},
@@ -252,33 +231,30 @@
     }
   },
   {
-    "id": "block-5e17535b-c320-4a85-a15f-5e3fd6467149",
+    "id": "block-eae4aa2d-d5d0-4c1f-b71f-643f71bc40e3",
     "parents": [],
     "metadata": {
       "name": "Kt-L7Ae - Weiss",
       "description": "L7Ae:K-turn system. K-t = K-turn, recognition sequence for RNA-binding protein L7Ae  . L7Ae then binds the K-turn motifs in the 5′ UTR of RNA and block the ribosome binding to the mRNA.    doi:10.1038/nbt.3301  ",
       "authors": [],
+      "created": 1468258798260,
       "tags": {},
-      "color": "#D28482",
+      "color": "#e7aaa9",
       "shortName": "Kt",
       "egfPosition": "4"
     },
     "sequence": {
-      "md5": "5236e8a0c708dbbce191925b189f4251",
-      "length": 32,
+      "md5": "9c842ece7f9a44724594f391ab92e42c",
+      "length": 36,
       "annotations": [],
-      "initialBases": "AAGGA"
+      "initialBases": "AAGGAT"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_4_ktl7aeweiss"
     },
     "rules": {
-      "list": false,
-      "role": "regulatory",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "regulatory"
     },
     "components": [],
     "options": {},
@@ -288,33 +264,30 @@
     }
   },
   {
-    "id": "block-27fa5b78-4ac9-4d11-96a4-05fd2d78d0b3",
+    "id": "block-d9e4167e-a28a-4107-97ad-f8ef76ec657d",
     "parents": [],
     "metadata": {
       "name": "attP - BxB1",
       "description": "attP site for BxB1 integrase",
       "authors": [],
+      "created": 1468258798261,
       "tags": {},
-      "color": "#E9BA9b",
+      "color": "#D28482",
       "shortName": "attP",
       "egfPosition": "5"
     },
     "sequence": {
-      "md5": "19e9faf646684e7e6bf4948a7971483e",
-      "length": 56,
+      "md5": "7091b210784a8ef02cab227e338d8a94",
+      "length": 60,
       "annotations": [],
-      "initialBases": "CTGTG"
+      "initialBases": "CTGTGG"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_5_attpbxb1"
     },
     "rules": {
-      "list": false,
-      "role": "restrictionSite",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "restrictionSite"
     },
     "components": [],
     "options": {},
@@ -324,33 +297,30 @@
     }
   },
   {
-    "id": "block-f28f7ec3-757c-4a6a-bf7f-9f4eae5ad51d",
+    "id": "block-67f4ca26-ff2b-4017-8cfd-8e662ad615fe",
     "parents": [],
     "metadata": {
       "name": "K1-K1 -L7Ae",
       "description": "L7Ae:K-turn system. K = K-turn, recognition sequence for RNA-binding protein L7Ae  . L7Ae then binds the K-turn motifs in the 5′ UTR of RNA and block the ribosome binding to the mRNA.   ",
       "authors": [],
+      "created": 1468258798262,
       "tags": {},
-      "color": "#efac7e",
+      "color": "#E9BA9b",
       "shortName": "K1",
       "egfPosition": "5"
     },
     "sequence": {
-      "md5": "c6c155263ed9438f3d806b12991f856f",
-      "length": 71,
+      "md5": "fa619182f3fe5a15145e0f3489c73ce9",
+      "length": 75,
       "annotations": [],
-      "initialBases": "CAAAC"
+      "initialBases": "CAAACA"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_5_k1k1l7ae"
     },
     "rules": {
-      "list": false,
-      "role": "regulatory",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "regulatory"
     },
     "components": [],
     "options": {},
@@ -360,33 +330,30 @@
     }
   },
   {
-    "id": "block-cb38a45c-4400-4347-bc4d-83222a228e5f",
+    "id": "block-34bb6411-24b5-48a1-b685-bcb0e48d7a88",
     "parents": [],
     "metadata": {
       "name": "Kt-Kt -L7Ae-Weiss",
       "description": "L7Ae:K-turn system. K-t = K-turn, recognition sequence for RNA-binding protein L7Ae  . L7Ae then binds the K-turn motifs in the 5′ UTR of RNA and block the ribosome binding to the mRNA.    doi:10.1038/nbt.3301  ",
       "authors": [],
+      "created": 1468258798263,
       "tags": {},
-      "color": "#EFD79A",
+      "color": "#efac7e",
       "shortName": "Kt-Kt",
       "egfPosition": "5"
     },
     "sequence": {
-      "md5": "c6f2208c6ff5201c10c791c2d31ca300",
-      "length": 83,
+      "md5": "82b6207d770169a295db5c2ad2736770",
+      "length": 87,
       "annotations": [],
-      "initialBases": "CAAAC"
+      "initialBases": "CAAACA"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_5_ktktl7aeweiss"
     },
     "rules": {
-      "list": false,
-      "role": "regulatory",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "regulatory"
     },
     "components": [],
     "options": {},
@@ -396,33 +363,30 @@
     }
   },
   {
-    "id": "block-9f6ae419-3db2-440f-815c-ed57f9eb717a",
+    "id": "block-e9765ac6-90b8-4a02-8d46-966b8cd35b18",
     "parents": [],
     "metadata": {
       "name": "ATG-BoxC (L7Ae)",
       "description": "BoxC recognized by RNA binding protein L7Ae.  L7Ae then binds theBoxC motif placed after the ATG and block translation of the CDS. dOI: 10.1038/nCHeMBIO.273",
       "authors": [],
+      "created": 1468258798264,
       "tags": {},
-      "color": "#F1D26C",
+      "color": "#EFD79A",
       "shortName": "",
       "egfPosition": "6"
     },
     "sequence": {
-      "md5": "b16ab31d4a7454f057dbee7ba73108f6",
-      "length": 73,
+      "md5": "37d06dd7215f9bb2ac96390d57a31ece",
+      "length": 77,
       "annotations": [],
-      "initialBases": "AACCG"
+      "initialBases": "AACCGT"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_6_atgboxcl7ae"
     },
     "rules": {
-      "list": false,
-      "role": "regulatory",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "regulatory"
     },
     "components": [],
     "options": {},
@@ -432,33 +396,30 @@
     }
   },
   {
-    "id": "block-ac92f4c2-6c93-43f6-a4c2-80e1410405cd",
+    "id": "block-37474e5b-8c42-4c64-afc3-8f8ca73d580a",
     "parents": [],
     "metadata": {
       "name": "Kozak_ATG",
       "description": "Classical kozak sequence",
       "authors": [],
+      "created": 1468258798265,
       "tags": {},
-      "color": "#E4E480",
+      "color": "#F1D26C",
       "shortName": "Kz_1",
       "egfPosition": "6"
     },
     "sequence": {
-      "md5": "fd50c5c574310379f9d9322901f91685",
-      "length": 43,
+      "md5": "a66bb8ddcab5a3f8b14e343e711b0890",
+      "length": 47,
       "annotations": [],
-      "initialBases": "AACCG"
+      "initialBases": "AACCGT"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_6_kozakatg"
     },
     "rules": {
-      "list": false,
-      "role": "cds",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "cds"
     },
     "components": [],
     "options": {},
@@ -468,33 +429,30 @@
     }
   },
   {
-    "id": "block-0ab9f775-ed5c-4795-9e33-1d91fb91f2a2",
+    "id": "block-2b3a8d9e-bfc0-4049-b795-ceea6ddaf917",
     "parents": [],
     "metadata": {
       "name": "Nt-IgKL sequence",
       "description": "N-terminal leader sequence from mouse immunoglobulin κ light chain. Peptide tag that targets the protein to the secretion pathway for protein secretion",
       "authors": [],
+      "created": 1468258798266,
       "tags": {},
-      "color": "#D3D34F",
+      "color": "#E4E480",
       "shortName": "IgKL",
       "egfPosition": "6"
     },
     "sequence": {
-      "md5": "bca44fc45cfe313bbaaa783d7b281e56",
-      "length": 73,
+      "md5": "26063b964966727d6e2607e43369d6b6",
+      "length": 77,
       "annotations": [],
-      "initialBases": "CCGCC"
+      "initialBases": "CCGCCA"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_6_ntigklsequence"
     },
     "rules": {
-      "list": false,
-      "role": "cds",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "cds"
     },
     "components": [],
     "options": {},
@@ -504,33 +462,30 @@
     }
   },
   {
-    "id": "block-8b9f56ef-812f-47c4-8503-4c07aeae5fe2",
+    "id": "block-2407d6b9-bb6a-4e14-97df-6ee20639533a",
     "parents": [],
     "metadata": {
       "name": "Nt-MLS",
       "description": "N-Terminal mitochondrial leader sequence. Peptide tag that targets the protein to the mitochondria",
       "authors": [],
+      "created": 1468258798267,
       "tags": {},
-      "color": "#9CC6C0",
+      "color": "#D3D34F",
       "shortName": "MLS",
       "egfPosition": "6"
     },
     "sequence": {
-      "md5": "1f807b6e6e39ebb2ebdbfaff3ab6aff9",
-      "length": 97,
+      "md5": "717c1ca96a4486e8079b431f6eac3a7d",
+      "length": 101,
       "annotations": [],
-      "initialBases": "CCGCC"
+      "initialBases": "CCGCCA"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_6_ntmls"
     },
     "rules": {
-      "list": false,
-      "role": "cds",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "cds"
     },
     "components": [],
     "options": {},
@@ -540,33 +495,30 @@
     }
   },
   {
-    "id": "block-c557776d-7ced-42e7-9163-db9c27395467",
+    "id": "block-68e3fe58-cfce-40a1-92e4-8bb7cd7e08a5",
     "parents": [],
     "metadata": {
       "name": "Nt-myristoylation signal",
       "description": "N-Terminal myristoylation signal. N-myristoylation signal from Src Kinase - fusion proteins are targeted to and serve as markers of the plasma membrane. Anchors protein to the membrane ( Genesis. 2006 April ; 44(4): 202–218. doi:10.1002/dvg.20203.)",
       "authors": [],
+      "created": 1468258798267,
       "tags": {},
-      "color": "#6DA19C",
+      "color": "#9CC6C0",
       "shortName": "",
       "egfPosition": "6"
     },
     "sequence": {
-      "md5": "713932335ac562b4417c065ae0fc8859",
-      "length": 52,
+      "md5": "61602b0c4f2f346286c3925296adb88a",
+      "length": 56,
       "annotations": [],
-      "initialBases": "CCGCC"
+      "initialBases": "CCGCCA"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_6_ntmyristoylationsignal"
     },
     "rules": {
-      "list": false,
-      "role": "cds",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "cds"
     },
     "components": [],
     "options": {},
@@ -576,33 +528,30 @@
     }
   },
   {
-    "id": "block-22c453b6-414f-4fb2-83f2-d2fa91f16624",
+    "id": "block-1425b1a3-b439-4819-884f-0c2143803881",
     "parents": [],
     "metadata": {
       "name": "Nt-Palmytolination sequence",
       "description": "N-terminal GAP43-palmitoylation sequence. Petide tag for targeting the protein to the plasma membrane ",
       "authors": [],
+      "created": 1468258798268,
       "tags": {},
-      "color": "#B1CED0",
+      "color": "#6DA19C",
       "shortName": "Pal",
       "egfPosition": "6"
     },
     "sequence": {
-      "md5": "6541c46ea9604f37b6d9150f08a98650",
-      "length": 70,
+      "md5": "f7bbc8a4dbc09a7a4ffde640aa574e13",
+      "length": 74,
       "annotations": [],
-      "initialBases": "CCGCC"
+      "initialBases": "CCGCCA"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_6_ntpalmytolinationsequence"
     },
     "rules": {
-      "list": false,
-      "role": "cds",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "cds"
     },
     "components": [],
     "options": {},
@@ -612,33 +561,30 @@
     }
   },
   {
-    "id": "block-a3654d42-b90b-4dab-969d-f6459fe32064",
+    "id": "block-8912f240-9e3d-4539-9c42-5ab87b390b3e",
     "parents": [],
     "metadata": {
       "name": "Nt-SV40-NLS",
       "description": "N-terminal nuclear localization signal of SV40 large T antigen. Peptide tag for targeting the protein to the nucleus ",
       "authors": [],
+      "created": 1468258798269,
       "tags": {},
-      "color": "#65AAB1",
+      "color": "#B1CED0",
       "shortName": "SV40-NLS",
       "egfPosition": "6"
     },
     "sequence": {
-      "md5": "db0702badb02a63b1b19da15a1261403",
-      "length": 34,
+      "md5": "711f14ad93961a2f1ec110258c09d851",
+      "length": 38,
       "annotations": [],
-      "initialBases": "CCGCC"
+      "initialBases": "CCGCCA"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_6_ntsv40nls"
     },
     "rules": {
-      "list": false,
-      "role": "cds",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "cds"
     },
     "components": [],
     "options": {},
@@ -648,33 +594,30 @@
     }
   },
   {
-    "id": "block-19c68a6b-bfae-4349-9ef0-5e231b41f67a",
+    "id": "block-3fd35568-cc8f-4283-88e6-67a2a990e44c",
     "parents": [],
     "metadata": {
       "name": "3X-FLAG",
       "description": "N-t 3xFLAG. 3XFLAG is hydrophilic, contains an Enterokinase cleavage site, and is relatively small. Therefore, the risk of altering protein function, blocking other epitopes or decreasing solubility is minimized. In cases of low-level expression, 3xFLAG is ideal",
       "authors": [],
+      "created": 1468258798270,
       "tags": {},
-      "color": "#8EC78D",
+      "color": "#65AAB1",
       "shortName": "3X-FLAG",
       "egfPosition": "6"
     },
     "sequence": {
-      "md5": "02d289cc4e8f840e5dc7acc2851f2b32",
-      "length": 79,
+      "md5": "83ffd4a725ae00af7e68632eac325542",
+      "length": 83,
       "annotations": [],
-      "initialBases": "CCGCC"
+      "initialBases": "CCGCCA"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_6_3xflag"
     },
     "rules": {
-      "list": false,
-      "role": "cds",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "cds"
     },
     "components": [],
     "options": {},
@@ -684,33 +627,30 @@
     }
   },
   {
-    "id": "block-93fc4767-4c89-439c-9d3a-8985ce27b648",
+    "id": "block-12dc8d7c-1784-4052-a650-46a8e393dd7b",
     "parents": [],
     "metadata": {
       "name": "BxB1",
       "description": "BxB1 Serine integrase. Phage-encoded serine integrases (Xu et al. BMC Biotechnology 2013, 13:87)",
       "authors": [],
+      "created": 1468258798270,
       "tags": {},
-      "color": "#53B15F",
+      "color": "#8EC78D",
       "shortName": "",
       "egfPosition": "7"
     },
     "sequence": {
-      "md5": "30dfda0c8d0722536397e65c79c2863c",
-      "length": 1499,
+      "md5": "220f04ade7537a29f9e9656c82ee0669",
+      "length": 1503,
       "annotations": [],
-      "initialBases": "AGAGC"
+      "initialBases": "AGAGCA"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_7_bxb1"
     },
     "rules": {
-      "list": false,
-      "role": "restrictionSite",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "restrictionSite"
     },
     "components": [],
     "options": {},
@@ -720,33 +660,30 @@
     }
   },
   {
-    "id": "block-3482e4a1-4569-49f5-a88c-d36676f653d2",
+    "id": "block-0defcb83-269b-480d-b6d1-174441401ea5",
     "parents": [],
     "metadata": {
       "name": "L7Ae - Weiss",
       "description": "ribosomal protein L7Ae of Archaeoglobus fulgidus, which binds tightly to the K-turn RNA motif.  It can be used to inhibit tranlsation when Kt is placed in 5'UTR of a mRNA. doi:10.1038/nbt.3301",
       "authors": [],
+      "created": 1468258798271,
       "tags": {},
-      "color": "#C5C4C1",
+      "color": "#53B15F",
       "shortName": "L7Ae",
       "egfPosition": "7"
     },
     "sequence": {
-      "md5": "d986ca08309abc03888ff03dd72931ee",
-      "length": 356,
+      "md5": "812476536ee079581f057f6ae2a547af",
+      "length": 360,
       "annotations": [],
-      "initialBases": "TACGT"
+      "initialBases": "TACGTG"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_7_l7aeweiss"
     },
     "rules": {
-      "list": false,
-      "role": "cds",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "cds"
     },
     "components": [],
     "options": {},
@@ -756,33 +693,30 @@
     }
   },
   {
-    "id": "block-4dc39f9d-84b9-4402-8d83-ed9201e19ffd",
+    "id": "block-5d7ffb42-385b-40cf-b00c-e682a40dd6a4",
     "parents": [],
     "metadata": {
       "name": "L7Ae ",
       "description": "ribosomal protein L7Ae of Archaeoglobus fulgidus, which binds tightly to the K-turn RNA motif.  It can be used to inhibit tranlsation when Kt is placed in 5'UTR of a mRNA. doi:10.1038/nbt.3301",
       "authors": [],
+      "created": 1468258798272,
       "tags": {},
-      "color": "#A5A6A2",
+      "color": "#C5C4C1",
       "shortName": "",
       "egfPosition": "7"
     },
     "sequence": {
-      "md5": "bfab01e0f3b129b9a5839978d044e196",
-      "length": 596,
+      "md5": "a6067da5c19247fa57d6010d4a55959c",
+      "length": 600,
       "annotations": [],
-      "initialBases": "AGCCC"
+      "initialBases": "AGCCCC"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_7_l7ae"
     },
     "rules": {
-      "list": false,
-      "role": "cds",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "cds"
     },
     "components": [],
     "options": {},
@@ -792,33 +726,30 @@
     }
   },
   {
-    "id": "block-f8a667ea-698e-435e-aaa5-e1f6cbac400b",
+    "id": "block-bd1340c3-a1c7-4bd7-a489-8336968f372d",
     "parents": [],
     "metadata": {
       "name": "mKate2",
       "description": "Fluorescent reporter - Far red - λex (nm) = 588, λem (nm) = 633 doi: 10.1042/bj20081949",
       "authors": [],
+      "created": 1468258798273,
       "tags": {},
-      "color": "#e7aaa9",
+      "color": "#A5A6A2",
       "shortName": "mK2",
       "egfPosition": "7"
     },
     "sequence": {
-      "md5": "e3cfbc17fcb822d5aa4096c43cb8c2ba",
-      "length": 695,
+      "md5": "a990b23a7d042b3319a754cadd2be51b",
+      "length": 699,
       "annotations": [],
-      "initialBases": "gtgag"
+      "initialBases": "gtgagc"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_7_mkate2"
     },
     "rules": {
-      "list": false,
-      "role": "reporter",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "reporter"
     },
     "components": [],
     "options": {},
@@ -828,33 +759,30 @@
     }
   },
   {
-    "id": "block-54cafe39-855b-40ad-9ea5-56a812db5744",
+    "id": "block-55b8fe94-b412-4a3e-b114-75237d42deb7",
     "parents": [],
     "metadata": {
       "name": "mNeoGreen",
       "description": "Fluorescent reporter - Green - λex (nm) = 506 λem (nm) = 517  . doi: 10.1038/nmeth.2413",
       "authors": [],
+      "created": 1468258798273,
       "tags": {},
-      "color": "#D28482",
+      "color": "#e7aaa9",
       "shortName": "mNG",
       "egfPosition": "7"
     },
     "sequence": {
-      "md5": "a4ed866adbe252629cabf886e7ac2bb1",
-      "length": 707,
+      "md5": "9b9e0621ec7db148ed59cbe282bc072d",
+      "length": 711,
       "annotations": [],
-      "initialBases": "GTGAG"
+      "initialBases": "GTGAGC"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_7_mneogreen"
     },
     "rules": {
-      "list": false,
-      "role": "reporter",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "reporter"
     },
     "components": [],
     "options": {},
@@ -864,33 +792,30 @@
     }
   },
   {
-    "id": "block-67b39ee9-d1db-4f8a-ae53-bb9d4de009b5",
+    "id": "block-1d08987a-57e3-41a3-a417-efbb99ea07fa",
     "parents": [],
     "metadata": {
       "name": "mRuby2",
       "description": "Fluorescent reporter - Red - λex (nm) = 559 λem (nm) = 600  . doi: 10.1038/nmeth.2171",
       "authors": [],
+      "created": 1468258798274,
       "tags": {},
-      "color": "#E9BA9b",
+      "color": "#D28482",
       "shortName": "mR2",
       "egfPosition": "7"
     },
     "sequence": {
-      "md5": "0cb8424ff9169cb5aa57c62f6f306b85",
-      "length": 710,
+      "md5": "1d90c400f21d51a8c5bd766e2eaf8a99",
+      "length": 714,
       "annotations": [],
-      "initialBases": "GTGTC"
+      "initialBases": "GTGTCT"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_7_mruby2"
     },
     "rules": {
-      "list": false,
-      "role": "reporter",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "reporter"
     },
     "components": [],
     "options": {},
@@ -900,33 +825,30 @@
     }
   },
   {
-    "id": "block-ef3ee18c-3ab3-4a1c-9ffc-dc9808a871cc",
+    "id": "block-6cc9d74e-3d73-4960-8910-bd41ca9db1a2",
     "parents": [],
     "metadata": {
       "name": "mTagBFP2",
       "description": "Fluorescent reporter - Blue - λex (nm) = 399 λem (nm) = 454  . doi: 10.1371/journal.pone.0028674",
       "authors": [],
+      "created": 1468258798275,
       "tags": {},
-      "color": "#efac7e",
+      "color": "#E9BA9b",
       "shortName": "mBP2",
       "egfPosition": "7"
     },
     "sequence": {
-      "md5": "c5c01775c9ad2d93e78e64ee87fe6e0e",
-      "length": 710,
+      "md5": "deaea4d130dcebc59fca4f462037daf3",
+      "length": 714,
       "annotations": [],
-      "initialBases": "GTGTC"
+      "initialBases": "GTGTCT"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_7_mtagbfp2"
     },
     "rules": {
-      "list": false,
-      "role": "reporter",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "reporter"
     },
     "components": [],
     "options": {},
@@ -936,33 +858,30 @@
     }
   },
   {
-    "id": "block-91e0d59f-f376-441f-9652-af0a47511923",
+    "id": "block-c4959a3c-35e0-4d5f-b610-eb202cbbb5b1",
     "parents": [],
     "metadata": {
       "name": "Fyrefly Luciferase ",
       "description": "Reporter gene encoding for Fyreply luciferase. Bioluminescent imaging  is a sensitive and versatile tool that uses luciferase enzyme as an imaging reporter",
       "authors": [],
+      "created": 1468258798275,
       "tags": {},
-      "color": "#EFD79A",
+      "color": "#efac7e",
       "shortName": "LCF",
       "egfPosition": "7"
     },
     "sequence": {
-      "md5": "f94f29254143e9742e33daba6f0c6eb9",
-      "length": 1649,
+      "md5": "6e49d96bd65e1a611fbe5137bf452dc2",
+      "length": 1653,
       "annotations": [],
-      "initialBases": "GAGGA"
+      "initialBases": "GAGGAC"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_7_fyreflyluciferase"
     },
     "rules": {
-      "list": false,
-      "role": "reporter",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "reporter"
     },
     "components": [],
     "options": {},
@@ -972,33 +891,30 @@
     }
   },
   {
-    "id": "block-d151e835-3133-46b4-8cba-d49a944b6382",
+    "id": "block-281c3abb-1308-4da5-955a-3e6248a7f60c",
     "parents": [],
     "metadata": {
       "name": "Linker 1",
       "description": "Flexible peptide linker: SGLRSGSGGGSASGGSG  . PROTEIN SCIENCE 2013 VOL 22:153—167",
       "authors": [],
+      "created": 1468258798276,
       "tags": {},
-      "color": "#F1D26C",
+      "color": "#EFD79A",
       "shortName": "LK-1",
       "egfPosition": "8"
     },
     "sequence": {
-      "md5": "0f9ce0a38e72603bef4d9747a7df9f1c",
-      "length": 51,
+      "md5": "e0d2e61c73d8f44d66a8a411f886ea42",
+      "length": 55,
       "annotations": [],
-      "initialBases": "TCTGG"
+      "initialBases": "TCTGGA"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_8_linker1"
     },
     "rules": {
-      "list": false,
-      "role": "structural",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "structural"
     },
     "components": [],
     "options": {},
@@ -1008,33 +924,30 @@
     }
   },
   {
-    "id": "block-42f26558-0af1-4332-b974-0dc6a4f13840",
+    "id": "block-aa35d736-21e5-4f2c-a8a1-d3c7ca7ce47a",
     "parents": [],
     "metadata": {
       "name": "Linker 2",
       "description": "The linker sequence avoid large hydrophobic residues to maintain good solubility in aque- ous solutions. This linker provided similar performance as a longer (GGGGS)4 linker. One advantage of this linker over the (GGGGS)4 linker is that it did not have high homologous repeats in its DNA coding sequence.   Nat. Biotechnol. 17 (1999) 691–695.",
       "authors": [],
+      "created": 1468258798277,
       "tags": {},
-      "color": "#E4E480",
+      "color": "#F1D26C",
       "shortName": "LK-2",
       "egfPosition": "8"
     },
     "sequence": {
-      "md5": "2eae97c75ac6f79d27ce7bbf0bfbf347",
-      "length": 36,
+      "md5": "ea45fc295348406e890983bdee499fca",
+      "length": 40,
       "annotations": [],
-      "initialBases": "GGCAG"
+      "initialBases": "GGCAGC"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_8_linker2"
     },
     "rules": {
-      "list": false,
-      "role": "structural",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "structural"
     },
     "components": [],
     "options": {},
@@ -1044,33 +957,30 @@
     }
   },
   {
-    "id": "block-5056079f-3b25-45ab-b90a-1c4e723c6896",
+    "id": "block-c2c33c2b-23f2-4459-bf04-6d77ec2ffeda",
     "parents": [],
     "metadata": {
       "name": "p2A-Porcine teschovirus-1 ",
       "description": "‘self-cleaving’ 2A peptide. Nat. Biotechnol. (2004) 22, 589–594",
       "authors": [],
+      "created": 1468258798278,
       "tags": {},
-      "color": "#D3D34F",
+      "color": "#E4E480",
       "shortName": "p2A",
       "egfPosition": "8"
     },
     "sequence": {
-      "md5": "a3eee2c4d1ccfcfeff0264b998fa4bda",
-      "length": 57,
+      "md5": "addf9a4e126430bdb9ae5f4eabef0cd5",
+      "length": 61,
       "annotations": [],
-      "initialBases": "GCTAC"
+      "initialBases": "GCTACT"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_8_p2aporcineteschovirus1"
     },
     "rules": {
-      "list": false,
-      "role": "structural",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "structural"
     },
     "components": [],
     "options": {},
@@ -1080,33 +990,30 @@
     }
   },
   {
-    "id": "block-551eebcf-93b1-429e-8409-22feb9548ab6",
+    "id": "block-f6fddc7d-6c7c-4d2d-be24-53f46edd8e2b",
     "parents": [],
     "metadata": {
       "name": "Ct-KDEL",
       "description": "Protein tag for targeting the endoplasmic reticulum",
       "authors": [],
+      "created": 1468258798279,
       "tags": {},
-      "color": "#9CC6C0",
+      "color": "#D3D34F",
       "shortName": "KDEL",
       "egfPosition": "8a"
     },
     "sequence": {
-      "md5": "44468f0e7cd2fb33e2b8d9c87ea51b8d",
-      "length": 50,
+      "md5": "f0491ea596f96c18e4c79003daaa86cd",
+      "length": 54,
       "annotations": [],
-      "initialBases": "AAGGA"
+      "initialBases": "AAGGAC"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_8a_ctkdel"
     },
     "rules": {
-      "list": false,
-      "role": "cds",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "structural"
     },
     "components": [],
     "options": {},
@@ -1116,33 +1023,30 @@
     }
   },
   {
-    "id": "block-58a4e580-de50-4ae9-8071-88eda8caeb30",
+    "id": "block-5c4fc6d1-de04-4a26-9e6d-982b0426f51e",
     "parents": [],
     "metadata": {
       "name": "IRES2",
       "description": "IRES - internal ribosome entry site. ATG in included",
       "authors": [],
+      "created": 1468258798280,
       "tags": {},
-      "color": "#6DA19C",
+      "color": "#9CC6C0",
       "shortName": "",
       "egfPosition": "8b"
     },
     "sequence": {
-      "md5": "e9cb8a2dd3ced2f2e01982f714fe7a34",
-      "length": 614,
+      "md5": "9d512e688c6e6cf05b877c7b98c578d4",
+      "length": 618,
       "annotations": [],
-      "initialBases": "CGCTC"
+      "initialBases": "CGCTCG"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_8b_ires2"
     },
     "rules": {
-      "list": false,
-      "role": "rbs",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "rbs"
     },
     "components": [],
     "options": {},
@@ -1152,33 +1056,30 @@
     }
   },
   {
-    "id": "block-2215b361-f2d5-49c2-b86a-e021734e6b67",
+    "id": "block-89d1e9ae-1f43-48b6-9566-a572c0320c25",
     "parents": [],
     "metadata": {
       "name": "BSDR",
       "description": "blasticidin-resistance gene encoding a  blasticidin S (BS) deaminase. Blasticidin is an efficient selective antibiotic that acts on both eukaryotic and prokaryotic cells",
       "authors": [],
+      "created": 1468258798280,
       "tags": {},
-      "color": "#B1CED0",
+      "color": "#6DA19C",
       "shortName": "",
       "egfPosition": "9"
     },
     "sequence": {
-      "md5": "ebee7a29a7e98b7e733affc4e77ec5e4",
-      "length": 401,
+      "md5": "afa4b8f0e3e0635383ac0847c78cc1ff",
+      "length": 405,
       "annotations": [],
-      "initialBases": "CCGCC"
+      "initialBases": "CCGCCA"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_9_bsdr"
     },
     "rules": {
-      "list": false,
-      "role": "selection",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "selection"
     },
     "components": [],
     "options": {},
@@ -1188,33 +1089,30 @@
     }
   },
   {
-    "id": "block-6013c7f7-49b5-4758-8e39-92fb2981bb04",
+    "id": "block-a0ca9c8e-ddb5-43b6-96e4-a8f26abd171e",
     "parents": [],
     "metadata": {
       "name": "PuroR",
       "description": "Puromycin resistance gene ecnoding a puromycin N-acetyl-transferase. Puromycin is an antibiotic that is a protein synthesis inhibitor by inhibiting translation",
       "authors": [],
+      "created": 1468258798281,
       "tags": {},
-      "color": "#65AAB1",
+      "color": "#B1CED0",
       "shortName": "",
       "egfPosition": "9"
     },
     "sequence": {
-      "md5": "26d9eb092fc78588d0189fa297897e02",
-      "length": 602,
+      "md5": "835d01e1b3e2bc5ac0b53597a0685db1",
+      "length": 606,
       "annotations": [],
-      "initialBases": "CCACC"
+      "initialBases": "CCACCG"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_9_puror"
     },
     "rules": {
-      "list": false,
-      "role": "selection",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "selection"
     },
     "components": [],
     "options": {},
@@ -1224,33 +1122,30 @@
     }
   },
   {
-    "id": "block-903ec11e-affd-44c2-a100-f5ea8cbc4a13",
+    "id": "block-406051a8-3b60-44bc-bef7-ec46fc7e2a56",
     "parents": [],
     "metadata": {
       "name": "NeoR",
       "description": "Neomycin resistance gene encoding a neomycin phosphotransferase. G418, also known as G418 sulfate and Geneticin, is an aminoglycoside antibiotic similar in structure to gentamicin B1, produced by Micromonospora rhodorangea. G418 blocks polypeptide synthesis by inhibiting the elongation step in both prokaryotic and eukaryotic cells. Resistance to G418 is conferred by the Neomycin resistance gene",
       "authors": [],
+      "created": 1468258798282,
       "tags": {},
-      "color": "#8EC78D",
+      "color": "#65AAB1",
       "shortName": "",
       "egfPosition": "9"
     },
     "sequence": {
-      "md5": "a635613fd2f1951cddbc136ddd365380",
-      "length": 815,
+      "md5": "27c80ca9744acac11891955092de1221",
+      "length": 819,
       "annotations": [],
-      "initialBases": "CCAGC"
+      "initialBases": "CCAGCC"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_9_neor"
     },
     "rules": {
-      "list": false,
-      "role": "selection",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "selection"
     },
     "components": [],
     "options": {},
@@ -1260,33 +1155,30 @@
     }
   },
   {
-    "id": "block-de7bee3f-6afe-4797-a2fa-aa97068c892c",
+    "id": "block-cc4f0c55-32d1-4fee-b8be-5d0d67ca9c06",
     "parents": [],
     "metadata": {
       "name": "DmrC",
       "description": "DmrC is a chemically inducible  dimerization domain.It dimerizes with DmrA in presence of heterodimerizer.  iDimerizeTM Inducible Heterodimer System - Clontech",
       "authors": [],
+      "created": 1468258798283,
       "tags": {},
-      "color": "#53B15F",
+      "color": "#8EC78D",
       "shortName": "",
       "egfPosition": "9"
     },
     "sequence": {
-      "md5": "240db578bc90c118b9e246502cb8acd6",
-      "length": 288,
+      "md5": "289178a1bdb9ccfbefff0889511fc0f7",
+      "length": 292,
       "annotations": [],
-      "initialBases": "CCATC"
+      "initialBases": "CCATCC"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_9_dmrc"
     },
     "rules": {
-      "list": false,
-      "role": "structural",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "structural"
     },
     "components": [],
     "options": {},
@@ -1296,33 +1188,30 @@
     }
   },
   {
-    "id": "block-a3327a4b-882d-43ac-b127-ffbf7e7828b6",
+    "id": "block-31f2f590-5176-4f4c-9211-a8bd2eccefea",
     "parents": [],
     "metadata": {
       "name": "Fyrefly Luciferase -3XFLAG",
       "description": "Reporter gene encoding for Fyreply luciferase. Bioluminescent imaging  is a sensitive and versatile tool that uses luciferase enzyme as an imaging reporter",
       "authors": [],
+      "created": 1468258798284,
       "tags": {},
-      "color": "#C5C4C1",
+      "color": "#53B15F",
       "shortName": "LCF-3XFLAG",
       "egfPosition": "9"
     },
     "sequence": {
-      "md5": "491416c64265a27ae2105441c1285f8c",
-      "length": 1736,
+      "md5": "8fa06c4a5657f7d21b457e9099da4b33",
+      "length": 1740,
       "annotations": [],
-      "initialBases": "CCGAG"
+      "initialBases": "CCGAGG"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_9_fyreflyluciferase3xflag"
     },
     "rules": {
-      "list": false,
-      "role": "reporter",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "reporter"
     },
     "components": [],
     "options": {},
@@ -1332,33 +1221,30 @@
     }
   },
   {
-    "id": "block-e776164b-3046-4215-9faf-000e4b86cdac",
+    "id": "block-481a428c-84da-4098-bbd9-1a6ecc62967b",
     "parents": [],
     "metadata": {
       "name": "mNeoGreen",
       "description": "Fluorescent reporter - Green - λex (nm) = 506 λem (nm) = 517  . doi: 10.1038/nmeth.2413",
       "authors": [],
+      "created": 1468258798284,
       "tags": {},
-      "color": "#A5A6A2",
+      "color": "#C5C4C1",
       "shortName": "mNG",
       "egfPosition": "9"
     },
     "sequence": {
-      "md5": "8fbcce109859f03770c4a0f458f1fcd3",
-      "length": 713,
+      "md5": "194e49d4fc6184b2126403f719a3a904",
+      "length": 717,
       "annotations": [],
-      "initialBases": "CCGTG"
+      "initialBases": "CCGTGA"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_9_mneogreen"
     },
     "rules": {
-      "list": false,
-      "role": "reporter",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "reporter"
     },
     "components": [],
     "options": {},
@@ -1368,33 +1254,30 @@
     }
   },
   {
-    "id": "block-3b19dbc5-d2a2-4c85-8476-8e2c08c28f1c",
+    "id": "block-a0b0f4be-44e9-433f-a038-051ce8311598",
     "parents": [],
     "metadata": {
       "name": "mRuby2",
       "description": "Fluorescent reporter - Red - λex (nm) = 559 λem (nm) = 600  . doi: 10.1038/nmeth.2171",
       "authors": [],
+      "created": 1468258798285,
       "tags": {},
-      "color": "#e7aaa9",
+      "color": "#A5A6A2",
       "shortName": "mR2",
       "egfPosition": "9"
     },
     "sequence": {
-      "md5": "53098628e8bcdc569dbd69d51aed89cc",
-      "length": 716,
+      "md5": "a8837e66c15f4f218527303e824d8056",
+      "length": 720,
       "annotations": [],
-      "initialBases": "CCGTG"
+      "initialBases": "CCGTGT"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_9_mruby2"
     },
     "rules": {
-      "list": false,
-      "role": "reporter",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "reporter"
     },
     "components": [],
     "options": {},
@@ -1404,33 +1287,30 @@
     }
   },
   {
-    "id": "block-e95ebbcc-2a8e-4133-89ca-f6496d1aaa54",
+    "id": "block-b3c1ddf8-dd18-480e-972a-7ad521e418c0",
     "parents": [],
     "metadata": {
       "name": "mTagBFP2",
       "description": "Fluorescent reporter - Blue - λex (nm) = 399 λem (nm) = 454  . doi: 10.1371/journal.pone.0028674",
       "authors": [],
+      "created": 1468258798286,
       "tags": {},
-      "color": "#D28482",
+      "color": "#e7aaa9",
       "shortName": "mBP2",
       "egfPosition": "9"
     },
     "sequence": {
-      "md5": "27980cc4eb41877d74dd1e20dbed7437",
-      "length": 713,
+      "md5": "07a2b168bea6a7d29cdd82daf2dc1928",
+      "length": 717,
       "annotations": [],
-      "initialBases": "CCGTG"
+      "initialBases": "CCGTGT"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_9_mtagbfp2"
     },
     "rules": {
-      "list": false,
-      "role": "reporter",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "reporter"
     },
     "components": [],
     "options": {},
@@ -1440,33 +1320,30 @@
     }
   },
   {
-    "id": "block-c8931171-9d61-4cb4-b103-187e53db99d8",
+    "id": "block-7e09b080-109c-4219-8dd4-a31fd5f5e2f6",
     "parents": [],
     "metadata": {
       "name": "a-Tubulin",
       "description": "Gene encoding for alpha-Tubulin",
       "authors": [],
+      "created": 1468258798286,
       "tags": {},
-      "color": "#E9BA9b",
+      "color": "#D28482",
       "shortName": "Tb",
       "egfPosition": "9"
     },
     "sequence": {
-      "md5": "fdea1cf19093ae3857198691d13c2299",
-      "length": 1362,
+      "md5": "2d242af1b459c97c8e29a771ad4a13a9",
+      "length": 1366,
       "annotations": [],
-      "initialBases": "CCGTG"
+      "initialBases": "CCGTGC"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_9_atubulin"
     },
     "rules": {
-      "list": false,
-      "role": "structural",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "structural"
     },
     "components": [],
     "options": {},
@@ -1476,33 +1353,30 @@
     }
   },
   {
-    "id": "block-b2c013d3-5fb2-4e00-ad3a-700c31573afe",
+    "id": "block-d132f0f3-2930-4ed6-a8b4-347b23c3b309",
     "parents": [],
     "metadata": {
       "name": "Tet-Aptazyme",
       "description": "Tetracycline-inducible  aptazyme. It is a ribozyme that once placed in the 3'UTR causes RNA self-cleavage. The mRNA loses the polyA and is degraded. The result is a posttranscriptional downregulation of gene expression.  The ribozyme is fused with an aptamer that recognizes tetracycline. In presence of Tet the aptazyme is inactivated and the mRNA is not degraded.  dx.doi.org/10.1021/sb500270h | ACS Synth. Biol. 2015, 4, 526−534",
       "authors": [],
+      "created": 1468258798287,
       "tags": {},
-      "color": "#efac7e",
+      "color": "#E9BA9b",
       "shortName": "",
       "egfPosition": "10"
     },
     "sequence": {
-      "md5": "7fdda928c1cfef4d5e2e84b7daad69a5",
-      "length": 171,
+      "md5": "d9fdc8f3c3f038c90368ecdd3e92de47",
+      "length": 175,
       "annotations": [],
-      "initialBases": "AGACA"
+      "initialBases": "AGACAA"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_10_tetaptazyme"
     },
     "rules": {
-      "list": false,
-      "role": "regulatory",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "regulatory"
     },
     "components": [],
     "options": {},
@@ -1512,33 +1386,30 @@
     }
   },
   {
-    "id": "block-6fb86f21-231b-4a45-8c1a-69ae1d3bf6e2",
+    "id": "block-3ab175ef-1b55-4e2b-87cc-b67d60e3bb57",
     "parents": [],
     "metadata": {
       "name": "SV40 polyA",
       "description": "Simian virus 40 PolyA",
       "authors": [],
+      "created": 1468258798288,
       "tags": {},
-      "color": "#EFD79A",
+      "color": "#efac7e",
       "shortName": "SV40pA",
       "egfPosition": "11"
     },
     "sequence": {
-      "md5": "d1a66a599fc97130a3eb0e184c1507a7",
-      "length": 131,
+      "md5": "2e7b95205788a8ecf67f4d281cb1dbcf",
+      "length": 135,
       "annotations": [],
-      "initialBases": "ACTTG"
+      "initialBases": "ACTTGT"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_11_sv40polya"
     },
     "rules": {
-      "list": false,
-      "role": "terminator",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "terminator"
     },
     "components": [],
     "options": {},
@@ -1548,33 +1419,30 @@
     }
   },
   {
-    "id": "block-698eb515-cc36-466e-9a92-a3c69d37adfd",
+    "id": "block-61b8f0ce-0fe0-48c8-948c-f59d41c0a547",
     "parents": [],
     "metadata": {
       "name": "SV40p",
       "description": "Simian virus 40 early promoter ",
       "authors": [],
+      "created": 1468258798288,
       "tags": {},
-      "color": "#F1D26C",
+      "color": "#EFD79A",
       "shortName": "",
       "egfPosition": "14"
     },
     "sequence": {
-      "md5": "49443df9621ffbe4a19da24aabf3e7d7",
-      "length": 380,
+      "md5": "53e7e2190dcf9b5377698c66e9c91791",
+      "length": 384,
       "annotations": [],
-      "initialBases": "GTGTG"
+      "initialBases": "GTGTGT"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_14_sv40p"
     },
     "rules": {
-      "list": false,
-      "role": "promoter",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "promoter"
     },
     "components": [],
     "options": {},
@@ -1584,33 +1452,30 @@
     }
   },
   {
-    "id": "block-c4444674-faf3-439b-bba0-0df894b4bfef",
+    "id": "block-4b236873-9f84-4d9a-9371-af0fe1f8c903",
     "parents": [],
     "metadata": {
       "name": "PuroR",
       "description": "Puromycin resistance gene ecnoding a puromycin N-acetyl-transferase. Puromycin is an antibiotic that is a protein synthesis inhibitor by inhibiting translation",
       "authors": [],
+      "created": 1468258798289,
       "tags": {},
-      "color": "#E4E480",
+      "color": "#F1D26C",
       "shortName": "",
       "egfPosition": "15"
     },
     "sequence": {
-      "md5": "0141b325074c7188eeb093c0a1e8d8d7",
-      "length": 611,
+      "md5": "488166749f1bc4e8e0ac8604f0a49c39",
+      "length": 615,
       "annotations": [],
-      "initialBases": "CCGCC"
+      "initialBases": "CCGCCA"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_15_puror"
     },
     "rules": {
-      "list": false,
-      "role": "selection",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "selection"
     },
     "components": [],
     "options": {},
@@ -1620,33 +1485,30 @@
     }
   },
   {
-    "id": "block-b9ac600d-f39a-4e65-be3b-a7eac5df0b73",
+    "id": "block-4e04496b-34d2-4a01-b39d-036970146d33",
     "parents": [],
     "metadata": {
       "name": "bGH polyA",
       "description": "bovine growth hormone polyA",
       "authors": [],
+      "created": 1468258798289,
       "tags": {},
-      "color": "#D3D34F",
+      "color": "#E4E480",
       "shortName": "bGHpA",
       "egfPosition": "16"
     },
     "sequence": {
-      "md5": "d19666635d5468cf52ba1e071312731c",
-      "length": 257,
+      "md5": "ff5edbcc3b458b577f0d46de2b3a5c7d",
+      "length": 261,
       "annotations": [],
-      "initialBases": "CTCTG"
+      "initialBases": "CTCTGG"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_16_bghpolya"
     },
     "rules": {
-      "list": false,
-      "role": "terminator",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "terminator"
     },
     "components": [],
     "options": {},
@@ -1656,33 +1518,30 @@
     }
   },
   {
-    "id": "block-8033c41e-be2a-4453-9393-fd9c2dcc3b43",
+    "id": "block-60dee1e9-53de-47cb-890f-f2a9837aede5",
     "parents": [],
     "metadata": {
       "name": "CMVp",
       "description": "Strong constitutive promoter : Human cytomegalovirus (CMV) immediate early enhancer and promoter",
       "authors": [],
+      "created": 1468258798290,
       "tags": {},
-      "color": "#9CC6C0",
+      "color": "#D3D34F",
       "shortName": "",
       "egfPosition": "18"
     },
     "sequence": {
-      "md5": "8f283ca5fc89f7ecdf75c83a73494dd8",
-      "length": 543,
+      "md5": "b843ac7e30ca10751e5f57f52a73982a",
+      "length": 547,
       "annotations": [],
-      "initialBases": "CGTTA"
+      "initialBases": "CGTTAC"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_18_cmvp"
     },
     "rules": {
-      "list": false,
-      "role": "promoter",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "promoter"
     },
     "components": [],
     "options": {},
@@ -1692,33 +1551,30 @@
     }
   },
   {
-    "id": "block-cccaf51a-3d84-489c-a614-8d0e062a3ebd",
+    "id": "block-926c8896-d021-4e5f-abea-95d1f334bc7f",
     "parents": [],
     "metadata": {
       "name": "EF1ap",
       "description": "strong constitutive promoter derived from  endogenous promoter of human elongation factor EF-1α . EF-1 alpha is often useful in conditions where other promoters (such as CMV) have diminished activity or have been silenced (as in embryonic stem cells)",
       "authors": [],
+      "created": 1468258798291,
       "tags": {},
-      "color": "#6DA19C",
+      "color": "#9CC6C0",
       "shortName": "",
       "egfPosition": "18"
     },
     "sequence": {
-      "md5": "5fa85522433d4cc8a68d6b6377131bdf",
-      "length": 1224,
+      "md5": "6b7723b4cf0251b9cbcbf2a4b01759e3",
+      "length": 1228,
       "annotations": [],
-      "initialBases": "GGCTC"
+      "initialBases": "GGCTCC"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_18_ef1ap"
     },
     "rules": {
-      "list": false,
-      "role": "promoter",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "promoter"
     },
     "components": [],
     "options": {},
@@ -1728,33 +1584,30 @@
     }
   },
   {
-    "id": "block-634ff14a-af9a-4304-85db-4b985ddd1c34",
+    "id": "block-141b5036-cc70-4c32-820a-41f5b03a6696",
     "parents": [],
     "metadata": {
       "name": "mNeoGreen",
       "description": "Fluorescent reporter - Green - λex (nm) = 506 λem (nm) = 517  . doi: 10.1038/nmeth.2413",
       "authors": [],
+      "created": 1468258798291,
       "tags": {},
-      "color": "#B1CED0",
+      "color": "#6DA19C",
       "shortName": "mNG",
       "egfPosition": "19"
     },
     "sequence": {
-      "md5": "398aebce8bfea8e72cbfe595aab48e14",
-      "length": 716,
+      "md5": "ecfbf0381441d2e5b865b61eac6d5578",
+      "length": 720,
       "annotations": [],
-      "initialBases": "CCGCC"
+      "initialBases": "CCGCCA"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_19_mneogreen"
     },
     "rules": {
-      "list": false,
-      "role": "reporter",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "reporter"
     },
     "components": [],
     "options": {},
@@ -1764,33 +1617,30 @@
     }
   },
   {
-    "id": "block-9d3aa448-ae4f-41fa-87eb-469ac475584a",
+    "id": "block-217357c2-5990-415b-b1e1-dc6f0327fdfe",
     "parents": [],
     "metadata": {
       "name": "mRuby2",
       "description": "Fluorescent reporter - Red - λex (nm) = 559 λem (nm) = 600  . doi: 10.1038/nmeth.2171",
       "authors": [],
+      "created": 1468258798292,
       "tags": {},
-      "color": "#65AAB1",
+      "color": "#B1CED0",
       "shortName": "mR2",
       "egfPosition": "19"
     },
     "sequence": {
-      "md5": "575ccb3a58390b429ae42854a4d23560",
-      "length": 719,
+      "md5": "f7e8c5c2788ba9c8d2299f93004eb4aa",
+      "length": 723,
       "annotations": [],
-      "initialBases": "CCGCC"
+      "initialBases": "CCGCCA"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_19_mruby2"
     },
     "rules": {
-      "list": false,
-      "role": "reporter",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "reporter"
     },
     "components": [],
     "options": {},
@@ -1800,33 +1650,30 @@
     }
   },
   {
-    "id": "block-78148a83-62b4-40a9-b7f8-7bbcfa29c493",
+    "id": "block-879c289b-1287-4740-81b4-030e577cbc71",
     "parents": [],
     "metadata": {
       "name": "mTagBFP2",
       "description": "Fluorescent reporter - Blue - λex (nm) = 399 λem (nm) = 454  . doi: 10.1371/journal.pone.0028674",
       "authors": [],
+      "created": 1468258798293,
       "tags": {},
-      "color": "#8EC78D",
+      "color": "#65AAB1",
       "shortName": "mBP2",
       "egfPosition": "19"
     },
     "sequence": {
-      "md5": "49f8cc602ebbe8b58d35d31c6e9238c6",
-      "length": 719,
+      "md5": "4248c939c6ab15212b3ca850fe0695c0",
+      "length": 723,
       "annotations": [],
-      "initialBases": "CCGCC"
+      "initialBases": "CCGCCA"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_19_mtagbfp2"
     },
     "rules": {
-      "list": false,
-      "role": "reporter",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "reporter"
     },
     "components": [],
     "options": {},
@@ -1836,33 +1683,30 @@
     }
   },
   {
-    "id": "block-ccd18f75-af6e-486a-9ee6-2d5876f4a2db",
+    "id": "block-833c78e4-1583-48b1-ae4f-cf741e72a845",
     "parents": [],
     "metadata": {
       "name": "Tet-ON-3G",
       "description": "Tetracycline inducible transcriptional activator. Tet-On 3G - Clontech",
       "authors": [],
+      "created": 1468258798293,
       "tags": {},
-      "color": "#53B15F",
+      "color": "#8EC78D",
       "shortName": "",
       "egfPosition": "19"
     },
     "sequence": {
-      "md5": "bf9ed9f9934d323f9e23e5e416c82958",
-      "length": 761,
+      "md5": "7167546342886802bdce01a188de37ee",
+      "length": 765,
       "annotations": [],
-      "initialBases": "CCGCC"
+      "initialBases": "CCGCCA"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_19_teton3g"
     },
     "rules": {
-      "list": false,
-      "role": "cds",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "cds"
     },
     "components": [],
     "options": {},
@@ -1872,33 +1716,30 @@
     }
   },
   {
-    "id": "block-063ece53-5733-444d-88ca-1c79bbca92e9",
+    "id": "block-e9bf5f69-9a83-4296-819c-adb47469ab4e",
     "parents": [],
     "metadata": {
       "name": "Ct-minute-NES",
       "description": "minute virus of mice derived nuclear export signal (NES, MTKKFGTLTI) ",
       "authors": [],
+      "created": 1468258798294,
       "tags": {},
-      "color": "#C5C4C1",
+      "color": "#53B15F",
       "shortName": "NES",
       "egfPosition": "20"
     },
     "sequence": {
-      "md5": "34e0cbb8dea9528d05e73b6d0f6a0d46",
-      "length": 35,
+      "md5": "df9c7e000d5f3494ba963df153345179",
+      "length": 39,
       "annotations": [],
-      "initialBases": "GAATG"
+      "initialBases": "GAATGA"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_20_ctminutenes"
     },
     "rules": {
-      "list": false,
-      "role": "cds",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "structural"
     },
     "components": [],
     "options": {},
@@ -1908,33 +1749,30 @@
     }
   },
   {
-    "id": "block-c5ebdea4-dbe7-4b53-a3ed-73f471b27eca",
+    "id": "block-45312077-d62d-420d-a089-7dbb522c829d",
     "parents": [],
     "metadata": {
       "name": "Ct-NES",
       "description": "Nuclear exportation sequence",
       "authors": [],
+      "created": 1468258798294,
       "tags": {},
-      "color": "#A5A6A2",
+      "color": "#C5C4C1",
       "shortName": "",
       "egfPosition": "20"
     },
     "sequence": {
-      "md5": "6014a8fe371e7512fb553f58fc66358e",
-      "length": 44,
+      "md5": "78be7cc45c0e13e06e0d42fc7832e467",
+      "length": 48,
       "annotations": [],
-      "initialBases": "GAGCC"
+      "initialBases": "GAGCCC"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_20_ctnes"
     },
     "rules": {
-      "list": false,
-      "role": "cds",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "structural"
     },
     "components": [],
     "options": {},
@@ -1944,33 +1782,30 @@
     }
   },
   {
-    "id": "block-1535556e-624a-47de-83a5-14c69eaaa927",
+    "id": "block-98a92e80-0e2d-4f3a-9057-683dedb8df5e",
     "parents": [],
     "metadata": {
       "name": "Linker 3",
       "description": "Flexible peptide  linker:  GGGSGGGGSAS",
       "authors": [],
+      "created": 1468258798295,
       "tags": {},
-      "color": "#e7aaa9",
+      "color": "#A5A6A2",
       "shortName": "LK-3",
       "egfPosition": "20"
     },
     "sequence": {
-      "md5": "df8ff54f03f5b683888c1317951444c2",
-      "length": 37,
+      "md5": "111a4aaf8df8b4fc9d0fabb2b0400a9e",
+      "length": 41,
       "annotations": [],
-      "initialBases": "GAGGC"
+      "initialBases": "GAGGCG"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_20_linker3"
     },
     "rules": {
-      "list": false,
-      "role": "structural",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "structural"
     },
     "components": [],
     "options": {},
@@ -1980,33 +1815,30 @@
     }
   },
   {
-    "id": "block-f5cdcfc4-3eb9-4ed2-a836-a562356672ee",
+    "id": "block-44c4889b-e263-4354-b5cb-b22d65869a24",
     "parents": [],
     "metadata": {
       "name": "p2A-Porcine teschovirus-1 ",
       "description": "‘self-cleaving’ 2A peptide. Nat.Biotechnol.2004. 22, 589–594",
       "authors": [],
+      "created": 1468258798295,
       "tags": {},
-      "color": "#D28482",
+      "color": "#e7aaa9",
       "shortName": "p2A",
       "egfPosition": "20"
     },
     "sequence": {
-      "md5": "7bc1e2a20c151872fb69bc02145d48b6",
-      "length": 61,
+      "md5": "23d80e74d3d12a2ae6f59ca982de691f",
+      "length": 65,
       "annotations": [],
-      "initialBases": "GCGCT"
+      "initialBases": "GCGCTA"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_20_p2aporcineteschovirus1"
     },
     "rules": {
-      "list": false,
-      "role": "structural",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "structural"
     },
     "components": [],
     "options": {},
@@ -2016,33 +1848,30 @@
     }
   },
   {
-    "id": "block-db781aa6-9244-4651-a962-1dfd4605edc9",
+    "id": "block-f168baa9-efa1-4530-8434-7e90c2978497",
     "parents": [],
     "metadata": {
       "name": "DmrA",
       "description": "DmrA is a chemically inducible  dimerization domain.It dimerizes with DmrC in presence of heterodimerizer.  iDimerizeTM Inducible Heterodimer System - Clontech",
       "authors": [],
+      "created": 1468258798295,
       "tags": {},
-      "color": "#E9BA9b",
+      "color": "#D28482",
       "shortName": "",
       "egfPosition": "21"
     },
     "sequence": {
-      "md5": "4389356649feb4316f9a0e0fd3f5c31c",
-      "length": 327,
+      "md5": "02ca73ea39477bf8d09f8118f6792bdd",
+      "length": 331,
       "annotations": [],
-      "initialBases": "GGAGT"
+      "initialBases": "GGAGTG"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_21_dmra"
     },
     "rules": {
-      "list": false,
-      "role": "structural",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "structural"
     },
     "components": [],
     "options": {},
@@ -2052,33 +1881,30 @@
     }
   },
   {
-    "id": "block-d61b10d2-4aea-42f4-a969-61305caa9b1b",
+    "id": "block-290b855a-1700-4305-92ee-567cacd619b4",
     "parents": [],
     "metadata": {
       "name": "mKate2",
       "description": "Fluorescent reporter - Far red - λex (nm) = 588, λem (nm) = 633 doi: 10.1042/bj20081949",
       "authors": [],
+      "created": 1468258798296,
       "tags": {},
-      "color": "#efac7e",
+      "color": "#E9BA9b",
       "shortName": "mK2",
       "egfPosition": "21"
     },
     "sequence": {
-      "md5": "3b0097d953e54f5430d1daf986e0da43",
-      "length": 696,
+      "md5": "6ef04c40476371a3f00549678fa554a4",
+      "length": 700,
       "annotations": [],
-      "initialBases": "gtgag"
+      "initialBases": "gtgagc"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_21_mkate2"
     },
     "rules": {
-      "list": false,
-      "role": "reporter",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "reporter"
     },
     "components": [],
     "options": {},
@@ -2088,33 +1914,30 @@
     }
   },
   {
-    "id": "block-74346c5c-5912-4443-abbf-00fd2a44c562",
+    "id": "block-0436c4ac-858b-4418-bc61-1666dd83195d",
     "parents": [],
     "metadata": {
       "name": "mNeoGreen",
       "description": "Fluorescent reporter - Green - λex (nm) = 506 λem (nm) = 517  . doi: 10.1038/nmeth.2413",
       "authors": [],
+      "created": 1468258798296,
       "tags": {},
-      "color": "#EFD79A",
+      "color": "#efac7e",
       "shortName": "mNG",
       "egfPosition": "21"
     },
     "sequence": {
-      "md5": "5fc002897bf2f590de38ee87259b53ad",
-      "length": 708,
+      "md5": "93cd7f72fa24681c2f7661f77b95b6e1",
+      "length": 712,
       "annotations": [],
-      "initialBases": "GTGAG"
+      "initialBases": "GTGAGC"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_21_mneogreen"
     },
     "rules": {
-      "list": false,
-      "role": "reporter",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "reporter"
     },
     "components": [],
     "options": {},
@@ -2124,33 +1947,30 @@
     }
   },
   {
-    "id": "block-c5d7bd33-ee9c-408b-b7e3-c573be4b3e4f",
+    "id": "block-f2e94de3-3054-47c0-96c0-eceb9ec8328e",
     "parents": [],
     "metadata": {
       "name": "mRuby2",
       "description": "Fluorescent reporter - Red - λex (nm) = 559 λem (nm) = 600  . doi: 10.1038/nmeth.2171",
       "authors": [],
+      "created": 1468258798297,
       "tags": {},
-      "color": "#F1D26C",
+      "color": "#EFD79A",
       "shortName": "mR2",
       "egfPosition": "21"
     },
     "sequence": {
-      "md5": "cc48e2aa1d228f42d918b286d5fca6fd",
-      "length": 711,
+      "md5": "5b9806c01de97260c1a6000dbad6fed3",
+      "length": 715,
       "annotations": [],
-      "initialBases": "GTGTC"
+      "initialBases": "GTGTCT"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_21_mruby2"
     },
     "rules": {
-      "list": false,
-      "role": "reporter",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "reporter"
     },
     "components": [],
     "options": {},
@@ -2160,33 +1980,30 @@
     }
   },
   {
-    "id": "block-50837be5-f263-4477-bbd8-43ce275c5432",
+    "id": "block-b682040e-0ceb-4455-a964-ca81f68efaf0",
     "parents": [],
     "metadata": {
       "name": "mTagBFP2",
       "description": "Fluorescent reporter - Blue - λex (nm) = 399 λem (nm) = 454  . doi: 10.1371/journal.pone.0028674",
       "authors": [],
+      "created": 1468258798297,
       "tags": {},
-      "color": "#E4E480",
+      "color": "#F1D26C",
       "shortName": "mBP2",
       "egfPosition": "21"
     },
     "sequence": {
-      "md5": "50c31c00646abd4cf75fbc96a3df6255",
-      "length": 711,
+      "md5": "5ebd9dbe1413a87f1ca5af0d8a841a77",
+      "length": 715,
       "annotations": [],
-      "initialBases": "GTGTC"
+      "initialBases": "GTGTCT"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_21_mtagbfp2"
     },
     "rules": {
-      "list": false,
-      "role": "reporter",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "reporter"
     },
     "components": [],
     "options": {},
@@ -2196,33 +2013,30 @@
     }
   },
   {
-    "id": "block-4b8ee9e2-7d4c-4595-86cb-fb027af7edb5",
+    "id": "block-b985c060-39f9-495a-83a3-1fa160b03bb6",
     "parents": [],
     "metadata": {
       "name": "PuroR",
       "description": "Puromycin resistance gene ecnoding a puromycin N-acetyl-transferase. Puromycin is an antibiotic that is a protein synthesis inhibitor by inhibiting translation",
       "authors": [],
+      "created": 1468258798297,
       "tags": {},
-      "color": "#D3D34F",
+      "color": "#E4E480",
       "shortName": "",
       "egfPosition": "21"
     },
     "sequence": {
-      "md5": "dba93610c5a03a915216dabab29b4971",
-      "length": 600,
+      "md5": "8fa16802f5d651a170c951954decb868",
+      "length": 604,
       "annotations": [],
-      "initialBases": "ACCGA"
+      "initialBases": "ACCGAG"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_21_puror"
     },
     "rules": {
-      "list": false,
-      "role": "selection",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "selection"
     },
     "components": [],
     "options": {},
@@ -2232,33 +2046,30 @@
     }
   },
   {
-    "id": "block-1345cabf-5ee7-4a26-b350-a83f2b03e8f3",
+    "id": "block-d9f45ab9-c354-471f-991a-7e4fddc35ab0",
     "parents": [],
     "metadata": {
       "name": "PGK polyA",
       "description": "mouse phosphoglucokinase polyA",
       "authors": [],
+      "created": 1468258798298,
       "tags": {},
-      "color": "#9CC6C0",
+      "color": "#D3D34F",
       "shortName": "PGKpA",
       "egfPosition": "22"
     },
     "sequence": {
-      "md5": "a96b3c3932dc15416811d2d67e0bb9a3",
-      "length": 229,
+      "md5": "69a00b013a2454fc5949d6ffe78f80be",
+      "length": 233,
       "annotations": [],
-      "initialBases": "CCTTG"
+      "initialBases": "CCTTGA"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_22_pgkpolya"
     },
     "rules": {
-      "list": false,
-      "role": "terminator",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "terminator"
     },
     "components": [],
     "options": {},
@@ -2268,33 +2079,30 @@
     }
   },
   {
-    "id": "block-475a0a84-4a8a-4b6b-88ce-929b0136f0f7",
+    "id": "block-88f96405-af56-46a7-ab8d-c33a0f6f66fc",
     "parents": [],
     "metadata": {
       "name": "Insulator_FB",
       "description": "FII/BEAD-A (FB) element. (STEMCELLS2008;26:3257–3266 ). FII/BEAD-A (FB) contains the minimal enhancer-blocking components of the chicken b-globin 5'HS4 insulator and a homologous region from the human T-cell receptor  BEAD-1 insulator ",
       "authors": [],
+      "created": 1468258798298,
       "tags": {},
-      "color": "#6DA19C",
+      "color": "#9CC6C0",
       "shortName": "IS_FB",
       "egfPosition": "23"
     },
     "sequence": {
-      "md5": "29c089067c1d3baf030143274e69d2d1",
-      "length": 141,
+      "md5": "2e6276e228f5e1bf26446641d809f2ed",
+      "length": 145,
       "annotations": [],
-      "initialBases": "GGCCG"
+      "initialBases": "GGCCGC"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_23_insulatorfb"
     },
     "rules": {
-      "list": false,
-      "role": "insulator",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "insulator"
     },
     "components": [],
     "options": {},
@@ -2304,33 +2112,30 @@
     }
   },
   {
-    "id": "block-b01d849e-1450-4be6-829b-31fa38446d89",
+    "id": "block-0acf4755-84a5-4220-a9a0-08a7fa73662d",
     "parents": [],
     "metadata": {
       "name": "3'HA-hAAVS1",
       "description": "Homology arm for targeting of hAVVS1 locus",
       "authors": [],
+      "created": 1468258798299,
       "tags": {},
-      "color": "#B1CED0",
+      "color": "#6DA19C",
       "shortName": "",
       "egfPosition": "24"
     },
     "sequence": {
-      "md5": "c5a0682845deab5c47253dc11e2db50f",
-      "length": 633,
+      "md5": "5a4a63767c5a0b1a6fa10dee65b1949b",
+      "length": 637,
       "annotations": [],
-      "initialBases": "CCGCC"
+      "initialBases": "CCGCCT"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_24_3hahaavs1"
     },
     "rules": {
-      "list": false,
-      "role": "structural",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "structural"
     },
     "components": [],
     "options": {},
@@ -2340,33 +2145,30 @@
     }
   },
   {
-    "id": "block-c5fd10bb-177f-4f31-bd66-9a34d2ed9a30",
+    "id": "block-415d51dd-230a-45c5-a194-d3e9c18b9a09",
     "parents": [],
     "metadata": {
       "name": "3'-ITR-PB",
       "description": "transposon-specific inverted terminal repeat sequences (ITRs) recognized by PiggyBac transposase",
       "authors": [],
+      "created": 1468258798300,
       "tags": {},
-      "color": "#65AAB1",
+      "color": "#B1CED0",
       "shortName": "",
       "egfPosition": "24"
     },
     "sequence": {
-      "md5": "427fa75b9c85fc7f41c52f87f990c979",
-      "length": 247,
+      "md5": "fca3e716125e5a7a38f8e044fa29226e",
+      "length": 251,
       "annotations": [],
-      "initialBases": "TGCAT"
+      "initialBases": "TGCATC"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_24_3itrpb"
     },
     "rules": {
-      "list": false,
-      "role": "structural",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "structural"
     },
     "components": [],
     "options": {},
@@ -2376,33 +2178,30 @@
     }
   },
   {
-    "id": "block-fb6040ed-4a64-4856-8f5d-0bce01021a9c",
+    "id": "block-9412b5ce-a288-4ac3-965c-f70b9ebfbd18",
     "parents": [],
     "metadata": {
       "name": "SV40-ORI",
       "description": "Simian virus 40 origin of replication. SV40 DNA replication is initiated by binding of large T-antigen to the origin region of the genome",
       "authors": [],
+      "created": 1468258798300,
       "tags": {},
-      "color": "#8EC78D",
+      "color": "#65AAB1",
       "shortName": "",
       "egfPosition": "25"
     },
     "sequence": {
-      "md5": "e1f70fd6d6a612271136c281c231f6cf",
-      "length": 136,
+      "md5": "bba134aceca75612657f776011912d90",
+      "length": 140,
       "annotations": [],
-      "initialBases": "ATCCC"
+      "initialBases": "ATCCCG"
     },
     "source": {
       "source": "egf",
       "id": "EGF_ML_25_sv40ori"
     },
     "rules": {
-      "list": false,
-      "role": "structural",
-      "hidden": false,
-      "frozen": false,
-      "fixed": false
+      "role": "structural"
     },
     "components": [],
     "options": {},
