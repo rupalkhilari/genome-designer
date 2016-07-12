@@ -17,6 +17,7 @@ import React, { Component, PropTypes } from 'react';
 import {connect} from 'react-redux';
 import { uiShowAuthenticationForm, uiSetGrunt } from '../../actions/ui';
 import { forgot } from '../../middleware/auth';
+import track from '../../analytics/ga';
 
 /**
  * default visibility and text for error labels
@@ -61,12 +62,14 @@ class ForgotForm extends Component {
               text: 'Unrecognized email address',
             },
           });
+          track('Authentication', 'Forgot', json.message);
           return;
         }
         // show grunt
         this.props.uiSetGrunt(`Check Email: A link to reset your password has been sent to ${this.emailAddress}`);
         // close the form
         this.props.uiShowAuthenticationForm('none');
+        track('Authentication', 'Forgot', 'Success');
       })
       .catch((reason) => {
         this.setState({
@@ -75,6 +78,7 @@ class ForgotForm extends Component {
             text: 'Unexpected error, please check your connection',
           },
         });
+        track('Authentication', 'Forgot', 'Unexpected Error');
       });
   }
 

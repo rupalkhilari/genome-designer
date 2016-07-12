@@ -35,7 +35,8 @@ const hostname = '0.0.0.0';
 
 // not an obvious way to determine if this is production or local. For now I'm testing the port
 // and if it is the HTTP or HTTPS default port we assume production.
-const production = port === 80 || port === 443;
+// const production = port === 80 || port === 443;
+const production = true;
 
 //file paths depending on if building or not
 //note that currently, you basically need to use npm run start in order to serve the client bundle + webpack middleware
