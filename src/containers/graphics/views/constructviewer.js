@@ -190,15 +190,17 @@ export class ConstructViewer extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const hasFocus = this.isFocused();
-    const willFocus = nextProps.construct.id === nextProps.focus.constructId;
-    if (!hasFocus && willFocus) {
-      console.log('Construct Viewer about to focus:', nextProps.construct.id);
-      const element = ReactDOM.findDOMNode(this);
-      if (element.scrollIntoViewIfNeeded) {
-        element.scrollIntoViewIfNeeded(true);
-      } else {
-        element.scrollIntoView();
+    // scroll into view when focused by user, unless this is a result of a drag operation
+    if (!this.sg.ui.dragInside) {
+      const hasFocus = this.isFocused();
+      const willFocus = nextProps.construct.id === nextProps.focus.constructId;
+      if (!hasFocus && willFocus) {
+        const element = ReactDOM.findDOMNode(this);
+        if (element.scrollIntoViewIfNeeded) {
+          element.scrollIntoViewIfNeeded(true);
+        } else {
+          element.scrollIntoView();
+        }
       }
     }
   }

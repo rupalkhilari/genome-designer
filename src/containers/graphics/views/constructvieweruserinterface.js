@@ -604,6 +604,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * a drag entered the construct viewer
    */
   onDragEnter(globalPoint, payload) {
+    this.dragInside = true;
     this.hideEdgeInsertionPoint();
     this.hideBlockInsertionPoint();
     this.selectConstruct();
@@ -612,6 +613,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * drag left the construct viewer
    */
   onDragLeave() {
+    this.dragInside = false;
     this.hideEdgeInsertionPoint();
     this.hideBlockInsertionPoint();
   }
