@@ -33,6 +33,10 @@ const DEFAULT_PORT = 3000;
 const port = parseInt(process.argv[2], 10) || process.env.PORT || DEFAULT_PORT;
 const hostname = '0.0.0.0';
 
+// not an obvious way to determine if this is production or local. For now I'm testing the port
+// and if it is the HTTP or HTTPS default port we assume production.
+const production = port === 80 || port === 443;
+
 //file paths depending on if building or not
 //note that currently, you basically need to use npm run start in order to serve the client bundle + webpack middleware
 const createBuildPath = (isBuild, notBuild = isBuild) => {
@@ -135,7 +139,7 @@ app.get('*', (req, res) => {
       discourseDomain: process.env.BNR_ENV_URL_SUFFIX || `https://forum.bionano.autodesk.com`,
     };
     //so that any routing is delegated to the client
-    res.render(path.join(pathContent + '/index.jade'), Object.assign({}, req.user, discourse));
+    res.render(path.join(pathContent + '/index.jade'), Object.assign({}, req.user, discourse, {production}));
   }
 });
 
