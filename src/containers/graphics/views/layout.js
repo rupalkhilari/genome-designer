@@ -319,7 +319,7 @@ export default class Layout {
         dataAttribute: {name: 'nodetype', value: 'block'},
         sg: this.sceneGraph,
       }, appearance);
-      props.roleName = this.isSBOL(part) ? this.blocks[part].rules.role : null;
+      props.roleName = this.isSBOL(part) ? this.blocks[part].rules.role  || this.blocks[part].metadata.role: null;
       node = new Role2D(props);
       this.sceneGraph.root.appendChild(node);
       this.map(part, node);
@@ -371,7 +371,7 @@ export default class Layout {
    * return true if the block appears to be an SBOL symbol
    */
   isSBOL(part) {
-    return !!this.blocks[part].rules.role;
+    return !!(this.blocks[part].rules.role || this.blocks[part].metadata.role);
   }
 
   /**
@@ -673,7 +673,7 @@ export default class Layout {
 
       // set role part name if any
       node.set({
-        roleName: this.isSBOL(part) ? block.rules.role : null,
+        roleName: this.isSBOL(part) ? block.rules.role || block.metadata.role : null,
       });
 
       // measure element text or used condensed spacing
