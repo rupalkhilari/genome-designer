@@ -7,7 +7,6 @@
  */
 export default function track(category, action, label, value, non_interaction) {
   // only send if in production env and google analytics is present
-  debugger;
   if (production && ga) {
     ga('send', 'event', category, action, label, value, non_interaction);
   }
