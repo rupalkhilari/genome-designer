@@ -421,18 +421,13 @@ export default class ConstructViewerUserInterface extends UserInterface {
    */
   update() {
     super.update();
-    if (this.isSelectedConstruct()) {
+    if (this.constructViewer.isFocused()) {
       this.lighten();
     } else {
       this.darken();
     }
   }
-  /**
-   * true if we are the selected construct
-   */
-  isSelectedConstruct() {
-    return this.constructViewer.props.construct.id === this.constructViewer.props.focus.constructId;
-  }
+
   /**
    * select the construct if not already selected
    */
