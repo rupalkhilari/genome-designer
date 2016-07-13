@@ -32,7 +32,6 @@ import exportRouter from '../plugins/convert/export';
 const DEFAULT_PORT = 3000;
 const port = parseInt(process.argv[2], 10) || process.env.PORT || DEFAULT_PORT;
 const hostname = '0.0.0.0';
-const production = process.env.NODE_ENV === 'production';
 
 //file paths depending on if building or not
 //note that currently, you basically need to use npm run start in order to serve the client bundle + webpack middleware
@@ -136,7 +135,9 @@ app.get('*', (req, res) => {
       discourseDomain: process.env.BNR_ENV_URL_SUFFIX || `https://forum.bionano.autodesk.com`,
     };
     //so that any routing is delegated to the client
-    res.render(path.join(pathContent + '/index.jade'), Object.assign({}, req.user, discourse, {production}));
+    res.render(path.join(pathContent + '/index.jade'), Object.assign({}, req.user, discourse, {
+      productionEnvironment: process.env.NODE_ENV === 'production',
+    }));
   }
 });
 
