@@ -27,10 +27,12 @@ export const operators = [
     ],
     color: colors.red,
   },
-];
+]
+  .map(operator => {
+    return Object.assign(GslOperatorSchema.scaffold(), operator, {
+      image: `images/gsl/${operator.id}.svg`,
+    });
+  })
+  .reduce((acc, operator) => Object.assign(acc, { [operator.id]: operator }), {});
 
-export function gslImage(gslId) {
-  return `images/gsl/${gslId}.svg`;
-}
-
-export const operatorIds = operators.map(operator => operator.id);
+export const operatorIds = Object.keys(operators);

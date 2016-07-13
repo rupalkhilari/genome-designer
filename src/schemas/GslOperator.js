@@ -19,12 +19,12 @@ import Schema from './SchemaClass';
 
 const gslOperatorFields = {
   id: [
-    fields.string(),
+    fields.string().required,
     `ID of operator`,
   ],
 
   name: [
-    fields.string(),
+    fields.string().required,
     `Readable name`,
   ],
 
