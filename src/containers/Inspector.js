@@ -18,6 +18,7 @@ import { connect } from 'react-redux';
 import { inspectorToggleVisibility } from '../actions/ui';
 import { _getFocused } from '../selectors/focus';
 
+import InspectorGsl from '../components/Inspector/InspectorGsl';
 import InspectorBlock from '../components/Inspector/InspectorBlock';
 import InspectorProject from '../components/Inspector/InspectorProject';
 
@@ -45,6 +46,11 @@ export class Inspector extends Component {
     // inspect instances, or construct if no instance or project if no construct or instances
     let inspect;
     switch (type) {
+    //todo - support this. need to update selectors etc.
+    case 'gsl':
+      inspect = (<InspectorGsl instance={focused}
+                      readOnly />);
+      break;
     case 'project':
       inspect = (<InspectorProject instance={focused}
                                    orders={orders}

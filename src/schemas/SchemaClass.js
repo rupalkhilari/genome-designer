@@ -69,7 +69,7 @@ export default class Schema {
     return new this.constructor(this.definitions);
   }
 
-  validateFields(instance = {}, shouldThrow) {
+  validateFields(instance = {}, shouldThrow = false) {
     return Object.keys(this.fields).every(fieldName => {
       const instanceFieldValue = instance[fieldName];
       const field = this.fields[fieldName];
@@ -100,7 +100,7 @@ export default class Schema {
   }
 
   //may want to extend this function in your class for instance-wide validation, not just of fields
-  validate(instance, shouldThrow) {
+  validate(instance, shouldThrow = false) {
     return this.validateFields(instance, shouldThrow);
   }
 
