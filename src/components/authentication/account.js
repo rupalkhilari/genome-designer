@@ -18,6 +18,7 @@ import {connect} from 'react-redux';
 import { uiShowAuthenticationForm, uiSetGrunt } from '../../actions/ui';
 import invariant from 'invariant';
 import { userUpdate } from '../../actions/user';
+import track from '../../analytics/ga';
 
 /**
  * default visibility and text for error labels
@@ -88,6 +89,7 @@ class AccountForm extends Component {
 
     // client side validation first
     if (this.clientValidation()) {
+      track('Authentication', 'Account', 'Failed client validation');
       return;
     }
 
@@ -111,6 +113,7 @@ class AccountForm extends Component {
         // show grunt / close form
         this.props.uiSetGrunt(`Account updated to ${user.firstName} ${user.lastName} ( ${user.email} )`);
         this.props.uiShowAuthenticationForm('none');
+        track('Authentication', 'Account', 'Success');
       })
       .catch((reason) => {
         const defaultMessage = 'Unexpected error, please check your connection';
@@ -118,6 +121,7 @@ class AccountForm extends Component {
         this.showServerErrors({
           message,
         });
+        track('Authentication', 'Account', message);
       });
   }
 

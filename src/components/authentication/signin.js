@@ -23,6 +23,7 @@ import {
 import invariant from 'invariant';
 import { userLogin } from '../../actions/user';
 import { projectOpen } from '../../actions/projects';
+import track from '../../analytics/ga';
 
 /**
  * default visibility and text for error labels
@@ -63,6 +64,7 @@ class SignInForm extends Component {
     this.props.uiSpin('Signing in... Please wait.');
     this.props.userLogin(this.emailAddress, this.password)
       .then(user => {
+        track('Authentication', 'Sign In', 'Success');
         // close the form
         this.props.uiSpin();
         this.props.uiShowAuthenticationForm('none');
@@ -75,6 +77,7 @@ class SignInForm extends Component {
         this.showServerErrors({
           message,
         });
+        track('Authentication', 'Sign In', message);
       });
   }
 

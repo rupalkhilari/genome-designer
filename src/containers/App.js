@@ -23,6 +23,7 @@ import AboutForm from '../components/aboutform';
 import OrderModal from '../containers/orders/ordermodal';
 import ModalSpinner from '../components/modal/modalspinner';
 import SaveErrorModal from '../components/modal/SaveErrorModal';
+import track from '../analytics/ga';
 
 import '../styles/App.css';
 
@@ -43,6 +44,21 @@ class App extends Component {
   componentDidMount() {
     document.addEventListener('keydown', this.rejectBackspace);
     document.addEventListener('keypress', this.rejectBackspace);
+    // track top level, unhandled exceptions in the app
+    window.onerror = function() {
+      const a = Array.from(arguments);
+      const json = {};
+      a.forEach((arg, index) => {
+        // we except strings as arguments or stringable object. toString ensures
+        // things like functions won't cause problems with JSON.stringify
+        json[index] = arg.toString();
+      });
+      const str = JSON.stringify(json, null, 2);
+      track('Errors', 'Unhandled Exception', str);
+
+      // rethrow the error :(
+      throw new Error(arguments[0]);
+    }
   }
 
   rejectBackspace(evt) {
