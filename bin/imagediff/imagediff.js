@@ -1,6 +1,6 @@
 var resemble = require('../../node_modules/node-resemble-js/resemble.js');
 var fs = require('../../node_modules/fs-extra/lib/index.js');
-var readline = require('readline');
+var readline = require('readline-sync');
 var path = require('path');
 var clc = require('../../node_modules/cli-color/index.js');
 var execSync = require('child_process').execSync;
@@ -44,18 +44,12 @@ const handleDifference = (cannonical, test) => {
   console.log(clc.yellow('Test Failed, Options Are:'));
   console.log('1 - Test Passes, Update Cannonical Image and Continue');
   console.log('2 - Test Fails, Continue');
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-  });
-  rl.question('\nSelect the action: ', (answer) => {
-    rl.close();
-    const n = parseFloat(answer);
-    if (n === 1) {
-      // overwrite cannonical image with test image
-      fs.copySync(test, cannonical);
-    }
-  });
+  const answer = readline.question('\nSelect the action: ');
+  const n = parseFloat(answer);
+  if (n === 1) {
+    // overwrite cannonical image with test image
+    fs.copySync(test, cannonical);
+  }
 }
 
 console.log('|====== Screenshot Comparison ======|');
