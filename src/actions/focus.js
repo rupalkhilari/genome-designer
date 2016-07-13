@@ -20,7 +20,7 @@ import safeValidate from '../schemas/fields/safeValidate';
 import { id as idValidatorCreator } from '../schemas/fields/validators';
 import Block from '../models/Block';
 import Project from '../models/Project';
-import { operators } from '../inventory/gsl';
+import { operatorIds } from '../inventory/gsl';
 
 const idValidator = (id) => safeValidate(idValidatorCreator(), true, id);
 
@@ -161,7 +161,7 @@ export const focusPrioritize = (level = 'project') => {
 
 export const focusGsl = (gslId) => {
   return (dispatch, getState) => {
-    invariant(operators.indexOf(gslId) >= 0, 'must pass a valid GSL operator ID');
+    invariant(operatorIds.indexOf(gslId) >= 0, 'must pass a valid GSL operator ID');
 
     dispatch({
       type: ActionTypes.FOCUS_GSL_OPERATOR,

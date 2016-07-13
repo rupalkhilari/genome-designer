@@ -17,13 +17,14 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import InputSimple from './../InputSimple';
 import GslOperatorSchema from '../../schemas/GslOperator';
+import { operatorIds } from '../../inventory/gsl';
 import InspectorRow from './InspectorRow';
 import PickerItem from '../ui/PickerItem';
 
 export class InspectorGsl extends Component {
   static propTypes = {
-    instance: (props, propName) => {
-      if (!GslOperatorSchema.validate((props[propName]))) {
+    gslId: (props, propName) => {
+      if (!operatorIds.indexOf((props[propName])) >= 0) {
         return new Error('must pass a valid GSL Operator');
       }
     },
