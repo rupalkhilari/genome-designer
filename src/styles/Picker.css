@@ -95,11 +95,6 @@
       border-color: rgba(255,255,255,0.5);
     }
 
-    &.readOnly:hover {
-      border-color: transparent;
-      cursor: default;
-    }
-
     &.active {
       cursor: default;
       border-color: white;
@@ -116,6 +111,15 @@
 
     &.active svg {
       opacity: 1;
+    }
+
+    &.readOnly:hover {
+      border-color: transparent;
+      cursor: default;
+
+      svg {
+        opacity: 0.5;
+      }
     }
   }
 

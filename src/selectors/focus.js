@@ -17,13 +17,21 @@ import * as BlockSelector from './blocks';
 
 //todo - this should not be exposed as part of 3rd party API... exported so inspector can share. may want to move to another file?
 export const _getFocused = (state, defaultToConstruct = true, defaultProjectId = null) => {
-  const { level, forceProject, forceBlocks, projectId, constructId, blockIds, gslId, options } = state.focus;
+  const { level, forceProject, forceBlocks, projectId, constructId, blockIds, gslId, roleId, options } = state.focus;
 
   if (level === 'gsl') {
     return {
       type: 'gsl',
       readOnly: true,
       focused: gslId,
+    };
+  }
+
+  if (level === 'role') {
+    return {
+      type: 'role',
+      readOnly: true,
+      focused: roleId,
     };
   }
 

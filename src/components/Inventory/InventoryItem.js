@@ -30,7 +30,7 @@ import {
   uiSetGrunt,
   uiSpin,
 } from '../../actions/ui';
-import { focusForceBlocks, focusGsl } from '../../actions/focus';
+import { focusForceBlocks, focusGsl, focusRole } from '../../actions/focus';
 
 import '../../styles/InventoryItem.css';
 
@@ -58,6 +58,7 @@ export class InventoryItem extends Component {
     focusBlocks: PropTypes.array.isRequired,
     inspectorToggleVisibility: PropTypes.func.isRequired,
     focusGsl: PropTypes.func.isRequired,
+    focusRole: PropTypes.func.isRequired,
     focusForceBlocks: PropTypes.func.isRequired,
     uiSetGrunt: PropTypes.func.isRequired,
     uiSpin: PropTypes.func.isRequired,
@@ -129,15 +130,18 @@ export class InventoryItem extends Component {
   }
 
   handleClick = () => {
-    const { item, onSelect, inventoryType, inspectorToggleVisibility, focusForceBlocks, focusGsl } = this.props;
+    const { item, onSelect, inventoryType, inspectorToggleVisibility, focusForceBlocks, focusGsl, focusRole } = this.props;
 
     const promise = (!!onSelect) ? onSelect(item) : Promise.resolve(item);
 
     promise.then(result => {
-      if (inventoryType === blockDragType || inventoryType === roleDragType) {
+      //todo - this shouldnt be responsibility of this generic component. move into specific components.
+      if (inventoryType === blockDragType) {
         focusForceBlocks([result]);
       } else if (inventoryType === gslDragType) {
         focusGsl(result.id);
+      } else if (inventoryType === roleDragType) {
+        focusRole(result.id);
       }
       inspectorToggleVisibility(true);
     });
@@ -181,6 +185,7 @@ export default connect((state) => {
 }, {
   focusForceBlocks,
   focusGsl,
+  focusRole,
   inspectorToggleVisibility,
   uiSetGrunt,
   uiSpin,

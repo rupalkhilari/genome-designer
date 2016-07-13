@@ -20,7 +20,8 @@ import safeValidate from '../schemas/fields/safeValidate';
 import { id as idValidatorCreator } from '../schemas/fields/validators';
 import Block from '../models/Block';
 import Project from '../models/Project';
-import { operatorIds } from '../inventory/gsl';
+import { operators } from '../inventory/gsl';
+import { symbolMap } from '../inventory/roles'; 
 
 const idValidator = (id) => safeValidate(idValidatorCreator(), true, id);
 
@@ -149,7 +150,7 @@ export const focusForceProject = (project) => {
 
 export const focusPrioritize = (level = 'project') => {
   return (dispatch, getState) => {
-    invariant(['project', 'construct', 'block', 'gsl'].indexOf(level) >= 0, 'must pass a valid type to give priority to');
+    invariant(['project', 'construct', 'block', 'gsl', 'role'].indexOf(level) >= 0, 'must pass a valid type to give priority to');
 
     dispatch({
       type: ActionTypes.FOCUS_PRIORITIZE,
@@ -161,11 +162,22 @@ export const focusPrioritize = (level = 'project') => {
 
 export const focusGsl = (gslId) => {
   return (dispatch, getState) => {
-    invariant(operatorIds.indexOf(gslId) >= 0, 'must pass a valid GSL operator ID');
+    invariant(operators[gslId], 'must pass a valid GSL operator ID');
 
     dispatch({
       type: ActionTypes.FOCUS_GSL_OPERATOR,
       gslId,
+    });
+  };
+};
+
+export const focusRole = (roleId) => {
+  return (dispatch, getState) => {
+    invariant(symbolMap[roleId], 'must pass a valid Role ID');
+
+    dispatch({
+      type: ActionTypes.FOCUS_ROLE,
+      roleId,
     });
   };
 };

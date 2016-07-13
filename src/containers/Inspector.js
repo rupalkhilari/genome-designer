@@ -19,6 +19,7 @@ import { inspectorToggleVisibility } from '../actions/ui';
 import { _getFocused } from '../selectors/focus';
 
 import InspectorGsl from '../components/Inspector/InspectorGsl';
+import InspectorRole from '../components/Inspector/InspectorRole';
 import InspectorBlock from '../components/Inspector/InspectorBlock';
 import InspectorProject from '../components/Inspector/InspectorProject';
 
@@ -50,6 +51,10 @@ export class Inspector extends Component {
     case 'gsl':
       inspect = (<InspectorGsl gslId={focused}
                                readOnly/>);
+      break;
+    case 'role':
+      inspect = (<InspectorRole roleId={focused}
+                                readOnly/>);
       break;
     case 'project':
       inspect = (<InspectorProject instance={focused}
