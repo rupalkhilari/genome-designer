@@ -95,6 +95,11 @@
       border-color: rgba(255,255,255,0.5);
     }
 
+    &.readOnly:hover {
+      border-color: transparent;
+      cursor: default;
+    }
+
     &.active {
       cursor: default;
       border-color: white;

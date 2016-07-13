@@ -17,9 +17,11 @@ import React, { PropTypes } from 'react';
 import RoleSvg from '../RoleSvg';
 
 export default function PickerItem(props) {
-  const { isCurrent, svg, name, styles, onClick, onMouseEnter, onMouseOut } = props;
+  const { readOnly, isCurrent, svg, name, styles, onClick, onMouseEnter, onMouseOut } = props;
 
-  return (<a className={'Picker-item' + (isCurrent ? ' active' : '')}
+  return (<a className={'Picker-item' +
+                        (isCurrent ? ' active' : '') +
+                        (readOnly ? ' readOnly' : '')}
              alt={name}
              title={name}
              style={styles}
@@ -37,7 +39,8 @@ export default function PickerItem(props) {
 }
 
 PickerItem.propTypes = {
-  isCurrent: PropTypes.bool.isRequired,
+  readOnly: PropTypes.bool,
+  isCurrent: PropTypes.bool,
   styles: PropTypes.object,
   svg: PropTypes.string,
   name: PropTypes.string,
@@ -47,6 +50,8 @@ PickerItem.propTypes = {
 };
 
 PickerItem.defaultProps = {
+  readOnly: false,
+  isCurrent: false,
   onMouseEnter: () => {},
   onClick: () => {},
   onMouseOut: () => {},

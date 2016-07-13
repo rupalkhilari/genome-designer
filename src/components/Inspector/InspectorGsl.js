@@ -16,15 +16,14 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import InputSimple from './../InputSimple';
-import GslOperatorSchema from '../../schemas/GslOperator';
-import { operatorIds } from '../../inventory/gsl';
+import { operators } from '../../inventory/gsl';
 import InspectorRow from './InspectorRow';
 import PickerItem from '../ui/PickerItem';
 
 export class InspectorGsl extends Component {
   static propTypes = {
     gslId: (props, propName) => {
-      if (!operatorIds.indexOf((props[propName])) >= 0) {
+      if (!operators[props[propName]]) {
         return new Error('must pass a valid GSL Operator');
       }
     },
@@ -32,7 +31,8 @@ export class InspectorGsl extends Component {
   };
 
   render() {
-    const { instance, readOnly } = this.props;
+    const { gslId, readOnly } = this.props;
+    const instance = operators[gslId];
 
     return (
       <div className="InspectorContent InspectorContentGsl">
@@ -57,11 +57,15 @@ export class InspectorGsl extends Component {
         </InspectorRow>
 
         <InspectorRow heading="Examples">
-          {instance.examples.map(example => (<div className="InspectorContentGsl-example">{example}</div>))}
+          {instance.examples.map((example, index) => (
+            <div key={index}
+                 className="InspectorContentGsl-example">{example}</div>
+          ))}
         </InspectorRow>
 
         <InspectorRow heading="Syntax Coloring">
-          <PickerItem styles={{backgroundColor: instance.color}}/>
+          <PickerItem readOnly
+                      styles={{backgroundColor: instance.color}}/>
         </InspectorRow>
 
       </div>

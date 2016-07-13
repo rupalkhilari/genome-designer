@@ -1,31 +1,36 @@
 /*
-Copyright 2016 Autodesk,Inc.
+ Copyright 2016 Autodesk,Inc.
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import DnD from '../../containers/graphics/dnd/dnd';
 import MouseTrap from '../../containers/graphics/mousetrap';
 import RoleSvg from '../RoleSvg';
 import BasePairCount from '../ui/BasePairCount';
+import { 
+  block as blockDragType,
+  gsl as gslDragType,
+  role as roleDragType,
+} from '../../constants/DragTypes';
 
 import {
   inspectorToggleVisibility,
   uiSetGrunt,
   uiSpin,
- } from '../../actions/ui';
-import { focusForceBlocks } from '../../actions/focus';
+} from '../../actions/ui';
+import { focusForceBlocks, focusGsl } from '../../actions/focus';
 
 import '../../styles/InventoryItem.css';
 
@@ -51,6 +56,7 @@ export class InventoryItem extends Component {
     forceBlocks: PropTypes.array.isRequired,
     focusBlocks: PropTypes.array.isRequired,
     inspectorToggleVisibility: PropTypes.func.isRequired,
+    focusGsl: PropTypes.func.isRequired,
     focusForceBlocks: PropTypes.func.isRequired,
     uiSetGrunt: PropTypes.func.isRequired,
     uiSpin: PropTypes.func.isRequired,
@@ -122,12 +128,16 @@ export class InventoryItem extends Component {
   }
 
   handleClick = () => {
-    const { item, onSelect, inspectorToggleVisibility, focusForceBlocks } = this.props;
+    const { item, onSelect, inventoryType, inspectorToggleVisibility, focusForceBlocks, focusGsl } = this.props;
 
     const promise = (!!onSelect) ? onSelect(item) : Promise.resolve(item);
 
     promise.then(result => {
-      focusForceBlocks([result]);
+      if (inventoryType === blockDragType || inventoryType === roleDragType) {
+        focusForceBlocks([result]);
+      } else if (inventoryType === gslDragType) {
+        focusGsl(result.id);
+      }
       inspectorToggleVisibility(true);
     });
   };
@@ -153,7 +163,8 @@ export class InventoryItem extends Component {
             {itemName}
           </span>
           {itemDetail && <span className="InventoryItem-detail">{itemDetail}</span>}
-          {(!itemDetail && hasSequence) && <span className="InventoryItem-detail"><BasePairCount count={item.sequence.length}/></span>}
+          {(!itemDetail && hasSequence) &&
+          <span className="InventoryItem-detail"><BasePairCount count={item.sequence.length}/></span>}
         </a>
       </div>
     );
@@ -167,6 +178,7 @@ export default connect((state) => {
   };
 }, {
   focusForceBlocks,
+  focusGsl,
   inspectorToggleVisibility,
   uiSetGrunt,
   uiSpin,
