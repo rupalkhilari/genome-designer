@@ -24,6 +24,7 @@ import { projectOpen } from '../../actions/projects';
 import { userRegister } from '../../actions/user';
 import invariant from 'invariant';
 import { tos, privacy } from '../../utils/ui/uiapi';
+import track from '../../analytics/ga';
 
 /**
  * default visibility and text for error labels
@@ -78,6 +79,7 @@ class RegisterForm extends Component {
     evt.preventDefault();
     // client side validation first
     if (this.clientValidation()) {
+      track('Authentication', 'Sign Up', 'Failed client validation');
       return;
     }
     this.props.uiSpin('Creating your account... Please wait.');
@@ -88,6 +90,7 @@ class RegisterForm extends Component {
       lastName: this.lastName,
     })
     .then((json) => {
+      track('Authentication', 'Sign Up', 'Success');
       // close the form / wait message
       this.props.uiSpin();
       this.props.uiShowAuthenticationForm('none');
@@ -100,6 +103,7 @@ class RegisterForm extends Component {
       this.showServerErrors({
         message,
       });
+      track('Authentication', 'Sign Up', message);
     });
   }
 

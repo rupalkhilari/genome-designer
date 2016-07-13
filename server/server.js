@@ -135,7 +135,9 @@ app.get('*', (req, res) => {
       discourseDomain: process.env.BNR_ENV_URL_SUFFIX || `https://forum.bionano.autodesk.com`,
     };
     //so that any routing is delegated to the client
-    res.render(path.join(pathContent + '/index.pug'), Object.assign({}, req.user, discourse));
+    res.render(path.join(pathContent + '/index.pug'), Object.assign({}, req.user, discourse, {
+      productionEnvironment: process.env.NODE_ENV === 'production',
+    }));
   }
 });
 

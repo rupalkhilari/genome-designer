@@ -421,18 +421,13 @@ export default class ConstructViewerUserInterface extends UserInterface {
    */
   update() {
     super.update();
-    if (this.isSelectedConstruct()) {
+    if (this.constructViewer.isFocused()) {
       this.lighten();
     } else {
       this.darken();
     }
   }
-  /**
-   * true if we are the selected construct
-   */
-  isSelectedConstruct() {
-    return this.constructViewer.props.construct.id === this.constructViewer.props.focus.constructId;
-  }
+
   /**
    * select the construct if not already selected
    */
@@ -609,6 +604,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * a drag entered the construct viewer
    */
   onDragEnter(globalPoint, payload) {
+    this.dragInside = true;
     this.hideEdgeInsertionPoint();
     this.hideBlockInsertionPoint();
     this.selectConstruct();
@@ -617,6 +613,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * drag left the construct viewer
    */
   onDragLeave() {
+    this.dragInside = false;
     this.hideEdgeInsertionPoint();
     this.hideBlockInsertionPoint();
   }
