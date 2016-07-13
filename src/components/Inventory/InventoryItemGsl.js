@@ -46,12 +46,11 @@ export default class InventoryItemRole extends Component {
   render() {
     const { operator, ...rest } = this.props;
 
-    //todo - need to support Role SVGs. probably need to update the roleSVG component to have a generic internal class which just takes a URL
     return (
       <div className="InventoryItemGsl">
         <InventoryItem {...rest}
           inventoryType={gslDragType}
-          svg={operator.id}
+          image={operator.image}
           item={this.operator}
           dataAttribute={`gsl ${operator.id}`}/>
       </div>

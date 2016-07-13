@@ -7,7 +7,7 @@ export const colors = {
 
 export const operators = [
   {
-    id: 'locus',
+    id: 'geneLocus',
     name: 'Gene Locus',
     type: 'Level 1 Prefix',
     description: `Type the g operator as a prefix to a gene name to specify that gene by name`,
@@ -62,7 +62,7 @@ export const operators = [
     color: colors.red,
   },
   {
-    id: 'fusible',
+    id: 'orfFusible',
     name: 'Fusible ORF, no stop codon',
     type: 'Level 1 Prefix',
     description: ``,
@@ -86,7 +86,7 @@ export const operators = [
     color: colors.red,
   },
   {
-    id: 'startSlice',
+    id: 'sliceStart',
     name: 'Start-relative Slice',
     type: 'Level 1 Postfix',
     description: ``,
@@ -94,7 +94,7 @@ export const operators = [
     color: colors.red,
   },
   {
-    id: 'endSlice',
+    id: 'sliceEnd',
     name: 'End-relative Slice',
     type: 'Level 1 Postfix',
     description: ``,
@@ -126,8 +126,8 @@ export const operators = [
     color: colors.red,
   },
   {
-    id: 'external',
-    name: 'External Reference or Variable',
+    id: 'variable',
+    name: 'Variable or External Reference',
     type: 'Level 2 Operator',
     description: ``,
     examples: [],
@@ -176,7 +176,7 @@ export const operators = [
 ]
   .map(operator => {
     return Object.assign(GslOperatorSchema.scaffold(), operator, {
-      image: `images/gsl/${operator.id}.svg`,
+      image: `/images/gsl/GSL-${operator.id}.svg`,
     });
   })
   .reduce((acc, operator) => Object.assign(acc, { [operator.id]: operator }), {});

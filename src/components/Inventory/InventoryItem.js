@@ -19,7 +19,7 @@ import DnD from '../../containers/graphics/dnd/dnd';
 import MouseTrap from '../../containers/graphics/mousetrap';
 import RoleSvg from '../RoleSvg';
 import BasePairCount from '../ui/BasePairCount';
-import { 
+import {
   block as blockDragType,
   gsl as gslDragType,
   role as roleDragType,
@@ -44,6 +44,7 @@ export class InventoryItem extends Component {
       }).isRequired,
     }).isRequired,
     itemDetail: PropTypes.string, //gray text shown after
+    image: PropTypes.string, //takes precedence over svg
     svg: PropTypes.string, //right now, SBOL SVG ID
     svgProps: PropTypes.object,
     defaultName: PropTypes.string,
@@ -143,7 +144,7 @@ export class InventoryItem extends Component {
   };
 
   render() {
-    const { item, itemDetail, svg, svgProps, defaultName, inventoryType, dataAttribute, forceBlocks, focusBlocks } = this.props;
+    const { item, itemDetail, image, svg, svgProps, defaultName, inventoryType, dataAttribute, forceBlocks, focusBlocks } = this.props;
     const isSelected = forceBlocks.indexOf(item) >= 0 || focusBlocks.some(focusId => item.id === focusId);
 
     const hasSequence = item.sequence && item.sequence.length > 0;
@@ -152,13 +153,14 @@ export class InventoryItem extends Component {
 
     return (
       <div className={'InventoryItem' +
-        (!!svg ? ' hasImage' : '') +
+        ((!!image || !!svg) ? ' hasImage' : '') +
         (!!isSelected ? ' selected' : '')}
            ref={(el) => this.itemElement = el}
            data-inventory={dataAttr}>
         <a className="InventoryItem-item"
            onClick={this.handleClick}>
-          {svg ? <RoleSvg symbolName={svg} color="white" {...svgProps} styles={{marginTop: '-0.25em'}}/> : null}
+          {image && (<span className="InventoryItem-image" style={{backgroundImage: `url(${image})`}} />)}
+          {(svg && !image) ? <RoleSvg symbolName={svg} color="white" {...svgProps} styles={{marginTop: '-0.25em'}}/> : null}
           <span className="InventoryItem-text">
             {itemName}
           </span>
