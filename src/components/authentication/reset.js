@@ -20,6 +20,7 @@ import { userLogin } from '../../actions/user';
 import { reset } from '../../middleware/data';
 import invariant from 'invariant';
 import { projectOpen } from '../../actions/projects';
+import track from '../../analytics/ga';
 
 /**
  * default visibility and text for error labels
@@ -57,6 +58,7 @@ class RegisterForm extends Component {
     evt.preventDefault();
     // client side validation first
     if (this.clientValidation()) {
+      track('Authentication', 'Reset', 'Failed client validation');
       return;
     }
 
@@ -66,6 +68,7 @@ class RegisterForm extends Component {
           this.showServerErrors(json);
           return;
         }
+        track('Authentication', 'Reset', 'Success');
         this.props.uiSetGrunt(`Your password has been reset`);
         // we can sign in the user since we have their password and email
         this.props.userLogin(this.getParameter('e'), this.password)
@@ -83,6 +86,7 @@ class RegisterForm extends Component {
         this.showServerErrors({
           message: reason.message || 'Unexpected error, please check your connection',
         });
+        track('Authentication', 'Reset', 'Unexpected Error');
       });
   }
 

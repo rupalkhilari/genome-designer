@@ -126,6 +126,15 @@ export class ConstructViewerCanvas extends Component {
   }
 
   /**
+   * scroll to top when a new construct viewer is added
+   */
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.children.length > this.props.children.length) {
+      ReactDOM.findDOMNode(this).scrollTop = 0;
+    }
+  }
+
+  /**
    * clicking on canvas unselects all blocks
    */
   onClick = (evt) => {
