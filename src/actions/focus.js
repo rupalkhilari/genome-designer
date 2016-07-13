@@ -1,18 +1,18 @@
 /*
-Copyright 2016 Autodesk,Inc.
+ Copyright 2016 Autodesk,Inc.
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
 import * as ActionTypes from '../constants/ActionTypes';
 import * as BlockSelector from '../selectors/blocks';
 import invariant from 'invariant';
@@ -20,6 +20,7 @@ import safeValidate from '../schemas/fields/safeValidate';
 import { id as idValidatorCreator } from '../schemas/fields/validators';
 import Block from '../models/Block';
 import Project from '../models/Project';
+import { operators } from '../inventory/gsl';
 
 const idValidator = (id) => safeValidate(idValidatorCreator(), true, id);
 
@@ -148,13 +149,24 @@ export const focusForceProject = (project) => {
 
 export const focusPrioritize = (level = 'project') => {
   return (dispatch, getState) => {
-    invariant(['project', 'construct', 'block'].indexOf(level) >= 0, 'must pass a valid type to give priority to');
+    invariant(['project', 'construct', 'block', 'gsl'].indexOf(level) >= 0, 'must pass a valid type to give priority to');
 
     dispatch({
       type: ActionTypes.FOCUS_PRIORITIZE,
       level,
     });
     return level;
+  };
+};
+
+export const focusGsl = (gslId) => {
+  return (dispatch, getState) => {
+    invariant(operators.indexOf(gslId) >= 0, 'must pass a valid GSL operator ID');
+
+    dispatch({
+      type: ActionTypes.FOCUS_GSL_OPERATOR,
+      gslId,
+    });
   };
 };
 

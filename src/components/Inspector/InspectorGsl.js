@@ -48,7 +48,6 @@ export class InspectorGsl extends Component {
                        value={instance.type}/>
         </InspectorRow>
 
-
         <InspectorRow heading="Usage">
           <InputSimple placeholder="Description of usage"
                        useTextarea
@@ -69,5 +68,4 @@ export class InspectorGsl extends Component {
   }
 }
 
-export default connect(() => ({}), {
-})(InspectorGsl);
+export default connect(() => ({}), {})(InspectorGsl);

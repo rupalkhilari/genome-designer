@@ -20,9 +20,10 @@ import invariant from 'invariant';
 export const initialState = {
   forceProject: null, //forced model
   forceBlocks: [], //forced models
-  projectId: null, //current project. Set by projectPage. preferred over route query.
+  projectId: null, //current project. Set by projectPage. preferred over route query. //todo - remove. use router.
   blockIds: [], //ids of selection
   constructId: null, //id of current
+  gslId: null, // ID of focused GSL
   level: 'project', //what to give priority to (when defined)
   options: {}, //map {listBlockId : selectedOptionId}
 };
@@ -36,6 +37,7 @@ export default function inventory(state = initialState, action) {
       blockIds: [],
       constructId: null,
       forceProject: project,
+      gslId: null,
       level: 'project',
     });
 
@@ -47,6 +49,7 @@ export default function inventory(state = initialState, action) {
       forceProject: null,
       blockIds: [],
       constructId: null,
+      gslId: null,
       level: 'block',
     });
 
@@ -56,6 +59,7 @@ export default function inventory(state = initialState, action) {
       forceProject: null,
       forceBlocks: [],
       projectId: projectId,
+      gslId: null,
       level: 'project',
     });
 
@@ -65,6 +69,7 @@ export default function inventory(state = initialState, action) {
       forceProject: null,
       forceBlocks: [],
       constructId: constructId,
+      gslId: null,
       level: 'construct',
     });
 
@@ -75,6 +80,7 @@ export default function inventory(state = initialState, action) {
       forceProject: null,
       forceBlocks: [],
       blockIds: blockIds,
+      gslId: null,
       level: 'block',
     });
 
@@ -88,7 +94,15 @@ export default function inventory(state = initialState, action) {
     const { options } = action;
     return Object.assign({}, state, {
       level: 'option',
+      gslId: null,
       options,
+    });
+
+  case ActionTypes.FOCUS_GSL_OPERATOR :
+    const { gslId } = action;
+    return Object.assign({}, state, {
+      level: 'gsl',
+      gslId,
     });
 
   case ActionTypes.BLOCK_OPTION_TOGGLE :
