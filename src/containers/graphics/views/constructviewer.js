@@ -189,6 +189,22 @@ export class ConstructViewer extends Component {
     window.removeEventListener('resize', this.resizeDebounced);
   }
 
+  componentWillReceiveProps(nextProps) {
+    // scroll into view when focused by user, unless this is a result of a drag operation
+    if (!this.sg.ui.dragInside) {
+      const hasFocus = this.isFocused();
+      const willFocus = nextProps.construct.id === nextProps.focus.constructId;
+      if (!hasFocus && willFocus) {
+        const element = ReactDOM.findDOMNode(this);
+        if (element.scrollIntoViewIfNeeded) {
+          element.scrollIntoViewIfNeeded(true);
+        } else {
+          element.scrollIntoView();
+        }
+      }
+    }
+  }
+
   /**
    * given a construct ID return the current viewer if there is one
    */
@@ -557,6 +573,14 @@ export class ConstructViewer extends Component {
 
   isSampleProject() {
     return this.props.projectGet(this.props.currentProjectId).isSample;
+  }
+
+  /**
+   * true if our construct is focused
+   * @return {Boolean}
+   */
+  isFocused() {
+    return this.props.construct.id === this.props.focus.constructId;
   }
 
   lockIcon() {
