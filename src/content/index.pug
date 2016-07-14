@@ -10,10 +10,10 @@ html
             firstName       : "#{firstName}",
             lastName        : "#{lastName}",
         };
-        
+
         var discourseDomain = "#{discourseDomain}";
         var productionEnvironment = #{productionEnvironment}
-        
+
     -if (productionEnvironment)
       script.
           (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -22,12 +22,13 @@ html
           })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
           ga('create', 'UA-63638898-3', 'auto');
           ga('send', 'pageview');
-        
+
   body
 
     #root
     //- any html/svg templates you want included verbatim
     div(style="display: none;visibility: hidden;margin-left: -10000px;")
+      include ../images/roleSymbols/templates/emptyBlock.svg
       include ../images/roleSymbols/templates/cds.svg
       include ../images/roleSymbols/templates/insulator.svg
       include ../images/roleSymbols/templates/operator.svg
@@ -41,7 +42,6 @@ html
       include ../images/roleSymbols/templates/terminator.svg
       include ../images/roleSymbols/templates/structural.svg
       include ../images/roleSymbols/templates/restrictionSite.svg
-      include ../images/roleSymbols/templates/noSymbol.svg
       include ../images/ui/disclosure_triangle_closed.svg
       include ../images/ui/lock.svg
 

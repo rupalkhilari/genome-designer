@@ -60,8 +60,7 @@ export default class SymbolPicker extends Component {
 
   render() {
     const { current, readOnly, onSelect } = this.props;
-    const noSymbol = 'noSymbol';
-    const noSymbolText = 'No Symbol';
+    const noSymbol = 'emptyBlock';
     const currentSymbol = current || ((current === false) ? null : noSymbol);
 
     return (
@@ -88,13 +87,6 @@ export default class SymbolPicker extends Component {
                                     onClick={() => !readOnly && onSelect(id)}
                 />);
               })}
-              <PickerItem isCurrent={!current}
-                          name={noSymbolText}
-                          svg={noSymbol}
-                          onMouseEnter={() => this.onMouseEnter(noSymbolText)}
-                          onMouseOut={(evt) => evt.stopPropagation()}
-                          onClick={() => !readOnly && onSelect(null)}
-              />
             </div>
           </div>
         )}
