@@ -13,14 +13,13 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-import Instance from './Instance';
-import invariant from 'invariant';
+import Immutable from './Immutable';
 import AnnotationSchema from '../schemas/Annotation';
 import cloneDeep from 'lodash.clonedeep';
 import color from '../utils/generators/color';
 import { symbolMap } from '../inventory/roles';
 
-export default class Annotation extends Instance {
+export default class Annotation extends Immutable {
   constructor(input) {
     super(input, AnnotationSchema.scaffold(), { color: color() });
   }
