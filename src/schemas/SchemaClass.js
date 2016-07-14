@@ -1,23 +1,27 @@
 /*
-Copyright 2016 Autodesk,Inc.
+ Copyright 2016 Autodesk,Inc.
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
 import mapValues from '../utils/object/mapValues';
 
 /**
  * Schemas are used internally for ensure data is consistent and valid, and guarantee the presence of various fields.
- * @class Schema
+ * Schemas provide functions for scaffolding, used internally by models, to ensure the presence and correctness of Instance fields.
+ * Validation occurs compared to the schema, validating field types and object-wide validation.
+ * Fields all have a description, and `describe()` will output the fields of the schema and a description of each.
+ * @name Schema
+ * @class
  * @param fieldDefinitions {Object} dictionary of field names to definitions. Definitions take the form:
  * [
  *   parameterizedFieldType {function} Parameterized field type (e.g. fields.id().required)
@@ -49,13 +53,18 @@ import mapValues from '../utils/object/mapValues';
 
  */
 export default class Schema {
+  /**
+   * Create a Schema
+   * @param {Object} fieldDefinitions Object whose keys are field names, and values are arrays as defined in {@link Schema} class description
+   */
   constructor(fieldDefinitions) {
     this.definitions = fieldDefinitions;
     this.fields = createFields(fieldDefinitions);
     this.type = this.constructor.name; //to mirror fields, in validation
   }
 
-  extend(childDefinitions) {
+  //prefer ES6 extension
+  extend(childDefinitions = {}) {
     if (process.env.NODE_ENV !== 'production') {
       console.warn('it is recommedned you extend Schemas using ES6 classes, not the extend() method');
     }
@@ -66,11 +75,31 @@ export default class Schema {
     ));
   }
 
+  /**
+   * Clone the schema
+   * @returns {Schema}
+   */
   clone() {
     return new this.constructor(this.definitions);
   }
 
-  validateFields(instance = {}, shouldThrow) {
+  /**
+   * Validate the fields of the schema, skipping object wide validation if the schema has defined any.
+   * @param {object} instance Object to validate
+   * @param {boolean} [shouldThrow=false]
+   * @throws if `shouldThrow === true` and instance is invalid
+   * @returns {boolean} True if valid
+   */
+  validateFields(instance, shouldThrow = false) {
+    if (typeof instance !== 'object') {
+      const errorMessage = `Instance provided to validate() is not an object, got ${instance}`;
+      if (shouldThrow) {
+        throw Error(errorMessage);
+      } else if (process.env.NODE_ENV !== 'production') {
+        console.error(errorMessage); //eslint-disable-line
+      }
+    }
+
     return Object.keys(this.fields).every(fieldName => {
       const instanceFieldValue = instance[fieldName];
       const field = this.fields[fieldName];
@@ -100,27 +129,38 @@ export default class Schema {
     });
   }
 
-  //may want to extend this function in your class for instance-wide validation, not just of fields
-  validate(instance, shouldThrow) {
+  /**
+   * Validate a schema.
+   * This function can be extended in subclasses for instance-wide validation, not just of fields
+   * @param {object} instance Object to validate
+   * @param {boolean} [shouldThrow=false]
+   * @throws if `shouldThrow === true` and instance is invalid
+   * @returns {boolean} True if valid
+   */
+  validate(instance, shouldThrow = false) {
     return this.validateFields(instance, shouldThrow);
   }
 
+  /**
+   * Describe the Schema. Outputs an object whose keys are all the fields, and whose values are descriptions of each field.
+   * @returns {Object}
+   */
   describe() {
-    return mapValues(this.fields, field => (
-      field.description ||
-      field.typeDescription ||
-      '<no description>'
-    ));
+    const defaultDesc = '<no description>';
+    return mapValues(this.fields, field => `${field.description || field.typeDescription || defaultDesc} (required: ${isFieldRequired(field)}, default: ${scaffoldField(field)})`);
   }
 
+  /**
+   * Create a scaffold of a schema, which includes required fields (unless specified not to be scaffolded) and default values
+   * @param {boolean} [onlyRequiredFields=false]
+   * @returns {Object} Object with keys of the schema and their default values
+   */
   scaffold(onlyRequiredFields = false) {
-    const defaultScaffoldValue = null;
-
     return Object.keys(this.fields).reduce((scaffold, fieldName) => {
       const field = this.fields[fieldName];
-      const fieldRequired = (field instanceof Schema) || field.fieldRequired;
+      const fieldRequired = isFieldRequired(field);
 
-      if (onlyRequiredFields && !fieldRequired) {
+      if (onlyRequiredFields === true && !fieldRequired) {
         return scaffold;
       }
 
@@ -133,9 +173,7 @@ export default class Schema {
         return scaffold;
       }
 
-      const fieldValue = (typeof field.scaffold === 'function') ?
-        field.scaffold(field.params) :
-        defaultScaffoldValue;
+      const fieldValue = scaffoldField(field);
       return Object.assign(scaffold, { [fieldName]: fieldValue });
     }, {});
   }
@@ -172,4 +210,15 @@ function createSchemaField(inputField, description = '', additional) {
     { description },
     additional
   );
+}
+
+function isFieldRequired(field) {
+  return (field instanceof Schema) || field.fieldRequired;
+}
+
+const defaultScaffoldValue = null;
+function scaffoldField(field) {
+  return (typeof field.scaffold === 'function' && !field.avoidScaffold) ?
+    field.scaffold(field.params) :
+    defaultScaffoldValue;
 }
