@@ -30,8 +30,6 @@ module.exports = {
       // expect three construct views, two with one block each
       .assert.countelements('.construct-viewer', 3)
       .assert.countelements('[data-nodetype="block"]', 2)
-      // expect SVG elements for each role symbol
-      .assert.countelements('.construct-viewer svg', 2);
 
     // save project
     clickMainMenu(browser, 1, 1);
@@ -62,8 +60,6 @@ module.exports = {
       // expect four constructs and three blocks
       .assert.countelements('.construct-viewer', 4)
       .assert.countelements('[data-nodetype="block"]', 3)
-      // expect SVG elements for each role symbol
-      .assert.countelements('.construct-viewer svg', 3);
 
     //drag a single block to create a new construct
     dragFromTo(browser, '.InventoryItem-item', 10, 10, '.cvc-drop-target', 10, 10);
@@ -73,8 +69,6 @@ module.exports = {
       // expect four construct views and 4 blocks
       .assert.countelements('.construct-viewer', 5)
       .assert.countelements('[data-nodetype="block"]', 4)
-      // expect SVG elements for each role symbol but not for the last block added
-      .assert.countelements('.construct-viewer svg', 3)
       // generate test image
       .saveScreenshot('./test-e2e/current-screenshots/drag-saved-construct.png')
       .end();
