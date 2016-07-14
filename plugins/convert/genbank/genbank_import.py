@@ -69,6 +69,9 @@ def convert_block_to_feature(all_blocks, to_convert, parent, to_remove_list):
         else:
             feature["notes"][key] = value
 
+    if "role" in to_convert["rules"]:
+        feature["role"] = to_convert["rules"]["role"]
+
     #feature["sequence"] = to_convert["sequence"]["sequence"]
 
     if "annotations" not in parent["sequence"]:

@@ -7,14 +7,15 @@
 
  http://www.apache.org/licenses/LICENSE-2.0
 
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
- */
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 import { set as pathSet, unset as pathUnset, cloneDeep, merge } from 'lodash';
 import invariant from 'invariant';
+import Immutable from './Immutable';
 import InstanceSchema from '../schemas/Instance';
 import safeValidate from '../schemas/fields/safeValidate';
 import { version } from '../schemas/fields/validators';
@@ -26,7 +27,7 @@ const versionValidator = (ver, required = false) => safeValidate(version(), requ
  * @class
  * @gc Model
  */
-export default class Instance {
+export default class Instance extends Immutable {
   /**
    * Create an instance
    * @param {object} input Input object
@@ -37,16 +38,12 @@ export default class Instance {
   constructor(input = {}, subclassBase, moreFields) {
     invariant(typeof input === 'object', 'must pass an object (or leave undefined) to model constructor');
 
-    merge(this,
+    return super(merge(
       InstanceSchema.scaffold(),
       subclassBase,
       moreFields,
       input,
-    );
-
-    if (process.env.NODE_ENV !== 'production') {
-      require('deep-freeze')(this);
-    }
+    ));
   }
 
   /**
