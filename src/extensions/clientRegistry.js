@@ -19,7 +19,7 @@ import './loadExtensions';
 export const registry = {};
 const callbacks = [];
 
-export const validRegion = (region) => regions.hasOwnProperty(region);
+export const validRegion = (region) => region === null || regions.hasOwnProperty(region);
 
 //returns an array
 export const extensionsByRegion = (region) => {

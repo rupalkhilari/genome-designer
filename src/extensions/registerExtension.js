@@ -20,16 +20,13 @@ import invariant from 'invariant';
 const registerExtension = (manifest, render) => {
   const { name, region } = manifest;
   invariant(name, 'Name is required');
-  invariant(region, 'Region (manifest.region) is required to register a plugin');
   invariant(typeof render === 'function', 'Must provide a render function to register a plugin');
+  invariant(region || region === null, 'Region (manifest.region) is required to register a plugin, or null for non-visual plugins');
+  invariant(validRegion(region), 'Region must be a valid region');
 
-  if (validRegion(region)) {
-    const merged = merge({}, registry[name], manifest, {render});
-    register(merged);
-    return merged;
-  } else {
-    throw new Error(`extension region ${region} unrecognized`);
-  }
+  const merged = merge({}, registry[name], manifest, {render});
+  register(merged);
+  return merged;
 };
 
 export default registerExtension;

@@ -37,7 +37,7 @@ describe('Extensions', () => {
           }
           expect(result.body).to.be.an.object;
           assert(result.body.name === 'simple');
-          assert(result.body.region === 'sequenceDetail');
+          assert(result.body.region === null);
           done();
         });
     });
