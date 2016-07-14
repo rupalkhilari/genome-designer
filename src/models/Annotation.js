@@ -18,20 +18,44 @@ import invariant from 'invariant';
 import AnnotationSchema from '../schemas/Annotation';
 import cloneDeep from 'lodash.clonedeep';
 
+/**
+ * Annotations mark regions of sequence with notes, colors, roles, etc.
+ * Annotations are often used in imports due to the hierarchical nature of the Genetic Constructor data model. Blocks do not allow for overlaps, but many sequences have overlapping annotations. Annotations which do not overlap are used to create the Block hierarchy, while overlaps are converted into instances of the Annotation class.
+ */
 export default class Annotation extends Instance {
+  /**
+   * Create an annotation
+   * @param {object} input Input object for the annotation to merge onto the scaffold
+   */
   constructor(input) {
     super(input, AnnotationSchema.scaffold());
   }
 
-  //return an unfrozen JSON (
+  /**
+   * Create an unfrozen annotation, extending input with schema
+   * @param {object} [input]
+   * @returns {object} an unfrozen JSON, no instance methods
+   */
   static classless(input) {
     return cloneDeep(new Annotation(input));
   }
 
+  /**
+   * Validate an annotation
+   * @static
+   * @param {object} input Object to validate
+   * @param {boolean} [throwOnError=false] Validation should throw on errors
+   * @throws if you specify throwOnError
+   * @returns {boolean} Whether input valid
+   */
   static validate(input, throwOnError) {
     return AnnotationSchema.validate(input, throwOnError);
   }
 
+  /**
+   * Get the length of the annotation
+   * @returns {number}
+   */
   get length() {
     //todo - this is super naive
     return this.end - this.start;

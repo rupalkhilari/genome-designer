@@ -16,6 +16,7 @@ limitations under the License.
 import mapValues from '../utils/object/mapValues';
 
 /**
+ * Schemas are used internally for ensure data is consistent and valid, and guarantee the presence of various fields.
  * @class Schema
  * @param fieldDefinitions {Object} dictionary of field names to definitions. Definitions take the form:
  * [

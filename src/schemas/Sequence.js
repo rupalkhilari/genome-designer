@@ -17,12 +17,6 @@ import fields from './fields/index';
 import Schema from './SchemaClass';
 import AnnotationSchema from './Annotation';
 
-/**
- @name SequenceSchema
- @description
- A sequence, typically of a part and a large string. Sequences are references because they are not usually loaded in the applicaiton, and may be very large, so can be loaded with their own API for defining desired regions.
- */
-
 const fieldDefs = {
   md5: [
     fields.string(),
@@ -62,4 +56,8 @@ export class SequenceSchemaClass extends Schema {
   }
 }
 
+/**
+ A sequence, typically of a part and a large string. Sequences are references because they are not usually loaded in the application, and may be very large, so can be loaded with their own API for defining desired regions.
+ @name SequenceSchema
+ */
 export default new SequenceSchemaClass();
