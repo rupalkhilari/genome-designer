@@ -17,12 +17,13 @@ limitations under the License.
 /**
  * The Store is the hub of all data in Genetic Constructor. It is a large object, treated as immutable, and only modified using actions. All components register a subscription to the store, and check whether they should update, generally using reference equality checks (since the store is immutable) or sometimes the action type.
  *
- * The store uses Redux {@link https://github.com/reactjs/redux}
- *
  * Actions are triggered by components / programmatically, dispatched to the store, and handled by reducers. Reducers actually modify the store (technically, perform the mutation and return a new instance). Then, subscribed listeners are passed the store, and check if the sections they care about have changed, and update as necessary.
+ *
+ * The store is organized into various sections, which have corresponding actions + selectors. It is probably most useful to inspect the structure of the store by calling {@link Store.getState}.
  *
  * All actions are enumerated in {@link module:ActionTypes}
  *
+ * The store uses Redux {@link https://github.com/reactjs/redux}
  * @module Store
  * @gc Store
  */
@@ -71,5 +72,7 @@ export { lastAction, dispatch, subscribe, getState, pause, resume, isPaused };
  * @name getState
  * @type Function
  * @returns {object} Current state
+ * @example
+ * const state = gd.store.getState();
  */
 export default store;
