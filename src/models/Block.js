@@ -60,7 +60,7 @@ export default class Block extends Instance {
   }
 
   /**
-   * Validate a block object
+   * Validate a Block data object
    * @param {object} input
    * @param {boolean} [throwOnError=false] Whether to throw on errors
    * @throws if `throwOnError===true`, will throw when invalid
@@ -310,9 +310,11 @@ export default class Block extends Instance {
   /**
    * Set Block's name
    * @param {string} newName
+   * @throws if not a string
    * @returns {Block}
    */
   setName(newName) {
+    invariant(typeof newName === 'string', 'must pass name string');
     const renamed = this.mutate('metadata.name', newName);
 
     if (this.isFiller()) {
