@@ -28,7 +28,8 @@ export const extensionsByRegion = (region) => {
       const manifest = registry[key];
       return manifest.region === region;
     })
-    .map(key => registry[key]);
+    .map(key => registry[key])
+    .sort((one, two) => one.name > two.name);
 };
 
 //this is used by registerExtension, should not be called directly. in future could just proxy adding of extension keys
