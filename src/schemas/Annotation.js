@@ -42,6 +42,10 @@ const fieldDefs = {
     fields.string(),
     'Description of annotation',
   ],
+  role: [
+    fields.string(),
+    `Role of the Annotation`,
+  ],
   sequence: [
     fields.sequence({loose: true}),
     'IUPAC sequence of the annotation',
