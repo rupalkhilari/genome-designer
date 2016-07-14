@@ -26,7 +26,6 @@ export default class InventoryItemRole extends Component {
     role: PropTypes.shape({
       id: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired,
-      images: PropTypes.object.isRequired,
     }).isRequired,
   };
 
@@ -41,11 +40,10 @@ export default class InventoryItemRole extends Component {
       id: symbol.id,
       metadata: {
         name: symbol.name,
-        image: symbol.images.thin,
         color: null,
       },
       rules: {
-        role: symbol.id,
+        role: symbol.id === 'null' ? null : symbol.id,
       },
     });
   }
