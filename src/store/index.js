@@ -13,6 +13,20 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
+/**
+ * The Store is the hub of all data in Genetic Constructor. It is a large object, treated as immutable, and only modified using actions. All components register a subscription to the store, and check whether they should update, generally using reference equality checks (since the store is immutable) or sometimes the action type.
+ *
+ * The store uses Redux {@link https://github.com/reactjs/redux}
+ *
+ * Actions are triggered by components / programmatically, dispatched to the store, and handled by reducers. Reducers actually modify the store (technically, perform the mutation and return a new instance). Then, subscribed listeners are passed the store, and check if the sections they care about have changed, and update as necessary.
+ *
+ * All actions are enumerated in {@link module:ActionTypes}
+ *
+ * @module Store
+ * @gc Store
+ */
+
 import configureStore from './configureStore';
 import { getLastAction as lastAction } from './saveLastActionMiddleware';
 
@@ -29,8 +43,33 @@ import { getLastAction as lastAction } from './saveLastActionMiddleware';
 
 const store = configureStore();
 
-//in general, you will want to use redux's connect() where possible. This is in the event you need direct access
+//within the app you should use redux's connect(). This is in the event you need direct access, e.g. third-party extensions
 const { dispatch, subscribe, getState, pause, resume, isPaused } = store;
 export { lastAction, dispatch, subscribe, getState, pause, resume, isPaused };
 
+/**
+ * Dispatch an action to the store
+ * @name dispatch
+ * @type Function
+ * @param {object} payload An object describing the mutation. Must include a `type` field.
+ */
+
+/**
+ * Register a subscription with the store.
+ *
+ * This will run every time the store changes, so it should be fast. Register only once if possible, and use a switch to react according to the action type, and use reference equality checks to the section you are interested in to see quickly if it has changed.
+ * @name subscribe
+ * @type Function
+ * @param {function} subscriber Function to subscribe to the store, It will be passed the store and lastAction type.
+ * @returns {function} function to call to unsubscribe
+ * @example
+ * var unsubscribe = gd.store.subscribe(function (store, lastAction) { ... });
+ */
+
+/**
+ * Get the current application state.
+ * @name getState
+ * @type Function
+ * @returns {object} Current state
+ */
 export default store;

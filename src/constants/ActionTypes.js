@@ -13,6 +13,11 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+/**
+ * ActionTypes module defines constants for every action (i.e. data manipulation) in the application API
+ * @module ActionTypes
+ */
+
 export const BLOCK_CREATE = 'BLOCK_CREATE';
 export const BLOCK_STASH = 'BLOCK_STASH';
 export const BLOCK_LOAD = 'BLOCK_LOAD';
@@ -81,7 +86,6 @@ export const UI_SHOW_GENBANK_IMPORT = 'UI_SHOW_GENBANK_IMPORT';
 export const UI_SAVE_ERROR = 'UI_SAVE_ERROR';
 
 export const USER_SET_USER = 'USER_SET_USER';
-export const USER_LOGIN = 'USER_LOGIN';
 
 export const CLIPBOARD_SET_DATA = 'CLIPBOARD-SET-DATA';
 
