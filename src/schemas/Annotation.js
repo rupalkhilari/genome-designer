@@ -42,6 +42,10 @@ const fieldDefs = {
     fields.string(),
     'Description of annotation',
   ],
+  color: [
+    fields.string(),
+    `Color of the Annotation`,
+  ],
   role: [
     fields.string(),
     `Role of the Annotation`,

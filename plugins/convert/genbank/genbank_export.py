@@ -76,16 +76,23 @@ def convert_annotations(block, gb):
     for annotation in block["sequence"]["annotations"]:
         gb_annot = SeqFeature.SeqFeature()
         annotation_type = "unknown"
+
+        if "role" in annotation and annotation["role"] != "":
+            annotation_type = annotation["role"]
+
         for key, value in annotation.iteritems():
-            if key not in ["start", "end", "notes", "strand"]:
+            if key not in ["start", "end", "notes", "strand", "color", "role"]:
                 gb_annot.qualifiers[key] = value
+            elif key == "color":
+                gb_annot.qualifiers["GC_Color"] = value
             elif key == "notes":
                 for notes_key, notes_value in annotation["notes"].iteritems():
                     if notes_key == "genbank":
                         for gb_key, gb_value in notes_value.iteritems():
-                            gb_annot.qualifiers[gb_key] = gb_value
-                    if notes_key == "type":
-                        annotation_type = notes_value
+                            if gb_key not in ["type"]:
+                                gb_annot.qualifiers[gb_key] = gb_value
+                            elif gb_key == "type":
+                                annotation_type = gb_value
 
         if "start" in annotation:
             strand = 1

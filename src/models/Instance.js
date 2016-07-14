@@ -13,9 +13,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import uuid from 'node-uuid';
 import { set as pathSet, unset as pathUnset, cloneDeep, merge } from 'lodash';
 import invariant from 'invariant';
+import Immutable from './Immutable';
 import InstanceSchema from '../schemas/Instance';
 import safeValidate from '../schemas/fields/safeValidate';
 import { version } from '../schemas/fields/validators';
@@ -27,20 +27,16 @@ const versionValidator = (ver, required = false) => safeValidate(version(), requ
  * you can pass as argument to the constructor either:
  *  - an object, which will extend the created instance
  */
-export default class Instance {
+export default class Instance extends Immutable {
   constructor(input = {}, subclassBase, moreFields) {
     invariant(typeof input === 'object', 'must pass an object (or leave undefined) to model constructor');
 
-    merge(this,
+    return super(merge(
       InstanceSchema.scaffold(),
       subclassBase,
       moreFields,
       input,
-    );
-
-    if (process.env.NODE_ENV !== 'production') {
-      require('deep-freeze')(this);
-    }
+    ));
   }
 
   //use cloneDeep and perform mutation prior to calling constructor because constructor may freeze object

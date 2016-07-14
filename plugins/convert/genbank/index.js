@@ -4,10 +4,12 @@ import * as filePaths from '../../../server/utils/filePaths';
 import path from 'path';
 import Project from '../../../src/models/Project';
 import Block from '../../../src/models/Block';
+import Annotation from '../../../src/models/Annotation';
 import merge from 'lodash.merge';
 import _ from 'lodash';
 import BlockSchema from '../../../src/schemas/Block';
 import ProjectSchema from '../../../src/schemas/Project';
+import AnnotationSchema from '../../../src/schemas/Annotation';
 import * as persistence from '../../../server/data/persistence';
 import md5 from 'md5';
 
@@ -50,13 +52,21 @@ const createBlockStructureAndSaveSequence = (block, sourceId) => {
   //get the sequence md5
   const sequenceMd5 = block.sequence.sequence ? md5(block.sequence.sequence) : '';
 
+  // Remap annotations
+  let allAnnotations = [];
+  if (block.sequence.annotations) {
+    allAnnotations = block.sequence.annotations.map(ann => {
+      return Annotation.classless(merge({}, AnnotationSchema.scaffold(true), ann));
+    });
+  }
+
   //reassign values
   const toMerge = {
     metadata: block.metadata,
     sequence: {
       md5: sequenceMd5,
       length: block.sequence.length,
-      annotations: block.sequence.annotations, //you will likely have to remap these...
+      annotations: allAnnotations,
     },
     source: {
       id: fileName,

@@ -9,6 +9,7 @@ import * as filePaths from '../../server/utils/filePaths';
 import { errorDoesNotExist } from '../../server/utils/errors';
 import md5 from 'md5';
 import { merge, filter } from 'lodash';
+import resetColorSeed from '../../src/utils/generators/color';
 
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
@@ -75,6 +76,7 @@ router.post('/:pluginId/convert', jsonParser, (req, resp, next) => {
 
   req.on('end', () => {
     const inputFilePath = filePaths.createStorageUrl(pluginId, md5(buffer));
+    resetColorSeed();
     return fileSystem.fileWrite(inputFilePath, buffer, false)
       .then(() => callImportFunction('convert', pluginId, inputFilePath))
       .then(converted => {
@@ -102,6 +104,7 @@ router.post('/:pluginId/:projectId?', jsonParser, (req, resp, next) => {
         const inputFilePath = filePaths.createStorageUrl(pluginId, md5(data));
         fileSystem.fileWrite(inputFilePath, data, false)
           .then((err) => {
+            resetColorSeed();
             return importProject(pluginId, inputFilePath)
               .then((roll) => {
                 if (!projectId) {
