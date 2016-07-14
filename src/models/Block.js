@@ -359,6 +359,13 @@ export default class Block extends Instance {
 
   //future - account for block.rules.filter
 
+  /**
+   * Adds a component by ID
+   * @param {UUID} componentId ID of child block
+   * @param {number} [index=this.components.length]
+   * @throws if fixed or list block, or if component ID invalid
+   * @returns {Block}
+   */
   addComponent(componentId, index) {
     invariant(!this.isFixed(), 'Block is fixed - cannot add/remove/move components');
     invariant(!this.isList(), 'cannot add components to a list block');
@@ -369,6 +376,12 @@ export default class Block extends Instance {
     return this.mutate('components', newComponents);
   }
 
+  /**
+   * Remove a component by ID
+   * @param componentId
+   * @throws If fixed
+   * @returns {Block} Returns same instance if componentId not found
+   */
   removeComponent(componentId) {
     invariant(!this.isFixed(), 'Block is fixed - cannot add/remove/move components');
     const spliceIndex = this.components.findIndex(compId => compId === componentId);
@@ -383,7 +396,14 @@ export default class Block extends Instance {
     return this.mutate('components', newComponents);
   }
 
-  //pass index to be at after spliced out
+  /**
+   * Move a component to a new index
+   * @param {UUID} componentId Component ID
+   * @param {number} newIndex index for block, after spliced out
+   * @throws if fixed or list
+   * @returns {Block}
+   */
+  //
   moveComponent(componentId, newIndex) {
     invariant(!this.isFixed(), 'Block is fixed - cannot add/remove/move components');
     invariant(!this.isList(), 'cannot add components to a list block');
@@ -409,7 +429,13 @@ export default class Block extends Instance {
 
   //future  - account for block.rules.filter
 
-  //for template usage i.e. the options have already been set
+  /**
+   * Toggle whether a list option is active.
+   * For Template usage.
+   * @param {...UUID} optionIds
+   * @throws if not a list block, or any optionId is not already a list option
+   * @returns {Block}
+   */
   toggleOptions(...optionIds) {
     invariant(this.isList(), 'must be a list block to toggle list options');
     invariant(optionIds.every(optionId => Object.prototype.hasOwnProperty.call(this.options, optionId)), 'Option ID must be present to toggle it');
@@ -421,7 +447,13 @@ export default class Block extends Instance {
     return this.mutate('options', options);
   }
 
-  //for list block authoring
+  /**
+   * Add list options as possibilities (they will be inactive).
+   * For template authoring.
+   * @param {...UUID} optionIds Block IDs to set as options
+   * @throws if not list block, or any option ID is invalid
+   * @returns {Block}
+   */
   addOptions(...optionIds) {
     invariant(this.isList(), 'must be a list block to add list options');
     invariant(optionIds.every(option => idValidator(option)), 'must pass component IDs');
@@ -435,7 +467,12 @@ export default class Block extends Instance {
     return this.mutate('options', newOptions);
   }
 
-  //for list block authoring
+  /**
+   * Remove list options from possibilities.
+   * For template authoring.
+   * @param {...UUID} optionIds Block IDs to set as options
+   * @returns {Block}
+   */
   removeOptions(...optionIds) {
     const cloned = cloneDeep(this.options);
     optionIds.forEach(id => {
@@ -449,6 +486,11 @@ export default class Block extends Instance {
     return this.mutate('options', cloned);
   }
 
+  /**
+   * Returns array of list options, by default only active ones
+   * @param {boolean} [includeUnselected=false] Include inactive list options
+   * @returns {Array.<UUID>}
+   */
   getOptions(includeUnselected = false) {
     return Object.keys(this.options).filter(id => this.options[id] || (includeUnselected === true));
   }
@@ -457,32 +499,37 @@ export default class Block extends Instance {
    sequence
    ************/
 
+  /**
+   * Check whether block has a sequence saved on the server, or an associated URL
+   * @returns {boolean}
+   */
   hasSequence() {
-    return !!this.sequence.md5;
+    return !!this.sequence.md5 || !!this.sequence.url;
   }
 
   /**
    * Retrieve the sequence of the block. Retrieves the sequence from the server, since it is stored in a separate file.
-   * @param format {String} accepts 'raw', 'fasta', 'genbank'
    * @returns {Promise} Promise which resolves with the sequence value, or (resolves) with null if no sequence is associated.
    */
-  getSequence(format = 'raw') {
-    const { md5, download } = this.sequence;
-    if (!md5) {
-      if (typeof download === 'function') {
-        return download();
-      }
+  getSequence() {
+    const { md5, download, url } = this.sequence;
 
-      return Promise.resolve(null);
+    if (typeof download === 'function') {
+      return Promise.resolve(download());
+    } else if (md5) {
+      return getSequence(md5);
+    } else if (url) {
+      return fetch(url).then(resp => resp.text());
     }
-    return getSequence(md5, format);
+
+    return Promise.resolve(null);
   }
 
-  //fixme - need to overwrite sequence.download() in case it exists
+  //todo - ability to set source
   /**
-   * Set sequence and write to server
+   * Set sequence and write to server. Updates the length and initial bases. The block's source will be set to 'user'.
    * @param {string} sequence New sequence
-   * @param {boolean} [useStrict=false]
+   * @param {boolean} [useStrict=false] strictness of sequence validation (IUPAC bases)
    * @param {boolean} [persistSource=false] Maintain the source of the block
    * @returns {Promise} Promise which resolves with the udpated block after the sequence is written to the server
    */

@@ -29,9 +29,14 @@ const fieldDefs = {
     `md5 hash of the sequence, used for lookup`,
   ],
 
+  url: [
+    fields.url(),
+    `URL of Sequence, md5 gets priority`,
+  ],
+
   length: [
     fields.number(),
-    `Length of the sequence (calculated on the server)`,
+    `Length of the sequence (calculated on set)`,
   ],
 
   annotations: [
