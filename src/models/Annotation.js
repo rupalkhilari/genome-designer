@@ -22,7 +22,7 @@ import { symbolMap } from '../inventory/roles';
 
 export default class Annotation extends Instance {
   constructor(input) {
-    super(input, AnnotationSchema.scaffold(), { metadata: { color: color() } });
+    super(input, AnnotationSchema.scaffold(), { color: color() });
   }
 
   //return an unfrozen JSON (
