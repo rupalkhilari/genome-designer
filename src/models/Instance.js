@@ -23,8 +23,10 @@ import { version } from '../schemas/fields/validators';
 const versionValidator = (ver, required = false) => safeValidate(version(), required, ver);
 
 /**
- * The Instance class is the base class for models. Models are immutable objects, which conform to a schema, and provide an explicit API for modifying their data
+ * Instances are immutable objects, which conform to a schema, and provide an explicit API for modifying their data.
+ * Instances have an ID, metadata, and are versioned (explicitly or implicitly by the Instance which owns them)
  * @class
+ * @extends Immutable
  * @gc Model
  */
 export default class Instance extends Immutable {
@@ -47,39 +49,17 @@ export default class Instance extends Immutable {
   }
 
   /**
-   * Change the value of a property, returning a new Instance
-   * Uses {@link https://lodash.com/docs#set lodash _.set()} syntax for path, e.g. `a[0].b.c`
-   * @param {string} path Path of property to change
-   * @param {*} value New value
-   * @returns {Instance} A new instance
-   * @example
-   * const initial = new Instance({some: {value: 9}});
-   * initial.some.value; //9
-   * const next = initial.mutate('some.value', 10);
-   * next.some.value; //10
-   * initial.some.value; //9
+   * See {@link Immutable.mutate}
    */
   mutate(path, value) {
-    //use cloneDeep and perform mutation prior to calling constructor because constructor may freeze object
-    const base = cloneDeep(this);
-    pathSet(base, path, value);
-    return new this.constructor(base);
+    return super.mutate(path, value);
   }
 
   /**
-   * Return a new Instance with input object merged into it
-   * Uses {@link https://lodash.com/docs#merge lodash _.merge()} for performing a deep merge
-   * @param {object} obj Object to merge into instance
-   * @returns {Instance} A new instance, with `obj` merged in
-   * @example
-   * const initial = new Instance();
-   * const next = initial.merge({new: 'stuff'});
+   * See {@link Immutable.merge}
    */
   merge(obj) {
-    //use cloneDeep and perform mutation prior to calling constructor because constructor may freeze object
-    const base = cloneDeep(this);
-    merge(base, obj);
-    return new this.constructor(base);
+    return super.merge(obj);
   }
 
   /**
