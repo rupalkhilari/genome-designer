@@ -15,13 +15,17 @@
  */
 import Immutable from './Immutable';
 import AnnotationSchema from '../schemas/Annotation';
-import cloneDeep from 'lodash.clonedeep';
+import { merge, cloneDeep } from 'lodash';
 import color from '../utils/generators/color';
 import { symbolMap } from '../inventory/roles';
 
 export default class Annotation extends Immutable {
   constructor(input) {
-    super(input, AnnotationSchema.scaffold(), { color: color() });
+    return super(merge(
+      AnnotationSchema.scaffold(),
+      { color: color() },
+      input,
+    ));
   }
 
   //return an unfrozen JSON (
