@@ -4,7 +4,7 @@ import AnnotationSchema from '../../src/schemas/Annotation';
 import merge from 'lodash.merge';
 
 describe('Model', () => {
-  describe.only('Annotation', () => {
+  describe('Annotation', () => {
     let annotation;
     beforeEach(() => {
       annotation = new Annotation();

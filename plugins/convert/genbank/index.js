@@ -56,7 +56,7 @@ const createBlockStructureAndSaveSequence = (block, sourceId) => {
   let allAnnotations = [];
   if (block.sequence.annotations) {
     allAnnotations = block.sequence.annotations.map(ann => {
-      return Annotation.classless(merge({}, AnnotationSchema.scaffold(true), ann));
+      return Annotation.classless(ann);
     });
   }
 
