@@ -1,6 +1,4 @@
 import * as fileSystem from '../../server/utils/fileSystem';
-import * as persistence from '../../server/data/persistence';
-import path from 'path';
 import invariant from 'invariant';
 import Block from '../../src/models/Block';
 import parse from 'csv-parse';
@@ -67,9 +65,10 @@ export function convertCsv(csvContents, fileName, fileUrl) {
   })
     //remove top rows
     .then(lines => {
+      //todo - ensure these are fields, beyond just making sure a required field is present
       //todo - should be lower case in the doc
       fields = lines.shift(1).map(name => name.toLowerCase());
-      console.log('using fields: ' + fields.join(', '));
+      console.log('csvjs import - using fields: ' + fields.join(', '));
       if (!fields.some(fieldName => requiredFields.indexOf(fieldName) >= 0)) {
         return Promise.reject('no required fields present');
       }

@@ -55,6 +55,7 @@ router.get('/file/:fileId', (req, res, next) => {
 
 router.post('/:projectId?', jsonParser, (req, resp, next) => {
   const { projectId } = req.params;
+  const noSave = req.query.hasOwnProperty('noSave');
 
   let csvFile;
   // save incoming file then read back the string data.
@@ -91,6 +92,10 @@ router.post('/:projectId?', jsonParser, (req, resp, next) => {
     //todo - handle catch here for CSV failures
     //get maps of sequence hash and blocks, write sequences first
     .then(({ blocks, sequences }) => {
+      if (noSave) {
+        return Promise.resolve(blocks);
+      }
+
       return Promise.all(Object.keys(sequences).map(sequenceMd5 => {
         const sequence = sequences[sequenceMd5];
         return sequence.length > 0 ?
@@ -126,15 +131,15 @@ router.post('/:projectId?', jsonParser, (req, resp, next) => {
         .then(() => roll);
     })
     .then(roll => {
+      if (noSave) {
+        return Promise.resolve(roll);
+      }
+
       return rollup.writeProjectRollup(roll.project.id, roll, req.user.uuid)
         .then(() => persistence.projectSave(roll.project.id, req.user.uuid))
-        .then(commit => resp.status(200).json({ ProjectId: roll.project.id }))
-        .catch(err => {
-          console.log('Error in Import : ' + err);
-          console.log(err.stack);
-          resp.status(500).send(err);
-        });
+        .then(() => roll);
     })
+    .then((roll) => resp.status(200).json({ ProjectId: roll.project.id }))
     .catch(err => {
       console.log('Error in Import: ' + err);
       console.log(err.stack);
