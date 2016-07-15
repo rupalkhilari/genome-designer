@@ -1,0 +1,15 @@
+{
+  "name": "linked",
+  "version": "1.0.0",
+  "description": "Linked extension, ease development using `npm link`",
+  "main": "index.js",
+  "region": "sequenceDetail",
+  "readable": "Linked Example",
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "d3": "^4.1.1",
+    "jquery": "^3.1.0",
+    "react": "^15.2.1"
+  }
+}

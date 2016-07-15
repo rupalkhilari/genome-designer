@@ -6,10 +6,6 @@ var manifest = {
   "region": null
 };
 
-function render() {
-  var subscriber = window.gd.store.subscribe(function simpleStoreSubscription(state, lastAction) {
-    console.log(lastAction, state);
-  });
-}
-
-window.gd.registerExtension(manifest, render);
+var subscriber = window.gd.store.subscribe(function simpleStoreSubscription(state, lastAction) {
+  console.log(lastAction, state);
+});
