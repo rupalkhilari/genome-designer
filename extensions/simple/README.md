@@ -7,3 +7,17 @@ It demonstrates what is minimally needed to write an extension, and demonstrates
 This extension does not have any visual element - it simply exists and interacts with the app non-visually.
 
 No building or installation is necessary.
+
+### Files
+
+#### package.json
+
+`package.json` is most easily created by running `npm init`.
+
+For front-end extensions, the field `region` is required.
+
+#### index.js
+
+This is the file that is actually served and executed on the client.
+
+Extensions may simply register to the store etc by interacting with the GC API at `window.gd`
