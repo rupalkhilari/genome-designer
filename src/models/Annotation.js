@@ -15,7 +15,7 @@
  */
 import Immutable from './Immutable';
 import AnnotationSchema from '../schemas/Annotation';
-import cloneDeep from 'lodash.clonedeep';
+import { merge, cloneDeep } from 'lodash';
 import color from '../utils/generators/color';
 import { symbolMap } from '../inventory/roles';
 
@@ -32,7 +32,11 @@ export default class Annotation extends Immutable {
    * @param {object} input Input object for the annotation to merge onto the scaffold
    */
   constructor(input) {
-    super(input, AnnotationSchema.scaffold(), { color: color() });
+    return super(merge(
+      AnnotationSchema.scaffold(),
+      { color: color() },
+      input,
+    ));
   }
 
   /**

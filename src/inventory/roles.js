@@ -16,6 +16,7 @@ limitations under the License.
 /** @module roles */
 
 export const symbolMap = {
+  'null': 'No Symbol',
   promoter: 'Promoter',
   cds: 'CDS',
   terminator: 'Terminator',
@@ -57,17 +58,10 @@ export const roleMassager = {
    selection
  */
 
-function makeImagePath(fileName, folder = 'thin') {
-  return '/images/roleSymbols/' + folder + '/' + fileName + '.svg';
-}
 
 const symbols = Object.keys(symbolMap).map(key => ({
   id: key,
   name: symbolMap[key],
-  images: {
-    thin: makeImagePath(key, 'thin'),
-    templates: makeImagePath(key, 'templates'),
-  },
 }));
 
 export default symbols;
