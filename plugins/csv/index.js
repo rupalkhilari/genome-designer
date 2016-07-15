@@ -4,7 +4,7 @@ import formidable from 'formidable';
 import invariant from 'invariant';
 import md5 from 'md5';
 
-import convertCsv from './convert';
+import convertFromFile from './convert';
 
 //GC specific
 import Project from '../../src/models/Project';
@@ -16,17 +16,25 @@ import * as rollup from '../../server/data/rollup';
 import { errorDoesNotExist } from '../../server/utils/errors';
 import resetColorSeed from '../../src/utils/generators/color'; //necessary?
 
+const storagePrefix = 'csvJS';
+
+//make storage directory just in case...
+fileSystem.directoryMake(filePaths.createStorageUrl(storagePrefix));
+
+const createFilePath = (fileName) => {
+  invariant(fileName, 'need a file name');
+  return filePaths.createStorageUrl(storagePrefix, fileName);
+};
+const createFileUrl = (fileName) => {
+  invariant(fileName, 'need a file name');
+  return '/convert/csv/file/' + fileName;
+};
+
 //create the router
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
   strict: false, //allow values other than arrays and objects
 });
-
-const storagePrefix = 'csvJS';
-const createFilePath = (fileName) => {
-  invariant(fileName, 'need a file name');
-  return filePaths.createStorageUrl(storagePrefix, fileName);
-};
 
 //route to download files
 router.get('/file/:fileId', (req, res, next) => {
@@ -59,18 +67,28 @@ router.post('/:projectId?', jsonParser, (req, resp, next) => {
       if (err) {
         return reject(err);
       }
-      resolve(files, fields);
+      resolve(files);
     });
   })
-    .then((files, fields) => fileSystem.fileRead(files.data.path, false)
-      .then((data) => {
-        csvFile = createFilePath(md5(data));
-        return fileSystem.fileWrite(csvFile, data, false)
-          .then(() => {
-            resetColorSeed();
-            return convertCsv(csvFile, { fields });
-          });
-      }))
+    .then(files => {
+      const tempPath = files.data.path;
+
+      if (!tempPath) {
+        return Promise.reject('no file provided');
+      }
+
+      return fileSystem.fileRead(tempPath, false)
+        .then((data) => {
+          const fileName = md5(data);
+          csvFile = createFilePath(fileName);
+          return fileSystem.fileWrite(csvFile, data, false)
+            .then(() => {
+              resetColorSeed();
+              return convertFromFile(csvFile, fileName, createFileUrl(fileName));
+            });
+        });
+    })
+    //todo - handle catch here for CSV failures
     //get maps of sequence hash and blocks, write sequences first
     .then(({ blocks, sequences }) => {
       return Promise.all(Object.keys(sequences).map(sequenceMd5 => {
@@ -83,6 +101,10 @@ router.post('/:projectId?', jsonParser, (req, resp, next) => {
     })
     .then(blocks => {
       const blockIds = Object.keys(blocks);
+
+      if (!blockIds.length) {
+        return Promise.reject('no valid blocks');
+      }
 
       if (!projectId) {
         const project = Project.classless({ components: blockIds });

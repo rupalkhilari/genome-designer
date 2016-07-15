@@ -6,8 +6,10 @@ import Block from '../../src/models/Block';
 import parse from 'csv-parse';
 import md5 from 'md5';
 
-const csvFields = ['name', 'description', 'sequence', 'role', 'color'];
-const headerRows = 1;
+//default fields in the CSV
+const defaultColumns = ['name', 'description', 'role', 'color', 'sequence'];
+//one of these fields is required for each block attempting to import
+const requiredFields = ['name', 'description', 'role', 'sequence'];
 
 const roleMassageMap = {
   CDS: 'cds',
@@ -23,12 +25,23 @@ const zip = (keys, vals) => keys.reduce(
 
 const mapPartFields = (importedObject) => {
   //fields based on array at top
-  const { name, description, role, sequence, ...rest } = importedObject;
+  const {
+    name = 'New Block',
+    description = '',
+    role = null,
+    sequence = null,
+    color,
+    ...rest,
+  } = importedObject;
+
+  //todo - rest of fields should remove the @ symbol
+  //can update docs to say this is not necessary
 
   return {
     metadata: {
       name,
-      description: description,
+      description,
+      color,
     },
     rules: {
       role,
@@ -40,65 +53,71 @@ const mapPartFields = (importedObject) => {
   };
 };
 
-const defaultOutputPath = path.join(__dirname, './converted.json');
-const defaultOptions = {
-  fields: csvFields,
-  outputPath: defaultOutputPath,
-};
+export function convertCsv(csvContents, fileName, fileUrl) {
+  invariant(typeof csvContents === 'string', 'expected a string');
 
-export default function convertCsv(csvPath, inputOptions = {}) {
-  invariant(csvPath, 'need a csv path as command line arg');
-
-  const options = Object.assign({}, defaultOptions, inputOptions);
+  let fields;
   const sequenceHash = {}; //hash of md5s, update as we go through blocks, write at end
 
-  //todo - ensure have all the fields we expect in `csvFields`
-  console.log('using fields:');
-  console.log(options.fields);
-
-  return fileSystem.fileRead(csvPath, false)
-    .then(contents => {
-      return new Promise((resolve, reject) => {
-        parse(contents, {}, (err, output) => {
-          if (err) return reject(err);
-          resolve(output);
-        });
-      });
-    })
+  return new Promise((resolve, reject) => {
+    parse(csvContents, {}, (err, output) => {
+      if (err) return reject(err);
+      resolve(output);
+    });
+  })
     //remove top rows
-    .then(lines => lines.slice(headerRows))
+    .then(lines => {
+      //todo - should be lower case in the doc
+      fields = lines.shift(1).map(name => name.toLowerCase());
+      console.log('using fields: ' + fields.join(', '));
+      if (!fields.some(fieldName => requiredFields.indexOf(fieldName) >= 0)) {
+        return Promise.reject('no required fields present');
+      }
+      return lines;
+    })
     //remove empty lines
     .then(lines => lines.filter(line => line.some(field => !!field)))
     //make object with appropriate keys
-    .then(lines => lines.map(line => zip(options.fields, line)))
+    .then(lines => lines.map(line => zip(fields, line)))
+    //remove parts which do not have any required fields
+    .then(parts => parts.filter(part => requiredFields.some(field => !!part[field])))
     //assign role
     .then(parts => parts.map(part => Object.assign(part, { role: roleMassageMap[part.role] || part.role || null })))
     //map fields to block fields
     .then(parts => parts.map(part => mapPartFields(part)))
+    //assign the source
+    .then(parts => parts.map(part => {
+      //assign the source
+      return Object.assign(part, {
+        source: {
+          source: 'csv',
+          id: fileName,
+          url: fileUrl,
+        },
+      });
+    }))
     //update the sequence field
     .then(parts => parts.map(part => {
       const { sequence } = part;
-      const sequenceMd5 = md5(sequence);
 
-      const updatedPart = Object.assign(part, {
-        sequence: {
-          md5: sequenceMd5,
-          length: sequence.length,
-          initialBases: '' + sequence.substr(0, 6),
-        },
-        source: {
-          source: 'csv',
-          id: csvPath,
-          url: '', //todo - add a URL (may need to pass this in?)
-        },
-      });
+      //only assign seqeuence information if we have a sequence
+      if (!!sequence) {
+        const sequenceMd5 = md5(sequence);
+        Object.assign(part, {
+          sequence: {
+            md5: sequenceMd5,
+            length: sequence.length,
+            initialBases: '' + sequence.substr(0, 6),
+          },
+        });
 
-      Object.assign(sequenceHash, {
-        [sequenceMd5]: sequence,
-      });
+        Object.assign(sequenceHash, {
+          [sequenceMd5]: sequence,
+        });
+      }
 
       //wrap in the block scaffold
-      return Block.classless(updatedPart);
+      return Block.classless(part);
     }))
     //make a map
     .then(blocks => blocks.reduce((acc, block) => Object.assign(acc, { [block.id]: block }), {}))
@@ -106,4 +125,11 @@ export default function convertCsv(csvPath, inputOptions = {}) {
       blocks: blockMap,
       sequences: sequenceHash,
     }));
+}
+
+export default function convertFromFile(csvPath, fileName, fileUrl) {
+  invariant(csvPath, 'need a csv path');
+
+  return fileSystem.fileRead(csvPath, false)
+    .then((contents) => convertCsv(contents, fileName, fileUrl));
 }
