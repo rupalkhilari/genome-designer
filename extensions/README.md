@@ -2,6 +2,12 @@ Extensions are client-side additions for Genetic Constructor, which allow for in
 
 This directory is for local extensions only. By default, they will not automatically be installed. Extensions that are accessible to the server should be listed in `/server/extensions/package.json` and will be installed using npm. Extensions in this folder will only be accessible if listed in that manifest.
 
+### Install extensions
+
+In general, extensions listed in `/server/extensions/package.json` and are installed using `npm run install-extensions`. This will install packages, which are assumed to be already build. We make no guarantees that all package dependencies will be installed.
+
+If you are developing locally, you may list packages with relative paths, as allowed by NPM in `package.json`. You may wish to use `npm link` while you are developing (see below).
+
 ### Tips
 
 ##### `npm link`
