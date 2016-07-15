@@ -26,6 +26,7 @@ const fieldDefs = {
   url: [
     fields.url(),
     `URL of Sequence, md5 gets priority`,
+    { scaffold: false },
   ],
 
   length: [
