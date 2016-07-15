@@ -21,10 +21,11 @@ import { dispatch } from '../../../store/index';
 import { difference } from '../../../utils/set/set';
 
 /**
- * actual Drag and Drop manager.
+ * Drag and Drop manager. Creates a singleton which allows registration of drag targets and drop targets
+ * The singleton is exposed on the window at window.gd.DnD for extensions to register their own drop targets
+ * @module DnD
  */
 class DnD {
-
   constructor() {
     this.targets = [];
     this.monitors = new Set();
@@ -32,11 +33,13 @@ class DnD {
     this.mouseUp = this.onMouseUp.bind(this);
   }
 
-  // start a drag operation using the given element proxy for display purposes
-  // and starting from the given global position. Payload is any object representing
-  // what is being dragged
-  // valid options:
-  //  - onDrop(target) - can return a payload to use onDrop
+  /**
+   * start a drag operation using the given element proxy for display purposes
+   * and starting from the given global position. Payload is any object representing
+   * what is being dragged
+   * valid options:
+   * - onDrop(target) - can return a payload to use onDrop
+   */
   startDrag(elementProxy, globalPosition, payload, options = {}) {
     // the body must have position relative for this to work ( or we could add
     // an element to act as a drag surface but that seems like overkill )

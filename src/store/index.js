@@ -53,6 +53,11 @@ export { lastAction, dispatch, subscribe, getState, pause, resume, isPaused };
  * @name dispatch
  * @type Function
  * @param {object} payload An object describing the mutation. Must include a `type` field.
+ * @example
+ * //anti-pattern - recommend you always use actions
+ * //create a block without using an action by dispatching automatically
+ * const type = gd.actionTypes.BLOCK_CREATE;
+ * const block = gd.store.dispatch({type});
  */
 
 /**
