@@ -15,7 +15,11 @@ limitations under the License.
 */
 import fetch from 'isomorphic-fetch';
 
-//reject on 4xx and 5xx responses, otherwise should have no effect
+/**
+ * Fetch wrapper. Reject on 4xx and 5xx responses, otherwise should have no effect
+ *
+ * @private
+ */
 export default function rejectingFetch(...args) {
   return fetch(...args)
     .then(resp => {
