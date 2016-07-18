@@ -46,7 +46,7 @@ export default class UserInterface {
   }
   /**
    * replace current selections, call with falsey to reset selections
-   * @param {[type]} newSelections [description]
+   *
    */
   setSelections(newSelections) {
     this.selections = newSelections ? newSelections.slice() : [];
@@ -54,7 +54,7 @@ export default class UserInterface {
   }
   /**
    * add to selections, ignores if already present
-   * @param {[type]} node [description]
+   *
    */
   addToSelections(nodes) {
     let added = 0;
@@ -70,8 +70,8 @@ export default class UserInterface {
   }
   /**
    * remove from selections, ignores if not present
-   * @param  {[type]} node [description]
-   * @return {[type]}      [description]
+   *
+   *
    */
   removeFromSelections(node) {
     invariant(node.sg === this.sg, 'node is not in our scenegraph');
@@ -83,7 +83,7 @@ export default class UserInterface {
   }
   /**
    * returns true if the node is selected
-   * @param  {[type]}  node [description]
+   *
    * @return {Boolean}      [description]
    */
   isSelected(node) {
@@ -92,7 +92,7 @@ export default class UserInterface {
 
   /**
    * create / add / remove selection elements according to current selections
-   * @return {[type]} [description]
+   *
    */
   updateSelections() {
     // bucket any items are don't need anymore, we will try to reuse them
@@ -178,7 +178,7 @@ export default class UserInterface {
 
   /**
    * general update, called whenever our scenegraph updates
-   * @return {[type]} [description]
+   *
    */
   update() {
     this.updateSelections();
@@ -186,7 +186,7 @@ export default class UserInterface {
 
   /**
    * update our element to the current scene graph size
-   * @return {[type]} [description]
+   *
    */
   updateSize() {
     this.el.style.width = this.sg.width + 'px';

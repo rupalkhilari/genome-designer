@@ -166,8 +166,8 @@ export class ConstructViewer extends Component {
 
   /**
    * scroll into view if needed and update scenegraph
-   * @param  {[type]} prevProps [description]
-   * @return {[type]}           [description]
+   *
+   *
    */
   componentDidUpdate(prevProps) {
     // if we are newly focused then scroll ourselves into view
@@ -296,7 +296,7 @@ export class ConstructViewer extends Component {
 
   /**
    * window resize, update layout and scene graph with new dimensions
-   * @return {[type]} [description]
+   *
    */
   windowResized() {
     this.sg.availableWidth = this.dom.clientWidth;
@@ -306,7 +306,7 @@ export class ConstructViewer extends Component {
 
   /**
    * accessor for our DOM node.
-   * @return {[type]} [description]
+   *
    */
   get dom() {
     return ReactDOM.findDOMNode(this);
@@ -314,7 +314,7 @@ export class ConstructViewer extends Component {
 
   /**
    * accessor that fetches the actual scene graph element within our DOM
-   * @return {[type]} [description]
+   *
    */
   get sceneGraphEl() {
     return this.dom.querySelector('.sceneGraph');
@@ -354,7 +354,7 @@ export class ConstructViewer extends Component {
 
   /**
    * open the inspector
-   * @return {[type]} [description]
+   *
    */
   openInspector() {
     this.props.inspectorToggleVisibility(true);

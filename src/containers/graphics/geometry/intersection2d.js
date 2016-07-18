@@ -38,7 +38,7 @@ export default class Intersection2D {
 
   /**
    * return the first point in our intersection set or null if there are no intersections
-   * @return {[type]} [description]
+   *
    */
   get point() {
     if (this.points && this.points.length) {

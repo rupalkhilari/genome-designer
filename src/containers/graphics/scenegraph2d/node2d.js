@@ -152,7 +152,7 @@ export default class Node2D {
 
   /**
    * just our local transform
-   * @return {[type]} [description]
+   *
    */
   get localTransform() {
     // use simple caching to save on this calculation
@@ -182,7 +182,7 @@ export default class Node2D {
 
   /**
    * inverse transformation matrix
-   * @return {[type]} [description]
+   *
    */
   get inverseTransformationMatrix() {
     return this.transformationMatrix.inverse();
@@ -314,7 +314,7 @@ export default class Node2D {
 
   /**
    * send to back of z order
-   * @return {[type]} [description]
+   *
    */
   sendToBack() {
     invariant(this.parent, 'Not attached!');
@@ -357,8 +357,8 @@ export default class Node2D {
 
   /**
    * append the given child to us. It will be top most until another child is added
-   * @param  {[type]} child [description]
-   * @return {[type]}       [description]
+   *
+   *
    */
   appendChild(child) {
     invariant(child && !child.parent, 'cannot append nothing or a parented node');
@@ -370,8 +370,8 @@ export default class Node2D {
 
   /**
    * remove the given child from our children
-   * @param  {[type]} child [description]
-   * @return {[type]}       [description]
+   *
+   *
    */
   removeChild(child) {
     invariant(child && this.children.indexOf(child) >= 0, 'node is not our child');
@@ -384,7 +384,7 @@ export default class Node2D {
 
   /**
    * Updating all display properties of the node and returning our element.
-   * @return {[type]} [description]
+   *
    */
   update() {
     //if we have additional CSS classes to apply do that
