@@ -19,10 +19,8 @@ Autosaving / loading models are passed as a `rollup`, which takes the format:
 ```
 {
   project: <projectManifest>,
-  blocks: [
-    <blockManifest>,
-    ...
-  ]
+  blocks: <blockMap>
+}
 ```
 
 ### Directory Structure 
@@ -35,10 +33,11 @@ In the scheme below, `/data/` is under git version control
     data/
         manifest.json
         /blocks
-            /<blockId>
-                manifest.json
-            /<blockId>
-                manifest.json
+           manifest.json
+    orders/
+        /<orderId>
+            manifest.json
+            rollup.json
 /sequence
     /<md5>
     /<md5>
@@ -46,36 +45,6 @@ In the scheme below, `/data/` is under git version control
 
 ### Permissions
 
-Permissions are checked in `index.js`... All other files assume that they are being called when valid / permissions have been validated. Utilities are available in `permissions.js`
+Projects and their contents currently can only be owned / accessed by single users. Sequences can be accessed by anybody, and are not owned by anybody.
 
-Sequences can be accessed by anybody, and are not owned by anybody.
-
-## Files
-
-### index.js
-
-Express Router, largely relying on persistence interface
-
-### versioning.js
-
-git utilities, relying on nodegit
-
-### persistence.js
-
-Interface for checking existence / creating / replacing / merging / deleting projects and blocks
-
-### filePaths.js
-
-Create file system paths for projects, blocks, manifest files, sequence files
-
-### commitMessages.js
-
-Constants for various commit messages + generators so messages are consistent + easier to filter
-
-### rollup.js
-
-Utilities for creating / reading / writing rollups.
-
-### permissions.js
-
-Utilities for creating permission files for a project, and validating permissions. Also exports a routing middleware function for checking permissions. 
+Project permissions are checked in `index.js` router... Other utilities assume that permissions are valid when they are called.
