@@ -107,8 +107,37 @@ async function start() {
             },
           }, resolve);
 
+          //helpers for events listening
+          const eventsCareAbout = ['add', 'change', 'unlink', 'addDir', 'unlinkDir'];
+          const handleChange = (evt, path, stat) => {
+            if (!eventsCareAbout.indexOf(evt) >= 0) {
+              return;
+            }
+            console.log(evt, path);
+            runServer();
+          };
+          const ignoreDotFilesAndNestedNodeModules = /([\/\\]\.)|(node_modules\/.*?\/node_modules)/gi;
+          const ignoreFilePathCheck = (path) => {
+            console.log(path);
+            if (ignoreDotFilesAndNestedNodeModules.test(path)) {
+              return true;
+            }
+            //ignore node_modules for things in the root /extensions/ folder
+            //additional check to handle symlinked files (nested node modules wont pick this up in symlinks)
+            //ugly because javascript doesnt support negative lookaheads
+            if (/(.*?\/)?extensions\/.*?\/node_modules/.test(path) && (typeof RegExp.$1 === 'string' && RegExp.$1.substring(-6) !== 'server')) {
+              return true;
+            }
+          };
+
           //while we are not bundling the server, we can set up a watch to recompile on changes
-          bs.watch('server/**/*').on('change', () => runServer());
+          const watcher = bs.watch('server/**/*', {
+            ignored: ignoreFilePathCheck,
+          });
+
+          //wait for initial scan to complete then listen for events
+          watcher.on('ready', () => watcher.on('all', handleChange));
+
           bs.watch('plugins/**/*').on('change', () => runServer());
 
           //reassign so that we arent creating multiple browsersync entities, or rebuilding over and over
@@ -126,7 +155,7 @@ async function start() {
     /*
      console.info('beginning webpack build');
      clientCompiler.run((err) => {
-      if (err) throw err;
+     if (err) throw err;
      });
      */
   });

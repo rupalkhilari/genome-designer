@@ -1,7 +1,7 @@
 {
-  "name": "linked",
+  "name": "simpleWidget",
   "version": "1.0.0",
-  "description": "Linked extension, ease development using `npm link`",
+  "description": "Extension which renders basic widget into the web app",
   "main": "index.js",
   "region": "sequenceDetail",
   "readable": "Linked Example",
