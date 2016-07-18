@@ -138,6 +138,7 @@ async function start() {
           //wait for initial scan to complete then listen for events
           watcher.on('ready', () => watcher.on('all', handleChange));
 
+          //simple watch for plugins for now, intend to deprecate when merge extensions + plugins into the extension folder
           bs.watch('plugins/**/*').on('change', () => runServer());
 
           //reassign so that we arent creating multiple browsersync entities, or rebuilding over and over
