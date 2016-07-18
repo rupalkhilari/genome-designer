@@ -2,7 +2,9 @@
 
 ## Overview
 
-This section of the API is for saving Projects and Blocks. Projects are saved as directories, and versioned under git. Blocks are directories under projects. Using the provided persistence interface, git versioning should be handled automatically.
+This section of the API is for saving Projects, Blocks, and Orders.
+
+Each project is a directory. It's manifest and information about all the blocks are saved `/data/`, which is versioned using git. Projects also contain orders, which are not versioned.
 
 Sequences are saved under their md5 hash, and in a separate folder. The md5 is computed on the client, and `block.sequence.md5` notes this value, which is used for retrieving the sequence.
 
@@ -10,7 +12,7 @@ Sequences are saved under their md5 hash, and in a separate folder. The md5 is c
 
 A project will NOT gain a commit whenever something happens (e.g. create, save, destroy). Commits happen with autosaving, which will be triggered by the client every few minutes when there are changes. 
 
-Snapshots are just commits with a specific message.
+Snapshots are just commits with a specific message and message format so they can be filtered out from all the other commits.
 
 ### Format
 
@@ -23,7 +25,7 @@ Autosaving / loading models are passed as a `rollup`, which takes the format:
 }
 ```
 
-### Directory Structure 
+### Storage directory Structure
 
 In the scheme below, `/data/` is under git version control
 
