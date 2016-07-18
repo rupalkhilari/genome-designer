@@ -24,6 +24,7 @@ import sha1 from 'sha1';
  *
  * Output fields take the following form:
  *
+ * ```javascript
  * {
  *   type: {string} <name>
  *   validate: {Function} <Parameterized validation function>
@@ -32,6 +33,7 @@ import sha1 from 'sha1';
  *   typeDescription: {string} <description of type from fields.js>
  *   baseValidator:  {function} validatorFunctions.id
  * }
+ * ```
  *
  * @module fields
  * @example

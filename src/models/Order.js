@@ -28,6 +28,7 @@ const idValidator = (id) => safeValidate(validators.id(), true, id);
  * A construct can be ordered, i.e. synthesized, and the process is saved using an Order. Orders are placed with a foundry.
  * Orders are only saved once they have been completed successfully
  * @name Order
+ * @class
  * @extends Instance
  * @gc Model
  */

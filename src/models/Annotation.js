@@ -23,6 +23,7 @@ import { symbolMap } from '../inventory/roles';
  * Annotations mark regions of sequence with notes, colors, roles, etc.
  * Annotations are often used in imports due to the hierarchical nature of the Genetic Constructor data model. Blocks do not allow for overlaps, but many sequences have overlapping annotations. Annotations which do not overlap are used to create the Block hierarchy, while overlaps are converted into instances of the Annotation class.
  * @name Annotation
+ * @class
  * @extends Immutable
  * @gc Model
  */

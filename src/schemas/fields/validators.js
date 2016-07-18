@@ -1,29 +1,33 @@
 /*
-Copyright 2016 Autodesk,Inc.
+ Copyright 2016 Autodesk,Inc.
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
 import safeValidate from './safeValidate';
 import urlRegex from 'url-regex';
 import { dnaStrictRegexp, dnaLooseRegexp } from '../../utils/dna/dna';
 import { id as idRegex } from '../../utils/regex';
 
+//any additions to this file should be tested, and everything will be exported, so only export real validators
+
 /**
- * note that everything exported in this file is tested - so only export real validators
+ * Validators are parameterized functions used to validate the correctness of some input.
  *
- * @description
- * these validators are used by fields/index.js
- * when defining a Schema you should use the fieldType objects exported from that file instead of these directly. However, you may want to use these when just running validation. Note that they expect parameters.
+ * Validators are consumed by fields, which are in turned used by Schemas.
+ *
+ * In general, when defining a Schema you should use fields instead of validators directly. However, you may want to use these when just running validation. Note that they expect parameters.
+ *
+ * @module validators
  *
  * @example
  * let validator = number({min:5});

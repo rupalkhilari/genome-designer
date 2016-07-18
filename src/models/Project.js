@@ -27,6 +27,7 @@ const versionValidator = (ver, required = false) => safeValidate(version(), requ
  * Projects are the containers for a body of work, including all their blocks, preferences, orders, and files.
  * Projects are versioned using git, and save their most recent SHA in project.version
  * @name Project
+ * @class
  * @extends Instance
  * @gc Model
  */

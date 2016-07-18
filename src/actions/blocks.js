@@ -13,6 +13,10 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
+/**
+ * @module Block
+ * @memberOf module:Actions
+ */
 import invariant from 'invariant';
 import { merge } from 'lodash';
 import * as ActionTypes from '../constants/ActionTypes';

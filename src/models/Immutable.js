@@ -17,7 +17,9 @@ import { set as pathSet, unset as pathUnset, cloneDeep, merge } from 'lodash';
 import invariant from 'invariant';
 
 /**
- * The Immutable class creates Immutable objects, which have 
+ * The Immutable class creates Immutable objects, whose properties are immutable and cannot be modifed except through their defined API.
+ * @name Immutable
+ * @class
  */
 export default class Immutable {
   constructor(input = {}) {

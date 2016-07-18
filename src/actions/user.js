@@ -23,7 +23,7 @@ const mapUserFromServer = (serverUser) => ({
   email: serverUser.email,
 });
 
-/**
+/*
  * user = { userid:, email:, firstName:, lastName }
  */
 const _userSetUser = (user) => ({
