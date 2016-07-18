@@ -16,6 +16,11 @@ limitations under the License.
 import fields from './fields/index';
 import Schema from './SchemaClass';
 
+/**
+ * Information about a placed order
+ * @name OrderStatusSchema
+ * @gc Schema
+ */
 const fieldDefs = {
   foundry: [
     fields.string().required,

@@ -16,6 +16,11 @@ limitations under the License.
 import fields from './fields/index';
 import Schema from './SchemaClass';
 
+/**
+ * BlockSource denotes where a block came from. It is generally set on import / addition to the project
+ * @name BlockSourceSchema
+ * @gc Schema
+ */
 const blockSourceFields = {
   source: [
     fields.string(),
@@ -25,6 +30,11 @@ const blockSourceFields = {
   id: [
     fields.string(),
     `ID at remote foundry`,
+  ],
+
+  url: [
+    fields.url(),
+    `URL to resource`,
   ],
 };
 

@@ -20,6 +20,11 @@ import MetadataSchema from './Metadata';
 import OrderParametersSchema from './OrderParameters';
 import OrderStatusSchema from './OrderStatus';
 
+/**
+ * Orders are intended / placed orders of DNA with a remote foundry.
+ * @name OrderSchema
+ * @gc Schema
+ */
 const orderFields = {
   id: [
     fields.id({ prefix: 'order' }).required,

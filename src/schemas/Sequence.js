@@ -17,6 +17,11 @@ import fields from './fields/index';
 import Schema from './SchemaClass';
 import AnnotationSchema from './Annotation';
 
+/**
+ * Definition of a schema, including metadata about the schema and references to how to retrieve it.
+ * @name SequenceSchema
+ * @gc Schema
+ */
 const fieldDefs = {
   md5: [
     fields.string(),
@@ -46,7 +51,7 @@ const fieldDefs = {
 
   download: [
     fields.func(),
-    `Function which returns the sequence, taking precedence over md5 download`,
+    `Function which returns the sequence, taking precedence over md5 download. Note this is not persisted, and only exists in the scope of the user's session.`,
     { avoidScaffold: true },
   ],
 };

@@ -16,6 +16,11 @@ limitations under the License.
 import fields from './fields/index';
 import Schema from './SchemaClass';
 
+/**
+ * Rules defining a block and its function. See the chart in Rules_notes.png
+ * @name RulesSchema
+ * @gc Schema
+ */
 const rulesFields = {
   list: [
     fields.bool(),
