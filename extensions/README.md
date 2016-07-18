@@ -43,6 +43,9 @@ $ cd server/extensions
 
 # add the link, assuming your package name is myExtension
 $ npm link myExtension
+
+# start / restart the server (to ensure your extension is picked up in the registry)
+$ npm run start
 ```
 
 Now, you should see a linked directory `myExtension` in `node_modules` of server/extensions. Simply reload the client and you should be served the latest version of your code, as the server dynamically pulls from the directory of your extension.
