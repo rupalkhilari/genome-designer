@@ -22,11 +22,16 @@ import { Route, IndexRedirect, IndexRoute } from 'react-router';
 import App from '../containers/App';
 import ProjectPage from '../containers/ProjectPage';
 import HomePage from '../containers/homepage';
+import RouteNotFound from '../containers/routenotfound';
 import AuthRouteWrapper from '../components/authentication/authRouteWrapper';
 
 const history = syncHistoryWithStore(browserHistory, store, {
   selectLocationState: (state) => state.router,
 });
+
+const notFound = () => {
+  alert('404');
+}
 
 export default (
   <Router history={history}>
@@ -46,6 +51,7 @@ export default (
         <Route path=":comp" component={HomePage}/>
         <IndexRoute component={HomePage}/>
       </Route>
+      <Route path="*" component={RouteNotFound}/>
 
       <IndexRedirect to="/homepage"/>
 
