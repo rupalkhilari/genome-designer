@@ -13,9 +13,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-/**
+/*
  * Expose some actions on the window, so they are accessible by 3rd party consumers
- *
  * We simply expose all actions for now, on an object grouped by realm of actions
  */
 
