@@ -1,18 +1,27 @@
 /*
-Copyright 2016 Autodesk,Inc.
+ Copyright 2016 Autodesk,Inc.
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
+/**
+ * Mock authentication for local development, or when the bionano-auth package is not in use.
+ *
+ * The default user is used for all requests, and its ID is used for all permissions / keying.
+ *
+ * Exposes a few routes but does not exhaustively cover the bionano-auth router.
+ *
+ * This user is used in unit testing.
+ */
 import express from 'express';
 import checkUserSetup from './userSetup';
 
@@ -64,6 +73,6 @@ export const mockUser = (req, res, next) => {
   }
 
   //stub the initial user setup here as well
-  checkUserSetup({uuid: "0"})
+  checkUserSetup({ uuid: "0" })
     .then(() => next());
 };

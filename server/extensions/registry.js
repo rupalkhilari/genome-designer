@@ -14,36 +14,36 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import path from 'path';
-import manifest from './package.json';
+import fs from 'fs';
 
-const { dependencies } = manifest;
+const nodeModulesDir = process.env.BUILD ? 'gd_extensions' : path.resolve(__dirname, './node_modules');
 
-const registry = Object.keys(dependencies).reduce((acc, dep) => {
+const registry = {};
+
+fs.readdirSync(nodeModulesDir).forEach(packageName => {
   try {
     //skip the simple extension unless we're in the test environment
-    if (dep === 'simple' && process.env.NODE_ENV !== 'test') {
-      return acc;
+    if (packageName === 'simple' && process.env.NODE_ENV !== 'test') {
+      return;
     }
 
     let depManifest;
     //building in webpack requires static paths, dynamic requires are really tricky
     if (process.env.BUILD) {
-      depManifest = require(`gd_extensions/${dep}/package.json`);
+      depManifest = require(`gd_extensions/${packageName}/package.json`);
     } else {
-      const filePath = path.resolve(__dirname, './node_modules', dep + '/package.json');
+      const filePath = path.resolve(nodeModulesDir, packageName + '/package.json');
       depManifest = require(filePath);
     }
 
-    Object.assign(acc, {
-      [dep]: depManifest,
+    Object.assign(registry, {
+      [packageName]: depManifest,
     });
   } catch (err) {
-    console.warn('error loading extension: ' + dep);
+    console.warn('error loading extension: ' + packageName);
     console.error(err);
   }
-
-  return acc;
-}, {});
+});
 
 export const isRegistered = (name) => {
   return registry.hasOwnProperty(name);

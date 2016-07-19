@@ -1,0 +1,13 @@
+{
+  "name": "webpacked",
+  "version": "1.0.0",
+  "description": "Example extension which uses Webpack to create a bundle.",
+  "region": "sequenceDetail",
+  "readable": "Webpacked Example",
+  "scripts" : {
+    "build" : "npm install && webpack -d main.js index.js"
+  },
+  "devDependencies": {
+    "json-loader": "^0.5.4"
+  }
+}

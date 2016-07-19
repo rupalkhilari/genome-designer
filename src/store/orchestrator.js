@@ -20,6 +20,17 @@ const dispatchWrapper = (action) => (...args) => dispatch(action(...args));
 
 const sections = ['blocks', 'clipboard', 'projects', 'ui', 'focus', 'inventory', 'inspector', 'orders'];
 
+/**
+ * The Orchestrator provides the API for third parties to interact with Genetic Constructor's Instances.
+ * The Orchestrator is the object exposed on the window at `gd.api`. It merges all the actions and selectors into a single object, with a section for each group of actions + selectors.
+ * Internally, all actions and selectors are automatically bound so they dispatch, without requiring the Redux syntax `store.dispatch(<action>)`.
+ * @name Orchestrator
+ * @example
+ * //create a project with a single block in it, and rename the block
+ * const block = gd.api.blocks.blockCreate({metadata: {name: 'First Name'}});
+ * const project = gd.api.projects.projectCreate({components: [block.id]});
+ * gd.api.blocks.blockRename(block.id, 'My New Name');
+ */
 export default sections.reduce((acc, section) => {
   //dont need to use static imports so long as we're using babel...
   const rawActions = require(`../actions/${section}.js`);

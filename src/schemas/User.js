@@ -18,10 +18,9 @@ import * as validators from './fields/validators';
 import Schema from './SchemaClass';
 
 /**
- @name UserSchema
- @description A user account
+ * A user account
+ * @name UserSchema
 */
-
 const fieldDefs = {
   id: [
     fields.id({prefix: 'user'}).required,

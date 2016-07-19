@@ -47,7 +47,7 @@ export default class SBOL2D extends Node2D {
 
   /**
    * get the preferred width / height of this block as condensed or fully expanded
-   * @return {[type]} [description]
+   *
    */
   getPreferredSize(str) {
     // measure actual text plus some padding

@@ -19,6 +19,11 @@ import Schema from './SchemaClass';
 import ParentSchema from './Parent';
 import MetadataSchema from './Metadata';
 
+/**
+ * Instance is a parent class. These are IDed and versioned objects with an ancestry, with a dedicated metadata field.
+ * @name InstanceSchema
+ * @gc Schema
+ */
 const instanceFields = {
   id: [
     fields.id().required,

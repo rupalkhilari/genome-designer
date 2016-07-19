@@ -16,8 +16,9 @@ limitations under the License.
 const noop = () => {};
 
 /**
- * @description
  * wraps a validator function to handle errors. Errors will log in non-production environments.
+ *
+ * @private
  *
  * @param validator {Function} function which:
  * 1) returns an Error when there is an error

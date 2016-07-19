@@ -13,6 +13,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+/**
+ * Constants for various commit messages + generators so messages are consistent + easier to filter
+ * @module commitMessages
+ */
 const projectSuffix = '_project';
 const blockSuffix = '_block';
 

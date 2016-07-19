@@ -100,8 +100,8 @@ export default class ConstructViewerUserInterface extends UserInterface {
   }
   /**
    * return the top most block at a given location
-   * @param  {[type]} point [description]
-   * @return {[type]}       [description]
+   *
+   *
    */
   topBlockAt(point) {
     const top = this.topNodeAt(point);
@@ -417,7 +417,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
 
   /**
    * selected construct is lighter than unselected constructs
-   * @return {[type]} [description]
+   *
    */
   update() {
     super.update();
@@ -492,7 +492,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
   }
   /**
    * list of all selected blocks, based on our selected scenegraph blocks
-   * @return {[type]} [description]
+   *
    */
   get selectedElements() {
     return this.selections.map((node) => {
@@ -740,7 +740,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
   }
   /**
    * return the current insertion point if any
-   * @return {[type]} [description]
+   *
    */
   getInsertionPoint() {
     return this.insertion;
