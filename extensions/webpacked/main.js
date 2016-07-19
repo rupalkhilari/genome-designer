@@ -1,7 +1,7 @@
 var manifest = require('json!./package.json');
 
 function render(container, options) {
-  container.innerHTML = 'extension loaded!';
+  container.innerHTML = 'extension rendered this!';
 
   //console.log(options.boundingBox);
 
