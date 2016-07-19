@@ -18,8 +18,8 @@ limitations under the License.
  * @memberOf module:Actions
  *
  * @private
- * This module is not exported on the window, so marked as private
  */
+//This module is not exported on the window, so marked as private
 import * as ActionTypes from '../constants/ActionTypes';
 import { register, login, logout, updateAccount } from '../middleware/auth';
 
