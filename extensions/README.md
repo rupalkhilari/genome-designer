@@ -8,6 +8,17 @@ In general, extensions listed in `/server/extensions/package.json` and are insta
 
 If you are developing locally, you may list packages with relative paths, as allowed by NPM in `package.json`. You may wish to use `npm link` while you are developing (see below).
 
+### Hosting extensions
+
+Extensions are installed onto the server using `npm`. NPM supports referencing packages in several ways, defined [on their website](https://docs.npmjs.com/files/package.json#dependencies), but which include:
+
+- local, relative paths
+- URLs
+- github repositories
+- npm packages
+
+See the npm documentation for how to update `package.json`.
+
 ### Tips
 
 ##### `npm link`
