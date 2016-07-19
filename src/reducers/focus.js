@@ -23,6 +23,7 @@ export const initialState = {
   projectId: null, //current project. Set by projectPage. preferred over route query.
   blockIds: [], //ids of selection
   constructId: null, //id of current
+  roleId: null, //ID of focused Role
   level: 'project', //what to give priority to (when defined)
   options: {}, //map {listBlockId : selectedOptionId}
 };
@@ -36,6 +37,7 @@ export default function inventory(state = initialState, action) {
       blockIds: [],
       constructId: null,
       forceProject: project,
+      roleId: null,
       level: 'project',
     });
 
@@ -47,6 +49,7 @@ export default function inventory(state = initialState, action) {
       forceProject: null,
       blockIds: [],
       constructId: null,
+      roleId: null,
       level: 'block',
     });
 
@@ -56,6 +59,7 @@ export default function inventory(state = initialState, action) {
       forceProject: null,
       forceBlocks: [],
       projectId: projectId,
+      roleId: null,
       level: 'project',
     });
 
@@ -65,6 +69,7 @@ export default function inventory(state = initialState, action) {
       forceProject: null,
       forceBlocks: [],
       constructId: constructId,
+      roleId: null,
       level: 'construct',
     });
 
@@ -75,6 +80,7 @@ export default function inventory(state = initialState, action) {
       forceProject: null,
       forceBlocks: [],
       blockIds: blockIds,
+      roleId: null,
       level: 'block',
     });
 
@@ -88,7 +94,15 @@ export default function inventory(state = initialState, action) {
     const { options } = action;
     return Object.assign({}, state, {
       level: 'option',
+      roleId: null,
       options,
+    });
+
+  case ActionTypes.FOCUS_ROLE :
+    const { roleId } = action;
+    return Object.assign({}, state, {
+      level: 'role',
+      roleId,
     });
 
   case ActionTypes.BLOCK_OPTION_TOGGLE :

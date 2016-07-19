@@ -20,6 +20,7 @@ import safeValidate from '../schemas/fields/safeValidate';
 import { id as idValidatorCreator } from '../schemas/fields/validators';
 import Block from '../models/Block';
 import Project from '../models/Project';
+import { symbolMap } from '../inventory/roles';
 
 const idValidator = (id) => safeValidate(idValidatorCreator(), true, id);
 
@@ -148,13 +149,24 @@ export const focusForceProject = (project) => {
 
 export const focusPrioritize = (level = 'project') => {
   return (dispatch, getState) => {
-    invariant(['project', 'construct', 'block'].indexOf(level) >= 0, 'must pass a valid type to give priority to');
+    invariant(['project', 'construct', 'block', 'role'].indexOf(level) >= 0, 'must pass a valid type to give priority to');
 
     dispatch({
       type: ActionTypes.FOCUS_PRIORITIZE,
       level,
     });
     return level;
+  };
+};
+
+export const focusRole = (roleId) => {
+  return (dispatch, getState) => {
+    invariant(symbolMap[roleId], 'must pass a valid Role ID');
+
+    dispatch({
+      type: ActionTypes.FOCUS_ROLE,
+      roleId,
+    });
   };
 };
 
