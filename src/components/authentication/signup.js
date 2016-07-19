@@ -26,7 +26,7 @@ import invariant from 'invariant';
 import { tos, privacy } from '../../utils/ui/uiapi';
 import track from '../../analytics/ga';
 
-/**
+/*
  * default visibility and text for error labels
  * @type {Object}
  */
