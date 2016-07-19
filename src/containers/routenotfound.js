@@ -13,18 +13,11 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
 
 import '../styles/404.css';
 
 export default class RouteNotFound extends Component {
-
-  // this route can result from path like 'homepage/signin', 'homepage', 'homepage/register' etc.
-  // If the final path is the name of an authorization form we will show it
-  componentDidMount() {
-
-  }
-
   render() {
     return (
       <iframe className="fourohfour" seamless src="http://www.cnn.com"/>
