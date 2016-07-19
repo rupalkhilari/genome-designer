@@ -52,7 +52,7 @@ export { lastAction, dispatch, subscribe, getState, pause, resume, isPaused };
  * Dispatch an action to the store
  * @name dispatch
  * @type Function
- * @param {object} payload An object describing the mutation. Must include a `type` field.
+ * @param {Object} payload An object describing the mutation. Must include a `type` field.
  * @example
  * //anti-pattern - recommend you always use actions
  * //create a block without using an action by dispatching automatically
@@ -76,7 +76,7 @@ export { lastAction, dispatch, subscribe, getState, pause, resume, isPaused };
  * Get the current application state.
  * @name getState
  * @type Function
- * @returns {object} Current state
+ * @returns {Object} Current state
  * @example
  * const state = gd.store.getState();
  */

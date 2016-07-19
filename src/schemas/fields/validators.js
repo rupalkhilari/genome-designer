@@ -29,6 +29,7 @@ import { id as idRegex } from '../../utils/regex';
  *
  * @module validators
  *
+ *
  * @example
  * let validator = number({min:5});
  * validator(4); //false

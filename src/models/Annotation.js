@@ -25,12 +25,14 @@ import { symbolMap } from '../inventory/roles';
  * @name Annotation
  * @class
  * @extends Immutable
+ *
+ * @memberOf module:Models
  * @gc Model
  */
 export default class Annotation extends Immutable {
   /**
    * Create an annotation
-   * @param {object} input Input object for the annotation to merge onto the scaffold
+   * @param {Object} input Input object for the annotation to merge onto the scaffold
    */
   constructor(input) {
     return super(merge(
@@ -42,8 +44,8 @@ export default class Annotation extends Immutable {
 
   /**
    * Create an unfrozen annotation, extending input with schema
-   * @param {object} [input]
-   * @returns {object} an unfrozen JSON, no instance methods
+   * @param {Object} [input]
+   * @returns {Object} an unfrozen JSON, no instance methods
    */
   static classless(input) {
     return cloneDeep(new Annotation(input));
@@ -52,7 +54,7 @@ export default class Annotation extends Immutable {
   /**
    * Validate an annotation
    * @static
-   * @param {object} input Object to validate
+   * @param {Object} input Object to validate
    * @param {boolean} [throwOnError=false] Validation should throw on errors
    * @throws if you specify throwOnError
    * @returns {boolean} Whether input valid

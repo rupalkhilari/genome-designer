@@ -111,7 +111,7 @@ export default class Node2D {
 
   /**
    * apply the properties of the object p to our props.
-   * @param {object} props - key / value pairs of properties
+   * @param {Object} props - key / value pairs of properties
    */
   set(props) {
     Object.keys(props).forEach(key => {

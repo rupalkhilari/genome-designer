@@ -20,6 +20,9 @@ import invariant from 'invariant';
  * The Immutable class creates Immutable objects, whose properties are immutable and cannot be modifed except through their defined API.
  * @name Immutable
  * @class
+ *
+ * @memberOf module:Models
+ * @gc Model
  */
 export default class Immutable {
   constructor(input = {}) {
@@ -59,7 +62,7 @@ export default class Immutable {
   /**
    * Return a new Immutable with input object merged into it
    * Uses {@link https://lodash.com/docs#merge lodash _.merge()} for performing a deep merge
-   * @param {object} obj Object to merge into instance
+   * @param {Object} obj Object to merge into instance
    * @returns {Immutable} A new instance, with `obj` merged in
    * @example
    * const initial = new Immutable();

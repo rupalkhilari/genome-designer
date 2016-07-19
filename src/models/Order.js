@@ -30,6 +30,8 @@ const idValidator = (id) => safeValidate(validators.id(), true, id);
  * @name Order
  * @class
  * @extends Instance
+ *
+ * @memberOf module:Models
  * @gc Model
  */
 export default class Order extends Instance {

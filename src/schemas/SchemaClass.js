@@ -85,7 +85,7 @@ export default class Schema {
 
   /**
    * Validate the fields of the schema, skipping object wide validation if the schema has defined any.
-   * @param {object} instance Object to validate
+   * @param {Object} instance Object to validate
    * @param {boolean} [shouldThrow=false]
    * @throws if `shouldThrow === true` and instance is invalid
    * @returns {boolean} True if valid
@@ -132,7 +132,7 @@ export default class Schema {
   /**
    * Validate a schema.
    * This function can be extended in subclasses for instance-wide validation, not just of fields
-   * @param {object} instance Object to validate
+   * @param {Object} instance Object to validate
    * @param {boolean} [shouldThrow=false]
    * @throws if `shouldThrow === true` and instance is invalid
    * @returns {boolean} True if valid

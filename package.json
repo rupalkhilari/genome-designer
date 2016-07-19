@@ -9,7 +9,7 @@
     "clean": "babel-node tools/run clean",
     "build": "babel-node tools/run build",
     "build-client": "babel-node tools/run bundle",
-    "jsdoc": "jsdoc -c docs/conf.json --package package.json --readme docs/README.md",
+    "jsdoc": "jsdoc -c docs/jsdoc.conf.json --package package.json --readme docs/README.md",
     "postinstall": "npm run install-extensions && npm run selenium",
     "install-extensions": "cd server/extensions && rm -rf node_modules && npm install --only=prod --no-bin-link --no-optional",
     "check": "npm run lint && npm run test",

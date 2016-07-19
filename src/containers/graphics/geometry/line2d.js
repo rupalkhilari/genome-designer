@@ -140,7 +140,7 @@ export default class Line2D {
 
   /**
    * static constructor, produces a Line from the product of toObject
-   * @param  {object} obj
+   * @param  {Object} obj
    * @return Line2D
    */
   static fromObject(obj) {

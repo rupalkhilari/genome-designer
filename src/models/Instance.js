@@ -27,14 +27,16 @@ const versionValidator = (ver, required = false) => safeValidate(version(), requ
  * Instances have an ID, metadata, and are versioned (explicitly or implicitly by the Instance which owns them)
  * @class
  * @extends Immutable
+ *
+ * @memberOf module:Models
  * @gc Model
  */
 export default class Instance extends Immutable {
   /**
    * Create an instance
-   * @param {object} input Input object
-   * @param {object} [subclassBase] If extending the class, additional fields to use in the scaffold
-   * @param {object} [moreFields] Additional fields, beyond the scaffold
+   * @param {Object} input Input object
+   * @param {Object} [subclassBase] If extending the class, additional fields to use in the scaffold
+   * @param {Object} [moreFields] Additional fields, beyond the scaffold
    * @returns {Instance} An instance, frozen if not in production
    */
   constructor(input = {}, subclassBase, moreFields) {
@@ -65,7 +67,7 @@ export default class Instance extends Immutable {
   /**
    * Clone an instance, adding the parent to the ancestry of the child Instance.
    * @param {object|null|string} [parentInfo={}] Parent info for denoting ancestry. If pass null to parentInfo, the instance is simply cloned, and nothing is added to the history. If pass a string, it will be used as the version.
-   * @param {object} [overwrites={}] object to merge into the cloned Instance
+   * @param {Object} [overwrites={}] object to merge into the cloned Instance
    * @throws if version is invalid (not provided and no field version on the instance)
    * @returns {Instance}
    */

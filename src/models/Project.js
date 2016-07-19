@@ -29,12 +29,14 @@ const versionValidator = (ver, required = false) => safeValidate(version(), requ
  * @name Project
  * @class
  * @extends Instance
+ *
+ * @memberOf module:Models
  * @gc Model
  */
 export default class Project extends Instance {
   /**
    * Create a project given some input object
-   * @param {object} [input]
+   * @param {Object} [input]
    * @returns {Project}
    */
   constructor(input) {
@@ -43,8 +45,8 @@ export default class Project extends Instance {
 
   /**
    * Create an unfrozen project, extending input with schema
-   * @param {object} [input]
-   * @returns {object} an unfrozen JSON, no instance methods
+   * @param {Object} [input]
+   * @returns {Object} an unfrozen JSON, no instance methods
    */
   static classless(input) {
     return Object.assign({}, cloneDeep(new Project(input)));
@@ -52,7 +54,7 @@ export default class Project extends Instance {
 
   /**
    * Validate a Project data object
-   * @param {object} input
+   * @param {Object} input
    * @param {boolean} [throwOnError=false] Whether to throw on errors
    * @throws if `throwOnError===true`, will throw when invalid
    * @returns {boolean} if `throwOnError===false`, whether input is a valid block
@@ -66,8 +68,8 @@ export default class Project extends Instance {
 
   /**
    * compares two projects, checking if they are the same (ignoring project version)
-   * @param {object} one
-   * @param {object} two
+   * @param {Object} one
+   * @param {Object} two
    * @returns {boolean} whether equal
    */
   static compare(one, two) {

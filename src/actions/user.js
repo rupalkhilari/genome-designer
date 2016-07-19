@@ -24,7 +24,7 @@ const mapUserFromServer = (serverUser) => ({
 });
 
 /*
- * user = { userid:, email:, firstName:, lastName }
+ * user = { userid, email, firstName, lastName }
  */
 const _userSetUser = (user) => ({
   type: ActionTypes.USER_SET_USER,

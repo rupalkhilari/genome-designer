@@ -14,7 +14,7 @@
  limitations under the License.
  */
 /**
- * @module Block
+ * @name Block Actions
  * @memberOf module:Actions
  */
 import invariant from 'invariant';
@@ -63,7 +63,7 @@ export const blockLoad = (blockId, inputProjectId, withContents = false, skipIfC
 
 /**
  * Create a new Block
- * @param {object} initialModel
+ * @param {Object} initialModel
  * @param {boolean} [useDefaults=true] Set e.g. current project ID automatically. Set to false if you are creating a block outside of a project (i.e. floating, not associated with project yet)
  * @returns {Block}
  */

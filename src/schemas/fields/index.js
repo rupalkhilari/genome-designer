@@ -36,6 +36,9 @@ import sha1 from 'sha1';
  * ```
  *
  * @module fields
+ *
+ * @private
+ *
  * @example
  * import fields from './fields';
  * import * as validatorFunctions from './validators';
