@@ -14,7 +14,7 @@
  limitations under the License.
  */
 /**
- * @name Block Actions
+ * @module Block Actions
  * @memberOf module:Actions
  */
 import invariant from 'invariant';

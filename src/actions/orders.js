@@ -13,6 +13,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+/**
+ * @module Order Actions
+ * @memberOf module:Actions
+ */
 import invariant from 'invariant';
 import Order from '../models/Order';
 import { getOrder, getOrders } from '../middleware/order';
@@ -24,6 +28,12 @@ import * as blockSelectors from '../selectors/blocks';
 import { cloneDeep, merge, flatten, sampleSize, range, shuffle } from 'lodash';
 import * as instanceMap from '../store/instanceMap';
 
+/**
+ * List a user's orders
+ * @param {UUID} projectId
+ * @param {boolean} [avoidCache=false]
+ * @returns {Array.<Order>} Manifests of user's Orders
+ */
 export const orderList = (projectId, avoidCache = false) => {
   return (dispatch, getState) => {
     const cached = instanceMap.projectOrdersLoaded(projectId);
@@ -46,6 +56,15 @@ export const orderList = (projectId, avoidCache = false) => {
   };
 };
 
+/**
+ * Retreive an order
+ * @param {UUID} projectId
+ * @param {UUID} orderId
+ * @param {boolean} [avoidCache=false]
+ * @returns {Promise}
+ * @resolve {Order}
+ * @reject {Response}
+ */
 export const orderGet = (projectId, orderId, avoidCache = false) => {
   return (dispatch, getState) => {
     const cached = instanceMap.orderLoaded(orderId);
@@ -69,7 +88,13 @@ export const orderGet = (projectId, orderId, avoidCache = false) => {
   };
 };
 
-//create an order with basic fields
+/**
+ * Create an order with basic fields
+ * @param {UUID} projectId
+ * @param {Array.<UUID>} constructIds Construct Ids involved in the order
+ * @param {Object} parameters
+ * @returns {Order}
+ */
 export const orderCreate = (projectId, constructIds = [], parameters = {}) => {
   return (dispatch, getState) => {
     invariant(projectId, 'must pass project ID');
@@ -100,9 +125,17 @@ export const orderCreate = (projectId, constructIds = [], parameters = {}) => {
   };
 };
 
-//parameters must be valid. returns an array with the generated constructs, does not affect the order itself.
 //todo - selector
 //todo - ensure this code (generating constructs from order + rollup) is shared between client and server
+/**
+ * Generate all combinations for the constructs of an order (i.e., expand list blocks etc.)
+ *
+ * Parameters must be valid. returns an array with the generated constructs, does not affect the order itself.
+ * @param {UUID} orderId
+ * @param {boolean} [allPossibilities=false] Force all combinations if only a subset specified in order parameters
+ * @throws If the constructs are not specs
+ * @returns {function(*, *)}
+ */
 export const orderGenerateConstructs = (orderId, allPossibilities = false) => {
   return (dispatch, getState) => {
     const state = getState();
@@ -122,6 +155,13 @@ export const orderGenerateConstructs = (orderId, allPossibilities = false) => {
   };
 };
 
+/**
+ * Set the parameters of the order
+ * @param {UUID} orderId
+ * @param {Object} inputParameters New parameters, or parameters to merge
+ * @param {boolean} [shouldMerge=false]
+ * @returns {Order}
+ */
 export const orderSetParameters = (orderId, inputParameters = {}, shouldMerge = false) => {
   return (dispatch, getState) => {
     const oldOrder = getState().orders[orderId];
@@ -154,9 +194,17 @@ export const orderSetParameters = (orderId, inputParameters = {}, shouldMerge = 
       type: ActionTypes.ORDER_SET_PARAMETERS,
       order,
     });
+
+    return order;
   };
 };
 
+/**
+ * Set the name of an order
+ * @param {UUID} orderId
+ * @param {string} name
+ * @returns {Order}
+ */
 export const orderSetName = (orderId, name) => {
   return (dispatch, getState) => {
     const oldOrder = getState().orders[orderId];
@@ -170,8 +218,16 @@ export const orderSetName = (orderId, name) => {
   };
 };
 
-//submit the order, foundry information is required
-//actually saves the order to the server
+/**
+ * Submit an order. Attempt to submit it to the foundry specified
+ *
+ * If successful, this will freeze the order and save it on the server, adding it to the project's order history.
+ * @param {UUID} orderId
+ * @param {string} foundry
+ * @returns {Promise}
+ * @resolve {order} The fully valid order, with status set
+ * @reject {String|Object} reason for failure, dependent on the foundry
+ */
 export const orderSubmit = (orderId, foundry) => {
   return (dispatch, getState) => {
     const retrievedOrder = getState().orders[orderId];
@@ -211,6 +267,11 @@ export const orderSubmit = (orderId, foundry) => {
   };
 };
 
+/**
+ * Remove an order from the store
+ * @param {UUID} orderId
+ * @returns {UUID} Order ID
+ */
 export const orderDetach = (orderId) => {
   return (dispatch, getState) => {
     const order = getState().orders[orderId];

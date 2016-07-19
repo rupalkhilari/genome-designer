@@ -13,6 +13,13 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+/**
+ * @module User Actions
+ * @memberOf module:Actions
+ *
+ * @private
+ * This module is not exported on the window, so marked as private
+ */
 import * as ActionTypes from '../constants/ActionTypes';
 import { register, login, logout, updateAccount } from '../middleware/auth';
 
