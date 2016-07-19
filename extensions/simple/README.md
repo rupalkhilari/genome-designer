@@ -20,4 +20,4 @@ For front-end extensions, the field `region` is required.
 
 This is the file that is actually served and executed on the client.
 
-Extensions may simply register to the store etc by interacting with the GC API at `window.gd`
+Extensions may simply register to the store etc by interacting with the GC API at `window.constructor`

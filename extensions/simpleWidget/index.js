@@ -10,9 +10,9 @@ var manifest = {
 function render(container, options) {
   container.innerHTML = 'extension loaded!';
 
-  var subscriber = window.gd.store.subscribe(function storeSubscription(state, lastAction) {
+  var subscriber = window.constructor.store.subscribe(function storeSubscription(state, lastAction) {
     console.log(lastAction.type);
   });
 }
 
-window.gd.registerExtension(manifest, render);
+window.constructor.registerExtension(manifest, render);

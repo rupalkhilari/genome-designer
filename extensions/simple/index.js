@@ -6,6 +6,6 @@ var manifest = {
   "region": null
 };
 
-var subscriber = window.gd.store.subscribe(function simpleStoreSubscription(state, lastAction) {
+var subscriber = window.constructor.store.subscribe(function simpleStoreSubscription(state, lastAction) {
   console.log(lastAction, state);
 });
