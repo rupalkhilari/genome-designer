@@ -30,7 +30,7 @@ render(
 );
 
 //expose various things on the window, e.g. for extensions
-const exposed = global.gd = {};
+const exposed = global.constructor = {};
 Object.assign(exposed, {
   registerExtension,
   actionTypes,
