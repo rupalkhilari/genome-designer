@@ -1,12 +1,3 @@
-//in a more complex project using a build system, you could simply include package.json here and define your fields there
-var manifest = {
-  "name": "linked",
-  "version": "1.0.0",
-  "description": "Linked Extension",
-  "region": "sequenceDetail",
-  "readable": "Linked Example"
-};
-
 function render(container, options) {
   container.innerHTML = 'extension loaded!';
 
@@ -15,4 +6,4 @@ function render(container, options) {
   });
 }
 
-window.constructor.registerExtension(manifest, render);
+window.constructor.registerExtension('simpleWidget', render);

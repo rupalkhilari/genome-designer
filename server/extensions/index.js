@@ -16,7 +16,7 @@ limitations under the License.
 import express from 'express';
 import bodyParser from 'body-parser';
 import { errorDoesNotExist } from '../utils/errors';
-import listExtensions from './registry';
+import extensionRegistry from './registry';
 import loadExtension, { getExtensionInternalPath} from './loadExtension';
 import errorHandlingMiddleware from '../utils/errorHandlingMiddleware';
 
@@ -27,7 +27,7 @@ router.use(jsonParser);
 router.use(errorHandlingMiddleware);
 
 router.get('/list', (req, res) => {
-  res.json(listExtensions);
+  res.json(extensionRegistry);
 });
 
 router.get('/manifest/:extension', (req, res, next) => {

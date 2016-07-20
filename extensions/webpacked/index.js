@@ -45,10 +45,8 @@
 /*!*****************!*\
   !*** ./main.js ***!
   \*****************/
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
-	var manifest = __webpack_require__(/*! json!./package.json */ 1);
-	
 	function render(container, options) {
 	  container.innerHTML = 'extension rendered this!';
 	
@@ -77,31 +75,8 @@
 	  });
 	}
 	
-	window.constructor.registerExtension(manifest, render);
+	window.constructor.registerExtension('webpacked', render);
 
-
-/***/ },
-/* 1 */
-/*!**************************************!*\
-  !*** ./~/json-loader!./package.json ***!
-  \**************************************/
-/***/ function(module, exports) {
-
-	module.exports = {
-		"name": "webpacked",
-		"version": "1.0.0",
-		"description": "Example extension which uses Webpack to create a bundle.",
-		"region": "sequenceDetail",
-		"readable": "Webpacked Example",
-		"scripts": {
-			"prepublish": "npm run build",
-			"build": "webpack -d main.js index.js"
-		},
-		"devDependencies": {
-			"json-loader": "^0.5.4",
-			"webpack": "^1.13.1"
-		}
-	};
 
 /***/ }
 /******/ ]);

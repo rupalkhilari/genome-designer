@@ -1,5 +1,3 @@
-var manifest = require('json!./package.json');
-
 function render(container, options) {
   container.innerHTML = 'extension rendered this!';
 
@@ -28,4 +26,4 @@ function render(container, options) {
   });
 }
 
-window.constructor.registerExtension(manifest, render);
+window.constructor.registerExtension('webpacked', render);

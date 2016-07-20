@@ -15,31 +15,35 @@ limitations under the License.
 */
 import loadScript from 'load-script';
 
+//map extension key -> whether downloaded already
 const cached = {};
 
 /**
- * given an extension, actually load the script
- *
- * resolve(false) - was cached
- * resolve(true) - was downloaded
- * reject(err) - error downloading
+ * given an extension key, actually load the script
+ * @returns {Promise}
+ * @resolve {boolean} (false) - was cached, (true) - was downloaded
+ * @reject {Response} (err) - error downloading
  */
-export const downloadExtension = (name) => {
+export const downloadExtension = (key) => {
   return new Promise((resolve, reject) => {
-    if (cached[name]) {
+    if (cached[key]) {
       resolve(false);
     }
 
     //we need index.js so that relative sourcemap paths will work properly
-    const url = `/extensions/load/${name}/index.js`;
+    const url = `/extensions/load/${key}/index.js`;
     loadScript(url, (err, script) => {
       if (err) {
         reject(err);
       }
-      cached[name] = true;
+      cached[key] = true;
       resolve(true);
     });
   });
+};
+
+export const isDownloaded = (key) => {
+  return !!cached[key];
 };
 
 export default downloadExtension;

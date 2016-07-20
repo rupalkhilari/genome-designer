@@ -62,3 +62,13 @@ $ npm run start
 Now, you should see a linked directory `myExtension` in `node_modules` of server/extensions. Simply reload the client and you should be served the latest version of your code, as the server dynamically pulls from the directory of your extension.
 
 Note that `npm run install-extensions` clears the `node_modules` directory, so you will have to re-establish the link after running that script using `npm link <packageName>`.
+
+### Troubleshooting
+
+#### My extension isn't showing up
+
+- Make sure you started the server after modifying package.json or adding the symlinked directory.
+
+- Ensure that the package is in `server/extensions/node_modules`
+
+- Check the server log and client console for errors
