@@ -5,7 +5,7 @@ import json
 
 def is_filler(block):
     # It's a filler block when it has no name, it has a sequence, and no color
-    return block["metadata"]["name"] == "" and (block["sequence"]["sequence"] and block["sequence"]["sequence"] != "") \
+    return block["metadata"]["name"] == "" and ("sequence" in block and "sequence" in block["sequence"] and block["sequence"]["sequence"] != "") \
            and ("initialBases" in block["metadata"] and block["metadata"]["initialBases"] != "")
 
 def add_features(block, allblocks, gb, start):
