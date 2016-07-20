@@ -24,8 +24,8 @@ const registry = {};
 
 fs.readdirSync(nodeModulesDir).forEach(packageName => {
   try {
-    //skip the simple extension unless we're in the test environment
-    if (packageName === 'simple' && process.env.NODE_ENV !== 'test') {
+    //skip the test extensions unless we're in the test environment
+    if (packageName.startsWith('test') && process.env.NODE_ENV !== 'test') {
       return;
     }
 
