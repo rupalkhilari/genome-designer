@@ -24,6 +24,8 @@ import ExtensionView from './ExtensionView';
 
 import '../styles/ProjectDetail.css';
 
+const projectDetailExtensionRegion = 'sequenceDetail';
+
 export class ProjectDetail extends Component {
   static propTypes = {
     uiToggleDetailView: PropTypes.func.isRequired,
@@ -43,8 +45,8 @@ export class ProjectDetail extends Component {
   componentDidMount() {
     //listen to get relevant manifests here
     this.extensionsListener = onRegister((registry, key, region) => {
-      if (region === 'sequenceDetail') {
-        this.extensions = extensionsByRegion('sequenceDetail');
+      if (region === projectDetailExtensionRegion) {
+        this.extensions = extensionsByRegion(projectDetailExtensionRegion);
         this.forceUpdate();
       }
     }, true);
@@ -157,7 +159,7 @@ export class ProjectDetail extends Component {
         {header}
         <div className="ProjectDetail-chrome"
              ref="extensionContainer">
-          {currentExtension && (<ExtensionView region="sequenceDetail"
+          {currentExtension && (<ExtensionView region={projectDetailExtensionRegion}
                                                extension={currentExtension}/>) }
         </div>
       </div>
