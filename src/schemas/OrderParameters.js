@@ -16,6 +16,11 @@ limitations under the License.
 import fields from './fields/index';
 import Schema from './SchemaClass';
 
+/**
+ * Parameters for Order
+ * @name OrderParametersSchema
+ * @gc Schema
+ */
 const fieldDefs = {
   method: [
     fields.string(),

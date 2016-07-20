@@ -14,11 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 /**
- * Expose some actions on the window, so they are accessible by 3rd party consumers
- *
- * We simply expose all actions for now, on an object grouped by realm of actions
+ * Genetic Constructor exposes actions for making changes + performing data mutations.
+ * @module Actions
  */
-
 import * as blocks from './blocks';
 import * as inspector from './inspector';
 import * as inventory from './inventory';

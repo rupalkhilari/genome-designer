@@ -79,8 +79,8 @@ export default class MouseTrap {
 
   /**
    * context menu event
-   * @param  {[type]} event [description]
-   * @return {[type]}       [description]
+   *
+   *
    */
   onContextMenu(event) {
     this.callback('contextMenu', event, new Vector2D(event.offsetX, event.offsetY));
@@ -163,7 +163,7 @@ export default class MouseTrap {
 
   /**
    * cancel a drag track in progress
-   * @return {[type]} [description]
+   *
    */
   cancelDrag() {
     this.lastLeftClick = null;

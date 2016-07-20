@@ -31,7 +31,7 @@ export default class Glyph2D {
 
   /**
    * you can't update the base class
-   * @return {[type]} [description]
+   *
    */
   update() {
     invariant(false, 'Inheriting class must define the render method');

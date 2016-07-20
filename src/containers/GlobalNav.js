@@ -243,7 +243,7 @@ class GlobalNav extends Component {
 
   /**
    * show the delete project dialog
-   * @return {[type]} [description]
+   *
    */
   queryDeleteProject() {
     this.setState({
@@ -281,7 +281,7 @@ class GlobalNav extends Component {
 
   /**
    * download the current file as a genbank file
-   * @return {[type]} [description]
+   *
    */
   downloadProjectGenbank() {
     this.saveProject()

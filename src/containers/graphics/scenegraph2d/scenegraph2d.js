@@ -1,18 +1,18 @@
 /*
-Copyright 2016 Autodesk,Inc.
+ Copyright 2016 Autodesk,Inc.
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
 import uuid from 'node-uuid';
 import Node2D from './node2d';
 import invariant from 'invariant';
@@ -64,13 +64,14 @@ export default class SceneGraph2D {
   darken() {
     this.parent.classList.add('sceneGraph-dark');
   }
+
   lighten() {
     this.parent.classList.remove('sceneGraph-dark');
   }
 
   /**
    * update our element to the current scene graph size
-   * @return {[type]} [description]
+   *
    */
   updateSize() {
     this.parent.style.width = this.width + 'px';
@@ -105,11 +106,11 @@ export default class SceneGraph2D {
    * return a list of nodes at the given location, the higest in the z-order
    * will be towards tht end of the list, the top most node is the last.
    * @param  {Vector2D} point
-   * @return {[Node2D]}
+   * @return {Array.<Node2D>}
    */
   findNodesAt(point) {
     const hits = [];
-    this.traverse( node => {
+    this.traverse(node => {
       if (node.parent && node.containsGlobalPoint(point)) {
         hits.push(node);
       }
@@ -122,7 +123,7 @@ export default class SceneGraph2D {
    */
   findNodesWithin(box) {
     const hits = [];
-    this.traverse( node => {
+    this.traverse(node => {
       if (node.parent && node.getAABB().intersectWithBox(box)) {
         hits.push(node);
       }
@@ -137,7 +138,7 @@ export default class SceneGraph2D {
    */
   getAABB() {
     let aabb = null;
-    this.traverse( node => {
+    this.traverse(node => {
       // ignore the root, which we can identify because it has no parent
       if (node.parent) {
         const nodeAABB = node.getAABB();
@@ -149,7 +150,7 @@ export default class SceneGraph2D {
 
   /**
    * updating the entire graph just involves updating the entire root node branch
-   * @return {[type]} [description]
+   *
    */
   update() {
     this.root.updateBranch();

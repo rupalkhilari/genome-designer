@@ -25,7 +25,7 @@ import { userLogin } from '../../actions/user';
 import { projectOpen } from '../../actions/projects';
 import track from '../../analytics/ga';
 
-/**
+/*
  * default visibility and text for error labels
  * @type {Object}
  */

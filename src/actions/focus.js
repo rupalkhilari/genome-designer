@@ -1,18 +1,22 @@
 /*
-Copyright 2016 Autodesk,Inc.
+ Copyright 2016 Autodesk,Inc.
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
+/**
+ * @module Focus Actions
+ * @memberOf module:Actions
+ */
 import * as ActionTypes from '../constants/ActionTypes';
 import * as BlockSelector from '../selectors/blocks';
 import invariant from 'invariant';
@@ -24,6 +28,11 @@ import { symbolMap } from '../inventory/roles';
 
 const idValidator = (id) => safeValidate(idValidatorCreator(), true, id);
 
+/**
+ * Focus a project by ID
+ * @param {UUID} inputProjectId
+ * @returns {UUID} Focused ID, or null if invalid ID
+ */
 export const focusProject = (inputProjectId = null) => {
   return (dispatch, getState) => {
     const projectId = idValidator(inputProjectId) ? inputProjectId : null;
@@ -36,6 +45,11 @@ export const focusProject = (inputProjectId = null) => {
   };
 };
 
+/**
+ * Focus a construct by ID, updating block selection if a new construct
+ * @param {UUID} inputConstructId
+ * @returns {UUID} Construct ID
+ */
 export const focusConstruct = (inputConstructId) => {
   return (dispatch, getState) => {
     //null is valid to unselect all constructs
@@ -62,6 +76,11 @@ export const focusConstruct = (inputConstructId) => {
   };
 };
 
+/**
+ * Focus blocks (from a single construct) , updating construct if necessary
+ * @param {Array.<UUID>} blockIds
+ * @returns {Array.<UUID>} focused block IDs
+ */
 export const focusBlocks = (blockIds) => {
   return (dispatch, getState) => {
     invariant(Array.isArray(blockIds), 'must pass array to focus blocks');
@@ -89,6 +108,11 @@ export const focusBlocks = (blockIds) => {
   };
 };
 
+/**
+ * Add blocks to focus
+ * @param {Array.<UUID>} blocksIdsToAdd
+ * @returns {Array.<UUID>} all block IDs focused
+ */
 export const focusBlocksAdd = (blocksIdsToAdd) => {
   return (dispatch, getState) => {
     invariant(Array.isArray(blocksIdsToAdd), 'must pass array to focus blocks');
@@ -101,6 +125,11 @@ export const focusBlocksAdd = (blocksIdsToAdd) => {
   };
 };
 
+/**
+ * Toggle focus of blocks
+ * @param {Array.<UUID>} blockToToggle
+ * @returns {Array.<UUID>} all block IDs focused
+ */
 export const focusBlocksToggle = (blocksToToggle) => {
   return (dispatch, getState) => {
     invariant(Array.isArray(blocksToToggle), 'must pass array to focus blocks');
@@ -121,7 +150,11 @@ export const focusBlocksToggle = (blocksToToggle) => {
   };
 };
 
-//pass model, takes precedence
+/**
+ * Force focus of blocks, passing in Block Models rather than IDs (blocks may not be in the store)
+ * @param {Array.<Block>} blocks
+ * @returns {Array.<Block>} force-focused blocks
+ */
 export const focusForceBlocks = (blocks) => {
   return (dispatch, getState) => {
     invariant(blocks.every(block => Block.validate(block, false)), 'each block must pass validation to focus it');
@@ -134,7 +167,11 @@ export const focusForceBlocks = (blocks) => {
   };
 };
 
-//pass model, takes precedence
+/**
+ * Force focusing of project, passing in Project Models rahter than IDs (may not be in store)
+ * @param {Project} project
+ * @returns {Project}
+ */
 export const focusForceProject = (project) => {
   return (dispatch, getState) => {
     invariant(Project.validate(project, false), 'must pass a valid project');
@@ -147,9 +184,14 @@ export const focusForceProject = (project) => {
   };
 };
 
+/**
+ * Specify which level of focus has priority
+ * @param level One of `project`, `construct`, `block`, `option`, or `role`
+ * @returns {string} focused level
+ */
 export const focusPrioritize = (level = 'project') => {
   return (dispatch, getState) => {
-    invariant(['project', 'construct', 'block', 'role'].indexOf(level) >= 0, 'must pass a valid type to give priority to');
+    invariant(['project', 'construct', 'block', 'option', 'role'].indexOf(level) >= 0, 'must pass a valid type to give priority to');
 
     dispatch({
       type: ActionTypes.FOCUS_PRIORITIZE,
@@ -159,6 +201,11 @@ export const focusPrioritize = (level = 'project') => {
   };
 };
 
+/**
+ * Focus a role
+ * @param {string} roleId
+ * @returns {string} roleId
+ */
 export const focusRole = (roleId) => {
   return (dispatch, getState) => {
     invariant(symbolMap[roleId], 'must pass a valid Role ID');
@@ -167,9 +214,16 @@ export const focusRole = (roleId) => {
       type: ActionTypes.FOCUS_ROLE,
       roleId,
     });
+    return roleId;
   };
 };
 
+/**
+ * Specify which list option is selected for a list Block
+ * @param {UUID} blockId List block ID
+ * @param {UUID} optionId
+ * @returns {Object} Map of selected options
+ */
 export const focusBlockOption = (blockId, optionId) => {
   return (dispatch, getState) => {
     invariant(idValidator(blockId) && idValidator(optionId), 'must pass valid block ID and optionId');

@@ -13,6 +13,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+/**
+ * Interface for checking existence / creating / replacing / merging / deleting instances
+ * @module persistence
+ */
 import invariant from 'invariant';
 import path from 'path';
 import { merge, values, forEach } from 'lodash';

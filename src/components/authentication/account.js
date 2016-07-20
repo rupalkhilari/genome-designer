@@ -20,7 +20,7 @@ import invariant from 'invariant';
 import { userUpdate } from '../../actions/user';
 import track from '../../analytics/ga';
 
-/**
+/*
  * default visibility and text for error labels
  * @type {Object}
  */

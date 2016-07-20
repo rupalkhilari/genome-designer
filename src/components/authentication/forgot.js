@@ -19,7 +19,7 @@ import { uiShowAuthenticationForm, uiSetGrunt } from '../../actions/ui';
 import { forgot } from '../../middleware/auth';
 import track from '../../analytics/ga';
 
-/**
+/*
  * default visibility and text for error labels
  * @type {Object}
  */

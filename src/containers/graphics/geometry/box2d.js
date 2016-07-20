@@ -66,9 +66,9 @@ export default class Box2D {
   /**
    * extend ourselves with any of the property names in props,
    * renaming them to the given target property name
-   * @param  {[type]} from  [description]
-   * @param  {[type]} props [description]
-   * @return {[type]}       [description]
+   * 
+   * 
+   * 
    */
   extend(from, props) {
     for (const key in props) {
@@ -100,7 +100,7 @@ export default class Box2D {
   /**
    * return an AABB defined by the limits of this point
    * and another point
-   * @param  {[Vector2D} ary
+   * @param  {Vector2D} ary
    * @return {Box2D}
    */
   static boxFromPoints(ary) {

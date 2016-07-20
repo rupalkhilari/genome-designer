@@ -54,7 +54,7 @@ class ConstructPreview extends Component {
 
   /**
    * construct scene graph and layout once mounted
-   * @return {[type]} [description]
+   *
    */
   componentDidMount() {
     // create the scene graph we are going to use to display the construct

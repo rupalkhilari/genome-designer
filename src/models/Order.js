@@ -24,8 +24,16 @@ import { submitOrder, getQuote } from '../middleware/order';
 
 const idValidator = (id) => safeValidate(validators.id(), true, id);
 
-//due to issues with freezing, not extending Instance. This is a hack. Ideally, could have InstanceUnfrozen schema or something to extend
-//NOTE that orders are not immutable because this can be very expensive when they are large. Note that this affects rendering in React
+/**
+ * A construct can be ordered, i.e. synthesized, and the process is saved using an Order. Orders are placed with a foundry.
+ * Orders are only saved once they have been completed successfully
+ * @name Order
+ * @class
+ * @extends Instance
+ *
+ * @memberOf module:Models
+ * @gc Model
+ */
 export default class Order extends Instance {
   constructor(input = {}) {
     invariant(input.projectId, 'project Id is required to make an order');
@@ -48,7 +56,13 @@ export default class Order extends Instance {
     return OrderDefinition.validate(input, throwOnError);
   }
 
-  //validate order prior to submission - should have parameters, constructs, user, projectId
+  /**
+   * validate order prior to submission - should have parameters, constructs, user, projectId
+   * @param input
+   * @param throwOnError
+   * @throws if throwOnError === true
+   * @returns {boolean}
+   */
   static validateSetup(input, throwOnError = false) {
     return idValidator(input.projectId) &&
       input.constructIds.length > 0 &&
@@ -56,6 +70,13 @@ export default class Order extends Instance {
       OrderParametersSchema.validate(input.parameters, throwOnError);
   }
 
+  /**
+   * Validate the parameters of an order
+   * @param input
+   * @param throwOnError
+   * @throws if throwOnError ==== true
+   * @returns {*}
+   */
   static validateParameters(input, throwOnError = false) {
     return OrderParametersSchema.validate(input, throwOnError);
   }
@@ -64,11 +85,24 @@ export default class Order extends Instance {
     invariant(false, 'cannot clone an order');
   }
 
+  /**
+   * Change a property of the Order
+   * @param path
+   * @param value
+   * @throws if the order has been submitted
+   * @returns {Instance}
+   */
   mutate(path, value) {
     invariant(!this.isSubmitted(), 'cannot change a submitted order');
     return super.mutate(path, value);
   }
 
+  /**
+   * Merge an object onto the Order
+   * @param object Object to merge with order
+   * @throws if the order has been submitted
+   * @returns {Instance}
+   */
   merge(...args) {
     invariant(!this.isSubmitted(), 'cannot change a submitted order');
     return super.merge(...args);
@@ -82,14 +116,27 @@ export default class Order extends Instance {
     return this.metadata.name || 'Untitled Order';
   }
 
+  /**
+   * Set name of the order
+   * @param newName
+   * @returns {Order}
+   */
   setName(newName) {
     return this.mutate('metadata.name', newName);
   }
 
+  /**
+   * Check whether the order has been submitted
+   * @returns {boolean}
+   */
   isSubmitted() {
     return this.status.foundry && this.status.remoteId;
   }
 
+  /**
+   * If submitted, return time order placed
+   * @returns {number|null} POSIX time
+   */
   dateSubmitted() {
     return this.isSubmitted() ? this.status.timeSent : null;
   }
@@ -98,11 +145,20 @@ export default class Order extends Instance {
    parameters, user, other information
    ************/
 
+  /**
+   * Set order parameters
+   * @param parameters
+   * @returns {Order}
+   */
   setParameters(parameters = {}) {
     invariant(OrderParametersSchema.validate(parameters, false), 'parameters must pass validation');
     return this.mutate('parameters', parameters);
   }
 
+  /**
+   * Check whether only ordering a subset of possible combinations
+   * @returns {boolean}
+   */
   onlySubset() {
     const { parameters } = this;
     return (!parameters.onePot && parameters.permutations < this.numberCombinations);
@@ -112,10 +168,20 @@ export default class Order extends Instance {
    quote + submit
    ************/
 
+  /**
+   * If supported by the foundry, get a quote for the order
+   * @param foundry
+   */
   quote(foundry) {
     return getQuote(foundry, this);
   }
 
+  //todo - should not need to pass this to the server. should be able to generated deterministically. Set up better code shsraing between client + server
+  /**
+   * Submit the order
+   * @param {string} foundry ID of the foundry. Currently, 'egf'
+   * @param {Array.<Array.<UUID>>} positionalCombinations 2D of positional combinations, used on the server for generating all combinations
+   */
   submit(foundry, positionalCombinations) {
     //may want to just set the foundry on the order directly?
     return submitOrder(this, foundry, positionalCombinations);

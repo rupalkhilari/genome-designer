@@ -13,6 +13,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+/**
+ * git utilities, relying on nodegit, for versioning of projects
+ * @module versioning
+ */
 import nodegit from 'nodegit';
 import invariant from 'invariant';
 import path from 'path';

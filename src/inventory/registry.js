@@ -26,6 +26,8 @@ export const registry = {
   genbank,
 };
 
+//todo - ability to register inventory search + retrieval lazily -- need to expose this
+
 export const register = (source) => {
   invariant(false, 'not supported yet');
 
