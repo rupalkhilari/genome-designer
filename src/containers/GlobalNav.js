@@ -609,6 +609,11 @@ class GlobalNav extends Component {
           text: 'HELP',
           items: [
             {
+              text: 'Report a Bug',
+              action: () => { window.open('https://github.com/autodesk-bionano/genome-designer/issues', '_blank')}
+            },
+            {},
+            {
               text: 'User Guide',
               action: this.disgorgeDiscourse.bind(this, '/c/genetic-constructor/user-guide'),
             }, {
@@ -626,7 +631,9 @@ class GlobalNav extends Component {
             }, {
               text: 'Give Us Feedback',
               action: this.disgorgeDiscourse.bind(this, '/c/genetic-constructor/feedback'),
-            }, {}, {
+            },
+            {},
+            {
               text: 'About Genetic Constructor',
               action: () => {
                 this.props.uiShowAbout(true);
