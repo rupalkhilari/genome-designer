@@ -4,7 +4,8 @@
   "description": "list of the default extensions for genome designer",
   "dependencies": {
     "simple" : "../../extensions/simple",
-    "simpleWidget": "../../extensions/simpleWidget",
+    "minimalServer": "../../extensions/minimalServer",
+    "webpacked": "../../extensions/webpacked",
     "SequenceDetail" : "IsaacLuo/onion2#deploy"
   }
 }

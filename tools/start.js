@@ -108,26 +108,28 @@ async function start() {
           }, resolve);
 
           //helpers for events listening
-          const eventsCareAbout = ['add', 'change', 'unlink', 'addDir', 'unlinkDir'];
-          const handleChange = (evt, path, stat) => {
-            if (!eventsCareAbout.indexOf(evt) >= 0) {
-              return;
-            }
-            console.log(evt, path);
-            runServer();
-          };
           const ignoreDotFilesAndNestedNodeModules = /([\/\\]\.)|(node_modules\/.*?\/node_modules)/gi;
           const ignoreFilePathCheck = (path) => {
-            console.log(path);
             if (ignoreDotFilesAndNestedNodeModules.test(path)) {
               return true;
             }
             //ignore node_modules for things in the root /extensions/ folder
             //additional check to handle symlinked files (nested node modules wont pick this up in symlinks)
             //ugly because javascript doesnt support negative lookaheads
-            if (/(.*?\/)?extensions\/.*?\/node_modules/.test(path) && (typeof RegExp.$1 === 'string' && RegExp.$1.substring(-6) !== 'server')) {
+            if (/(.*?\/)?extensions\/.*?\/node_modules/.test(path) && (typeof RegExp.$1 === 'string' && RegExp.$1.substring(-7) !== 'server/')) {
               return true;
             }
+          };
+          const eventsCareAbout = ['add', 'change', 'unlink', 'addDir', 'unlinkDir'];
+          const handleChange = (evt, path, stat) => {
+            if (eventsCareAbout.indexOf(evt) < 0) {
+              return;
+            }
+            if (ignoreFilePathCheck(path)) {
+              return;
+            }
+            console.log('webpack watch:', evt, path);
+            runServer();
           };
 
           //while we are not bundling the server, we can set up a watch to recompile on changes

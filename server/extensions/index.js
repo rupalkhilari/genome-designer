@@ -16,9 +16,10 @@ limitations under the License.
 import express from 'express';
 import bodyParser from 'body-parser';
 import { errorDoesNotExist } from '../utils/errors';
-import extensionRegistry from './registry';
+import extensionRegistry, { getClientExtensions } from './registry';
 import loadExtension, { getExtensionInternalPath} from './loadExtension';
 import errorHandlingMiddleware from '../utils/errorHandlingMiddleware';
+import extensionApiRouter from './apiRouter';
 
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json();
@@ -27,20 +28,19 @@ router.use(jsonParser);
 router.use(errorHandlingMiddleware);
 
 router.get('/list', (req, res) => {
-  res.json(extensionRegistry);
+  console.log(extensionRegistry);
+  res.json(getClientExtensions());
 });
 
 router.get('/manifest/:extension', (req, res, next) => {
   const { extension } = req.params;
+  const manifest = getClientExtensions()[extension];
 
-  loadExtension(extension)
-    .then(manifest => res.json(manifest))
-    .catch(err => {
-      if (err === errorDoesNotExist) {
-        return res.status(400).send(errorDoesNotExist);
-      }
-      next(err);
-    });
+  if (!manifest) {
+    return res.status(400).send(errorDoesNotExist);
+  }
+
+  return res.json(manifest);
 });
 
 if (process.env.NODE_ENV !== 'production') {
@@ -86,5 +86,7 @@ if (process.env.NODE_ENV !== 'production') {
       });
   });
 }
+
+router.use('/api', extensionApiRouter);
 
 export default router;

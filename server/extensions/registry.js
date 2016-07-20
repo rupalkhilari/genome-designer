@@ -15,6 +15,8 @@ limitations under the License.
 */
 import path from 'path';
 import fs from 'fs';
+import { pickBy } from 'lodash';
+import { manifestIsServer, manifestIsClient } from './manifestUtils';
 
 const nodeModulesDir = process.env.BUILD ? 'gd_extensions' : path.resolve(__dirname, './node_modules');
 
@@ -47,6 +49,14 @@ fs.readdirSync(nodeModulesDir).forEach(packageName => {
 
 export const isRegistered = (name) => {
   return registry.hasOwnProperty(name);
+};
+
+export const getClientExtensions = () => {
+  return pickBy(registry, (manifest, key) => manifestIsClient(manifest));
+};
+
+export const getServerExtensions = () => {
+  return pickBy(registry, (manifest, key) => manifestIsServer(manifest));
 };
 
 export default registry;
