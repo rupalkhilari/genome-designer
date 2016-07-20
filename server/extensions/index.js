@@ -23,7 +23,7 @@ import extensionApiRouter from './apiRouter';
 
 //native extensions
 import csvRouter from './native/csv/index';
-//import genbankRouter from './native/genbank/index';
+import genbankRouter from './native/genbank/index';
 
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json();
@@ -93,7 +93,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 //handle native extensions which are included statically
 router.use('/api/csv', csvRouter);
-//router.use('/api/genbank', genbankRouter);
+router.use('/api/genbank', genbankRouter);
 
 //other /api routes deleted to extension API router
 router.use('/api', extensionApiRouter);

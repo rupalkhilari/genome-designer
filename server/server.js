@@ -26,6 +26,7 @@ import bodyParser from 'body-parser';
 import errorHandlingMiddleware from './utils/errorHandlingMiddleware';
 import checkUserSetup from './auth/userSetup';
 
+//todo - delete these references - in extensions now
 import importRouter from '../plugins/convert/import';
 import exportRouter from '../plugins/convert/export';
 
@@ -104,6 +105,7 @@ app.use('/order', orderRouter);
 app.use('/file', fileRouter);
 app.use('/extensions', extensionsRouter);
 
+//todo - delete this - exposed under /extensions/api/genbank
 //extensions
 app.use('/import', importRouter);
 app.use('/export', exportRouter);
