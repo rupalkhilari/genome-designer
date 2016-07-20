@@ -8,7 +8,7 @@ Extensions export an [Express](https://expressjs.com/) [router](https://expressj
 
 At the moment, server extensions are installed at server build-time and run alongside the rest of the server.
 
-Types of server extensions, e.g. conversion, are recommended to follow a conventional API.
+Certain types of server extensions, e.g. conversion, are recommended to follow a provided, conventional API.
 
 Constructor provides REST APIs that the router can call internally for accessing or persisting data.
 

@@ -65,7 +65,11 @@ $ npm run start
 
 Now, you should see a linked directory `myExtension` in `node_modules` of server/extensions. Simply reload the client and you should be served the latest version of your code, as the server dynamically pulls from the directory of your extension.
 
-Note that `npm run install-extensions` clears the `node_modules` directory, so you will have to re-establish the link after running that script using `npm link <packageName>`.
+###### Notes:
+
+- When creating a link, npm may not run the `preprocess` script if you have defined one, even though this script is called with `npm install`.
+
+- `npm run install-extensions` clears the `node_modules` directory, so you will have to re-establish the link after running that script using `npm link <packageName>`.
 
 ### Troubleshooting
 
