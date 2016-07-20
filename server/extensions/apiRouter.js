@@ -32,7 +32,7 @@ router.all('/:ext/:route?', (req, res, next) => {
   const extension = extensionRegistry[ext];
 
   if (!extension) {
-    console.log(`could not find extension ${ext} in registry (${Object.keys(registry).join(', ')})`);
+    console.log(`could not find extension ${ext} in registry (${Object.keys(extensionRegistry).join(', ')})`);
     return res.status(404).send(errorExtensionNotFound);
   }
 
