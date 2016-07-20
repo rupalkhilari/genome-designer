@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { convertCsv } from '../../plugins/csv/convert';
+import { convertCsv } from '../../server/extensions/native/csv/convert';
 import rejectingFetch from '../../src/middleware/rejectingFetch';
 
 describe('Plugins', () => {
@@ -31,7 +31,7 @@ Blah,This is a cool part,promoter,#99ccccc,ACTTACGCATCAGCTACGACTACTGACTAGCTAGCTA
 
     it('should work via REST', () => {
       //todo - test this properly
-      return rejectingFetch('/csv', {method: 'POST', body: formData})
+      return rejectingFetch('/extensions/api/csv', {method: 'POST', body: formData})
         .then(resp => resp.json())
         .then(response => {
           console.log(response);

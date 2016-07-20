@@ -7,27 +7,27 @@ import md5 from 'md5';
 import convertFromFile from './convert';
 
 //GC specific
-import Project from '../../src/models/Project';
-import Block from '../../src/models/Block';
-import * as fileSystem from '../../server/utils/fileSystem';
-import * as filePaths from '../../server/utils/filePaths';
-import * as persistence from '../../server/data/persistence';
-import * as rollup from '../../server/data/rollup';
-import { errorDoesNotExist } from '../../server/utils/errors';
-import resetColorSeed from '../../src/utils/generators/color'; //necessary?
+import Project from '../../../../src/models/Project';
+import Block from '../../../../src/models/Block';
+import * as fileSystem from '../../../../server/utils/fileSystem';
+import * as filePaths from '../../../../server/utils/filePaths';
+import * as persistence from '../../../../server/data/persistence';
+import * as rollup from '../../../../server/data/rollup';
+import { errorDoesNotExist } from '../../../../server/utils/errors';
+import resetColorSeed from '../../../../src/utils/generators/color'; //necessary?
 
-const storagePrefix = 'csvJS';
+const extensionKey = 'csv';
 
 //make storage directory just in case...
-fileSystem.directoryMake(filePaths.createStorageUrl(storagePrefix));
+fileSystem.directoryMake(filePaths.createStorageUrl(extensionKey));
 
 const createFilePath = (fileName) => {
   invariant(fileName, 'need a file name');
-  return filePaths.createStorageUrl(storagePrefix, fileName);
+  return filePaths.createStorageUrl(extensionKey, fileName);
 };
 const createFileUrl = (fileName) => {
   invariant(fileName, 'need a file name');
-  return '/convert/csv/file/' + fileName;
+  return extensionKey + '/file/' + fileName;
 };
 
 //create the router
@@ -72,7 +72,7 @@ router.post('/:projectId?', jsonParser, (req, resp, next) => {
     });
   })
     .then(files => {
-      const tempPath = files.data.path;
+      const tempPath = (files && files.data) ? files.data.path : null;
 
       if (!tempPath) {
         return Promise.reject('no file provided');
