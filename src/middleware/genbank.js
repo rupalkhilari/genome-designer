@@ -25,30 +25,28 @@ const contentTypeTextHeader = { headers: { 'Content-Type': 'text/plain' } };
  * project ID is returned and should be reloaded if the current project or opened if a new project.
  * Promise resolves with projectId on success and rejects with statusText of xhr
  */
-//todo - this should use fetch...
 export const importGenbankOrCSV = (file, projectId) => {
   invariant(file && file.name, 'expected a file object of the type that can be added to FormData');
+
   const formData = new FormData();
   formData.append('data', file, file.name);
+
   const isCSV = file.name.toLowerCase().endsWith('.csv');
   const uri = `/import/${isCSV ? 'csv' : 'genbank'}${projectId ? '/' + projectId : ''}`;
-  return new Promise((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', uri, true);
-    xhr.onload = () => {
-      if (xhr.status >= 200 && xhr.status < 300) {
-        const json = JSON.parse(xhr.response);
-        invariant(json && json.ProjectId, 'expect a project ID');
-        resolve(json.ProjectId);
-      } else {
-        reject(xhr.statusText);
-      }
-    };
-    xhr.onerror = () => {
-      reject(xhr.statusText);
-    };
-    xhr.send(formData);
-  });
+
+  //define these here so content type not automatically applied so webkit can define its own boundry
+  const headers = {
+    method: 'POST',
+    credentials: 'same-origin',
+    body: formData,
+  };
+
+  return rejectingFetch(uri, headers)
+    .then(resp => resp.json())
+    .then((json => {
+      invariant(json && json.ProjectId, 'expect a project ID');
+      return json.ProjectId;
+    }));
 };
 
 export const exportBlock = (pluginId, inputs) => {
