@@ -1,6 +1,6 @@
 Extension with a simple visual component.
 
-Instead of simply registering with the API, this extension renders into a defined region of the application.
+Instead of simply registering with the API, this extension renders into a defined region of the application, by calling `window.constructor.registerExtension`.
 
 Genetic Constructor exposes specific regions where extensions can insert themselves. In this case, the extension renders in `sequenceDetail` - the panel below the design canvas.
 

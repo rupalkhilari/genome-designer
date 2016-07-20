@@ -12,9 +12,9 @@ No building or installation is necessary.
 
 #### package.json
 
-`package.json` is most easily created by running `npm init`.
+`package.json` is required for NPM packages, and NPM nicely underlies our dependency system.
 
-For front-end extensions, the field `region` is required.
+In addition to basic fields like `name`, for front-end extensions, the field `region` is required. It can be `null`, or refer to a page region if the extension is visual. These page regions are defined in ``/src/extensions/regions.js`
 
 #### index.js
 

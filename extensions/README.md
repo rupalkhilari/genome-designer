@@ -33,7 +33,11 @@ If you do not have an extension, let's create one in `/extensions/myExtension`:
 $ cd extensions
 $ mkdir myExtension
 $ cd myExtension
+```
 
+NPM packages require a file called `package.json` to describe them and their dependencies.
+
+```
 # set up your extension's NPM package
 $ npm init
 # follow the steps...
