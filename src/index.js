@@ -29,7 +29,10 @@ render(
   document.getElementById('root')
 );
 
-//expose various things on the window, e.g. for extensions
+/**
+ * The API for Genetic Constructor is exposed on the window at `window.constructor`. This object includes the API for triggering actions and subscribing to the store, and registering extensions.
+ * @name window.constructor
+ */
 const exposed = global.constructor = {};
 Object.assign(exposed, {
   registerExtension,
