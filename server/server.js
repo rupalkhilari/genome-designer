@@ -26,6 +26,7 @@ import bodyParser from 'body-parser';
 import errorHandlingMiddleware from './utils/errorHandlingMiddleware';
 import checkUserSetup from './auth/userSetup';
 
+import csvRouter from '../plugins/csv/index';
 import importRouter from '../plugins/convert/import';
 import exportRouter from '../plugins/convert/export';
 
@@ -107,6 +108,7 @@ app.use('/extensions', extensionsRouter);
 //extensions
 app.use('/import', importRouter);
 app.use('/export', exportRouter);
+app.use('/convert/csv', csvRouter);
 
 // Register Client Requests, delegate routing to client
 // ----------------------------------------------------

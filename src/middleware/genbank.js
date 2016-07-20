@@ -28,6 +28,7 @@ const contentTypeTextHeader = { headers: { 'Content-Type': 'text/plain' } };
 //todo - this should use fetch...
 export const importGenbankOrCSV = (file, projectId) => {
   invariant(file && file.name, 'expected a file object of the type that can be added to FormData');
+  debugger;
   const formData = new FormData();
   formData.append('data', file, file.name);
   const isCSV = file.name.toLowerCase().endsWith('.csv');
