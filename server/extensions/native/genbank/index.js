@@ -54,7 +54,7 @@ router.get('/file/:fileId', (req, res, next) => {
 
 /***** EXPORT ******/
 
-router.post('/export/:projectId/:constructId?', (req, res, next) => {
+router.get('/export/:projectId/:constructId?', (req, res, next) => {
   const { projectId, constructId } = req.params;
 
   rollup.getProjectRollup(projectId)
@@ -76,14 +76,15 @@ router.post('/export/:projectId/:constructId?', (req, res, next) => {
     })
     .catch(err => {
       console.log('Error!', err);
-      resp.status(500).send(err);
+      res.status(500).send(err);
     });
 });
 
 /***** IMPORT ******/
 
-//future - deprecate, and use the noSave flag instead (update readme) on import route (requires deeper cleaning)
 //convert without persisting
+//takes a string as input, not a file, unlike route below
+//returns { roots: [], blocks: { <id> : <block> } }
 router.post('/import/convert', (req, resp, next) => {
   const constructsOnly = !!req.query.constructsOnly;
 
@@ -194,6 +195,6 @@ router.post('/import/:projectId?', (req, res, next) => {
     });
 });
 
-router.all('*', (req, res) => res.status(404).send());
+router.all('*', (req, res) => res.status(404).send('route not found'));
 
 export default router;
