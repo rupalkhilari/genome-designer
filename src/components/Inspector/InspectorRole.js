@@ -14,17 +14,12 @@
  limitations under the License.
  */
 import React, { Component, PropTypes } from 'react';
-import { connect } from 'react-redux';
 import InputSimple from './../InputSimple';
 import symbols, { symbolMap } from '../../inventory/roles';
 import InspectorRow from './InspectorRow';
 import PickerItem from '../ui/PickerItem';
 
-<<<<<<< HEAD
-export class InspectorGsl extends Component {
-=======
 export default class InspectorRole extends Component {
->>>>>>> extensions
   static propTypes = {
     roleId: (props, propName) => {
       if (!symbolMap[props[propName]]) {
@@ -55,8 +50,4 @@ export default class InspectorRole extends Component {
     );
   }
 }
-<<<<<<< HEAD
 
-export default connect(() => ({}), {})(InspectorGsl);
-=======
->>>>>>> extensions
