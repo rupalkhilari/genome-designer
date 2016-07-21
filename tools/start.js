@@ -109,14 +109,16 @@ async function start() {
 
           //helpers for events listening
           const ignoreDotFilesAndNestedNodeModules = /([\/\\]\.)|(node_modules\/.*?\/node_modules)/gi;
+          const checkSymlinkedNodeModule = /(.*?\/)?extensions\/.*?\/node_modules/;
+          const checkIsInServerExtensions = /^server\//;
           const ignoreFilePathCheck = (path) => {
             if (ignoreDotFilesAndNestedNodeModules.test(path)) {
               return true;
             }
-            //ignore node_modules for things in the root /extensions/ folder
-            //additional check to handle symlinked files (nested node modules wont pick this up in symlinks)
+            //ignore node_modules for things in the root server/extensions/ folder
+            //additional check needed to handle symlinked files (nested node modules wont pick this up in symlinks)
             //ugly because javascript doesnt support negative lookaheads
-            if (/(.*?\/)?extensions\/.*?\/node_modules/.test(path) && (typeof RegExp.$1 === 'string' && RegExp.$1.substring(-7) !== 'server/')) {
+            if (checkSymlinkedNodeModule.test(path) && checkIsInServerExtensions.test(path)) {
               return true;
             }
           };
