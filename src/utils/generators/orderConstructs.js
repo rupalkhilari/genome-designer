@@ -16,7 +16,7 @@ limitations under the License.
 /**
  * Given positional possiblities, generate combinations deterministically
  *
- * @param combos {2D Array} Positional options, e.g. [ [1,2,3], [4,5,6], [7] ]
+ * @param combos {Array.<Array.<number>>} Positional options, e.g. [ [1,2,3], [4,5,6], [7] ]
  * @param collector {Array} Array to push permutations into
  * @param position
  * @param currentPermutation

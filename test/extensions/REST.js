@@ -5,7 +5,11 @@ import devServer from '../../server/server';
 
 describe('Extensions', () => {
   describe('REST', () => {
-    it('should list the extensions, manifests keyed by name', (done) => {
+    //keys of test extensions
+    const testClient = 'testClient';
+    const testServer = 'testServer';
+
+    it('should list the client extensions, manifests keyed by name', (done) => {
       const url = '/extensions/list';
       request(devServer)
         .get(url)
@@ -20,14 +24,15 @@ describe('Extensions', () => {
           assert(Object.keys(result.body).every(key => {
             const manifest = result.body[key];
             const { name, version, region } = manifest;
-            return !!name && !!version && !!region;
+            const regionValid = region === null || !!region;
+            return !!name && !!version && regionValid;
           }), 'invalid manifest format');
           done();
         });
     });
 
     it('/manifest/ to get manifest', (done) => {
-      const url = '/extensions/manifest/simple';
+      const url = `/extensions/manifest/${testClient}`;
       request(devServer)
         .get(url)
         .expect(200)
@@ -36,14 +41,14 @@ describe('Extensions', () => {
             return done(err);
           }
           expect(result.body).to.be.an.object;
-          assert(result.body.name === 'simple');
-          assert(result.body.region === 'sequenceDetail');
+          assert(result.body.name === testClient);
+          assert(result.body.region === null);
           done();
         });
     });
 
     it('/load/ to get the index.js script', (done) => {
-      const url = '/extensions/load/simple';
+      const url = `/extensions/manifest/${testClient}`;
       request(devServer)
         .get(url)
         .expect(200)
@@ -52,11 +57,12 @@ describe('Extensions', () => {
             return done(err);
           }
 
-          assert(result.text.indexOf('render'), 'should return script with a render() function');
-          assert(result.text.indexOf('gd.registerExtension'), 'should return script which registers itself using registerExtension on the client');
+          assert(result.text.indexOf('window.constructor'), 'should call something on the window.constructor object');
 
           done();
         });
     });
+
+    it('/api/ route to call server extensions exposed router');
   });
 });

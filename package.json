@@ -9,6 +9,7 @@
     "clean": "babel-node tools/run clean",
     "build": "babel-node tools/run build",
     "build-client": "babel-node tools/run bundle",
+    "jsdoc": "jsdoc -c docs/jsdoc.conf.json --package package.json --readme docs/README.md",
     "postinstall": "npm run install-extensions && npm run selenium",
     "install-extensions": "cd server/extensions && rm -rf node_modules && npm install --only=prod --no-bin-link --no-optional",
     "check": "npm run lint && npm run test",
@@ -21,7 +22,6 @@
     "imagediff": "node ./bin/imagediff/imagediff.js --truth ./test-e2e/cannonical-screenshots/ --hypothesis ./test-e2e/current-screenshots/",
     "selenium": "node ./node_modules/selenium-standalone/bin/selenium-standalone install",
     "start-docker": "docker build -t genome-designer . && docker run --privileged -v /var/run/docker.sock:/run/docker.sock -i -p 3000:3000 -t genome-designer",
-    "create-ecoli-db": "python extensions/foundry/ecoli/generate_db.py jdon extensions/foundry/ecoli/ecoli.genes.json extensions/foundry/ecoli.json",
     "auth": "./bin/local-auth.sh",
     "auth-test": "COMMAND=\"mocha --compilers js:babel-register,css:test/css-null-compiler.js --require ./test/setup.js --timeout=10000 test/server/auth/REST.spec.js\" ./bin/server-auth.sh",
     "server-auth": "EMAIL=1 COMMAND='npm run start-instance -- --release' ./bin/server-auth.sh"
@@ -31,7 +31,7 @@
     "url": "git+https://github.com/autodesk-bionano/genome-designer.git"
   },
   "author": "",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/autodesk-bionano/genome-designer/issues"
   },
@@ -56,7 +56,6 @@
     "history": "^1.17.0",
     "invariant": "^2.2.0",
     "isomorphic-fetch": "^2.1.1",
-    "jade": "^1.11.0",
     "jquery": "^2.1.4",
     "load-script": "^1.0.0",
     "lodash": "^4.5.1",
@@ -73,6 +72,7 @@
     "normalize.css": "^3.0.3",
     "normalizr": "^1.2.0",
     "promised-exec": "^1.0.1",
+    "pug": "^2.0.0-beta3",
     "query-string": "^3.0.1",
     "random-js": "^1.0.8",
     "react": "^0.14.8",
@@ -124,6 +124,8 @@
     "express": "^4.13.3",
     "file-loader": "^0.8.5",
     "fs-extra": "^0.30.0",
+    "jsdoc": "^3.4.0",
+    "jsdoc-babel": "^0.2.1",
     "jsdom": "^7.0.2",
     "json-loader": "^0.5.4",
     "mocha": "^2.2.5",
@@ -139,6 +141,7 @@
     "postcss-nested": "^1.0.0",
     "react-transform-catch-errors": "^1.0.1",
     "react-transform-hmr": "^1.0.1",
+    "readline-sync": "^1.4.4",
     "redbox-react": "^1.0.1",
     "redux-devtools": "^3.0.1",
     "redux-devtools-dock-monitor": "^1.0.1",

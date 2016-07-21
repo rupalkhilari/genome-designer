@@ -11,7 +11,7 @@ Server is written so you can:
  
 Server launches in its own process, and new process is started every time the server rebuilds, and is proxied using BrowserSync. The proxy also dynamically adds in hot module loading, and reload when static assets update, and React Hot Module loading and React Transform.
 
-TODO: Build the server. Not building because of relative path issues.
+TODO: Build the server. Not building because of relative path issues, in particular of non-static imports (e.g. all the plugins)
 
 ## Build Automation Tools
 
@@ -27,28 +27,26 @@ TODO: Build the server. Not building because of relative path issues.
 * Copies static files to the output folder (`copy.js`)
 * Creates application bundles with Webpack (`bundle.js`, `webpack.config.js`)
 
-##### `npm run deploy` (`deploy.js`)
-
-**todo**
-
 ##### Options
 
 Flag          | Description
 ------------- | -------------------------------------------------- 
 `--release`   | Minimizes and optimizes the compiled output
 `--verbose`   | Prints detailed information to the console
-`--debugmode` | Launches the App in Debugging mode
+`--debugmode` | Launches the App in Debugging mode (e.g. with Redux devtools)
 
 For example:
 
 ```sh
-$ npm run build -- --release --verbose   # Build the app in production mode
+$ npm run start     # Run the app for local development, with full sourcemapping etc.
 ```
 
-or
+```sh
+$ npm start -- --release        # Launch dev server in production mode + minified
+```
 
 ```sh
-$ npm start -- --release                 # Launch dev server in production mode
+$ npm run build -- --release --verbose   # Build the app in production mode
 ```
 
 The additional `--` before flags is necessary to pass the arguments from babel-node to the actual process spawned.

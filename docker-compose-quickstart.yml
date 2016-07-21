@@ -7,8 +7,9 @@ genome-designer:
     - /storage/genome-designer/projects:/projects
   environment:
     STORAGE: /projects
-    API_END_POINT: http://auth${AUTH_ENV_TAG}.bionano.bio:8080/api
-    HOST_URL: http://genome-designer${AUTH_ENV_TAG}.bionano.autodesk.com
+    API_END_POINT: http://auth${BNR_ENV_URL_SUFFIX}.bionano.bio:8080/api
+    HOST_URL: https://geneticconstructor${BNR_ENV_URL_SUFFIX}.bionano.autodesk.com
+    NODE_ENV: ${NODE_ENV}
   command:
     npm run server-auth
   log_driver: json-file

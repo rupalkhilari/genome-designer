@@ -13,6 +13,11 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+/**
+ * DragTypes enumerates the possible drag types supported through Genetic Constructor. Each type corresponds to a different data format and likely will need to be handled differently by respective drop targets.
+ * @module DragTypes
+ */
+
 //top-level for anything dragged from inventory
 export const inventoryItem = 'INVENTORY_ITEM';
 

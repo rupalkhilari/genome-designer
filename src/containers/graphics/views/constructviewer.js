@@ -166,8 +166,8 @@ export class ConstructViewer extends Component {
 
   /**
    * scroll into view if needed and update scenegraph
-   * @param  {[type]} prevProps [description]
-   * @return {[type]}           [description]
+   *
+   *
    */
   componentDidUpdate(prevProps) {
     // if we are newly focused then scroll ourselves into view
@@ -296,7 +296,7 @@ export class ConstructViewer extends Component {
 
   /**
    * window resize, update layout and scene graph with new dimensions
-   * @return {[type]} [description]
+   *
    */
   windowResized() {
     this.sg.availableWidth = this.dom.clientWidth;
@@ -306,7 +306,7 @@ export class ConstructViewer extends Component {
 
   /**
    * accessor for our DOM node.
-   * @return {[type]} [description]
+   *
    */
   get dom() {
     return ReactDOM.findDOMNode(this);
@@ -314,7 +314,7 @@ export class ConstructViewer extends Component {
 
   /**
    * accessor that fetches the actual scene graph element within our DOM
-   * @return {[type]} [description]
+   *
    */
   get sceneGraphEl() {
     return this.dom.querySelector('.sceneGraph');
@@ -354,7 +354,7 @@ export class ConstructViewer extends Component {
 
   /**
    * open the inspector
-   * @return {[type]} [description]
+   *
    */
   openInspector() {
     this.props.inspectorToggleVisibility(true);
@@ -466,7 +466,7 @@ export class ConstructViewer extends Component {
     let parent = insertionPoint ? this.getBlockParent(insertionPoint.block) : this.props.construct;
     if (type === roleDragType) {
       // create new block with correct type of sbol symbo
-      const droppedBlock = this.props.blockCreate({ rules: { role: item.id } });
+      const droppedBlock = this.props.blockCreate({ rules: { role: item.rules.role } });
       // insert next to block, inject into a block, or add as the first block of an empty construct
       if (insertionPoint) {
         if (insertionPoint.edge) {

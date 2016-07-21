@@ -1,4 +1,5 @@
 import Instance from '../../src/models/Instance';
+import InstanceSchema from '../../src/schemas/Instance';
 import chai from 'chai';
 import sha1 from 'sha1';
 
@@ -11,6 +12,16 @@ describe('Model', () => {
         const inst = new Instance();
 
         expect(inst.constructor).to.be.a('function');
+      });
+
+      it('should include scaffold for default input', () => {
+        const inst = new Instance();
+        const scaffold = InstanceSchema.scaffold();
+        const massaged = Object.assign({}, scaffold, {
+          id: inst.id,
+        });
+        expect(inst).to.eql(massaged);
+        assert(typeof inst.metadata === 'object', 'should have metadata field');
       });
 
       it('should accept existing input', () => {

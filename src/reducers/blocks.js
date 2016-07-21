@@ -15,11 +15,11 @@ limitations under the License.
 */
 import * as ActionTypes from '../constants/ActionTypes';
 import * as instanceMap from '../store/instanceMap';
-import { blocks as testBlocks } from './testProject';
 
 const initialState = {};
 
 if (process.env.NODE_ENV === 'test') {
+  const testBlocks = require('./testProject').blocks;
   testBlocks.forEach(block => Object.assign(initialState,
     { [block.id]: block }
   ));

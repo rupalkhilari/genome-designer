@@ -20,7 +20,11 @@ import symbols, { symbolMap } from '../../inventory/roles';
 import InspectorRow from './InspectorRow';
 import PickerItem from '../ui/PickerItem';
 
+<<<<<<< HEAD
 export class InspectorGsl extends Component {
+=======
+export default class InspectorRole extends Component {
+>>>>>>> extensions
   static propTypes = {
     roleId: (props, propName) => {
       if (!symbolMap[props[propName]]) {
@@ -51,5 +55,8 @@ export class InspectorGsl extends Component {
     );
   }
 }
+<<<<<<< HEAD
 
 export default connect(() => ({}), {})(InspectorGsl);
+=======
+>>>>>>> extensions

@@ -69,7 +69,7 @@ export default class Layout {
    * size the scene graph to just accomodate all the nodes that are present.
    * This is only performed for the root layout ( nested constructs should not
    * perform this operation, as per the rootLayout property )
-   * @return {[type]} [description]
+   *
    */
   autoSizeSceneGraph() {
     if (this.rootLayout) {
@@ -168,7 +168,7 @@ export default class Layout {
   }
   /**
    * drop nodes allocated with emptyListBlockFactory that are no longer needed
-   * @return {[type]} [description]
+   *
    */
   dropEmptyBlocks() {
     Object.keys(this.emptyMap).forEach((parentBlockId) => {
@@ -308,9 +308,9 @@ export default class Layout {
   /**
    * create a node, if not already created for the given piece.
    * Add to our hash for tracking
-   * @param  {[type]} part          [description]
-   * @param  {[type]} appearance [description]
-   * @return {[type]}            [description]
+   *
+   *
+   *
    */
   partFactory(part, appearance) {
     let node = this.nodeFromElement(part);
@@ -416,7 +416,7 @@ export default class Layout {
   }
   /**
    * create the banner / bar for the construct ( contains the triangle )
-   * @return {[type]} [description]
+   *
    */
   bannerFactory() {
     if (this.showHeader && !this.banner) {
@@ -436,8 +436,8 @@ export default class Layout {
   }
   /**
    * create title as necessary
-   * @param  {[type]} part [description]
-   * @return {[type]}   [description]
+   *
+   *
    */
   titleFactory() {
     if (this.showHeader) {
@@ -550,7 +550,7 @@ export default class Layout {
   /**
    * store layout information on our cloned copy of the data, constructing
    * display elements as required
-   * @return {[type]} [description]
+   *
    */
   update(options) {
     this.options = options;
@@ -579,7 +579,7 @@ export default class Layout {
 
   /**
    * one of several different layout algorithms
-   * @return {[type]} [description]
+   *
    */
   layoutWrap() {
     return this.layout({
@@ -595,7 +595,7 @@ export default class Layout {
   }
   /**
    * return the point where layout of actual blocks begins
-   * @return {[type]} [description]
+   *
    */
   getInitialLayoutPoint() {
     return new Vector2D(this.insetX + kT.rowBarW, this.insetY + (this.showHeader ? kT.bannerHeight + kT.titleH + kT.rowBarH : kT.rowBarH));
@@ -612,7 +612,7 @@ export default class Layout {
   /**
    * layout, configured with various options:
    * xlimit: maximum x extent
-   * @return {[type]} [description]
+   *
    */
   layout(layoutOptions) {
     // set the new reference key

@@ -18,15 +18,12 @@ import fields from './fields/index';
 import Schema from './SchemaClass';
 
 /**
- @name AnnotationSchema
- @parent BlockSchema
- @role Annotation (kinda)
-
- @description
- An annotation on a sequence.
- Should either have a sequence or start+end location
-
- Later, we may want to make a field that notes how optimizable the sequence is. E.g. none, codon-optimize, or random sequence. It may be represented as a degenerate sequence?
+ * An annotation on a sequence.
+ * Should either have a sequence or start+end location
+ * Later, we may want to make a field that notes how optimizable the sequence is. E.g. none, codon-optimize, or random sequence. It may be represented as a degenerate sequence?
+ *
+ * @name AnnotationSchema
+ * @gc Schema
  */
 
 const fieldDefs = {
@@ -41,6 +38,14 @@ const fieldDefs = {
   description: [
     fields.string(),
     'Description of annotation',
+  ],
+  color: [
+    fields.string(),
+    `Color of the Annotation`,
+  ],
+  role: [
+    fields.string(),
+    `Role of the Annotation`,
   ],
   sequence: [
     fields.sequence({loose: true}),

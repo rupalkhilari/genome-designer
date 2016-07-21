@@ -37,8 +37,8 @@ export const isOne = (val) => {
 
 /**
  * index of child in parent
- * @param  {[type]} node [description]
- * @return {[type]}      [description]
+ *
+ *
  */
 export const nodeIndex = (node) => {
   if (!node.parentNode) {

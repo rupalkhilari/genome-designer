@@ -1,18 +1,22 @@
 /*
-Copyright 2016 Autodesk,Inc.
+ Copyright 2016 Autodesk,Inc.
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
+/**
+ * @module Block Actions
+ * @memberOf module:Actions
+ */
 import invariant from 'invariant';
 import { merge } from 'lodash';
 import * as ActionTypes from '../constants/ActionTypes';
@@ -26,8 +30,14 @@ import { pauseAction, resumeAction } from '../store/pausableStore';
 
 //todo - helper to wrap dispatch()'s in a paused transaction - make sure dispatch still runs when passed as arg
 
-//Promise
-//retrieves a block, and its options and components if specified
+/**
+ * Retrieves a block, and its options and components if specified
+ * @param {UUID} blockId
+ * @param {UUID} inputProjectId
+ * @param {boolean} [withContents=false]
+ * @param {boolean} [skipIfContentsEmpty=false]
+ * @returns {Promise} Array of Blocks retrieved
+ */
 export const blockLoad = (blockId, inputProjectId, withContents = false, skipIfContentsEmpty = false) => {
   return (dispatch, getState) => {
     const retrieved = getState().blocks[blockId];
@@ -51,8 +61,12 @@ export const blockLoad = (blockId, inputProjectId, withContents = false, skipIfC
   };
 };
 
-//useDefaults e.g. to set the projectId automatically
-//do not use this if you are creating a block outside of a project (i.e. floating, not associated with project yet)
+/**
+ * Create a new Block
+ * @param {Object} initialModel
+ * @param {boolean} [useDefaults=true] Set e.g. current project ID automatically. Set to false if you are creating a block outside of a project (i.e. floating, not associated with project yet)
+ * @returns {Block}
+ */
 export const blockCreate = (initialModel, useDefaults = true) => {
   return (dispatch, getState) => {
     const toMerge = (useDefaults === true) ?
@@ -68,7 +82,11 @@ export const blockCreate = (initialModel, useDefaults = true) => {
   };
 };
 
-//if you have block models you want in the store this will add them directly
+/**
+ * Add Block Models to the store directly
+ * @param {...Block|Object} inputBlocks
+ * @returns {...Block}
+ */
 export const blockStash = (...inputBlocks) => {
   return (dispatch, getState) => {
     const blocks = inputBlocks.map(blockObj => new Block(blockObj));
@@ -95,8 +113,7 @@ export const blockMerge = (blockId, toMerge) => {
 };
 
 /**
- * @description
- * Clones a block (and its children by default)
+ * Clone a block (and its children, by default)
  *
  * @param blockInput {ID|Object} JSON of block directly, or ID. Accept both since inventory items may not be in the store, so we need to pass the block directly. Prefer to use ID.
  * @param parentObjectInput {Object} information about parent, defaults to generated:
@@ -105,7 +122,7 @@ export const blockMerge = (blockId, toMerge) => {
   *  version - that of project ID if in the store, or first parent if available and same project id
   * }
  * @param shallowOnly {Boolean} Does a deep clone by default, adds all child blocks to store
- * @returns {Object} clone block (root node if has children)
+ * @returns {Block} clone block (root node if has children)
  */
 export const blockClone = (blockInput, parentObjectInput = {}, shallowOnly = false) => {
   return (dispatch, getState) => {
@@ -175,6 +192,12 @@ export const blockClone = (blockInput, parentObjectInput = {}, shallowOnly = fal
   };
 };
 
+/**
+ * Freeze a block, so that no further changes can be made to it without cloning it first
+ * @param {UUID} blockId
+ * @param {boolean} [recursive=true] Apply to contents (components + options)
+ * @returns {...Block} all blocks frozen
+ */
 export const blockFreeze = (blockId, recursive = true) => {
   return (dispatch, getState) => {
     const oldBlocks = [getState().blocks[blockId]];
@@ -189,23 +212,29 @@ export const blockFreeze = (blockId, recursive = true) => {
       undoable: true,
       blocks,
     });
+
+    return blocks;
   };
 };
 
-//deletes blocks from store
-//need to run this sequentially
-export const blockDelete = (...blocks) => {
+/**
+ * Deletes blocks from the store by ID, and removes from constructs containing it
+ * @param {...UUID} blockIds
+ * @returns {...UUID} IDs removed
+ */
+export const blockDelete = (...blockIds) => {
   return (dispatch, getState) => {
     dispatch(pauseAction());
     dispatch(undoActions.transact());
 
-    blocks.forEach(blockId => {
+    blockIds.forEach(blockId => {
       //find parent, remove component from parent
 
       const parent = dispatch(selectors.blockGetParents(blockId)).shift();
 
       //may not have parent (is construct) or parent was deleted
       if (parent) {
+        //todo - remove from options
         dispatch(blockRemoveComponent(parent, blockId)); //eslint-disable-line no-use-before-define
       }
 
@@ -219,12 +248,15 @@ export const blockDelete = (...blocks) => {
     dispatch(undoActions.commit());
     dispatch(resumeAction());
 
-    return blocks;
+    return blockIds;
   };
 };
 
-//remove blocks from constructs / projects, but leave in the store
-//need to run this sequentially
+/**
+ * Remove blocks from constructs / projects, but leave in the store, and removing block from constructs containing it
+ * @param {...UUID} blockIds
+ * @returns {...UUID} IDs removed
+ */
 export const blockDetach = (...blockIds) => {
   return (dispatch, getState) => {
     dispatch(pauseAction());
@@ -235,6 +267,7 @@ export const blockDetach = (...blockIds) => {
       const parent = dispatch(selectors.blockGetParents(blockId)).shift();
       //may not have parent (is construct) or parent was deleted
       if (parent) {
+        //todo - remove from options
         dispatch(blockRemoveComponent(parent.id, blockId)); //eslint-disable-line no-use-before-define
       }
     });
@@ -250,9 +283,15 @@ export const blockDetach = (...blockIds) => {
  * Components
  ***************************************/
 
-export const blockRemoveComponent = (blockId, ...componentIds) => {
+/**
+ * Remove components from a construct
+ * @param {UUID} constructId
+ * @param {...UUID} componentIds
+ * @returns {Block} Updated construct
+ */
+export const blockRemoveComponent = (constructId, ...componentIds) => {
   return (dispatch, getState) => {
-    const oldBlock = getState().blocks[blockId];
+    const oldBlock = getState().blocks[constructId];
     const block = componentIds.reduce((acc, currentId) => {
       return acc.removeComponent(currentId);
     }, oldBlock);
@@ -266,6 +305,16 @@ export const blockRemoveComponent = (blockId, ...componentIds) => {
   };
 };
 
+/**
+ * Add component to a construct.
+ * Removes from previous parent if currently part of a construct
+ * Note you may use blockAddComponents to add more than one at a time.
+ * @param {UUID} blockId Construct
+ * @param {UUID} componentId Component
+ * @param {number} index to insert component
+ * @param {boolean} [forceProjectId=false] Use true if the block is not from this project
+ * @returns {Block} Updated construct
+ */
 export const blockAddComponent = (blockId, componentId, index = -1, forceProjectId = false) => {
   return (dispatch, getState) => {
     const oldParent = dispatch(selectors.blockGetParents(componentId)).shift();
@@ -313,7 +362,12 @@ export const blockAddComponent = (blockId, componentId, index = -1, forceProject
 };
 
 /**
- * add the array of componentIds into the given part at the given starting index. Rather than adding them all at once, dispatch an event for each to ensure we remove from previous parents and stay in a valid state.
+ * Add multiple components to a construct at once, calling blockAddComponent
+ * @param {UUID} blockId Construct
+ * @param {Array.<UUID>} componentIds Components
+ * @param {number} index to insert component
+ * @param {boolean} [forceProjectId=false] Use true if the block is not from this project
+ * @returns {Block} Updated construct
  */
 export const blockAddComponents = (blockId, componentIds, index, forceProjectId = false) => {
   return (dispatch, getState) => {
@@ -331,7 +385,13 @@ export const blockAddComponents = (blockId, componentIds, index, forceProjectId 
   };
 };
 
-//move within same parent, new index (pass index to be at after spliced out)
+/**
+ * Move component within a construt
+ * @param {UUID} blockId
+ * @param {UUID} componentId
+ * @param {number} newIndex
+ * @returns {Block} Updated construct
+ */
 export const blockMoveComponent = (blockId, componentId, newIndex) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
@@ -348,6 +408,8 @@ export const blockMoveComponent = (blockId, componentId, newIndex) => {
 /***************************************
  Options
  ***************************************/
+
+//not exposing authoring actions yet, as there is some work to be done to ensure blocks are actually part of the project etc.
 
 //for authoring template
 export const blockOptionsAdd = (blockId, ...optionIds) => {
@@ -379,6 +441,12 @@ export const blockOptionsRemove = (blockId, ...optionIds) => {
   };
 };
 
+/**
+ * Toggle whether a list option is active
+ * @param blockId
+ * @param optionIds
+ * @returns {function(*, *)}
+ */
 export const blockOptionsToggle = (blockId, ...optionIds) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
@@ -397,6 +465,12 @@ export const blockOptionsToggle = (blockId, ...optionIds) => {
  * Metadata things
  ***************************************/
 
+/**
+ * Rename a block
+ * @param {UUID} blockId
+ * @param {string} name
+ * @returns {Block} Updated Block
+ */
 export const blockRename = (blockId, name) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
@@ -415,6 +489,12 @@ export const blockRename = (blockId, name) => {
   };
 };
 
+/**
+ * Set block's color
+ * @param {UUID} blockId
+ * @param {string} color Hex color string
+ * @returns {Block} Updated Block
+ */
 export const blockSetColor = (blockId, color) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
@@ -434,7 +514,10 @@ export const blockSetColor = (blockId, color) => {
 };
 
 /**
- * change the role symbol of the block e.g. from the inspector
+ * Set block's role
+ * @param {UUID} blockId
+ * @param {string} role Role as defined in {@link module:roles}
+ * @returns {Block} Updated Block
  */
 export const blockSetRole = (blockId, role) => {
   return (dispatch, getState) => {
@@ -460,6 +543,12 @@ export const blockSetRole = (blockId, role) => {
  * annotations
  ***************************************/
 
+/**
+ * Add an annotation to a block
+ * @param {UUID} blockId
+ * @param {Annotation} annotation
+ * @returns {Block} Updated Block
+ */
 export const blockAnnotate = (blockId, annotation) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
@@ -473,7 +562,12 @@ export const blockAnnotate = (blockId, annotation) => {
   };
 };
 
-//can pass annotation or annotation name
+/**
+ * Remove an annotation
+ * @param {UUID} blockId
+ * @param {Annotation|string} annotation Annotation or its name
+ * @returns {Block} Updated Block
+ */
 export const blockRemoveAnnotation = (blockId, annotation) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
@@ -491,17 +585,25 @@ export const blockRemoveAnnotation = (blockId, annotation) => {
  * Sequence
  ***************************************/
 
-//Non-mutating
-//Promise
-//ignore format for now
-export const blockGetSequence = (blockId, format) => {
+/**
+ * Download a Block's sequence
+ * @param {UUID} blockId Block ID with sequence to retrieve
+ * @returns {Promise} Resolves to plain string of sequence
+ */
+export const blockGetSequence = (blockId) => {
   return (dispatch, getState) => {
     const block = getState().blocks[blockId];
-    return block.getSequence(format);
+    return block.getSequence();
   };
 };
 
-//Promise
+/**
+ * Set a block's sequence, updating its source and sequence metadata
+ * @param {UUID} blockId
+ * @param {string} sequence Sequence string
+ * @param {boolean} [useStrict] Use strict sequence validation (canonical IUPAC bases)
+ * @returns {Promise} resolves to Block when the sequence has been written
+ */
 export const blockSetSequence = (blockId, sequence, useStrict) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];

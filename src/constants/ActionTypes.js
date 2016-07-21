@@ -1,18 +1,37 @@
 /*
-Copyright 2016 Autodesk,Inc.
+ Copyright 2016 Autodesk,Inc.
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
+/**
+ * ActionTypes module defines constants for every action (i.e. data manipulation) in the application API
+ *
+ * Read the source code to see all action types.
+ *
+ * This object is exported on the Genetic Constructor global object. It is recommended you specify event types dynamically using that object, rather than strings, as these types may change internally over time.
+ *
+ * @module ActionTypes
+ *
+ * @example
+ *
+ * gd.store.subscribe((store, lastAction) => {
+ *   if (lastAction.type === gd.actionTypes.BLOCK_CREATE) {
+ *     //do something
+ *   }
+ * });
+ *
+ */
+
 export const BLOCK_CREATE = 'BLOCK_CREATE';
 export const BLOCK_STASH = 'BLOCK_STASH';
 export const BLOCK_LOAD = 'BLOCK_LOAD';
@@ -83,7 +102,6 @@ export const UI_SHOW_GENBANK_IMPORT = 'UI_SHOW_GENBANK_IMPORT';
 export const UI_SAVE_ERROR = 'UI_SAVE_ERROR';
 
 export const USER_SET_USER = 'USER_SET_USER';
-export const USER_LOGIN = 'USER_LOGIN';
 
 export const CLIPBOARD_SET_DATA = 'CLIPBOARD-SET-DATA';
 

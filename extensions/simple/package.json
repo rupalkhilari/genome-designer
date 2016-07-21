@@ -1,13 +1,6 @@
 {
   "name": "simple",
   "version": "1.0.0",
-  "description": "Simple Extensions",
-  "region": "sequenceDetail",
-  "readable": "Simple",
-  "scripts" : {
-    "build" : "npm install && webpack -d main.js index.js"
-  },
-  "devDependencies": {
-    "json-loader": "^0.5.4"
-  }
+  "description": "Simple Genetic Constructor Extension Example",
+  "region": null
 }

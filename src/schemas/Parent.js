@@ -16,6 +16,11 @@ limitations under the License.
 import fields from './fields/index';
 import Schema from './SchemaClass';
 
+/**
+ * Parents are objects in an Instance's ancestry
+ * @name ParentSchema
+ * @gc Schema
+ */
 const fieldDefs = {
   id: [
     fields.id().required,

@@ -17,6 +17,7 @@ import path from 'path';
 import { errorDoesNotExist } from '../utils/errors';
 import registry from './registry';
 
+//todo - no need for this right now - everything is statically avaialbe in the beginning
 const loadExtension = (name) => {
   return new Promise((resolve, reject) => {
     const manifest = registry[name];

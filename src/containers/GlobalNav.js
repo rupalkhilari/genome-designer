@@ -73,6 +73,8 @@ import AutosaveTracking from '../components/GlobalNav/autosaveTracking';
 import OkCancel from '../components/okcancel';
 import * as instanceMap from '../store/instanceMap';
 import { merge } from 'lodash';
+import { extensionApiPath } from '../middleware/paths';
+
 
 import '../styles/GlobalNav.css';
 
@@ -243,7 +245,7 @@ class GlobalNav extends Component {
 
   /**
    * show the delete project dialog
-   * @return {[type]} [description]
+   *
    */
   queryDeleteProject() {
     this.setState({
@@ -281,13 +283,13 @@ class GlobalNav extends Component {
 
   /**
    * download the current file as a genbank file
-   * @return {[type]} [description]
+   *
    */
   downloadProjectGenbank() {
     this.saveProject()
       .then(() => {
         // for now use an iframe otherwise any errors will corrupt the page
-        const url = `${window.location.protocol}//${window.location.host}/export/genbank/${this.props.currentProjectId}`;
+        const url = extensionApiPath('genbank', `export/${this.props.currentProjectId}`);
         const iframe = document.createElement('iframe');
         iframe.style.display = 'none';
         iframe.src = url;
@@ -609,6 +611,11 @@ class GlobalNav extends Component {
           text: 'HELP',
           items: [
             {
+              text: 'Report a Bug',
+              action: () => { window.open('https://github.com/autodesk-bionano/genome-designer/issues', '_blank')}
+            },
+            {},
+            {
               text: 'User Guide',
               action: this.disgorgeDiscourse.bind(this, '/c/genetic-constructor/user-guide'),
             }, {
@@ -626,7 +633,9 @@ class GlobalNav extends Component {
             }, {
               text: 'Give Us Feedback',
               action: this.disgorgeDiscourse.bind(this, '/c/genetic-constructor/feedback'),
-            }, {}, {
+            },
+            {},
+            {
               text: 'About Genetic Constructor',
               action: () => {
                 this.props.uiShowAbout(true);

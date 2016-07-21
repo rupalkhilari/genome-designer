@@ -13,6 +13,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+/**
+ * @module Project Actions
+ * @memberOf module:Actions
+ */
 import invariant from 'invariant';
 import * as ActionTypes from '../constants/ActionTypes';
 import { saveProject, loadProject, snapshot, listProjects, deleteProject } from '../middleware/data';
@@ -45,7 +49,12 @@ export const projectMerge = (projectId, toMerge) => {
   };
 };
 
-//Promise
+/**
+ * List manifests of all of a user's projects
+ * @returns {Promise}
+ * @resolve {Array.<Project>}
+ * @reject {Response}
+ */
 export const projectList = () => {
   return (dispatch, getState) => {
     return listProjects()
@@ -62,7 +71,11 @@ export const projectList = () => {
   };
 };
 
-//Promise
+/**
+ * Delete a project. THIS CANNOT BE UNDONE.
+ * @param {UUID} projectId
+ * @returns {UUID} project ID deleted
+ */
 export const projectDelete = (projectId) => {
   return (dispatch, getState) => {
     return deleteProject(projectId)
@@ -84,8 +97,14 @@ export const projectDelete = (projectId) => {
   };
 };
 
-//Promise
-//this is a background save (e.g. autosave)
+/**
+ * Save the project, e.g. for autosave.
+ * @param {UUID} [inputProjectId] Omit to save the current project
+ * @param {boolean} [forceSave=false] Force saving, even if the project has not changed since last save
+ * @returns {Promise}
+ * @resolve {sha|null} SHA of save, or null if save was unnecessary
+ * @reject {string|Response} Error message
+ */
 export const projectSave = (inputProjectId, forceSave = false) => {
   return (dispatch, getState) => {
     const currentProjectId = dispatch(projectSelectors.projectGetCurrentId());
@@ -130,8 +149,15 @@ export const projectSave = (inputProjectId, forceSave = false) => {
   };
 };
 
-//Promise
-//explicit save e.g. an important point
+/**
+ * Snapshots are saves of the project at an important point, creating an explicit commit with a user-specified message.
+ * @param {UUID} projectId
+ * @param {string} message Commit message
+ * @param {boolean} [withRollup=true] Save the current version of the project
+ * @returns {Promise}
+ * @resolve {sha} SHA of snapshot
+ * @reject {string|Response} Error message
+ */
 export const projectSnapshot = (projectId, message, withRollup = true) => {
   return (dispatch, getState) => {
     const roll = withRollup ?
@@ -163,7 +189,11 @@ export const projectSnapshot = (projectId, message, withRollup = true) => {
   };
 };
 
-//create a new project
+/**
+ * Create a project
+ * @param {Object} initialModel Data to merge onto scaffold
+ * @returns {Project} New project
+ */
 export const projectCreate = (initialModel) => {
   return (dispatch, getState) => {
     const project = new Project(initialModel);
@@ -176,6 +206,16 @@ export const projectCreate = (initialModel) => {
   };
 };
 
+/**
+ * Internal method to load a project. Attempt to load another on failure. Used internally by projectLoad, can recursive in this verison.
+ * @private
+ * @param projectId
+ * @param {Array|boolean} [loadMoreOnFail=false] Pass array for list of IDs to ignore
+ * @param dispatch Pass in the dispatch function for the store
+ * @returns Promise
+ * @resolve {Rollup} loaded Project + Block Map
+ * @reject
+ */
 const _projectLoad = (projectId, loadMoreOnFail = false, dispatch) => {
   return loadProject(projectId)
     .then(rollup => {
@@ -218,8 +258,15 @@ const _projectLoad = (projectId, loadMoreOnFail = false, dispatch) => {
     });
 };
 
-//Promise
-//loadMoreOnFail - pass array for true, with IDs to skip
+/**
+ * Load a project and add it and its contents to the store
+ * @param projectId
+ * @param {boolean} [avoidCache=false]
+ * @param {Array|boolean} [loadMoreOnFail=false] False to only attempt to load single project ID. Pass array of IDs to ignore in case of failure
+ * @returns {Promise}
+ * @resolve {Project}
+ * @reject null
+ */
 export const projectLoad = (projectId, avoidCache = false, loadMoreOnFail = false) => {
   return (dispatch, getState) => {
     const isCached = !!projectId && instanceMap.projectLoaded(projectId);
@@ -252,9 +299,14 @@ export const projectLoad = (projectId, avoidCache = false, loadMoreOnFail = fals
   };
 };
 
-//Promise
-//default to most recent project if falsy
-//skip save if project is deleted
+/**
+ * Open a project, that has already been loaded using projectLoad()
+ * @param [inputProjectId] Defaults to most recently saved project
+ * @param {boolean} [skipSave=false] By default, save the current project. Skip saving the current project before navigating e.g. if deleting it.
+ * @returns {Promise}
+ * @resolve {Project} Project that is opened
+ * @reject {null}
+ */
 export const projectOpen = (inputProjectId, skipSave = false) => {
   return (dispatch, getState) => {
     const currentProjectId = dispatch(projectSelectors.projectGetCurrentId());
@@ -308,6 +360,12 @@ export const projectOpen = (inputProjectId, skipSave = false) => {
   };
 };
 
+/**
+ * Rename a project
+ * @param {UUID} projectId
+ * @param {string} newName
+ * @returns {Project}
+ */
 export const projectRename = (projectId, newName) => {
   return (dispatch, getState) => {
     const oldProject = getState().projects[projectId];
@@ -321,7 +379,14 @@ export const projectRename = (projectId, newName) => {
   };
 };
 
-//Adds a construct to a project. Does not create the construct. Use blocks.js
+/**
+ * Adds a construct to a project. Does not create the construct. Use a Block Action.
+ * The added construct should have the project ID of the current project.
+ * @param {UUID} projectId
+ * @param {UUID} componentId
+ * @param {boolean} [forceProjectId=false]
+ * @returns {Project}
+ */
 export const projectAddConstruct = (projectId, componentId, forceProjectId = false) => {
   return (dispatch, getState) => {
     const oldProject = getState().projects[projectId];
@@ -359,7 +424,12 @@ export const projectAddConstruct = (projectId, componentId, forceProjectId = fal
   };
 };
 
-//Removes a construct from a project.
+/**
+ * Removes a construct from a project.
+ * @param {UUID} projectId
+ * @param {UUID} componentId
+ * @returns {Project}
+ */
 export const projectRemoveConstruct = (projectId, componentId) => {
   return (dispatch, getState) => {
     const oldProject = getState().projects[projectId];
