@@ -20,8 +20,8 @@ At this time, the client is bootstrapped with knowledge of all the plugins avail
 
 Extensions are expected to be NPM modules. They must provide:
  
-- an entrypoint of `index.js` which is responsible for calling `gd.registerExtension(manifest, render)`. The format of the render function is given below. The Genetic Constructor server will only serve `index.js` - you must host other files externally if they are to be loaded lazily.
-- package.json with fields `id`, `name`, `version`, `region` (defined below) 
+- an entrypoint of `index.js` which is responsible for calling `window.constructor.extensions.register(extensionKey, render)`. The format of the render function is given below. The Genetic Constructor server will only serve `index.js` - you must host other files externally if they are to be loaded lazily.
+- package.json with fields `name`, `version`, `region` (defined below), and optionally `readable`, `description`, etc.
 
 ### Examples
 
@@ -31,10 +31,10 @@ Examples are given in the directory `/extensions/` of this project.
 
 ```
 {
-  "id": "onion",
-  "name": "Sequence Viewer",
+  "name": "sequenceViewer",
+  "readable": "Sequence Viewer",
   "version" : "1.0.0",
-  "description": "Detailed Sequence viewer from EGF",
+  "description": "Detailed Sequence viewer for Constructor",
   "region" : "sequenceDetail"
 }
 ```

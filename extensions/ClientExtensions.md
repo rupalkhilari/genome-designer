@@ -18,7 +18,7 @@ const render = (container, options) => {
     //return a function to call when the component unmounts to perform cleanup
     return listener;
 }
-window.constructor.registerExtension(extensionKey, render);
+window.constructor.extensions.register(extensionKey, render);
 ```
 
 ### render()

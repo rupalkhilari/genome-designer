@@ -75,7 +75,7 @@
 	  });
 	}
 	
-	window.constructor.registerExtension('webpacked', render);
+	window.constructor.extensions.register('webpacked', render);
 
 
 /***/ }

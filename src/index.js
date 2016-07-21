@@ -20,7 +20,7 @@ import reduxRouter from './routes/reduxRouter';
 import * as actionTypes from './constants/ActionTypes';
 import store, { lastAction } from './store/index';
 import orchestrator from './store/orchestrator';
-import registerExtension from './extensions/registerExtension';
+import extensions from './extensions/_expose';
 
 render(
   <Provider store={store}>
@@ -35,7 +35,7 @@ render(
  */
 const exposed = global.constructor = {};
 Object.assign(exposed, {
-  registerExtension,
+  extensions,
   actionTypes,
   api: orchestrator,
   store: {

@@ -26,4 +26,4 @@ function render(container, options) {
   });
 }
 
-window.constructor.registerExtension('webpacked', render);
+window.constructor.extensions.register('webpacked', render);

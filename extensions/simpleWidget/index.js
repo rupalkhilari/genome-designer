@@ -6,4 +6,4 @@ function render(container, options) {
   });
 }
 
-window.constructor.registerExtension('simpleWidget', render);
+window.constructor.extensions.register('simpleWidget', render);
