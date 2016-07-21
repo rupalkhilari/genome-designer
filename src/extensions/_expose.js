@@ -1,5 +1,6 @@
 import register from './registerExtension';
 import { isRegistered, onRegister, validRegion } from './clientRegistry';
+import { callExtensionApi as api } from '../middleware/extensions';
 
 /**
  * API Section for extensions
@@ -7,6 +8,7 @@ import { isRegistered, onRegister, validRegion } from './clientRegistry';
  */
 export default {
   register,
+  api,
   isRegistered,
   onRegister,
   validRegion,
