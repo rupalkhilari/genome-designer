@@ -5,7 +5,7 @@
   "dependencies": {
     "testClient" : "../../extensions/testClient",
     "serverBasicApi": "../../extensions/serverBasicApi",
-    "webpacked": "../../extensions/webpacked",
+    "clientAndServer": "../../extensions/clientAndServer",
     "SequenceDetail" : "IsaacLuo/onion2#deploy"
   }
 }
