@@ -26,7 +26,7 @@ router.use(jsonParser);
 /** Route Checking **/
 
 //for URLs properly formed with an extension already registered, delegate to the router
-router.all('/:ext/:route?', (req, res, next) => {
+router.all('/:ext/*', (req, res, next) => {
   const { ext, route } = req.params;
 
   const extension = extensionRegistry[ext];
