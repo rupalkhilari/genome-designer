@@ -107,6 +107,8 @@ async function start() {
             },
           }, resolve);
 
+          //todo - we want ton only recompile once per batch of changes - currently every single file change will trigger a build. Maybe just debounce?
+
           //helpers for events listening
           const ignoreDotFilesAndNestedNodeModules = /([\/\\]\.)|(node_modules\/.*?\/node_modules)/gi;
           const checkSymlinkedNodeModule = /(.*?\/)?extensions\/.*?\/node_modules/;
