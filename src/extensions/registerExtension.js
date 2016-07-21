@@ -35,7 +35,7 @@ const registerExtension = (key, render) => {
   //wrap the render function in a closure and try-catch, and ensure it is downloaded
   const wrappedRender = function wrappedRender() {
     try {
-      render.apply(null, arguments);
+      return render.apply(null, arguments);
     } catch (e) {
       console.error('there was an error loading the extension' + name);
       console.error(e);

@@ -126,7 +126,7 @@ export const downloadAndRender = (key, container, options) => {
         console.warn(`Extension ${name} did not specify a render() function, even though it defined a region. Check Extension manifest definition.`)
         return;
       }
-      manifest.render(container, options);
+      return manifest.render(container, options);
     });
 };
 
