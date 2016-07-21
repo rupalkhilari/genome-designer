@@ -8,9 +8,19 @@ Extensions export an [Express](https://expressjs.com/) [router](https://expressj
 
 At the moment, server extensions are installed at server build-time and run alongside the rest of the server.
 
-Certain types of server extensions, e.g. conversion, are recommended to follow a provided, conventional API.
+"Native Extensions" (`server/extensions/native/`) are bundled into the main application, as they require on files and/or singletons within the application Code Base.
+
+More general server extension are required at compile-time and their routers attached dynamically. These extensions are self-contained, and do not rely on files within the Constructor Code Base. Functionality will be added over time to ease the writing of these extensions for third parties.
 
 Constructor provides REST APIs that the router can call internally for accessing or persisting data.
+
+## Extension Structure
+
+A field `router` is required in `package.json`, and this file path will be required and added to the extension router dynamically.
+
+### Recommendations
+
+Certain types of server extensions, e.g. conversion, are recommended to follow a provided, conventional API.
 
 ### Possible Future Limitations
 
