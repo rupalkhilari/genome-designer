@@ -50,5 +50,8 @@ export const get = (id, parameters = {}) => {
 };
 
 export const sourceUrl = ({url, id}) => {
+  if (!id && !url) {
+    return null;
+  }
   return url || `http://parts.igem.org/Part:${id}`;
 };

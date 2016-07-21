@@ -149,6 +149,9 @@ export const search = (query, options = {}) => {
     .then(ids => getSummary(...ids));
 };
 
-export const sourceUrl = ({ id }) => {
-  return `https://www.ncbi.nlm.nih.gov/nuccore/${id}`;
+export const sourceUrl = ({ url, id }) => {
+  if (!id && !url) {
+    return null;
+  }
+  return !!id ? `https://www.ncbi.nlm.nih.gov/nuccore/${id}` : url;
 };
