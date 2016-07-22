@@ -17,7 +17,7 @@ import fetch from 'isomorphic-fetch';
 import { parseResults, parseFullResult } from './parseResults';
 import queryString from 'query-string';
 
-export const url = 'http://ec2-52-30-192-126.eu-west-1.compute.amazonaws.com:8003/collections';
+export const url = 'https://gc-inventory.dev.bionano.autodesk.com/collections';
 
 export const name = 'iGEM Registry';
 const collection = 'igem';
@@ -50,5 +50,8 @@ export const get = (id, parameters = {}) => {
 };
 
 export const sourceUrl = ({url, id}) => {
+  if (!id && !url) {
+    return null;
+  }
   return url || `http://parts.igem.org/Part:${id}`;
 };

@@ -23,7 +23,7 @@ import { convertGenbank } from '../../middleware/genbank';
 // NCBI limits number of requests per user/ IP, so better to initate from the client and I support process on client...
 export const name = 'NCBI';
 
-const makeFastaUrl = (id) => `http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id=${id}&rettype=fasta&retmode=text`;
+const makeFastaUrl = (id) => `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id=${id}&rettype=fasta&retmode=text`;
 
 //todo - handle RNA
 
@@ -79,7 +79,7 @@ export const getSummary = (...ids) => {
 
   const idList = ids.join(',');
 
-  const url = `http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=nuccore&id=${idList}&retmode=json`;
+  const url = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=nuccore&id=${idList}&retmode=json`;
 
   return rejectingFetch(url)
     .then(resp => resp.json())
@@ -105,7 +105,7 @@ export const get = (accessionVersion, parameters = {}, summary) => {
 
   const { format } = parametersMapped;
 
-  const url = `http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id=${accessionVersion}&rettype=${format}&retmode=text`;
+  const url = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id=${accessionVersion}&rettype=${format}&retmode=text`;
 
   return rejectingFetch(url)
     .then(resp => resp.text())
@@ -141,7 +141,7 @@ export const search = (query, options = {}) => {
 
   const parameterString = queryString.stringify(mappedParameters);
 
-  const url = `http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=nuccore&${parameterString}`;
+  const url = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=nuccore&${parameterString}`;
 
   return rejectingFetch(url)
     .then(resp => resp.json())
@@ -149,6 +149,9 @@ export const search = (query, options = {}) => {
     .then(ids => getSummary(...ids));
 };
 
-export const sourceUrl = ({ id }) => {
-  return `http://www.ncbi.nlm.nih.gov/nuccore/${id}`;
+export const sourceUrl = ({ url, id }) => {
+  if (!id && !url) {
+    return null;
+  }
+  return !!id ? `https://www.ncbi.nlm.nih.gov/nuccore/${id}` : url;
 };
