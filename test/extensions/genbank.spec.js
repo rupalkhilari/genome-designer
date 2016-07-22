@@ -1,18 +1,16 @@
 import {expect} from 'chai';
 import path from 'path';
-import {importProject} from '../../plugins/convert/import';
-import {exportProject, exportConstruct} from '../../plugins/convert/export';
+import fs from 'fs';
+import {importProject, exportProject, exportConstruct} from '../../server/extensions/native/genbank/convert';
 import BlockSchema from '../../src/schemas/Block';
 import ProjectSchema from '../../src/schemas/Project';
-
-const fs = require('fs');
 
 const getBlock = (allBlocks, blockId) => {
   return allBlocks[blockId];
 };
 
-describe('Plugins', () => {
-  describe('Genbank Plugin', () => {
+describe('Extensions', () => {
+  describe('Genbank', () => {
     it('should import Genbank file with contiguous entries as a project', function importGB(done) {
       importProject('genbank', path.resolve(__dirname, '../res/sampleGenbankContiguous.gb'))
         .then(output => {
