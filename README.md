@@ -6,6 +6,10 @@
 
 Notes can be found at [Installation](docs/installation.md)
 
+### Documentation
+
+See [Documentation](docs/README.md)
+
 ### License
 
 Copyright 2015 Autodesk Inc.
