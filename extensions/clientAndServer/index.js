@@ -24,4 +24,4 @@ function render(container, options) {
   });
 }
 
-window.constructor.registerExtension(extensionKey, render);
+window.constructor.extensions.register(extensionKey, render);

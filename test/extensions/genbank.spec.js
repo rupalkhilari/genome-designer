@@ -1,20 +1,18 @@
 import {expect} from 'chai';
 import path from 'path';
-import {importProject} from '../../plugins/convert/import';
-import {exportProject, exportConstruct} from '../../plugins/convert/export';
+import fs from 'fs';
+import {importProject, exportProject, exportConstruct} from '../../server/extensions/native/genbank/convert';
 import BlockSchema from '../../src/schemas/Block';
 import ProjectSchema from '../../src/schemas/Project';
-
-const fs = require('fs');
 
 const getBlock = (allBlocks, blockId) => {
   return allBlocks[blockId];
 };
 
-describe('Plugins', () => {
-  describe('Genbank Plugin', () => {
+describe('Extensions', () => {
+  describe.only('Genbank', () => {
     it('should import Genbank file with contiguous entries as a project', function importGB(done) {
-      importProject('genbank', path.resolve(__dirname, '../res/sampleGenbankContiguous.gb'))
+      importProject(path.resolve(__dirname, '../res/sampleGenbankContiguous.gb'))
         .then(output => {
           expect(output.project).not.to.equal(undefined);
           expect(ProjectSchema.validate(output.project)).to.equal(true);
@@ -47,7 +45,7 @@ describe('Plugins', () => {
     });
 
     it('should import Genbank file with holes as a project', function importGB(done) {
-      importProject('genbank', path.resolve(__dirname, '../res/sampleGenbankContiguousWithHoles.gb'))
+      importProject(path.resolve(__dirname, '../res/sampleGenbankContiguousWithHoles.gb'))
         .then(output => {
           expect(output.project).not.to.equal(undefined);
           expect(output.project.components.length === 1).to.equal(true);
@@ -69,7 +67,7 @@ describe('Plugins', () => {
     });
 
     it('should import Genbank file with holes in features as a project', function importGB(done) {
-      importProject('genbank', path.resolve(__dirname, '../res/sampleGenbankSimpleNested.gb'))
+      importProject(path.resolve(__dirname, '../res/sampleGenbankSimpleNested.gb'))
         .then(output => {
           expect(output.project).not.to.equal(undefined);
           expect(output.project.components.length === 1).to.equal(true);
@@ -95,7 +93,7 @@ describe('Plugins', () => {
     });
 
     it('should import Genbank file with multiple entries as a project', function importGB(done) {
-      importProject('genbank', path.resolve(__dirname, '../res/sampleMultiGenbank.gb'))
+      importProject(path.resolve(__dirname, '../res/sampleMultiGenbank.gb'))
         .then(output => {
           expect(output.project).not.to.equal(undefined);
           expect(ProjectSchema.validate(output.project)).to.equal(true);
@@ -111,7 +109,7 @@ describe('Plugins', () => {
     });
 
     it('should fail on bad Genbank format', function importGB(done) {
-      importProject('genbank', path.resolve(__dirname, '../res/badFormatGenbank.gb'))
+      importProject(path.resolve(__dirname, '../res/badFormatGenbank.gb'))
         .then(output => {
           expect(output).to.equal('Invalid Genbank format.');
           done();
@@ -120,13 +118,13 @@ describe('Plugins', () => {
     });
 
     it('should roundtrip a Genbank project through our app', function exportGB(done) {
-      importProject('genbank', path.resolve(__dirname, '../res/sampleGenbankContiguous.gb'))
+      importProject(path.resolve(__dirname, '../res/sampleGenbankContiguous.gb'))
         .then(output => {
           expect(output.project).not.to.equal(undefined);
           expect(ProjectSchema.validate(output.project)).to.equal(true);
           expect(output.project.metadata.name).to.equal('EU912544');
           expect(output.project.metadata.description).to.equal('Cloning vector pDM313, complete sequence.');
-          return exportProject('genbank', output)
+          return exportProject(output)
             .then(result => {
               expect(result).to.contain('LOCUS       EU912544                 120 bp    DNA');
               expect(result).to.contain('SYN 06-FEB-2009');
@@ -150,14 +148,14 @@ describe('Plugins', () => {
     });
 
     it('should roundtrip a Genbank construct through our app', function exportGB(done) {
-      importProject('genbank', path.resolve(__dirname, '../res/sampleGenbankContiguous.gb'))
+      importProject(path.resolve(__dirname, '../res/sampleGenbankContiguous.gb'))
         .then(output => {
           expect(output.project).not.to.equal(undefined);
           expect(ProjectSchema.validate(output.project)).to.equal(true);
           expect(output.project.metadata.name).to.equal('EU912544');
-          expect(output.project.metadata.description).to.equal('Cloning vector pDM313, complete sequence.')
+          expect(output.project.metadata.description).to.equal('Cloning vector pDM313, complete sequence.');
 
-          return exportConstruct('genbank', output, output.project.components[0])
+          return exportConstruct({ roll: output, constructId: output.project.components[0] })
             .then(result => {
               expect(result).to.contain('LOCUS       EU912544                 120 bp    DNA');
               expect(result).to.contain('SYN 06-FEB-2009');
@@ -183,7 +181,7 @@ describe('Plugins', () => {
     it.skip('should export project to multi-record Genbank', function exportGB(done) {
       fs.readFile(path.resolve(__dirname, '../res/sampleProject.json'), 'utf8', (err, sampleProjJson) => {
         const sampleProj = JSON.parse(sampleProjJson);
-        exportProject('genbank', sampleProj)
+        exportProject(sampleProj)
           .then(result => {
             //LOCUS 1, LOCUS 2, LOCUS 3, and LOCUS 4
             expect((result.match(/\/\//g) || []).length).to.equal(4);

@@ -67,7 +67,7 @@ export function convertCsv(csvContents, fileName, fileUrl) {
     .then(lines => {
       //todo - ensure these are fields, beyond just making sure a required field is present
       //todo - should be lower case in the doc
-      fields = lines.shift(1).map(name => name.toLowerCase());
+      fields = lines.shift(1);
       console.log('csvjs import - using fields: ' + fields.join(', '));
       if (!fields.some(fieldName => requiredFields.indexOf(fieldName) >= 0)) {
         return Promise.reject('no required fields present');

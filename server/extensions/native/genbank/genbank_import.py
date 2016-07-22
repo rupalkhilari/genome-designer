@@ -347,6 +347,9 @@ def convert_genbank_record_to_blocks(gb):
 def genbank_to_project(filename):
     project = { "components": []}
     blocks = {}
+    print('file is')
+    print(filename)
+
     generator = SeqIO.parse(open(filename,"r"),"genbank")
     for record in generator:
         results = convert_genbank_record_to_blocks(record)

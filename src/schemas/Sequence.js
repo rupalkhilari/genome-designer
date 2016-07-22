@@ -51,7 +51,7 @@ const fieldDefs = {
 
   download: [
     fields.func(),
-    `Function which returns the sequence, taking precedence over md5 download. Note this is not persisted, and only exists in the scope of the user's session.`,
+    `Function which returns the sequence, taking precedence over md5 download. Note this is not persisted, and only exists in the scope of the user's session, so might be used e.g. for a inspecting a detached block not yet in a project`,
     { avoidScaffold: true },
   ],
 };

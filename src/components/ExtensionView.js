@@ -32,13 +32,14 @@ export default class ExtensionView extends Component {
     },
   };
 
+  constructor() {
+    super();
+    this.callback = null;
+  }
+
   state = {
     downloaded: false,
   };
-
-  shouldComponentUpdate(nextProps, nextState) {
-    return !isEqual(this.props, nextProps);
-  }
 
   componentDidMount() {
     this.renderExtension();
@@ -52,10 +53,32 @@ export default class ExtensionView extends Component {
     }
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    return !isEqual(this.props, nextProps);
+  }
+
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.extension !== this.props.extension) {
+      this.unmountExtension();
       this.renderExtension();
     }
+  }
+
+  componentWillUnmount() {
+    this.unmountExtension();
+  }
+
+  //when extension changes or unmount, call unregister handler if we have one
+  unmountExtension() {
+    if (typeof this.callback === 'function') {
+      try {
+        this.callback();
+      } catch (err) {
+        console.log('error on unregister callback');
+        console.error(err);
+      }
+    }
+    this.callback = null;
   }
 
   renderExtension() {
@@ -73,9 +96,13 @@ export default class ExtensionView extends Component {
         const boundingBox = this.element.getBoundingClientRect();
 
         downloadAndRender(extension, this.element, { boundingBox })
-          .then(() => this.setState({
-            downloaded: true,
-          }));
+          .then((unregister) => {
+            //todo - better handle scenario of extension loaded but not rendered (i.e. callback not yet set) - want to unregister immediately
+            this.callback = unregister;
+            this.setState({
+              downloaded: true,
+            });
+          });
       });
     } catch (err) {
       console.error('error loading / rendering extension ' + extension);

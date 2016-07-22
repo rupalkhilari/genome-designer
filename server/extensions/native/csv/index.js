@@ -55,7 +55,8 @@ router.get('/file/:fileId', (req, res, next) => {
 
 router.post('/:projectId?', jsonParser, (req, resp, next) => {
   const { projectId } = req.params;
-  const noSave = req.query.hasOwnProperty('noSave');
+  const noSave = req.query.hasOwnProperty('noSave') || projectId === 'convert';
+  const returnRoll = projectId === 'convert';
 
   let csvFile;
   // save incoming file then read back the string data.
@@ -139,7 +140,13 @@ router.post('/:projectId?', jsonParser, (req, resp, next) => {
         .then(() => persistence.projectSave(roll.project.id, req.user.uuid))
         .then(() => roll);
     })
-    .then((roll) => resp.status(200).json({ ProjectId: roll.project.id }))
+    .then((roll) => {
+      const response = returnRoll ?
+        roll :
+        { ProjectId: roll.project.id };
+
+      resp.status(200).json(response);
+    })
     .catch(err => {
       console.log('Error in Import: ' + err);
       console.log(err.stack);

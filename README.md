@@ -6,6 +6,12 @@
 
 Notes can be found at [Installation](docs/installation.md)
 
+### Documentation
+
+See [Documentation](docs/README.md).
+
+For API documentation, see generated JSDocs in `/jsdoc/` (improvements forthcoming, we promise).
+
 ### License
 
 Copyright 2015 Autodesk Inc.

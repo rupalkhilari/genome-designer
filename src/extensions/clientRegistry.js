@@ -42,6 +42,13 @@ function safelyRunCallbacks(...args) {
   callbacks.forEach(cb => safelyRunCallback(cb, ...callbackArgs));
 }
 
+/**
+ * Check whether a region is a valid to load the extension
+ * @name validRegion
+ * @memberOf window.constructor.extensions
+ * @param {string} region Region to check
+ * @returns {boolean} true if region is valid
+ */
 export const validRegion = (region) => region === null || regions.hasOwnProperty(region);
 
 //returns an array
@@ -49,7 +56,7 @@ export const extensionsByRegion = (region) => {
   return Object.keys(registry)
     .filter(key => {
       const manifest = registry[key];
-      return manifest.region === region;
+      return manifest.geneticConstructor.region === region;
     })
     .map(key => registry[key])
     .sort((one, two) => one.name < two.name ? -1 : 1)
@@ -67,9 +74,10 @@ export const extensionsByRegion = (region) => {
  */
 export const registerManifest = (manifest) => {
   try {
-    const { name, region } = manifest;
+    const { name, geneticConstructor } = manifest;
+    const { region } = geneticConstructor;
     invariant(name, 'Name is required');
-    invariant(region || region === null, 'Region (manifest.region) is required to register a client-side extension, or null for non-visual extensions');
+    invariant(region || region === null, 'Region (manifest.geneticConstructor.region) is required to register a client-side extension, or null for non-visual extensions');
     invariant(validRegion(region), 'Region must be a valid region');
 
     Object.assign(registry, { [name]: manifest });
@@ -84,7 +92,7 @@ export const registerManifest = (manifest) => {
 /**
  * Register the render() function of an extension
  * Extension manifest must already registered
- * used by registerExtension
+ * used by registerExtension()
  * @private
  * @param key
  * @param render
@@ -100,6 +108,8 @@ export const registerRender = (key, render) => {
 
 /**
  * Register a callback for when extensions are registered
+ * @name onRegister
+ * @memberOf window.constructor.extensions
  * @param {Function} cb Callback, called with signature (registry, key, region) where key is last registered extension key
  * @param {boolean} [skipFirst=false] Execute on register?
  * @returns {Function} Unregister function
@@ -107,7 +117,7 @@ export const registerRender = (key, render) => {
 export const onRegister = (cb, skipFirst = false) => {
   callbacks.push(cb);
   !skipFirst && safelyRunCallback(cb, registry);
-  return function unregister() { callbacks.splice(callbacks.findIndex(cb), 1) };
+  return function unregister() { callbacks.splice(callbacks.findIndex(cb), 1); };
 };
 
 export const getExtensionName = (key) => {
@@ -115,21 +125,32 @@ export const getExtensionName = (key) => {
   if (!manifest) {
     return null;
   }
-  return manifest.readable || manifest.name;
+  return manifest.geneticConstructor.readable || manifest.name;
 };
 
+//the render is assigned by the download process. This is a bit unclear
+//todo - doc better, better error message
 export const downloadAndRender = (key, container, options) => {
   return downloadExtension(key)
     .then(() => {
       const manifest = registry[key];
       if (typeof manifest.render !== 'function') {
-        console.warn(`Extension ${name} did not specify a render() function, even though it defined a region. Check Extension manifest definition.`)
+        console.warn(`Extension ${name} did not specify a render() function, even though it defined a region. Check Extension manifest definition.`);
         return;
       }
-      manifest.render(container, options);
+      return manifest.render(container, options);
     });
 };
 
-export
-default
-registry;
+/**
+ * Check whether an extension is registered
+ * @name isRegistered
+ * @memberOf window.constructor.extensions
+ * @param {string} key Extension name
+ * @returns {boolean} true if registered
+ */
+export const isRegistered = (key) => {
+  return !!registry[key];
+};
+
+export default registry;
