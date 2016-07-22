@@ -19,12 +19,17 @@ describe('Extensions', () => {
             return done(err);
           }
 
+          console.log(result.body);
+
           expect(result.body).to.be.an.object;
           assert(Object.keys(result.body).length > 0, 'there should be extensions registered');
           assert(Object.keys(result.body).every(key => {
             const manifest = result.body[key];
             const { name, version, region } = manifest;
+
+            //region check is only valid for client extension, but these should all be client extensions...
             const regionValid = region === null || !!region;
+
             return !!name && !!version && regionValid;
           }), 'invalid manifest format');
           done();

@@ -34,8 +34,6 @@ describe('Extensions', () => {
     const filePath = path.resolve(__dirname, '../res/' + fileName);
     const fileContents = fs.readFileSync(filePath, 'utf8');
 
-    console.log(fileContents);
-
     /*
      //in the browser this works, but not node
      const file = new File([fileContents], fileName);
