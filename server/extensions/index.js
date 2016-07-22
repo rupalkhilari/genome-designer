@@ -32,7 +32,7 @@ router.use(jsonParser);
 router.use(errorHandlingMiddleware);
 
 router.get('/list', (req, res) => {
-  console.log(extensionRegistry);
+  //console.log(extensionRegistry);
   res.json(getClientExtensions());
 });
 

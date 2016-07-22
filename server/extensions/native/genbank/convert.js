@@ -31,7 +31,7 @@ const runCommand = (command, inputFile, outputFile) => {
       else resolve(stdout);
     });
   })
-  .then(() => fileSystem.fileRead(outputFile, false));
+    .then(() => fileSystem.fileRead(outputFile, false));
 };
 
 //////////////////////////////////////////////////////////////
@@ -176,8 +176,8 @@ const handleBlocks = (inputFilePath) => {
             const newRootBlocks = result.project.components.map((oldBlockId) => {
               return getNewId(blocksWithOldIds, oldBlockId);
             });
-            const blockMap = remappedBlocksArray.reduce((acc, block) => Object.assign(acc, { [block.id]: block}), {});
-            return {project: result.project, rootBlocks: newRootBlocks, blocks: blockMap};
+            const blockMap = remappedBlocksArray.reduce((acc, block) => Object.assign(acc, { [block.id]: block }), {});
+            return { project: result.project, rootBlocks: newRootBlocks, blocks: blockMap };
           });
       }
       else {
@@ -198,7 +198,7 @@ export const importProject = (inputFilePath) => {
 
       //const outputFile = filePaths.createStorageUrl('imported_from_genbank.json');
       //fileSystem.fileWrite(outputFile, {project: resProject, blocks: result.blocks});
-      return {project: resProject, blocks: result.blocks};
+      return { project: resProject, blocks: result.blocks };
     });
 };
 
@@ -210,7 +210,7 @@ export const importConstruct = (inputFilePath) => {
       if (_.isString(rawProjectRootsAndBlocks)) {
         return rawProjectRootsAndBlocks;
       }
-      return {roots: rawProjectRootsAndBlocks.rootBlocks, blocks: rawProjectRootsAndBlocks.blocks};
+      return { roots: rawProjectRootsAndBlocks.rootBlocks, blocks: rawProjectRootsAndBlocks.blocks };
     });
 };
 
@@ -261,7 +261,7 @@ const exportProjectStructure = (project, blocks) => {
 //expects an object in the format { block.id : block }
 const loadSequences = (blockMap) => {
   invariant(typeof blockMap === 'object', 'passed rollup should be a block map');
-  
+
   const blocks = _.values(blockMap);
   return Promise.all(
     blocks.map(block => {
@@ -270,7 +270,7 @@ const loadSequences = (blockMap) => {
         Promise.resolve();
 
       return sequencePromise
-        .then((seq) => merge({}, block, {sequence: {sequence: seq}}))
+        .then((seq) => merge({}, block, { sequence: { sequence: seq } }))
         .catch((error) => block);
     }));
 };
@@ -285,10 +285,11 @@ export const exportProject = (roll) => {
 
 // This is the entry function for construct export
 // Given a project and a set of blocks, generate the genbank format for a particular construct within that project
+//expects input in form: { roll: <rollup> : constructId: <UUID> }
 export const exportConstruct = (input) => {
   return loadSequences(input.roll.blocks)
     .then(blockWithSequences => {
-      const theRoll = merge(cloneDeep(input), {project: {components: [ input.constructId ]}});
+      const theRoll = merge(cloneDeep(input.roll), { project: { components: [input.constructId] } });
       // Rewrite the components so that it's only the requested construct!
       return exportProjectStructure(theRoll.project, blockWithSequences)
         .then(exportStr => Promise.resolve(exportStr))
