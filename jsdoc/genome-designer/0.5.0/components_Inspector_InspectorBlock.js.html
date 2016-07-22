@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/Inspector/InspectorBlock.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/Inspector/InspectorBlock.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/*
+Copyright 2016 Autodesk,Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+import React, { Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
+import Block from '../../models/Block';
+import { transact, commit, abort } from '../../store/undo/actions';
+import { blockMerge, blockSetColor, blockSetRole, blockRename } from '../../actions/blocks';
+import { uiShowOrderForm } from '../../actions/ui';
+import InputSimple from './../InputSimple';
+import ColorPicker from './../ui/ColorPicker';
+import Toggler from './../ui/Toggler';
+import SymbolPicker from './../ui/SymbolPicker';
+import BlockSource from './BlockSource';
+import ListOptions from './ListOptions';
+import OrderList from './OrderList';
+import InspectorRow from './InspectorRow';
+import BlockNotes from './BlockNotes';
+
+export class InspectorBlock extends Component {
+  static propTypes = {
+    readOnly: PropTypes.bool.isRequired,
+    instances: PropTypes.arrayOf((propValue, key) => {
+      const instance = propValue[key];
+      if (!(Block.validate(instance) &amp;&amp; instance instanceof Block)) {
+        return new Error('Must pass valid instances of blocks to the inspector, got ' + JSON.stringify(instance));
+      }
+    }).isRequired,
+    orders: PropTypes.array.isRequired,
+    blockSetColor: PropTypes.func.isRequired,
+    blockSetRole: PropTypes.func.isRequired,
+    blockMerge: PropTypes.func.isRequired,
+    blockRename: PropTypes.func.isRequired,
+    transact: PropTypes.func.isRequired,
+    commit: PropTypes.func.isRequired,
+    abort: PropTypes.func.isRequired,
+    uiShowOrderForm: PropTypes.func.isRequired,
+    forceIsConstruct: PropTypes.bool,
+  };
+
+  static defaultProps = {
+    forceIsConstruct: false,
+  };
+
+  setBlockName = (name) => {
+    this.props.instances.forEach((block) => {
+      this.props.blockRename(block.id, name);
+    });
+  };
+
+  setBlockDescription = (description) => {
+    this.props.instances.forEach((block) => {
+      this.props.blockMerge(block.id, { metadata: { description } });
+    });
+  };
+
+  selectColor = (color) => {
+    this.startTransaction();
+    this.props.instances.forEach((block) => {
+      this.props.blockSetColor(block.id, color);
+    });
+    this.endTransaction();
+  };
+
+  selectSymbol = (symbol) => {
+    this.startTransaction();
+    this.props.instances.forEach((block) => {
+      this.props.blockSetRole(block.id, symbol);
+    });
+    this.endTransaction();
+  };
+
+  startTransaction = () => {
+    this.props.transact();
+  };
+
+  endTransaction = (shouldAbort = false) => {
+    if (shouldAbort === true) {
+      this.props.abort();
+      return;
+    }
+    this.props.commit();
+  };
+
+  handleOpenOrder = (orderId) => {
+    this.props.uiShowOrderForm(true, orderId);
+  };
+
+  /**
+   * color of selected instance or null if multiple blocks selected
+   */
+  currentColor() {
+    if (this.props.instances.length === 1) {
+      return this.props.instances[0].metadata.color;
+    }
+    return null;
+  }
+
+  /**
+   * role symbol of selected instance or null if multiple blocks selected
+   */
+  currentRoleSymbol() {
+    if (this.props.instances.length === 1) {
+      return this.props.instances[0].rules.role;
+    }
+    //false is specially handled in symbol picker as blank, and is different than null (no symbol)
+    return false;
+  }
+
+  /**
+   * current name of instance or null if multi-select
+   */
+  currentName(defaultToRole) {
+    if (this.props.instances.length === 1) {
+      return this.props.instances[0].metadata.name || (defaultToRole ? this.props.instances[0].rules.role : '') || '';
+    }
+    return '';
+  }
+
+  /**
+   * current name of instance or null if multi-select
+   */
+  currentDescription() {
+    if (this.props.instances.length === 1) {
+      return this.props.instances[0].metadata.description || '';
+    }
+    return '';
+  }
+
+  allBlocksWithSequence() {
+    return this.props.instances.every(instance => !!instance.sequence.length);
+  }
+
+  currentSequenceLength() {
+    if (this.allBlocksWithSequence()) {
+      const reduced = this.props.instances.reduce((acc, instance) => acc + (instance.sequence.length || 0), 0);
+      return reduced + ' bp';
+    }
+    return this.props.instances.length > 1 ?
+      'Incomplete Sketch' :
+      'No Sequence';
+  }
+
+  currentAnnotations() {
+    if (this.props.instances.length > 1) {
+      return [];
+    } else if (this.props.instances.length === 1) {
+      return this.props.instances[0].sequence.annotations;
+    }
+    return [];
+  }
+
+  currentSource() {
+    const lenInstances = this.props.instances.length;
+    const firstBlock = this.props.instances[0];
+    const firstSource = firstBlock.source;
+    const { id: firstId, source: firstName } = firstSource;
+    const firstHasSource = !!firstName;
+
+    if (firstHasSource &amp;&amp; (lenInstances === 1 ||
+      this.props.instances.every(block => block.source.id === firstId &amp;&amp; block.source.source === firstName))) {
+      return (&lt;BlockSource block={firstBlock}/>);
+    }
+    if (lenInstances > 1) {
+      return (&lt;p>Multiple Sources&lt;/p>);
+    }
+    return null;
+  }
+
+  render() {
+    const { instances, orders, readOnly, forceIsConstruct } = this.props;
+    const singleInstance = instances.length === 1;
+    const isList = singleInstance &amp;&amp; instances[0].isList();
+    const isTemplate = singleInstance &amp;&amp; instances[0].isTemplate();
+    const isConstruct = singleInstance &amp;&amp; instances[0].isConstruct();
+    const inputKey = instances.map(inst => inst.id).join(',');
+    const anyIsConstructOrTemplateOrList = instances.some(instance => instance.isConstruct() || instance.isTemplate() || instance.isList());
+
+    const name = singleInstance ? instances[0].getType() : 'Block';
+
+    const currentSourceElement = this.currentSource();
+    const annotations = this.currentAnnotations();
+
+    const hasSequence = this.allBlocksWithSequence();
+    const hasNotes = singleInstance &amp;&amp; Object.keys(instances[0].notes).length > 0;
+
+    const relevantOrders = orders.filter(order => singleInstance &amp;&amp; order.constructIds.indexOf(instances[0].id) >= 0);
+
+    return (
+      &lt;div className="InspectorContent InspectorContentBlock">
+
+        &lt;InspectorRow heading={name}>
+          &lt;InputSimple refKey={inputKey}
+                       placeholder={this.currentName(true) || 'Enter a name'}
+                       readOnly={readOnly}
+                       onChange={this.setBlockName}
+                       onFocus={this.startTransaction}
+                       onBlur={this.endTransaction}
+                       onEscape={() => this.endTransaction(true)}
+                       maxLength={64}
+                       value={this.currentName(false)}/>
+        &lt;/InspectorRow>
+
+        &lt;InspectorRow heading="Description">
+          &lt;InputSimple refKey={inputKey + 'desc'}
+                       placeholder="Enter a description"
+                       useTextarea
+                       readOnly={readOnly}
+                       onChange={this.setBlockDescription}
+                       onFocus={this.startTransaction}
+                       onBlur={this.endTransaction}
+                       onEscape={() => this.endTransaction(true)}
+                       maxLength={1024}
+                       value={this.currentDescription()}/>
+        &lt;/InspectorRow>
+
+        &lt;InspectorRow heading="Source"
+                      condition={!!currentSourceElement}>
+          {currentSourceElement}
+        &lt;/InspectorRow>
+
+        &lt;InspectorRow heading="Sequence Length"
+                      condition={hasSequence}>
+          &lt;p>&lt;strong>{this.currentSequenceLength()}&lt;/strong>&lt;/p>
+        &lt;/InspectorRow>
+
+        {/* todo - this should have its own component */}
+        &lt;InspectorRow heading={ name + ' Metadata'}
+                      hasToggle
+                      condition={hasNotes}>
+          &lt;div className="InspectorContent-section">
+            &lt;BlockNotes notes={instances[0].notes}/>
+          &lt;/div>
+        &lt;/InspectorRow>
+
+        &lt;InspectorRow heading="Order History"
+                      hasToggle
+                      condition={relevantOrders.length > 0}>
+          &lt;div className="InspectorContent-section">
+            &lt;OrderList orders={relevantOrders}
+                       onClick={(orderId) => this.handleOpenOrder(orderId)}/>
+          &lt;/div>
+        &lt;/InspectorRow>
+
+        &lt;InspectorRow heading="Color &amp; Symbol">
+          &lt;div className="InspectorContent-pickerWrap">
+            &lt;ColorPicker current={this.currentColor()}
+                         readOnly={readOnly}
+                         onSelect={this.selectColor}/>
+
+            &lt;SymbolPicker current={this.currentRoleSymbol()}
+                          readOnly={readOnly || isConstruct || isTemplate || isList || forceIsConstruct || anyIsConstructOrTemplateOrList }
+                          onSelect={this.selectSymbol}/>
+          &lt;/div>
+        &lt;/InspectorRow>
+
+        &lt;InspectorRow heading="Annotations"
+                      condition={annotations.length > 0}>
+          &lt;div className="InspectorContentBlock-Annotations">
+            {annotations.map((annotation, idx) => {
+              return (
+                &lt;span className="InspectorContentBlock-Annotation"
+                      key={idx}>
+                {annotation.name || annotation.description || '?'}
+              &lt;/span>
+              );
+            })}
+          &lt;/div>
+        &lt;/InspectorRow>
+
+        &lt;InspectorRow heading="List Options"
+                      condition={isList}>
+          &lt;ListOptions block={instances[0]}/>
+        &lt;/InspectorRow>
+
+      &lt;/div>
+    );
+  }
+}
+
+export default connect(() => ({}), {
+  blockSetColor,
+  blockSetRole,
+  blockRename,
+  blockMerge,
+  transact,
+  commit,
+  abort,
+  uiShowOrderForm,
+})(InspectorBlock);
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Actions.html">Actions</a></li><li><a href="module-Actions.module_Block%2520Actions.html">Block Actions</a></li><li><a href="module-Actions.module_Clipboard%2520Actions.html">Clipboard Actions</a></li><li><a href="module-Actions.module_Focus%2520Actions.html">Focus Actions</a></li><li><a href="module-Actions.module_Inventory%2520Actions.html">Inventory Actions</a></li><li><a href="module-Actions.module_Order%2520Actions.html">Order Actions</a></li><li><a href="module-Actions.module_Project%2520Actions.html">Project Actions</a></li><li><a href="module-Actions.module_UI%2520Actions.html">UI Actions</a></li><li><a href="module-ActionTypes.html">ActionTypes</a></li><li><a href="module-DragTypes.html">DragTypes</a></li><li><a href="module-Models.html">Models</a></li><li><a href="module-roles.html">roles</a></li><li><a href="module-Selectors.html">Selectors</a></li><li><a href="module-Store.html">Store</a></li><li><a href="module-validators.html">validators</a></li></ul><h3>Classes</h3><ul><li><a href="module-Models.Annotation.html">Annotation</a></li><li><a href="module-Models.Block.html">Block</a></li><li><a href="module-Models.Immutable.html">Immutable</a></li><li><a href="module-Models.Instance.html">Instance</a></li><li><a href="module-Models.Order.html">Order</a></li><li><a href="module-Models.Project.html">Project</a></li><li><a href="Schema.html">Schema</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addComponent">addComponent</a></li><li><a href="global.html#annotate">annotate</a></li><li><a href="global.html#AnnotationSchema">AnnotationSchema</a></li><li><a href="global.html#BlockSchema">BlockSchema</a></li><li><a href="global.html#BlockSourceSchema">BlockSourceSchema</a></li><li><a href="global.html">classless</a></li><li><a href="global.html#downloadExtension">downloadExtension</a></li><li><a href="global.html#get">get</a></li><li><a href="global.html#getName">getName</a></li><li><a href="global.html#getOptions">getOptions</a></li><li><a href="global.html#getRole">getRole</a></li><li><a href="global.html#getSequence">getSequence</a></li><li><a href="global.html#getType">getType</a></li><li><a href="global.html#hasContents">hasContents</a></li><li><a href="global.html#hasSequence">hasSequence</a></li><li><a href="global.html#ImportGenBankModal">ImportGenBankModal</a></li><li><a href="global.html#importGenbankOrCSV">importGenbankOrCSV</a></li><li><a href="global.html#inspectorToggleVisibility">inspectorToggleVisibility</a></li><li><a href="global.html#InstanceSchema">InstanceSchema</a></li><li><a href="global.html#isConstruct">isConstruct</a></li><li><a href="global.html#isFiller">isFiller</a></li><li><a href="global.html#isFixed">isFixed</a></li><li><a href="global.html#isFrozen">isFrozen</a></li><li><a href="global.html#isHidden">isHidden</a></li><li><a href="global.html#isList">isList</a></li><li><a href="global.html#isTemplate">isTemplate</a></li><li><a href="global.html#MenuItem">MenuItem</a></li><li><a href="global.html#MenuSeparator">MenuSeparator</a></li><li><a href="global.html#merge">merge</a></li><li><a href="global.html#MetadataSchema">MetadataSchema</a></li><li><a href="global.html#ModalSpinner">ModalSpinner</a></li><li><a href="global.html#ModalWindow">ModalWindow</a></li><li><a href="global.html#moveComponent">moveComponent</a></li><li><a href="global.html#mutate">mutate</a></li><li><a href="global.html#OkCancel">OkCancel</a></li><li><a href="global.html#Orchestrator">Orchestrator</a></li><li><a href="global.html#OrderParametersSchema">OrderParametersSchema</a></li><li><a href="global.html#OrderSchema">OrderSchema</a></li><li><a href="global.html#OrderStatusSchema">OrderStatusSchema</a></li><li><a href="global.html#ParentSchema">ParentSchema</a></li><li><a href="global.html#ProjectSchema">ProjectSchema</a></li><li><a href="global.html#removeAnnotation">removeAnnotation</a></li><li><a href="global.html#removeComponent">removeComponent</a></li><li><a href="global.html#RulesSchema">RulesSchema</a></li><li><a href="global.html#SequenceSchema">SequenceSchema</a></li><li><a href="global.html#setColor">setColor</a></li><li><a href="global.html#setDescription">setDescription</a></li><li><a href="global.html#setFrozen">setFrozen</a></li><li><a href="global.html#setListBlock">setListBlock</a></li><li><a href="global.html#setName">setName</a></li><li><a href="global.html#setProjectId">setProjectId</a></li><li><a href="global.html#setRole">setRole</a></li><li><a href="global.html#setRule">setRule</a></li><li><a href="global.html#setSequence">setSequence</a></li><li><a href="global.html#toggleOptions">toggleOptions</a></li><li><a href="global.html#UserSchema">UserSchema</a></li><li><a href="global.html">validate</a></li><li><a href="global.html#value">value</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Thu Jul 21 2016 18:49:37 GMT-0700 (PDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
