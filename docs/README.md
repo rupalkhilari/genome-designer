@@ -21,7 +21,7 @@ The following are the primary topics of the Constructor Application:
 - Client API
     - [Store](../src/store/README.md)
     - [Actions](../src/actions/README.md)
-    - [Selectors]((../src/selectors/README.md)
+    - [Selectors](../src/selectors/README.md)
     - [Reducers](../src/reducers/README.md)
     - [Middleware](../src/middleware/README.md)
 
