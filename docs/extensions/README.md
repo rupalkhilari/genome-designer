@@ -1,6 +1,6 @@
 Extensions are additions for Genetic Constructor, with client and/or server functionality
 
-[Client extensions](ClientExtensions.md) allow for interaction with user's data from the client, and widgets inserted at specified regions within the app.
+[Client Extensions](ClientExtensions.md) allow for interaction with user's data from the client, and widgets inserted at specified regions within the app.
 
 [Server Extensions](ServerExtensions.md) add dynamic REST APIs to the server, which can be called by client-extensions, and have some access to persisted Genetic Constructor data.
 
