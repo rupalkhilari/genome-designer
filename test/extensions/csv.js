@@ -10,7 +10,7 @@ import rejectingFetch from '../../src/middleware/rejectingFetch';
 const devServer = require('../../server/server');
 
 describe('Extensions', () => {
-  describe.only('CSV', () => {
+  describe('CSV', () => {
     let server;
 
     before('server setup', (done) => {
