@@ -56,7 +56,7 @@ export const extensionsByRegion = (region) => {
   return Object.keys(registry)
     .filter(key => {
       const manifest = registry[key];
-      return manifest.region === region;
+      return manifest.geneticConstructor.region === region;
     })
     .map(key => registry[key])
     .sort((one, two) => one.name < two.name ? -1 : 1)
@@ -74,9 +74,10 @@ export const extensionsByRegion = (region) => {
  */
 export const registerManifest = (manifest) => {
   try {
-    const { name, region } = manifest;
+    const { name, geneticConstructor } = manifest;
+    const { region } = geneticConstructor;
     invariant(name, 'Name is required');
-    invariant(region || region === null, 'Region (manifest.region) is required to register a client-side extension, or null for non-visual extensions');
+    invariant(region || region === null, 'Region (manifest.geneticConstructor.region) is required to register a client-side extension, or null for non-visual extensions');
     invariant(validRegion(region), 'Region must be a valid region');
 
     Object.assign(registry, { [name]: manifest });
@@ -116,7 +117,7 @@ export const registerRender = (key, render) => {
 export const onRegister = (cb, skipFirst = false) => {
   callbacks.push(cb);
   !skipFirst && safelyRunCallback(cb, registry);
-  return function unregister() { callbacks.splice(callbacks.findIndex(cb), 1)};
+  return function unregister() { callbacks.splice(callbacks.findIndex(cb), 1); };
 };
 
 export const getExtensionName = (key) => {
@@ -124,9 +125,11 @@ export const getExtensionName = (key) => {
   if (!manifest) {
     return null;
   }
-  return manifest.readable || manifest.name;
+  return manifest.geneticConstructor.readable || manifest.name;
 };
 
+//the render is assigned by the download process. This is a bit unclear
+//todo - doc better, better error message
 export const downloadAndRender = (key, container, options) => {
   return downloadExtension(key)
     .then(() => {

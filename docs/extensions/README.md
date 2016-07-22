@@ -4,6 +4,12 @@ Extensions are additions for Genetic Constructor, with client and/or server func
 
 [Server Extensions](ServerExtensions.md) add dynamic REST APIs to the server, which can be called by client-extensions, and have some access to persisted Genetic Constructor data.
 
+### Requirements
+
+Extensions must be valid NPM packages, including a file `package.json`.
+
+Extensions must include a field `geneticConstructor: {}` in `package.json` or they will be ignored.
+
 ### Install extensions
 
 In general, extensions listed in `/server/extensions/package.json` and are installed using `npm run install-extensions`. This will install packages, which are assumed to be already build. You may wish to use `npm link` while you are developing a local extension (see Tips section).

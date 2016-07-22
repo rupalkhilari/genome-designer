@@ -46,7 +46,8 @@ router.all('/:ext/*', (req, res, next) => {
 const serverExtensions = getServerExtensions();
 Object.keys(serverExtensions).forEach(key => {
   const manifest = serverExtensions[key];
-  const routePath = manifest.router;
+  const routePath = manifest.geneticConstructor.router;
+
   //todo - build dependent path lookup
   const extensionRouter = require(path.resolve(__dirname, 'node_modules', key, routePath));
 

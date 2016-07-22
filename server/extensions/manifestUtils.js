@@ -1,3 +1,5 @@
+import invariant from 'invariant';
+
 /**
  * Check whether an extension manifest has client side components
  * @private
@@ -5,7 +7,8 @@
  * @returns {boolean} true if client components
  */
 export function manifestIsClient(manifest) {
-  const hasRegion = (manifest.region === null || !!manifest.region);
+  invariant(typeof manifest.geneticConstructor === 'object', 'must pass a valid genetic constructor manifest');
+  const hasRegion = (manifest.geneticConstructor.region === null || !!manifest.geneticConstructor.region);
   return hasRegion;
 }
 
@@ -16,5 +19,6 @@ export function manifestIsClient(manifest) {
  * @returns {boolean} true if server components
  */
 export function manifestIsServer(manifest) {
-  return !!manifest.router;
+  invariant(typeof manifest.geneticConstructor === 'object', 'must pass a valid genetic constructor manifest');
+  return !!manifest.geneticConstructor.router;
 }

@@ -16,7 +16,28 @@ Constructor provides REST APIs that the router can call internally for accessing
 
 ## Extension Structure
 
-A field `router` is required in `package.json`, and this file path will be required and added to the extension router dynamically.
+A field `router` is required in the `geneticConstructor` object of ``package.json`, and this file path will be required and added to the extension router dynamically.
+
+### Example
+
+Taken from the minimalServer example:
+
+```json
+{
+  "name": "minimalServer",
+  "version": "1.0.0",
+  "description": "Create a simple REST router",
+  "geneticConstructor": {
+    "readable": "Minimal Server",
+    "router": "index.js"
+  },
+  "author": "Autodesk Inc.",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.14.0"
+  }
+}
+```
 
 ### Recommendations
 

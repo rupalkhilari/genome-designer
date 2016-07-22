@@ -33,6 +33,11 @@ fs.readdirSync(nodeModulesDir).forEach(packageName => {
     const filePath = path.resolve(nodeModulesDir, packageName + '/package.json');
     const depManifest = require(filePath);
 
+    if (!depManifest.geneticConstructor) {
+      console.log('ignoring package ' + packageName + ', no field geneticConstructor');
+      return;
+    }
+
     Object.assign(registry, {
       [packageName]: depManifest,
     });

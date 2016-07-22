@@ -2,8 +2,10 @@
   "name": "webpacked",
   "version": "1.0.0",
   "description": "Example extension which uses Webpack to create a bundle.",
-  "region": "sequenceDetail",
-  "readable": "Webpacked Example",
+  "geneticConstructor": {
+    "region": "sequenceDetail",
+    "readable": "Webpacked Example"
+  },
   "scripts": {
     "prepublish": "npm run build",
     "build": "webpack -d main.js index.js"
