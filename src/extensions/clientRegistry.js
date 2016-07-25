@@ -116,7 +116,7 @@ export const registerRender = (key, render) => {
  */
 export const onRegister = (cb, skipFirst = false) => {
   callbacks.push(cb);
-  !skipFirst && safelyRunCallback(cb, registry);
+  !skipFirst && safelyRunCallback(cb, registry, null);
   return function unregister() { callbacks.splice(callbacks.findIndex(cb), 1); };
 };
 

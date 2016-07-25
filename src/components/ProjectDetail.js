@@ -44,13 +44,14 @@ export class ProjectDetail extends Component {
   extensions = [];
 
   componentDidMount() {
-    //listen to get relevant manifests here
+    //listen to get relevant manifests here.
+    //run on first time (key === null) in case registry is already populated.
     this.extensionsListener = onRegister((registry, key, region) => {
-      if (region === projectDetailExtensionRegion) {
+      if (key === null || region === projectDetailExtensionRegion) {
         this.extensions = extensionsByRegion(projectDetailExtensionRegion);
         this.forceUpdate();
       }
-    }, true);
+    });
   }
 
   componentWillUnmount() {
