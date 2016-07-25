@@ -103,6 +103,10 @@ export class ProjectDetail extends Component {
 
   /** end resize things **/
 
+  canToggleExtension = () => {
+    return true; //this.props.focusDetailsExist(); //we dont really care - just let extensions render
+  };
+
   handleClickToggle = evt => {
     if (this.props.focusDetailsExist()) {
       this.toggle();
@@ -111,8 +115,7 @@ export class ProjectDetail extends Component {
   };
 
   toggle = (forceVal) => {
-    const detailsAvailable = this.props.focusDetailsExist();
-    this.props.uiToggleDetailView(detailsAvailable && forceVal);
+    this.props.uiToggleDetailView(this.canToggleExtension() && forceVal);
   };
 
   render() {
@@ -122,7 +125,7 @@ export class ProjectDetail extends Component {
 
     const { isVisible, currentExtension } = this.props;
     const currentExtensionName = getExtensionName(currentExtension);
-    const detailsExist = true; //this.props.focusDetailsExist(); //we dont really care - just let extensions render
+    const detailsExist = this.canToggleExtension();
 
     const header = (isVisible && currentExtension) ?
       (
@@ -160,6 +163,7 @@ export class ProjectDetail extends Component {
                               onMouseDown={this.handleResizableMouseDown}></div>)}
         {header}
         {currentExtension && (<ExtensionView region={projectDetailExtensionRegion}
+                                             isVisible={isVisible}
                                              extension={currentExtension}/>) }
       </div>
     );
