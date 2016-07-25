@@ -32,11 +32,12 @@ export class ProjectDetail extends Component {
     detailViewSelectExtension: PropTypes.func.isRequired,
     focusDetailsExist: PropTypes.func.isRequired,
     isVisible: PropTypes.bool.isRequired,
-    currentExtension: PropTypes.any, //todo - allow null
+    currentExtension: PropTypes.any, //todo - allow null or key
     project: PropTypes.object.isRequired,
   };
 
   state = {
+    //default open height
     openHeight: 400,
   };
 
@@ -76,6 +77,7 @@ export class ProjectDetail extends Component {
     document.addEventListener('mouseup', this.handleResizeMouseUp);
     this.dragStart = evt.pageY;
     //cringe-worthy query selector voodoo
+    //leave at least 200 px in the design canvas
     this.dragMax = document.querySelector('.ProjectPage-content').getBoundingClientRect().height - 200;
     this.openStart = this.state.openHeight;
   };
@@ -83,7 +85,7 @@ export class ProjectDetail extends Component {
   handleResizeMouseMove = evt => {
     evt.preventDefault();
     const delta = this.dragStart - evt.pageY;
-    const minHeight = 300;
+    const minHeight = 200;
     const nextHeight = Math.min(this.dragMax, Math.max(minHeight, this.openStart + delta));
     this.setState({ openHeight: nextHeight });
     this.throttledDispatchResize();
@@ -101,6 +103,10 @@ export class ProjectDetail extends Component {
 
   /** end resize things **/
 
+  canToggleExtension = () => {
+    return true; //this.props.focusDetailsExist(); //we dont really care - just let extensions render
+  };
+
   handleClickToggle = evt => {
     if (this.props.focusDetailsExist()) {
       this.toggle();
@@ -109,8 +115,7 @@ export class ProjectDetail extends Component {
   };
 
   toggle = (forceVal) => {
-    const detailsAvailable = this.props.focusDetailsExist();
-    this.props.uiToggleDetailView(detailsAvailable && forceVal);
+    this.props.uiToggleDetailView(this.canToggleExtension() && forceVal);
   };
 
   render() {
@@ -120,7 +125,7 @@ export class ProjectDetail extends Component {
 
     const { isVisible, currentExtension } = this.props;
     const currentExtensionName = getExtensionName(currentExtension);
-    const detailsExist = this.props.focusDetailsExist();
+    const detailsExist = this.canToggleExtension();
 
     const header = (isVisible && currentExtension) ?
       (
@@ -152,16 +157,14 @@ export class ProjectDetail extends Component {
 
     return (
       <div className={'ProjectDetail' + (isVisible ? ' visible' : '')}
-           style={{ minHeight: (isVisible ? `${this.state.openHeight}px` : null) }}>
+           style={{ height: (isVisible ? `${this.state.openHeight}px` : null) }}>
         {(isVisible) && (<div ref="resizeHandle"
                               className="ProjectDetail-resizeHandle"
                               onMouseDown={this.handleResizableMouseDown}></div>)}
         {header}
-        <div className="ProjectDetail-chrome"
-             ref="extensionContainer">
-          {currentExtension && (<ExtensionView region={projectDetailExtensionRegion}
-                                               extension={currentExtension}/>) }
-        </div>
+        {currentExtension && (<ExtensionView region={projectDetailExtensionRegion}
+                                             isVisible={isVisible}
+                                             extension={currentExtension}/>) }
       </div>
     );
   }

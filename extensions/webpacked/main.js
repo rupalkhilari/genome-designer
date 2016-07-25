@@ -24,6 +24,9 @@ function render(container, options) {
       last = current;
     }
   });
+
+  //return an unsubscribe function to clean up when the extension unmounts
+  return subscriber;
 }
 
 window.constructor.extensions.register('webpacked', render);
