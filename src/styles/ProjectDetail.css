@@ -1,17 +1,13 @@
 @import './variables.css';
 
 .ProjectDetail {
-  display: flex;
   position: relative;
-  flex-direction: column;
-  align-content: center;
   min-height: 30px;
-  flex-basis: 0;
+  flex-shrink: 0;
   background-color: var(--colors-blueGreyMed);
 
   &.visible {
     background-color: var(--colors-white);
-    min-height: 400px;
   }
 
   &-resizeHandle {
