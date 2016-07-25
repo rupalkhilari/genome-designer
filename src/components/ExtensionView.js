@@ -122,7 +122,7 @@ export default class ExtensionView extends Component {
     }
 
     return (
-      <div className={'ExtensionView'} style={{}}>
+      <div className={'ExtensionView'}>
         <div className="ExtensionView-content" ref={(el) => {
           if (el) {
             this.element = el;

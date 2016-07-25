@@ -122,7 +122,7 @@ export class ProjectDetail extends Component {
 
     const { isVisible, currentExtension } = this.props;
     const currentExtensionName = getExtensionName(currentExtension);
-    const detailsExist = this.props.focusDetailsExist();
+    const detailsExist = true; //this.props.focusDetailsExist(); //we dont really care - just let extensions render
 
     const header = (isVisible && currentExtension) ?
       (
