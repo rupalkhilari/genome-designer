@@ -17,6 +17,8 @@ import React, { Component, PropTypes } from 'react';
 import extensionRegistry, { validRegion, downloadAndRender } from '../extensions/clientRegistry';
 import { isEqual } from 'lodash';
 
+import '../styles/ExtensionView.css';
+
 export default class ExtensionView extends Component {
   static propTypes = {
     region: function regionPropValidator(props, name) {
@@ -120,8 +122,8 @@ export default class ExtensionView extends Component {
     }
 
     return (
-      <div className={'ExtensionView'}>
-        <div ref={(el) => {
+      <div className={'ExtensionView'} style={{}}>
+        <div className="ExtensionView-content" ref={(el) => {
           if (el) {
             this.element = el;
           }

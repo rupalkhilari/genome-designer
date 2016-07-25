@@ -22,6 +22,9 @@ function render(container, options) {
         container.appendChild(child);
       });
   });
+
+  //return an unsubscribe function to clean up when the extension unmounts
+  return subscriber;
 }
 
 window.constructor.extensions.register(extensionKey, render);
