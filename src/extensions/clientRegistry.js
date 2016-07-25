@@ -133,9 +133,12 @@ export const getExtensionName = (key) => {
   return manifest.geneticConstructor.readable || manifest.name;
 };
 
-//the render is assigned by the download process. This is a bit unclear
-//todo - doc better, better error message
 /**
+ * Attempt to download and render an extension.
+ *
+ * Should only call this function if there is a render function, otherwise just download it.
+ *
+ * @private
  *
  * @param key
  * @param container
