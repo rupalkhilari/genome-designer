@@ -82,6 +82,11 @@ export const registerManifest = (manifest) => {
 
     Object.assign(registry, { [name]: manifest });
 
+    //temp - for non-visual extensions, just run them on load
+    if (region === null) {
+      downloadExtension(name);
+    }
+
     safelyRunCallbacks(registry, name, region);
   } catch (err) {
     console.log(`could not register extension ${manifest.name}:`);
@@ -130,6 +135,15 @@ export const getExtensionName = (key) => {
 
 //the render is assigned by the download process. This is a bit unclear
 //todo - doc better, better error message
+/**
+ *
+ * @param key
+ * @param container
+ * @param options
+ * @returns {Promise}
+ * @resolve {Function} callback from render, the unregister function
+ * @reject {Error} Error while rendering
+ */
 export const downloadAndRender = (key, container, options) => {
   return downloadExtension(key)
     .then(() => {
@@ -138,7 +152,16 @@ export const downloadAndRender = (key, container, options) => {
         console.warn(`Extension ${name} did not specify a render() function, even though it defined a region. Check Extension manifest definition.`);
         return;
       }
-      return manifest.render(container, options);
+
+      return new Promise((resolve, reject) => {
+        try {
+          const callback = manifest.render(container, options);
+          resolve(callback);
+        } catch (err) {
+          //already logged it when wrap render in registerExtension
+          reject(err);
+        }
+      });
     });
 };
 

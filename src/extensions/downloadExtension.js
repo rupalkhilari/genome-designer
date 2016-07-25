@@ -15,7 +15,7 @@ limitations under the License.
 */
 import loadScript from 'load-script';
 
-//map extension key -> whether downloaded already
+//map extension key -> true downloaded already
 const cached = {};
 
 /**
@@ -26,19 +26,33 @@ const cached = {};
  */
 export const downloadExtension = (key) => {
   return new Promise((resolve, reject) => {
-    if (cached[key]) {
+    if (cached[key] === true) {
       resolve(false);
+    }
+
+    //avoid trying to download again extensions which already errored
+    if (cached[key] === false) {
+      console.warn(`there was an error loading ${key}, so not trying again`);
+      return reject('already errored');
     }
 
     //we need index.js so that relative sourcemap paths will work properly
     const url = `/extensions/load/${key}/index.js`;
-    loadScript(url, (err, script) => {
-      if (err) {
-        reject(err);
-      }
-      cached[key] = true;
-      resolve(true);
-    });
+
+    //we can try to catch some errors, but adding script dynamically to head of page doesn't allow us to catch this way
+    //todo - patch window.onerror and catch
+    try {
+      loadScript(url, (err, script) => {
+        if (err) {
+          reject(err);
+        }
+        cached[key] = true;
+        resolve(true);
+      });
+    } catch (err) {
+      cached[key] = false;
+      reject(err);
+    }
   });
 };
 
