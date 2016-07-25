@@ -120,8 +120,8 @@ export default class ExtensionView extends Component {
     }
 
     return (
-      <div className={'ExtensionView'}>
-        <div ref={(el) => {
+      <div className={'ExtensionView'} style={{width:"100%", flexGrow: 1}}>
+        <div style={{width:"100%", height: "100%"}} ref={(el) => {
           if (el) {
             this.element = el;
           }
