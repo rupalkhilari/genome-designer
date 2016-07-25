@@ -3,7 +3,9 @@
   "version" : "0.0.1",
   "description": "list of the default extensions for genome designer",
   "dependencies": {
-    "simple" : "../../extensions/simple",
+    "testClient" : "../../extensions/testClient",
+    "serverBasicApi": "../../extensions/serverBasicApi",
+    "clientAndServer": "../../extensions/clientAndServer",
     "SequenceDetail" : "IsaacLuo/onion2#deploy"
   }
 }

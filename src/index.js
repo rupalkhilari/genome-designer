@@ -20,7 +20,7 @@ import reduxRouter from './routes/reduxRouter';
 import * as actionTypes from './constants/ActionTypes';
 import store, { lastAction } from './store/index';
 import orchestrator from './store/orchestrator';
-import registerExtension from './extensions/registerExtension';
+import extensions from './extensions/_expose';
 
 render(
   <Provider store={store}>
@@ -29,10 +29,13 @@ render(
   document.getElementById('root')
 );
 
-//expose various things on the window, e.g. for extensions
-const exposed = global.gd = {};
+/**
+ * The API for Genetic Constructor is exposed on the window at `window.constructor`. This object includes the API for triggering actions and subscribing to the store, and registering extensions.
+ * @name window.constructor
+ */
+const exposed = global.constructor = {};
 Object.assign(exposed, {
-  registerExtension,
+  extensions,
   actionTypes,
   api: orchestrator,
   store: {

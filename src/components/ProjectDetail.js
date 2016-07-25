@@ -1,26 +1,30 @@
 /*
-Copyright 2016 Autodesk,Inc.
+ Copyright 2016 Autodesk,Inc.
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { uiToggleDetailView, detailViewSelectExtension } from '../actions/ui';
 import { focusDetailsExist } from '../selectors/focus';
-import { extensionsByRegion, onRegister } from '../extensions/clientRegistry';
+import { extensionsByRegion, getExtensionName, onRegister } from '../extensions/clientRegistry';
 import { throttle } from 'lodash';
 
+import ExtensionView from './ExtensionView';
+
 import '../styles/ProjectDetail.css';
+
+const projectDetailExtensionRegion = 'sequenceDetail';
 
 export class ProjectDetail extends Component {
   static propTypes = {
@@ -28,7 +32,7 @@ export class ProjectDetail extends Component {
     detailViewSelectExtension: PropTypes.func.isRequired,
     focusDetailsExist: PropTypes.func.isRequired,
     isVisible: PropTypes.bool.isRequired,
-    currentExtension: PropTypes.object,
+    currentExtension: PropTypes.any, //todo - allow null
     project: PropTypes.object.isRequired,
   };
 
@@ -36,25 +40,32 @@ export class ProjectDetail extends Component {
     openHeight: 400,
   };
 
-  extensionRendered = false;
   extensions = [];
 
   componentDidMount() {
-    this.extensionsListener = onRegister(() => {
-      Object.assign(this, { extensions: extensionsByRegion('sequenceDetail') });
-      if (!this.props.currentExtension && this.extensions.length) {
-        this.setCurrentExtension(this.extensions[0]);
+    //listen to get relevant manifests here
+    this.extensionsListener = onRegister((registry, key, region) => {
+      if (region === projectDetailExtensionRegion) {
+        this.extensions = extensionsByRegion(projectDetailExtensionRegion);
+        this.forceUpdate();
       }
-    });
+    }, true);
   }
 
   componentWillUnmount() {
     this.extensionsListener();
   }
 
-  setCurrentExtension(manifest) {
-    this.props.detailViewSelectExtension(manifest);
-  }
+  openExtension = (key) => {
+    if (!key) {
+      return;
+    }
+
+    this.toggle(true);
+    this.props.detailViewSelectExtension(key);
+  };
+
+  /** resize things (todo - make a component that handles this) **/
 
   throttledDispatchResize = throttle(() => window.dispatchEvent(new Event('resize')), 50);
 
@@ -88,6 +99,8 @@ export class ProjectDetail extends Component {
     window.dispatchEvent(new Event('resize'));
   };
 
+  /** end resize things **/
+
   handleClickToggle = evt => {
     if (this.props.focusDetailsExist()) {
       this.toggle();
@@ -98,54 +111,22 @@ export class ProjectDetail extends Component {
   toggle = (forceVal) => {
     const detailsAvailable = this.props.focusDetailsExist();
     this.props.uiToggleDetailView(detailsAvailable && forceVal);
-    window.setTimeout(() => {
-      window.dispatchEvent(new Event('resize'));
-    }, 300);
   };
-
-  //todo - need to provide a way to unregister event handlers (e.g. an un-render() callback) to the extension
-  loadExtension = (manifest) => {
-    if (!manifest) {
-      return;
-    }
-
-    this.toggle(true);
-    this.extensionRendered = false;
-    this.setCurrentExtension(manifest);
-  };
-
-  renderCurrentExtension() {
-    const { currentExtension } = this.props;
-
-    if (!currentExtension) {
-      return;
-    }
-
-    try {
-      setTimeout(() => {
-        const boundingBox = this.refs.extensionContainer.getBoundingClientRect();
-        currentExtension.render(this.refs.extensionView, { boundingBox });
-        this.extensionRendered = true;
-      });
-    } catch (err) {
-      console.error('error loading / rendering extension!', currentExtension);
-      throw err;
-    }
-  }
 
   render() {
-    const { isVisible, currentExtension } = this.props;
-    const detailsExist = this.props.focusDetailsExist();
-
-    if (isVisible && currentExtension && !this.extensionRendered) {
-      this.renderCurrentExtension();
+    if (!this.extensions.length) {
+      return null;
     }
+
+    const { isVisible, currentExtension } = this.props;
+    const currentExtensionName = getExtensionName(currentExtension);
+    const detailsExist = this.props.focusDetailsExist();
 
     const header = (isVisible && currentExtension) ?
       (
         <div className="ProjectDetail-heading">
           <a
-            className="ProjectDetail-heading-extension visible">{currentExtension.readable || currentExtension.name}</a>
+            className="ProjectDetail-heading-extension visible">{currentExtensionName}</a>
           <a ref="close"
              className={'ProjectDetail-heading-close' + (!detailsExist ? ' disabled' : '')}
              onClick={() => this.toggle(false)}/>
@@ -157,11 +138,12 @@ export class ProjectDetail extends Component {
              className="ProjectDetail-heading-toggle"
              onClick={this.handleClickToggle}/>
           <div className="ProjectDetail-heading-extensionList">
-            {this.extensions.map(manifest => {
+            {this.extensions.map(key => {
+              const name = getExtensionName(key);
               return (
-                <a key={manifest.name}
+                <a key={key}
                    className={'ProjectDetail-heading-extension' + (!detailsExist ? ' disabled' : '')}
-                   onClick={() => detailsExist && this.loadExtension(manifest)}>{manifest.readable || manifest.name}</a>
+                   onClick={() => detailsExist && this.openExtension(key)}>{name}</a>
               );
             })}
           </div>
@@ -170,15 +152,15 @@ export class ProjectDetail extends Component {
 
     return (
       <div className={'ProjectDetail' + (isVisible ? ' visible' : '')}
-           style={{minHeight: (isVisible ? `${this.state.openHeight}px` : null)}}>
+           style={{ minHeight: (isVisible ? `${this.state.openHeight}px` : null) }}>
         {(isVisible) && (<div ref="resizeHandle"
                               className="ProjectDetail-resizeHandle"
                               onMouseDown={this.handleResizableMouseDown}></div>)}
         {header}
         <div className="ProjectDetail-chrome"
              ref="extensionContainer">
-          <div ref="extensionView"
-               className="ProjectDetail-extensionView"></div>
+          {currentExtension && (<ExtensionView region={projectDetailExtensionRegion}
+                                               extension={currentExtension}/>) }
         </div>
       </div>
     );

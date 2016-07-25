@@ -73,6 +73,8 @@ import AutosaveTracking from '../components/GlobalNav/autosaveTracking';
 import OkCancel from '../components/okcancel';
 import * as instanceMap from '../store/instanceMap';
 import { merge } from 'lodash';
+import { extensionApiPath } from '../middleware/paths';
+
 
 import '../styles/GlobalNav.css';
 
@@ -287,7 +289,7 @@ class GlobalNav extends Component {
     this.saveProject()
       .then(() => {
         // for now use an iframe otherwise any errors will corrupt the page
-        const url = `${window.location.protocol}//${window.location.host}/export/genbank/${this.props.currentProjectId}`;
+        const url = extensionApiPath('genbank', `export/${this.props.currentProjectId}`);
         const iframe = document.createElement('iframe');
         iframe.style.display = 'none';
         iframe.src = url;

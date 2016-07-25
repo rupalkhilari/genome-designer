@@ -24,5 +24,4 @@ export const dataApiPath = (path) => serverRoot + 'data/' + path;
 export const orderApiPath = (path) => serverRoot + 'order/' + path;
 export const extensionsPath = (id) => serverRoot + 'extensions/' + id;
 export const fileApiPath = (path) => serverRoot + 'file/' + path;
-export const importPath = (path) => serverRoot + 'import/' + path;
-export const exportPath = (path) => serverRoot + 'export/' + path;
+export const extensionApiPath = (extension, path) => serverRoot + `extensions/api/${extension}/${path}`;

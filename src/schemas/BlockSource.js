@@ -33,8 +33,8 @@ const blockSourceFields = {
   ],
 
   url: [
-    fields.url(),
-    `URL to resource`,
+    fields.string(),
+    `URL to resource, relative paths are relative to genetic construct root URL`,
     { scaffold: false },
   ],
 };

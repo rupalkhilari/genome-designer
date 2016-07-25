@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: actions/inventory.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: actions/inventory.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/*
+ Copyright 2016 Autodesk,Inc.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
+/**
+ * @module Inventory Actions
+ * @memberOf module:Actions
+ */
+import * as ActionTypes from '../constants/ActionTypes';
+import { getSources } from '../inventory/registry';
+import * as searchApi from '../middleware/search';
+
+//note - expects this to be static
+const searchSources = getSources('search');
+
+//if immediate, call on leading edge, prevent subsequence calls until timeout clears
+//will not resolve when debounced. note that not rejected, could probably write to handle that with a pending state
+let timeout;
+function debouncer(wait = 250, immediate = false) {
+  return new Promise((resolve, reject) => {
+    const later = () => {
+      timeout = null;
+      if (!immediate) {
+        resolve();
+      }
+    };
+    const callNow = immediate === true; // || !timeout; --- un comment to enable on leading edge
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+    if (callNow) resolve();
+  });
+}
+
+/**
+ * Set the inventory search term, without actually running a search
+ * @param {string} searchTerm
+ * @returns {string} Search term
+ */
+export const inventorySetSearchTerm = (searchTerm) => {
+  return (dispatch, getState) => {
+    dispatch({
+      type: ActionTypes.INVENTORY_SET_SEARCH_TERM,
+      searchTerm,
+    });
+    return searchTerm;
+  };
+};
+
+/**
+ * Search for a term across active search sources
+ * @param {string} inputTerm Term to search for
+ * @param {Object} [options=null]
+ * @param {boolean} [skipDebounce=false]
+ * @returns {Promise}
+ * @resolve {Array} Search results
+ * @reject {null}
+ */
+export const inventorySearch = (inputTerm = '', options = null, skipDebounce = false) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const { sourceList } = state.inventory;
+    const searchTerm = (typeof inputTerm !== 'undefined') ? inputTerm : state.inventory.searchTerm;
+
+    dispatch({
+      type: ActionTypes.INVENTORY_SEARCH,
+      sourceList,
+      searchTerm,
+    });
+
+    if (!inputTerm.length) {
+      return Promise.resolve();
+    }
+
+    //debounce initiation of searches
+    return debouncer(500, skipDebounce)
+      .then(() => searchApi.search(searchTerm, options, sourceList))
+      .then(searchResults => {
+        dispatch({
+          type: ActionTypes.INVENTORY_SEARCH_RESOLVE,
+          searchResults,
+          searchTerm,
+          sourceList,
+        });
+        return searchResults;
+      })
+      .catch(err => {
+        dispatch({
+          type: ActionTypes.INVENTORY_SEARCH_REJECT,
+          searchTerm,
+        });
+        return null;
+      });
+  };
+};
+
+/**
+ * Toggle whether the sources view is open
+ * @param {boolean} [forceState] Ignore to toggle
+ * @returns {boolean} Whether showing now
+ */
+export const inventoryShowSourcesToggling = (forceState) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const { sourcesToggling, sourceList, lastSearch, searchTerm } = state.inventory;
+
+    const nextState = (forceState !== undefined) ? !!forceState : !sourcesToggling;
+    dispatch({
+      type: ActionTypes.INVENTORY_SOURCES_VISIBILITY,
+      nextState,
+    });
+
+    //if not toggling any more, check if need to run a new search
+    if (!nextState) {
+      if (sourceList.some(source => lastSearch.sourceList.indexOf(source) &lt; 0)) {
+        dispatch(inventorySearch(searchTerm, null, true));
+      }
+    }
+
+    return nextState;
+  };
+};
+
+/**
+ * Set the list of active search sources
+ * @param {Array} sourceList List of sources
+ * @returns {Array} Sources now using
+ */
+export const inventorySetSources = (sourceList = []) => {
+  return (dispatch, getState) => {
+    if (!(sourceList.length &amp;&amp; sourceList.every(source => searchSources.indexOf(source) >= 0))) {
+      return getState().inventory.sourceList;
+    }
+
+    dispatch({
+      type: ActionTypes.INVENTORY_SET_SOURCES,
+      sourceList,
+    });
+
+    return sourceList;
+  };
+};
+
+/**
+ * Toggle whether a search source is active
+ * @param {string} source
+ * @returns {Array} List of active sources
+ */
+export const inventoryToggleSource = (source) => {
+  return (dispatch, getState) => {
+    if (searchSources.indexOf(source) &lt; 0) {
+      return null;
+    }
+
+    const sourceList = getState().inventory.sourceList.slice();
+
+    //xor, reset if empty
+    const indexOfSource = sourceList.indexOf(source);
+    if (indexOfSource >= 0) {
+      sourceList.splice(indexOfSource, 1);
+      if (sourceList.length === 0) {
+        sourceList.push(...getSources('search'));
+      }
+    } else {
+      sourceList.push(source);
+    }
+
+    return dispatch(inventorySetSources(sourceList));
+  };
+};
+
+/**
+ * Toggle whether an inventory Source is visible. This controls whether its results are visible, not whether the source is active.
+ *
+ * don't check this for source being in source list since currently use this for also handling whether a role is visible (see inventory component, depends on how grouped)
+ * @param {string} source
+ * @returns {Object} Map of sources to whether they are visible
+ */
+export const inventoryToggleSourceVisible = (source) => {
+  return (dispatch, getState) => {
+    const { sourcesVisible } = getState().inventory;
+    const nextState = Object.assign({}, sourcesVisible, { [source]: !sourcesVisible[source] });
+
+    dispatch({
+      type: ActionTypes.INVENTORY_SOURCES_VISIBLE,
+      sourcesVisible: nextState,
+    });
+
+    return nextState;
+  };
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Actions.html">Actions</a></li><li><a href="module-Actions.module_Block%2520Actions.html">Block Actions</a></li><li><a href="module-Actions.module_Clipboard%2520Actions.html">Clipboard Actions</a></li><li><a href="module-Actions.module_Focus%2520Actions.html">Focus Actions</a></li><li><a href="module-Actions.module_Inventory%2520Actions.html">Inventory Actions</a></li><li><a href="module-Actions.module_Order%2520Actions.html">Order Actions</a></li><li><a href="module-Actions.module_Project%2520Actions.html">Project Actions</a></li><li><a href="module-Actions.module_UI%2520Actions.html">UI Actions</a></li><li><a href="module-ActionTypes.html">ActionTypes</a></li><li><a href="module-DragTypes.html">DragTypes</a></li><li><a href="module-Models.html">Models</a></li><li><a href="module-roles.html">roles</a></li><li><a href="module-Selectors.html">Selectors</a></li><li><a href="module-Store.html">Store</a></li><li><a href="module-validators.html">validators</a></li></ul><h3>Classes</h3><ul><li><a href="module-Models.Annotation.html">Annotation</a></li><li><a href="module-Models.Block.html">Block</a></li><li><a href="module-Models.Immutable.html">Immutable</a></li><li><a href="module-Models.Instance.html">Instance</a></li><li><a href="module-Models.Order.html">Order</a></li><li><a href="module-Models.Project.html">Project</a></li><li><a href="Schema.html">Schema</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addComponent">addComponent</a></li><li><a href="global.html#annotate">annotate</a></li><li><a href="global.html#AnnotationSchema">AnnotationSchema</a></li><li><a href="global.html#BlockSchema">BlockSchema</a></li><li><a href="global.html#BlockSourceSchema">BlockSourceSchema</a></li><li><a href="global.html">classless</a></li><li><a href="global.html#downloadExtension">downloadExtension</a></li><li><a href="global.html#get">get</a></li><li><a href="global.html#getName">getName</a></li><li><a href="global.html#getOptions">getOptions</a></li><li><a href="global.html#getRole">getRole</a></li><li><a href="global.html#getSequence">getSequence</a></li><li><a href="global.html#getType">getType</a></li><li><a href="global.html#hasContents">hasContents</a></li><li><a href="global.html#hasSequence">hasSequence</a></li><li><a href="global.html#ImportGenBankModal">ImportGenBankModal</a></li><li><a href="global.html#importGenbankOrCSV">importGenbankOrCSV</a></li><li><a href="global.html#inspectorToggleVisibility">inspectorToggleVisibility</a></li><li><a href="global.html#InstanceSchema">InstanceSchema</a></li><li><a href="global.html#isConstruct">isConstruct</a></li><li><a href="global.html#isFiller">isFiller</a></li><li><a href="global.html#isFixed">isFixed</a></li><li><a href="global.html#isFrozen">isFrozen</a></li><li><a href="global.html#isHidden">isHidden</a></li><li><a href="global.html#isList">isList</a></li><li><a href="global.html#isTemplate">isTemplate</a></li><li><a href="global.html#MenuItem">MenuItem</a></li><li><a href="global.html#MenuSeparator">MenuSeparator</a></li><li><a href="global.html#merge">merge</a></li><li><a href="global.html#MetadataSchema">MetadataSchema</a></li><li><a href="global.html#ModalSpinner">ModalSpinner</a></li><li><a href="global.html#ModalWindow">ModalWindow</a></li><li><a href="global.html#moveComponent">moveComponent</a></li><li><a href="global.html#mutate">mutate</a></li><li><a href="global.html#OkCancel">OkCancel</a></li><li><a href="global.html#Orchestrator">Orchestrator</a></li><li><a href="global.html#OrderParametersSchema">OrderParametersSchema</a></li><li><a href="global.html#OrderSchema">OrderSchema</a></li><li><a href="global.html#OrderStatusSchema">OrderStatusSchema</a></li><li><a href="global.html#ParentSchema">ParentSchema</a></li><li><a href="global.html#ProjectSchema">ProjectSchema</a></li><li><a href="global.html#removeAnnotation">removeAnnotation</a></li><li><a href="global.html#removeComponent">removeComponent</a></li><li><a href="global.html#RulesSchema">RulesSchema</a></li><li><a href="global.html#SequenceSchema">SequenceSchema</a></li><li><a href="global.html#setColor">setColor</a></li><li><a href="global.html#setDescription">setDescription</a></li><li><a href="global.html#setFrozen">setFrozen</a></li><li><a href="global.html#setListBlock">setListBlock</a></li><li><a href="global.html#setName">setName</a></li><li><a href="global.html#setProjectId">setProjectId</a></li><li><a href="global.html#setRole">setRole</a></li><li><a href="global.html#setRule">setRule</a></li><li><a href="global.html#setSequence">setSequence</a></li><li><a href="global.html#toggleOptions">toggleOptions</a></li><li><a href="global.html#UserSchema">UserSchema</a></li><li><a href="global.html">validate</a></li><li><a href="global.html#value">value</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Thu Jul 21 2016 18:56:51 GMT-0700 (PDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

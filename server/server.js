@@ -26,9 +26,6 @@ import bodyParser from 'body-parser';
 import errorHandlingMiddleware from './utils/errorHandlingMiddleware';
 import checkUserSetup from './auth/userSetup';
 
-import importRouter from '../plugins/convert/import';
-import exportRouter from '../plugins/convert/export';
-
 const DEFAULT_PORT = 3000;
 const port = parseInt(process.argv[2], 10) || process.env.PORT || DEFAULT_PORT;
 const hostname = '0.0.0.0';
@@ -103,10 +100,6 @@ app.use('/data', dataRouter);
 app.use('/order', orderRouter);
 app.use('/file', fileRouter);
 app.use('/extensions', extensionsRouter);
-
-//extensions
-app.use('/import', importRouter);
-app.use('/export', exportRouter);
 
 // Register Client Requests, delegate routing to client
 // ----------------------------------------------------

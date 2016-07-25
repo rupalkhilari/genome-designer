@@ -1,14 +1,12 @@
-var manifest = require('json!./package.json');
-
 function render(container, options) {
-  container.innerHTML = 'extension loaded!';
+  container.innerHTML = 'extension rendered this!';
 
   //console.log(options.boundingBox);
 
   //throw an error for debugging debugging
   //require('./externalFile.js').doBadThing();
 
-  var subscriber = window.gd.store.subscribe(function (state, lastAction) {
+  var subscriber = window.constructor.store.subscribe(function (state, lastAction) {
     var last = [];
     var current = state.focus.blockIds;
     if (current &&
@@ -28,4 +26,4 @@ function render(container, options) {
   });
 }
 
-window.gd.registerExtension(manifest, render);
+window.constructor.extensions.register('webpacked', render);

@@ -31,3 +31,5 @@ export const errorVersioningSystem = 'VERSIONING_ERROR';
 export const errorCouldntFindProjectId = 'PROJECT_ID_NOT_FOUND';
 
 export const errorOrderRejected = 'ORDER_REJECTED';
+
+export const errorExtensionNotFound = 'EXTENSION_NOT_FOUND';

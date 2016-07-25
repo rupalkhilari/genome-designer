@@ -19,6 +19,7 @@ limitations under the License.
  */
 import * as ActionTypes from '../constants/ActionTypes';
 import invariant from 'invariant';
+import extensionRegistry from '../extensions/clientRegistry';
 
 /**
  * Toggle whether the inspector is visible
@@ -95,24 +96,29 @@ export const uiToggleDetailView = (forceState) => {
       type: ActionTypes.DETAIL_VIEW_TOGGLE_VISIBILITY,
       nextState,
     });
+
+    window.setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+    }, 300);
+
     return nextState;
   };
 };
 
 /**
  * Select an extension to show in the detail view
- * @param {Object} manifest A valid manifest for an extension
- * @throws If manifest invalid
- * @returns {Object} selected manifest
+ * @param {string} key Key (name) of extension
+ * @throws If manifest not registered
+ * @returns {string} selected manifest key
  */
-export const detailViewSelectExtension = (manifest) => {
+export const detailViewSelectExtension = (key) => {
   return (dispatch, getState) => {
-    invariant(manifest === null || (manifest.name && typeof manifest.render === 'function'), 'improper formed manifest');
+    invariant(extensionRegistry[key], 'extension must be registerd in registry, got ' + key);
     dispatch({
       type: ActionTypes.DETAIL_VIEW_SELECT_EXTENSION,
-      manifest,
+      key,
     });
-    return manifest;
+    return key;
   };
 };
 

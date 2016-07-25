@@ -16,9 +16,14 @@ limitations under the License.
 import express from 'express';
 import bodyParser from 'body-parser';
 import { errorDoesNotExist } from '../utils/errors';
-import listExtensions from './registry';
+import extensionRegistry, { getClientExtensions } from './registry';
 import loadExtension, { getExtensionInternalPath} from './loadExtension';
 import errorHandlingMiddleware from '../utils/errorHandlingMiddleware';
+import extensionApiRouter from './apiRouter';
+
+//native extensions
+import csvRouter from './native/csv/index';
+import genbankRouter from './native/genbank/index';
 
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json();
@@ -27,20 +32,19 @@ router.use(jsonParser);
 router.use(errorHandlingMiddleware);
 
 router.get('/list', (req, res) => {
-  res.json(listExtensions);
+  //console.log(extensionRegistry);
+  res.json(getClientExtensions());
 });
 
 router.get('/manifest/:extension', (req, res, next) => {
   const { extension } = req.params;
+  const manifest = getClientExtensions()[extension];
 
-  loadExtension(extension)
-    .then(manifest => res.json(manifest))
-    .catch(err => {
-      if (err === errorDoesNotExist) {
-        return res.status(400).send(errorDoesNotExist);
-      }
-      next(err);
-    });
+  if (!manifest) {
+    return res.status(400).send(errorDoesNotExist);
+  }
+
+  return res.json(manifest);
 });
 
 if (process.env.NODE_ENV !== 'production') {
@@ -86,5 +90,12 @@ if (process.env.NODE_ENV !== 'production') {
       });
   });
 }
+
+//handle native extensions which are included statically
+router.use('/api/csv', csvRouter);
+router.use('/api/genbank', genbankRouter);
+
+//other /api routes deleted to extension API router
+router.use('/api', extensionApiRouter);
 
 export default router;

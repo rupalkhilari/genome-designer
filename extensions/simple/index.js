@@ -1,11 +1,8 @@
-//in a more complex project using a build system, you could simply include package.json here and define your fields there
-var manifest = {
-  "name": "simple",
-  "version": "1.0.0",
-  "description": "Simple Genetic Construct Extension Example",
-  "region": null
-};
-
-var subscriber = window.gd.store.subscribe(function simpleStoreSubscription(state, lastAction) {
+function simpleStoreSubscription(state, lastAction) {
   console.log(lastAction, state);
-});
+}
+
+var subscriber = window.constructor.store.subscribe(simpleStoreSubscription);
+
+//later, when you are done, to stop listening...
+//subscriber()
