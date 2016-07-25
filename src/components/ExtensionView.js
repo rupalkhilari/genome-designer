@@ -17,6 +17,8 @@ import React, { Component, PropTypes } from 'react';
 import extensionRegistry, { validRegion, downloadAndRender } from '../extensions/clientRegistry';
 import { isEqual } from 'lodash';
 
+import '../styles/ExtensionView.css';
+
 export default class ExtensionView extends Component {
   static propTypes = {
     region: function regionPropValidator(props, name) {
@@ -30,6 +32,11 @@ export default class ExtensionView extends Component {
         return new Error(`invalid extension key, got ${extension}`);
       }
     },
+    isVisible: PropTypes.bool,
+  };
+
+  static defaultProps = {
+    isVisible: true,
   };
 
   constructor() {
@@ -112,7 +119,7 @@ export default class ExtensionView extends Component {
 
   //todo - better error handling for extension loading + the status / default text
   render() {
-    const { extension } = this.props;
+    const { extension, isVisible } = this.props;
     const { downloaded } = this.state;
 
     if (!extension) {
@@ -120,8 +127,8 @@ export default class ExtensionView extends Component {
     }
 
     return (
-      <div className={'ExtensionView'} style={{width:"100%", flexGrow: 1}}>
-        <div style={{width:"100%", height: "100%"}} ref={(el) => {
+      <div className={'ExtensionView' + (isVisible ? ' visible' : '')}>
+        <div className="ExtensionView-content" ref={(el) => {
           if (el) {
             this.element = el;
           }
