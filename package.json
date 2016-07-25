@@ -18,11 +18,12 @@
     "test": "rm -rf ./storage/test && NODE_ENV=test babel-node tools/run setup && NODE_ENV=test mocha --recursive --compilers js:babel-register,css:test/css-null-compiler.js --require ./test/setup.js --timeout=25000",
     "test:watch": "npm test -- --watch",
     "nightwatch": "node ./node_modules/nightwatch/bin/nightwatch --retries 3 --config ./test-e2e/nightwatch.json",
-    "e2e": "node ./bin/e2e.js",
+    "e2e": "NODE_ENV=test node ./bin/e2e.js",
     "imagediff": "node ./bin/imagediff/imagediff.js --truth ./test-e2e/cannonical-screenshots/ --hypothesis ./test-e2e/current-screenshots/",
     "selenium": "node ./node_modules/selenium-standalone/bin/selenium-standalone install",
     "start-docker": "docker build -t genome-designer . && docker run --privileged -v /var/run/docker.sock:/run/docker.sock -i -p 3000:3000 -t genome-designer",
     "auth": "./bin/local-auth.sh",
+    "auth-testing": "NODE_ENV=test npm run auth",
     "auth-test": "COMMAND=\"mocha --compilers js:babel-register,css:test/css-null-compiler.js --require ./test/setup.js --timeout=10000 test/server/auth/REST.spec.js\" ./bin/server-auth.sh",
     "server-auth": "EMAIL=1 COMMAND='npm run start-instance -- --release' ./bin/server-auth.sh"
   },
