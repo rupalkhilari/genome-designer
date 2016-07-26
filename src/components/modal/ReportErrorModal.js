@@ -28,15 +28,16 @@ class SaveErrorModal extends Component {
   state = {
     title: '',
     description: '',
+    submitted: false,
+    createdUrl: null,
   };
 
   formValid = () => {
     const { title, description } = this.state;
-    console.log(title, description);
     return !!title && title.length > 8 && !!description && description.length > 5;
   };
 
-  reportError = () => {
+  submitForm = () => {
     const url = window.location.href;
     const user = window.flashedUser.userid; //fixme - this is a bit hack, should use action
     const { title, description } = this.state;
@@ -57,7 +58,9 @@ ${user}`;
       labels: ['bug:web'],
     };
 
-    debugger;
+    this.setState({
+      submitted: true,
+    });
 
     rejectingFetch('https://api.github.com/repos/autodesk-bionano/genome-designer/issues', {
       method: 'POST',
@@ -69,7 +72,15 @@ ${user}`;
       .then(resp => resp.json())
       .then(json => {
         console.log(json);
-        this.props.uiReportError(false);
+        this.setState({
+          createdUrl: json.html_url,
+        });
+      })
+      .catch(err => {
+        console.error(err);
+        this.setState({
+          submitted: false,
+        });
       });
   };
 
@@ -77,11 +88,14 @@ ${user}`;
     if (!this.props.open) {
       return null;
     }
+
+    const { createdUrl } = this.state;
     const formvalid = this.formValid();
 
     return (
       <ModalWindow
         open={this.props.open}
+        closeOnClickOutside
         title="Report an Issue"
         closeModal={() => this.props.uiReportError(false)}
         payload={(
@@ -101,11 +115,15 @@ ${user}`;
                       value={this.state.description}
                       onChange={evt => this.setState({description: evt.target.value})} />
 
+            {createdUrl && (<div style={{paddingTop: '1.5rem', textAlign: 'center'}}>
+              Thank you! Your issue has been logged at <a href={createdUrl} target="_blank">GitHub (account required)</a>
+            </div>)}
+
             <div style={{ width: '200px', paddingTop: '1.5rem', textAlign: 'center' }}>
               <button
                 type="submit"
                 disabled={!formvalid}
-                onClick={() => this.reportError()}>
+                onClick={() => this.submitForm()}>
                 Submit
               </button>
             </div>
