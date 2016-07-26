@@ -29,7 +29,7 @@ const _getBlockFromStore = (blockId, store) => {
 const _getParentFromStore = (blockId, store, def = null) => {
   const id = Object.keys(store.blocks).find(id => {
     const block = _getBlockFromStore(id, store);
-    return block.components.indexOf(blockId) > -1;
+    return block.components.indexOf(blockId) > -1 || block.options.hasOwnProperty(blockId);
   });
   return !!id ? store.blocks[id] : def;
 };
