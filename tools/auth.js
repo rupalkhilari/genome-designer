@@ -6,6 +6,8 @@ import path from 'path';
 const pathProjectRoot = path.resolve(__dirname, '../');
 let pathBioNanoPlatform = path.resolve(pathProjectRoot, '../bio-user-platform');
 
+/** config **/
+
 //if this isnt working, you can debug with --DEBUG flag
 const DEBUG = process.argv.includes('--DEBUG');
 if (!DEBUG) {
@@ -22,13 +24,14 @@ process.argv.forEach((val, index) => {
 });
 console.log('path for bio-user-platform is ' + pathBioNanoPlatform + '. Set by passing --PLATFORM_PATH=/your/path');
 
-const log = (...args) => {
-  if (DEBUG) {
-    console.log.apply(console, args);
+/** command utils **/
+
+//simple wrap around console.log
+const log = (output, forceOutput) => {
+  if (DEBUG || forceOutput === true) {
+    console.log(output);
   }
 };
-
-/** command utils **/
 
 const promisedExec = (cmd, opts) => {
   console.log('running ' + cmd);
@@ -47,7 +50,7 @@ ${stderr}`);
   });
 };
 
-const spawnWaitUntilString = (cmd, args, opts, waitUntil) => {
+const spawnWaitUntilString = (cmd, args, opts, waitUntil, forceOutput = false) => {
   console.log('running: ' + cmd + ' ' + args.join(' '));
 
   return new Promise((resolve, reject) => {
@@ -126,7 +129,7 @@ const startAuthServer = () => {
 const startRunAuth = () => {
   return spawnWaitUntilString('npm', ['run', 'auth'], {
     cwd: pathProjectRoot,
-  }, 'Server listening at http://0.0.0.0:3000/');
+  }, 'Server listening at http://0.0.0.0:3000/', true);
 };
 
 async function auth() {
