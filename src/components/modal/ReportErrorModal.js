@@ -17,7 +17,14 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import ModalWindow from './modalwindow';
 import { uiReportError } from '../../actions/ui';
-import rejectingFetch from '../../middleware/rejectingFetch';
+import { reportError } from '../../middleware/reporting';
+
+const initialState = {
+  title: '',
+  description: '',
+  submitted: false,
+  createdUrl: null,
+}
 
 class SaveErrorModal extends Component {
   static propTypes = {
@@ -25,12 +32,7 @@ class SaveErrorModal extends Component {
     uiReportError: PropTypes.func.isRequired,
   };
 
-  state = {
-    title: '',
-    description: '',
-    submitted: false,
-    createdUrl: null,
-  };
+  state = Object.assign({}, initialState);
 
   formValid = () => {
     const { title, description } = this.state;
@@ -39,37 +41,14 @@ class SaveErrorModal extends Component {
 
   submitForm = () => {
     const url = window.location.href;
-    const user = window.flashedUser.userid; //fixme - this is a bit hack, should use action
+    const user = window.flashedUser.userid; //todo - should use action
     const { title, description } = this.state;
-    const body = `### URL
-${url}
-
-### Description
-
-${description}
-
-### User
-
-${user}`;
-
-    const payload = {
-      title,
-      body,
-      labels: ['bug:web'],
-    };
 
     this.setState({
       submitted: true,
     });
 
-    rejectingFetch('https://api.github.com/repos/autodesk-bionano/genome-designer/issues', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    })
-      .then(resp => resp.json())
+    return reportError(title, description, url, user)
       .then(json => {
         console.log(json);
         this.setState({
@@ -82,6 +61,11 @@ ${user}`;
           submitted: false,
         });
       });
+  };
+
+  closeModal = () => {
+    this.setState(Object.assign({}, initialState));
+    this.props.uiReportError(false);
   };
 
   render() {
@@ -97,7 +81,7 @@ ${user}`;
         open={this.props.open}
         closeOnClickOutside
         title="Report an Issue"
-        closeModal={() => this.props.uiReportError(false)}
+        closeModal={this.closeModal}
         payload={(
           <div className="gd-form"
                 style={{ padding: '1rem 2em 3rem', width: '50vw', minWidth: '300px' }}>
