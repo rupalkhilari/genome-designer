@@ -132,6 +132,12 @@ export const blockGet = (blockId) => {
   };
 };
 
+export const blockGetParent = (blockId) => {
+  return (dispatch, getState) => {
+    return _getParentFromStore(blockId, getState());
+  };
+};
+
 //first parent is direct parent, last parent is construct
 //returns blocks, not ids
 export const blockGetParents = (blockId) => {
@@ -279,6 +285,26 @@ export const blockHasSequence = blockId => {
   return (dispatch, getState) => {
     const block = _getBlockFromStore(blockId, getState());
     return !!block && block.hasSequence();
+  };
+};
+
+export const blockIsListOption = (blockId, getParentId = true) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const block = _getBlockFromStore(blockId, state);
+
+    //basic checks
+    if (block.isConstruct() || block.isList()) {
+      return false;
+    }
+
+    const parent = _getParentFromStore(blockId, state);
+
+    if (!parent || !parent.isList()) {
+      return false;
+    }
+
+    return !!getParentId ? parent.id : true;
   };
 };
 
