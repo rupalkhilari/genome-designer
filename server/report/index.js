@@ -34,12 +34,24 @@ const jsonParser = bodyParser.json({
 
 router.use(errorHandlingMiddleware);
 
-//dont parse json, just relay it
-router.post('/githubIssue', (req, res, next) => {
-  const payload = req.body;
-  const githubUrl = `${githubIssuesApiUrl}?client_id=${process.env.GITHUB_CLIENT_ID}&client_secret=${process.env.GITHUB_CLIENT_SECRET}`;
+//dummy route, registered with Github
+router.route('/githubOAuth')
+  .all((req, res, next) => {
+    //todo
+  });
 
-  rejectingFetch(githubUrl, headersPost(payload))
+router.post('/githubIssue', jsonParser, (req, res, next) => {
+  const payload = JSON.stringify(req.body);
+  const githubUrl = `${githubIssuesApiUrl}?access_token=${process.env.GITHUB_ACCESS_TOKEN}`;
+
+  rejectingFetch(githubUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/vnd.github.v3.text+json',
+    },
+    body: payload,
+  })
     .catch(resp => {
       res.status(resp.status);
       return resp;

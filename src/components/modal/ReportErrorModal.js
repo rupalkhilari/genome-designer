@@ -24,7 +24,8 @@ const initialState = {
   description: '',
   submitted: false,
   createdUrl: null,
-}
+  hasError: false,
+};
 
 class SaveErrorModal extends Component {
   static propTypes = {
@@ -50,15 +51,16 @@ class SaveErrorModal extends Component {
 
     return reportError(title, description, url, user)
       .then(json => {
-        console.log(json);
         this.setState({
           createdUrl: json.html_url,
+          hasError: false,
         });
       })
-      .catch(err => {
-        console.error(err);
+      .catch(resp => {
+        resp.json().then(json => console.log(json));
         this.setState({
           submitted: false,
+          hasError: true,
         });
       });
   };
@@ -73,7 +75,7 @@ class SaveErrorModal extends Component {
       return null;
     }
 
-    const { createdUrl } = this.state;
+    const { createdUrl, submitted, hasError } = this.state;
     const formvalid = this.formValid();
 
     return (
@@ -100,13 +102,17 @@ class SaveErrorModal extends Component {
                       onChange={evt => this.setState({description: evt.target.value})} />
 
             {createdUrl && (<div style={{paddingTop: '1.5rem', textAlign: 'center'}}>
-              Thank you! Your issue has been logged at <a href={createdUrl} target="_blank">GitHub (account required)</a>
+              Thank you! Your issue has been logged at <a style={{textDecoration: 'underline'}} href={createdUrl} target="_blank">GitHub (account required)</a>
+            </div>)}
+
+            {hasError && (<div style={{paddingTop: '1.5rem', textAlign: 'center'}}>
+              Something went wrong. <a style={{textDecoration: 'underline'}} href={'https://forum.bionano.autodesk.com/c/genetic-constructor'} target="_blank">Post to our forums</a> instead?
             </div>)}
 
             <div style={{ width: '200px', paddingTop: '1.5rem', textAlign: 'center' }}>
               <button
                 type="submit"
-                disabled={!formvalid}
+                disabled={!formvalid || submitted}
                 onClick={() => this.submitForm()}>
                 Submit
               </button>
