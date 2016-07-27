@@ -108,13 +108,15 @@ async function start() {
           }, resolve);
 
           //todo - we want ton only recompile once per batch of changes - currently every single file change will trigger a build. Maybe just debounce?
-
-          //helpers for events listening
           const ignoreDotFilesAndNestedNodeModules = /([\/\\]\.)|(node_modules\/.*?\/node_modules)/gi;
           const checkSymlinkedNodeModule = /(.*?\/)?extensions\/.*?\/node_modules/;
           const checkIsInServerExtensions = /^server\//;
           const ignoreFilePathCheck = (path) => {
             if (ignoreDotFilesAndNestedNodeModules.test(path)) {
+              return true;
+            }
+            //ignore jetbrains temp filesystem
+            if (/__jb_/ig.test(path)) {
               return true;
             }
             //ignore node_modules for things in the root server/extensions/ folder
@@ -124,16 +126,16 @@ async function start() {
               return true;
             }
           };
+
           const eventsCareAbout = ['add', 'change', 'unlink', 'addDir', 'unlinkDir'];
           const handleChange = (evt, path, stat) => {
-            if (eventsCareAbout.indexOf(evt) < 0) {
-              return;
-            }
             if (ignoreFilePathCheck(path)) {
               return;
             }
-            console.log('webpack watch:', evt, path);
-            runServer();
+            if (eventsCareAbout.includes(evt)) {
+              console.log('webpack watch:', evt, path);
+              runServer();
+            }
           };
 
           //while we are not bundling the server, we can set up a watch to recompile on changes
