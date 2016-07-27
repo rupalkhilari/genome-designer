@@ -67,9 +67,10 @@ const parseSummary = (summary) => {
 
   return new Block({
     metadata: {
-      name: summary.caption,
-      description: summary.title,
-      organism: summary.organism,
+      name: summary.title,
+      description: `${summary.title}
+
+NCBI Accession: ${summary.accessionversion}`,
     },
     sequence: {
       length: summary.slen,
@@ -84,8 +85,8 @@ const parseSummary = (summary) => {
     notes: mapSummaryToNotes({
       Organism: 'organism',
       Molecule: 'moltype',
-      'Date Created': 'createdate',
-      'Last Updated': 'updatedate',
+      'Date Created (NCBI)': 'createdate',
+      'Last Updated (NCBI)': 'updatedate',
       extra: 'extra',
     }, summary),
   });
@@ -134,7 +135,12 @@ export const get = (accessionVersion, parameters = {}, summary) => {
     .then(blocks => blocks.map(block => wrapBlock(block, accessionVersion)))
     .then(blockModels => {
       const [constructUnmerged, ... rest] = blockModels;
+
+      //we assign the ID so it matches the summary, and focuses in the inventory properly
+      //note that this depends on the construct being cloned on drop
       const construct = constructUnmerged.merge({
+        id: summary.id,
+        metadata: summary.metadata,
         notes: summary.notes,
       });
 
