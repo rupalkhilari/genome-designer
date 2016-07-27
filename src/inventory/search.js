@@ -18,6 +18,34 @@ import { registry, getSources } from './registry';
 
 /**
  * Searching across inventories loaded in Constructor.
+ *
+ * Sources must conform to a prescribed structure to work with Constructor. They must support the following functions:
+ *
+ * ### `search(query, options)`
+ *
+ * Search the source for a given query.
+ *
+ * sources must support the following `options`
+ *
+ * `start` - index of search results at which to start
+ * `entries` - number of entries to fetch
+ *
+ * Results returned from each source are an array of Block models. These models can and likely should be minimal, as they are only shown in the inventory. `get()` will be called before showing in the inspector or adding to the project.
+ *
+ * ### `get(id, options, searchResult)`
+ *
+ * Given an ID, get complete Block from the source. Passed the searchResult e.g. to map over the ID (note that Blocks should be cloned when added to the project e.g. by drag and drop).
+ *
+ * Returns an array of Block models, where the first block is the construct, and subsequent blocks are its contents.
+ *
+ * Should support the following `options`:
+ *
+ * `onlyConstruct` - only return one block, the construct (e.g. to show in the inspector, without adding to project)
+ *
+ * ### `sourceUrl(blockSource)`
+ *
+ * Given a block's source (`block.source`), generate a URL for where more information about the block can be found
+ *
  * @module search
  */
 

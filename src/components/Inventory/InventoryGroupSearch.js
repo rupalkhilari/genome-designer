@@ -83,7 +83,6 @@ export class InventoryGroupSearch extends Component {
             const [ construct, ...blocks ] = result;
 
             //need to specially handle blocks which are constructs here, add them to the store (not important for showing in the inspector)
-            //todo - does this accomodate onion properly
             //todo - performance -- this will effectively add everything twice, since will be cloned. Should not clone deep (there is an option for this in blockClone, need to pass to onDrop of construct viewer, somehow diffrentiate from dragging a construct from a project
             if (shouldAddToStore) {
               this.props.blockStash(construct, ...blocks);

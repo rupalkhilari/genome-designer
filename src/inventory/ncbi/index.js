@@ -119,7 +119,7 @@ export const getSummary = (...ids) => {
 
 // http://www.ncbi.nlm.nih.gov/books/NBK25499/#chapter4.EFetch
 //note that these may be very very large, use getSummary unless you need the whole thing
-export const get = (accessionVersion, parameters = {}, summary) => {
+export const get = (accessionVersion, parameters = {}, searchResult) => {
   const parametersMapped = Object.assign({
     format: 'gb',
     onlyConstruct: false,
@@ -139,13 +139,13 @@ export const get = (accessionVersion, parameters = {}, summary) => {
       //we assign the ID so it matches the summary, and focuses in the inventory properly
       //note that this depends on the construct being cloned on drop
       const construct = constructUnmerged.merge({
-        id: summary.id,
-        metadata: summary.metadata,
-        notes: summary.notes,
+        id: searchResult.id,
+        metadata: searchResult.metadata,
+        notes: searchResult.notes,
       });
 
       return parametersMapped.onlyConstruct ?
-        [construct.merge({ sequence: summary.sequence })] : //if just returning the construct (e.g. for inventory), patch it with the sequence information
+        [construct.merge({ sequence: searchResult.sequence })] : //if just returning the construct (e.g. for inventory), patch it with the sequence information
         [construct, ...rest];
     })
     .catch(err => {
