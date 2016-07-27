@@ -102,7 +102,7 @@ export default class Block extends Instance {
       overwrites;
 
     if (parentInfo === null) {
-      return super.clone(false, mergeWith);
+      return super.clone(parentInfo, mergeWith);
     }
 
     const parentObject = Object.assign({
