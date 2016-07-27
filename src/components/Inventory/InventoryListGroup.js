@@ -1,18 +1,18 @@
 /*
-Copyright 2016 Autodesk,Inc.
+ Copyright 2016 Autodesk,Inc.
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
 import React, { Component, PropTypes } from 'react';
 import invariant from 'invariant';
 import Spinner from '../ui/Spinner';
@@ -36,6 +36,11 @@ export default class InventoryListGroup extends Component {
     canToggle: PropTypes.bool,
     toggleOnSelect: PropTypes.bool, //run toggling on selection
     dataAttribute: PropTypes.string,
+    actionButton: PropTypes.shape({
+      text: PropTypes.string,
+      visible: PropTypes.bool.isRequired,
+      onClick: PropTypes.func.isRequired,
+    }),
   };
 
   static defaultProps = {
@@ -93,7 +98,7 @@ export default class InventoryListGroup extends Component {
   };
 
   render() {
-    const { isSelectable, hideToggle, title, manual, isLoading, isExpanded, isActive, children, disabled, canToggle, dataAttribute } = this.props;
+    const { isSelectable, hideToggle, title, manual, isLoading, isExpanded, isActive, children, disabled, canToggle, dataAttribute, actionButton } = this.props;
     const expanded = manual ? isExpanded : this.state.expanded;
 
     return (
@@ -112,6 +117,15 @@ export default class InventoryListGroup extends Component {
           <a className="InventoryListGroup-title">
             <span>{title}</span>
           </a>
+          {(actionButton && actionButton.visible) && (
+            <a className="InventoryListGroup-action"
+               onClick={(evt) => {
+                 evt.stopPropagation();
+                 actionButton.onClick(evt);
+               }}>
+              <span className="InventoryListGroup-action-text">{actionButton.text}</span>
+            </a>
+          )}
         </div>
         {(isLoading && !expanded) && <Spinner />}
         {expanded && <div className="InventoryListGroup-contents no-vertical-scroll">

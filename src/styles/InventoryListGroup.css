@@ -8,13 +8,27 @@
 
   &-heading {
     flex-shrink: 0;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: no-wrap;
+    justify-content: space-between;
+    user-select: none;
     padding: 2px 5px;
     border-radius: 3px;
+    position: relative;
   }
 
   &-title {
     cursor: pointer;
-    user-select: none;
+  }
+
+  &-action {
+    flex-grow: 1;
+    text-align: right;
+
+    &-text {
+      cursor: pointer;
+    }
   }
 
   &-contents {

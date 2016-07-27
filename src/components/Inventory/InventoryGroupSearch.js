@@ -73,13 +73,11 @@ export class InventoryGroupSearch extends Component {
                           onSourceToggle={(source) => this.onSourceToggle(source)}/>
 
         {!sourcesToggling && (
-          <InventorySearchResults onClickMore
-                                  searchTerm={searchTerm}
+          <InventorySearchResults searchTerm={searchTerm}
                                   sourcesToggling={sourcesToggling}
                                   sourcesVisible={sourcesVisible}
                                   searching={searching}
                                   searchResults={searchResults}
-                                  sourceList={sourceList}
                                   blockStash={this.props.blockStash}
                                   inventoryToggleSourceVisible={this.props.inventoryToggleSourceVisible}/>
         )}

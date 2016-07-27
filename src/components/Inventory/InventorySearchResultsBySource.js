@@ -14,10 +14,7 @@
  limitations under the License.
  */
 import React, { Component, PropTypes } from 'react';
-
 import { block as blockDragType } from '../../constants/DragTypes';
-import { chain } from 'lodash';
-
 import { registry } from '../../inventory/registry';
 
 import InventoryList from './InventoryList';
@@ -25,6 +22,7 @@ import InventoryListGroup from './InventoryListGroup';
 
 export default class InventorySearchResultsBySource extends Component {
   static propTypes = {
+    actionButton: PropTypes.object.isRequired, //see InventoryListGroup component
     searchResults: PropTypes.object.isRequired,
     sourcesVisible: PropTypes.object.isRequired,
     onListGroupToggle: PropTypes.func.isRequired,
@@ -33,7 +31,7 @@ export default class InventorySearchResultsBySource extends Component {
   };
 
   render() {
-    const { searchResults, sourcesVisible, onListGroupToggle, onItemSelect, onItemDrop } = this.props;
+    const { actionButton, searchResults, sourcesVisible, onListGroupToggle, onItemSelect, onItemDrop } = this.props;
 
     return (
       <div className="InventorySearchResultGroup">
@@ -44,6 +42,7 @@ export default class InventorySearchResultsBySource extends Component {
           return (
             <InventoryListGroup title={`${name} (${listingItems.length})`}
                                 disabled={!listingItems.length}
+                                actionButton={actionButton}
                                 manual
                                 isExpanded={sourcesVisible[key]}
                                 onToggle={() => onListGroupToggle(key)}

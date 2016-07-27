@@ -14,16 +14,10 @@
  limitations under the License.
  */
 import React, { Component, PropTypes } from 'react';
-
-import { block as blockDragType } from '../../constants/DragTypes';
-import { chain } from 'lodash';
-
 import { registry } from '../../inventory/registry';
 
 import Spinner from '../../components/ui/Spinner';
 import InventoryTabs from './InventoryTabs';
-import InventoryList from './InventoryList';
-import InventoryListGroup from './InventoryListGroup';
 import InventorySearchResultsBySource from './InventorySearchResultsBySource';
 import InventorySearchResultsByKind from './InventorySearchResultsByKind';
 
@@ -37,7 +31,6 @@ export default class InventorySearchResults extends Component {
     searchTerm: PropTypes.string.isRequired,
     sourcesToggling: PropTypes.bool.isRequired,
     searching: PropTypes.bool.isRequired,
-    sourceList: PropTypes.array.isRequired,
     searchResults: PropTypes.object.isRequired,
     sourcesVisible: PropTypes.object.isRequired,
     inventoryToggleSourceVisible: PropTypes.func.isRequired,
@@ -93,7 +86,7 @@ export default class InventorySearchResults extends Component {
   };
 
   render() {
-    const { searchTerm, sourcesToggling, searching, sourceList, searchResults, sourcesVisible } = this.props;
+    const { searchTerm, sourcesToggling, searching, searchResults, sourcesVisible } = this.props;
     const { groupBy } = this.state;
 
     if (!searchTerm) {
@@ -106,13 +99,20 @@ export default class InventorySearchResults extends Component {
       return (<Spinner />);
     }
 
+    //todo - action button. need to know whether there are more results. need to support pagination here.
+
     const groupsContent = noSearchResults
       ?
       (<div className="InventoryGroup-placeholderContent">No Results Found</div>)
       :
       (groupBy === 'source')
         ?
-        <InventorySearchResultsBySource searchResults={searchResults}
+        <InventorySearchResultsBySource actionButton={{
+                                          text: 'Load More',
+                                          visible: true,
+                                          onClick: () => {},
+                                        }}
+                                        searchResults={searchResults}
                                         sourcesVisible={sourcesVisible}
                                         onListGroupToggle={(key) => this.handleListGroupToggle(key)}
                                         onItemDrop={(key, item) => this.handleItemOnDrop(key, item)}
