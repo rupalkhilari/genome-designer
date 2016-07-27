@@ -17,13 +17,14 @@ import * as ActionTypes from '../constants/ActionTypes';
 import { registry, getSources } from '../inventory/registry';
 import { getItem, setItem } from '../middleware/localStorageCache';
 
+const createEmptySearchResults = (sourceList) => sourceList.reduce((acc, source) => Object.assign(acc, { [source]: [] }), {});
+const createSourcesVisible = (valueFunction = () => false, sourceList = getSources('search')) => {
+  return sourceList.reduce((acc, source) => Object.assign(acc, { [source]: valueFunction(source) }), {});
+};
+
 const searchSources = getSources('search');
 const initialSearchSources = getItem('searchSources') ? getItem('searchSources').split(',') : searchSources;
-const defaultSearchResults = searchSources.reduce((acc, source) => Object.assign(acc, { [source]: [] }), {});
-
-const createSourcesVisible = (valueFunction = () => false) => {
-  return getSources('search').reduce((acc, source) => Object.assign(acc, { [source]: valueFunction(source) }), {});
-};
+const defaultSearchResults = createEmptySearchResults(searchSources);
 
 export const initialState = {
   sourcesToggling: false,
@@ -41,10 +42,10 @@ export const initialState = {
 export default function inventory(state = initialState, action) {
   switch (action.type) {
   case ActionTypes.INVENTORY_SEARCH : {
-    const { searchTerm } = action;
+    const { searchTerm, sourceList } = action;
     return Object.assign({}, state, {
       searchTerm,
-      searchResults: defaultSearchResults,
+      searchResults: createEmptySearchResults(sourceList),
       searching: searchTerm.length > 0,
     });
   }
@@ -65,7 +66,6 @@ export default function inventory(state = initialState, action) {
       return Object.assign({}, state, {
         searching: false,
         searchResults,
-        //we can assign just based on filter, because search already limited by which sources the user has allowed
         sourcesVisible: createSourcesVisible((source) => searchResults[source] && searchResults[source].length > 0),
         lastSearch: {
           searchTerm,

@@ -24,6 +24,8 @@ import Spinner from '../../components/ui/Spinner';
 import InventoryTabs from './InventoryTabs';
 import InventoryList from './InventoryList';
 import InventoryListGroup from './InventoryListGroup';
+import InventorySearchResultsBySource from './InventorySearchResultsBySource';
+import InventorySearchResultsByKind from './InventorySearchResultsByKind';
 
 const inventoryTabs = [
   { key: 'source', name: 'By Source' },
@@ -44,10 +46,6 @@ export default class InventorySearchResults extends Component {
 
   state = {
     groupBy: 'source',
-  };
-
-  onListGroupToggle = (source) => {
-    this.props.inventoryToggleSourceVisible(source);
   };
 
   getFullItem = (registryKey, item, onlyConstruct = false, shouldAddToStore = true) => {
@@ -82,16 +80,20 @@ export default class InventorySearchResults extends Component {
     this.setState({ groupBy: key });
   };
 
-  handleListOnSelect = (registryKey, item) => {
+  handleListGroupToggle = (source) => {
+    this.props.inventoryToggleSourceVisible(source);
+  };
+
+  handleItemOnSelect = (registryKey, item) => {
     return this.getFullItem(registryKey, item, true, false);
   };
 
-  handleListOnDrop = (registryKey, item, target, position) => {
+  handleItemOnDrop = (registryKey, item, target, position) => {
     return this.getFullItem(registryKey, item, false, true);
   };
 
   render() {
-    const { searchTerm, sourcesToggling, searching, sourceList, searchResults, sourcesVisible, inventoryShowSourcesToggling } = this.props;
+    const { searchTerm, sourcesToggling, searching, sourceList, searchResults, sourcesVisible } = this.props;
     const { groupBy } = this.state;
 
     if (!searchTerm) {
@@ -104,68 +106,31 @@ export default class InventorySearchResults extends Component {
       return (<Spinner />);
     }
 
-    //todo - this could be its own component
-    let groupsContent;
-
-    if (searchTerm && noSearchResults) {
-      groupsContent = (<div className="InventoryGroup-placeholderContent">No Results Found</div>);
-    } else {
-      groupsContent = (groupBy === 'source')
+    const groupsContent = noSearchResults
+      ?
+      (<div className="InventoryGroup-placeholderContent">No Results Found</div>)
+      :
+      (groupBy === 'source')
         ?
-        sourceList.map(key => {
-          if (!searchResults[key]) {
-            return null;
-          }
-
-          const name = registry[key].name;
-          const listingItems = searchResults[key];
-
-          return (
-            <InventoryListGroup title={`${name} (${listingItems.length})`}
-                                disabled={!listingItems.length}
-                                manual
-                                isExpanded={sourcesVisible[key]}
-                                onToggle={() => this.onListGroupToggle(key)}
-                                key={key}
-                                dataAttribute={`searchgroup ${name}`}>
-              <InventoryList inventoryType={blockDragType}
-                             onDrop={(item) => this.handleListOnDrop(key, item)}
-                             onSelect={(item) => this.handleListOnSelect(key, item)}
-                             items={listingItems}
-                             dataAttributePrefix={`searchresult ${name}`}/>
-            </InventoryListGroup>
-          );
-        })
+        <InventorySearchResultsBySource searchResults={searchResults}
+                                        sourcesVisible={sourcesVisible}
+                                        onListGroupToggle={(key) => this.handleListGroupToggle(key)}
+                                        onItemDrop={(key, item) => this.handleItemOnDrop(key, item)}
+                                        onItemSelect={(key, item) => this.handleItemOnSelect(key, item)}
+        />
         :
-        chain(searchResults)
-          .map((sourceResults, sourceKey) => sourceResults.map(block => block.merge({ source: sourceKey })))
-          .values()
-          .flatten()
-          .groupBy('rules.role')
-          .map((items, group) => {
-            const listingItems = items;
-            return (
-              <InventoryListGroup title={`${group} (${listingItems.length})`}
-                                  disabled={!listingItems.length}
-                                  manual
-                                  isExpanded={sourcesVisible[group]}
-                                  onToggle={() => this.onListGroupToggle(group)}
-                                  key={group}
-                                  dataAttribute={`searchgroup-role ${group}`}>
-                <InventoryList inventoryType={blockDragType}
-                               onDrop={(item) => this.handleListOnDrop(item.source, item)}
-                               onSelect={(item) => this.handleListOnSelect(item.source, item)}
-                               items={listingItems}
-                               dataAttributePrefix={`searchresult ${group}`}/>
-              </InventoryListGroup>
-            );
-          })
-          .value();
-    }
+        <InventorySearchResultsByKind searchResults={searchResults}
+                                      sourcesVisible={sourcesVisible}
+                                      onListGroupToggle={(key) => this.handleListGroupToggle(key)}
+                                      onItemDrop={(key, item) => this.handleItemOnDrop(key, item)}
+                                      onItemSelect={(key, item) => this.handleItemOnSelect(key, item)}
+        />;
+
+    const showTabs = !(!searchTerm || sourcesToggling || (searching && noSearchResults) || noSearchResults);
 
     return (
       <div className="InventoryGroup-contentNester InventorySearchResults">
-        {!(!searchTerm || sourcesToggling || (searching && noSearchResults) || noSearchResults) && (
+        {showTabs && (
           <InventoryTabs tabs={inventoryTabs}
                          activeTabKey={groupBy}
                          onTabSelect={(tab) => this.handleTabSelect(tab.key)}/>
