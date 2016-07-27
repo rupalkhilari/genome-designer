@@ -27,13 +27,13 @@ console.log('path for bio-user-platform is ' + pathBioNanoPlatform + '. Set by p
 /** command utils **/
 
 //simple wrap around console.log
-const log = (output, forceOutput) => {
+const log = (output, forceOutput = false) => {
   if (DEBUG || forceOutput === true) {
     console.log(output);
   }
 };
 
-const promisedExec = (cmd, opts) => {
+const promisedExec = (cmd, opts, forceOutput) => {
   console.log('running ' + cmd);
 
   return new Promise((resolve, reject) => {
@@ -42,15 +42,17 @@ const promisedExec = (cmd, opts) => {
         console.error(err);
         return reject(err);
       }
-      //convert from buffers
-      log(`${stdout}
-${stderr}`);
+
+      //`` to convert from buffers
+      log(`${stdout}`, forceOutput);
+      log(`${stderr}`, forceOutput);
+
       return resolve(`${stdout}`, `${stderr}`);
     });
   });
 };
 
-const spawnWaitUntilString = (cmd, args, opts, waitUntil, forceOutput = false) => {
+const spawnWaitUntilString = (cmd, args, opts, waitUntil, forceOutput) => {
   console.log('running: ' + cmd + ' ' + args.join(' '));
 
   return new Promise((resolve, reject) => {
@@ -58,14 +60,14 @@ const spawnWaitUntilString = (cmd, args, opts, waitUntil, forceOutput = false) =
     const process = spawn(cmd, args, opts);
 
     process.stdout.on('data', data => {
-      log(`${data}`);
+      log(`${data}`, forceOutput);
       if (`${data}`.indexOf(waitUntil) >= 0) {
         resolve(process);
       }
     });
 
     process.stderr.on('data', data => {
-      log(`${data}`);
+      log(`${data}`, forceOutput);
       if (`${data}`.indexOf(waitUntil) >= 0) {
         resolve(process);
       }
@@ -77,7 +79,7 @@ const spawnWaitUntilString = (cmd, args, opts, waitUntil, forceOutput = false) =
     });
 
     process.on('close', (code) => {
-      log(`child process exited with code ${code}`);
+      log(`child process exited with code ${code}`, forceOutput);
     });
   });
 };
