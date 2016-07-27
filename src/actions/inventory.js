@@ -19,7 +19,7 @@
  */
 import * as ActionTypes from '../constants/ActionTypes';
 import { getSources } from '../inventory/registry';
-import * as searchApi from '../middleware/search';
+import * as searchApi from '../inventory/search';
 
 //note - expects this to be static
 const searchSources = getSources('search');
@@ -92,7 +92,7 @@ export const inventorySearch = (inputTerm = '', options = null, skipDebounce = f
         if (!waitForAll) {
           const results = {};
           const promises = sourceList.map(source => {
-            return searchApi.search(searchTerm, options, [source])
+            return searchApi.search(searchTerm, options, source)
               .then(resultObject => {
                 //update the result object
                 dispatch({
@@ -118,7 +118,7 @@ export const inventorySearch = (inputTerm = '', options = null, skipDebounce = f
         }
 
         //otherwise, just execute and wait for all to resolve
-        return searchApi.search(searchTerm, options, sourceList);
+        return searchApi.searchMultiple(searchTerm, options, sourceList);
       })
       .then(searchResults => {
         dispatch({
