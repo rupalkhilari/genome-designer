@@ -62,17 +62,18 @@ export const inventorySetSearchTerm = (searchTerm) => {
  * @param {string} inputTerm Term to search for
  * @param {Object} [options=null]
  * @param {boolean} [skipDebounce=false]
- * @param {boolean|Function} [runPartially=false] If provided, will dispatch every time a source resolves. If provide a function, the callback will be called with temporary results each time one source resolves with arguments (searchResults, source)
+ * @param {boolean} [waitForAll=false] If true, wait for all searches to resolve before dispatching. If false, will dispatch every time a source resolves.
  * @returns {Promise}
  * @resolve {Object} Search results, keyed by search Source
  * @reject {null}
  */
-export const inventorySearch = (inputTerm = '', options = null, skipDebounce = false, runPartially = false) => {
+export const inventorySearch = (inputTerm = '', options = null, skipDebounce = false, waitForAll = false) => {
   return (dispatch, getState) => {
     const state = getState();
     const { sourceList } = state.inventory;
     const searchTerm = (typeof inputTerm !== 'undefined') ? inputTerm : state.inventory.searchTerm;
-    const callback = (runPartially === true && typeof runPartially === 'function') ? runPartially : () => {};
+    //note -- not documented
+    const callback = (typeof waitForAll === 'function') ? waitForAll : () => {};
 
     dispatch({
       type: ActionTypes.INVENTORY_SEARCH,
@@ -88,15 +89,12 @@ export const inventorySearch = (inputTerm = '', options = null, skipDebounce = f
     return debouncer(500, skipDebounce)
       .then(() => {
         //if passed a callback, use callback for updates as each source resolves
-        if (runPartially === true) {
+        if (!waitForAll) {
           const results = {};
           const promises = sourceList.map(source => {
             return searchApi.search(searchTerm, options, [source])
               .then(resultObject => {
                 //update the result object
-
-                console.log('partial results for ' + source, resultObject);
-
                 dispatch({
                   type: ActionTypes.INVENTORY_SEARCH_RESOLVE_PARTIAL,
                   searchTerm,
@@ -123,8 +121,6 @@ export const inventorySearch = (inputTerm = '', options = null, skipDebounce = f
         return searchApi.search(searchTerm, options, sourceList);
       })
       .then(searchResults => {
-        console.log(searchResults);
-
         dispatch({
           type: ActionTypes.INVENTORY_SEARCH_RESOLVE,
           searchResults,
@@ -146,9 +142,10 @@ export const inventorySearch = (inputTerm = '', options = null, skipDebounce = f
 /**
  * Toggle whether the sources view is open
  * @param {boolean} [forceState] Ignore to toggle
+ * @param {boolean} [waitForAll=false] See inventorySearch
  * @returns {boolean} Whether showing now
  */
-export const inventoryShowSourcesToggling = (forceState) => {
+export const inventoryShowSourcesToggling = (forceState, waitForAll) => {
   return (dispatch, getState) => {
     const state = getState();
     const { sourcesToggling, sourceList, lastSearch, searchTerm } = state.inventory;
@@ -162,7 +159,7 @@ export const inventoryShowSourcesToggling = (forceState) => {
     //if not toggling any more, check if need to run a new search
     if (!nextState) {
       if (sourceList.some(source => lastSearch.sourceList.indexOf(source) < 0)) {
-        dispatch(inventorySearch(searchTerm, null, true));
+        dispatch(inventorySearch(searchTerm, null, true, waitForAll));
       }
     }
 

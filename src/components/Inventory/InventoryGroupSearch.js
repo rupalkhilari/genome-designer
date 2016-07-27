@@ -112,11 +112,7 @@ export class InventoryGroupSearch extends Component {
 
   handleSearchChange = (searchTerm) => {
     const { inventorySearch } = this.props;
-    // todo - validate callback
-    const partialCallback = (results, source) => {
-      //this.forceUpdate()
-    };
-    inventorySearch(searchTerm, null, false, true);
+    inventorySearch(searchTerm);
   };
 
   render() {
