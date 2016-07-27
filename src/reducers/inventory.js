@@ -45,15 +45,13 @@ export default function inventory(state = initialState, action) {
     return Object.assign({}, state, {
       searchTerm,
       searchResults: defaultSearchResults,
-      searching: searchTerm.length,
+      searching: searchTerm.length > 0,
     });
   }
   case ActionTypes.INVENTORY_SEARCH_RESOLVE_PARTIAL : {
     const { patch, searchTerm, source } = action;
     if (searchTerm === state.searchTerm) {
       const searchResults = Object.assign({}, state.searchResults, patch);
-      console.log('patching', searchResults);
-
       return Object.assign({}, state, {
         searchResults,
       });
