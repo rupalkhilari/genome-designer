@@ -110,8 +110,17 @@ export class InventoryGroupSearch extends Component {
     return this.getFullItem(registryKey, item, false, true);
   };
 
+  handleSearchChange = (searchTerm) => {
+    const { inventorySearch } = this.props;
+    // todo - validate callback
+    const partialCallback = (results, source) => {
+      //this.forceUpdate()
+    };
+    inventorySearch(searchTerm, null, false, true);
+  };
+
   render() {
-    const { searchTerm, sourcesToggling, searching, sourceList, searchResults, sourcesVisible, inventoryShowSourcesToggling, inventorySearch } = this.props;
+    const { searchTerm, sourcesToggling, searching, sourceList, searchResults, sourcesVisible, inventoryShowSourcesToggling } = this.props;
     const { groupBy } = this.state;
 
     //doesnt account for filtering...
@@ -123,7 +132,7 @@ export class InventoryGroupSearch extends Component {
 
     let groupsContent;
 
-    if (searching) {
+    if (searching && noSearchResults) {
       groupsContent = (<Spinner />);
     } else if (!searchTerm) {
       groupsContent = null;
@@ -188,14 +197,14 @@ export class InventoryGroupSearch extends Component {
         <InventorySearch searchTerm={searchTerm}
                          isSearching={searching}
                          disabled={sourcesToggling}
-                         onSearchChange={(value) => inventorySearch(value)}/>
+                         onSearchChange={(value) => this.handleSearchChange(value)}/>
         <InventorySources registry={registry}
                           sourceList={sourceList}
                           toggling={sourcesToggling}
                           onToggleVisible={(nextState) => inventoryShowSourcesToggling(nextState)}
                           onSourceToggle={(source) => this.onSourceToggle(source)}/>
 
-        {(!searching && !noSearchResults && !sourcesToggling) && (
+        {!(!searchTerm || sourcesToggling || (searching && noSearchResults) || noSearchResults) && (
           <InventoryTabs tabs={inventoryTabs}
                          activeTabKey={groupBy}
                          onTabSelect={(tab) => this.handleTabSelect(tab.key)}/>

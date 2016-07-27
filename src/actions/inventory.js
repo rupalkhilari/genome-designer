@@ -62,15 +62,17 @@ export const inventorySetSearchTerm = (searchTerm) => {
  * @param {string} inputTerm Term to search for
  * @param {Object} [options=null]
  * @param {boolean} [skipDebounce=false]
+ * @param {boolean|Function} [runPartially=false] If provided, will dispatch every time a source resolves. If provide a function, the callback will be called with temporary results each time one source resolves with arguments (searchResults, source)
  * @returns {Promise}
- * @resolve {Array} Search results
+ * @resolve {Object} Search results, keyed by search Source
  * @reject {null}
  */
-export const inventorySearch = (inputTerm = '', options = null, skipDebounce = false) => {
+export const inventorySearch = (inputTerm = '', options = null, skipDebounce = false, runPartially = false) => {
   return (dispatch, getState) => {
     const state = getState();
     const { sourceList } = state.inventory;
     const searchTerm = (typeof inputTerm !== 'undefined') ? inputTerm : state.inventory.searchTerm;
+    const callback = (runPartially === true && typeof runPartially === 'function') ? runPartially : () => {};
 
     dispatch({
       type: ActionTypes.INVENTORY_SEARCH,
@@ -84,8 +86,45 @@ export const inventorySearch = (inputTerm = '', options = null, skipDebounce = f
 
     //debounce initiation of searches
     return debouncer(500, skipDebounce)
-      .then(() => searchApi.search(searchTerm, options, sourceList))
+      .then(() => {
+        //if passed a callback, use callback for updates as each source resolves
+        if (runPartially === true) {
+          const results = {};
+          const promises = sourceList.map(source => {
+            return searchApi.search(searchTerm, options, [source])
+              .then(resultObject => {
+                //update the result object
+
+                console.log('partial results for ' + source, resultObject);
+
+                dispatch({
+                  type: ActionTypes.INVENTORY_SEARCH_RESOLVE_PARTIAL,
+                  searchTerm,
+                  patch: resultObject,
+                  source,
+                });
+
+                //call the callback
+                callback(getState().inventory.searchResults, source);
+
+                return resultObject;
+              });
+          });
+
+          //call callback at start
+          callback(results, null);
+
+          //return promise all to continue normal flow
+          return Promise.all(promises)
+            .then(resultsArray => Object.assign({}, ...resultsArray));
+        }
+
+        //otherwise, just execute and wait for all to resolve
+        return searchApi.search(searchTerm, options, sourceList);
+      })
       .then(searchResults => {
+        console.log(searchResults);
+
         dispatch({
           type: ActionTypes.INVENTORY_SEARCH_RESOLVE,
           searchResults,
