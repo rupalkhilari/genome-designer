@@ -46,5 +46,5 @@ export const search = (term, options = {}) => {
 export const get = (id, parameters = {}, searchResult) => {
   return fetch(`${url}/${collection}/parts/${id}`)
     .then(resp => resp.json())
-    .then(result => parseFullResult(result));
+    .then(result => parseFullResult(result, searchResult));
 };

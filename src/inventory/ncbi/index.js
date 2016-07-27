@@ -16,8 +16,7 @@
 import rejectingFetch from '../../middleware/rejectingFetch';
 import queryString from 'query-string';
 import Block from '../../models/Block';
-import merge from 'lodash.merge';
-import debounce from 'lodash.debounce';
+import { merge, debounce } from 'lodash';
 import { convertGenbank } from '../../middleware/genbank';
 
 // NCBI limits number of requests per user/ IP, so better to initate from the client and I support process on client...
@@ -25,7 +24,7 @@ export const name = 'NCBI';
 
 const makeFastaUrl = (id) => `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id=${id}&rettype=fasta&retmode=text`;
 
-//todo - handle RNA
+//todo - handle RNA? reject it? what do we want to do?
 
 //convert genbank file to bunch of blocks
 //assume there is always one root construct
@@ -92,7 +91,7 @@ NCBI Accession: ${summary.accessionversion}`,
   });
 };
 
-export const getSummary = (...ids) => {
+const getSummary = (...ids) => {
   if (!ids.length) {
     return Promise.resolve([]);
   }
