@@ -24,7 +24,7 @@ export default function InventoryListGroupAction({ visible, disabled, onClick, t
       (disabled ? ' disabled' : '')}
          onClick={(evt) => {
            evt.stopPropagation();
-           if (!disabled) {
+           if (visible && !disabled) {
              onClick(evt);
            }
          }}>

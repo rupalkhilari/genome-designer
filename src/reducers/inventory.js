@@ -126,8 +126,9 @@ export default function inventory(state = initialState, action) {
     const results = patch[source];
     const oldResults = state.searchResults[source];
     //if there are no results, still construct the final value the same way
-    const nextResults = Object.assign([...oldResults, ...results], {
+    const nextResults = Object.assign([...results, ...oldResults], {
       parameters: results.parameters,
+      count: results.count,
       loading: false,
     });
 

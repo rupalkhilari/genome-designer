@@ -153,7 +153,7 @@ export const inventorySearchPaginate = (source) => {
 
     const moreResults = Number.isInteger(results.count) ?
     results.length < results.count :
-    results.length % lastParameters.entries === 0; //todo - this doesn't account for when number entries % length does in fact = 0
+    results.length % lastParameters.entries === 0;
 
     if (!moreResults) {
       return false;

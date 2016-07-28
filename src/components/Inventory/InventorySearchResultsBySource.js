@@ -47,7 +47,7 @@ export default class InventorySearchResultsBySource extends Component {
           //todo - this will not handle case where number results % number entries == 0
           const moreResults = Number.isInteger(results.count) ?
             results.length < results.count :
-            results.length === results.parameters.entries;
+            results.length % results.parameters.entries === 0;
           const actionVisible = results.length > 0 && moreResults && sourcesVisible[key];
 
           return (
