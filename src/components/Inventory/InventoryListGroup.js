@@ -37,11 +37,7 @@ export default class InventoryListGroup extends Component {
     canToggle: PropTypes.bool,
     toggleOnSelect: PropTypes.bool, //run toggling on selection
     dataAttribute: PropTypes.string,
-    actionButton: PropTypes.shape({
-      text: PropTypes.string,
-      visible: PropTypes.bool.isRequired,
-      onClick: PropTypes.func.isRequired,
-    }),
+    actionButton: PropTypes.object,
   };
 
   static defaultProps = {

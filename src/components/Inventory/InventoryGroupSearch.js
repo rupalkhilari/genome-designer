@@ -17,6 +17,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import {
   inventorySearch,
+  inventorySearchPaginate,
   inventoryShowSourcesToggling,
   inventorySetSources,
   inventoryToggleSource,
@@ -39,6 +40,7 @@ export class InventoryGroupSearch extends Component {
     sourcesVisible: PropTypes.object.isRequired,
     searchResults: PropTypes.object.isRequired,
     inventorySearch: PropTypes.func.isRequired,
+    inventorySearchPaginate: PropTypes.func.isRequired,
     inventoryShowSourcesToggling: PropTypes.func.isRequired,
     inventorySetSources: PropTypes.func.isRequired,
     inventoryToggleSource: PropTypes.func.isRequired,
@@ -54,6 +56,10 @@ export class InventoryGroupSearch extends Component {
   handleSearchChange = (searchTerm) => {
     const { inventorySearch } = this.props;
     inventorySearch(searchTerm);
+  };
+
+  handleLoadMore = (source) => {
+    this.props.inventorySearchPaginate(source);
   };
 
   render() {
@@ -79,6 +85,7 @@ export class InventoryGroupSearch extends Component {
                                   searching={searching}
                                   searchResults={searchResults}
                                   blockStash={this.props.blockStash}
+                                  loadMore={(source) => this.handleLoadMore(source)}
                                   inventoryToggleSourceVisible={this.props.inventoryToggleSourceVisible}/>
         )}
       </div>
@@ -92,6 +99,7 @@ function mapStateToProps(state, props) {
 
 export default connect(mapStateToProps, {
   inventorySearch,
+  inventorySearchPaginate,
   inventoryShowSourcesToggling,
   inventorySetSources,
   inventoryToggleSource,

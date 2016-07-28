@@ -27,15 +27,12 @@ export default class InventorySearchResultsBySource extends Component {
     onListGroupToggle: PropTypes.func.isRequired,
     onItemSelect: PropTypes.func.isRequired,
     onItemDrop: PropTypes.func.isRequired,
+    onListGroupAction: PropTypes.func.isRequired,
   };
 
   handleListGroupAction(evt, key) {
     evt.preventDefault();
-    console.warn('todo');
-
-    //this.props.searchResults[key].loading = true;
-    //this.forceUpdate();
-    //setTimeout(() => {this.props.searchResults[key].loading = false; this.forceUpdate() }, 2000);
+    this.props.onListGroupAction(key);
   }
 
   render() {
@@ -45,15 +42,21 @@ export default class InventorySearchResultsBySource extends Component {
       <div className="InventorySearchResultGroup">
         {Object.keys(searchResults).map((key) => {
           const name = registry[key].name;
-          const listingItems = searchResults[key];
+          const results = searchResults[key];
+
+          //todo - this will not handle case where number results % number entries == 0
+          const moreResults = Number.isInteger(results.count) ?
+            results.length < results.count :
+            results.length === results.parameters.entries;
+          const actionVisible = results.length > 0 && moreResults && sourcesVisible[key];
 
           return (
-            <InventoryListGroup title={`${name} (${listingItems.length})`}
-                                disabled={!listingItems.length}
+            <InventoryListGroup title={`${name} (${results.length})`}
+                                disabled={!results.length}
                                 actionButton={{
                                   text: 'Load More',
-                                  disabled: searchResults[key].loading,
-                                  visible: true,
+                                  disabled: !!searchResults[key].loading,
+                                  visible: actionVisible,
                                   onClick: (evt) => { this.handleListGroupAction(evt, key);},
                                 }}
                                 manual
@@ -64,12 +67,12 @@ export default class InventorySearchResultsBySource extends Component {
               <InventoryList inventoryType={blockDragType}
                              onDrop={(item) => onItemDrop(key, item)}
                              onSelect={(item) => onItemSelect(key, item)}
-                             items={listingItems}
+                             items={results}
                              dataAttributePrefix={`searchresult ${name}`}/>
             </InventoryListGroup>
           );
         })}
       </div>
-    )
+    );
   }
 }

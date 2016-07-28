@@ -139,6 +139,54 @@ export const inventorySearch = (inputTerm = '', options = null, skipDebounce = f
   };
 };
 
+export const inventorySearchPaginate = (source) => {
+  return (dispatch, getState) => {
+    const state = getState().inventory;
+    const { searchTerm, searchResults, searching } = state;
+    const results = searchResults[source];
+
+    if (!searchTerm || !!searching || !results.length) {
+      return false;
+    }
+
+    const lastParameters = results.parameters;
+
+    const moreResults = Number.isInteger(results.count) ?
+    results.length < results.count :
+    results.length % lastParameters.entries === 0; //todo - this doesn't account for when number entries % length does in fact = 0
+
+    if (!moreResults) {
+      return false;
+    }
+
+    const parameters = {
+      start: results.length,
+      entries: lastParameters.entries,
+    };
+
+    dispatch({
+      type: ActionTypes.INVENTORY_SEARCH_PAGINATE,
+      source,
+      parameters,
+      searchTerm,
+    });
+
+    return searchApi.search(searchTerm, parameters, source)
+      .catch(err => {
+        console.error(err);
+        return Object.assign([], { parameters });
+      })
+      .then((resultObject) => {
+        dispatch({
+          type: ActionTypes.INVENTORY_SEARCH_PAGINATE_RESOLVE,
+          source,
+          patch: resultObject,
+          searchTerm,
+        });
+      });
+  };
+};
+
 /**
  * Toggle whether the sources view is open
  * @param {boolean} [forceState] Ignore to toggle

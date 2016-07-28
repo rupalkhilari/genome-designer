@@ -33,6 +33,7 @@ export default class InventorySearchResults extends Component {
     searching: PropTypes.bool.isRequired,
     searchResults: PropTypes.object.isRequired,
     sourcesVisible: PropTypes.object.isRequired,
+    loadMore: PropTypes.func.isRequired,
     inventoryToggleSourceVisible: PropTypes.func.isRequired,
     blockStash: PropTypes.func.isRequired,
   };
@@ -47,8 +48,8 @@ export default class InventorySearchResults extends Component {
       onlyConstruct,
     };
 
-    if (source && id) {
-      return registry[source].get(id, parameters, item)
+    if (registryKey && id) {
+      return registry[registryKey].get(id, parameters, item)
         .then(result => {
           //if we have an array, first one is construct, and all other blocks should be added to the store
           if (Array.isArray(result)) {
@@ -77,6 +78,10 @@ export default class InventorySearchResults extends Component {
     this.props.inventoryToggleSourceVisible(source);
   };
 
+  handleListGroupAction = (key) => {
+    this.props.loadMore(key);
+  };
+
   handleItemOnSelect = (registryKey, item) => {
     return this.getFullItem(registryKey, item, true, false);
   };
@@ -99,8 +104,6 @@ export default class InventorySearchResults extends Component {
       return (<Spinner />);
     }
 
-    //todo - action button. need to know whether there are more results. need to support pagination here.
-
     const groupsContent = noSearchResults
       ?
       (<div className="InventoryGroup-placeholderContent">No Results Found</div>)
@@ -109,6 +112,7 @@ export default class InventorySearchResults extends Component {
         ?
         <InventorySearchResultsBySource searchResults={searchResults}
                                         sourcesVisible={sourcesVisible}
+                                        onListGroupAction={(key) => this.handleListGroupAction(key)}
                                         onListGroupToggle={(key) => this.handleListGroupToggle(key)}
                                         onItemDrop={(key, item) => this.handleItemOnDrop(key, item)}
                                         onItemSelect={(key, item) => this.handleItemOnSelect(key, item)}
