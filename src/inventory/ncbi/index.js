@@ -173,10 +173,16 @@ export const search = (query, options = {}) => {
 
   const url = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=nuccore&${parameterString}`;
 
+  let count;
+
   return rejectingFetch(url)
     .then(resp => resp.json())
-    .then(json => json.esearchresult.idlist)
+    .then(json => {
+      count = json.esearchresult.count;
+      return json.esearchresult.idlist;
+    })
     .then(ids => getSummary(...ids))
+    .then(results => Object.assign(results, { count, parameters }))
     .catch(err => {
       console.log(err);
       throw err;

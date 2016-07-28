@@ -30,7 +30,9 @@ import { registry, getSources } from './registry';
  * `start` - index of search results at which to start
  * `entries` - number of entries to fetch
  *
- * Results returned from each source are an array of Block models. These models can and likely should be minimal, as they are only shown in the inventory. `get()` will be called before showing in the inspector or adding to the project.
+ * Results returned from each source are an array of Block models, with the property `parameters` assigned to the array, reflecting the parameters actually used in the search (determined by the search extension, defaults are not attached)
+ *
+ * These models can and likely should be minimal, as they are only shown in the inventory. `get()` will be called before showing in the inspector or adding to the project. They must include `block.source = { source: <key>, id: <source_id> }` for the `get()`
  *
  * ### `get(id, options, searchResult)`
  *
@@ -53,13 +55,13 @@ import { registry, getSources } from './registry';
  * Run a search over a inventory source.
  * @memberOf module:search
  * @param {string} term Search term
- * @param {Object} options Options, defined in {@link module:search}
+ * @param {Object} parameters Parameters, defined in {@link module:search}
  * @param {string} sourceKey Key of search in search registry
  * @returns {Promise}
  * @resolve {Object} searchResults In form { <key> : <results array> }
  * @reject {Error} Error If the search fails or hits > 400 status code
  */
-export const search = (term, options, sourceKey) => {
+export const search = (term, parameters = {}, sourceKey) => {
   const sources = getSources('search');
 
   invariant(typeof term === 'string', 'Term must be a string');
@@ -67,11 +69,12 @@ export const search = (term, options, sourceKey) => {
 
   const searchPromise = !term.length ?
     Promise.resolve([]) :
-    registry[sourceKey].search(term, options);
+    registry[sourceKey].search(term, parameters);
 
-  return searchPromise.then(results => ({
-    [sourceKey]: results,
-  }));
+  return searchPromise.then(results => {
+    invariant(typeof results.parameters === 'object', 'must attach parameters object to results array');
+    return { [sourceKey]: results };
+  });
 };
 
 /**
