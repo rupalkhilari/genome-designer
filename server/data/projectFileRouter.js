@@ -50,7 +50,10 @@ router.route('/:extension/:file')
     fileSystem.fileRead(filePath, false)
       .then(data => res.send(data))
       .catch(err => {
-        console.log('project file get err', err.stack);
+        if (err === errorDoesNotExist) {
+          return res.status(404).send(errorDoesNotExist);
+        }
+        console.log('project file get err', err, err.stack);
         next(err);
       });
   })
@@ -67,7 +70,7 @@ router.route('/:extension/:file')
         .then(() => fileSystem.fileWrite(filePath, buffer, false))
         .then(() => res.send(req.originalUrl))
         .catch((err) => {
-          console.log('project file post err', err.stack);
+          console.log('project file post err', err, err.stack);
           next(err);
         });
     });
