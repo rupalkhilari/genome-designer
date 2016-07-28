@@ -10,11 +10,11 @@
   },
   "plugins": [
     "node_modules/jsdoc-babel",
-    "plugins/markdown"
+    "node_modules/jsdoc/plugins/markdown"
   ],
   "opts": {
     "recurse": true,
-    "destination": "./jsdoc"
+    "destination": "./docs/jsdoc"
   },
   "markdown": {
     "parser": "gfm",

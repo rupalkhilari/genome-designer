@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/authentication/reset.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/authentication/reset.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/*
+Copyright 2016 Autodesk,Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+import React, { Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
+import { uiShowAuthenticationForm, uiSetGrunt } from '../../actions/ui';
+import { userLogin } from '../../actions/user';
+import { reset } from '../../middleware/data';
+import invariant from 'invariant';
+import { projectOpen } from '../../actions/projects';
+import track from '../../analytics/ga';
+
+/*
+ * default visibility and text for error labels
+ * @type {Object}
+ */
+const errors = {
+  password1Error: {
+    visible: false,
+    text: 'none',
+  },
+  password2Error: {
+    visible: false,
+    text: 'none',
+  },
+};
+
+class RegisterForm extends Component {
+
+  static propTypes = {
+    uiShowAuthenticationForm: PropTypes.func.isRequired,
+    uiSetGrunt: PropTypes.func.isRequired,
+    projectOpen: PropTypes.func.isRequired,
+    userLogin: PropTypes.func.isRequired,
+  };
+
+  constructor() {
+    super();
+    this.state = Object.assign({}, errors);
+  }
+
+  // on form submission, first perform client side validation then submit
+  // to the server if that goes well.
+  onSubmit(evt) {
+    // submission occurs via REST not form submission
+    evt.preventDefault();
+    // client side validation first
+    if (this.clientValidation()) {
+      track('Authentication', 'Reset', 'Failed client validation');
+      return;
+    }
+
+    reset(this.getParameter('e'), this.getParameter('h'), this.password)
+      .then((json) => {
+        if (json.message) {
+          this.showServerErrors(json);
+          return;
+        }
+        track('Authentication', 'Reset', 'Success');
+        this.props.uiSetGrunt(`Your password has been reset`);
+        // we can sign in the user since we have their password and email
+        this.props.userLogin(this.getParameter('e'), this.password)
+          .then(user => {
+            // close the form
+            this.props.uiShowAuthenticationForm('none');
+            this.props.projectOpen(null);
+          })
+          .catch((reason) => {
+            // if the sign in failed just redirect to sign in
+            this.props.uiShowAuthenticationForm('signin');
+          });
+      })
+      .catch((reason) => {
+        this.showServerErrors({
+          message: reason.message || 'Unexpected error, please check your connection',
+        });
+        track('Authentication', 'Reset', 'Unexpected Error');
+      });
+  }
+
+  // return a hash of the query strings
+  getQueryStrings() {
+    const assoc = {};
+    const decode = (str) => {
+      return decodeURIComponent(str.replace(/\+/g, ' '));
+    };
+    const queryString = location.search.substring(1);
+    const keyValues = queryString.split('&amp;');
+
+    for (const i in keyValues) {
+      if (keyValues.hasOwnProperty(i)) {
+        const key = keyValues[i].split('=');
+        if (key.length > 1) {
+          assoc[decode(key[0])] = decode(key[1]);
+        }
+      }
+    }
+    return assoc;
+  }
+
+  // return a single named parameter from the query string
+  getParameter(name) {
+    return this.getQueryStrings()[name];
+  }
+
+  /**
+   * basic validation occurs on client i.e. matching email addresses, Passwords
+   * and all required fields present
+   */
+  clientValidation() {
+    // reset all error messages
+    const newState = Object.assign({}, errors);
+    // parse individual problems and report
+
+    if (!this.password) {
+      newState.password1Error = { visible: true, text: 'Please enter a password' };
+    }
+    if (!this.passwordConfirm || this.password !== this.passwordConfirm) {
+      newState.password2Error = { visible: true, text: 'Passwords do not match' };
+    }
+
+    // display appropriate errors
+    this.setState(newState);
+    // return true if there was an error
+    return Object.keys(newState).find((key) => {
+      return newState[key].visible;
+    });
+  }
+
+  get password() {
+    return this.refs.password.value.trim();
+  }
+
+  get passwordConfirm() {
+    return this.refs.passwordConfirm.value.trim();
+  }
+
+  /**
+   * display server errors in the most logical way
+   */
+  showServerErrors(json) {
+    invariant(json &amp;&amp; json.message, 'We expected an error message');
+    // any unrecognized errors are displayed below the tos
+    this.setState({
+      password1Error: {
+        visible: true,
+        text: json.message,
+      },
+    });
+  }
+
+  render() {
+    return (
+      &lt;form
+        id="reset-form"
+        className="gd-form authentication-form"
+        onSubmit={this.onSubmit.bind(this)}>
+        &lt;div className="title">Reset Password&lt;/div>
+
+        &lt;div
+          className={`error ${this.state.password1Error.visible ? 'visible' : ''}`}>{`${this.state.password1Error.text}`}&lt;/div>
+        &lt;input
+          ref="password"
+          type="password"
+          className="input"
+          placeholder="New password"/>
+        &lt;input
+          ref="passwordConfirm"
+          type="password"
+          className="input"
+          placeholder="Confirm new password"/>
+        &lt;div
+          className={`error ${this.state.password2Error.visible ? 'visible' : ''}`}>{`${this.state.password2Error.text}`}&lt;/div>
+
+        &lt;button type="submit">Reset Password&lt;/button>
+        &lt;button
+          type="button"
+          onClick={() => {
+            this.props.uiShowAuthenticationForm('none');
+          }}>Cancel
+        &lt;/button>
+      &lt;/form>
+    );
+  }
+}
+function mapStateToProps(state) {
+  return {};
+}
+
+export default connect(mapStateToProps, {
+  uiShowAuthenticationForm,
+  uiSetGrunt,
+  userLogin,
+  projectOpen,
+})(RegisterForm);
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Actions.html">Actions</a></li><li><a href="module-Actions.module_Block%2520Actions.html">Block Actions</a></li><li><a href="module-Actions.module_Clipboard%2520Actions.html">Clipboard Actions</a></li><li><a href="module-Actions.module_Focus%2520Actions.html">Focus Actions</a></li><li><a href="module-Actions.module_Inventory%2520Actions.html">Inventory Actions</a></li><li><a href="module-Actions.module_Order%2520Actions.html">Order Actions</a></li><li><a href="module-Actions.module_Project%2520Actions.html">Project Actions</a></li><li><a href="module-Actions.module_UI%2520Actions.html">UI Actions</a></li><li><a href="module-ActionTypes.html">ActionTypes</a></li><li><a href="module-DragTypes.html">DragTypes</a></li><li><a href="module-Models.html">Models</a></li><li><a href="module-roles.html">roles</a></li><li><a href="module-Selectors.html">Selectors</a></li><li><a href="module-Selectors.module_UI%2520Selectors.html">UI Selectors</a></li><li><a href="module-Store.html">Store</a></li><li><a href="module-validators.html">validators</a></li></ul><h3>Classes</h3><ul><li><a href="module-Models.Annotation.html">Annotation</a></li><li><a href="module-Models.Block.html">Block</a></li><li><a href="module-Models.Immutable.html">Immutable</a></li><li><a href="module-Models.Instance.html">Instance</a></li><li><a href="module-Models.Order.html">Order</a></li><li><a href="module-Models.Project.html">Project</a></li><li><a href="Schema.html">Schema</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addComponent">addComponent</a></li><li><a href="global.html#annotate">annotate</a></li><li><a href="global.html#AnnotationSchema">AnnotationSchema</a></li><li><a href="global.html#BlockSchema">BlockSchema</a></li><li><a href="global.html#BlockSourceSchema">BlockSourceSchema</a></li><li><a href="global.html">classless</a></li><li><a href="global.html#downloadExtension">downloadExtension</a></li><li><a href="global.html#get">get</a></li><li><a href="global.html#getName">getName</a></li><li><a href="global.html#getOptions">getOptions</a></li><li><a href="global.html#getRole">getRole</a></li><li><a href="global.html#getSequence">getSequence</a></li><li><a href="global.html#getType">getType</a></li><li><a href="global.html#hasContents">hasContents</a></li><li><a href="global.html#hasSequence">hasSequence</a></li><li><a href="global.html#ImportGenBankModal">ImportGenBankModal</a></li><li><a href="global.html#importGenbankOrCSV">importGenbankOrCSV</a></li><li><a href="global.html#inspectorToggleVisibility">inspectorToggleVisibility</a></li><li><a href="global.html#InstanceSchema">InstanceSchema</a></li><li><a href="global.html#isConstruct">isConstruct</a></li><li><a href="global.html#isFiller">isFiller</a></li><li><a href="global.html#isFixed">isFixed</a></li><li><a href="global.html#isFrozen">isFrozen</a></li><li><a href="global.html#isHidden">isHidden</a></li><li><a href="global.html#isList">isList</a></li><li><a href="global.html#isTemplate">isTemplate</a></li><li><a href="global.html#MenuItem">MenuItem</a></li><li><a href="global.html#MenuSeparator">MenuSeparator</a></li><li><a href="global.html#merge">merge</a></li><li><a href="global.html#MetadataSchema">MetadataSchema</a></li><li><a href="global.html#ModalSpinner">ModalSpinner</a></li><li><a href="global.html#ModalWindow">ModalWindow</a></li><li><a href="global.html#moveComponent">moveComponent</a></li><li><a href="global.html#mutate">mutate</a></li><li><a href="global.html#OkCancel">OkCancel</a></li><li><a href="global.html#Orchestrator">Orchestrator</a></li><li><a href="global.html#OrderParametersSchema">OrderParametersSchema</a></li><li><a href="global.html#OrderSchema">OrderSchema</a></li><li><a href="global.html#OrderStatusSchema">OrderStatusSchema</a></li><li><a href="global.html#ParentSchema">ParentSchema</a></li><li><a href="global.html#ProjectSchema">ProjectSchema</a></li><li><a href="global.html#removeAnnotation">removeAnnotation</a></li><li><a href="global.html#removeComponent">removeComponent</a></li><li><a href="global.html#RulesSchema">RulesSchema</a></li><li><a href="global.html#SequenceSchema">SequenceSchema</a></li><li><a href="global.html#setColor">setColor</a></li><li><a href="global.html#setDescription">setDescription</a></li><li><a href="global.html#setFrozen">setFrozen</a></li><li><a href="global.html#setListBlock">setListBlock</a></li><li><a href="global.html#setName">setName</a></li><li><a href="global.html#setProjectId">setProjectId</a></li><li><a href="global.html#setRole">setRole</a></li><li><a href="global.html#setRule">setRule</a></li><li><a href="global.html#setSequence">setSequence</a></li><li><a href="global.html#toggleOptions">toggleOptions</a></li><li><a href="global.html#UserSchema">UserSchema</a></li><li><a href="global.html">validate</a></li><li><a href="global.html#value">value</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Thu Jul 28 2016 16:31:31 GMT-0700 (PDT)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
