@@ -58,6 +58,7 @@ export default class InventorySearchResultsBySource extends Component {
                                   disabled: !!searchResults[key].loading,
                                   visible: actionVisible,
                                   onClick: (evt) => { this.handleListGroupAction(evt, key);},
+                                  'data-inventory': `load-more ${key}`,
                                 }}
                                 manual
                                 isExpanded={sourcesVisible[key]}

@@ -17,7 +17,7 @@ import React, { PropTypes } from 'react';
 
 import '../../styles/InventoryListGroupAction.css';
 
-export default function InventoryListGroupAction({ visible, disabled, onClick, text }) {
+export default function InventoryListGroupAction({ visible, disabled, onClick, text, ...rest }) {
   return (
       <a className={'InventoryListGroupAction' +
       (visible ? ' visible' : '') +
@@ -27,7 +27,8 @@ export default function InventoryListGroupAction({ visible, disabled, onClick, t
            if (visible && !disabled) {
              onClick(evt);
            }
-         }}>
+         }}
+         {...rest}>
         <span className="InventoryListGroupAction-text">{text}</span>
       </a>
     );
