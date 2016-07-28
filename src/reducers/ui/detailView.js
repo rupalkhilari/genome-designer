@@ -25,7 +25,11 @@ export default function detailView(state = initialState, action) {
   switch (action.type) {
   case ActionTypes.DETAIL_VIEW_TOGGLE_VISIBILITY :
     const { nextState } = action;
-    return Object.assign({}, state, { isVisible: nextState });
+    const next = { isVisible: nextState };
+    if (!nextState) {
+      Object.assign(next, { currentExtension: null });
+    }
+    return Object.assign({}, state, next);
 
   case ActionTypes.DETAIL_VIEW_SELECT_EXTENSION :
     const { key } = action;
