@@ -21,6 +21,8 @@ import Spinner from './ui/Spinner';
 
 import '../styles/ExtensionView.css';
 
+//todo - either get rid of the visible flag (just unmount the extension), or support unregistering when it is set to false
+
 export default class ExtensionView extends Component {
   static propTypes = {
     region: function regionPropValidator(props, name) {
@@ -146,17 +148,19 @@ export default class ExtensionView extends Component {
       overlayContent = (<div className="ExtensionView-error">
         <p>There was an error rendering the extension</p>
         <div className="ExtensionView-error-stack">{hasError.stack}</div>
-        </div>);
+      </div>);
     }
 
     return (
       <div className={'ExtensionView' + (isVisible ? ' visible' : '')}>
         {overlayContent}
-        <div className="ExtensionView-content" ref={(el) => {
-          if (el) {
-            this.element = el;
-          }
-        }}>
+        <div className="ExtensionView-content"
+             key={extension}
+             ref={(el) => {
+               if (el) {
+                 this.element = el;
+               }
+             }}>
         </div>
       </div>
     );

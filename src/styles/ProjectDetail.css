@@ -44,7 +44,6 @@
 
     &-toggle {
       align-self: flex-start;
-      color: white;
       background-image: url('/images/ui/caret_open_light.svg');
       cursor: pointer;
 
@@ -64,14 +63,19 @@
     &-extension {
       padding: 0px 20px;
       border-right: 1px solid var(--colors-grey);
-      color: #e6e6e6;
+      color: var(--colors-greyMedLight);
       cursor: pointer;
 
       .visible & {
-        color: #4c505f;
-        padding: 0px;
-        border: 0;
         cursor: default;
+        color: var(--colors-greyMedLight);
+        border-color: var(--colors-greyMedLight);
+        cursor: pointer;
+
+        &.active {
+          color: var(--colors-blueBlack);
+          cursor: default;
+        }
       }
 
       &.disabled {
@@ -85,9 +89,7 @@
     }
 
     &-close {
-      position: absolute;
-      top: 4px;
-      right: 5px;
+      align-self: flex-end;
       background-image: url('/images/ui/close_icon_dark.svg');
       cursor: pointer;
     }
