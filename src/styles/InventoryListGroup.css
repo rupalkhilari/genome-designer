@@ -16,19 +16,14 @@
     padding: 2px 5px;
     border-radius: 3px;
     position: relative;
+
+    &-filler {
+      flex-grow: 1;
+    }
   }
 
   &-title {
     cursor: pointer;
-  }
-
-  &-action {
-    flex-grow: 1;
-    text-align: right;
-
-    &-text {
-      cursor: pointer;
-    }
   }
 
   &-contents {

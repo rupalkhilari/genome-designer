@@ -22,7 +22,6 @@ import InventoryListGroup from './InventoryListGroup';
 
 export default class InventorySearchResultsBySource extends Component {
   static propTypes = {
-    actionButton: PropTypes.object.isRequired, //see InventoryListGroup component
     searchResults: PropTypes.object.isRequired,
     sourcesVisible: PropTypes.object.isRequired,
     onListGroupToggle: PropTypes.func.isRequired,
@@ -30,8 +29,17 @@ export default class InventorySearchResultsBySource extends Component {
     onItemDrop: PropTypes.func.isRequired,
   };
 
+  handleListGroupAction(evt, key) {
+    evt.preventDefault();
+    console.warn('todo');
+
+    //this.props.searchResults[key].loading = true;
+    //this.forceUpdate();
+    //setTimeout(() => {this.props.searchResults[key].loading = false; this.forceUpdate() }, 2000);
+  }
+
   render() {
-    const { actionButton, searchResults, sourcesVisible, onListGroupToggle, onItemSelect, onItemDrop } = this.props;
+    const { searchResults, sourcesVisible, onListGroupToggle, onItemSelect, onItemDrop } = this.props;
 
     return (
       <div className="InventorySearchResultGroup">
@@ -42,7 +50,12 @@ export default class InventorySearchResultsBySource extends Component {
           return (
             <InventoryListGroup title={`${name} (${listingItems.length})`}
                                 disabled={!listingItems.length}
-                                actionButton={actionButton}
+                                actionButton={{
+                                  text: 'Load More',
+                                  disabled: searchResults[key].loading,
+                                  visible: true,
+                                  onClick: (evt) => { this.handleListGroupAction(evt, key);},
+                                }}
                                 manual
                                 isExpanded={sourcesVisible[key]}
                                 onToggle={() => onListGroupToggle(key)}

@@ -19,6 +19,7 @@ import Spinner from '../ui/Spinner';
 import Toggler from '../ui/Toggler';
 
 import '../../styles/InventoryListGroup.css';
+import InventoryListGroupAction from './InventoryListGroupAction';
 
 export default class InventoryListGroup extends Component {
   static propTypes = {
@@ -101,6 +102,10 @@ export default class InventoryListGroup extends Component {
     const { isSelectable, hideToggle, title, manual, isLoading, isExpanded, isActive, children, disabled, canToggle, dataAttribute, actionButton } = this.props;
     const expanded = manual ? isExpanded : this.state.expanded;
 
+    const rightSide = actionButton ?
+      <InventoryListGroupAction {...actionButton} /> :
+      <span className="InventoryListGroup-heading-filler" />;
+
     return (
       <div className={'InventoryListGroup' +
       (isSelectable ? ' isSelectable' : '') +
@@ -117,15 +122,7 @@ export default class InventoryListGroup extends Component {
           <a className="InventoryListGroup-title">
             <span>{title}</span>
           </a>
-          {(actionButton && actionButton.visible) && (
-            <a className="InventoryListGroup-action"
-               onClick={(evt) => {
-                 evt.stopPropagation();
-                 actionButton.onClick(evt);
-               }}>
-              <span className="InventoryListGroup-action-text">{actionButton.text}</span>
-            </a>
-          )}
+          {rightSide}
         </div>
         {(isLoading && !expanded) && <Spinner />}
         {expanded && <div className="InventoryListGroup-contents no-vertical-scroll">

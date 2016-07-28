@@ -107,12 +107,7 @@ export default class InventorySearchResults extends Component {
       :
       (groupBy === 'source')
         ?
-        <InventorySearchResultsBySource actionButton={{
-                                          text: 'Load More',
-                                          visible: true,
-                                          onClick: () => {},
-                                        }}
-                                        searchResults={searchResults}
+        <InventorySearchResultsBySource searchResults={searchResults}
                                         sourcesVisible={sourcesVisible}
                                         onListGroupToggle={(key) => this.handleListGroupToggle(key)}
                                         onItemDrop={(key, item) => this.handleItemOnDrop(key, item)}
