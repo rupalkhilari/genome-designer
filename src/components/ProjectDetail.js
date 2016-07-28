@@ -173,13 +173,13 @@ export class ProjectDetail extends Component {
 
 const mapStateToProps = (state, props) => {
   const { isVisible, currentExtension } = state.ui.detailView;
-  const { constructId, forceBlocks, blockIds } = state.focus; //to force rendering (check for if details exist) on focus change
+  //const { constructId, forceBlocks, blockIds } = state.focus; //to force rendering (check for if details exist) on focus change
   return {
     isVisible,
     currentExtension,
-    blockIds,
-    constructId,
-    forceBlocks,
+    //blockIds,
+    //constructId,
+    //forceBlocks,
   };
 };
 

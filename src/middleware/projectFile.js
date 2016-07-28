@@ -22,6 +22,10 @@ const contentTypeTextHeader = { headers: { 'Content-Type': 'text/plain' } };
 
 //returns a fetch object, for you to parse yourself (doesnt automatically convert to json / text)
 export const readProjectFile = (projectId, extension, fileName) => {
+  invariant(projectId, 'projectId is required');
+  invariant(extension, 'extension key is required');
+  invariant(fileName, 'file name is required');
+
   return rejectingFetch(projectFilePath(projectId, extension, fileName), headersGet(contentTypeTextHeader));
 };
 
@@ -39,4 +43,12 @@ export const writeProjectFile = (projectId, extension, fileName, contents) => {
   }
 
   return rejectingFetch(filePath, headersPost(contents, contentTypeTextHeader));
+};
+
+export const listProjectFiles = (projectId, extension) => {
+  invariant(projectId, 'projectId is required');
+  invariant(extension, 'must pass an extension');
+
+  return rejectingFetch(projectFilePath(projectId, extension), headersGet())
+    .then(resp => resp.text());
 };
