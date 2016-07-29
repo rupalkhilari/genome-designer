@@ -45,7 +45,8 @@ function safelyRunCallbacks(...args) {
 /**
  * Check whether a region is a valid to load the extension
  * @name validRegion
- * @memberOf window.constructor.extensions
+ * @memberOf module:constructor.module:extensions
+ * @function
  * @param {string} region Region to check
  * @returns {boolean} true if region is valid
  */
@@ -67,6 +68,7 @@ export const extensionsByRegion = (region) => {
  * Validate + register an extension manifest
  * If invalid, error is caught and logged
  * called by loadExtensions to add the manifests
+ * @function
  * @private
  * @param {Object} manifest A valid manifest
  * @returns {Object} registry
@@ -98,6 +100,7 @@ export const registerManifest = (manifest) => {
  * Register the render() function of an extension
  * Extension manifest must already registered
  * used by registerExtension()
+ * @function
  * @private
  * @param key
  * @param render
@@ -114,7 +117,8 @@ export const registerRender = (key, render) => {
 /**
  * Register a callback for when extensions are registered
  * @name onRegister
- * @memberOf window.constructor.extensions
+ * @function
+ * @memberOf module:constructor.module:extensions
  * @param {Function} cb Callback, called with signature (registry, key, region) where key is last registered extension key
  * @param {boolean} [skipFirst=false] Execute on register?
  * @returns {Function} Unregister function
@@ -139,6 +143,7 @@ export const getExtensionName = (key) => {
  * Should only call this function if there is a render function, otherwise just download it.
  *
  * @private
+ * @function
  *
  * @param key
  * @param container
@@ -171,7 +176,8 @@ export const downloadAndRender = (key, container, options) => {
 /**
  * Check whether an extension is registered
  * @name isRegistered
- * @memberOf window.constructor.extensions
+ * @function
+ * @memberOf module:constructor.module:extensions
  * @param {string} key Extension name
  * @returns {boolean} true if registered
  */

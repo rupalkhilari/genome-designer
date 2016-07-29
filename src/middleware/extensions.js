@@ -26,7 +26,8 @@ export const getExtensionsInfo = () => {
 /**
  * Call The API of an extension. This is just a simple wrapper around REST requests using fetch()
  * @name api
- * @memberOf window.constructor.extensions
+ * @function
+ * @memberOf module:constructor.module:extensions
  * @param {string} extensionKey Key of extension
  * @param {string} route Route exposed by the extension router
  * @param {Request} fetchBody fetch options. see https://developer.mozilla.org/en-US/docs/Web/API/GlobalFetch/fetch
