@@ -52,12 +52,18 @@
     
 
     
-        <h3 class="subsection-title">Members</h3>
+
+    
+        <h3 class="subsection-title">Methods</h3>
 
         
             
-<h4 class="name" id="~blockAddComponent"><span class="type-signature">(inner) </span>blockAddComponent<span class="type-signature"></span></h4>
 
+    
+
+    <h4 class="name" id="~blockAddComponent"><span class="type-signature">(inner) </span>blockAddComponent<span class="signature">(blockId, componentId, index, forceProjectId<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Block.html">Block</a>}</span></h4>
+
+    
 
 
 
@@ -71,6 +77,186 @@
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>blockId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">UUID</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>Construct</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>componentId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">UUID</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>Component</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>index</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>to insert component</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>forceProjectId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last"><p>Use true if the block is not from this project</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
 <dl class="details">
 
     
@@ -100,7 +286,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="actions_blocks.js.html">actions/blocks.js</a>, <a href="actions_blocks.js.html#line406">line 406</a>
+        <a href="actions_blocks.js.html">actions/blocks.js</a>, <a href="actions_blocks.js.html#line414">line 414</a>
     </li></ul></dd>
     
 
@@ -116,10 +302,46 @@
 
 
 
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Updated construct</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Block.html">Block</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
         
             
-<h4 class="name" id="~blockAddComponents"><span class="type-signature">(inner) </span>blockAddComponents<span class="type-signature"></span></h4>
 
+    
+
+    <h4 class="name" id="~blockAddComponents"><span class="type-signature">(inner) </span>blockAddComponents<span class="signature">(blockId, componentIds, index, forceProjectId<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Block.html">Block</a>}</span></h4>
+
+    
 
 
 
@@ -133,6 +355,186 @@
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>blockId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">UUID</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>Construct</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>componentIds</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;UUID></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>Components</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>index</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>to insert component</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>forceProjectId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last"><p>Use true if the block is not from this project</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
 <dl class="details">
 
     
@@ -162,7 +564,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="actions_blocks.js.html">actions/blocks.js</a>, <a href="actions_blocks.js.html#line463">line 463</a>
+        <a href="actions_blocks.js.html">actions/blocks.js</a>, <a href="actions_blocks.js.html#line472">line 472</a>
     </li></ul></dd>
     
 
@@ -178,10 +580,46 @@
 
 
 
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Updated construct</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Block.html">Block</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
         
             
-<h4 class="name" id="~blockAnnotate"><span class="type-signature">(inner) </span>blockAnnotate<span class="type-signature"></span></h4>
 
+    
+
+    <h4 class="name" id="~blockAnnotate"><span class="type-signature">(inner) </span>blockAnnotate<span class="signature">(blockId, annotation)</span><span class="type-signature"> &rarr; {<a href="Block.html">Block</a>}</span></h4>
+
+    
 
 
 
@@ -195,6 +633,84 @@
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>blockId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">UUID</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>annotation</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Annotation.html">Annotation</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
 <dl class="details">
 
     
@@ -224,7 +740,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="actions_blocks.js.html">actions/blocks.js</a>, <a href="actions_blocks.js.html#line657">line 657</a>
+        <a href="actions_blocks.js.html">actions/blocks.js</a>, <a href="actions_blocks.js.html#line672">line 672</a>
     </li></ul></dd>
     
 
@@ -240,10 +756,46 @@
 
 
 
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Updated Block</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Block.html">Block</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
         
             
-<h4 class="name" id="~blockClone"><span class="type-signature">(inner) </span>blockClone<span class="type-signature"></span></h4>
 
+    
+
+    <h4 class="name" id="~blockClone"><span class="type-signature">(inner) </span>blockClone<span class="signature">(blockInput, parentObjectInput, shallowOnly)</span><span class="type-signature"> &rarr; {<a href="Block.html">Block</a>}</span></h4>
+
+    
 
 
 
@@ -257,6 +809,110 @@
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>blockInput</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">ID</span>
+|
+
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>JSON of block directly, or ID. Accept both since inventory items may not be in the store, so we need to pass the block directly. Prefer to use ID.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>parentObjectInput</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>information about parent, defaults to generated:<br> {id: from block input<br>  projectId - same as block being cloned, or block.projectId<br> version - that of project ID if in the store, or first parent if available and same project id<br>}</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>shallowOnly</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Does a deep clone by default, adds all child blocks to store</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
 <dl class="details">
 
     
@@ -286,7 +942,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="actions_blocks.js.html">actions/blocks.js</a>, <a href="actions_blocks.js.html#line190">line 190</a>
+        <a href="actions_blocks.js.html">actions/blocks.js</a>, <a href="actions_blocks.js.html#line193">line 193</a>
     </li></ul></dd>
     
 
@@ -302,10 +958,46 @@
 
 
 
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>clone block (root node if has children)</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Block.html">Block</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
         
             
-<h4 class="name" id="~blockCreate"><span class="type-signature">(inner) </span>blockCreate<span class="type-signature"></span></h4>
 
+    
+
+    <h4 class="name" id="~blockCreate"><span class="type-signature">(inner) </span>blockCreate<span class="signature">(initialModel, useDefaults<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Block.html">Block</a>}</span></h4>
+
+    
 
 
 
@@ -319,6 +1011,116 @@
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>initialModel</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>useDefaults</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    true
+                
+                </td>
+            
+
+            <td class="description last"><p>Set e.g. current project ID automatically. Set to false if you are creating a block outside of a project (i.e. floating, not associated with project yet)</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
 <dl class="details">
 
     
@@ -348,7 +1150,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="actions_blocks.js.html">actions/blocks.js</a>, <a href="actions_blocks.js.html#line127">line 127</a>
+        <a href="actions_blocks.js.html">actions/blocks.js</a>, <a href="actions_blocks.js.html#line129">line 129</a>
     </li></ul></dd>
     
 
@@ -364,10 +1166,42 @@
 
 
 
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Block.html">Block</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
         
             
-<h4 class="name" id="~blockDelete"><span class="type-signature">(inner) </span>blockDelete<span class="type-signature"></span></h4>
 
+    
+
+    <h4 class="name" id="~blockDelete"><span class="type-signature">(inner) </span>blockDelete<span class="signature">(&hellip;blockIds)</span><span class="type-signature"> &rarr; {UUID}</span></h4>
+
+    
 
 
 
@@ -381,6 +1215,73 @@
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>blockIds</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">UUID</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                    &lt;repeatable><br>
+                
+                </td>
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
 <dl class="details">
 
     
@@ -410,7 +1311,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="actions_blocks.js.html">actions/blocks.js</a>, <a href="actions_blocks.js.html#line301">line 301</a>
+        <a href="actions_blocks.js.html">actions/blocks.js</a>, <a href="actions_blocks.js.html#line306">line 306</a>
     </li></ul></dd>
     
 
@@ -426,10 +1327,46 @@
 
 
 
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>IDs removed</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">UUID</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
         
             
-<h4 class="name" id="~blockDetach"><span class="type-signature">(inner) </span>blockDetach<span class="type-signature"></span></h4>
 
+    
+
+    <h4 class="name" id="~blockDetach"><span class="type-signature">(inner) </span>blockDetach<span class="signature">(&hellip;blockIds)</span><span class="type-signature"> &rarr; {UUID}</span></h4>
+
+    
 
 
 
@@ -443,6 +1380,73 @@
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>blockIds</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">UUID</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                    &lt;repeatable><br>
+                
+                </td>
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
 <dl class="details">
 
     
@@ -472,7 +1476,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="actions_blocks.js.html">actions/blocks.js</a>, <a href="actions_blocks.js.html#line340">line 340</a>
+        <a href="actions_blocks.js.html">actions/blocks.js</a>, <a href="actions_blocks.js.html#line346">line 346</a>
     </li></ul></dd>
     
 
@@ -488,10 +1492,46 @@
 
 
 
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>IDs removed</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">UUID</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
         
             
-<h4 class="name" id="~blockFreeze"><span class="type-signature">(inner) </span>blockFreeze<span class="type-signature"></span></h4>
 
+    
+
+    <h4 class="name" id="~blockFreeze"><span class="type-signature">(inner) </span>blockFreeze<span class="signature">(blockId, recursive<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Block.html">Block</a>}</span></h4>
+
+    
 
 
 
@@ -505,6 +1545,116 @@
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>blockId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">UUID</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>recursive</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    true
+                
+                </td>
+            
+
+            <td class="description last"><p>Apply to contents (components + options)</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
 <dl class="details">
 
     
@@ -534,7 +1684,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="actions_blocks.js.html">actions/blocks.js</a>, <a href="actions_blocks.js.html#line273">line 273</a>
+        <a href="actions_blocks.js.html">actions/blocks.js</a>, <a href="actions_blocks.js.html#line277">line 277</a>
     </li></ul></dd>
     
 
@@ -550,10 +1700,46 @@
 
 
 
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>all blocks frozen</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Block.html">Block</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
         
             
-<h4 class="name" id="~blockGetSequence"><span class="type-signature">(inner) </span>blockGetSequence<span class="type-signature"></span></h4>
 
+    
+
+    <h4 class="name" id="~blockGetSequence"><span class="type-signature">(inner) </span>blockGetSequence<span class="signature">(blockId)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+
+    
 
 
 
@@ -567,6 +1753,61 @@
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>blockId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">UUID</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Block ID with sequence to retrieve</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
 <dl class="details">
 
     
@@ -596,7 +1837,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="actions_blocks.js.html">actions/blocks.js</a>, <a href="actions_blocks.js.html#line698">line 698</a>
+        <a href="actions_blocks.js.html">actions/blocks.js</a>, <a href="actions_blocks.js.html#line715">line 715</a>
     </li></ul></dd>
     
 
@@ -612,15 +1853,51 @@
 
 
 
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Resolves to plain string of sequence</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
         
             
-<h4 class="name" id="~blockMoveComponent"><span class="type-signature">(inner) </span>blockMoveComponent<span class="type-signature"></span></h4>
 
+    
+
+    <h4 class="name" id="~blockMoveComponent"><span class="type-signature">(inner) </span>blockMoveComponent<span class="signature">(blockId, componentId, newIndex)</span><span class="type-signature"> &rarr; {<a href="Block.html">Block</a>}</span></h4>
+
+    
 
 
 
 <div class="description">
-    <p>Move component within a construt</p>
+    <p>Move component within a construct</p>
 </div>
 
 
@@ -629,6 +1906,107 @@
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>blockId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">UUID</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>componentId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">UUID</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>newIndex</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
 <dl class="details">
 
     
@@ -658,7 +2036,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="actions_blocks.js.html">actions/blocks.js</a>, <a href="actions_blocks.js.html#line488">line 488</a>
+        <a href="actions_blocks.js.html">actions/blocks.js</a>, <a href="actions_blocks.js.html#line498">line 498</a>
     </li></ul></dd>
     
 
@@ -674,10 +2052,46 @@
 
 
 
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Updated construct</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Block.html">Block</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
         
             
-<h4 class="name" id="~blockOptionsToggle"><span class="type-signature">(inner) </span>blockOptionsToggle<span class="type-signature"></span></h4>
 
+    
+
+    <h4 class="name" id="~blockOptionsToggle"><span class="type-signature">(inner) </span>blockOptionsToggle<span class="signature">(blockId, optionIds)</span><span class="type-signature"> &rarr; {function}</span></h4>
+
+    
 
 
 
@@ -691,6 +2105,74 @@
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>blockId</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>optionIds</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
 <dl class="details">
 
     
@@ -720,7 +2202,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="actions_blocks.js.html">actions/blocks.js</a>, <a href="actions_blocks.js.html#line551">line 551</a>
+        <a href="actions_blocks.js.html">actions/blocks.js</a>, <a href="actions_blocks.js.html#line562">line 562</a>
     </li></ul></dd>
     
 
@@ -736,10 +2218,42 @@
 
 
 
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">function</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
         
             
-<h4 class="name" id="~blockRemoveAnnotation"><span class="type-signature">(inner) </span>blockRemoveAnnotation<span class="type-signature"></span></h4>
 
+    
+
+    <h4 class="name" id="~blockRemoveAnnotation"><span class="type-signature">(inner) </span>blockRemoveAnnotation<span class="signature">(blockId, annotation)</span><span class="type-signature"> &rarr; {<a href="Block.html">Block</a>}</span></h4>
+
+    
 
 
 
@@ -753,6 +2267,87 @@
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>blockId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">UUID</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>annotation</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Annotation.html">Annotation</a></span>
+|
+
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Annotation or its name</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
 <dl class="details">
 
     
@@ -782,7 +2377,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="actions_blocks.js.html">actions/blocks.js</a>, <a href="actions_blocks.js.html#line676">line 676</a>
+        <a href="actions_blocks.js.html">actions/blocks.js</a>, <a href="actions_blocks.js.html#line692">line 692</a>
     </li></ul></dd>
     
 
@@ -798,10 +2393,46 @@
 
 
 
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Updated Block</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Block.html">Block</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
         
             
-<h4 class="name" id="~blockRemoveComponent"><span class="type-signature">(inner) </span>blockRemoveComponent<span class="type-signature"></span></h4>
 
+    
+
+    <h4 class="name" id="~blockRemoveComponent"><span class="type-signature">(inner) </span>blockRemoveComponent<span class="signature">(constructId, &hellip;componentIds)</span><span class="type-signature"> &rarr; {<a href="Block.html">Block</a>}</span></h4>
+
+    
 
 
 
@@ -815,6 +2446,104 @@
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>constructId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">UUID</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>componentIds</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">UUID</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                    &lt;repeatable><br>
+                
+                </td>
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
 <dl class="details">
 
     
@@ -844,7 +2573,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="actions_blocks.js.html">actions/blocks.js</a>, <a href="actions_blocks.js.html#line376">line 376</a>
+        <a href="actions_blocks.js.html">actions/blocks.js</a>, <a href="actions_blocks.js.html#line383">line 383</a>
     </li></ul></dd>
     
 
@@ -860,10 +2589,46 @@
 
 
 
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Updated construct</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Block.html">Block</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
         
             
-<h4 class="name" id="~blockRename"><span class="type-signature">(inner) </span>blockRename<span class="type-signature"></span></h4>
 
+    
+
+    <h4 class="name" id="~blockRename"><span class="type-signature">(inner) </span>blockRename<span class="signature">(blockId, name)</span><span class="type-signature"> &rarr; {<a href="Block.html">Block</a>}</span></h4>
+
+    
 
 
 
@@ -877,6 +2642,84 @@
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>blockId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">UUID</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
 <dl class="details">
 
     
@@ -906,7 +2749,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="actions_blocks.js.html">actions/blocks.js</a>, <a href="actions_blocks.js.html#line579">line 579</a>
+        <a href="actions_blocks.js.html">actions/blocks.js</a>, <a href="actions_blocks.js.html#line591">line 591</a>
     </li></ul></dd>
     
 
@@ -922,10 +2765,46 @@
 
 
 
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Updated Block</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Block.html">Block</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
         
             
-<h4 class="name" id="~blockSetColor"><span class="type-signature">(inner) </span>blockSetColor<span class="type-signature"></span></h4>
 
+    
+
+    <h4 class="name" id="~blockSetColor"><span class="type-signature">(inner) </span>blockSetColor<span class="signature">(blockId, color)</span><span class="type-signature"> &rarr; {<a href="Block.html">Block</a>}</span></h4>
+
+    
 
 
 
@@ -939,6 +2818,84 @@
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>blockId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">UUID</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>color</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Hex color string</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
 <dl class="details">
 
     
@@ -968,7 +2925,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="actions_blocks.js.html">actions/blocks.js</a>, <a href="actions_blocks.js.html#line603">line 603</a>
+        <a href="actions_blocks.js.html">actions/blocks.js</a>, <a href="actions_blocks.js.html#line616">line 616</a>
     </li></ul></dd>
     
 
@@ -984,10 +2941,46 @@
 
 
 
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Updated Block</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Block.html">Block</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
         
             
-<h4 class="name" id="~blockSetRole"><span class="type-signature">(inner) </span>blockSetRole<span class="type-signature"></span></h4>
 
+    
+
+    <h4 class="name" id="~blockSetRole"><span class="type-signature">(inner) </span>blockSetRole<span class="signature">(blockId, role)</span><span class="type-signature"> &rarr; {<a href="Block.html">Block</a>}</span></h4>
+
+    
 
 
 
@@ -1001,6 +2994,84 @@
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>blockId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">UUID</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>role</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Role as defined in <a href="module-roles.html">module:roles</a></p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
 <dl class="details">
 
     
@@ -1030,7 +3101,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="actions_blocks.js.html">actions/blocks.js</a>, <a href="actions_blocks.js.html#line627">line 627</a>
+        <a href="actions_blocks.js.html">actions/blocks.js</a>, <a href="actions_blocks.js.html#line641">line 641</a>
     </li></ul></dd>
     
 
@@ -1046,10 +3117,46 @@
 
 
 
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Updated Block</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Block.html">Block</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
         
             
-<h4 class="name" id="~blockSetSequence"><span class="type-signature">(inner) </span>blockSetSequence<span class="type-signature"></span></h4>
 
+    
+
+    <h4 class="name" id="~blockSetSequence"><span class="type-signature">(inner) </span>blockSetSequence<span class="signature">(blockId, sequence, useStrict<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+
+    
 
 
 
@@ -1063,6 +3170,135 @@
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>blockId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">UUID</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>sequence</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Sequence string</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>useStrict</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Use strict sequence validation (canonical IUPAC bases)</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
 <dl class="details">
 
     
@@ -1092,7 +3328,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="actions_blocks.js.html">actions/blocks.js</a>, <a href="actions_blocks.js.html#line712">line 712</a>
+        <a href="actions_blocks.js.html">actions/blocks.js</a>, <a href="actions_blocks.js.html#line730">line 730</a>
     </li></ul></dd>
     
 
@@ -1108,10 +3344,46 @@
 
 
 
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>resolves to Block when the sequence has been written</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
         
             
-<h4 class="name" id="~blockStash"><span class="type-signature">(inner) </span>blockStash<span class="type-signature"></span></h4>
 
+    
+
+    <h4 class="name" id="~blockStash"><span class="type-signature">(inner) </span>blockStash<span class="signature">(inputBlocks)</span><span class="type-signature"> &rarr; {<a href="Block.html">Block</a>}</span></h4>
+
+    
 
 
 
@@ -1125,6 +3397,64 @@
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>inputBlocks</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Block.html">Block</a></span>
+|
+
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
 <dl class="details">
 
     
@@ -1154,7 +3484,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="actions_blocks.js.html">actions/blocks.js</a>, <a href="actions_blocks.js.html#line147">line 147</a>
+        <a href="actions_blocks.js.html">actions/blocks.js</a>, <a href="actions_blocks.js.html#line150">line 150</a>
     </li></ul></dd>
     
 
@@ -1170,9 +3500,35 @@
 
 
 
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
         
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Block.html">Block</a></span>
+
+
+    </dd>
+</dl>
+
     
 
+
+
+        
     
 
     
@@ -1188,13 +3544,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Actions.html">Actions</a></li><li><a href="module-Actions.module_Block%2520Actions.html">Block Actions</a></li><li><a href="module-Actions.module_Clipboard%2520Actions.html">Clipboard Actions</a></li><li><a href="module-Actions.module_Focus%2520Actions.html">Focus Actions</a></li><li><a href="module-Actions.module_Inventory%2520Actions.html">Inventory Actions</a></li><li><a href="module-Actions.module_Order%2520Actions.html">Order Actions</a></li><li><a href="module-Actions.module_Project%2520Actions.html">Project Actions</a></li><li><a href="module-Actions.module_UI%2520Actions.html">UI Actions</a></li><li><a href="module-ActionTypes.html">ActionTypes</a></li><li><a href="module-DragTypes.html">DragTypes</a></li><li><a href="module-Models.html">Models</a></li><li><a href="module-roles.html">roles</a></li><li><a href="module-Selectors.html">Selectors</a></li><li><a href="module-Selectors.module_UI%2520Selectors.html">UI Selectors</a></li><li><a href="module-Store.html">Store</a></li><li><a href="module-validators.html">validators</a></li></ul><h3>Classes</h3><ul><li><a href="module-Models.Annotation.html">Annotation</a></li><li><a href="module-Models.Block.html">Block</a></li><li><a href="module-Models.Immutable.html">Immutable</a></li><li><a href="module-Models.Instance.html">Instance</a></li><li><a href="module-Models.Order.html">Order</a></li><li><a href="module-Models.Project.html">Project</a></li><li><a href="Schema.html">Schema</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addComponent">addComponent</a></li><li><a href="global.html#annotate">annotate</a></li><li><a href="global.html#AnnotationSchema">AnnotationSchema</a></li><li><a href="global.html#BlockSchema">BlockSchema</a></li><li><a href="global.html#BlockSourceSchema">BlockSourceSchema</a></li><li><a href="global.html">classless</a></li><li><a href="global.html#downloadExtension">downloadExtension</a></li><li><a href="global.html#get">get</a></li><li><a href="global.html#getName">getName</a></li><li><a href="global.html#getOptions">getOptions</a></li><li><a href="global.html#getRole">getRole</a></li><li><a href="global.html#getSequence">getSequence</a></li><li><a href="global.html#getType">getType</a></li><li><a href="global.html#hasContents">hasContents</a></li><li><a href="global.html#hasSequence">hasSequence</a></li><li><a href="global.html#ImportGenBankModal">ImportGenBankModal</a></li><li><a href="global.html#importGenbankOrCSV">importGenbankOrCSV</a></li><li><a href="global.html#inspectorToggleVisibility">inspectorToggleVisibility</a></li><li><a href="global.html#InstanceSchema">InstanceSchema</a></li><li><a href="global.html#isConstruct">isConstruct</a></li><li><a href="global.html#isFiller">isFiller</a></li><li><a href="global.html#isFixed">isFixed</a></li><li><a href="global.html#isFrozen">isFrozen</a></li><li><a href="global.html#isHidden">isHidden</a></li><li><a href="global.html#isList">isList</a></li><li><a href="global.html#isTemplate">isTemplate</a></li><li><a href="global.html#MenuItem">MenuItem</a></li><li><a href="global.html#MenuSeparator">MenuSeparator</a></li><li><a href="global.html#merge">merge</a></li><li><a href="global.html#MetadataSchema">MetadataSchema</a></li><li><a href="global.html#ModalSpinner">ModalSpinner</a></li><li><a href="global.html#ModalWindow">ModalWindow</a></li><li><a href="global.html#moveComponent">moveComponent</a></li><li><a href="global.html#mutate">mutate</a></li><li><a href="global.html#OkCancel">OkCancel</a></li><li><a href="global.html#Orchestrator">Orchestrator</a></li><li><a href="global.html#OrderParametersSchema">OrderParametersSchema</a></li><li><a href="global.html#OrderSchema">OrderSchema</a></li><li><a href="global.html#OrderStatusSchema">OrderStatusSchema</a></li><li><a href="global.html#ParentSchema">ParentSchema</a></li><li><a href="global.html#ProjectSchema">ProjectSchema</a></li><li><a href="global.html#removeAnnotation">removeAnnotation</a></li><li><a href="global.html#removeComponent">removeComponent</a></li><li><a href="global.html#RulesSchema">RulesSchema</a></li><li><a href="global.html#SequenceSchema">SequenceSchema</a></li><li><a href="global.html#setColor">setColor</a></li><li><a href="global.html#setDescription">setDescription</a></li><li><a href="global.html#setFrozen">setFrozen</a></li><li><a href="global.html#setListBlock">setListBlock</a></li><li><a href="global.html#setName">setName</a></li><li><a href="global.html#setProjectId">setProjectId</a></li><li><a href="global.html#setRole">setRole</a></li><li><a href="global.html#setRule">setRule</a></li><li><a href="global.html#setSequence">setSequence</a></li><li><a href="global.html#toggleOptions">toggleOptions</a></li><li><a href="global.html#UserSchema">UserSchema</a></li><li><a href="global.html">validate</a></li><li><a href="global.html#value">value</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Actions.html">Actions</a></li><li><a href="module-Actions.module_Block%2520Actions.html">Block Actions</a></li><li><a href="module-Actions.module_Clipboard%2520Actions.html">Clipboard Actions</a></li><li><a href="module-Actions.module_Focus%2520Actions.html">Focus Actions</a></li><li><a href="module-Actions.module_Inventory%2520Actions.html">Inventory Actions</a></li><li><a href="module-Actions.module_Order%2520Actions.html">Order Actions</a></li><li><a href="module-Actions.module_Project%2520Actions.html">Project Actions</a></li><li><a href="module-Actions.module_UI%2520Actions.html">UI Actions</a></li><li><a href="module-ActionTypes.html">ActionTypes</a></li><li><a href="module-DragTypes.html">DragTypes</a></li><li><a href="module-Models.html">Models</a></li><li><a href="module-roles.html">roles</a></li><li><a href="module-Selectors.html">Selectors</a></li><li><a href="module-Selectors.module_UI%2520Selectors.html">UI Selectors</a></li><li><a href="module-Store.html">Store</a></li><li><a href="module-validators.html">validators</a></li></ul><h3>Classes</h3><ul><li><a href="Annotation.html">Annotation</a></li><li><a href="Block.html">Block</a></li><li><a href="Immutable.html">Immutable</a></li><li><a href="Instance.html">Instance</a></li><li><a href="Order.html">Order</a></li><li><a href="Project.html">Project</a></li><li><a href="Schema.html">Schema</a></li></ul><h3>Global</h3><ul><li><a href="global.html#AnnotationSchema">AnnotationSchema</a></li><li><a href="global.html#BlockSchema">BlockSchema</a></li><li><a href="global.html#BlockSourceSchema">BlockSourceSchema</a></li><li><a href="global.html#downloadExtension">downloadExtension</a></li><li><a href="global.html#ImportGenBankModal">ImportGenBankModal</a></li><li><a href="global.html#importGenbankOrCSV">importGenbankOrCSV</a></li><li><a href="global.html#inspectorToggleVisibility">inspectorToggleVisibility</a></li><li><a href="global.html#InstanceSchema">InstanceSchema</a></li><li><a href="global.html#MenuItem">MenuItem</a></li><li><a href="global.html#MenuSeparator">MenuSeparator</a></li><li><a href="global.html#MetadataSchema">MetadataSchema</a></li><li><a href="global.html#ModalSpinner">ModalSpinner</a></li><li><a href="global.html#ModalWindow">ModalWindow</a></li><li><a href="global.html#OkCancel">OkCancel</a></li><li><a href="global.html#Orchestrator">Orchestrator</a></li><li><a href="global.html#OrderParametersSchema">OrderParametersSchema</a></li><li><a href="global.html#OrderSchema">OrderSchema</a></li><li><a href="global.html#OrderStatusSchema">OrderStatusSchema</a></li><li><a href="global.html#ParentSchema">ParentSchema</a></li><li><a href="global.html#ProjectSchema">ProjectSchema</a></li><li><a href="global.html#RulesSchema">RulesSchema</a></li><li><a href="global.html#SequenceSchema">SequenceSchema</a></li><li><a href="global.html#UserSchema">UserSchema</a></li><li><a href="global.html#value">value</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Thu Jul 28 2016 16:31:31 GMT-0700 (PDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Thu Jul 28 2016 17:12:15 GMT-0700 (PDT)
 </footer>
 
 <script> prettyPrint(); </script>

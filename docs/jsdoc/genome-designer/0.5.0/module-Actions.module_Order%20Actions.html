@@ -52,12 +52,18 @@
     
 
     
-        <h3 class="subsection-title">Members</h3>
+
+    
+        <h3 class="subsection-title">Methods</h3>
 
         
             
-<h4 class="name" id="~orderCreate"><span class="type-signature">(inner) </span>orderCreate<span class="type-signature"></span></h4>
 
+    
+
+    <h4 class="name" id="~orderCreate"><span class="type-signature">(inner) </span>orderCreate<span class="signature">(projectId, constructIds, parameters)</span><span class="type-signature"> &rarr; {<a href="Order.html">Order</a>}</span></h4>
+
+    
 
 
 
@@ -71,6 +77,107 @@
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>projectId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">UUID</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>constructIds</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Array.&lt;UUID></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Construct Ids involved in the order</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>parameters</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
 <dl class="details">
 
     
@@ -100,7 +207,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="actions_orders.js.html">actions/orders.js</a>, <a href="actions_orders.js.html#line160">line 160</a>
+        <a href="actions_orders.js.html">actions/orders.js</a>, <a href="actions_orders.js.html#line163">line 163</a>
     </li></ul></dd>
     
 
@@ -116,10 +223,42 @@
 
 
 
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Order.html">Order</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
         
             
-<h4 class="name" id="~orderDetach"><span class="type-signature">(inner) </span>orderDetach<span class="type-signature"></span></h4>
 
+    
+
+    <h4 class="name" id="~orderDetach"><span class="type-signature">(inner) </span>orderDetach<span class="signature">(orderId)</span><span class="type-signature"> &rarr; {UUID}</span></h4>
+
+    
 
 
 
@@ -133,6 +272,61 @@
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>orderId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">UUID</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
 <dl class="details">
 
     
@@ -162,7 +356,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="actions_orders.js.html">actions/orders.js</a>, <a href="actions_orders.js.html#line357">line 357</a>
+        <a href="actions_orders.js.html">actions/orders.js</a>, <a href="actions_orders.js.html#line365">line 365</a>
     </li></ul></dd>
     
 
@@ -178,10 +372,46 @@
 
 
 
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Order ID</p>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">UUID</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
         
             
-<h4 class="name" id="~orderGenerateConstructs"><span class="type-signature">(inner) </span>orderGenerateConstructs<span class="type-signature"></span></h4>
 
+    
+
+    <h4 class="name" id="~orderGenerateConstructs"><span class="type-signature">(inner) </span>orderGenerateConstructs<span class="signature">(orderId, allPossibilities<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {function}</span></h4>
+
+    
 
 
 
@@ -196,6 +426,116 @@
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>orderId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">UUID</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>allPossibilities</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last"><p>Force all combinations if only a subset specified in order parameters</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
 <dl class="details">
 
     
@@ -225,7 +565,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="actions_orders.js.html">actions/orders.js</a>, <a href="actions_orders.js.html#line208">line 208</a>
+        <a href="actions_orders.js.html">actions/orders.js</a>, <a href="actions_orders.js.html#line212">line 212</a>
     </li></ul></dd>
     
 
@@ -241,10 +581,54 @@
 
 
 
+
+
+
+
+
+<h5>Throws:</h5>
+
+        
+
+    <div class="param-desc">
+    
+        <p>If the constructs are not specs</p>
+    
+    </div>
+
+
+    
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">function</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
         
             
-<h4 class="name" id="~orderGet"><span class="type-signature">(inner) </span>orderGet<span class="type-signature"></span></h4>
 
+    
+
+    <h4 class="name" id="~orderGet"><span class="type-signature">(inner) </span>orderGet<span class="signature">(projectId, orderId, avoidCache<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+
+    
 
 
 
@@ -258,6 +642,151 @@
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>projectId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">UUID</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>orderId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">UUID</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>avoidCache</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
 <dl class="details">
 
     
@@ -287,7 +816,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="actions_orders.js.html">actions/orders.js</a>, <a href="actions_orders.js.html#line129">line 129</a>
+        <a href="actions_orders.js.html">actions/orders.js</a>, <a href="actions_orders.js.html#line131">line 131</a>
     </li></ul></dd>
     
 
@@ -303,10 +832,42 @@
 
 
 
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
         
             
-<h4 class="name" id="~orderSetName"><span class="type-signature">(inner) </span>orderSetName<span class="type-signature"></span></h4>
 
+    
+
+    <h4 class="name" id="~orderSetName"><span class="type-signature">(inner) </span>orderSetName<span class="signature">(orderId, name)</span><span class="type-signature"> &rarr; {<a href="Order.html">Order</a>}</span></h4>
+
+    
 
 
 
@@ -320,6 +881,84 @@
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>orderId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">UUID</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>name</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
 <dl class="details">
 
     
@@ -349,7 +988,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="actions_orders.js.html">actions/orders.js</a>, <a href="actions_orders.js.html#line289">line 289</a>
+        <a href="actions_orders.js.html">actions/orders.js</a>, <a href="actions_orders.js.html#line295">line 295</a>
     </li></ul></dd>
     
 
@@ -365,10 +1004,42 @@
 
 
 
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Order.html">Order</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
         
             
-<h4 class="name" id="~orderSetParameters"><span class="type-signature">(inner) </span>orderSetParameters<span class="type-signature"></span></h4>
 
+    
+
+    <h4 class="name" id="~orderSetParameters"><span class="type-signature">(inner) </span>orderSetParameters<span class="signature">(orderId, inputParameters, shouldMerge<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Order.html">Order</a>}</span></h4>
+
+    
 
 
 
@@ -382,6 +1053,151 @@
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>orderId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">UUID</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>inputParameters</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>New parameters, or parameters to merge</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>shouldMerge</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
 <dl class="details">
 
     
@@ -411,7 +1227,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="actions_orders.js.html">actions/orders.js</a>, <a href="actions_orders.js.html#line243">line 243</a>
+        <a href="actions_orders.js.html">actions/orders.js</a>, <a href="actions_orders.js.html#line248">line 248</a>
     </li></ul></dd>
     
 
@@ -427,10 +1243,42 @@
 
 
 
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Order.html">Order</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
         
             
-<h4 class="name" id="~orderSubmit"><span class="type-signature">(inner) </span>orderSubmit<span class="type-signature"></span></h4>
 
+    
+
+    <h4 class="name" id="~orderSubmit"><span class="type-signature">(inner) </span>orderSubmit<span class="signature">(orderId, foundry)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+
+    
 
 
 
@@ -445,6 +1293,84 @@
 
 
 
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>orderId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">UUID</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>foundry</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
 <dl class="details">
 
     
@@ -474,7 +1400,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="actions_orders.js.html">actions/orders.js</a>, <a href="actions_orders.js.html#line312">line 312</a>
+        <a href="actions_orders.js.html">actions/orders.js</a>, <a href="actions_orders.js.html#line319">line 319</a>
     </li></ul></dd>
     
 
@@ -490,9 +1416,35 @@
 
 
 
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
         
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+    </dd>
+</dl>
+
     
 
+
+
+        
     
 
     
@@ -508,13 +1460,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Actions.html">Actions</a></li><li><a href="module-Actions.module_Block%2520Actions.html">Block Actions</a></li><li><a href="module-Actions.module_Clipboard%2520Actions.html">Clipboard Actions</a></li><li><a href="module-Actions.module_Focus%2520Actions.html">Focus Actions</a></li><li><a href="module-Actions.module_Inventory%2520Actions.html">Inventory Actions</a></li><li><a href="module-Actions.module_Order%2520Actions.html">Order Actions</a></li><li><a href="module-Actions.module_Project%2520Actions.html">Project Actions</a></li><li><a href="module-Actions.module_UI%2520Actions.html">UI Actions</a></li><li><a href="module-ActionTypes.html">ActionTypes</a></li><li><a href="module-DragTypes.html">DragTypes</a></li><li><a href="module-Models.html">Models</a></li><li><a href="module-roles.html">roles</a></li><li><a href="module-Selectors.html">Selectors</a></li><li><a href="module-Selectors.module_UI%2520Selectors.html">UI Selectors</a></li><li><a href="module-Store.html">Store</a></li><li><a href="module-validators.html">validators</a></li></ul><h3>Classes</h3><ul><li><a href="module-Models.Annotation.html">Annotation</a></li><li><a href="module-Models.Block.html">Block</a></li><li><a href="module-Models.Immutable.html">Immutable</a></li><li><a href="module-Models.Instance.html">Instance</a></li><li><a href="module-Models.Order.html">Order</a></li><li><a href="module-Models.Project.html">Project</a></li><li><a href="Schema.html">Schema</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addComponent">addComponent</a></li><li><a href="global.html#annotate">annotate</a></li><li><a href="global.html#AnnotationSchema">AnnotationSchema</a></li><li><a href="global.html#BlockSchema">BlockSchema</a></li><li><a href="global.html#BlockSourceSchema">BlockSourceSchema</a></li><li><a href="global.html">classless</a></li><li><a href="global.html#downloadExtension">downloadExtension</a></li><li><a href="global.html#get">get</a></li><li><a href="global.html#getName">getName</a></li><li><a href="global.html#getOptions">getOptions</a></li><li><a href="global.html#getRole">getRole</a></li><li><a href="global.html#getSequence">getSequence</a></li><li><a href="global.html#getType">getType</a></li><li><a href="global.html#hasContents">hasContents</a></li><li><a href="global.html#hasSequence">hasSequence</a></li><li><a href="global.html#ImportGenBankModal">ImportGenBankModal</a></li><li><a href="global.html#importGenbankOrCSV">importGenbankOrCSV</a></li><li><a href="global.html#inspectorToggleVisibility">inspectorToggleVisibility</a></li><li><a href="global.html#InstanceSchema">InstanceSchema</a></li><li><a href="global.html#isConstruct">isConstruct</a></li><li><a href="global.html#isFiller">isFiller</a></li><li><a href="global.html#isFixed">isFixed</a></li><li><a href="global.html#isFrozen">isFrozen</a></li><li><a href="global.html#isHidden">isHidden</a></li><li><a href="global.html#isList">isList</a></li><li><a href="global.html#isTemplate">isTemplate</a></li><li><a href="global.html#MenuItem">MenuItem</a></li><li><a href="global.html#MenuSeparator">MenuSeparator</a></li><li><a href="global.html#merge">merge</a></li><li><a href="global.html#MetadataSchema">MetadataSchema</a></li><li><a href="global.html#ModalSpinner">ModalSpinner</a></li><li><a href="global.html#ModalWindow">ModalWindow</a></li><li><a href="global.html#moveComponent">moveComponent</a></li><li><a href="global.html#mutate">mutate</a></li><li><a href="global.html#OkCancel">OkCancel</a></li><li><a href="global.html#Orchestrator">Orchestrator</a></li><li><a href="global.html#OrderParametersSchema">OrderParametersSchema</a></li><li><a href="global.html#OrderSchema">OrderSchema</a></li><li><a href="global.html#OrderStatusSchema">OrderStatusSchema</a></li><li><a href="global.html#ParentSchema">ParentSchema</a></li><li><a href="global.html#ProjectSchema">ProjectSchema</a></li><li><a href="global.html#removeAnnotation">removeAnnotation</a></li><li><a href="global.html#removeComponent">removeComponent</a></li><li><a href="global.html#RulesSchema">RulesSchema</a></li><li><a href="global.html#SequenceSchema">SequenceSchema</a></li><li><a href="global.html#setColor">setColor</a></li><li><a href="global.html#setDescription">setDescription</a></li><li><a href="global.html#setFrozen">setFrozen</a></li><li><a href="global.html#setListBlock">setListBlock</a></li><li><a href="global.html#setName">setName</a></li><li><a href="global.html#setProjectId">setProjectId</a></li><li><a href="global.html#setRole">setRole</a></li><li><a href="global.html#setRule">setRule</a></li><li><a href="global.html#setSequence">setSequence</a></li><li><a href="global.html#toggleOptions">toggleOptions</a></li><li><a href="global.html#UserSchema">UserSchema</a></li><li><a href="global.html">validate</a></li><li><a href="global.html#value">value</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Actions.html">Actions</a></li><li><a href="module-Actions.module_Block%2520Actions.html">Block Actions</a></li><li><a href="module-Actions.module_Clipboard%2520Actions.html">Clipboard Actions</a></li><li><a href="module-Actions.module_Focus%2520Actions.html">Focus Actions</a></li><li><a href="module-Actions.module_Inventory%2520Actions.html">Inventory Actions</a></li><li><a href="module-Actions.module_Order%2520Actions.html">Order Actions</a></li><li><a href="module-Actions.module_Project%2520Actions.html">Project Actions</a></li><li><a href="module-Actions.module_UI%2520Actions.html">UI Actions</a></li><li><a href="module-ActionTypes.html">ActionTypes</a></li><li><a href="module-DragTypes.html">DragTypes</a></li><li><a href="module-Models.html">Models</a></li><li><a href="module-roles.html">roles</a></li><li><a href="module-Selectors.html">Selectors</a></li><li><a href="module-Selectors.module_UI%2520Selectors.html">UI Selectors</a></li><li><a href="module-Store.html">Store</a></li><li><a href="module-validators.html">validators</a></li></ul><h3>Classes</h3><ul><li><a href="Annotation.html">Annotation</a></li><li><a href="Block.html">Block</a></li><li><a href="Immutable.html">Immutable</a></li><li><a href="Instance.html">Instance</a></li><li><a href="Order.html">Order</a></li><li><a href="Project.html">Project</a></li><li><a href="Schema.html">Schema</a></li></ul><h3>Global</h3><ul><li><a href="global.html#AnnotationSchema">AnnotationSchema</a></li><li><a href="global.html#BlockSchema">BlockSchema</a></li><li><a href="global.html#BlockSourceSchema">BlockSourceSchema</a></li><li><a href="global.html#downloadExtension">downloadExtension</a></li><li><a href="global.html#ImportGenBankModal">ImportGenBankModal</a></li><li><a href="global.html#importGenbankOrCSV">importGenbankOrCSV</a></li><li><a href="global.html#inspectorToggleVisibility">inspectorToggleVisibility</a></li><li><a href="global.html#InstanceSchema">InstanceSchema</a></li><li><a href="global.html#MenuItem">MenuItem</a></li><li><a href="global.html#MenuSeparator">MenuSeparator</a></li><li><a href="global.html#MetadataSchema">MetadataSchema</a></li><li><a href="global.html#ModalSpinner">ModalSpinner</a></li><li><a href="global.html#ModalWindow">ModalWindow</a></li><li><a href="global.html#OkCancel">OkCancel</a></li><li><a href="global.html#Orchestrator">Orchestrator</a></li><li><a href="global.html#OrderParametersSchema">OrderParametersSchema</a></li><li><a href="global.html#OrderSchema">OrderSchema</a></li><li><a href="global.html#OrderStatusSchema">OrderStatusSchema</a></li><li><a href="global.html#ParentSchema">ParentSchema</a></li><li><a href="global.html#ProjectSchema">ProjectSchema</a></li><li><a href="global.html#RulesSchema">RulesSchema</a></li><li><a href="global.html#SequenceSchema">SequenceSchema</a></li><li><a href="global.html#UserSchema">UserSchema</a></li><li><a href="global.html#value">value</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Thu Jul 28 2016 16:31:31 GMT-0700 (PDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Thu Jul 28 2016 17:12:15 GMT-0700 (PDT)
 </footer>
 
 <script> prettyPrint(); </script>

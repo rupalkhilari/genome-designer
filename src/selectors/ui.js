@@ -21,7 +21,7 @@ limitations under the License.
 
 /**
  * Check if the inventory is open
- * @memberOf module:Inventory Selectors
+ * @function
  * @returns {boolean} true if the inventory is open
  */
 export const inventoryIsVisible = () => {
@@ -32,7 +32,7 @@ export const inventoryIsVisible = () => {
 
 /**
  * Check if the inspector is open
- * @memberOf module:UI Selectors
+ * @function
  * @returns {boolean} true if the inspector is open
  */
 export const inspectorIsVisible = () => {
@@ -43,7 +43,7 @@ export const inspectorIsVisible = () => {
 
 /**
  * Check if the detail view is open
- * @memberOf module:UI Selectors
+ * @function
  * @returns {boolean} true if the detail view is open
  */
 export const detailViewIsVisible = () => {

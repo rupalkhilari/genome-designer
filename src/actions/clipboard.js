@@ -22,6 +22,7 @@ import invariant from 'invariant';
 
 /**
  * Set the data on the clipboard
+ * @function
  * @param {Array} formats
  * @param {Array} data
  * @returns {Object} In form {formats, data}

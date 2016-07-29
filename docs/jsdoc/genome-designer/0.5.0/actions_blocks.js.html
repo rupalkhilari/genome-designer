@@ -60,6 +60,7 @@ import { pauseAction, resumeAction } from '../store/pausableStore';
 
 /**
  * Retrieves a block, and its options and components if specified
+ * @function
  * @param {UUID} blockId
  * @param {UUID} inputProjectId
  * @param {boolean} [withContents=false]
@@ -91,6 +92,7 @@ export const blockLoad = (blockId, inputProjectId, withContents = false, skipIfC
 
 /**
  * Create a new Block
+ * @function
  * @param {Object} initialModel
  * @param {boolean} [useDefaults=true] Set e.g. current project ID automatically. Set to false if you are creating a block outside of a project (i.e. floating, not associated with project yet)
  * @returns {Block}
@@ -112,6 +114,7 @@ export const blockCreate = (initialModel, useDefaults = true) => {
 
 /**
  * Add Block Models to the store directly
+ * @function
  * @param {...Block|Object} inputBlocks
  * @returns {...Block}
  */
@@ -142,7 +145,7 @@ export const blockMerge = (blockId, toMerge) => {
 
 /**
  * Clone a block (and its children, by default)
- *
+ * @function
  * @param blockInput {ID|Object} JSON of block directly, or ID. Accept both since inventory items may not be in the store, so we need to pass the block directly. Prefer to use ID.
  * @param parentObjectInput {Object} information about parent, defaults to generated:
  *  {id: from block input
@@ -222,6 +225,7 @@ export const blockClone = (blockInput, parentObjectInput = {}, shallowOnly = fal
 
 /**
  * Freeze a block, so that no further changes can be made to it without cloning it first
+ * @function
  * @param {UUID} blockId
  * @param {boolean} [recursive=true] Apply to contents (components + options)
  * @returns {...Block} all blocks frozen
@@ -247,6 +251,7 @@ export const blockFreeze = (blockId, recursive = true) => {
 
 /**
  * Deletes blocks from the store by ID, and removes from constructs containing it
+ * @function
  * @param {...UUID} blockIds
  * @returns {...UUID} IDs removed
  */
@@ -282,6 +287,7 @@ export const blockDelete = (...blockIds) => {
 
 /**
  * Remove blocks from constructs / projects, but leave in the store, and removing block from constructs containing it
+ * @function
  * @param {...UUID} blockIds
  * @returns {...UUID} IDs removed
  */
@@ -313,6 +319,7 @@ export const blockDetach = (...blockIds) => {
 
 /**
  * Remove components from a construct
+ * @function
  * @param {UUID} constructId
  * @param {...UUID} componentIds
  * @returns {Block} Updated construct
@@ -337,6 +344,7 @@ export const blockRemoveComponent = (constructId, ...componentIds) => {
  * Add component to a construct.
  * Removes from previous parent if currently part of a construct
  * Note you may use blockAddComponents to add more than one at a time.
+ * @function
  * @param {UUID} blockId Construct
  * @param {UUID} componentId Component
  * @param {number} index to insert component
@@ -391,6 +399,7 @@ export const blockAddComponent = (blockId, componentId, index = -1, forceProject
 
 /**
  * Add multiple components to a construct at once, calling blockAddComponent
+ * @function
  * @param {UUID} blockId Construct
  * @param {Array.&lt;UUID>} componentIds Components
  * @param {number} index to insert component
@@ -414,7 +423,8 @@ export const blockAddComponents = (blockId, componentIds, index, forceProjectId 
 };
 
 /**
- * Move component within a construt
+ * Move component within a construct
+ * @function
  * @param {UUID} blockId
  * @param {UUID} componentId
  * @param {number} newIndex
@@ -471,6 +481,7 @@ export const blockOptionsRemove = (blockId, ...optionIds) => {
 
 /**
  * Toggle whether a list option is active
+ * @function
  * @param blockId
  * @param optionIds
  * @returns {function(*, *)}
@@ -495,6 +506,7 @@ export const blockOptionsToggle = (blockId, ...optionIds) => {
 
 /**
  * Rename a block
+ * @function
  * @param {UUID} blockId
  * @param {string} name
  * @returns {Block} Updated Block
@@ -519,6 +531,7 @@ export const blockRename = (blockId, name) => {
 
 /**
  * Set block's color
+ * @function
  * @param {UUID} blockId
  * @param {string} color Hex color string
  * @returns {Block} Updated Block
@@ -543,6 +556,7 @@ export const blockSetColor = (blockId, color) => {
 
 /**
  * Set block's role
+ * @function
  * @param {UUID} blockId
  * @param {string} role Role as defined in {@link module:roles}
  * @returns {Block} Updated Block
@@ -573,6 +587,7 @@ export const blockSetRole = (blockId, role) => {
 
 /**
  * Add an annotation to a block
+ * @function
  * @param {UUID} blockId
  * @param {Annotation} annotation
  * @returns {Block} Updated Block
@@ -592,6 +607,7 @@ export const blockAnnotate = (blockId, annotation) => {
 
 /**
  * Remove an annotation
+ * @function
  * @param {UUID} blockId
  * @param {Annotation|string} annotation Annotation or its name
  * @returns {Block} Updated Block
@@ -615,6 +631,7 @@ export const blockRemoveAnnotation = (blockId, annotation) => {
 
 /**
  * Download a Block's sequence
+ * @function
  * @param {UUID} blockId Block ID with sequence to retrieve
  * @returns {Promise} Resolves to plain string of sequence
  */
@@ -627,6 +644,7 @@ export const blockGetSequence = (blockId) => {
 
 /**
  * Set a block's sequence, updating its source and sequence metadata
+ * @function
  * @param {UUID} blockId
  * @param {string} sequence Sequence string
  * @param {boolean} [useStrict] Use strict sequence validation (canonical IUPAC bases)
@@ -657,13 +675,13 @@ export const blockSetSequence = (blockId, sequence, useStrict) => {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Actions.html">Actions</a></li><li><a href="module-Actions.module_Block%2520Actions.html">Block Actions</a></li><li><a href="module-Actions.module_Clipboard%2520Actions.html">Clipboard Actions</a></li><li><a href="module-Actions.module_Focus%2520Actions.html">Focus Actions</a></li><li><a href="module-Actions.module_Inventory%2520Actions.html">Inventory Actions</a></li><li><a href="module-Actions.module_Order%2520Actions.html">Order Actions</a></li><li><a href="module-Actions.module_Project%2520Actions.html">Project Actions</a></li><li><a href="module-Actions.module_UI%2520Actions.html">UI Actions</a></li><li><a href="module-ActionTypes.html">ActionTypes</a></li><li><a href="module-DragTypes.html">DragTypes</a></li><li><a href="module-Models.html">Models</a></li><li><a href="module-roles.html">roles</a></li><li><a href="module-Selectors.html">Selectors</a></li><li><a href="module-Selectors.module_UI%2520Selectors.html">UI Selectors</a></li><li><a href="module-Store.html">Store</a></li><li><a href="module-validators.html">validators</a></li></ul><h3>Classes</h3><ul><li><a href="module-Models.Annotation.html">Annotation</a></li><li><a href="module-Models.Block.html">Block</a></li><li><a href="module-Models.Immutable.html">Immutable</a></li><li><a href="module-Models.Instance.html">Instance</a></li><li><a href="module-Models.Order.html">Order</a></li><li><a href="module-Models.Project.html">Project</a></li><li><a href="Schema.html">Schema</a></li></ul><h3>Global</h3><ul><li><a href="global.html#addComponent">addComponent</a></li><li><a href="global.html#annotate">annotate</a></li><li><a href="global.html#AnnotationSchema">AnnotationSchema</a></li><li><a href="global.html#BlockSchema">BlockSchema</a></li><li><a href="global.html#BlockSourceSchema">BlockSourceSchema</a></li><li><a href="global.html">classless</a></li><li><a href="global.html#downloadExtension">downloadExtension</a></li><li><a href="global.html#get">get</a></li><li><a href="global.html#getName">getName</a></li><li><a href="global.html#getOptions">getOptions</a></li><li><a href="global.html#getRole">getRole</a></li><li><a href="global.html#getSequence">getSequence</a></li><li><a href="global.html#getType">getType</a></li><li><a href="global.html#hasContents">hasContents</a></li><li><a href="global.html#hasSequence">hasSequence</a></li><li><a href="global.html#ImportGenBankModal">ImportGenBankModal</a></li><li><a href="global.html#importGenbankOrCSV">importGenbankOrCSV</a></li><li><a href="global.html#inspectorToggleVisibility">inspectorToggleVisibility</a></li><li><a href="global.html#InstanceSchema">InstanceSchema</a></li><li><a href="global.html#isConstruct">isConstruct</a></li><li><a href="global.html#isFiller">isFiller</a></li><li><a href="global.html#isFixed">isFixed</a></li><li><a href="global.html#isFrozen">isFrozen</a></li><li><a href="global.html#isHidden">isHidden</a></li><li><a href="global.html#isList">isList</a></li><li><a href="global.html#isTemplate">isTemplate</a></li><li><a href="global.html#MenuItem">MenuItem</a></li><li><a href="global.html#MenuSeparator">MenuSeparator</a></li><li><a href="global.html#merge">merge</a></li><li><a href="global.html#MetadataSchema">MetadataSchema</a></li><li><a href="global.html#ModalSpinner">ModalSpinner</a></li><li><a href="global.html#ModalWindow">ModalWindow</a></li><li><a href="global.html#moveComponent">moveComponent</a></li><li><a href="global.html#mutate">mutate</a></li><li><a href="global.html#OkCancel">OkCancel</a></li><li><a href="global.html#Orchestrator">Orchestrator</a></li><li><a href="global.html#OrderParametersSchema">OrderParametersSchema</a></li><li><a href="global.html#OrderSchema">OrderSchema</a></li><li><a href="global.html#OrderStatusSchema">OrderStatusSchema</a></li><li><a href="global.html#ParentSchema">ParentSchema</a></li><li><a href="global.html#ProjectSchema">ProjectSchema</a></li><li><a href="global.html#removeAnnotation">removeAnnotation</a></li><li><a href="global.html#removeComponent">removeComponent</a></li><li><a href="global.html#RulesSchema">RulesSchema</a></li><li><a href="global.html#SequenceSchema">SequenceSchema</a></li><li><a href="global.html#setColor">setColor</a></li><li><a href="global.html#setDescription">setDescription</a></li><li><a href="global.html#setFrozen">setFrozen</a></li><li><a href="global.html#setListBlock">setListBlock</a></li><li><a href="global.html#setName">setName</a></li><li><a href="global.html#setProjectId">setProjectId</a></li><li><a href="global.html#setRole">setRole</a></li><li><a href="global.html#setRule">setRule</a></li><li><a href="global.html#setSequence">setSequence</a></li><li><a href="global.html#toggleOptions">toggleOptions</a></li><li><a href="global.html#UserSchema">UserSchema</a></li><li><a href="global.html">validate</a></li><li><a href="global.html#value">value</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Actions.html">Actions</a></li><li><a href="module-Actions.module_Block%2520Actions.html">Block Actions</a></li><li><a href="module-Actions.module_Clipboard%2520Actions.html">Clipboard Actions</a></li><li><a href="module-Actions.module_Focus%2520Actions.html">Focus Actions</a></li><li><a href="module-Actions.module_Inventory%2520Actions.html">Inventory Actions</a></li><li><a href="module-Actions.module_Order%2520Actions.html">Order Actions</a></li><li><a href="module-Actions.module_Project%2520Actions.html">Project Actions</a></li><li><a href="module-Actions.module_UI%2520Actions.html">UI Actions</a></li><li><a href="module-ActionTypes.html">ActionTypes</a></li><li><a href="module-DragTypes.html">DragTypes</a></li><li><a href="module-Models.html">Models</a></li><li><a href="module-roles.html">roles</a></li><li><a href="module-Selectors.html">Selectors</a></li><li><a href="module-Selectors.module_UI%2520Selectors.html">UI Selectors</a></li><li><a href="module-Store.html">Store</a></li><li><a href="module-validators.html">validators</a></li></ul><h3>Classes</h3><ul><li><a href="Annotation.html">Annotation</a></li><li><a href="Block.html">Block</a></li><li><a href="Immutable.html">Immutable</a></li><li><a href="Instance.html">Instance</a></li><li><a href="Order.html">Order</a></li><li><a href="Project.html">Project</a></li><li><a href="Schema.html">Schema</a></li></ul><h3>Global</h3><ul><li><a href="global.html#AnnotationSchema">AnnotationSchema</a></li><li><a href="global.html#BlockSchema">BlockSchema</a></li><li><a href="global.html#BlockSourceSchema">BlockSourceSchema</a></li><li><a href="global.html#downloadExtension">downloadExtension</a></li><li><a href="global.html#ImportGenBankModal">ImportGenBankModal</a></li><li><a href="global.html#importGenbankOrCSV">importGenbankOrCSV</a></li><li><a href="global.html#inspectorToggleVisibility">inspectorToggleVisibility</a></li><li><a href="global.html#InstanceSchema">InstanceSchema</a></li><li><a href="global.html#MenuItem">MenuItem</a></li><li><a href="global.html#MenuSeparator">MenuSeparator</a></li><li><a href="global.html#MetadataSchema">MetadataSchema</a></li><li><a href="global.html#ModalSpinner">ModalSpinner</a></li><li><a href="global.html#ModalWindow">ModalWindow</a></li><li><a href="global.html#OkCancel">OkCancel</a></li><li><a href="global.html#Orchestrator">Orchestrator</a></li><li><a href="global.html#OrderParametersSchema">OrderParametersSchema</a></li><li><a href="global.html#OrderSchema">OrderSchema</a></li><li><a href="global.html#OrderStatusSchema">OrderStatusSchema</a></li><li><a href="global.html#ParentSchema">ParentSchema</a></li><li><a href="global.html#ProjectSchema">ProjectSchema</a></li><li><a href="global.html#RulesSchema">RulesSchema</a></li><li><a href="global.html#SequenceSchema">SequenceSchema</a></li><li><a href="global.html#UserSchema">UserSchema</a></li><li><a href="global.html#value">value</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Thu Jul 28 2016 16:31:31 GMT-0700 (PDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Thu Jul 28 2016 17:12:15 GMT-0700 (PDT)
 </footer>
 
 <script> prettyPrint(); </script>

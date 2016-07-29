@@ -44,6 +44,7 @@ function debouncer(wait = 250, immediate = false) {
 
 /**
  * Set the inventory search term, without actually running a search
+ * @function
  * @param {string} searchTerm
  * @returns {string} Search term
  */
@@ -59,6 +60,7 @@ export const inventorySetSearchTerm = (searchTerm) => {
 
 /**
  * Search for a term across active search sources
+ * @function
  * @param {string} inputTerm Term to search for
  * @param {Object} [options=null]
  * @param {boolean} [skipDebounce=false]
@@ -106,6 +108,7 @@ export const inventorySearch = (inputTerm = '', options = null, skipDebounce = f
 
 /**
  * Toggle whether the sources view is open
+ * @function
  * @param {boolean} [forceState] Ignore to toggle
  * @returns {boolean} Whether showing now
  */
@@ -133,6 +136,7 @@ export const inventoryShowSourcesToggling = (forceState) => {
 
 /**
  * Set the list of active search sources
+ * @function
  * @param {Array} sourceList List of sources
  * @returns {Array} Sources now using
  */
@@ -153,6 +157,7 @@ export const inventorySetSources = (sourceList = []) => {
 
 /**
  * Toggle whether a search source is active
+ * @function
  * @param {string} source
  * @returns {Array} List of active sources
  */
@@ -183,6 +188,7 @@ export const inventoryToggleSource = (source) => {
  * Toggle whether an inventory Source is visible. This controls whether its results are visible, not whether the source is active.
  *
  * don't check this for source being in source list since currently use this for also handling whether a role is visible (see inventory component, depends on how grouped)
+ * @function
  * @param {string} source
  * @returns {Object} Map of sources to whether they are visible
  */

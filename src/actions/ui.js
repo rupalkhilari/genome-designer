@@ -23,6 +23,7 @@ import extensionRegistry from '../extensions/clientRegistry';
 
 /**
  * Toggle whether the inspector is visible
+ * @function
  * @param {boolean} [forceState] Omit to toggle
  * @returns {boolean} whether visible
  */
@@ -45,6 +46,7 @@ export const inspectorToggleVisibility = (forceState) => {
 
 /**
  * Toggle whether the inventory is visible
+ * @function
  * @param {boolean} [forceState] Omit to toggle
  * @returns {boolean} whether visible
  */
@@ -67,6 +69,7 @@ export const inventoryToggleVisibility = (forceState) => {
 
 /**
  * Select which tab of the inventory is active
+ * @function
  * @todo - validate a legitimate tab is selected
  * @param {string} tab Key of tab to be active
  * @returns {string} Tab active
@@ -85,6 +88,7 @@ export const inventorySelectTab = (tab) => {
 
 /**
  * Toggle whether the detail view of the design canvas is open
+ * @function
  * @param {boolean} [forceState] Omit to toggle
  * @returns {boolean} next state
  */
@@ -107,6 +111,7 @@ export const uiToggleDetailView = (forceState) => {
 
 /**
  * Select an extension to show in the detail view
+ * @function
  * @param {string} key Key (name) of extension
  * @throws If manifest not registered
  * @returns {string} selected manifest key

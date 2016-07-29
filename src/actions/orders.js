@@ -30,6 +30,7 @@ import * as instanceMap from '../store/instanceMap';
 
 /**
  * List a user's orders
+ * @function
  * @param {UUID} projectId
  * @param {boolean} [avoidCache=false]
  * @returns {Array.<Order>} Manifests of user's Orders
@@ -58,6 +59,7 @@ export const orderList = (projectId, avoidCache = false) => {
 
 /**
  * Retreive an order
+ * @function
  * @param {UUID} projectId
  * @param {UUID} orderId
  * @param {boolean} [avoidCache=false]
@@ -90,6 +92,7 @@ export const orderGet = (projectId, orderId, avoidCache = false) => {
 
 /**
  * Create an order with basic fields
+ * @function
  * @param {UUID} projectId
  * @param {Array.<UUID>} constructIds Construct Ids involved in the order
  * @param {Object} parameters
@@ -131,6 +134,7 @@ export const orderCreate = (projectId, constructIds = [], parameters = {}) => {
  * Generate all combinations for the constructs of an order (i.e., expand list blocks etc.)
  *
  * Parameters must be valid. returns an array with the generated constructs, does not affect the order itself.
+ * @function
  * @param {UUID} orderId
  * @param {boolean} [allPossibilities=false] Force all combinations if only a subset specified in order parameters
  * @throws If the constructs are not specs
@@ -157,6 +161,7 @@ export const orderGenerateConstructs = (orderId, allPossibilities = false) => {
 
 /**
  * Set the parameters of the order
+ * @function
  * @param {UUID} orderId
  * @param {Object} inputParameters New parameters, or parameters to merge
  * @param {boolean} [shouldMerge=false]
@@ -201,6 +206,7 @@ export const orderSetParameters = (orderId, inputParameters = {}, shouldMerge = 
 
 /**
  * Set the name of an order
+ * @function
  * @param {UUID} orderId
  * @param {string} name
  * @returns {Order}
@@ -222,6 +228,7 @@ export const orderSetName = (orderId, name) => {
  * Submit an order. Attempt to submit it to the foundry specified
  *
  * If successful, this will freeze the order and save it on the server, adding it to the project's order history.
+ * @function
  * @param {UUID} orderId
  * @param {string} foundry
  * @returns {Promise}
@@ -269,6 +276,7 @@ export const orderSubmit = (orderId, foundry) => {
 
 /**
  * Remove an order from the store
+ * @function
  * @param {UUID} orderId
  * @returns {UUID} Order ID
  */
