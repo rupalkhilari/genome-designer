@@ -4,10 +4,11 @@ import { callExtensionApi as api } from '../middleware/extensions';
 import { readProjectFile as read, writeProjectFile as write, listProjectFiles as list } from '../middleware/projectFile';
 
 /**
+ * `window.constructor.extensions`
+ *
  * API Section for extensions
- * @name extensions
+ * @module extensions
  * @memberOf module:constructor
- * @name extensions
  */
 export default {
   register,

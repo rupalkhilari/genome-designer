@@ -19,7 +19,7 @@ import invariant from 'invariant';
 /**
  * Register a client-side extension with Genetic Constructor. This function registers a `render` function with the manifest of the extension, allowing the extension to render on the page.
  * @name register
- * @memberOf window.constructor.extensions
+ * @memberOf module:extensions
  * @param {string} key Name of the extension, must match package.json of the extension
  * @param {function} render Function called when the extension is requested to render. Called with signature `render(container, options)`
  */

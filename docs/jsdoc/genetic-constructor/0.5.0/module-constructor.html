@@ -38,7 +38,11 @@
     <div class="container-overview">
     
         
-            <div class="description"><p>The API for Genetic Constructor is exposed on the window at <code>window.constructor</code>. This object includes the API for triggering actions and subscribing to the store, and registering extensions.</p></div>
+            <div class="description"><p><code>window.constructor</code></p>
+<p>Client API for Genetic Constructor, which has major sections:</p>
+<p><a href="module-constructor.module_api.html"><code>window.constructor.api</code></a> - API for accessing + mutating Genetic Constructor Data</p>
+<p><a href="module-constructor.module_extensions.html"><code>window.constructor.extensions</code></a> - API for extensions</p>
+<p><a href="module-constructor.module_store.html"><code>window.constructor.store</code></a> - Event system, lower-level API for data manipulation + access</p></div>
         
 
         
@@ -128,147 +132,6 @@
     
 
     
-        <h3 class="subsection-title">Members</h3>
-
-        
-            
-<h4 class="name" id=".api"><span class="type-signature">(static) </span>api<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    <p>Constructor provides the API for third parties to interact with its data, on the window at <code>constructor.api</code>.</p>
-<p>It merges all the actions and selectors into a single object, with a section for each group of actions + selectors.</p>
-<p>Internally, all actions and selectors are automatically bound so they dispatch, without requiring the Redux syntax <code>store.dispatch(&lt;action&gt;)</code>.</p>
-</div>
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="store_orchestrator.js.html">store/orchestrator.js</a>, <a href="store_orchestrator.js.html#line52">line 52</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>//create a project with a single block in it, and rename the block
-
-const block = constructor.api.blocks.blockCreate({metadata: {name: 'First Name'}});
-
-const project = constructor.api.projects.projectCreate({components: [block.id]});
-
-constructor.api.blocks.blockRename(block.id, 'My New Name');</code></pre>
-
-
-
-        
-            
-<h4 class="name" id=".extensions"><span class="type-signature">(static) </span>extensions<span class="type-signature"></span></h4>
-
-
-
-
-<div class="description">
-    <p>API Section for extensions</p>
-</div>
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="extensions__expose.js.html">extensions/_expose.js</a>, <a href="extensions__expose.js.html#line19">line 19</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-        
-    
 
     
 
@@ -285,13 +148,13 @@ constructor.api.blocks.blockRename(block.id, 'My New Name');</code></pre>
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Actions.html">Actions</a></li><li><a href="module-Actions.module_Actions_Blocks.html">Actions_Blocks</a></li><li><a href="module-Actions.module_Actions_Clipboard.html">Actions_Clipboard</a></li><li><a href="module-Actions.module_Actions_Focus.html">Actions_Focus</a></li><li><a href="module-Actions.module_Actions_Inventory.html">Actions_Inventory</a></li><li><a href="module-Actions.module_Actions_Orders.html">Actions_Orders</a></li><li><a href="module-Actions.module_Actions_Projects.html">Actions_Projects</a></li><li><a href="module-Actions.module_Actions_UI.html">Actions_UI</a></li><li><a href="module-Constants.html">Constants</a></li><li><a href="module-constructor.html">constructor</a></li><li><a href="module-Schemas.html">Schemas</a></li><li><a href="module-Selectors.html">Selectors</a></li><li><a href="module-Selectors.module_Selectors_UI.html">Selectors_UI</a></li><li><a href="module-Store.html">Store</a></li></ul><h3>Classes</h3><ul><li><a href="Annotation.html">Annotation</a></li><li><a href="Block.html">Block</a></li><li><a href="Immutable.html">Immutable</a></li><li><a href="Instance.html">Instance</a></li><li><a href="Order.html">Order</a></li><li><a href="Project.html">Project</a></li><li><a href="Schema.html">Schema</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Actions.html">Actions</a></li><li><a href="module-Actions.module_Actions_Blocks.html">Actions_Blocks</a></li><li><a href="module-Actions.module_Actions_Clipboard.html">Actions_Clipboard</a></li><li><a href="module-Actions.module_Actions_Focus.html">Actions_Focus</a></li><li><a href="module-Actions.module_Actions_Inventory.html">Actions_Inventory</a></li><li><a href="module-Actions.module_Actions_Orders.html">Actions_Orders</a></li><li><a href="module-Actions.module_Actions_Projects.html">Actions_Projects</a></li><li><a href="module-Actions.module_Actions_UI.html">Actions_UI</a></li><li><a href="module-Constants.html">Constants</a></li><li><a href="module-constructor.html">constructor</a></li><li><a href="module-constructor.module_api.html">api</a></li><li><a href="module-constructor.module_extensions.html">extensions</a></li><li><a href="module-constructor.module_store.html">store</a></li><li><a href="module-Schemas.html">Schemas</a></li><li><a href="module-Selectors.html">Selectors</a></li><li><a href="module-Selectors.module_Selectors_UI.html">Selectors_UI</a></li></ul><h3>Classes</h3><ul><li><a href="Annotation.html">Annotation</a></li><li><a href="Block.html">Block</a></li><li><a href="Immutable.html">Immutable</a></li><li><a href="Instance.html">Instance</a></li><li><a href="Order.html">Order</a></li><li><a href="Project.html">Project</a></li><li><a href="Schema.html">Schema</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Fri Jul 29 2016 10:35:59 GMT-0700 (PDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Fri Jul 29 2016 11:12:04 GMT-0700 (PDT)
 </footer>
 
 <script> prettyPrint(); </script>

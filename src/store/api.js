@@ -21,12 +21,17 @@ const dispatchWrapper = (action) => (...args) => dispatch(action(...args));
 const sections = ['blocks', 'clipboard', 'projects', 'ui', 'focus', 'inventory', 'inspector', 'orders'];
 
 /**
- * Constructor provides the API for third parties to interact with its data, on the window at `constructor.api`.
+ * `window.constructor.api`
  *
- * It merges all the actions and selectors into a single object, with a section for each group of actions + selectors.
+ * Constructor provides a client API for third parties to interact with its data.
  *
- * Internally, all actions and selectors are automatically bound so they dispatch, without requiring the Redux syntax `store.dispatch(<action>)`.
- * @name api
+ * This object merges all the {@link module:Actions Actions} and {@link module:Selectors Selectors} into a single object, keyed by type of data (e.g. `blocks`, `projects`, `ui`).
+ *
+ * See {@link module:Actions Actions} and {@link module:Selectors Selectors} for functions available on this object.
+ *
+ * Internally, all actions and selectors are automatically bound so they automatically dispatch, without requiring the Redux wrapper syntax `store.dispatch(<action>)`. See {@link module:constructor.module:store Store} for more information on Redux.
+ *
+ * @module api
  * @memberOf module:constructor
  * @example
  * //create a project with a single block in it, and rename the block
