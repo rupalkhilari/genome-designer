@@ -1,3 +1,5 @@
+console.log('simple extension executed!');
+
 function simpleStoreSubscription(state, lastAction) {
   console.log(lastAction, state);
 }

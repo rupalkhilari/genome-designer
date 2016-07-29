@@ -36,9 +36,10 @@ const registerExtension = (key, render) => {
   const wrappedRender = function wrappedRender() {
     try {
       return render.apply(null, arguments);
-    } catch (e) {
-      console.error('there was an error loading the extension' + name);
-      console.error(e);
+    } catch (err) {
+      console.error('there was an error rendering the extension ' + key);
+      console.error(err);
+      throw err;
     }
   };
 

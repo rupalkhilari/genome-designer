@@ -14,7 +14,10 @@ function render(container, options) {
   });
 
   //return an unsubscribe function to clean up when the extension unmounts
-  return subscriber;
+  return function () {
+    console.log('i am called when the extension is closed');
+    subscriber();
+  };
 }
 
 window.constructor.extensions.register('simpleWidget', render);
