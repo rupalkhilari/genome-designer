@@ -16,6 +16,8 @@ User authentication depends on the Bio/Nano User Platform project, which is curr
 
 As a result, user authentication is NOT enabled by default when running this application locally. Authentication routes and a user object is provided but is mocked in middleware and routes provided in this project by default.
 
-If you have the bio-user-platform installed, you can run the server with authentication by running `npm run start-auth-stack`.
+If you have the bio-user-platform installed, you can run the server with authentication by running:
 
-[Click here to read how to install the bio-user-platform](docs/installation-bio-user-platform.md)
+`npm run start-auth-stack`.
+
+[Click here to read how to install the bio-user-platform](./installation-bio-user-platform.md)
