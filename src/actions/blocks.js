@@ -14,7 +14,7 @@
  limitations under the License.
  */
 /**
- * @module Block Actions
+ * @module Actions_Blocks
  * @memberOf module:Actions
  */
 import invariant from 'invariant';
@@ -29,6 +29,9 @@ import * as undoActions from '../store/undo/actions';
 import { pauseAction, resumeAction } from '../store/pausableStore';
 
 //todo - helper to wrap dispatch()'s in a paused transaction - make sure dispatch still runs when passed as arg
+
+//so this is super weird - jsdoc will work when you have some statements here. This file needs 1!
+const space_filler = 10;
 
 /**
  * Retrieves a block, and its options and components if specified

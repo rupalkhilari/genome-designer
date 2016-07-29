@@ -21,7 +21,7 @@ limitations under the License.
  *
  * The store is organized into various sections, which have corresponding actions + selectors. It is probably most useful to inspect the structure of the store by calling {@link Store.getState}.
  *
- * All actions are enumerated in {@link module:ActionTypes}
+ * All actions are enumerated in {@link ActionTypes}
  *
  * The store uses Redux {@link https://github.com/reactjs/redux}
  * @module Store
@@ -51,13 +51,13 @@ export { lastAction, dispatch, subscribe, getState, pause, resume, isPaused };
 /**
  * Dispatch an action to the store
  * @name dispatch
- * @type Function
+ * @function
  * @param {Object} payload An object describing the mutation. Must include a `type` field.
  * @example
  * //anti-pattern - recommend you always use actions
  * //create a block without using an action by dispatching automatically
- * const type = gd.actionTypes.BLOCK_CREATE;
- * const block = gd.store.dispatch({type});
+ * const type = constructor.actionTypes.BLOCK_CREATE;
+ * const block = constructor.store.dispatch({type});
  */
 
 /**
@@ -65,19 +65,19 @@ export { lastAction, dispatch, subscribe, getState, pause, resume, isPaused };
  *
  * This will run every time the store changes, so it should be fast. Register only once if possible, and use a switch to react according to the action type, and use reference equality checks to the section you are interested in to see quickly if it has changed.
  * @name subscribe
- * @type Function
+ * @function
  * @param {function} subscriber Function to subscribe to the store, It will be passed the store and lastAction type.
  * @returns {function} function to call to unsubscribe
  * @example
- * var unsubscribe = gd.store.subscribe(function (store, lastAction) { ... });
+ * var unsubscribe = constructor.store.subscribe(function (store, lastAction) { ... });
  */
 
 /**
  * Get the current application state.
  * @name getState
- * @type Function
+ * @function
  * @returns {Object} Current state
  * @example
- * const state = gd.store.getState();
+ * const state = constructor.store.getState();
  */
 export default store;

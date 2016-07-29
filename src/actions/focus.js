@@ -14,7 +14,7 @@
  limitations under the License.
  */
 /**
- * @module Focus Actions
+ * @module Actions_Focus
  * @memberOf module:Actions
  */
 import * as ActionTypes from '../constants/ActionTypes';

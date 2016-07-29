@@ -15,7 +15,7 @@ limitations under the License.
 */
 
 /**
- * @module UI Selectors
+ * @module Selectors_UI
  * @memberOf module:Selectors
  */
 

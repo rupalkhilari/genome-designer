@@ -14,7 +14,7 @@
  limitations under the License.
  */
 /**
- * @module Inventory Actions
+ * @module Actions_Inventory
  * @memberOf module:Actions
  */
 import * as ActionTypes from '../constants/ActionTypes';

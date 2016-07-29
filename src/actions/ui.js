@@ -14,12 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 /**
- * @module UI Actions
+ * @module Actions_UI
  * @memberOf module:Actions
  */
 import * as ActionTypes from '../constants/ActionTypes';
 import invariant from 'invariant';
 import extensionRegistry from '../extensions/clientRegistry';
+
+//so this is super weird - jsdoc will work when you have some statements here. This file needs 2!
+const space_filler = 10;
+const space_filler_2 = 20;
 
 /**
  * Toggle whether the inspector is visible
@@ -69,7 +73,7 @@ export const inventoryToggleVisibility = (forceState) => {
 
 /**
  * Select which tab of the inventory is active
- * @function
+ * @function inventorySelectTab
  * @todo - validate a legitimate tab is selected
  * @param {string} tab Key of tab to be active
  * @returns {string} Tab active
@@ -88,7 +92,7 @@ export const inventorySelectTab = (tab) => {
 
 /**
  * Toggle whether the detail view of the design canvas is open
- * @function
+ * @function uiToggleDetailView
  * @param {boolean} [forceState] Omit to toggle
  * @returns {boolean} next state
  */

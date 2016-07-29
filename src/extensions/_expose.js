@@ -5,7 +5,9 @@ import { readProjectFile as read, writeProjectFile as write, listProjectFiles as
 
 /**
  * API Section for extensions
- * @name window.constructor.extensions
+ * @name extensions
+ * @memberOf module:constructor
+ * @name extensions
  */
 export default {
   register,
