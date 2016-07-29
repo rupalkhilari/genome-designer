@@ -28,6 +28,9 @@ import * as blockSelectors from '../selectors/blocks';
 import { cloneDeep, merge, flatten, sampleSize, range, shuffle } from 'lodash';
 import * as instanceMap from '../store/instanceMap';
 
+//so this is super weird - jsdoc will work when you have some statements here. This file needs 1!
+const space_filler = 10;
+
 /**
  * List a user's orders
  * @function

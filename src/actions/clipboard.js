@@ -20,6 +20,9 @@ limitations under the License.
 import * as ActionTypes from '../constants/ActionTypes';
 import invariant from 'invariant';
 
+//so this is super weird - jsdoc will work when you have some statements here. This file needs 1!
+const space_filler = 10;
+
 /**
  * Set the data on the clipboard
  * @function
