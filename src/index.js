@@ -37,7 +37,9 @@ render(
 const exposed = global.constructor = {};
 Object.assign(exposed, {
   extensions,
-  actionTypes,
+  constants: {
+    actionTypes,
+  },
   api: orchestrator,
   store: {
     ...store,

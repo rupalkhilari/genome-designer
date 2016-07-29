@@ -26,7 +26,7 @@
  * @example
  *
  * constructor.store.subscribe((store, lastAction) => {
- *   if (lastAction.type === constructor.actionTypes.BLOCK_CREATE) {
+ *   if (lastAction.type === constructor.constants.actionTypes.BLOCK_CREATE) {
  *     //do something
  *   }
  * });
