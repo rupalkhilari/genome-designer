@@ -145,7 +145,7 @@ export class InventoryItem extends Component {
 
   render() {
     const { item, itemDetail, image, svg, svgProps, defaultName, inventoryType, dataAttribute, forceBlocks, focusBlocks } = this.props;
-    const isSelected = forceBlocks.indexOf(item) >= 0 || focusBlocks.some(focusId => item.id === focusId);
+    const isSelected = forceBlocks.some(block => item.id === block.id) || focusBlocks.some(focusId => item.id === focusId);
 
     const hasSequence = item.sequence && item.sequence.length > 0;
     const itemName = item.metadata.name || defaultName || 'Unnamed';
@@ -161,7 +161,7 @@ export class InventoryItem extends Component {
            onClick={this.handleClick}>
           {image && (<span className="InventoryItem-image" style={{backgroundImage: `url(${image})`}} />)}
           {(svg && !image) ? <RoleSvg symbolName={svg} color="white" {...svgProps} styles={{}}/> : null}
-          <span className="InventoryItem-text">
+          <span className="InventoryItem-text" title={itemName}>
             {itemName}
           </span>
           {itemDetail && <span className="InventoryItem-detail">{itemDetail}</span>}
