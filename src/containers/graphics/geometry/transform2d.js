@@ -123,7 +123,7 @@ export default class Transform2D {
 
   /**
    * return a JSONable object representation of the transform
-   * @return {object}
+   * @return {Object}
    */
   toObject() {
     return {
@@ -136,7 +136,7 @@ export default class Transform2D {
 
   /**
    * create a new Transform2D from an object created with toObject
-   * @param  {object} obj
+   * @param  {Object} obj
    * @return Transform2D
    */
   static fromObject(obj) {

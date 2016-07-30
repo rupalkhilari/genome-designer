@@ -14,26 +14,28 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 /**
- * @description Helper for creating simple actions with known keys
+ * Helper for creating simple actions with known keys
+ *
+ * @private
+ *
  * @param type {ActionType} ActionType
  * @param argNames {...string} argument names
  * @returns {Function} function which takes the arguments defined and creates the corresponding payload
  *
  * @example
  *
- before:
-
-  export function addTodo(text) {
-    return {
-      type: 'ADD_TODO',
-      text
-    };
-  }
-
- after:
-
- export const addTodo = makeActionCreator(ADD_TODO, 'text');
-
+ * before:
+ *
+ *  export function addTodo(text) {
+ *    return {
+ *      type: 'ADD_TODO',
+ *      text
+ *    };
+ *  }
+ *
+ * after:
+ *
+ * export const addTodo = makeActionCreator(ADD_TODO, 'text');
  */
 export default function makeActionCreator(type, ...argNames) {
   return function actionAwaitingArgs(...args) {

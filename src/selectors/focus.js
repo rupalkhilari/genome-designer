@@ -17,7 +17,15 @@ import * as BlockSelector from './blocks';
 
 //todo - this should not be exposed as part of 3rd party API... exported so inspector can share
 export const _getFocused = (state, defaultToConstruct = true, defaultProjectId = null) => {
-  const { level, forceProject, forceBlocks, projectId, constructId, blockIds, options } = state.focus;
+  const { level, forceProject, forceBlocks, projectId, constructId, blockIds, options, roleId } = state.focus;
+
+  if (level === 'role') {
+    return {
+      type: 'role',
+      readOnly: true,
+      focused: roleId,
+    };
+  }
 
   //focus doesnt update on undo, just the blocks... so need to filter / make sure defined
   const project = forceProject || state.projects[projectId || defaultProjectId];
@@ -35,7 +43,7 @@ export const _getFocused = (state, defaultToConstruct = true, defaultProjectId =
     focused = project;
     readOnly = !!forceProject || project.isSample;
     type = 'project'; //override in case here because construct / blocks unspecified
-  } else if (level === 'construct' || (defaultToConstruct === true && construct && !blocks.length)) {
+  } else if (level === 'construct' && construct || (defaultToConstruct === true && construct && !blocks.length)) {
     focused = [construct];
     readOnly = construct.isFrozen();
   } else if (level === 'option' && option) {

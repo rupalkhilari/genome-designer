@@ -13,6 +13,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+/**
+ * Utilities for querying the user information, wrapping file system queries etc.
+ * @module querying
+ */
 import * as fileSystem from '../utils/fileSystem';
 import * as filePaths from '../utils/filePaths';
 import * as persistence from './persistence';

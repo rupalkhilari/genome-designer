@@ -18,9 +18,9 @@ import * as validators from './fields/validators';
 import { InstanceSchemaClass } from './Instance';
 
 /**
- @name ProjectSchema
- @description
- Project is the container for a body of work. It consists primarily of constructs, but also orders, settings, etc.
+ * Project is the container for a body of work. It consists primarily of constructs, but also orders, settings, etc.
+ * @name ProjectSchema
+ * @gc Schema
  */
 
 const projectFields = {

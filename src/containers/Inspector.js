@@ -1,23 +1,24 @@
 /*
-Copyright 2016 Autodesk,Inc.
+ Copyright 2016 Autodesk,Inc.
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { inspectorToggleVisibility } from '../actions/ui';
 import { _getFocused } from '../selectors/focus';
 
+import InspectorRole from '../components/Inspector/InspectorRole';
 import InspectorBlock from '../components/Inspector/InspectorBlock';
 import InspectorProject from '../components/Inspector/InspectorProject';
 
@@ -45,6 +46,9 @@ export class Inspector extends Component {
     // inspect instances, or construct if no instance or project if no construct or instances
     let inspect;
     switch (type) {
+    case 'role' :
+      inspect = (<InspectorRole roleId={focused} readOnly/>);
+      break;
     case 'project':
       inspect = (<InspectorProject instance={focused}
                                    orders={orders}
@@ -60,7 +64,7 @@ export class Inspector extends Component {
     }
 
     return (
-      <div className={'SidePanel Inspector no-vertical-scroll' +
+      <div className={'SidePanel Inspector' +
       (isVisible ? ' visible' : '') +
       (readOnly ? ' readOnly' : '') +
       (showingGrunt ? ' gruntPushdown' : '')}>
@@ -75,7 +79,7 @@ export class Inspector extends Component {
           </div>
         </div>
 
-        <div className="SidePanel-content">
+        <div className="SidePanel-content no-vertical-scroll">
           {inspect}
         </div>
       </div>

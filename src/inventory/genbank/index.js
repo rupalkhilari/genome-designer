@@ -23,5 +23,8 @@ import { importPath } from '../../middleware/paths';
 export const name = 'Genbank';
 
 export const sourceUrl = ({ url, id }) => {
+  if (!id && !url) {
+    return null;
+  }
   return url || importPath(`genbank/file/${id}`);
 };

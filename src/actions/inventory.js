@@ -1,22 +1,27 @@
 /*
-Copyright 2016 Autodesk,Inc.
+ Copyright 2016 Autodesk,Inc.
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
+/**
+ * @module Inventory Actions
+ * @memberOf module:Actions
+ */
 import * as ActionTypes from '../constants/ActionTypes';
 import { getSources } from '../inventory/registry';
-import * as searchApi from '../middleware/search';
+import * as searchApi from '../inventory/search';
 
+//note - expects this to be static
 const searchSources = getSources('search');
 
 //if immediate, call on leading edge, prevent subsequence calls until timeout clears
@@ -37,7 +42,11 @@ function debouncer(wait = 250, immediate = false) {
   });
 }
 
-//doesnt run a search, just set the term (without setting state.searching to true)
+/**
+ * Set the inventory search term, without actually running a search
+ * @param {string} searchTerm
+ * @returns {string} Search term
+ */
 export const inventorySetSearchTerm = (searchTerm) => {
   return (dispatch, getState) => {
     dispatch({
@@ -48,11 +57,23 @@ export const inventorySetSearchTerm = (searchTerm) => {
   };
 };
 
-export const inventorySearch = (inputTerm = '', options = null, skipDebounce = false) => {
+/**
+ * Search for a term across active search sources
+ * @param {string} inputTerm Term to search for
+ * @param {Object} [options=null]
+ * @param {boolean} [skipDebounce=false]
+ * @param {boolean} [waitForAll=false] If true, wait for all searches to resolve before dispatching. If false, will dispatch every time a source resolves.
+ * @returns {Promise}
+ * @resolve {Object} Search results, keyed by search Source
+ * @reject {null}
+ */
+export const inventorySearch = (inputTerm = '', options = null, skipDebounce = false, waitForAll = false) => {
   return (dispatch, getState) => {
     const state = getState();
     const { sourceList } = state.inventory;
     const searchTerm = (typeof inputTerm !== 'undefined') ? inputTerm : state.inventory.searchTerm;
+    //note -- not documented
+    const callback = (typeof waitForAll === 'function') ? waitForAll : () => {};
 
     dispatch({
       type: ActionTypes.INVENTORY_SEARCH,
@@ -66,7 +87,39 @@ export const inventorySearch = (inputTerm = '', options = null, skipDebounce = f
 
     //debounce initiation of searches
     return debouncer(500, skipDebounce)
-      .then(() => searchApi.search(searchTerm, options, sourceList))
+      .then(() => {
+        //if passed a callback, use callback for updates as each source resolves
+        if (!waitForAll) {
+          const results = {};
+          const promises = sourceList.map(source => {
+            return searchApi.search(searchTerm, options, source)
+              .then(resultObject => {
+                //update the result object
+                dispatch({
+                  type: ActionTypes.INVENTORY_SEARCH_RESOLVE_PARTIAL,
+                  searchTerm,
+                  patch: resultObject,
+                  source,
+                });
+
+                //call the callback
+                callback(getState().inventory.searchResults, source);
+
+                return resultObject;
+              });
+          });
+
+          //call callback at start
+          callback(results, null);
+
+          //return promise all to continue normal flow
+          return Promise.all(promises)
+            .then(resultsArray => Object.assign({}, ...resultsArray));
+        }
+
+        //otherwise, just execute and wait for all to resolve
+        return searchApi.searchMultiple(searchTerm, options, sourceList);
+      })
       .then(searchResults => {
         dispatch({
           type: ActionTypes.INVENTORY_SEARCH_RESOLVE,
@@ -86,7 +139,61 @@ export const inventorySearch = (inputTerm = '', options = null, skipDebounce = f
   };
 };
 
-export const inventoryShowSourcesToggling = (forceState) => {
+export const inventorySearchPaginate = (source) => {
+  return (dispatch, getState) => {
+    const state = getState().inventory;
+    const { searchTerm, searchResults, searching } = state;
+    const results = searchResults[source];
+
+    if (!searchTerm || !!searching || !results.length) {
+      return false;
+    }
+
+    const lastParameters = results.parameters;
+
+    const moreResults = Number.isInteger(results.count) ?
+    results.length < results.count :
+    results.length % lastParameters.entries === 0;
+
+    if (!moreResults) {
+      return false;
+    }
+
+    const parameters = {
+      start: results.length,
+      entries: lastParameters.entries,
+    };
+
+    dispatch({
+      type: ActionTypes.INVENTORY_SEARCH_PAGINATE,
+      source,
+      parameters,
+      searchTerm,
+    });
+
+    return searchApi.search(searchTerm, parameters, source)
+      .catch(err => {
+        console.error(err);
+        return Object.assign([], { parameters });
+      })
+      .then((resultObject) => {
+        dispatch({
+          type: ActionTypes.INVENTORY_SEARCH_PAGINATE_RESOLVE,
+          source,
+          patch: resultObject,
+          searchTerm,
+        });
+      });
+  };
+};
+
+/**
+ * Toggle whether the sources view is open
+ * @param {boolean} [forceState] Ignore to toggle
+ * @param {boolean} [waitForAll=false] See inventorySearch
+ * @returns {boolean} Whether showing now
+ */
+export const inventoryShowSourcesToggling = (forceState, waitForAll) => {
   return (dispatch, getState) => {
     const state = getState();
     const { sourcesToggling, sourceList, lastSearch, searchTerm } = state.inventory;
@@ -100,7 +207,7 @@ export const inventoryShowSourcesToggling = (forceState) => {
     //if not toggling any more, check if need to run a new search
     if (!nextState) {
       if (sourceList.some(source => lastSearch.sourceList.indexOf(source) < 0)) {
-        dispatch(inventorySearch(searchTerm, null, true));
+        dispatch(inventorySearch(searchTerm, null, true, waitForAll));
       }
     }
 
@@ -108,6 +215,11 @@ export const inventoryShowSourcesToggling = (forceState) => {
   };
 };
 
+/**
+ * Set the list of active search sources
+ * @param {Array} sourceList List of sources
+ * @returns {Array} Sources now using
+ */
 export const inventorySetSources = (sourceList = []) => {
   return (dispatch, getState) => {
     if (!(sourceList.length && sourceList.every(source => searchSources.indexOf(source) >= 0))) {
@@ -123,6 +235,11 @@ export const inventorySetSources = (sourceList = []) => {
   };
 };
 
+/**
+ * Toggle whether a search source is active
+ * @param {string} source
+ * @returns {Array} List of active sources
+ */
 export const inventoryToggleSource = (source) => {
   return (dispatch, getState) => {
     if (searchSources.indexOf(source) < 0) {
@@ -146,7 +263,13 @@ export const inventoryToggleSource = (source) => {
   };
 };
 
-//don't check this for source being in source list since currently use this for also handling whether a role is visible (see inventory component, depends on how grouped)
+/**
+ * Toggle whether an inventory Source is visible. This controls whether its results are visible, not whether the source is active.
+ *
+ * don't check this for source being in source list since currently use this for also handling whether a role is visible (see inventory component, depends on how grouped)
+ * @param {string} source
+ * @returns {Object} Map of sources to whether they are visible
+ */
 export const inventoryToggleSourceVisible = (source) => {
   return (dispatch, getState) => {
     const { sourcesVisible } = getState().inventory;

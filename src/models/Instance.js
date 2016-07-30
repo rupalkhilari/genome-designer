@@ -1,11 +1,11 @@
 /*
-Copyright 2016 Autodesk,Inc.
+ Copyright 2016 Autodesk,Inc.
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,11 +23,22 @@ import { version } from '../schemas/fields/validators';
 const versionValidator = (ver, required = false) => safeValidate(version(), required, ver);
 
 /**
- * @description
- * you can pass as argument to the constructor either:
- *  - an object, which will extend the created instance
+ * Instances are immutable objects, which conform to a schema, and provide an explicit API for modifying their data.
+ * Instances have an ID, metadata, and are versioned (explicitly or implicitly by the Instance which owns them)
+ * @class
+ * @extends Immutable
+ *
+ * @memberOf module:Models
+ * @gc Model
  */
 export default class Instance extends Immutable {
+  /**
+   * Create an instance
+   * @param {Object} input Input object
+   * @param {Object} [subclassBase] If extending the class, additional fields to use in the scaffold
+   * @param {Object} [moreFields] Additional fields, beyond the scaffold
+   * @returns {Instance} An instance, frozen if not in production
+   */
   constructor(input = {}, subclassBase, moreFields) {
     invariant(typeof input === 'object', 'must pass an object (or leave undefined) to model constructor');
 
@@ -39,26 +50,27 @@ export default class Instance extends Immutable {
     ));
   }
 
-  //use cloneDeep and perform mutation prior to calling constructor because constructor may freeze object
-
-  // returns a new instance
-  // uses lodash _.set() for path, e.g. 'a.b[0].c'
+  /**
+   * See {@link Immutable.mutate}
+   */
   mutate(path, value) {
-    const base = cloneDeep(this);
-    pathSet(base, path, value);
-    return new this.constructor(base);
+    return super.mutate(path, value);
   }
 
-  // returns a new instance
-  // deep merge using _.merge
+  /**
+   * See {@link Immutable.merge}
+   */
   merge(obj) {
-    const base = cloneDeep(this);
-    merge(base, obj);
-    return new this.constructor(base);
+    return super.merge(obj);
   }
 
-  //clone can accept just an ID (e.g. project), but likely want to pass an object (e.g. block, which also has field projectId in parent)
-  //if pass null to parentInfo, the block is simply cloned, and nothing is added to the history
+  /**
+   * Clone an instance, adding the parent to the ancestry of the child Instance.
+   * @param {object|null|string} [parentInfo={}] Parent info for denoting ancestry. If pass null to parentInfo, the instance is simply cloned, and nothing is added to the history. If pass a string, it will be used as the version.
+   * @param {Object} [overwrites={}] object to merge into the cloned Instance
+   * @throws if version is invalid (not provided and no field version on the instance)
+   * @returns {Instance}
+   */
   clone(parentInfo = {}, overwrites = {}) {
     const cloned = cloneDeep(this);
     let clone;

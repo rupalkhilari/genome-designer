@@ -13,9 +13,19 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+/**
+ * @module Clipboard Actions
+ * @memberOf module:Actions
+ */
 import * as ActionTypes from '../constants/ActionTypes';
 import invariant from 'invariant';
 
+/**
+ * Set the data on the clipboard
+ * @param {Array} formats
+ * @param {Array} data
+ * @returns {Object} In form {formats, data}
+ */
 export const clipboardSetData = (formats, data) => {
   return (dispatch, getState) => {
     invariant(Array.isArray(formats), 'expected formats to be an array of formats');

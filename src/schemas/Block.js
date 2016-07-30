@@ -21,19 +21,14 @@ import RulesSchema from './Rules';
 import BlockSourceSchema from './BlockSource';
 
 /**
- @name BlockSchema
- @role Component
- @description A component of a construct, or construct itself.
-
- Blocks are hierarchically composable elements which make up large constructs of DNA. Hierarchy is established with the `components` field, whereby a block references its children.
-
- Blocks may have a `sequence`, which is a reference to a file and associated annotations, and if so should reference their source (e.g. foundry, NCBI) whence they came.
-
- Blocks can define `rules`, to which direct descendent blocks must adhere. For example, bounds to GC content, whether locations are fixed, filters for allowed blocks. The type is the key, the rule is the value (heterogeneous formats). Currently, rules only apply to direct descendents in the design canvas.
-
- List Blocks allow for combinatorial logic, where multiple blocks can be associated as combinatorial `options` for this block. A block cannot be both a list block and have components.
-
- In addition to sequence annotations, a block may list `notes`, which are essentially annotations that do not specifically reference the sequence.
+ * A component of a construct, or construct itself.
+ * Blocks are hierarchically composable elements which make up large constructs of DNA. Hierarchy is established with the `components` field, whereby a block references its children.
+ * Blocks may have a `sequence`, which is a reference to a file and associated annotations, and if so should reference their source (e.g. foundry, NCBI) whence they came.
+ * Blocks can define `rules`, to which direct descendent blocks must adhere. For example, bounds to GC content, whether locations are fixed, filters for allowed blocks. The type is the key, the rule is the value (heterogeneous formats). Currently, rules only apply to direct descendents in the design canvas.
+ * List Blocks allow for combinatorial logic, where multiple blocks can be associated as combinatorial `options` for this block. A block cannot be both a list block and have components.
+ * In addition to sequence annotations, a block may list `notes`, which are essentially annotations that do not specifically reference the sequence.
+ * @name BlockSchema
+ * @gc Schema
  */
 
 const blockFields = {
@@ -42,6 +37,7 @@ const blockFields = {
     'Block UUID',
   ],
 
+  //todo - scaffold this to null to mark unassociated? and require the field?
   projectId: [
     fields.id({ prefix: 'project' }),
     'Project UUID',

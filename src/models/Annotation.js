@@ -19,7 +19,21 @@ import { merge, cloneDeep } from 'lodash';
 import color from '../utils/generators/color';
 import { symbolMap } from '../inventory/roles';
 
+/**
+ * Annotations mark regions of sequence with notes, colors, roles, etc.
+ * Annotations are often used in imports due to the hierarchical nature of the Genetic Constructor data model. Blocks do not allow for overlaps, but many sequences have overlapping annotations. Annotations which do not overlap are used to create the Block hierarchy, while overlaps are converted into instances of the Annotation class.
+ * @name Annotation
+ * @class
+ * @extends Immutable
+ *
+ * @memberOf module:Models
+ * @gc Model
+ */
 export default class Annotation extends Immutable {
+  /**
+   * Create an annotation
+   * @param {Object} input Input object for the annotation to merge onto the scaffold
+   */
   constructor(input) {
     return super(merge(
       AnnotationSchema.scaffold(),
@@ -28,15 +42,31 @@ export default class Annotation extends Immutable {
     ));
   }
 
-  //return an unfrozen JSON (
+  /**
+   * Create an unfrozen annotation, extending input with schema
+   * @param {Object} [input]
+   * @returns {Object} an unfrozen JSON, no instance methods
+   */
   static classless(input) {
     return cloneDeep(new Annotation(input));
   }
 
+  /**
+   * Validate an annotation
+   * @static
+   * @param {Object} input Object to validate
+   * @param {boolean} [throwOnError=false] Validation should throw on errors
+   * @throws if you specify throwOnError
+   * @returns {boolean} Whether input valid
+   */
   static validate(input, throwOnError) {
     return AnnotationSchema.validate(input, throwOnError);
   }
 
+  /**
+   * Get the length of the annotation
+   * @returns {number}
+   */
   get length() {
     //todo - this is super naive
     return this.end - this.start;

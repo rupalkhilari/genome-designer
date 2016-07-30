@@ -18,20 +18,20 @@ import safeValidate from './safeValidate';
 /**
  * Takes a basic field definition, returns a function which takes parameters, which subsequently returns a fully defined field.
  *
+ * @private
  * @param baseFieldDefinition {Object} Object which minimally contains the following keys:
  *
  * baseValidator {Function} validation function which accepts a set of parameters (see validators.js), and returns a function which accepts an input, and subsequently returns:
  *   1) returns nothing if valid
  *   2) returns an error for invalid with relevant message
  *
- * and likely should include the following keys
- *
- * typeDescription {String}
+ * and likely should include a typeDescription
  *
  * @param type {String} the field type (e.g. 'id')
  *
  * @return {Function} returns a function expecting an input value of parameters to the baseValidator, and which has the additional field .require if the field is required. The return of this function is a fully defined field:
  *
+ * ```javascript
  * {
  *   type: {String} Field type
  *   validate: {Function}
@@ -40,6 +40,7 @@ import safeValidate from './safeValidate';
  *   typeDescription: {String} description of field type
  *   baseValidator:  {Function} base validation function, pre-parameterized
  * }
+ * ```
  */
 export default function createFieldType(baseFieldDefinition, type) {
   const fieldDef = Object.assign({

@@ -6,9 +6,11 @@
   "scripts": {
     "start": "babel-node tools/run start",
     "start-instance": "babel-node tools/run start-instance",
+    "start-auth-stack": "babel-node tools/run auth-stack",
     "clean": "babel-node tools/run clean",
     "build": "babel-node tools/run build",
     "build-client": "babel-node tools/run bundle",
+    "jsdoc": "jsdoc -c docs/jsdoc.conf.json --package package.json --readme docs/README.md",
     "postinstall": "npm run install-extensions && npm run selenium",
     "install-extensions": "cd server/extensions && rm -rf node_modules && npm install --only=prod --no-bin-link --no-optional",
     "check": "npm run lint && npm run test",
@@ -21,7 +23,6 @@
     "imagediff": "node ./bin/imagediff/imagediff.js --truth ./test-e2e/cannonical-screenshots/ --hypothesis ./test-e2e/current-screenshots/",
     "selenium": "node ./node_modules/selenium-standalone/bin/selenium-standalone install",
     "start-docker": "docker build -t genome-designer . && docker run --privileged -v /var/run/docker.sock:/run/docker.sock -i -p 3000:3000 -t genome-designer",
-    "create-ecoli-db": "python extensions/foundry/ecoli/generate_db.py jdon extensions/foundry/ecoli/ecoli.genes.json extensions/foundry/ecoli.json",
     "auth": "./bin/local-auth.sh",
     "auth-test": "COMMAND=\"mocha --compilers js:babel-register,css:test/css-null-compiler.js --require ./test/setup.js --timeout=10000 test/server/auth/REST.spec.js\" ./bin/server-auth.sh",
     "server-auth": "EMAIL=1 COMMAND='npm run start-instance -- --release' ./bin/server-auth.sh"
@@ -124,6 +125,8 @@
     "express": "^4.13.3",
     "file-loader": "^0.8.5",
     "fs-extra": "^0.30.0",
+    "jsdoc": "^3.4.0",
+    "jsdoc-babel": "^0.2.1",
     "jsdom": "^7.0.2",
     "json-loader": "^0.5.4",
     "mocha": "^2.2.5",

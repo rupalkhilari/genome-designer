@@ -17,6 +17,11 @@ import fields from './fields/index';
 import * as validators from './fields/validators';
 import Schema from './SchemaClass';
 
+/**
+ * Metadata is a subfield of Instances
+ * @name MetadataSchema
+ * @gc Schema
+ */
 const fieldDefs = {
   name: [
     fields.string({ max: 256 }),

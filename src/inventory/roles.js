@@ -13,7 +13,16 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
+//todo - should break this into constants and host in /constants/ - this isn't really inventory specific
+
+/**
+ * Genetic Constructor includes a set of roles, inspired by SBOL visual, but extended to include types which accommodate the hierarchical nature of constructs.
+ * @module roles
+ */
+
 export const symbolMap = {
+  //include null for string matching, but the value will be the object null in blocks, not the string 'null'
   'null': 'No Symbol',
   promoter: 'Promoter',
   cds: 'CDS',

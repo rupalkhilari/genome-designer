@@ -23,7 +23,7 @@ export default class Matrix2D {
    * a 3x3 matrix designed to perform transformations in 2D space.
    * This class currently only implements the most basic operations e.g. Matrix x Vector, Matrix x Matrix, Inverse
    * @constructor
-   * @param {undefined || Array}
+   * @param {undefined|Array} vector
    */
   constructor(vector) {
     invariant(vector === undefined || Array.isArray(vector), 'invalid parameter');
@@ -175,7 +175,6 @@ export default class Matrix2D {
   /**
    * multiply this matrix by another
    * @param {Matrix2D} mtx
-   * @param Matrix2D
    */
   multiplyMatrix(mtx) {
     const result = new Matrix2D();

@@ -14,9 +14,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 /**
- * Expose selectors on the window, so they are accessible by 3rd party consumers
+ * Genetic Constructor exposes selectors for accessing application data + performing data queries
+ * @module Selectors
  */
-
 import * as blocks from './blocks';
 import * as inspector from './inspector';
 import * as inventory from './inventory';

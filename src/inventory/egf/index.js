@@ -17,13 +17,13 @@ import fetch from 'isomorphic-fetch';
 import { parseResults, parseFullResult } from './parseResults';
 import queryString from 'query-string';
 
-export const url = 'http://ec2-52-30-192-126.eu-west-1.compute.amazonaws.com:8003/collections';
+export const url = 'https://gc-inventory.dev.bionano.autodesk.com/collections';
 
 export const name = 'Edinburgh Genome Foundry';
 const collection = 'yeastfab';
 
 export const search = (term, options = {}) => {
-  const opts = Object.assign(
+  const parameters = Object.assign(
     {
       start: 0,
       entries: 50,
@@ -34,17 +34,18 @@ export const search = (term, options = {}) => {
     }
   );
 
-  return fetch(`${url}/search/?query_text=${term}&${queryString.stringify(opts)}`)
+  return fetch(`${url}/search/?query_text=${term}&${queryString.stringify(parameters)}`)
     .then(resp => resp.json())
     .then(results => parseResults(results))
+    .then(results => Object.assign(results, { parameters }))
     .catch(err => {
       console.error(err);
       return [];
     });
 };
 
-export const get = (id, parameters = {}) => {
+export const get = (id, parameters = {}, searchResult) => {
   return fetch(`${url}/${collection}/parts/${id}`)
     .then(resp => resp.json())
-    .then(result => parseFullResult(result));
+    .then(result => parseFullResult(result, searchResult));
 };
