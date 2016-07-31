@@ -20,7 +20,7 @@ import '../styles/404.css';
 export default class RouteNotFound extends Component {
   render() {
     return (
-      <iframe className="fourohfour" seamless src="http://www.cnn.com"/>
+      <iframe className="fourohfour" seamless src="http://bionano.autodesk.com/static/errors/404.html"/>
     );
   }
 }
