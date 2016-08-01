@@ -6,9 +6,8 @@
     "readable": "Sequence Viewer",
     "region": "sequenceDetail"
   },
-  "main": "sequence-viewer-index.js",
-  "scripts": {
-  },
+  "main": "index.js",
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/duncanmeech/sequence-viewer.git"
