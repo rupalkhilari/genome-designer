@@ -29,10 +29,6 @@ const history = syncHistoryWithStore(browserHistory, store, {
   selectLocationState: (state) => state.router,
 });
 
-const notFound = () => {
-  alert('404');
-}
-
 export default (
   <Router history={history}>
     <Route path="/" component={App}>
