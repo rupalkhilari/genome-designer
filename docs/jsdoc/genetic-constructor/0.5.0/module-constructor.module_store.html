@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Class: Immutable</title>
+    <title>JSDoc: Module: store</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Class: Immutable</h1>
+    <h1 class="page-title">Module: store</h1>
 
     
 
@@ -28,7 +28,8 @@
 
 <header>
     
-        <h2>Immutable</h2>
+        
+            
         
     
 </header>
@@ -37,18 +38,18 @@
     <div class="container-overview">
     
         
+            <div class="description"><p><code>window.constructor.store</code></p>
+<p>The Store is the hub of all data in Genetic Constructor. It is a large object, treated as immutable, and only modified using actions. All components register a subscription to the store, and check whether they should update, generally using reference equality checks (since the store is immutable) or sometimes the action type.</p>
+<p>Actions are triggered by components / programmatically, dispatched to the store, and handled by reducers. Reducers actually modify the store (technically, perform the mutation and return a new instance). Then, subscribed listeners are passed the store, and check if the sections they care about have changed, and update as necessary.</p>
+<p>The store is organized into various sections, which have corresponding actions + selectors. It is probably most useful to inspect the structure of the store by calling Store.getState.</p>
+<p>All actions are enumerated in ActionTypes</p>
+<p>The store uses Redux <a href="https://github.com/reactjs/redux">https://github.com/reactjs/redux</a></p></div>
+        
 
-    
-
-    <h4 class="name" id="Immutable"><span class="type-signature"></span>new Immutable<span class="signature">()</span><span class="type-signature"></span></h4>
-
-    
+        
+            
 
 
-
-<div class="description">
-    <p>The Immutable class creates Immutable objects, whose properties are immutable and cannot be modifed except through their defined API.</p>
-</div>
 
 
 
@@ -91,7 +92,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="models_Immutable.js.html">models/Immutable.js</a>, <a href="models_Immutable.js.html#line28">line 28</a>
+        <a href="store_index.js.html">store/index.js</a>, <a href="store_index.js.html#line43">line 43</a>
     </li></ul></dd>
     
 
@@ -117,6 +118,7 @@
 
 
 
+        
     
     </div>
 
@@ -140,14 +142,14 @@
 
     
 
-    <h4 class="name" id=".merge"><span class="type-signature">(static) </span>merge<span class="signature">(obj)</span><span class="type-signature"> &rarr; {<a href="Immutable.html">Immutable</a>}</span></h4>
+    <h4 class="name" id="~dispatch"><span class="type-signature">(inner) </span>dispatch<span class="signature">(payload)</span><span class="type-signature"></span></h4>
 
     
 
 
 
 <div class="description">
-    <p>Return a new Immutable with input object merged into it<br>Uses <a href="https://lodash.com/docs#merge">lodash _.merge()</a> for performing a deep merge</p>
+    <p>Dispatch an action to the store</p>
 </div>
 
 
@@ -183,7 +185,7 @@
 
         <tr>
             
-                <td class="name"><code>obj</code></td>
+                <td class="name"><code>payload</code></td>
             
 
             <td class="type">
@@ -199,7 +201,7 @@
 
             
 
-            <td class="description last"><p>Object to merge into instance</p></td>
+            <td class="description last"><p>An object describing the mutation. Must include a <code>type</code> field.</p></td>
         </tr>
 
     
@@ -240,7 +242,97 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="models_Immutable.js.html">models/Immutable.js</a>, <a href="models_Immutable.js.html#line99">line 99</a>
+        <a href="store_index.js.html">store/index.js</a>, <a href="store_index.js.html#line77">line 77</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>//anti-pattern - recommend you always use actions
+//create a block without using an action by dispatching automatically
+const type = constructor.constants.actionTypes.BLOCK_CREATE;
+const block = constructor.store.dispatch({type});</code></pre>
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="~getState"><span class="type-signature">(inner) </span>getState<span class="signature">()</span><span class="type-signature"> &rarr; {Object}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Get the current application state.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="store_index.js.html">store/index.js</a>, <a href="store_index.js.html#line101">line 101</a>
     </li></ul></dd>
     
 
@@ -267,7 +359,7 @@
 
         
 <div class="param-desc">
-    <p>A new instance, with <code>obj</code> merged in</p>
+    <p>Current state</p>
 </div>
 
 
@@ -278,7 +370,7 @@
     </dt>
     <dd>
         
-<span class="param-type"><a href="Immutable.html">Immutable</a></span>
+<span class="param-type">Object</span>
 
 
     </dd>
@@ -289,8 +381,7 @@
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>const initial = new Immutable();
-const next = initial.merge({new: 'stuff'});</code></pre>
+    <pre class="prettyprint"><code>const state = constructor.store.getState();</code></pre>
 
 
 
@@ -299,14 +390,15 @@ const next = initial.merge({new: 'stuff'});</code></pre>
 
     
 
-    <h4 class="name" id=".mutate"><span class="type-signature">(static) </span>mutate<span class="signature">(path, value)</span><span class="type-signature"> &rarr; {<a href="Immutable.html">Immutable</a>}</span></h4>
+    <h4 class="name" id="~subscribe"><span class="type-signature">(inner) </span>subscribe<span class="signature">(subscriber)</span><span class="type-signature"> &rarr; {function}</span></h4>
 
     
 
 
 
 <div class="description">
-    <p>Change the value of a property, returning a new Immutable<br>Uses <a href="https://lodash.com/docs#set">lodash _.set()</a> syntax for path, e.g. <code>a[0].b.c</code></p>
+    <p>Register a subscription with the store.</p>
+<p>This will run every time the store changes, so it should be fast. Register only once if possible, and use a switch to react according to the action type, and use reference equality checks to the section you are interested in to see quickly if it has changed.</p>
 </div>
 
 
@@ -342,13 +434,13 @@ const next = initial.merge({new: 'stuff'});</code></pre>
 
         <tr>
             
-                <td class="name"><code>path</code></td>
+                <td class="name"><code>subscriber</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">function</span>
 
 
             
@@ -358,30 +450,7 @@ const next = initial.merge({new: 'stuff'});</code></pre>
 
             
 
-            <td class="description last"><p>Path of property to change</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>value</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">*</span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>New value</p></td>
+            <td class="description last"><p>Function to subscribe to the store, It will be passed the store and lastAction type.</p></td>
         </tr>
 
     
@@ -422,7 +491,7 @@ const next = initial.merge({new: 'stuff'});</code></pre>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="models_Immutable.js.html">models/Immutable.js</a>, <a href="models_Immutable.js.html#line73">line 73</a>
+        <a href="store_index.js.html">store/index.js</a>, <a href="store_index.js.html#line89">line 89</a>
     </li></ul></dd>
     
 
@@ -449,7 +518,7 @@ const next = initial.merge({new: 'stuff'});</code></pre>
 
         
 <div class="param-desc">
-    <p>A new instance</p>
+    <p>function to call to unsubscribe</p>
 </div>
 
 
@@ -460,7 +529,7 @@ const next = initial.merge({new: 'stuff'});</code></pre>
     </dt>
     <dd>
         
-<span class="param-type"><a href="Immutable.html">Immutable</a></span>
+<span class="param-type">function</span>
 
 
     </dd>
@@ -471,11 +540,7 @@ const next = initial.merge({new: 'stuff'});</code></pre>
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>const initial = new Immutable({some: {value: 9}});
-initial.some.value; //9
-const next = initial.mutate('some.value', 10);
-next.some.value; //10
-initial.some.value; //9</code></pre>
+    <pre class="prettyprint"><code>var unsubscribe = constructor.store.subscribe(function (store, lastAction) { ... });</code></pre>
 
 
 
@@ -501,7 +566,7 @@ initial.some.value; //9</code></pre>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Mon Aug 01 2016 16:20:22 GMT-0700 (PDT)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Mon Aug 01 2016 16:20:23 GMT-0700 (PDT)
 </footer>
 
 <script> prettyPrint(); </script>

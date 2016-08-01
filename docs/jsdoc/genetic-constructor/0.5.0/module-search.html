@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Module: Selectors_UI</title>
+    <title>JSDoc: Module: search</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Module: Selectors_UI</h1>
+    <h1 class="page-title">Module: search</h1>
 
     
 
@@ -29,6 +29,8 @@
 <header>
     
         
+            
+        
     
 </header>
 
@@ -36,6 +38,91 @@
     <div class="container-overview">
     
         
+            <div class="description"><p>Searching across inventories loaded in Constructor.</p>
+<p>Sources must conform to a prescribed structure to work with Constructor. They must support the following functions:</p>
+<h3><code>search(query, options)</code></h3><p>Search the source for a given query.</p>
+<p>sources must support the following <code>options</code></p>
+<p><code>start</code> - index of search results at which to start<br><code>entries</code> - number of entries to fetch</p>
+<p>Results returned from each source are an array of Block models, with the property <code>parameters</code> assigned to the array, reflecting the parameters actually used in the search (determined by the search extension, defaults are not attached)</p>
+<p>These models can and likely should be minimal, as they are only shown in the inventory. <code>get()</code> will be called before showing in the inspector or adding to the project. They must include <code>block.source = { source: &lt;key&gt;, id: &lt;source_id&gt; }</code> for the <code>get()</code></p>
+<h3><code>get(id, options, searchResult)</code></h3><p>Given an ID, get complete Block from the source. Passed the searchResult e.g. to map over the ID (note that Blocks should be cloned when added to the project e.g. by drag and drop).</p>
+<p>Returns an array of Block models, where the first block is the construct, and subsequent blocks are its contents.</p>
+<p>Should support the following <code>options</code>:</p>
+<p><code>onlyConstruct</code> - only return one block, the construct (e.g. to show in the inspector, without adding to project)</p>
+<h3><code>sourceUrl(blockSource)</code></h3><p>Given a block's source (<code>block.source</code>), generate a URL for where more information about the block can be found</p></div>
+        
+
+        
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="inventory_search.js.html">inventory/search.js</a>, <a href="inventory_search.js.html#line36">line 36</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         
     
@@ -52,30 +139,18 @@
     
 
     
-
-    
-        <h3 class="subsection-title">Methods</h3>
+        <h3 class="subsection-title">Members</h3>
 
         
             
+<h4 class="name" id=".search"><span class="type-signature">(static) </span>search<span class="type-signature"></span></h4>
 
-    
-
-    <h4 class="name" id="~detailViewIsVisible"><span class="type-signature">(inner) </span>detailViewIsVisible<span class="signature">()</span><span class="type-signature"> &rarr; {boolean}</span></h4>
-
-    
 
 
 
 <div class="description">
-    <p>Check if the detail view is open</p>
+    <p>Run a search over a inventory source.</p>
 </div>
-
-
-
-
-
-
 
 
 
@@ -112,7 +187,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="selectors_ui.js.html">selectors/ui.js</a>, <a href="selectors_ui.js.html#line54">line 54</a>
+        <a href="inventory_search.js.html">inventory/search.js</a>, <a href="inventory_search.js.html#line96">line 96</a>
     </li></ul></dd>
     
 
@@ -128,58 +203,16 @@
 
 
 
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    <p>true if the detail view is open</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">boolean</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
         
             
+<h4 class="name" id=".searchMultiple"><span class="type-signature">(static) </span>searchMultiple<span class="type-signature"></span></h4>
 
-    
-
-    <h4 class="name" id="~inspectorIsVisible"><span class="type-signature">(inner) </span>inspectorIsVisible<span class="signature">()</span><span class="type-signature"> &rarr; {boolean}</span></h4>
-
-    
 
 
 
 <div class="description">
-    <p>Check if the inspector is open</p>
+    <p>Search multiple sources at once</p>
 </div>
-
-
-
-
-
-
 
 
 
@@ -216,7 +249,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="selectors_ui.js.html">selectors/ui.js</a>, <a href="selectors_ui.js.html#line43">line 43</a>
+        <a href="inventory_search.js.html">inventory/search.js</a>, <a href="inventory_search.js.html#line123">line 123</a>
     </li></ul></dd>
     
 
@@ -232,143 +265,9 @@
 
 
 
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
         
-<div class="param-desc">
-    <p>true if the inspector is open</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">boolean</span>
-
-
-    </dd>
-</dl>
-
     
 
-
-
-        
-            
-
-    
-
-    <h4 class="name" id="~inventoryIsVisible"><span class="type-signature">(inner) </span>inventoryIsVisible<span class="signature">()</span><span class="type-signature"> &rarr; {boolean}</span></h4>
-
-    
-
-
-
-<div class="description">
-    <p>Check if the inventory is open</p>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="selectors_ui.js.html">selectors/ui.js</a>, <a href="selectors_ui.js.html#line32">line 32</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<h5>Returns:</h5>
-
-        
-<div class="param-desc">
-    <p>true if the inventory is open</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">boolean</span>
-
-
-    </dd>
-</dl>
-
-    
-
-
-
-        
     
 
     
