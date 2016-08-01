@@ -6,7 +6,7 @@ The Constructor web application is bootstrapped with knowledge of all the plugin
 
 Extensions are expected to be NPM modules. They must provide:
 
-- an entrypoint of `index.js` which is responsible for calling `window.constructor.extensions.register(extensionKey, render)`. The format of the render function is given below. The Genetic Constructor server will only serve `index.js` - you must host other files externally if they are to be loaded lazily.
+- an entrypoint, specified in `package.json` as the field `geneticConstructor.client` (or which defaults to `index.js`), which is responsible for calling `window.constructor.extensions.register(extensionKey, render)`. The format of the render function is given below. The Genetic Constructor server will only serve this file - you must host other files externally if they are to be loaded lazily.
 
 - package.json with fields `name`, `version`, `geneticConstructor`. `geneticConstructor` must include the field `region` (defined below), and optionally `readable`, `description`, etc.
 
@@ -20,6 +20,7 @@ There are several examples in `/extensions/`. Here is a simple one:
   "version": "1.0.0",
   "description": "Simple Genetic Constructor Extension Example",
   "geneticConstructor": {
+    "client": "index.js",
     "region": null
   }
 }
