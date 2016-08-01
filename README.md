@@ -4,7 +4,7 @@
 
 ### Installation
 
-Notes can be found at [Installation](docs/installation.md)
+Notes can be found at [Installation](docs/installation/installation.md)
 
 ### Documentation
 
