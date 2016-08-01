@@ -45,7 +45,8 @@ function safelyRunCallbacks(...args) {
 /**
  * Check whether a region is a valid to load the extension
  * @name validRegion
- * @memberOf window.constructor.extensions
+ * @memberOf module:constructor.module:extensions
+ * @function
  * @param {string} region Region to check
  * @returns {boolean} true if region is valid
  */
@@ -67,6 +68,7 @@ export const extensionsByRegion = (region) => {
  * Validate + register an extension manifest
  * If invalid, error is caught and logged
  * called by loadExtensions to add the manifests
+ * @function
  * @private
  * @param {Object} manifest A valid manifest
  * @returns {Object} registry
@@ -82,6 +84,11 @@ export const registerManifest = (manifest) => {
 
     Object.assign(registry, { [name]: manifest });
 
+    //temp - for non-visual extensions, just run them on load
+    if (region === null) {
+      downloadExtension(name);
+    }
+
     safelyRunCallbacks(registry, name, region);
   } catch (err) {
     console.log(`could not register extension ${manifest.name}:`);
@@ -93,6 +100,7 @@ export const registerManifest = (manifest) => {
  * Register the render() function of an extension
  * Extension manifest must already registered
  * used by registerExtension()
+ * @function
  * @private
  * @param key
  * @param render
@@ -109,14 +117,15 @@ export const registerRender = (key, render) => {
 /**
  * Register a callback for when extensions are registered
  * @name onRegister
- * @memberOf window.constructor.extensions
+ * @function
+ * @memberOf module:constructor.module:extensions
  * @param {Function} cb Callback, called with signature (registry, key, region) where key is last registered extension key
  * @param {boolean} [skipFirst=false] Execute on register?
  * @returns {Function} Unregister function
  */
 export const onRegister = (cb, skipFirst = false) => {
   callbacks.push(cb);
-  !skipFirst && safelyRunCallback(cb, registry);
+  !skipFirst && safelyRunCallback(cb, registry, null);
   return function unregister() { callbacks.splice(callbacks.findIndex(cb), 1); };
 };
 
@@ -128,8 +137,21 @@ export const getExtensionName = (key) => {
   return manifest.geneticConstructor.readable || manifest.name;
 };
 
-//the render is assigned by the download process. This is a bit unclear
-//todo - doc better, better error message
+/**
+ * Attempt to download and render an extension.
+ *
+ * Should only call this function if there is a render function, otherwise just download it.
+ *
+ * @private
+ * @function
+ *
+ * @param key
+ * @param container
+ * @param options
+ * @returns {Promise}
+ * @resolve {Function} callback from render, the unregister function
+ * @reject {Error} Error while rendering
+ */
 export const downloadAndRender = (key, container, options) => {
   return downloadExtension(key)
     .then(() => {
@@ -138,14 +160,24 @@ export const downloadAndRender = (key, container, options) => {
         console.warn(`Extension ${name} did not specify a render() function, even though it defined a region. Check Extension manifest definition.`);
         return;
       }
-      return manifest.render(container, options);
+
+      return new Promise((resolve, reject) => {
+        try {
+          const callback = manifest.render(container, options);
+          resolve(callback);
+        } catch (err) {
+          //already logged it when wrap render in registerExtension
+          reject(err);
+        }
+      });
     });
 };
 
 /**
  * Check whether an extension is registered
  * @name isRegistered
- * @memberOf window.constructor.extensions
+ * @function
+ * @memberOf module:constructor.module:extensions
  * @param {string} key Extension name
  * @returns {boolean} true if registered
  */

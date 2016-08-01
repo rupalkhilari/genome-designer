@@ -20,12 +20,13 @@
  *
  * This object is exported on the Genetic Constructor global object. It is recommended you specify event types dynamically using that object, rather than strings, as these types may change internally over time.
  *
- * @module ActionTypes
+ * @name ActionTypes
+ * @memberOf module:Constants
  *
  * @example
  *
- * gd.store.subscribe((store, lastAction) => {
- *   if (lastAction.type === gd.actionTypes.BLOCK_CREATE) {
+ * constructor.store.subscribe((store, lastAction) => {
+ *   if (lastAction.type === constructor.constants.actionTypes.BLOCK_CREATE) {
  *     //do something
  *   }
  * });
@@ -100,6 +101,7 @@ export const UI_SET_GRUNT = 'UI_SET_GRUNT';
 export const UI_SPIN = 'UI_SPIN';
 export const UI_SHOW_GENBANK_IMPORT = 'UI_SHOW_GENBANK_IMPORT';
 export const UI_SAVE_ERROR = 'UI_SAVE_ERROR';
+export const UI_SHOW_REPORT_ERROR = 'UI_SHOW_REPORT_ERROR';
 
 export const USER_SET_USER = 'USER_SET_USER';
 

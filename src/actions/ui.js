@@ -14,15 +14,20 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 /**
- * @module UI Actions
+ * @module Actions_UI
  * @memberOf module:Actions
  */
 import * as ActionTypes from '../constants/ActionTypes';
 import invariant from 'invariant';
 import extensionRegistry from '../extensions/clientRegistry';
 
+//so this is super weird - jsdoc will work when you have some statements here. This file needs 2!
+const space_filler = 10;
+const space_filler_2 = 20;
+
 /**
  * Toggle whether the inspector is visible
+ * @function
  * @param {boolean} [forceState] Omit to toggle
  * @returns {boolean} whether visible
  */
@@ -45,6 +50,7 @@ export const inspectorToggleVisibility = (forceState) => {
 
 /**
  * Toggle whether the inventory is visible
+ * @function
  * @param {boolean} [forceState] Omit to toggle
  * @returns {boolean} whether visible
  */
@@ -67,6 +73,7 @@ export const inventoryToggleVisibility = (forceState) => {
 
 /**
  * Select which tab of the inventory is active
+ * @function inventorySelectTab
  * @todo - validate a legitimate tab is selected
  * @param {string} tab Key of tab to be active
  * @returns {string} Tab active
@@ -85,6 +92,7 @@ export const inventorySelectTab = (tab) => {
 
 /**
  * Toggle whether the detail view of the design canvas is open
+ * @function uiToggleDetailView
  * @param {boolean} [forceState] Omit to toggle
  * @returns {boolean} next state
  */
@@ -107,6 +115,7 @@ export const uiToggleDetailView = (forceState) => {
 
 /**
  * Select an extension to show in the detail view
+ * @function
  * @param {string} key Key (name) of extension
  * @throws If manifest not registered
  * @returns {string} selected manifest key
@@ -211,6 +220,16 @@ export const uiSaveFailure = () => {
   return (dispatch, getState) => {
     dispatch({
       type: ActionTypes.UI_SAVE_ERROR,
+    });
+    return null;
+  };
+};
+
+export const uiReportError = (nextState) => {
+  return (dispatch, getState) => {
+    dispatch({
+      type: ActionTypes.UI_SHOW_REPORT_ERROR,
+      modalState: nextState,
     });
     return null;
   };

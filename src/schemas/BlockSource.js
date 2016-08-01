@@ -19,6 +19,7 @@ import Schema from './SchemaClass';
 /**
  * BlockSource denotes where a block came from. It is generally set on import / addition to the project
  * @name BlockSourceSchema
+ * @memberOf module:Schemas
  * @gc Schema
  */
 const blockSourceFields = {

@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import store from '../../src/store/index';
-import orchestrator from '../../src/store/orchestrator';
+import orchestrator from '../../src/store/api';
 import * as actions from '../../src/actions/_expose';
 import * as selectors from '../../src/actions/_expose';
 

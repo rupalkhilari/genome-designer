@@ -19,7 +19,8 @@ import invariant from 'invariant';
 /**
  * Register a client-side extension with Genetic Constructor. This function registers a `render` function with the manifest of the extension, allowing the extension to render on the page.
  * @name register
- * @memberOf window.constructor.extensions
+ * @function
+ * @memberOf module:constructor.module:extensions
  * @param {string} key Name of the extension, must match package.json of the extension
  * @param {function} render Function called when the extension is requested to render. Called with signature `render(container, options)`
  */
@@ -36,9 +37,10 @@ const registerExtension = (key, render) => {
   const wrappedRender = function wrappedRender() {
     try {
       return render.apply(null, arguments);
-    } catch (e) {
-      console.error('there was an error loading the extension' + name);
-      console.error(e);
+    } catch (err) {
+      console.error('there was an error rendering the extension ' + key);
+      console.error(err);
+      throw err;
     }
   };
 

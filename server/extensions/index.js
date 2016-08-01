@@ -16,6 +16,7 @@ limitations under the License.
 import express from 'express';
 import bodyParser from 'body-parser';
 import { errorDoesNotExist } from '../utils/errors';
+import { clientBundleUrl, defaultClientFilePath } from './constants';
 import extensionRegistry, { getClientExtensions } from './registry';
 import loadExtension, { getExtensionInternalPath} from './loadExtension';
 import errorHandlingMiddleware from '../utils/errorHandlingMiddleware';
@@ -50,7 +51,7 @@ router.get('/manifest/:extension', (req, res, next) => {
 if (process.env.NODE_ENV !== 'production') {
   //make the whole extension available
   router.get('/load/:extension/:filePath?', (req, res, next) => {
-    const { filePath = 'index.js', extension } = req.params;
+    const { filePath = clientBundleUrl, extension } = req.params;
     const extensionFile = getExtensionInternalPath(extension, filePath);
 
     res.sendFile(extensionFile, (err) => {
@@ -64,7 +65,7 @@ if (process.env.NODE_ENV !== 'production') {
     });
   });
 } else {
-  //only index.js files are available
+  //only index.js (i.e. clientBundleUrl) files are available
 
   router.get('/load/:extension/:filePath?', (req, res, next) => {
     const { extension } = req.params;

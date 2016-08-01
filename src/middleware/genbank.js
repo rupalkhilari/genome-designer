@@ -26,6 +26,7 @@ const contentTypeTextHeader = { headers: { 'Content-Type': 'text/plain' } };
  * import a genbank or CSV file into the given project or into a new project.
  * project ID is returned and should be reloaded if the current project or opened if a new project.
  * Promise resolves with projectId on success and rejects with statusText of xhr
+ * @private
  */
 export const importGenbankOrCSV = (file, projectId) => {
   invariant(file && file.name, 'expected a file object of the type that can be added to FormData');

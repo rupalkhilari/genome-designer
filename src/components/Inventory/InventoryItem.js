@@ -165,7 +165,7 @@ export class InventoryItem extends Component {
         <a className="InventoryItem-item"
            onClick={this.handleClick}>
           {image && (<span className="InventoryItem-image" style={{backgroundImage: `url(${image})`}} />)}
-          {(svg && !image) ? <RoleSvg symbolName={svg} color="white" {...svgProps} styles={{marginTop: '-0.25em'}}/> : null}
+          {(svg && !image) ? <RoleSvg symbolName={svg} color="white" {...svgProps} styles={{}}/> : null}
           <span className="InventoryItem-text">
             {itemName}
           </span>

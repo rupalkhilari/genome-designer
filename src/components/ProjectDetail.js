@@ -44,13 +44,14 @@ export class ProjectDetail extends Component {
   extensions = [];
 
   componentDidMount() {
-    //listen to get relevant manifests here
+    //listen to get relevant manifests here.
+    //run on first time (key === null) in case registry is already populated.
     this.extensionsListener = onRegister((registry, key, region) => {
-      if (region === projectDetailExtensionRegion) {
+      if (key === null || region === projectDetailExtensionRegion) {
         this.extensions = extensionsByRegion(projectDetailExtensionRegion);
         this.forceUpdate();
       }
-    }, true);
+    });
   }
 
   componentWillUnmount() {
@@ -58,11 +59,14 @@ export class ProjectDetail extends Component {
   }
 
   openExtension = (key) => {
-    if (!key) {
+    if (!key || key === this.props.currentExtension) {
       return;
     }
 
-    this.toggle(true);
+    if (!this.props.isVisible) {
+      this.toggle(true);
+    }
+
     this.props.detailViewSelectExtension(key);
   };
 
@@ -103,57 +107,25 @@ export class ProjectDetail extends Component {
 
   /** end resize things **/
 
-  canToggleExtension = () => {
-    return true; //this.props.focusDetailsExist(); //we dont really care - just let extensions render
-  };
-
   handleClickToggle = evt => {
-    if (this.props.focusDetailsExist()) {
-      this.toggle();
-      this.loadExtension(this.extensions[0]);
+    if (this.props.isVisible) {
+      return this.toggle(false);
     }
+
+    this.toggle(true);
+    this.loadExtension(this.extensions[0]);
   };
 
   toggle = (forceVal) => {
-    this.props.uiToggleDetailView(this.canToggleExtension() && forceVal);
+    this.props.uiToggleDetailView(forceVal);
   };
 
   render() {
+    const { isVisible, currentExtension } = this.props;
+
     if (!this.extensions.length) {
       return null;
     }
-
-    const { isVisible, currentExtension } = this.props;
-    const currentExtensionName = getExtensionName(currentExtension);
-    const detailsExist = this.canToggleExtension();
-
-    const header = (isVisible && currentExtension) ?
-      (
-        <div className="ProjectDetail-heading">
-          <a
-            className="ProjectDetail-heading-extension visible">{currentExtensionName}</a>
-          <a ref="close"
-             className={'ProjectDetail-heading-close' + (!detailsExist ? ' disabled' : '')}
-             onClick={() => this.toggle(false)}/>
-        </div>
-      ) :
-      (
-        <div className="ProjectDetail-heading">
-          <a ref="open"
-             className="ProjectDetail-heading-toggle"
-             onClick={this.handleClickToggle}/>
-          <div className="ProjectDetail-heading-extensionList">
-            {this.extensions.map(key => {
-              const name = getExtensionName(key);
-              return (
-                <a key={key}
-                   className={'ProjectDetail-heading-extension' + (!detailsExist ? ' disabled' : '')}
-                   onClick={() => detailsExist && this.openExtension(key)}>{name}</a>
-              );
-            })}
-          </div>
-        </div>
-      );
 
     return (
       <div className={'ProjectDetail' + (isVisible ? ' visible' : '')}
@@ -161,7 +133,24 @@ export class ProjectDetail extends Component {
         {(isVisible) && (<div ref="resizeHandle"
                               className="ProjectDetail-resizeHandle"
                               onMouseDown={this.handleResizableMouseDown}></div>)}
-        {header}
+        <div className="ProjectDetail-heading">
+          {!isVisible && (<a ref="open"
+             className={'ProjectDetail-heading-toggle' + (isVisible ? ' visible' : '')}
+             onClick={this.handleClickToggle}/>)}
+          <div className={'ProjectDetail-heading-extensionList' + (isVisible ? ' visible' : '')}>
+            {this.extensions.map(key => {
+              const name = getExtensionName(key);
+              return (
+                <a key={key}
+                   className={'ProjectDetail-heading-extension' + (key === currentExtension ? ' active' : '')}
+                   onClick={() => this.openExtension(key)}>{name}</a>
+              );
+            })}
+          </div>
+          {isVisible && (<a ref="close"
+                            className={'ProjectDetail-heading-close'}
+                            onClick={() => this.toggle(false)}/>)}
+        </div>
         {currentExtension && (<ExtensionView region={projectDetailExtensionRegion}
                                              isVisible={isVisible}
                                              extension={currentExtension}/>) }
@@ -172,13 +161,13 @@ export class ProjectDetail extends Component {
 
 const mapStateToProps = (state, props) => {
   const { isVisible, currentExtension } = state.ui.detailView;
-  const { constructId, forceBlocks, blockIds } = state.focus; //to force rendering (check for if details exist) on focus change
+  //const { constructId, forceBlocks, blockIds } = state.focus; //to force rendering (check for if details exist) on focus change
   return {
     isVisible,
     currentExtension,
-    blockIds,
-    constructId,
-    forceBlocks,
+    //blockIds,
+    //constructId,
+    //forceBlocks,
   };
 };
 

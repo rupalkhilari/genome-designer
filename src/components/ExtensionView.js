@@ -17,7 +17,11 @@ import React, { Component, PropTypes } from 'react';
 import extensionRegistry, { validRegion, downloadAndRender } from '../extensions/clientRegistry';
 import { isEqual } from 'lodash';
 
+import Spinner from './ui/Spinner';
+
 import '../styles/ExtensionView.css';
+
+//todo - either get rid of the visible flag (just unmount the extension), or support unregistering when it is set to false
 
 export default class ExtensionView extends Component {
   static propTypes = {
@@ -46,6 +50,7 @@ export default class ExtensionView extends Component {
 
   state = {
     downloaded: false,
+    hasError: null,
   };
 
   componentDidMount() {
@@ -56,12 +61,13 @@ export default class ExtensionView extends Component {
     if (this.props.extension !== nextProps.extension) {
       this.setState({
         downloaded: false,
+        hasError: null,
       });
     }
   }
 
   shouldComponentUpdate(nextProps, nextState) {
-    return !isEqual(this.props, nextProps);
+    return !isEqual(this.props, nextProps) || !isEqual(this.state, nextState);
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -99,15 +105,23 @@ export default class ExtensionView extends Component {
     }
 
     try {
+      //wait till next tick so DOM ready etc.
       setTimeout(() => {
         const boundingBox = this.element.getBoundingClientRect();
 
         downloadAndRender(extension, this.element, { boundingBox })
-          .then((unregister) => {
+          .then(unregister => {
             //todo - better handle scenario of extension loaded but not rendered (i.e. callback not yet set) - want to unregister immediately
             this.callback = unregister;
             this.setState({
               downloaded: true,
+              hasError: null,
+            });
+          })
+          .catch(err => {
+            this.setState({
+              downloaded: true,
+              hasError: err,
             });
           });
       });
@@ -120,19 +134,33 @@ export default class ExtensionView extends Component {
   //todo - better error handling for extension loading + the status / default text
   render() {
     const { extension, isVisible } = this.props;
-    const { downloaded } = this.state;
+    const { downloaded, hasError } = this.state;
 
     if (!extension) {
       return null;
     }
 
+    let overlayContent = null;
+
+    if (!downloaded) {
+      overlayContent = <Spinner />;
+    } else if (!!hasError) {
+      overlayContent = (<div className="ExtensionView-error">
+        <p>There was an error rendering the extension</p>
+        <div className="ExtensionView-error-stack">{hasError.stack}</div>
+      </div>);
+    }
+
     return (
       <div className={'ExtensionView' + (isVisible ? ' visible' : '')}>
-        <div className="ExtensionView-content" ref={(el) => {
-          if (el) {
-            this.element = el;
-          }
-        }}>
+        {overlayContent}
+        <div className="ExtensionView-content"
+             key={extension}
+             ref={(el) => {
+               if (el) {
+                 this.element = el;
+               }
+             }}>
         </div>
       </div>
     );
