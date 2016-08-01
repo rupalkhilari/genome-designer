@@ -1,0 +1,29 @@
+{
+  "name": "sequence-viewer",
+  "version": "1.0.0",
+  "description": "simple DNA sequence viewer for integration with Genetic Constructor from Autodesk",
+  "geneticConstructor": {
+    "readable": "Sequence Viewer",
+    "region": "sequenceDetail"
+  },
+  "main": "index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/duncanmeech/sequence-viewer.git"
+  },
+  "keywords": [
+    "DNA",
+    "Sequence",
+    "Viewer",
+    "Autodesk",
+    "Genetic",
+    "Constructor"
+  ],
+  "author": "Duncan Meech",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/duncanmeech/sequence-viewer/issues"
+  },
+  "homepage": "https://github.com/duncanmeech/sequence-viewer#readme"
+}
