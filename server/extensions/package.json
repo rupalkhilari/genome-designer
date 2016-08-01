@@ -4,7 +4,6 @@
   "description": "list of the default extensions for genome designer",
   "dependencies": {
     "testClient" : "../../extensions/testClient",
-    "simpleWidget" : "../../extensions/simpleWidget",
-    "SequenceDetail" : "IsaacLuo/onion2#deploy"
+    "SequenceDetail" : "IsaacLuo/onion2#extensions-refactor"
   }
 }
