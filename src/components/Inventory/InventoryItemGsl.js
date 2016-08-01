@@ -52,6 +52,7 @@ export default class InventoryItemRole extends Component {
           inventoryType={gslDragType}
           image={operator.image}
           item={this.operator}
+          proxyText={this.operator.text}
           dataAttribute={`gsl ${operator.id}`}/>
       </div>
     );

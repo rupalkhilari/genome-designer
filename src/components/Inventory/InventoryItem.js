@@ -44,6 +44,7 @@ export class InventoryItem extends Component {
       }).isRequired,
     }).isRequired,
     itemDetail: PropTypes.string, //gray text shown after
+    proxyText: PropTypes.string,
     image: PropTypes.string, //takes precedence over svg
     svg: PropTypes.string, //right now, SBOL SVG ID
     svgProps: PropTypes.object,
@@ -119,7 +120,7 @@ export class InventoryItem extends Component {
   makeDnDProxy() {
     const proxy = document.createElement('div');
     proxy.className = 'InventoryItemProxy';
-    proxy.innerHTML = this.props.item.metadata.name || this.props.defaultName;
+    proxy.innerHTML = this.props.proxyText || this.props.item.metadata.name || this.props.defaultName;
     const svg = this.itemElement.querySelector('svg');
     if (svg) {
       const svgClone = svg.cloneNode(true);
