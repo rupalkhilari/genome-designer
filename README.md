@@ -4,7 +4,15 @@
 
 ### Installation
 
-Notes can be found at [Installation](docs/installation.md)
+Notes can be found at [Installation](docs/installation/installation.md)
+
+### Contributing + Documentation
+
+[Contributions](./CONTRIBUTING.md) are welcome!
+
+See [Documentation](docs/README.md).
+
+For API documentation, see generated JSDocs in `/jsdoc/` (improvements forthcoming, we promise).
 
 ### License
 

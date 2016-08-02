@@ -3,7 +3,7 @@
   "version" : "0.0.1",
   "description": "list of the default extensions for genome designer",
   "dependencies": {
-    "simple" : "../../extensions/simple",
-    "SequenceDetail" : "IsaacLuo/onion2#deploy"
+    "testClient" : "../../extensions/testClient",
+    "SequenceDetail" : "IsaacLuo/onion2#extensions-refactor"
   }
 }
