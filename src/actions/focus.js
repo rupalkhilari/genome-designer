@@ -29,24 +29,6 @@ import { symbolMap } from '../inventory/roles';
 const idValidator = (id) => safeValidate(idValidatorCreator(), true, id);
 
 /**
- * Focus a project by ID
- * @function
- * @param {UUID} inputProjectId
- * @returns {UUID} Focused ID, or null if invalid ID
- */
-export const focusProject = (inputProjectId = null) => {
-  return (dispatch, getState) => {
-    const projectId = idValidator(inputProjectId) ? inputProjectId : null;
-
-    dispatch({
-      type: ActionTypes.FOCUS_PROJECT,
-      projectId,
-    });
-    return projectId;
-  };
-};
-
-/**
  * Focus a construct by ID, updating block selection if a new construct
  * @function
  * @param {UUID} inputConstructId
