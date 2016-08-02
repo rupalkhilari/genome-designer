@@ -618,6 +618,17 @@ class GlobalNav extends Component {
               text: 'Report a Bug',
               action: () => { this.props.uiReportError(true); },
             },
+            {
+              text: 'Give Us Feedback',
+              action: this.disgorgeDiscourse.bind(this, '/c/genetic-constructor/feedback'),
+            },
+            {
+              text: 'Forums',
+              action: this.disgorgeDiscourse.bind(this, '/c/genetic-constructor'),
+            }, {
+              text: 'Get Support',
+              action: this.disgorgeDiscourse.bind(this, '/c/genetic-constructor/support'),
+            },
             {},
             {
               text: 'User Guide',
@@ -626,17 +637,12 @@ class GlobalNav extends Component {
               text: 'Tutorials',
               action: this.disgorgeDiscourse.bind(this, '/c/genetic-constructor/tutorials'),
             }, {
-              text: 'Forums',
-              action: this.disgorgeDiscourse.bind(this, '/c/genetic-constructor'),
-            }, {
-              text: 'Get Support',
-              action: this.disgorgeDiscourse.bind(this, '/c/genetic-constructor/support'),
-            }, {
               text: 'Keyboard Shortcuts',
               action: this.disgorgeDiscourse.bind(this, '/t/keyboard-shortcuts'),
-            }, {
-              text: 'Give Us Feedback',
-              action: this.disgorgeDiscourse.bind(this, '/c/genetic-constructor/feedback'),
+            },
+            {
+              text: 'API Documentation',
+              action: () => { window.open('/help/docs', '_blank'); },
             },
             {},
             {

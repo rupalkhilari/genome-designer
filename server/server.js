@@ -37,6 +37,7 @@ const createBuildPath = (isBuild, notBuild = isBuild) => {
   return path.join(__dirname, (process.env.BUILD ? isBuild : notBuild));
 };
 const pathContent = createBuildPath('content', '../src/content');
+const pathDocs = createBuildPath('jsdoc', '../docs/jsdoc/genetic-constructor/0.5.0');
 const pathImages = createBuildPath('images', '../src/images');
 const pathPublic = createBuildPath('public', '../src/public');
 const pathClientBundle = createBuildPath('client.js', '../build/client.js');
@@ -109,6 +110,7 @@ app.use('/report', reportRouter);
 //Static Files
 app.use(express.static(pathPublic));
 app.use('/images', express.static(pathImages));
+app.use('/help/docs', express.static(pathDocs));
 
 app.get('/version', (req, res) => {
   try {
