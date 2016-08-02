@@ -6,7 +6,9 @@
 
 Notes can be found at [Installation](docs/installation/installation.md)
 
-### Documentation
+### Contributing + Documentation
+
+[Contributions](./CONTRIBUTING.md) are welcome!
 
 See [Documentation](docs/README.md).
 

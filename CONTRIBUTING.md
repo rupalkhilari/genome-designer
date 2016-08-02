@@ -1,18 +1,38 @@
 # Contributing to Genetic Constructor
 
-You are welcome to contribute to Genetic Constructor
+Contributions to this project are encouraged! Email the maintainers to become a contributor.
 
-## Project Roles
+## Tips
+
+To get started, as always: [open an issue](https://github.com/autodesk-bionano/genome-designer/issues/new).
+
+Here are some ideas:
+
+**Create an Extension** - Constructor is built to support third parties adding functionality and easily plugging into the application.
+
+**Contribute unit tests** - test that Constructors's functions work correctly in a variety of situations, and that they report errors when appropriate
+
+**Bug fixes:** Found a typo in the code? Found that a function fails under certain conditions? Know how to fix it? Great! Go for it. Please [open an issue](https://github.com/autodesk-bionano/genome-designer/issues/new) so that we know you're working on it, and submit a pull request when you're ready.
+
+**Whatever:** There's ALWAYS something to do.
+
+### Pull requests are always welcome
+
+All PRs should be documented as [GitHub issues](https://github.com/autodesk-bionano/genome-designer/issues), ideally BEFORE you start working on them.
+
+## Submission Guidelines
+
+### Project Roles
 
 Maxwell Bates - Engineer
+
 Duncan Meech - Engineer
 
 Joe Lachoff - Designer
 
 Florencio Mazzoldi - Business Owner
-Eli Groban - Product Owner
 
-## Submission Guidelines
+Cornelia Schultz - Product Owner
 
 ### Timing
 
@@ -21,9 +41,7 @@ We will attempt to address all issues and pull requests within one week. It may 
 ### Issues
 
 If your issue appears to be a bug, and hasn't been reported, open a new issue.
-Help us to maximize the effort we can spend fixing issues and adding new
-features, by not reporting duplicate issues.  Providing the following information will increase the
-chances of your issue being dealt with quickly:
+Help us to maximize the effort we can spend fixing issues and adding new features, by not reporting duplicate issues. A template is provided when submitting an issue, and providing the following information will increase the chances of your issue being dealt with quickly:
 
 * **Overview of the Issue** - if an error is being thrown a non-minified stack trace helps
 * **Motivation for or Use Case** - explain why this is a bug for you
