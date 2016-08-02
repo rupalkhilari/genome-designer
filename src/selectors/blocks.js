@@ -229,7 +229,7 @@ export const blockGetSiblings = (blockId) => {
 //this could be optimized...
 const _nearestParent = (state, ...blockIds) => {
   if (blockIds.length === 1) {
-    return blockIds[0];
+    return _getBlockFromStore(blockIds[0], state);
   }
 
   //map block IDs to arrays of parents
@@ -259,6 +259,11 @@ const _nearestParent = (state, ...blockIds) => {
 //this could be optimized...
 const _getBoundingBlocks = (state, ...blockIds) => {
   const nearestParent = _nearestParent(state, ...blockIds);
+
+  if (nearestParent.components.length < 1) {
+    return [nearestParent, nearestParent];
+  }
+
   const components = nearestParent.components.map(blockId => _getBlockFromStore(blockId, state));
 
   const findComponentWithBlock = (component) => {
