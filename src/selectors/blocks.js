@@ -260,13 +260,16 @@ const _nearestParent = (state, ...blockIds) => {
 const _getBoundingBlocks = (state, ...blockIds) => {
   const nearestParent = _nearestParent(state, ...blockIds);
 
-  if (nearestParent.components.length < 1) {
+  if (blockIds.length === 1 || nearestParent.components.length < 1) {
     return [nearestParent, nearestParent];
   }
 
   const components = nearestParent.components.map(blockId => _getBlockFromStore(blockId, state));
 
   const findComponentWithBlock = (component) => {
+    if (blockIds.indexOf(component.id) >= 0) {
+      return true;
+    }
     const kids = _getAllComponents(component.id, state);
     return kids.some(kid => blockIds.indexOf(kid.id) >= 0);
   };
