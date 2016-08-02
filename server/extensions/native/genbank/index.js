@@ -169,7 +169,7 @@ router.post('/import/:projectId?', (req, res, next) => {
 
       return rollup.getProjectRollup(projectId)
         .then((existingRoll) => {
-          existingRoll.project.components = existingRoll.project.components.concat(blockIds);
+          existingRoll.project.components = existingRoll.project.components.concat(roll.project.components);
           Object.assign(existingRoll.blocks, roll.blocks);
           return existingRoll;
         });
