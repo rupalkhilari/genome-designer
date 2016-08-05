@@ -17,12 +17,8 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import GlobalNav from './GlobalNav';
 import AuthenticationForms from './authentication/authenticationforms';
-import ImportGenBankModal from '../components/genbank/import';
-import ImportDNAForm from '../components/importdna/importdnaform';
 import AboutForm from '../components/aboutform';
-import OrderModal from '../containers/orders/ordermodal';
 import ModalSpinner from '../components/modal/modalspinner';
-import SaveErrorModal from '../components/modal/SaveErrorModal';
 import ReportErrorModal from '../components/modal/ReportErrorModal';
 import track from '../analytics/ga';
 
@@ -88,12 +84,8 @@ class App extends Component {
         <GlobalNav currentProjectId={this.props.currentProjectId}
                    showMenu={onProjectPage}/>
         <AuthenticationForms />
-        <ImportGenBankModal currentProjectId={this.props.currentProjectId}/>
-        <ImportDNAForm />
         <AboutForm />
-        <SaveErrorModal />
         <ReportErrorModal />
-        <OrderModal projectId={this.props.currentProjectId} />
         <div className="App-pageContent">
           {this.props.children}
         </div>

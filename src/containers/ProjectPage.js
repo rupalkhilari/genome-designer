@@ -15,6 +15,11 @@ limitations under the License.
 */
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import ImportGenBankModal from '../components/genbank/import';
+import ImportDNAForm from '../components/importdna/importdnaform';
+import OrderModal from '../containers/orders/ordermodal';
+import SaveErrorModal from '../components/modal/SaveErrorModal';
+
 import ConstructViewer from './graphics/views/constructviewer';
 import ConstructViewerCanvas from './graphics/views/constructViewerCanvas';
 import ProjectDetail from '../components/ProjectDetail';
@@ -101,14 +106,18 @@ class ProjectPage extends Component {
 
     return (
       <div className={'ProjectPage' + (showingGrunt ? ' gruntPushdown' : '')}>
+        <ImportGenBankModal currentProjectId={projectId}/>
+        <ImportDNAForm />
+        <SaveErrorModal />
+        <OrderModal projectId={projectId} />
+
         <Inventory projectId={projectId}/>
 
         <div className="ProjectPage-content">
 
           <ProjectHeader project={project}/>
 
-          <ConstructViewerCanvas
-            currentProjectId={this.props.projectId}>
+          <ConstructViewerCanvas currentProjectId={projectId}>
             {constructViewers}
           </ConstructViewerCanvas>
 
