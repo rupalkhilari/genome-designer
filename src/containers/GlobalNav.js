@@ -680,7 +680,7 @@ class GlobalNav extends Component {
         <img className="GlobalNav-logo" src="/images/homepage/app-logo.png"/>
         {showMenu && this.menuBar()}
         <span className="GlobalNav-spacer"/>
-        {showMenu && <AutosaveTracking projectId={currentProjectId}/>}
+        {(showMenu && currentProjectId) && <AutosaveTracking projectId={currentProjectId}/>}
         <UserWidget/>
         <OkCancel
           open={this.state.showDeleteProject}
