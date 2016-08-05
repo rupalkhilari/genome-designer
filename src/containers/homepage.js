@@ -45,7 +45,7 @@ export default class HomePage extends Component {
       // NOTE: the nodirect query string prevents redirection
       if (this.props.user && this.props.user.userid && !this.props.location.query.noredirect) {
         // revisit last project
-        this.props.projectOpen(null);
+        this.props.projectOpen(null, true);
         return;
       }
     }
@@ -84,38 +84,6 @@ export default class HomePage extends Component {
         </div>
         <img className="homepage-autodesk" src="/images/homepage/autodesk-logo.png"/>
         <img className="homepage-egf" src="/images/homepage/egf-logo.png"/>
-        <div className="homepage-footer">
-          <div className="homepage-footer-title">New in version 0.1:</div>
-          <div className="homepage-footer-list">
-            <ul>
-              <li><span>&bull;</span>Search and import parts directly from the IGEM and NCBI databases.</li>
-              <li><span>&bull;</span>Specify parts from the Edinburgh Genome Foundry inventory.</li>
-              <li><span>&bull;</span>Import and export GenBank and FASTA files.</li>
-              <li><span>&bull;</span>Create an inventory of your own projects, constructs and parts to reuse.</li>
-              <li><span>&bull;</span>Drag and drop editing.</li>
-            </ul>
-            <ul>
-              <li><span>&bull;</span>Inspect sequence detail.</li>
-              <li><span>&bull;</span>Create nested constructs to manage complexity.</li>
-              <li><span>&bull;</span>Assign SBOL visual symbols and colors.</li>
-              <li><span>&bull;</span>Add titles and descriptions blocks, constructs and projects.</li>
-              <li><span>&bull;</span>Organize constructs into separate projects.</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    );
-  }
-  renderOLD() {
-    return (
-      <div className="homepage">
-        <div className="homepage-image-area">
-          <img className="homepage-background" src="/images/homepage/tiles.jpg"/>
-          <div className="homepage-getstarted" onClick={this.signIn.bind(this)}>Get started</div>
-          <img className="homepage-title" src="/images/homepage/genomedesigner.png"/>
-        </div>
-        <img className="homepage-autodesk" src="/images/homepage/autodesk-logo.png"/>
-        <div className="homepage-egf">Edinburgh Genome Foundry</div>
         <div className="homepage-footer">
           <div className="homepage-footer-title">New in version 0.1:</div>
           <div className="homepage-footer-list">
