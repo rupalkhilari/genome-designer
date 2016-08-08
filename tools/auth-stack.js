@@ -44,8 +44,12 @@ const promisedExec = (cmd, opts, forceOutput) => {
       }
 
       //`` to convert from buffers
-      log(`${stdout}`, forceOutput);
-      log(`${stderr}`, forceOutput);
+      if (stdout) {
+        log(`${stdout}`, forceOutput);
+      }
+      if (stderr) {
+        log(`${stderr}`, forceOutput);
+      }
 
       return resolve(`${stdout}`, `${stderr}`);
     });

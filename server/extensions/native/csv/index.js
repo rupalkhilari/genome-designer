@@ -53,7 +53,7 @@ router.get('/file/:fileId', (req, res, next) => {
     });
 });
 
-router.post('/:projectId?', jsonParser, (req, resp, next) => {
+router.post('/import/:projectId?', jsonParser, (req, resp, next) => {
   const { projectId } = req.params;
   const noSave = req.query.hasOwnProperty('noSave') || projectId === 'convert';
   const returnRoll = projectId === 'convert';
@@ -152,6 +152,11 @@ router.post('/:projectId?', jsonParser, (req, resp, next) => {
       console.log(err.stack);
       resp.status(500).send(err);
     });
+});
+
+//todo
+router.get('export/:projectId', (req, res, next) => {
+  res.status(501).send();
 });
 
 export default router;
