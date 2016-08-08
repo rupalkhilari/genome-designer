@@ -1,9 +1,25 @@
+/*
+Copyright 2016 Autodesk,Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 import Box2D from '../geometry/box2d';
 import Vector2D from '../geometry/vector2d';
 import Line2D from '../geometry/line2d';
 import Node2D from '../scenegraph2d/node2d';
 import Role2D from '../scenegraph2d/role2d';
 import ListItem2D from '../scenegraph2d/listitem2d';
+import EmptyListItem2D from '../scenegraph2d/emptylistitem2d';
 import LineNode2D from '../scenegraph2d/line2d';
 import kT from './layoutconstants';
 import objectValues from '../../../utils/object/values';
@@ -40,6 +56,7 @@ export default class Layout {
     this.nestedLayouts = {};
     this.connectors = {};
     this.listNodes = {};
+    this.emptyMap = {};
 
     // this reference is incremented for each update. Blocks, lines are given
     // the latest reference whenever they are updated. Any elements without
@@ -52,7 +69,7 @@ export default class Layout {
    * size the scene graph to just accomodate all the nodes that are present.
    * This is only performed for the root layout ( nested constructs should not
    * perform this operation, as per the rootLayout property )
-   * @return {[type]} [description]
+   *
    */
   autoSizeSceneGraph() {
     if (this.rootLayout) {
@@ -135,35 +152,92 @@ export default class Layout {
     return new ListItem2D(props);
   }
   /**
+   * create an empty list block
+   */
+  emptyListBlockFactory(blockId, parentNode) {
+    let node = this.emptyMap[blockId];
+    if (!node) {
+      const props = Object.assign({}, {
+        parent: parentNode,
+        strokeWidth: 0,
+        sg: this.sceneGraph,
+      }, kT.partAppearance);
+      node = this.emptyMap[blockId] = new EmptyListItem2D(props);
+    }
+    return node;
+  }
+  /**
+   * drop nodes allocated with emptyListBlockFactory that are no longer needed
+   *
+   */
+  dropEmptyBlocks() {
+    Object.keys(this.emptyMap).forEach((parentBlockId) => {
+      const node = this.emptyMap[parentBlockId];
+      if (node.updateReference !== this.updateReference) {
+        node.parent.removeChild(node);
+        delete this.emptyMap[parentBlockId];
+      }
+    });
+  }
+  /**
    * create / update the list items for the block
    */
   updateListForBlock(block, pW) {
+    // ignore if not a list block
+    if (!block.isList()) {
+      return;
+    }
+    // the node representing the parent block
     const parentNode = this.nodeFromElement(block.id);
-
-    Object.keys(block.options).filter(opt => block.options[opt]).forEach((blockId, index) => {
-      // ensure we have a hash of list nodes for this block.
-      let nodes = this.listNodes[block.id];
-      if (!nodes) {
-        nodes = this.listNodes[block.id] = {};
+    // get the focused list for this block
+    let focusedOptionId = this.focusedOptions[block.id];
+    // get only the options that are enabled for this block
+    const enabled = Object.keys(block.options).filter(opt => block.options[opt]);
+    // if block list is empty add a single placeholder block
+    if (enabled.length === 0) {
+        const node = this.emptyListBlockFactory(block.id, parentNode);
+        node.set({
+          bounds: new Box2D(0, kT.blockH + 1, pW, kT.optionH),
+          fill: this.fillColor(block.id),
+          updateReference: this.updateReference,
+          listParentBlock: block,
+          listParentNode: parentNode,
+        });
+    } else {
+      // find the index of the focused list option, or default the first one
+      let focusedIndex = enabled.findIndex(blockId => focusedOptionId === blockId);
+      if (focusedIndex < 0) {
+        focusedIndex = 0;
       }
-      // get the block in the list
-      const listBlock = this.getListBlock(blockId);
+      enabled.forEach((blockId, index) => {
+        // ensure we have a hash of list nodes for this block.
+        let nodes = this.listNodes[block.id];
+        if (!nodes) {
+          nodes = this.listNodes[block.id] = {};
+        }
+        // get the block in the list
+        const listBlock = this.getListBlock(blockId);
 
-      // create node as necessary for this block
-      let listNode = nodes[blockId];
-      if (!listNode) {
-        listNode = nodes[blockId] = this.listBlockFactory(blockId);
-        parentNode.appendChild(listNode);
-      }
-      // update position and other visual attributes of list part
-      listNode.set({
-        bounds: new Box2D(0, (index + 1) * kT.blockH, pW, kT.blockH),
-        text: listBlock.metadata.name,
-        fill: this.fillColor(block.id),
-        color: this.fontColor(block.id),
-        updateReference: this.updateReference,
+        // create node as necessary for this block
+        let listNode = nodes[blockId];
+        if (!listNode) {
+          listNode = nodes[blockId] = this.listBlockFactory(blockId);
+          parentNode.appendChild(listNode);
+        }
+        // update position and other visual attributes of list part
+        listNode.set({
+          bounds: new Box2D(0, kT.blockH + 1 + index * kT.optionH, pW, kT.optionH),
+          text: listBlock.metadata.name,
+          fill: this.fillColor(block.id),
+          color: this.fontColor(block.id),
+          updateReference: this.updateReference,
+          listParentBlock: block,
+          listParentNode: this.nodeFromElement(block.id),
+          listBlock,
+          optionSelected: index === focusedIndex,
+        });
       });
-    });
+    }
   }
 
   /**
@@ -228,9 +302,9 @@ export default class Layout {
   /**
    * create a node, if not already created for the given piece.
    * Add to our hash for tracking
-   * @param  {[type]} part          [description]
-   * @param  {[type]} appearance [description]
-   * @return {[type]}            [description]
+   *
+   *
+   *
    */
   partFactory(part, appearance) {
     let node = this.nodeFromElement(part);
@@ -239,7 +313,7 @@ export default class Layout {
         dataAttribute: {name: 'nodetype', value: 'block'},
         sg: this.sceneGraph,
       }, appearance);
-      props.roleName = this.isSBOL(part) ? this.blocks[part].rules.role : null;
+      props.roleName = this.isSBOL(part) ? this.blocks[part].rules.role  || this.blocks[part].metadata.role: null;
       node = new Role2D(props);
       this.sceneGraph.root.appendChild(node);
       this.map(part, node);
@@ -264,6 +338,11 @@ export default class Layout {
   fillColor(part) {
     const block = this.blocks[part];
     if (block.isFiller()) return '#4B505E';
+    // allow an optional blockColor method to override the block color
+    if (this.blockColor) {
+      return this.blockColor(part);
+    }
+    // use color in meta data
     return block.metadata.color || 'lightgray';
   }
   /**
@@ -286,7 +365,7 @@ export default class Layout {
    * return true if the block appears to be an SBOL symbol
    */
   isSBOL(part) {
-    return !!this.blocks[part].rules.role;
+    return !!(this.blocks[part].rules.role || this.blocks[part].metadata.role);
   }
 
   /**
@@ -327,18 +406,17 @@ export default class Layout {
    * If the part is an SBOL symbol then use the symbol name preferentially
    */
   partName(part) {
-    return this.blocks[part].getName();
+    return this.blocks[part].getName('Block', true);
   }
   /**
    * create the banner / bar for the construct ( contains the triangle )
-   * @return {[type]} [description]
+   *
    */
   bannerFactory() {
     if (this.showHeader && !this.banner) {
       this.banner = new Node2D({
         sg: this.sceneGraph,
         glyph: 'construct-banner',
-        bounds: new Box2D(this.insetX, this.insetY, this.sceneGraph.availableWidth - this.insetX, kT.bannerHeight),
       });
       this.sceneGraph.root.appendChild(this.banner);
     }
@@ -346,13 +424,14 @@ export default class Layout {
       this.banner.set({
         fill: this.baseColor,
         stroke: this.baseColor,
+        bounds: new Box2D(this.insetX, this.insetY, this.sceneGraph.availableWidth - this.insetX, kT.bannerHeight),
       });
     }
   }
   /**
    * create title as necessary
-   * @param  {[type]} part [description]
-   * @return {[type]}   [description]
+   *
+   *
    */
   titleFactory() {
     if (this.showHeader) {
@@ -371,8 +450,12 @@ export default class Layout {
         this.sceneGraph.root.appendChild(this.titleNode);
       }
 
-      // update title to current position and text and width
-      const text = this.construct.getName('New Construct');
+      // update title to current position and text and width, also add gray text
+      // to indicate template if appropriate
+      let text = this.construct.getName('New Construct');
+      if (this.construct.isTemplate()) {
+        text += '<span style="color:gray">&nbsp;Template</span>';
+      }
       const width = this.titleNode.measureText(text).x + kT.textPad + kT.contextDotsW;
 
       this.titleNode.set({
@@ -404,39 +487,27 @@ export default class Layout {
     });
   }
   /**
-   * create or recycle a row on demand. resetRows
-   * should be called whenever the update starts so this method
-   * can track which rows are still in play or ready to be disposed.
-   * When the update is complete, call disposeRows() to get rid
-   * of any unused rows
-   * @return {[type]} [description]
+   * create or recycle a row on demand.
    */
   rowFactory(bounds) {
     // re-use existing if possible
-    let row = null;
-    if (this.rows.length) {
-      row = this.rows.shift();
-    } else {
+    let row = this.rows.find(row => row.updateReference !== this.updateReference);
+    if (!row) {
       row = new Node2D(Object.assign({
         sg: this.sceneGraph,
+        strokeWidth: 0,
       }, kT.rowAppearance));
       this.sceneGraph.root.appendChild(row);
+      this.rows.push(row);
     }
     // set bounds and update to current color
     row.set({
       bounds: bounds,
       fill: this.baseColor,
+      strokeWidth: 0,
+      updateReference: this.updateReference,
     });
-
-    // save into new rows so we know this row is in use
-    this.newRows.push(row);
     return row;
-  }
-  /**
-   * setup an array to track which rows are still being used
-   */
-  resetRows() {
-    this.newRows = [];
   }
 
   /**
@@ -446,15 +517,19 @@ export default class Layout {
     this.newNestedLayouts = {};
   }
   /**
-   * dispose and unused rows and move newRows to rows
+   * dispose and unused rows
    */
   disposeRows() {
-    // cleanup unused rows
-    while (this.rows.length) {
-      this.sceneGraph.root.removeChild(this.rows.pop());
-    }
-    this.rows = this.newRows;
-    this.newRows = null;
+    // keep rows still in use, remove the others
+    const keepers = [];
+    this.rows.forEach(row => {
+      if (row.updateReference === this.updateReference) {
+        keepers.push(row);
+      } else {
+        this.sceneGraph.root.removeChild(row);
+      }
+    });
+    this.rows = keepers;
   }
 
   /**
@@ -469,13 +544,18 @@ export default class Layout {
   /**
    * store layout information on our cloned copy of the data, constructing
    * display elements as required
-   * @return {[type]} [description]
+   *
    */
-  update(construct, blocks, currentBlocks, currentConstructId) {
-    this.construct = construct;
-    this.currentConstructId = currentConstructId;
-    this.blocks = blocks;
-    this.currentBlocks = currentBlocks;
+  update(options) {
+    this.options = options;
+    this.construct = options.construct;
+    this.blocks = options.blocks;
+    this.currentConstructId = options.currentConstructId;
+    this.currentBlocks = options.currentBlocks;
+    this.focusedOptions = options.focusedOptions || {};
+    this.blockColor = options.blockColor;
+    invariant(this.construct && this.blocks && this.currentBlocks && this.focusedOptions, 'missing required options');
+
     this.baseColor = this.construct.metadata.color;
 
     // perform layout and remember how much vertical was required
@@ -493,7 +573,7 @@ export default class Layout {
 
   /**
    * one of several different layout algorithms
-   * @return {[type]} [description]
+   *
    */
   layoutWrap() {
     return this.layout({
@@ -509,7 +589,7 @@ export default class Layout {
   }
   /**
    * return the point where layout of actual blocks begins
-   * @return {[type]} [description]
+   *
    */
   getInitialLayoutPoint() {
     return new Vector2D(this.insetX + kT.rowBarW, this.insetY + (this.showHeader ? kT.bannerHeight + kT.titleH + kT.rowBarH : kT.rowBarH));
@@ -526,7 +606,7 @@ export default class Layout {
   /**
    * layout, configured with various options:
    * xlimit: maximum x extent
-   * @return {[type]} [description]
+   *
    */
   layout(layoutOptions) {
     // set the new reference key
@@ -539,8 +619,6 @@ export default class Layout {
     this.titleFactory();
     // maximum x position
     const mx = layoutOptions.xlimit;
-    // reset row factory
-    this.resetRows();
     // reset nested constructs
     this.resetNestedConstructs();
     // layout all the various components, constructing elements as required
@@ -574,7 +652,7 @@ export default class Layout {
       }
       // resize row bar to current row width
       const rowStart = this.insetX;
-      const rowEnd = row === 0 ? Math.max(xp, this.initialRowXLimit) : xp;
+      const rowEnd = rowIndex === 0 ? Math.max(xp, this.initialRowXLimit) : xp;
       const rowWidth = rowEnd - rowStart;
       row.set({translateX: rowStart + rowWidth / 2, width: rowWidth});
 
@@ -589,11 +667,18 @@ export default class Layout {
 
       // set role part name if any
       node.set({
-        roleName: this.isSBOL(part) ? block.rules.role : null,
+        roleName: this.isSBOL(part) ? block.rules.role || block.metadata.role : null,
       });
 
       // measure element text or used condensed spacing
       let td = this.measureText(node, name);
+
+      // measure the max required width of all list blocks
+      Object.keys(block.options).filter(opt => block.options[opt]).forEach(blockId => {
+        let width = this.measureText(node, this.getListBlock(blockId).metadata.name).x;
+        width += kT.optionDotW;
+        td.x = Math.max(td.x, width);
+      });
 
       // if position would exceed x limit then wrap
       if (xp + td.x > mx) {
@@ -604,11 +689,6 @@ export default class Layout {
         row = this.rowFactory(new Box2D(xp, yp - kT.rowBarH, 0, kT.rowBarH));
         rowIndex += 1;
       }
-
-      // measure the max required width of any list blocks
-      Object.keys(block.options).filter(opt => block.options[opt]).forEach(blockId => {
-        td.x = Math.max(td.x, this.measureText(node, this.getListBlock(blockId).metadata.name).x);
-      });
 
       // update maxListHeight based on how many list items this block has
       maxListHeight = Math.max(maxListHeight, listN * kT.blockH);
@@ -644,7 +724,7 @@ export default class Layout {
         // update base color of nested construct skeleton
         nestedLayout.baseColor = block.metadata.color || this.baseColor;
 
-        // update minimum x extend of first rowH
+        // update minimum x extent of first rowH
         nestedLayout.initialRowXLimit = this.getConnectionRowLimit(part);
 
         // ensure layout has the latest position ( parent may have moved )
@@ -652,11 +732,11 @@ export default class Layout {
         nestedLayout.insetY = nestedY;
 
         // layout with same options as ourselves
-        nestedVertical += nestedLayout.update(
-          this.blocks[part],
-          this.blocks,
-          this.currentBlocks,
-          this.currentConstructId) + kT.nestedInsetY;
+        nestedVertical += nestedLayout.update({
+          construct: this.blocks[part],
+          blocks: this.blocks,
+          currentBlocks: this.currentBlocks,
+          currentConstructId: this.currentConstructId}) + kT.nestedInsetY;
 
         // remove from old collection so the layout won't get disposed
         // and add to the new set of layouts
@@ -669,7 +749,7 @@ export default class Layout {
 
     // ensure final row has the final row width
     if (row) {
-      const rowStart = this.insetX;
+      const rowStart = this.insetX + 1;
       const rowEnd = rowIndex === 0 ? Math.max(xp, this.initialRowXLimit) : xp;
       const rowWidth = rowEnd - rowStart;
       row.set({translateX: rowStart + rowWidth / 2, width: rowWidth});
@@ -687,13 +767,21 @@ export default class Layout {
     // drop unused list items
     this.dropListItems();
 
+    // drop unused empty block placeholders
+    this.dropEmptyBlocks();
+
     // create/show vertical bar
     this.verticalFactory();
 
     // position and size vertical bar
     const heightUsed = yp - startY + kT.blockH;
+    let barHeight = heightUsed - kT.blockH + kT.rowBarH;
+    // if the height is small just make zero since its not needed
+    if (barHeight <= kT.rowBarH) {
+      barHeight = 0;
+    }
     this.vertical.set({
-      bounds: new Box2D(this.insetX, startY, kT.rowBarW, heightUsed),
+      bounds: new Box2D(this.insetX, startY - kT.rowBarH, kT.rowBarW, barHeight),
     });
     // filter the selections so that we eliminate those block we don't contain
     let selectedNodes = [];
@@ -707,7 +795,9 @@ export default class Layout {
       });
     }
     // apply selections to scene graph
-    this.sceneGraph.ui.setSelections(selectedNodes);
+    if (this.sceneGraph.ui) {
+      this.sceneGraph.ui.setSelections(selectedNodes);
+    }
 
     // for nesting return the height consumed by the layout
     return heightUsed + nestedVertical + kT.rowBarH;

@@ -1,3 +1,18 @@
+/*
+Copyright 2016 Autodesk,Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 import invariant from 'invariant';
 import {isOne, isZero, deg2rad, rad2deg} from '../utils';
 import Vector2D from './vector2d';
@@ -8,7 +23,7 @@ export default class Matrix2D {
    * a 3x3 matrix designed to perform transformations in 2D space.
    * This class currently only implements the most basic operations e.g. Matrix x Vector, Matrix x Matrix, Inverse
    * @constructor
-   * @param {undefined || Array}
+   * @param {undefined|Array} vector
    */
   constructor(vector) {
     invariant(vector === undefined || Array.isArray(vector), 'invalid parameter');
@@ -160,7 +175,6 @@ export default class Matrix2D {
   /**
    * multiply this matrix by another
    * @param {Matrix2D} mtx
-   * @param Matrix2D
    */
   multiplyMatrix(mtx) {
     const result = new Matrix2D();

@@ -1,3 +1,18 @@
+/*
+Copyright 2016 Autodesk,Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 import Vector2D from '../geometry/vector2d';
 import Box2D from '../geometry/box2d';
 import invariant from 'invariant';
@@ -6,10 +21,11 @@ import { dispatch } from '../../../store/index';
 import { difference } from '../../../utils/set/set';
 
 /**
- * actual Drag and Drop manager.
+ * Drag and Drop manager. Creates a singleton which allows registration of drag targets and drop targets
+ * The singleton is exposed on the window at window.constructor.DnD for extensions to register their own drop targets
+ * @module DnD
  */
 class DnD {
-
   constructor() {
     this.targets = [];
     this.monitors = new Set();
@@ -17,11 +33,13 @@ class DnD {
     this.mouseUp = this.onMouseUp.bind(this);
   }
 
-  // start a drag operation using the given element proxy for display purposes
-  // and starting from the given global position. Payload is any object representing
-  // what is being dragged
-  // valid options:
-  //  - onDrop(target) - can return a payload to use onDrop
+  /**
+   * start a drag operation using the given element proxy for display purposes
+   * and starting from the given global position. Payload is any object representing
+   * what is being dragged
+   * valid options:
+   * - onDrop(target) - can return a payload to use onDrop
+   */
   startDrag(elementProxy, globalPosition, payload, options = {}) {
     // the body must have position relative for this to work ( or we could add
     // an element to act as a drag surface but that seems like overkill )
@@ -58,6 +76,7 @@ class DnD {
 
     //set hooks
     this.onDrop = options.onDrop || (() => {});
+    this.onDropFailure = options.onDropFailure || (() => {});
     this.onDragComplete = options.onDragComplete || (() => {});
 
     // save the payload for dropping
@@ -148,6 +167,20 @@ class DnD {
 
           //completion handler
           this.onDragComplete(target, globalPosition, payload, evt);
+
+          // close / commit the undo/redo transaction if one is required
+          if (this.undoCommit) {
+            dispatch(commit());
+          }
+        })
+        //if the onDrop handler fails, or something in the drop... handle (e.g. close commit)
+        .catch((err) => {
+          this.onDropFailure(err, target);
+
+          // ensure lastTarget gets a dragLeave in case they rely on it for cleanup
+          if (target.options.dragLeave) {
+            target.options.dragLeave.call(this);
+          }
 
           // close / commit the undo/redo transaction if one is required
           if (this.undoCommit) {

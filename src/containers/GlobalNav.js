@@ -1,3 +1,18 @@
+/*
+ Copyright 2016 Autodesk,Inc.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import invariant from 'invariant';
@@ -9,6 +24,9 @@ import {
   projectAddConstruct,
   projectSave,
   projectOpen,
+  projectDelete,
+  projectList,
+  projectLoad,
 } from '../actions/projects';
 import {
   focusBlocks,
@@ -30,7 +48,7 @@ import {
 } from '../actions/blocks';
 import {
   blockGetParents,
-  blockGetChildrenRecursive,
+  blockGetComponentsRecursive,
 } from '../selectors/blocks';
 import { projectGetVersion } from '../selectors/projects';
 import { focusDetailsExist } from '../selectors/focus';
@@ -41,8 +59,11 @@ import {
   uiSetGrunt,
   uiShowAbout,
   inventorySelectTab,
+  inspectorToggleVisibility,
+  inventoryToggleVisibility,
+  uiShowDNAImport,
+  uiReportError,
 } from '../actions/ui';
-import { inspectorToggleVisibility, inventoryToggleVisibility, uiShowDNAImport } from '../actions/ui';
 import KeyboardTrap from 'mousetrap';
 import { stringToShortcut } from '../utils/ui/keyboard-translator';
 import {
@@ -52,6 +73,11 @@ import {
   privacy,
 } from '../utils/ui/uiapi';
 import AutosaveTracking from '../components/GlobalNav/autosaveTracking';
+import OkCancel from '../components/okcancel';
+import * as instanceMap from '../store/instanceMap';
+import { merge } from 'lodash';
+import { extensionApiPath } from '../middleware/paths';
+
 
 import '../styles/GlobalNav.css';
 
@@ -62,6 +88,9 @@ class GlobalNav extends Component {
     projectCreate: PropTypes.func.isRequired,
     projectAddConstruct: PropTypes.func.isRequired,
     projectSave: PropTypes.func.isRequired,
+    projectDelete: PropTypes.func.isRequired,
+    projectList: PropTypes.func.isRequired,
+    projectLoad: PropTypes.func.isRequired,
     currentProjectId: PropTypes.string,
     blockCreate: PropTypes.func.isRequired,
     showMenu: PropTypes.bool.isRequired,
@@ -83,11 +112,12 @@ class GlobalNav extends Component {
     uiSetGrunt: PropTypes.func.isRequired,
     blockDetach: PropTypes.func.isRequired,
     clipboard: PropTypes.object.isRequired,
-    blockGetChildrenRecursive: PropTypes.func.isRequired,
+    blockGetComponentsRecursive: PropTypes.func.isRequired,
     blockAddComponent: PropTypes.func.isRequired,
     blockAddComponents: PropTypes.func.isRequired,
     uiShowAbout: PropTypes.func.isRequired,
     uiShowDNAImport: PropTypes.func.isRequired,
+    uiReportError: PropTypes.func.isRequired,
     inventoryVisible: PropTypes.bool.isRequired,
     inspectorVisible: PropTypes.bool.isRequired,
     detailViewVisible: PropTypes.bool.isRequired,
@@ -179,13 +209,14 @@ class GlobalNav extends Component {
   state = {
     showAddProject: false,
     recentProjects: [],
+    showDeleteProject: false,
   };
 
   /**
    * select all blocks of the current construct
    */
   onSelectAll() {
-    this.props.focusBlocks(this.props.blockGetChildrenRecursive(this.props.focus.constructId).map(block => block.id));
+    this.props.focusBlocks(this.props.blockGetComponentsRecursive(this.props.focus.constructId).map(block => block.id));
   }
 
   // get parent of block
@@ -201,9 +232,46 @@ class GlobalNav extends Component {
     const project = this.props.projectCreate();
     // add a construct to the new project
     const block = this.props.blockCreate({ projectId: project.id });
-    this.props.projectAddConstruct(project.id, block.id);
+    const projectWithConstruct = this.props.projectAddConstruct(project.id, block.id);
+
+    //save this to the instanceMap as cached version, so that when projectSave(), will skip until the user has actually made changes
+    //do this outside the actions because we do some mutations after the project + construct are created (i.e., add the construct)
+    instanceMap.saveRollup({
+      project: projectWithConstruct,
+      blocks: {
+        [block.id]: block,
+      },
+    });
+
     this.props.focusConstruct(block.id);
     this.props.projectOpen(project.id);
+  }
+
+  /**
+   * show the delete project dialog
+   *
+   */
+  queryDeleteProject() {
+    this.setState({
+      showDeleteProject: true,
+    });
+  }
+
+  /**
+   * delete the current project and open a different one
+   */
+  deleteProject() {
+    if (this.props.project.isSample) {
+      this.props.uiSetGrunt('This is a sample project and cannot be deleted.');
+    } else {
+      const projectId = this.props.currentProjectId;
+      //load another project, avoiding this one
+      this.props.projectLoad(null, false, [projectId])
+      //open the new project, skip saving the previous one
+        .then(project => this.props.projectOpen(project.id, true))
+        //delete after we've navigated so dont trigger project page to complain about not being able to laod the project
+        .then(() => this.props.projectDelete(projectId));
+    }
   }
 
   /**
@@ -219,13 +287,13 @@ class GlobalNav extends Component {
 
   /**
    * download the current file as a genbank file
-   * @return {[type]} [description]
+   *
    */
   downloadProjectGenbank() {
     this.saveProject()
       .then(() => {
         // for now use an iframe otherwise any errors will corrupt the page
-        const url = `${window.location.protocol}//${window.location.host}/export/genbank/${this.props.currentProjectId}`;
+        const url = extensionApiPath('genbank', `export/${this.props.currentProjectId}`);
         const iframe = document.createElement('iframe');
         iframe.style.display = 'none';
         iframe.src = url;
@@ -267,7 +335,9 @@ class GlobalNav extends Component {
 
   // copy the focused blocks to the clipboard using a deep clone
   copyFocusedBlocksToClipboard() {
-    if (this.props.focus.blockIds.length) {
+    // we don't currently allow copying from frozen / fixed constructs since that would allow copy ( and then pasting )
+    // of list blocks from temlates.
+    if (this.props.focus.blockIds.length && !this.focusedConstruct().isFixed() && !this.focusedConstruct().isFrozen()) {
       // sort selected blocks so they are pasted in the same order as they exist now.
       // NOTE: we don't copy the children of any selected parents since they will
       // be cloned along with their parent
@@ -289,7 +359,7 @@ class GlobalNav extends Component {
    * select all the empty blocks in the current construct
    */
   selectEmptyBlocks() {
-    const allChildren = this.props.blockGetChildrenRecursive(this.props.focus.constructId);
+    const allChildren = this.props.blockGetComponentsRecursive(this.props.focus.constructId);
     const emptySet = allChildren.filter(block => !block.hasSequence()).map(block => block.id);
     this.props.focusBlocks(emptySet);
     if (!emptySet.length) {
@@ -341,8 +411,7 @@ class GlobalNav extends Component {
 
   // cut focused blocks to the clipboard, no clone required since we are removing them.
   cutFocusedBlocksToClipboard() {
-    if (this.props.focus.blockIds.length && !this.focusedConstruct().isFixed() && this.focusedConstruct().isFrozen()) {
-      // TODO, cut must be prevents on fixed or frozen blocks
+    if (this.props.focus.blockIds.length && !this.focusedConstruct().isFixed() && !this.focusedConstruct().isFrozen()) {
       const blockIds = this.props.blockDetach(...this.props.focus.blockIds);
       this.props.clipboardSetData([clipboardFormats.blocks], [blockIds.map(blockId => this.props.blocks[blockId])]);
       this.props.focusBlocks([]);
@@ -391,10 +460,16 @@ class GlobalNav extends Component {
           text: 'FILE',
           items: [
             {
-              text: 'Snapshot Project',
+              text: 'Save Project',
               shortcut: stringToShortcut('meta S'),
               action: () => {
                 this.saveProject();
+              },
+            },
+            {
+              text: 'Delete Project',
+              action: () => {
+                this.queryDeleteProject();
               },
             },
             {
@@ -475,7 +550,7 @@ class GlobalNav extends Component {
             }, {
               text: 'Copy',
               shortcut: stringToShortcut('meta C'),
-              disabled: !this.props.focus.blockIds.length,
+              disabled: !this.props.focus.blockIds.length || !this.focusedConstruct() || this.focusedConstruct().isFixed() || this.focusedConstruct().isFrozen(),
               action: () => {
                 this.copyFocusedBlocksToClipboard();
               },
@@ -489,11 +564,7 @@ class GlobalNav extends Component {
             }, {}, {
               text: 'Add Sequence',
               action: () => {
-                if (!this.props.focus.blockIds.length) {
-                  this.props.uiSetGrunt('Sequence data must be added to or before a selected block. Please select a block and try again.');
-                } else {
-                  this.props.uiShowDNAImport(true);
-                }
+                this.props.uiShowDNAImport(true);
               },
             }, {
               text: 'Select Empty Blocks',
@@ -544,25 +615,38 @@ class GlobalNav extends Component {
           text: 'HELP',
           items: [
             {
-              text: 'User Guide',
-              action: this.disgorgeDiscourse.bind(this, '/c/genome-designer/user-guide'),
-            }, {
-              text: 'Tutorials',
-              action: this.disgorgeDiscourse.bind(this, '/c/genome-designer/tutorials'),
-            }, {
+              text: 'Report a Bug',
+              action: () => { this.props.uiReportError(true); },
+            },
+            {
+              text: 'Give Us Feedback',
+              action: this.disgorgeDiscourse.bind(this, '/c/genetic-constructor/feedback'),
+            },
+            {
               text: 'Forums',
-              action: this.disgorgeDiscourse.bind(this, '/c/genome-designer'),
+              action: this.disgorgeDiscourse.bind(this, '/c/genetic-constructor'),
             }, {
               text: 'Get Support',
-              action: this.disgorgeDiscourse.bind(this, '/c/genome-designer/support'),
+              action: this.disgorgeDiscourse.bind(this, '/c/genetic-constructor/support'),
+            },
+            {},
+            {
+              text: 'User Guide',
+              action: this.disgorgeDiscourse.bind(this, '/c/genetic-constructor/user-guide'),
+            }, {
+              text: 'Tutorials',
+              action: this.disgorgeDiscourse.bind(this, '/c/genetic-constructor/tutorials'),
             }, {
               text: 'Keyboard Shortcuts',
-              action: () => {},
-            }, {
-              text: 'Give Us Feedback',
-              action: this.disgorgeDiscourse.bind(this, '/c/genome-designer/feedback'),
-            }, {}, {
-              text: 'About Genome Designer',
+              action: this.disgorgeDiscourse.bind(this, '/t/keyboard-shortcuts'),
+            },
+            {
+              text: 'API Documentation',
+              action: () => { window.open('/help/docs', '_blank'); },
+            },
+            {},
+            {
+              text: 'About Genetic Constructor',
               action: () => {
                 this.props.uiShowAbout(true);
               },
@@ -593,17 +677,45 @@ class GlobalNav extends Component {
     return (
       <div className="GlobalNav">
         <RibbonGrunt />
-        <span className="GlobalNav-title">GD</span>
+        <img className="GlobalNav-logo" src="/images/homepage/app-logo.png"/>
         {showMenu && this.menuBar()}
         <span className="GlobalNav-spacer"/>
-        {showMenu && <AutosaveTracking projectId={currentProjectId}/>}
+        {(showMenu && currentProjectId) && <AutosaveTracking projectId={currentProjectId}/>}
         <UserWidget/>
+        <OkCancel
+          open={this.state.showDeleteProject}
+          titleText="Delete Project"
+          messageHTML={(
+            <div className="message">
+              <br/>
+              <span
+                className="line">{this.props.project ? (`"${this.props.project.getName()}"` || "Your Project") : ""}</span>
+              <br/>
+              <span className="line">and all related project data will be permanently deleted.</span>
+              <br/>
+              <span className="line">This action cannot be undone.</span>
+              <br/>
+              <br/>
+              <br/>
+              <br/>
+            </div>
+          )}
+          okText="Delete"
+          cancelText="Cancel"
+          ok={() => {
+            this.setState({ showDeleteProject: false });
+            this.deleteProject();
+          }}
+          cancel={() => {
+            this.setState({ showDeleteProject: false });
+          }}
+        />
       </div>
     );
   }
 }
 
-function mapStateToProps(state) {
+function mapStateToProps(state, props) {
   return {
     focus: state.focus,
     blocks: state.blocks,
@@ -611,6 +723,8 @@ function mapStateToProps(state) {
     inspectorVisible: state.ui.inspector.isVisible,
     inventoryVisible: state.ui.inventory.isVisible,
     detailViewVisible: state.ui.detailView.isVisible,
+    project: state.projects[props.currentProjectId],
+    currentConstruct: state.blocks[state.focus.constructId],
   };
 }
 
@@ -619,6 +733,9 @@ export default connect(mapStateToProps, {
   projectCreate,
   projectSave,
   projectOpen,
+  projectDelete,
+  projectList,
+  projectLoad,
   projectGetVersion,
   blockCreate,
   blockClone,
@@ -629,7 +746,7 @@ export default connect(mapStateToProps, {
   inventoryToggleVisibility,
   blockRemoveComponent,
   blockGetParents,
-  blockGetChildrenRecursive,
+  blockGetComponentsRecursive,
   uiShowDNAImport,
   inventorySelectTab,
   undo,
@@ -640,6 +757,7 @@ export default connect(mapStateToProps, {
   uiToggleDetailView,
   uiShowAbout,
   uiSetGrunt,
+  uiReportError,
   focusBlocks,
   focusBlocksAdd,
   focusBlocksToggle,

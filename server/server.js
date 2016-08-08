@@ -1,15 +1,31 @@
+/*
+Copyright 2016 Autodesk,Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 import path from 'path';
 import fs from 'fs';
 import express from 'express';
 import morgan from 'morgan';
 
 import dataRouter from './data/index';
+import orderRouter from './order/index';
 import fileRouter from './file/index';
 import extensionsRouter from './extensions/index';
+import reportRouter from './report/index';
 import bodyParser from 'body-parser';
-
-import importRouter from '../plugins/convert/import';
-import exportRouter from '../plugins/convert/export';
+import errorHandlingMiddleware from './utils/errorHandlingMiddleware';
+import checkUserSetup from './auth/userSetup';
 
 const DEFAULT_PORT = 3000;
 const port = parseInt(process.argv[2], 10) || process.env.PORT || DEFAULT_PORT;
@@ -21,6 +37,7 @@ const createBuildPath = (isBuild, notBuild = isBuild) => {
   return path.join(__dirname, (process.env.BUILD ? isBuild : notBuild));
 };
 const pathContent = createBuildPath('content', '../src/content');
+const pathDocs = createBuildPath('jsdoc', '../docs/jsdoc/genetic-constructor/0.5.0');
 const pathImages = createBuildPath('images', '../src/images');
 const pathPublic = createBuildPath('public', '../src/public');
 const pathClientBundle = createBuildPath('client.js', '../build/client.js');
@@ -34,20 +51,7 @@ app.use(bodyParser.json({
   strict: false,
 }));
 
-//error logging middleware
-if (process.env.NODE_ENV !== 'production') {
-  app.use((err, req, res, next) => {
-    console.log('hit error logging middleware', err, req, res, next);
-    if (err) {
-      console.error(err);
-      if (res.headersSent) {
-        return next(err);
-      }
-      res.status(502).send(err);
-    }
-    return next();
-  });
-}
+app.use(errorHandlingMiddleware);
 
 //HTTP logging middleware
 app.use(morgan('dev', {
@@ -56,7 +60,7 @@ app.use(morgan('dev', {
 
 // view engine setup
 app.set('views', pathContent);
-app.set('view engine', 'jade');
+app.set('view engine', 'pug');
 
 // Register API middleware
 // ----------------------------------------------------
@@ -64,17 +68,25 @@ app.set('view engine', 'jade');
 // insert some form of user authentication
 // the auth routes are currently called from the client and expect JSON responses
 if (process.env.BIO_NANO_AUTH) {
-  console.log("real user authentication enabled");
-  var initAuthMiddleware = require('bio-user-platform').initAuthMiddleware;
+  console.log('real user authentication enabled');
+  const initAuthMiddleware = require('bio-user-platform').initAuthMiddleware;
 
-  // TODO load a custom configuration here
-  // disable all redirects
-  var authConfig = {
+  const authConfig = {
     logoutLanding: false,
     loginLanding: false,
     loginFailure: false,
-    resetForm: "/homepage/reset",
-    apiEndPoint: process.env.API_END_POINT || "http://localhost:8080/api",
+    resetForm: '/homepage/reset',
+    apiEndPoint: process.env.API_END_POINT || 'http://localhost:8080/api',
+    onLogin: (req, res, next) => {
+      return checkUserSetup(req.user)
+        //note this expects an abnormal return of req and res to the next function
+        .then((projectId) => {
+          //todo - pass this projectId on the response so the client knows which project to load
+          console.log('made projects for user. Empty project is ' + projectId);
+          return next(req, res);
+        });
+    },
+    registerRedirect: false,
   };
   app.use(initAuthMiddleware(authConfig));
 } else {
@@ -87,12 +99,10 @@ if (process.env.BIO_NANO_AUTH) {
 
 //primary routes
 app.use('/data', dataRouter);
+app.use('/order', orderRouter);
 app.use('/file', fileRouter);
 app.use('/extensions', extensionsRouter);
-
-//extensions
-app.use('/import', importRouter);
-app.use('/export', exportRouter);
+app.use('/report', reportRouter);
 
 // Register Client Requests, delegate routing to client
 // ----------------------------------------------------
@@ -100,6 +110,7 @@ app.use('/export', exportRouter);
 //Static Files
 app.use(express.static(pathPublic));
 app.use('/images', express.static(pathImages));
+app.use('/help/docs', express.static(pathDocs));
 
 app.get('/version', (req, res) => {
   try {
@@ -118,10 +129,12 @@ app.get('*', (req, res) => {
   } else {
     // setup user properties and discourse base url to flash to client
     const discourse = {
-      discourseDomain: `http://discourse${process.env.BNR_ENV_URL_SUFFIX || ''}.bionano.autodesk.com`,
+      discourseDomain: process.env.BNR_ENV_URL_SUFFIX || `https://forum.bionano.autodesk.com`,
     };
     //so that any routing is delegated to the client
-    res.render(path.join(pathContent + '/index.jade'), Object.assign({}, req.user, discourse));
+    res.render(path.join(pathContent + '/index.pug'), Object.assign({}, req.user, discourse, {
+      productionEnvironment: process.env.NODE_ENV === 'production',
+    }));
   }
 });
 

@@ -1,10 +1,27 @@
+/*
+Copyright 2016 Autodesk,Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 import React, { Component, PropTypes } from 'react';
+import ReactDom from 'react-dom';
 
 import '../styles/InputSimple.css';
 
 export default class InputSimple extends Component {
   static propTypes = {
     value: PropTypes.string.isRequired,
+    refKey: PropTypes.any, //can pass a key, if updating with each change, if key is different then will trigger blur/focus on component change
     onChange: PropTypes.func.isRequired,
     placeholder: PropTypes.string,
     readOnly: PropTypes.bool,
@@ -41,12 +58,14 @@ export default class InputSimple extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.value !== this.props.value) {
+    if (nextProps.refKey !== this.props.refKey) {
       if (this.midupdate) {
         this.midupdate();
         this.midupdate = null;
       }
+    }
 
+    if (nextProps.value !== this.props.value) {
       this.setState({ value: nextProps.value });
     }
   }
@@ -90,14 +109,22 @@ export default class InputSimple extends Component {
 
     if (!this.props.updateOnBlur) {
       this.handleSubmission(event.target.value);
-    } else {
-      this.midupdate = this.props.onBlur;
+    }
+
+    if (!this.midupdate) {
+      this.midupdate = () => {
+        //todo - verify calling correct versions of these functions
+        if (document.activeElement === ReactDom.findDOMNode(this.refs.input)) {
+          this.props.onBlur();
+          this.props.onFocus();
+        }
+      };
     }
   };
 
   render() {
     return (
-      <div className={'InputSimple' +
+      <div className={'InputSimple no-vertical-scroll' +
       (this.props.readOnly ? ' readOnly' : '')}>
         {(this.props.useTextarea) &&
         <textarea

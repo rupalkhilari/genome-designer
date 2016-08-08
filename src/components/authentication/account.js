@@ -1,10 +1,26 @@
+/*
+Copyright 2016 Autodesk,Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 import React, { Component, PropTypes } from 'react';
 import {connect} from 'react-redux';
 import { uiShowAuthenticationForm, uiSetGrunt } from '../../actions/ui';
 import invariant from 'invariant';
 import { userUpdate } from '../../actions/user';
+import track from '../../analytics/ga';
 
-/**
+/*
  * default visibility and text for error labels
  * @type {Object}
  */
@@ -73,6 +89,7 @@ class AccountForm extends Component {
 
     // client side validation first
     if (this.clientValidation()) {
+      track('Authentication', 'Account', 'Failed client validation');
       return;
     }
 
@@ -96,6 +113,7 @@ class AccountForm extends Component {
         // show grunt / close form
         this.props.uiSetGrunt(`Account updated to ${user.firstName} ${user.lastName} ( ${user.email} )`);
         this.props.uiShowAuthenticationForm('none');
+        track('Authentication', 'Account', 'Success');
       })
       .catch((reason) => {
         const defaultMessage = 'Unexpected error, please check your connection';
@@ -103,6 +121,7 @@ class AccountForm extends Component {
         this.showServerErrors({
           message,
         });
+        track('Authentication', 'Account', message);
       });
   }
 

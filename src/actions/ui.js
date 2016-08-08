@@ -1,6 +1,36 @@
+/*
+Copyright 2016 Autodesk,Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+/**
+ * @module Actions_UI
+ * @memberOf module:Actions
+ */
 import * as ActionTypes from '../constants/ActionTypes';
 import invariant from 'invariant';
+import extensionRegistry from '../extensions/clientRegistry';
 
+//so this is super weird - jsdoc will work when you have some statements here. This file needs 2!
+const space_filler = 10;
+const space_filler_2 = 20;
+
+/**
+ * Toggle whether the inspector is visible
+ * @function
+ * @param {boolean} [forceState] Omit to toggle
+ * @returns {boolean} whether visible
+ */
 export const inspectorToggleVisibility = (forceState) => {
   return (dispatch, getState) => {
     const currentState = getState().ui.inspector.isVisible;
@@ -18,6 +48,12 @@ export const inspectorToggleVisibility = (forceState) => {
   };
 };
 
+/**
+ * Toggle whether the inventory is visible
+ * @function
+ * @param {boolean} [forceState] Omit to toggle
+ * @returns {boolean} whether visible
+ */
 export const inventoryToggleVisibility = (forceState) => {
   return (dispatch, getState) => {
     const currentState = getState().ui.inventory.isVisible;
@@ -35,6 +71,13 @@ export const inventoryToggleVisibility = (forceState) => {
   };
 };
 
+/**
+ * Select which tab of the inventory is active
+ * @function inventorySelectTab
+ * @todo - validate a legitimate tab is selected
+ * @param {string} tab Key of tab to be active
+ * @returns {string} Tab active
+ */
 export const inventorySelectTab = (tab) => {
   return (dispatch, getState) => {
     dispatch({
@@ -47,6 +90,12 @@ export const inventorySelectTab = (tab) => {
 
 /* detail view */
 
+/**
+ * Toggle whether the detail view of the design canvas is open
+ * @function uiToggleDetailView
+ * @param {boolean} [forceState] Omit to toggle
+ * @returns {boolean} next state
+ */
 export const uiToggleDetailView = (forceState) => {
   return (dispatch, getState) => {
     const currentState = getState().ui.detailView.isVisible;
@@ -55,18 +104,30 @@ export const uiToggleDetailView = (forceState) => {
       type: ActionTypes.DETAIL_VIEW_TOGGLE_VISIBILITY,
       nextState,
     });
+
+    window.setTimeout(() => {
+      window.dispatchEvent(new Event('resize'));
+    }, 300);
+
     return nextState;
   };
 };
 
-export const detailViewSelectExtension = (manifest) => {
+/**
+ * Select an extension to show in the detail view
+ * @function
+ * @param {string} key Key (name) of extension
+ * @throws If manifest not registered
+ * @returns {string} selected manifest key
+ */
+export const detailViewSelectExtension = (key) => {
   return (dispatch, getState) => {
-    invariant(manifest === null || (manifest.name && typeof manifest.render === 'function'), 'improper formed manifest');
+    invariant(extensionRegistry[key], 'extension must be registerd in registry, got ' + key);
     dispatch({
       type: ActionTypes.DETAIL_VIEW_SELECT_EXTENSION,
-      manifest,
+      key,
     });
-    return manifest;
+    return key;
   };
 };
 
@@ -103,6 +164,17 @@ export const uiShowDNAImport = (bool) => {
   };
 };
 
+export const uiShowOrderForm = (bool, orderId) => {
+  return (dispatch, getState) => {
+    dispatch({
+      type: ActionTypes.UI_SHOW_ORDER_FORM,
+      showOrderForm: bool,
+      orderId,
+    });
+    return bool;
+  };
+};
+
 export const uiShowAbout = (bool) => {
   return (dispatch, getState) => {
     dispatch({
@@ -130,5 +202,35 @@ export const uiSetGrunt = (gruntMessage) => {
       gruntMessage,
     });
     return gruntMessage;
+  };
+};
+
+export const uiSpin = (spinMessage = '') => {
+  return (dispatch, getState) => {
+    dispatch({
+      type: ActionTypes.UI_SPIN,
+      spinMessage,
+    });
+    return spinMessage;
+  };
+};
+
+//cannot be dismissed
+export const uiSaveFailure = () => {
+  return (dispatch, getState) => {
+    dispatch({
+      type: ActionTypes.UI_SAVE_ERROR,
+    });
+    return null;
+  };
+};
+
+export const uiReportError = (nextState) => {
+  return (dispatch, getState) => {
+    dispatch({
+      type: ActionTypes.UI_SHOW_REPORT_ERROR,
+      modalState: nextState,
+    });
+    return null;
   };
 };

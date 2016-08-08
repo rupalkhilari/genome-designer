@@ -1,19 +1,33 @@
+/*
+Copyright 2016 Autodesk,Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 import fields from './fields/index';
 // import * as validators from './fields/validators';
-import SchemaDefinition from './SchemaDefinition';
+import Schema from './SchemaClass';
 
 /**
- @name AnnotationDefinition
- @parent BlockDefinition
- @role Annotation (kinda)
-
- @description
- An annotation on a sequence.
- Should either have a sequence or start+end location
-
- Later, we may want to make a field that notes how optimizable the sequence is. E.g. none, codon-optimize, or random sequence. It may be represented as a degenerate sequence?
+ * An annotation on a sequence.
+ * Should either have a sequence or start+end location
+ * Later, we may want to make a field that notes how optimizable the sequence is. E.g. none, codon-optimize, or random sequence. It may be represented as a degenerate sequence?
+ *
+ * @name AnnotationSchema
+ * @memberOf module:Schemas
+ * @gc Schema
  */
-const AnnotationDefinition = new SchemaDefinition({
+
+const fieldDefs = {
   tags: [
     fields.object(),
     'Dictionary of tags defining annotation',
@@ -25,6 +39,14 @@ const AnnotationDefinition = new SchemaDefinition({
   description: [
     fields.string(),
     'Description of annotation',
+  ],
+  color: [
+    fields.string(),
+    `Color of the Annotation`,
+  ],
+  role: [
+    fields.string(),
+    `Role of the Annotation`,
   ],
   sequence: [
     fields.sequence({loose: true}),
@@ -46,6 +68,12 @@ const AnnotationDefinition = new SchemaDefinition({
     fields.object().required,
     `Notes about the annotation`,
   ],
-});
+};
 
-export default AnnotationDefinition;
+export class AnnotationSchemaClass extends Schema {
+  constructor(fieldDefinitions) {
+    super(Object.assign({}, fieldDefs, fieldDefinitions));
+  }
+}
+
+export default new AnnotationSchemaClass();

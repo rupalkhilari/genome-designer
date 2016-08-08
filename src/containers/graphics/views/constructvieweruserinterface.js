@@ -1,3 +1,18 @@
+/*
+Copyright 2016 Autodesk,Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 import UserInterface from '../scenegraph2d/userinterface';
 import DnD from '../dnd/dnd';
 import Vector2D from '../geometry/vector2d';
@@ -27,6 +42,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
       dragLeave: this.onDragLeave.bind(this),
       dragOver: this.onDragOver.bind(this),
       drop: this.onDrop.bind(this),
+
       zorder: 0,
     });
 
@@ -43,6 +59,11 @@ export default class ConstructViewerUserInterface extends UserInterface {
       const element = this.layout.elementFromNode(node);
       if (element) {
         parts.push(element);
+      } else {
+        // check for list blocks as well, but ensure we only add the block once
+        if (node.listParentBlock && parts.indexOf(node.listParentBlock.id) < 0) {
+          parts.push(node.listParentBlock.id);
+        }
       }
     });
     // combine with existing selection
@@ -60,8 +81,18 @@ export default class ConstructViewerUserInterface extends UserInterface {
     // so work backwards in the list and return the first
     // block found
     for (let i = hits.length - 1; i >= 0; i--) {
+      // hit the title node
+      if (hits[i].isNodeOrChildOf(this.layout.titleNode)) {
+        return hits[i];
+      }
+      // a block node
       if (this.layout.elementFromNode(hits[i])) {
         return hits[i];
+      }
+      // if the node has a listParentBlock/Node property it is a list
+      // child of another block i.e. from a template
+      if (hits[i].listParentNode) {
+        return hits[i].listParentNode;
       }
     }
     // no hits or no blocks in the hits
@@ -69,8 +100,8 @@ export default class ConstructViewerUserInterface extends UserInterface {
   }
   /**
    * return the top most block at a given location
-   * @param  {[type]} point [description]
-   * @return {[type]}       [description]
+   *
+   *
    */
   topBlockAt(point) {
     const top = this.topNodeAt(point);
@@ -250,7 +281,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
   }
 
   metaKey(evt) {
-    return this.osType === 'mac' ? evt.metaKey : evt.ctrlKey;
+    return (this.osType === 'mac' ? evt.metaKey : evt.ctrlKey) || evt.altKey;
   }
 
   /**
@@ -325,17 +356,16 @@ export default class ConstructViewerUserInterface extends UserInterface {
       // the clicked block is just added to the selections, otherwise it replaces the selection.
       // Also, if the shift key is used the block is added and does not replace the selection
       let action = 'replace';
-      if (evt.shiftKey || (window.__gde2e && window.__gde2e.shiftKey)) {
+      if (evt.shiftKey) {
         action = 'add';
       }
-      if (this.metaKey(evt) || evt.altKey || (window.__gde2e && window.__gde2e.metaKey)) {
+      if (this.metaKey(evt)) {
         action = 'toggle';
       }
-      // if they clicked the context menu area, open it
-      // for now, open a context menu
+      // act according to region clicked
       const globalPoint = this.mouseTrap.mouseToGlobal(evt);
       const region = this.getBlockRegion(block, globalPoint);
-      switch (region) {
+      switch (region.where) {
 
       case 'dots':
         this.constructViewer.openPopup({
@@ -358,12 +388,21 @@ export default class ConstructViewerUserInterface extends UserInterface {
         }
         break;
 
+      case 'option':
+        // user might have clicked an 'empty list' placeholder, otherwise select the option
+        if (region.optionId) {
+          this.constructViewer.optionSelected(region.blockId, region.optionId);
+          action = 'optionSelect';
+        }
+        break;
+
       default: break;
       }
       // perform the final selection action using block
       switch (action) {
       case 'toggle' : this.constructViewer.blockToggleSelected([block]); break;
       case 'add': this.constructViewer.blockAddToSelectionsRange(block, this.selectedElements); break;
+      case 'optionSelect': break;
       default: this.constructViewer.blockSelected([block]); break;
       }
     } else {
@@ -378,22 +417,17 @@ export default class ConstructViewerUserInterface extends UserInterface {
 
   /**
    * selected construct is lighter than unselected constructs
-   * @return {[type]} [description]
+   *
    */
   update() {
     super.update();
-    if (this.isSelectedConstruct()) {
+    if (this.constructViewer.isFocused()) {
       this.lighten();
     } else {
       this.darken();
     }
   }
-  /**
-   * true if we are the selected construct
-   */
-  isSelectedConstruct() {
-    return this.constructViewer.props.construct.id === this.constructViewer.props.focus.constructId;
-  }
+
   /**
    * select the construct if not already selected
    */
@@ -406,7 +440,10 @@ export default class ConstructViewerUserInterface extends UserInterface {
   }
   /**
    * return an indication of where in the block this point lies.
-   * One of ['none', 'main, 'dots']
+   * {
+   * 	where: ['none', 'main, 'dots', 'option']
+   * 	// with additional properties as per the region hit
+   * }
    */
   getBlockRegion(block, globalPoint) {
     // substract window scrolling from global point to get viewport coordinates
@@ -416,11 +453,27 @@ export default class ConstructViewerUserInterface extends UserInterface {
     const box = node.el.getBoundingClientRect();
     // compare to bounds
     if (vpt.x < box.left || vpt.x > box.right || vpt.y < box.top || vpt.y > box.bottom) {
-      return 'none';
+      // check list blocks which are outside the bounds of the parent
+      let optionId;
+      for(let i = 0; i < node.children.length; i += 1) {
+        const child = node.children[i];
+        if (child.listParentBlock) {
+          // node represents a list block
+          const childBox = child.el.getBoundingClientRect();
+          if (vpt.x >= childBox.left && vpt.x < childBox.right && vpt.y >= childBox.top && vpt.y < childBox.bottom) {
+            return {
+              where: 'option',
+              blockId: child.listParentBlock.id,
+              optionId: child.listBlock ? child.listBlock.id : null,
+            };
+          }
+        }
+      };
+      return {where: 'none'};
     }
     // context menu area?
     if (vpt.x >= box.right - kT.contextDotsW) {
-      return 'dots';
+      return {where: 'dots'};
     }
     // child expander, if present
     if (node.hasChildren) {
@@ -430,16 +483,16 @@ export default class ConstructViewerUserInterface extends UserInterface {
       if (insetX < triSize && insetY < triSize) {
         // whatever the x position is ( 0..triSize ), y must be less than trisize - x
         if (insetY <= (triSize - insetX)) {
-          return 'triangle';
+          return {where: 'triangle'};
         }
       }
     }
     // in block but nowhere special
-    return 'main';
+    return {where: 'main'};
   }
   /**
    * list of all selected blocks, based on our selected scenegraph blocks
-   * @return {[type]} [description]
+   *
    */
   get selectedElements() {
     return this.selections.map((node) => {
@@ -551,6 +604,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * a drag entered the construct viewer
    */
   onDragEnter(globalPoint, payload) {
+    this.dragInside = true;
     this.hideEdgeInsertionPoint();
     this.hideBlockInsertionPoint();
     this.selectConstruct();
@@ -559,6 +613,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * drag left the construct viewer
    */
   onDragLeave() {
+    this.dragInside = false;
     this.hideEdgeInsertionPoint();
     this.hideBlockInsertionPoint();
   }
@@ -578,6 +633,9 @@ export default class ConstructViewerUserInterface extends UserInterface {
     this.selectConstruct();
     // no drop on frozen or fixed constructs
     if (this.construct.isFrozen() || this.construct.isFixed()) {
+      return;
+    }
+    if (payload.item.isConstruct && payload.item.isConstruct() && payload.item.isTemplate()) {
       return;
     }
     // convert global point to local space via our mousetrap
@@ -603,11 +661,15 @@ export default class ConstructViewerUserInterface extends UserInterface {
     if (this.construct.isFrozen() || this.construct.isFixed()) {
       return;
     }
+    // for now templates can only be dropped on the new construct target which is part of the canvas
+    if (payload.item.isConstruct && payload.item.isConstruct() && payload.item.isTemplate()) {
+      return;
+    }
 
     // flatten dropped object and treats as new construct if we are empty.
     const blockids = this.constructViewer.addItemAtInsertionPoint(payload, this.insertion, event);
-    this.constructViewer.blockSelected(blockids);
     this.constructViewer.constructSelected(this.constructViewer.props.constructId);
+    this.constructViewer.blockSelected(blockids);
   }
   /**
    * show the insertion point at the top left of an empty construct.
@@ -630,7 +692,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
     const node = this.layout.nodeFromElement(block);
     const AABB = node.getAABB();
     const xposition = edge === 'left' ? AABB.x : AABB.right;
-    this.showInsertionPointForEdgeAt(xposition - 4, AABB.y + 1);
+    this.showInsertionPointForEdgeAt(Math.max(0, xposition - 3), AABB.y + 1);
 
     // save the current insertion point
     this.insertion = {block, node, edge};
@@ -647,7 +709,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
     }
     this.insertionEdgeEl.style.display = 'block';
     this.insertionEdgeEl.style.left = x + 'px';
-    this.insertionEdgeEl.style.top = y - 12 + 'px';
+    this.insertionEdgeEl.style.top = y - 10 + 'px';
   }
  /**
   * show the insertion point over the given block, usually used when dropping
@@ -668,8 +730,8 @@ export default class ConstructViewerUserInterface extends UserInterface {
     const node = this.layout.nodeFromElement(block);
     const AABB = node.getAABB();
     // position insertion element at the appropriate edge
-    this.insertionBlockEl.style.left = AABB.x - 8 + 'px';
-    this.insertionBlockEl.style.top = AABB.y - 8 + 'px';
+    this.insertionBlockEl.style.left = AABB.x - 6 + 'px';
+    this.insertionBlockEl.style.top = AABB.y - 6 + 'px';
     this.insertionBlockEl.style.width = AABB.w + 1 + 'px';
     this.insertionBlockEl.style.height = AABB.h + 1 + 'px';
 
@@ -678,7 +740,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
   }
   /**
    * return the current insertion point if any
-   * @return {[type]} [description]
+   *
    */
   getInsertionPoint() {
     return this.insertion;

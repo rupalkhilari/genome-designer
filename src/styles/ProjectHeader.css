@@ -3,41 +3,31 @@
 .ProjectHeader {
   display: flex;
   flex-shrink: 0;
-  margin: 10px;
+  padding: 10px;
   flex-direction: row;
   justify-content: space-between;
   color: var(--colors-blueGreyLighter);
   cursor: default;
+  transition: background-color var(--timing-fast) ease-out;
 
   /* left side */
   &-info {
     display: flex;
     flex-grow: 1;
     flex-direction: column;
-  }
-
-  &-breadcrumbs {
-    padding-bottom: 10px;
-  }
-
-  &-breadcrumb {
-    text-decoration: none;
-  }
-
-  &-lead {
-    text-transform: uppercase;
-  }
-
-  &-breadcrumb-separator {
-    margin: 0 0.5em;
-    font-weight: 100;
+    max-width: 100%;
   }
 
   &-title {
-
+    font-size: 16px;
   }
 
   &-description {
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    max-height: 4.25em;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   /* right side */
@@ -48,5 +38,9 @@
   &-detailToggle {
     padding: 1em;
     cursor: pointer;
+  }
+
+  &.focused {
+    background-color: var(--colors-grey);
   }
 }

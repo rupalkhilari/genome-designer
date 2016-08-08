@@ -5,23 +5,11 @@ import devServer from '../../server/server';
 
 describe('Extensions', () => {
   describe('REST', () => {
-/*
-    let server;
+    //keys of test extensions
+    const testClient = 'testClient';
+    const testServer = 'testServer';
 
-
-    before('server setup', () => {
-      server = devServer.listen(3000, 'localhost', function (err) {
-        if (err) {
-          console.log("server failure", err);
-          return done(err);
-        }
-      });
-    });
-    after(() => {
-      server.close();
-    });
-*/
-    it('should list the extensions, manifests keyed by name', (done) => {
+    it('should list the client extensions, manifests keyed by name', (done) => {
       const url = '/extensions/list';
       request(devServer)
         .get(url)
@@ -31,19 +19,26 @@ describe('Extensions', () => {
             return done(err);
           }
 
+          console.log(result.body);
+
           expect(result.body).to.be.an.object;
           assert(Object.keys(result.body).length > 0, 'there should be extensions registered');
           assert(Object.keys(result.body).every(key => {
             const manifest = result.body[key];
-            const { name, version, region } = manifest;
-            return !!name && !!version && !!region;
+            const { name, version } = manifest;
+            const { region } = manifest.geneticConstructor;
+
+            //region check is only valid for client extension, but these should all be client extensions...
+            const regionValid = region === null || !!region;
+
+            return !!name && !!version && regionValid;
           }), 'invalid manifest format');
           done();
         });
     });
 
     it('/manifest/ to get manifest', (done) => {
-      const url = '/extensions/manifest/simple';
+      const url = `/extensions/manifest/${testClient}`;
       request(devServer)
         .get(url)
         .expect(200)
@@ -51,15 +46,17 @@ describe('Extensions', () => {
           if (err) {
             return done(err);
           }
+          console.log(result.body);
+
           expect(result.body).to.be.an.object;
-          assert(result.body.name === 'simple');
-          assert(result.body.region === 'sequenceDetail');
+          assert(result.body.name === testClient, 'wrong name');
+          assert(result.body.geneticConstructor.region === 'sequenceDetail', 'wrong region');
           done();
         });
     });
 
     it('/load/ to get the index.js script', (done) => {
-      const url = '/extensions/load/simple';
+      const url = `/extensions/manifest/${testClient}`;
       request(devServer)
         .get(url)
         .expect(200)
@@ -68,11 +65,12 @@ describe('Extensions', () => {
             return done(err);
           }
 
-          assert(result.text.indexOf('render'), 'should return script with a render() function');
-          assert(result.text.indexOf('gd.registerExtension'), 'should return script which registers itself using registerExtension on the client');
+          assert(result.text.indexOf('window.constructor'), 'should call something on the window.constructor object');
 
           done();
         });
     });
+
+    it('/api/ route to call server extensions exposed router');
   });
 });

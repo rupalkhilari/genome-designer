@@ -1,18 +1,48 @@
-import Instance from './Instance';
+/*
+Copyright 2016 Autodesk,Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 import invariant from 'invariant';
-import cloneDeep from 'lodash.clonedeep';
+import Instance from '../models/Instance';
+import { merge, cloneDeep } from 'lodash';
 import OrderDefinition from '../schemas/Order';
-import OrderParametersDefinition from '../schemas/OrderParameters';
+import OrderParametersSchema from '../schemas/OrderParameters';
+import * as validators from '../schemas/fields/validators';
+import safeValidate from '../schemas/fields/safeValidate';
+import { submitOrder, getQuote } from '../middleware/order';
 
+const idValidator = (id) => safeValidate(validators.id(), true, id);
+
+/**
+ * A construct can be ordered, i.e. synthesized, and the process is saved using an Order. Orders are placed with a foundry.
+ * Orders are only saved once they have been completed successfully
+ * @name Order
+ * @class
+ * @extends Instance
+ * @gc Model
+ */
 export default class Order extends Instance {
-  constructor(projectId, projectVersion, input = {}) {
-    invariant(projectId, 'project is required to make an order');
-    invariant(projectVersion, 'project version required to make an order');
+  /**
+   * @constructor
+   * @param {Object} [input={}]
+   * @returns {Order}
+   */
+  constructor(input = {}) {
+    invariant(input.projectId, 'project Id is required to make an order');
+    invariant(input.constructIds, 'constructIDs are required on creation for generating number of constructs');
 
-    super(input, OrderDefinition.scaffold(), {
-      projectId,
-      projectVersion,
-    });
+    super(input, OrderDefinition.scaffold());
   }
 
   /************
@@ -24,55 +54,173 @@ export default class Order extends Instance {
     return Object.assign({}, cloneDeep(new Order(input)));
   }
 
+  /**
+   * validate a complete order (with a project ID, which is after submission)
+   * @method validate
+   * @memberOf Order
+   * @static
+   */
   static validate(input, throwOnError = false) {
     return OrderDefinition.validate(input, throwOnError);
   }
 
+  /**
+   * validate order prior to submission - should have parameters, constructs, user, projectId
+   * @method validateSetup
+   * @memberOf Order
+   * @param input
+   * @param throwOnError
+   * @throws if throwOnError === true
+   * @returns {boolean}
+   */
+  static validateSetup(input, throwOnError = false) {
+    return idValidator(input.projectId) &&
+      input.constructIds.length > 0 &&
+      input.constructIds.every(id => idValidator(id)) &&
+      OrderParametersSchema.validate(input.parameters, throwOnError);
+  }
+
+  /**
+   * Validate the parameters of an order
+   * @method validateParameters
+   * @memberOf Order
+   * @static
+   * @param input
+   * @param throwOnError
+   * @throws if throwOnError ==== true
+   * @returns {*}
+   */
   static validateParameters(input, throwOnError = false) {
-    return OrderParametersDefinition.validate(input, throwOnError);
+    return OrderParametersSchema.validate(input, throwOnError);
   }
 
   clone() {
-    invariant('cannot clone an order');
+    invariant(false, 'cannot clone an order');
+  }
+
+  /**
+   * Change a property of the Order
+   * @method mutate
+   * @memberOf Order
+   * @param path
+   * @param value
+   * @throws if the order has been submitted
+   * @returns {Instance}
+   */
+  mutate(path, value) {
+    invariant(!this.isSubmitted(), 'cannot change a submitted order');
+    return super.mutate(path, value);
+  }
+
+  /**
+   * Merge an object onto the Order
+   * @method merge
+   * @memberOf Order
+   * @param {Object} obj Object to merge with order
+   * @throws if the order has been submitted
+   * @returns {Instance}
+   */
+  merge(obj) {
+    invariant(!this.isSubmitted(), 'cannot change a submitted order');
+    return super.merge(obj);
   }
 
   /************
    metadata etc
    ************/
 
-  setName(newName) {
-    const renamed = this.mutate('metadata.name', newName);
-    return renamed;
+  /**
+   * Get order name
+   * @method getName
+   * @memberOf Order
+   * @returns {*|string}
+   */
+  getName() {
+    return this.metadata.name || 'Untitled Order';
   }
 
+  /**
+   * Set name of the order
+   * @method setName
+   * @memberOf Order
+   * @param newName
+   * @returns {Order}
+   */
+  setName(newName) {
+    return this.mutate('metadata.name', newName);
+  }
+
+  /**
+   * Check whether the order has been submitted
+   * @method isSubmitted
+   * @memberOf Order
+   * @returns {boolean}
+   */
   isSubmitted() {
     return this.status.foundry && this.status.remoteId;
   }
 
-  /************
-   constructs + filtering
-   ************/
-
-  constructsAdd(...constructs) {
-    //todo
+  /**
+   * If submitted, return time order placed
+   * @method dateSubmitted
+   * @memberOf Order
+   * @returns {number|null} POSIX time
+   */
+  dateSubmitted() {
+    return this.isSubmitted() ? this.status.timeSent : null;
   }
 
-  constructsRemove(...constructs) {
-    //todo
+  /************
+   parameters, user, other information
+   ************/
+
+  /**
+   * Set order parameters
+   * @method setParameters
+   * @memberOf Order
+   * @param parameters
+   * @returns {Order}
+   */
+  setParameters(parameters = {}) {
+    invariant(OrderParametersSchema.validate(parameters, false), 'parameters must pass validation');
+    return this.mutate('parameters', parameters);
+  }
+
+  /**
+   * Check whether only ordering a subset of possible combinations
+   * @method onlySubset
+   * @memberOf Order
+   * @returns {boolean}
+   */
+  onlySubset() {
+    const { parameters } = this;
+    return (!parameters.onePot && parameters.permutations < this.numberCombinations);
   }
 
   /************
    quote + submit
    ************/
 
+  /**
+   * If supported by the foundry, get a quote for the order
+   * @method quote
+   * @memberOf Order
+   * @param foundry
+   */
   quote(foundry) {
-
+    return getQuote(foundry, this);
   }
 
-  submit(foundry) {
-    //set foundry + remote ID in status
-    //write it to the server
-    //return the updated order
+  //todo - should not need to pass this to the server. should be able to generated deterministically. Set up better code shsraing between client + server
+  /**
+   * Submit the order
+   * @method submit
+   * @memberOf Order
+   * @param {string} foundry ID of the foundry. Currently, 'egf'
+   * @param {Array.<Array.<UUID>>} positionalCombinations 2D of positional combinations, used on the server for generating all combinations
+   */
+  submit(foundry, positionalCombinations) {
+    //may want to just set the foundry on the order directly?
+    return submitOrder(this, foundry, positionalCombinations);
   }
-
 }

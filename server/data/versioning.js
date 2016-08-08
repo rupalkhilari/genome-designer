@@ -1,3 +1,22 @@
+/*
+Copyright 2016 Autodesk,Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+/**
+ * git utilities, relying on nodegit, for versioning of projects
+ * @module versioning
+ */
 import nodegit from 'nodegit';
 import invariant from 'invariant';
 import path from 'path';
@@ -16,7 +35,7 @@ const describeCommit = (commit) => ({
   time: commit.timeMs(),
 });
 
-export const initialize = (path) => {
+export const initialize = (path, userId = 'Author') => {
   const repoPath = makePath(path);
   return nodegit.Repository.init(repoPath, 0)
     .then(repo => {
@@ -30,7 +49,7 @@ export const initialize = (path) => {
             .then(() => index.write())
             .then(() => index.writeTree())
             .then(oid => {
-              const author = nodegit.Signature.now('Person', 'email');
+              const author = nodegit.Signature.now(userId, 'email');
               const committer = author;
               return repo.createCommit('HEAD', author, committer, 'Initialize', oid, []);
             });
@@ -52,7 +71,7 @@ export const isInitialized = (path) => {
 
 //todo - prevent conflicts -- shouldn't be an issue with only one branch
 //todo - ensure HEAD is latest on master
-export const commit = (path, message = 'commit message') => {
+export const commit = (path, message = 'commit message', userId = 'Author') => {
   const repoPath = makePath(path);
   return nodegit.Repository.open(repoPath)
     .then(repo => {
@@ -67,7 +86,7 @@ export const commit = (path, message = 'commit message') => {
               return nodegit.Reference.nameToId(repo, 'HEAD')
                 .then((head) => repo.getCommit(head))
                 .then(parent => {
-                  const author = nodegit.Signature.now('Person', 'email');
+                  const author = nodegit.Signature.now(userId, 'email');
                   const committer = author;
                   return repo.createCommit('HEAD', author, committer, message, oid, [parent]);
                 });

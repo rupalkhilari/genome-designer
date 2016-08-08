@@ -1,3 +1,18 @@
+/*
+Copyright 2016 Autodesk,Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import invariant from 'invariant';
@@ -9,8 +24,12 @@ import {
   blockClone,
   blockRename,
 } from '../../../actions/blocks';
+import { uiSpin } from '../../../actions/ui';
 import { focusConstruct, focusBlocks } from '../../../actions/focus';
-import { projectGetVersion } from '../../../selectors/projects';
+import {
+  projectGetVersion,
+  projectGet,
+ } from '../../../selectors/projects';
 import DnD from '../dnd/dnd';
 import ConstructViewer from './constructviewer';
 import MouseTrap from '../mousetrap';
@@ -21,6 +40,7 @@ import '../../../styles/constructviewercanvas.css';
 export class ConstructViewerCanvas extends Component {
 
   static propTypes = {
+    uiSpin: PropTypes.func.isRequired,
     blockCreate: PropTypes.func.isRequired,
     blockClone: PropTypes.func.isRequired,
     blockRename: PropTypes.func.isRequired,
@@ -43,7 +63,6 @@ export class ConstructViewerCanvas extends Component {
     // treat as a list of one or more blocks
     //if the block is from the inventory, we've cloned it and dont need to worry about forcing the projectId when we add the components
     const fromInventory = payload.source.indexOf('inventory') >= 0;
-
     //dont need to check if array, since inventory drags always are single items
     if (fromInventory && payload.type === blockDragType && payload.item.isConstruct()) {
       const construct = this.props.blockClone(payload.item.id);
@@ -51,12 +70,19 @@ export class ConstructViewerCanvas extends Component {
       this.props.focusConstruct(construct.id);
     } else {
       const construct = this.props.blockCreate();
-      this.props.projectAddConstruct(this.props.currentProjectId, construct.id, shouldForceProjectId);
+      this.props.projectAddConstruct(this.props.currentProjectId, construct.id, fromInventory);
       const constructViewer = ConstructViewer.getViewerForConstruct(construct.id);
       invariant(constructViewer, 'expect to find a viewer for the new construct');
       constructViewer.addItemAtInsertionPoint(payload, null, null);
       this.props.focusConstruct(construct.id);
     }
+  }
+
+  /**
+   * true if current project is a sample project
+   */
+  isSampleProject() {
+    return this.props.projectGet(this.props.currentProjectId).isSample;
   }
 
   /**
@@ -97,6 +123,15 @@ export class ConstructViewerCanvas extends Component {
     DnD.unregisterMonitor(ReactDOM.findDOMNode(this));
     this.mouseTrap.dispose();
     this.mouseTrap = null;
+  }
+
+  /**
+   * scroll to top when a new construct viewer is added
+   */
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.children.length > this.props.children.length) {
+      ReactDOM.findDOMNode(this).scrollTop = 0;
+    }
   }
 
   /**
@@ -181,15 +216,20 @@ export class ConstructViewerCanvas extends Component {
       return React.cloneElement(constructViewer, {
         mouseScroll: this.mouseScroll.bind(this),
         endMouseScroll: this.endMouseScroll.bind(this),
+        currentProjectId: this.props.currentProjectId,
       });
     });
 
+    // get class name for drop target which might hide it
+    const dropClasses = `cvc-drop-target${this.isSampleProject() ? ' cvc-hidden' : ''}`;
+
     // map construct viewers so we can propagate projectId and any recently dropped blocks
-    return (<div className="ProjectPage-constructs no-vertical-scroll" onClick={this.onClick}>
-      {constructViewers}
-      <div className="cvc-drop-target" ref="dropTarget" key="dropTarget">Drop blocks here to create a new construct.
+    return (
+      <div className="ProjectPage-constructs no-vertical-scroll" onClick={this.onClick}>
+        <div className={dropClasses} ref="dropTarget" key="dropTarget">Drop blocks here to create a new construct.</div>;
+        {constructViewers}
       </div>
-    </div>);
+    );
   }
 }
 
@@ -200,6 +240,7 @@ function mapStateToProps(state, props) {
 }
 
 export default connect(mapStateToProps, {
+  uiSpin,
   focusConstruct,
   focusBlocks,
   projectAddConstruct,
@@ -207,5 +248,6 @@ export default connect(mapStateToProps, {
   blockRename,
   blockAddComponent,
   projectGetVersion,
+  projectGet,
   blockClone,
 })(ConstructViewerCanvas);

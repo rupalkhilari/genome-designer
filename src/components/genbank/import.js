@@ -1,9 +1,26 @@
+/*
+Copyright 2016 Autodesk,Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import ModalWindow from '../modal/modalwindow';
-import Balls from '../ui/balls';
 import Dropzone from 'react-dropzone';
-import { uiShowGenBankImport } from '../../actions/ui';
+import {
+  uiShowGenBankImport,
+  uiSpin,
+} from '../../actions/ui';
 import { projectGet, projectListAllBlocks } from '../../selectors/projects';
 import { projectList, projectLoad, projectOpen } from '../../actions/projects';
 import { importGenbankOrCSV } from '../../middleware/genbank';
@@ -20,6 +37,7 @@ class ImportGenBankModal extends Component {
     currentProjectId: PropTypes.string.isRequired,
     open: PropTypes.bool.isRequired,
     uiShowGenBankImport: PropTypes.func.isRequired,
+    uiSpin: PropTypes.func.isRequired,
     projectLoad: PropTypes.func.isRequired,
   };
 
@@ -53,12 +71,18 @@ class ImportGenBankModal extends Component {
     });
 
     if (this.state.files.length) {
-      const projectId = this.state.destination === 'current project' ? '/' + this.props.currentProjectId : '';
+      this.setState({
+        processing: true,
+      });
+      this.props.uiSpin('Importing your file... Please wait');
+      const projectId = this.state.destination === 'current project' ? this.props.currentProjectId : '';
       const file = this.state.files[0];
       importGenbankOrCSV(file, projectId)
         .then(projectId => {
+          this.props.uiSpin();
           if (projectId === this.props.currentProjectId) {
-            this.props.projectLoad(projectId);
+            //true to forcibly reload the project, avoid our cache
+            this.props.projectLoad(projectId, true);
           } else {
             this.props.projectOpen(projectId);
           }
@@ -68,6 +92,7 @@ class ImportGenBankModal extends Component {
           this.props.uiShowGenBankImport(false);
         })
         .catch(error => {
+          this.props.uiSpin();
           this.setState({
             error: `Error uploading file: ${error}`,
             processing: false,
@@ -130,7 +155,6 @@ class ImportGenBankModal extends Component {
               </Dropzone>
               {this.showFiles()}
               {this.state.error ? <div className="error visible">{this.state.error}</div> : null}
-              <Balls running={this.state.processing} color={'lightgray'}/>
               <button type="submit" disabled={this.state.processing}>Upload</button>
               <button
                 type="button"
@@ -139,6 +163,10 @@ class ImportGenBankModal extends Component {
                   this.props.uiShowGenBankImport(false);
                 }}>Cancel
               </button>
+              <div className="link">
+                <span>Format documentation and same .CSV files can be found here</span>
+                <a className="blue-link" href="https://forum.bionano.autodesk.com/t/importing-data-using-csv-format" target="_blank">discourse.bionano.autodesk.com/genetic-constructor/formats</a>
+              </div>
             </form>
           )}
           closeOnClickOutside
@@ -159,6 +187,7 @@ function mapStateToProps(state) {
 
 export default connect(mapStateToProps, {
   uiShowGenBankImport,
+  uiSpin,
   projectGet,
   projectListAllBlocks,
   projectList,

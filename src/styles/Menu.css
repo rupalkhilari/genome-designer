@@ -31,8 +31,10 @@
 /*interaction blocker for popup menus, when visible or hidden*/
 .menu-popup-blocker-visible {
   position: fixed;
-  width: 100vw;
-  height: 100vh;
+  width: 100vw !important;
+  height: 100vh !important;
+  padding: 0 !important;
+  margin: 0 !important;
   left: 0;
   top: 0;
   background-color: transparent;

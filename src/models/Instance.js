@@ -1,69 +1,107 @@
-import uuid from 'node-uuid';
+/*
+ Copyright 2016 Autodesk,Inc.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 import { set as pathSet, unset as pathUnset, cloneDeep, merge } from 'lodash';
 import invariant from 'invariant';
-import InstanceDefinition from '../schemas/Instance';
+import Immutable from './Immutable';
+import InstanceSchema from '../schemas/Instance';
 import safeValidate from '../schemas/fields/safeValidate';
 import { version } from '../schemas/fields/validators';
 
 const versionValidator = (ver, required = false) => safeValidate(version(), required, ver);
 
 /**
- * @description
- * you can pass as argument to the constructor either:
- *  - an object, which will extend the created instance
+ * Instances are immutable objects, which conform to a schema, and provide an explicit API for modifying their data.
+ * Instances have an ID, metadata, and are versioned (explicitly or implicitly by the Instance which owns them)
+ * @name Instance
+ * @class
+ * @extends Immutable
+ * @gc Model
  */
-export default class Instance {
+export default class Instance extends Immutable {
+  /**
+   * Create an instance
+   * @constructor
+   * @param {Object} input Input object
+   * @param {Object} [subclassBase] If extending the class, additional fields to use in the scaffold
+   * @param {Object} [moreFields] Additional fields, beyond the scaffold
+   * @returns {Instance} An instance, frozen if not in production
+   */
   constructor(input = {}, subclassBase, moreFields) {
     invariant(typeof input === 'object', 'must pass an object (or leave undefined) to model constructor');
 
-    merge(this,
-      InstanceDefinition.scaffold(),
+    return super(merge(
+      InstanceSchema.scaffold(),
       subclassBase,
       moreFields,
       input,
-    );
-
-    if (process.env.NODE_ENV !== 'production') {
-      require('deep-freeze')(this);
-    }
+    ));
   }
 
-  //use cloneDeep and perform mutation prior to calling constructor because constructor may freeze object
-
-  // returns a new instance
-  // uses lodash _.set() for path, e.g. 'a.b[0].c'
+  /**
+   * See {@link Immutable.mutate}
+   * @method mutate
+   * @memberOf Instance
+   */
   mutate(path, value) {
-    const base = cloneDeep(this);
-    pathSet(base, path, value);
-    return new this.constructor(base);
+    return super.mutate(path, value);
   }
 
-  // returns a new instance
-  // deep merge using _.merge
+  /**
+   * See {@link Immutable.merge}
+   * @method merge
+   * @memberOf Instance
+   */
   merge(obj) {
-    const base = cloneDeep(this);
-    merge(base, obj);
-    return new this.constructor(base);
+    return super.merge(obj);
   }
 
-  //clone can accept just an ID (e.g. project), but likely want to pass an object (e.g. block, which also has field projectId in parent)
-  clone(parentInfo = {}) {
-    const self = cloneDeep(this);
-    const inputObject = (typeof parentInfo === 'string') ?
-    { version: parentInfo } :
-      parentInfo;
+  /**
+   * Clone an instance, adding the parent to the ancestry of the child Instance.
+   * @method clone
+   * @memberOf Instance
+   * @param {object|null|string} [parentInfo={}] Parent info for denoting ancestry. If pass null to parentInfo, the instance is simply cloned, and nothing is added to the history. If pass a string, it will be used as the version.
+   * @param {Object} [overwrites={}] object to merge into the cloned Instance
+   * @throws if version is invalid (not provided and no field version on the instance)
+   * @returns {Instance}
+   */
+  clone(parentInfo = {}, overwrites = {}) {
+    const cloned = cloneDeep(this);
+    let clone;
 
-    const parentObject = Object.assign({
-      id: self.id,
-      version: self.version,
-    }, inputObject);
+    if (parentInfo === null) {
+      clone = merge(cloned, overwrites);
+    } else {
+      const inputObject = (typeof parentInfo === 'string') ?
+      { version: parentInfo } :
+        parentInfo;
 
-    invariant(versionValidator(parentObject.version), 'must pass a valid version (SHA), got ' + parentObject.version);
+      const parentObject = Object.assign({
+        id: cloned.id,
+        version: cloned.version,
+      }, inputObject);
 
-    const clone = Object.assign(self, {
-      id: uuid.v4(),
-      parents: [parentObject].concat(self.parents),
-    });
+      invariant(versionValidator(parentObject.version), 'must pass a valid version (SHA), got ' + parentObject.version);
+
+      const parents = [parentObject, ...cloned.parents];
+
+      //unclear why, but merging parents was not overwriting the clone, so shallow assign parents specifically
+      clone = Object.assign(merge(cloned, overwrites), { parents });
+      delete clone.id;
+    }
+
     return new this.constructor(clone);
   }
 }

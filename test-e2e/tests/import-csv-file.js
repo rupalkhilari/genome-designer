@@ -7,10 +7,12 @@ var newConstruct = require('../fixtures/newconstruct');
 var clickMainMenu = require('../fixtures/click-main-menu');
 var http = require("http");
 var path = require('path');
+var size = require('../fixtures/size');
 
 module.exports = {
   'Import a CSV file' : function (browser) {
 
+    size(browser);
     // register via fixture
     var credentials = homepageRegister(browser);
 
@@ -24,7 +26,7 @@ module.exports = {
     newProject(browser);
 
     // click the file menu -> Upload Genbank File
-    clickMainMenu(browser, 1, 8);
+    clickMainMenu(browser, 1, 7);
 
     browser
       .waitForElementPresent('.genbank-import-form', 5000, 'Expect the import dialog to appear')
@@ -45,7 +47,8 @@ module.exports = {
       // click submit button to start the upload of fake data
       .submitForm('.genbank-import-form')
       // wait for a construct viewer to become visible
-      .waitForElementPresent('.construct-viewer', 5000, 'expected a construct viewer to appear')
+      .waitForElementPresent('[data-nodetype="block"]', 5000, 'expected a construct viewer to appear')
+      .saveScreenshot('./test-e2e/current-screenshots/import-csv-file.png')
       .end();
   }
 };

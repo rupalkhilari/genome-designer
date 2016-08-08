@@ -11,14 +11,8 @@
   flex-direction: column;
   flex-grow: 1;
   color: var(--colors-greyLight);
-
-  &-heading {
-    font-size: var(--font-size-text);
-    color: var(--colors-grey);
-    font-weight: 500;
-    margin: 1.25em 0 0.4em;
-    user-select: none;
-  }
+  padding-bottom: 1rem;
+  width: 100%;
 
   &Block {
 
@@ -43,5 +37,12 @@
   &-pickerWrap {
     display: flex;
     flex-direction: row;
+  }
+
+  &-section {
+    display: block;
+    background: var(--colors-blueGreyLighter);
+    margin: 0 -var(--SidePanel-width-padding-content);
+    padding: var(--SidePanel-width-padding-content);
   }
 }

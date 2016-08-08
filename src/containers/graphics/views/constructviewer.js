@@ -1,3 +1,18 @@
+/*
+Copyright 2016 Autodesk,Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import SceneGraph2D from '../scenegraph2d/scenegraph2d';
@@ -19,8 +34,15 @@ import {
 import {
   uiShowDNAImport,
   uiToggleDetailView,
-  inspectorToggleVisibility
+  inspectorToggleVisibility,
+  uiShowOrderForm,
 } from '../../../actions/ui';
+import {
+  orderCreate,
+  orderGenerateConstructs,
+  orderList,
+  orderSetName,
+} from '../../../actions/orders';
 import {
   blockGetParents,
 } from '../../../selectors/blocks';
@@ -33,12 +55,20 @@ import {
   focusBlocksAdd,
   focusBlocksToggle,
   focusConstruct,
+  focusBlockOption,
 } from '../../../actions/focus';
 import invariant from 'invariant';
 import {
   projectGetVersion,
+  projectGet,
 } from '../../../selectors/projects';
-import { projectRemoveConstruct } from '../../../actions/projects';
+import {
+  projectRemoveConstruct,
+  projectAddConstruct,
+} from '../../../actions/projects';
+import RoleSvg from '../../../components/RoleSvg';
+
+import "../../../styles/constructviewer.css";
 
 // static hash for matching viewers to constructs
 const idToViewer = {};
@@ -54,6 +84,7 @@ export class ConstructViewer extends Component {
     focusBlocksAdd: PropTypes.func.isRequired,
     focusBlocksToggle: PropTypes.func.isRequired,
     focusConstruct: PropTypes.func.isRequired,
+    focusBlockOption: PropTypes.func.isRequired,
     currentBlock: PropTypes.array,
     blockSetRole: PropTypes.func,
     blockCreate: PropTypes.func,
@@ -63,10 +94,17 @@ export class ConstructViewer extends Component {
     blockAddComponents: PropTypes.func,
     blockDetach: PropTypes.func,
     uiShowDNAImport: PropTypes.func,
+    uiShowOrderForm: PropTypes.func.isRequired,
+    orderCreate: PropTypes.func.isRequired,
+    orderGenerateConstructs: PropTypes.func.isRequired,
+    orderList: PropTypes.func.isRequired,
+    orderSetName: PropTypes.func.isRequired,
     blockRemoveComponent: PropTypes.func,
     blockGetParents: PropTypes.func,
     projectGetVersion: PropTypes.func,
+    projectGet: PropTypes.func,
     projectRemoveConstruct: PropTypes.func,
+    projectAddConstruct: PropTypes.func,
     blocks: PropTypes.object,
     focus: PropTypes.object,
     constructPopupMenuOpen: PropTypes.bool,
@@ -81,7 +119,7 @@ export class ConstructViewer extends Component {
       menuPosition: new Vector2D(),  // position for any popup menu,
       modalOpen: false,              // controls visibility of test modal window
     };
-    this.update = debounce(this._update.bind(this), 1);
+    this.update = debounce(this._update.bind(this), 16);
   }
 
   /**
@@ -128,8 +166,8 @@ export class ConstructViewer extends Component {
 
   /**
    * scroll into view if needed and update scenegraph
-   * @param  {[type]} prevProps [description]
-   * @return {[type]}           [description]
+   *
+   *
    */
   componentDidUpdate(prevProps) {
     // if we are newly focused then scroll ourselves into view
@@ -149,6 +187,22 @@ export class ConstructViewer extends Component {
     delete idToViewer[this.props.constructId];
     this.resizeDebounced.cancel();
     window.removeEventListener('resize', this.resizeDebounced);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    // scroll into view when focused by user, unless this is a result of a drag operation
+    if (!this.sg.ui.dragInside) {
+      const hasFocus = this.isFocused();
+      const willFocus = nextProps.construct.id === nextProps.focus.constructId;
+      if (!hasFocus && willFocus) {
+        const element = ReactDOM.findDOMNode(this);
+        if (element.scrollIntoViewIfNeeded) {
+          element.scrollIntoViewIfNeeded(true);
+        } else {
+          element.scrollIntoView();
+        }
+      }
+    }
   }
 
   /**
@@ -185,16 +239,6 @@ export class ConstructViewer extends Component {
   }
 
   /**
-   * rename one of our blocks
-   * @param  {[type]} blockId [description]
-   * @param  {[type]} newName [description]
-   * @return {[type]}         [description]
-   */
-  blockRename(blockId, newName) {
-
-  }
-
-  /**
    * select the given block
    */
   constructSelected(id) {
@@ -206,6 +250,13 @@ export class ConstructViewer extends Component {
    */
   blockSelected(partIds) {
     this.props.focusBlocks(partIds);
+  }
+
+  /**
+   * focus an option
+   */
+  optionSelected(blockId, optionId) {
+    this.props.focusBlockOption(blockId, optionId);
   }
 
   /**
@@ -226,7 +277,7 @@ export class ConstructViewer extends Component {
    * Join the given block with any other selected block in the same
    * construct level and select them all
    */
-  blockAddToSelectionsRange(partId, currentSelections) {
+   blockAddToSelectionsRange(partId, currentSelections) {
     // get all the blocks at the same level as this one
     const levelBlocks = (this.props.blockGetParents(partId)[0]).components;
     // find min/max index of these blocks if they are in the currentSelections
@@ -245,7 +296,7 @@ export class ConstructViewer extends Component {
 
   /**
    * window resize, update layout and scene graph with new dimensions
-   * @return {[type]} [description]
+   *
    */
   windowResized() {
     this.sg.availableWidth = this.dom.clientWidth;
@@ -255,7 +306,7 @@ export class ConstructViewer extends Component {
 
   /**
    * accessor for our DOM node.
-   * @return {[type]} [description]
+   *
    */
   get dom() {
     return ReactDOM.findDOMNode(this);
@@ -263,7 +314,7 @@ export class ConstructViewer extends Component {
 
   /**
    * accessor that fetches the actual scene graph element within our DOM
-   * @return {[type]} [description]
+   *
    */
   get sceneGraphEl() {
     return this.dom.querySelector('.sceneGraph');
@@ -273,19 +324,15 @@ export class ConstructViewer extends Component {
    * update the layout and then the scene graph
    */
   _update() {
-    //console.time(`LAYOUT`);
-    this.layout.update(
-      this.props.construct,
-      this.props.blocks,
-      this.props.focus.blockIds,
-      this.props.focus.constructId);
-    //console.timeEnd(`LAYOUT`);
-    //console.time('GRAPH');
+    this.layout.update({
+      construct: this.props.construct,
+      blocks: this.props.blocks,
+      currentBlocks: this.props.focus.blockIds,
+      currentConstructId: this.props.focus.constructId,
+      focusedOptions: this.props.focus.options,
+    });
     this.sg.update();
-    //console.timeEnd('GRAPH');
-    //console.time('UI');
     this.sg.ui.update();
-    //console.timeEnd('UI');
   }
 
   /**
@@ -307,7 +354,7 @@ export class ConstructViewer extends Component {
 
   /**
    * open the inspector
-   * @return {[type]} [description]
+   *
    */
   openInspector() {
     this.props.inspectorToggleVisibility(true);
@@ -357,9 +404,10 @@ export class ConstructViewer extends Component {
    * menu items for the construct context menu
    */
   constructContextMenuItems = () => {
+    const typeName = this.props.construct.getType('Construct');
     return [
       {
-        text: 'Inspect Construct',
+        text: `Inspect ${typeName}`,
         action: () => {
           this.openInspector();
           this.props.focusBlocks([]);
@@ -367,9 +415,24 @@ export class ConstructViewer extends Component {
         },
       },
       {
-        text: 'Delete Construct',
+        text: `Delete ${typeName}`,
+        disabled: this.isSampleProject(),
         action: () => {
           this.props.projectRemoveConstruct(this.props.projectId, this.props.constructId);
+        },
+      },
+      {
+        text: `Duplicate ${typeName}`,
+        disabled: this.isSampleProject(),
+        action: () => {
+          // clone the our construct/template and then add to project and ensure focused
+          let clone = this.props.blockClone(this.props.construct);
+          const oldName = clone.getName();
+          if (!oldName.endsWith(' - copy')) {
+            clone = this.props.blockRename(clone.id, `${oldName} - copy`);
+          }
+          this.props.projectAddConstruct(this.props.projectId, clone.id);
+          this.props.focusConstruct(clone.id);
         },
       },
     ];
@@ -403,7 +466,7 @@ export class ConstructViewer extends Component {
     let parent = insertionPoint ? this.getBlockParent(insertionPoint.block) : this.props.construct;
     if (type === roleDragType) {
       // create new block with correct type of sbol symbo
-      const droppedBlock = this.props.blockCreate({ rules: { role: item.id } });
+      const droppedBlock = this.props.blockCreate({ rules: { role: item.rules.role } });
       // insert next to block, inject into a block, or add as the first block of an empty construct
       if (insertionPoint) {
         if (insertionPoint.edge) {
@@ -487,6 +550,59 @@ export class ConstructViewer extends Component {
   }
 
   /**
+   * launch DNA form for this construct
+   */
+  onOrderDNA = () => {
+    let order = this.props.orderCreate(this.props.currentProjectId, [this.props.construct.id]);
+    this.props.orderList(this.props.currentProjectId)
+      .then((orders) => {
+        order = this.props.orderSetName(order.id, `Order ${orders.length}`);
+        this.props.uiShowOrderForm(true, order.id);
+      });
+  };
+
+  /**
+   * only visible on templates that are not part of the sample(s) project
+   */
+  orderButton() {
+    if (this.props.construct.isTemplate() && !this.isSampleProject()) {
+      return <button onClick={this.onOrderDNA} className="order-button">Order DNA</button>;
+    }
+    return null;
+  }
+
+  isSampleProject() {
+    return this.props.projectGet(this.props.currentProjectId).isSample;
+  }
+
+  /**
+   * true if our construct is focused
+   * @return {Boolean}
+   */
+  isFocused() {
+    return this.props.construct.id === this.props.focus.constructId;
+  }
+
+  lockIcon() {
+    if (!this.props.construct.isFrozen()) {
+      return null;
+    }
+    const isFocused = this.props.construct.id === this.props.focus.constructId;
+    const classes = `lockIcon${isFocused ? "" : " sceneGraph-dark"}`;
+    return (
+      <div className={classes}>
+        <RoleSvg
+          symbolName="lock"
+          color={this.props.construct.metadata.color}
+          width="14px"
+          height="14px"
+          fill={this.props.construct.metadata.color}
+        />
+      </div>
+    )
+  }
+
+  /**
    * render the component, the scene graph will render later when componentDidUpdate is called
    */
   render() {
@@ -497,6 +613,8 @@ export class ConstructViewer extends Component {
         </div>
         {this.blockContextMenu()}
         {this.constructContextMenu()}
+        {this.orderButton()}
+        {this.lockIcon()}
       </div>
     );
     return rendered;
@@ -525,10 +643,18 @@ export default connect(mapStateToProps, {
   focusBlocks,
   focusBlocksAdd,
   focusBlocksToggle,
+  focusBlockOption,
   focusConstruct,
   projectGetVersion,
+  projectGet,
   projectRemoveConstruct,
+  projectAddConstruct,
   inspectorToggleVisibility,
   uiShowDNAImport,
+  uiShowOrderForm,
   uiToggleDetailView,
+  orderCreate,
+  orderGenerateConstructs,
+  orderList,
+  orderSetName,
 })(ConstructViewer);

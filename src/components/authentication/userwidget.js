@@ -1,3 +1,18 @@
+/*
+Copyright 2016 Autodesk,Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import { push } from 'react-router-redux';
@@ -6,6 +21,7 @@ import Vector2D from '../../containers/graphics/geometry/vector2d';
 import { connect } from 'react-redux';
 import { uiShowAuthenticationForm, uiSetGrunt } from '../../actions/ui';
 import { userLogout } from '../../actions/user';
+import track from '../../analytics/ga';
 
 import '../../styles/userwidget.css';
 
@@ -50,10 +66,14 @@ class UserWidget extends Component {
   signOut() {
     this.props.userLogout()
     .then(() => {
-      this.props.push('/homepage');
+      track('Authentication', 'Sign Out', 'Success');
+      // store is left with previous user projects and other issue. For now do a complete reload
+      //this.props.push('/homepage');
+      window.location = `${window.location.protocol}\\\\${window.location.hostname}${window.location.port ? ':' + window.location.port : ''}\\homepage`;
     })
     .catch((reason) => {
       this.props.uiSetGrunt('There was a problem signing you out');
+      track('Authentication', 'Sign Out', 'Failed');
     });
   }
 
@@ -70,7 +90,7 @@ class UserWidget extends Component {
             classes: 'blue-menu-items',
           },
           {
-            text: 'My Account',
+            text: 'Account Settings',
             action: () => {
               this.props.uiShowAuthenticationForm('account');
             },

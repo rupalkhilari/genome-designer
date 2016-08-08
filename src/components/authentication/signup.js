@@ -1,12 +1,32 @@
+/*
+Copyright 2016 Autodesk,Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 import React, { Component, PropTypes } from 'react';
 import {connect} from 'react-redux';
-import { uiShowAuthenticationForm, uiSetGrunt } from '../../actions/ui';
+import {
+  uiShowAuthenticationForm,
+  uiSetGrunt,
+  uiSpin,
+} from '../../actions/ui';
 import { projectOpen } from '../../actions/projects';
 import { userRegister } from '../../actions/user';
 import invariant from 'invariant';
 import { tos, privacy } from '../../utils/ui/uiapi';
+import track from '../../analytics/ga';
 
-/**
+/*
  * default visibility and text for error labels
  * @type {Object}
  */
@@ -42,6 +62,7 @@ class RegisterForm extends Component {
   static propTypes = {
     uiShowAuthenticationForm: PropTypes.func.isRequired,
     uiSetGrunt: PropTypes.func.isRequired,
+    uiSpin: PropTypes.func.isRequired,
     userRegister: PropTypes.func.isRequired,
     projectOpen: PropTypes.func.isRequired,
   };
@@ -58,9 +79,10 @@ class RegisterForm extends Component {
     evt.preventDefault();
     // client side validation first
     if (this.clientValidation()) {
+      track('Authentication', 'Sign Up', 'Failed client validation');
       return;
     }
-
+    this.props.uiSpin('Creating your account... Please wait.');
     this.props.userRegister({
       email: this.emailAddress,
       password: this.password,
@@ -68,16 +90,20 @@ class RegisterForm extends Component {
       lastName: this.lastName,
     })
     .then((json) => {
-      // close the form
+      track('Authentication', 'Sign Up', 'Success');
+      // close the form / wait message
+      this.props.uiSpin();
       this.props.uiShowAuthenticationForm('none');
       this.props.projectOpen(null);
     })
     .catch((reason) => {
+      this.props.uiSpin();
       const defaultMessage = 'Unexpected error, please check your connection';
       const { message = defaultMessage } = reason;
       this.showServerErrors({
         message,
       });
+      track('Authentication', 'Sign Up', message);
     });
   }
 
@@ -87,6 +113,16 @@ class RegisterForm extends Component {
   }
 
   onTextChanged() {
+    if (this.firstName === 'darwin magic') {
+        this.refs.firstName.value = 'Charles';
+        this.refs.lastName.value = 'Darwin';
+        const email = `charlesdarwin_${Date.now()}@royalsociety.co.uk`;
+        this.refs.emailAddress.value = email;
+        this.refs.emailConfirm.value = email;
+        this.refs.password.value = '123456';
+        this.refs.passwordConfirm.value = '123456';
+        this.refs.tos.checked = true;
+    }
     this.setState({
       canSubmit: this.firstName &&
       this.lastName &&
@@ -283,7 +319,7 @@ class RegisterForm extends Component {
         <button
           type="button"
           onClick={() => {
-            this.props.uiShowAuthenticationForm('none');
+            this.props.uiShowAuthenticationForm('signin');
           }}>Cancel</button>
       </form>
     );
@@ -296,6 +332,7 @@ function mapStateToProps(state) {
 export default connect(mapStateToProps, {
   uiShowAuthenticationForm,
   uiSetGrunt,
+  uiSpin,
   userRegister,
   projectOpen,
 })(RegisterForm);

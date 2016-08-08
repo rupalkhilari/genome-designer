@@ -1,13 +1,34 @@
+/*
+ Copyright 2016 Autodesk,Inc.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
 import safeValidate from './safeValidate';
 import urlRegex from 'url-regex';
 import { dnaStrictRegexp, dnaLooseRegexp } from '../../utils/dna/dna';
+import { id as idRegex } from '../../utils/regex';
+
+//any additions to this file should be tested, and everything will be exported, so only export real validators
 
 /**
- * note that everything exported in this file is tested - so only export real validators
+ * Validators are parameterized functions used to validate the correctness of some input.
  *
- * @description
- * these validators are used by fields/index.js
- * when defining a SchemaDefinition you should use the fieldType objects exported from that file instead of these directly. However, you may want to use these when just running validation. Note that they expect parameters.
+ * Validators are consumed by fields, which are in turned used by Schemas.
+ *
+ * In general, when defining a Schema you should use fields instead of validators directly. However, you may want to use these when just running validation. Note that they expect parameters.
+ *
+ * @name validators
+ * @memberOf module:Schemas
  *
  * @example
  * let validator = number({min:5});
@@ -15,10 +36,10 @@ import { dnaStrictRegexp, dnaLooseRegexp } from '../../utils/dna/dna';
  * validator(40); //true
  */
 
-export const id = params => input => {
-  const regex = /^(\w+-)?[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+export const any = params => input => {};
 
-  if (!regex.test(input)) {
+export const id = params => input => {
+  if (!idRegex().test(input)) {
     return new Error(`${input} is not a RFC4122-compliant UUID`);
   }
 };
@@ -180,7 +201,7 @@ export const oneOf = possible => input => {
   }
 
   if (possible.indexOf(input) < 0) {
-    return new Error(input + ' not found in ' + possible.join(','));
+    return new Error(input + ' not found in ' + possible.join(', '));
   }
 };
 

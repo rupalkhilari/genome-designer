@@ -7,10 +7,12 @@ var newConstruct = require('../fixtures/newconstruct');
 var clickMainMenu = require('../fixtures/click-main-menu');
 var http = require("http");
 var path = require('path');
-
+var size = require('../fixtures/size');
 module.exports = {
   'Import a genbank file as a project then export project as a genbank file' : function (browser) {
 
+    size(browser);
+    
     // register via fixture
     var credentials = homepageRegister(browser);
 
@@ -22,9 +24,10 @@ module.exports = {
 
     // start with a new project to ensure no construct viewers are visible
     newProject(browser);
+    browser.pause(3000);
 
-    // click the file menu -> Upload Genbank File
-    clickMainMenu(browser, 1, 8);
+    // import from menu
+    clickMainMenu(browser, 1, 7);
 
     browser
       .waitForElementPresent('.genbank-import-form', 5000, 'Expect the import dialog to appear')
@@ -53,11 +56,12 @@ module.exports = {
       // save original project url
       var projectURL = response.value;
       var projectId = response.value.split('/').pop();
-      var uri = 'http://localhost:3001/export/genbank/' + projectId;
+      var uri = 'http://localhost:3001/extensions/api/genbank/export/' + projectId;
       browser
         .url(uri)
         .pause(5000)
         .assert.urlContains(projectURL)
+        .saveScreenshot('./test-e2e/current-screenshots/import-export-genbank-file.png')
         .end();
     });
   }

@@ -1,4 +1,5 @@
 import Instance from '../../src/models/Instance';
+import InstanceSchema from '../../src/schemas/Instance';
 import chai from 'chai';
 import sha1 from 'sha1';
 
@@ -11,6 +12,16 @@ describe('Model', () => {
         const inst = new Instance();
 
         expect(inst.constructor).to.be.a('function');
+      });
+
+      it('should include scaffold for default input', () => {
+        const inst = new Instance();
+        const scaffold = InstanceSchema.scaffold();
+        const massaged = Object.assign({}, scaffold, {
+          id: inst.id,
+        });
+        expect(inst).to.eql(massaged);
+        assert(typeof inst.metadata === 'object', 'should have metadata field');
       });
 
       it('should accept existing input', () => {
@@ -101,6 +112,14 @@ describe('Model', () => {
 
       expect(inst.clone.bind(inst, badVersion)).to.throw();
       expect(inst.clone.bind(inst, goodVersion)).to.not.throw();
+    });
+
+    it('clone(null) does not change ID or add to history', () => {
+      const inst = new Instance();
+      const clone = inst.clone(null);
+      assert(clone !== inst, 'should not be the same instance');
+      assert(clone.id === inst.id, 'should have same id after clone(null)');
+      assert(clone.parents.length === inst.parents.length, 'should not add a parent');
     });
   });
 });

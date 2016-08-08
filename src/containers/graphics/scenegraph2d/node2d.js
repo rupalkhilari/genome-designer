@@ -1,3 +1,18 @@
+/*
+Copyright 2016 Autodesk,Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 import uuid from 'node-uuid';
 import Vector2D from '../geometry/vector2d';
 import Box2D from '../geometry/box2d';
@@ -96,7 +111,7 @@ export default class Node2D {
 
   /**
    * apply the properties of the object p to our props.
-   * @param {object} props - key / value pairs of properties
+   * @param {Object} props - key / value pairs of properties
    */
   set(props) {
     Object.keys(props).forEach(key => {
@@ -137,7 +152,7 @@ export default class Node2D {
 
   /**
    * just our local transform
-   * @return {[type]} [description]
+   *
    */
   get localTransform() {
     // use simple caching to save on this calculation
@@ -167,7 +182,7 @@ export default class Node2D {
 
   /**
    * inverse transformation matrix
-   * @return {[type]} [description]
+   *
    */
   get inverseTransformationMatrix() {
     return this.transformationMatrix.inverse();
@@ -267,7 +282,7 @@ export default class Node2D {
 
   /**
    * get the axis align bounding box for the element
-   * @returns G.Box
+   * @returns {Box2D}
    */
   getAABB() {
     // transform the 4 corners of the bounds into screen space
@@ -287,10 +302,19 @@ export default class Node2D {
 
     return new Box2D(xmin, ymin, xmax - xmin, ymax - ymin);
   }
+  /**
+   * AABB of node including all child nodes
+   * @return {Box2D}
+   */
+  getAABBWithChildren() {
+    return this.children.reduce((aabb, child) => {
+      return aabb.union(child.getAABBWithChildren());
+    }, this.getAABB());
+  }
 
   /**
    * send to back of z order
-   * @return {[type]} [description]
+   *
    */
   sendToBack() {
     invariant(this.parent, 'Not attached!');
@@ -333,8 +357,8 @@ export default class Node2D {
 
   /**
    * append the given child to us. It will be top most until another child is added
-   * @param  {[type]} child [description]
-   * @return {[type]}       [description]
+   *
+   *
    */
   appendChild(child) {
     invariant(child && !child.parent, 'cannot append nothing or a parented node');
@@ -346,8 +370,8 @@ export default class Node2D {
 
   /**
    * remove the given child from our children
-   * @param  {[type]} child [description]
-   * @return {[type]}       [description]
+   *
+   *
    */
   removeChild(child) {
     invariant(child && this.children.indexOf(child) >= 0, 'node is not our child');
@@ -360,7 +384,7 @@ export default class Node2D {
 
   /**
    * Updating all display properties of the node and returning our element.
-   * @return {[type]} [description]
+   *
    */
   update() {
     //if we have additional CSS classes to apply do that

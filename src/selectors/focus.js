@@ -1,12 +1,88 @@
+/*
+Copyright 2016 Autodesk,Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 import * as BlockSelector from './blocks';
+
+const _getCurrentProjectId = () => {
+  const match = /^\/project\/(.*?)\??$/gi.exec(window.location.pathname);
+  return match ? match[1] : null;
+};
+
+//todo - this should not be exposed as part of 3rd party API... exported so inspector can share
+export const _getFocused = (state, defaultToConstruct = true, defaultProjectId = null) => {
+  const { level, forceProject, forceBlocks, constructId, blockIds, options, roleId } = state.focus;
+  const projectId = _getCurrentProjectId();
+
+  if (level === 'role') {
+    return {
+      type: 'role',
+      readOnly: true,
+      focused: roleId,
+    };
+  }
+
+  //focus doesnt update on undo, just the blocks... so need to filter / make sure defined
+  const project = forceProject || state.projects[projectId || defaultProjectId];
+  const construct = state.blocks[constructId];
+  const blocks = !!forceBlocks.length ?
+    forceBlocks :
+    blockIds.map(blockId => state.blocks[blockId]).filter(block => !!block);
+  const option = blockIds.length === 1 ? state.blocks[options[blockIds[0]]] : null;
+
+  let focused;
+  let readOnly = false;
+  let type = level;
+
+  if (level === 'project' || (!construct && !blocks.length)) {
+    focused = project;
+    readOnly = !!forceProject || !!project.isSample;
+    type = 'project'; //override in case here because construct / blocks unspecified
+  } else if (level === 'construct' && construct || (defaultToConstruct === true && construct && !blocks.length)) {
+    focused = [construct];
+    readOnly = construct.isFrozen();
+  } else if (level === 'option' && option) {
+    focused = [option];
+    readOnly = true;
+  } else {
+    focused = blocks;
+    readOnly = !!forceBlocks.length || focused.some(instance => instance.isFrozen());
+  }
+
+  return {
+    type,
+    readOnly,
+    focused,
+  };
+};
+
+//primary way to get focused things for the inspector
+export const focusGetFocused = (defaultToConstruct = true, defaultProjectId = null) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    return _getFocused(state, defaultToConstruct, defaultProjectId);
+  };
+};
 
 export const focusGetProject = () => {
   return (dispatch, getState) => {
-    const { forceProject, projectId } = getState().focus;
+    const { forceProject } = getState().focus;
     if (forceProject) {
       return forceProject;
     }
-    return getState().projects[projectId];
+    const projectId = _getCurrentProjectId();
+    return !!projectId ? getState().projects[projectId] : null;
   };
 };
 

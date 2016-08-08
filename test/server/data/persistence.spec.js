@@ -4,14 +4,21 @@ import uuid from 'node-uuid';
 import merge from 'lodash.merge';
 import md5 from 'md5';
 import { errorInvalidModel, errorAlreadyExists, errorDoesNotExist } from '../../../server/utils/errors';
-import { fileExists, fileRead, fileWrite, fileDelete, directoryExists, directoryMake, directoryDelete } from '../../../server/utils/fileSystem';
+import {
+  fileExists,
+  fileRead,
+  fileWrite,
+  fileDelete,
+  directoryExists,
+  directoryMake,
+  directoryDelete
+} from '../../../server/utils/fileSystem';
 import Project from '../../../src/models/Project';
 import Block from '../../../src/models/Block';
 
 import * as filePaths from '../../../server/utils/filePaths';
 import * as versioning from '../../../server/data/versioning';
 import * as persistence from '../../../server/data/persistence';
-import { findProjectFromBlock } from '../../../server/data/querying';
 
 //todo - can probably de-dupe many of these setup / before() clauses, they are pretty similar
 
@@ -20,17 +27,18 @@ describe('Server', () => {
     describe('persistence', function persistenceTests() {
       describe('existence + reading', () => {
         const projectName = 'persistenceProject';
-        const projectData = new Project({metadata: {name: projectName}});
+        const projectData = new Project({ metadata: { name: projectName } });
         const projectId = projectData.id;
         const projectPath = filePaths.createProjectPath(projectId);
         const projectDataPath = filePaths.createProjectDataPath(projectId);
         const projectManifestPath = path.resolve(projectDataPath, filePaths.manifestFilename);
 
         const blockName = 'blockA';
-        const blockData = new Block({metadata: {name: blockName}});
+        const blockData = Block.classless({ projectId, metadata: { name: blockName } });
         const blockId = blockData.id;
-        const blockPath = filePaths.createBlockPath(blockId, projectId);
-        const blockManifestPath = path.resolve(blockPath, filePaths.manifestFilename);
+        const blockFileContents = { [blockId]: blockData };
+        const blockDataPath = filePaths.createBlockDirectoryPath(projectId);
+        const blockManifestPath = filePaths.createBlockManifestPath(projectId);
 
         const blockSequence = 'acgtacgtacgatcgatcgac';
         const sequenceMd5 = md5(blockSequence);
@@ -40,9 +48,9 @@ describe('Server', () => {
           return directoryDelete(projectPath)
             .then(() => directoryMake(projectPath))
             .then(() => directoryMake(projectDataPath))
+            .then(() => directoryMake(blockDataPath))
             .then(() => fileWrite(projectManifestPath, projectData))
-            .then(() => directoryMake(blockPath))
-            .then(() => fileWrite(blockManifestPath, blockData))
+            .then(() => fileWrite(blockManifestPath, blockFileContents))
             .then(() => fileWrite(sequenceFilePath, blockSequence, false));
         });
 
@@ -57,7 +65,7 @@ describe('Server', () => {
         });
 
         it('blockExists() resolves if block exists', () => {
-          return persistence.blockExists(blockId, projectId);
+          return persistence.blocksExist(projectId, false, blockId);
         });
 
         it('projectGet() returns null if doesnt exist', () => {
@@ -71,12 +79,29 @@ describe('Server', () => {
         });
 
         it('blockGet() returns null if doesnt exist', () => {
-          return persistence.blockGet('notRealId', projectId)
-            .then((result) => assert(result === null));
+          return persistence.blockGet(projectId, false, 'notRealId')
+            .then((result) => {
+              assert(result === null, 'should be null if block doesnt exist')
+            });
         });
 
         it('blockGet() returns block if does exist', () => {
-          return persistence.blockGet(blockId, projectId)
+          return persistence.blockGet(projectId, false, blockId)
+            .then((result) => expect(result).to.eql(blockData));
+        });
+
+        it('blocksGet() returns map with key undefined if doesnt exist', () => {
+          const fakeId = 'notRealId';
+          return persistence.blocksGet(projectId, false, fakeId)
+            .then(blockMap => {
+              assert(typeof blockMap === 'object', 'should return a map');
+              assert(!blockMap[fakeId], 'value should not be defined');
+            });
+        });
+
+        it('blocksGet() returns map with block defined as value if does exist', () => {
+          return persistence.blocksGet(projectId, false, blockId)
+            .then(blockMap => blockMap[blockId])
             .then((result) => expect(result).to.eql(blockData));
         });
 
@@ -95,11 +120,6 @@ describe('Server', () => {
             .then(result => assert(false))
             .catch(err => expect(err).to.equal(errorDoesNotExist));
         });
-
-        it('findProjectFromBlock() should find project ID given only a block', () => {
-          return findProjectFromBlock(blockId)
-            .then(result => expect(result).to.equal(projectId));
-        });
       });
 
       describe('creation', () => {
@@ -110,14 +130,13 @@ describe('Server', () => {
         const projectRepoDataPath = filePaths.createProjectDataPath(projectId);
         const projectManifestPath = filePaths.createProjectManifestPath(projectId);
 
-        const blockData = new Block();
+        const blockData = Block.classless({ projectId });
         const blockId = blockData.id;
-        const blockPath = filePaths.createBlockPath(blockId, projectId);
-        const blockManifestPath = filePaths.createBlockManifestPath(blockId, projectId);
+        const blockManifestPath = filePaths.createBlockManifestPath(projectId, blockId);
 
         before(() => {
           return persistence.projectCreate(projectId, projectData, userId)
-            .then(() => persistence.blockCreate(blockId, blockData, projectId));
+            .then(() => persistence.blockWrite(projectId, blockData));
         });
 
         it('projectCreate() creates a git repo for the project', () => {
@@ -142,19 +161,6 @@ describe('Server', () => {
             .then(() => assert(false))
             .catch(err => expect(err).to.equal(errorAlreadyExists));
         });
-
-        it('blockCreate() creates a block folder', () => {
-          return directoryExists(blockPath)
-            .then(result => assert(result))
-            .then(() => fileRead(blockManifestPath))
-            .then(result => expect(result).to.eql(blockData));
-        });
-
-        it('blockCreate() rejects if exists', () => {
-          return persistence.blockCreate(blockId, {}, projectId)
-            .then(() => assert(false))
-            .catch(err => expect(err).to.equal(errorAlreadyExists));
-        });
       });
 
       describe('write + merge', () => {
@@ -165,17 +171,17 @@ describe('Server', () => {
         const projectRepoDataPath = filePaths.createProjectDataPath(projectId);
         const projectManifestPath = filePaths.createProjectManifestPath(projectId);
 
-        const blockData = new Block();
+        const blockData = Block.classless({ projectId });
         const blockId = blockData.id;
-        const blockPath = filePaths.createBlockPath(blockId, projectId);
-        const blockManifestPath = filePaths.createBlockManifestPath(blockId, projectId);
+        const blockFileContents = { [blockId]: blockData };
+        const blockManifestPath = filePaths.createBlockManifestPath(projectId);
 
         const blockSequence = 'aaaaaccccccggggttttt';
         const sequenceMd5 = md5(blockSequence);
         const sequenceFilePath = filePaths.createSequencePath(sequenceMd5);
 
-        const projectPatch = {metadata: {description: 'fancy pantsy'}};
-        const blockPatch = {rules: {role: 'promoter'}};
+        const projectPatch = { metadata: { description: 'fancy pantsy' } };
+        const blockPatch = { rules: { role: 'promoter' } };
 
         it('projectWrite() creates repo if necessary', () => {
           return persistence.projectWrite(projectId, projectData, userId)
@@ -186,7 +192,7 @@ describe('Server', () => {
         });
 
         it('projectWrite() validates the project', () => {
-          const invalidData = {my: 'data'};
+          const invalidData = { my: 'data' };
           //start with write to reset
           return persistence.projectWrite(projectId, projectData, userId)
             .then(() => persistence.projectWrite(projectId, invalidData))
@@ -197,7 +203,7 @@ describe('Server', () => {
         });
 
         it('projectMerge() forces the ID', () => {
-          const invalidData = {id: 'impossible'};
+          const invalidData = { id: 'impossible' };
           const comparison = projectData;
           return persistence.projectMerge(projectId, invalidData, userId)
             .then(result => expect(result).to.eql(comparison));
@@ -221,47 +227,43 @@ describe('Server', () => {
         });
 
         it('projectMerge() validates the project', () => {
-          const invalidData = {metadata: 'impossible'};
+          const invalidData = { metadata: 'impossible' };
           return persistence.projectMerge(projectId, invalidData, userId)
             .then(() => assert(false))
             .catch(err => expect(err).to.equal(errorInvalidModel));
         });
 
         it('blockWrite() creates block if necessary', () => {
-          return persistence.blockWrite(blockId, blockData, projectId)
-            .then(() => directoryExists(blockPath))
+          return persistence.blockWrite(projectId, blockData)
             .then(result => assert(result));
         });
 
         it('blockWrite() validates the block', () => {
-          const invalidData = {my: 'data'};
+          const invalidData = { my: 'data' };
           //start with write to reset
-          return persistence.blockWrite(blockId, blockData, projectId)
+          return persistence.blockWrite(projectId, blockData)
             .then(() => persistence.blockWrite(blockId, invalidData, projectId))
-            .then(() => assert(false))
-            .catch(err => expect(err).to.equal(errorInvalidModel))
+            .then(() => assert(false, 'should not have written successfully'))
+            .catch(err => {
+              console.log(err);
+              expect(err).to.equal(errorInvalidModel);
+            })
             .then(() => fileRead(blockManifestPath))
-            .then(result => expect(result).to.eql(blockData));
-        });
-
-        it('blockMerge() forces the ID', () => {
-          const invalidData = {id: 'impossible'};
-          const comparison = blockData;
-          return persistence.blockMerge(blockId, invalidData, projectId)
-            .then(result => expect(result).to.eql(comparison));
+            .then(result => expect(result).to.eql(blockFileContents));
         });
 
         it('blockWrite() ovewrwrites the block', () => {
-          const overwrite = blockData.merge(blockPatch);
-          return persistence.blockWrite(blockId, overwrite, projectId)
+          const overwrite = merge({}, blockData, blockPatch);
+          const overwriteFileContents = { [blockId]: overwrite };
+          return persistence.blockWrite(projectId, overwrite)
             .then(() => fileRead(blockManifestPath))
-            .then(result => expect(result).to.eql(overwrite));
+            .then(result => expect(result).to.eql(overwriteFileContents));
         });
 
         it('blockWrite() does not make the project commit', () => {
           return versioning.log(projectRepoDataPath).then(firstResults => {
-            const overwrite = blockData.merge(blockPatch);
-            return persistence.blockWrite(blockId, overwrite, projectId)
+            const overwrite = merge({}, blockData, blockPatch);
+            return persistence.blockWrite(projectId, overwrite)
               .then(() => versioning.log(projectRepoDataPath))
               .then((secondResults) => {
                 expect(secondResults.length).to.equal(firstResults.length);
@@ -271,17 +273,18 @@ describe('Server', () => {
 
         it('blockMerge() accepts a partial block', () => {
           const merged = merge({}, blockData, blockPatch);
+          const mergedFileContents = { [merged.id] : merged };
           //start with write to reset
-          return persistence.blockWrite(blockId, blockData, projectId)
-            .then(() => persistence.blockMerge(blockId, blockPatch, projectId))
+          return persistence.blockWrite(projectId, blockData)
+            .then(() => persistence.blockMerge(projectId, blockId, blockPatch))
             .then(result => expect(result).to.eql(merged))
             .then(() => fileRead(blockManifestPath))
-            .then(result => expect(result).to.eql(merged));
+            .then(result => expect(result).to.eql(mergedFileContents));
         });
 
         it('blockMerge() validates the block', () => {
-          const invalidData = {metadata: 'impossible'};
-          return persistence.blockMerge(blockId, invalidData, projectId)
+          const invalidData = { metadata: 'impossible' };
+          return persistence.blockMerge(projectId, blockId, invalidData)
             .then(() => assert(false))
             .catch(err => expect(err).to.equal(errorInvalidModel));
         });
@@ -300,42 +303,55 @@ describe('Server', () => {
         const projectId = projectData.id;
         const projectRepoDataPath = filePaths.createProjectDataPath(projectId);
         const projectManifestPath = filePaths.createProjectManifestPath(projectId);
+        const projectPermissionsPath = filePaths.createProjectPermissionsPath(projectId);
+        const projectOldOwnersPath = filePaths.createProjectPath(projectId, filePaths.permissionsDeletedFileName);
+        const trashPathProject = filePaths.createTrashPath(projectId);
+        const trashPathProjectManifest = filePaths.createTrashPath(projectId, filePaths.projectDataPath, filePaths.manifestFilename);
 
-        const blockData = new Block();
+        const blockData = Block.classless({ projectId });
         const blockId = blockData.id;
-        const blockPath = filePaths.createBlockPath(blockId, projectId);
-        const blockManifestPath = filePaths.createBlockManifestPath(blockId, projectId);
+        const blockFileContents = { [blockId]: blockData };
+        const blockManifestPath = filePaths.createBlockManifestPath(projectId, blockId);
 
         //hack(ish) - creating at beginning of each because chaining tests is hard, and beforeEach will encounter race condition
 
-        it('projectDelete() deletes the folder', () => {
+        it('projectDelete() moves the folder to the trash', () => {
           return persistence.projectWrite(projectId, projectData, userId)
             .then(() => fileRead(projectManifestPath))
             .then(result => expect(result).to.eql(projectData))
             .then(() => persistence.projectDelete(projectId))
-            .then(() => fileExists(projectManifestPath))
-            .then(result => assert(false))
-            .catch(err => expect(err).to.equal(errorDoesNotExist));
+            /*
+             //for scenario of writing old permissions file
+             .then(() => fileExists(projectManifestPath))
+             .then(result => assert(true))
+             .then(() => fileRead(projectPermissionsPath))
+             .then(contents => assert(!contents.indexOf(userId) >= 0, 'user should not be present anymore'))
+             .then(() => fileRead(projectOldOwnersPath))
+             .then(contents => assert(contents.indexOf(userId) >= 0, 'user ID should be present'));
+             */
+            .then(() => directoryExists(trashPathProject))
+            .then(() => fileRead(trashPathProjectManifest))
+            .then(result => expect(result).to.eql(projectData));
         });
 
         it('blockDelete() deletes block', () => {
           return persistence.projectWrite(projectId, projectData, userId)
-            .then(() => persistence.blockWrite(blockId, blockData, projectId))
+            .then(() => persistence.blockWrite(projectId, blockData))
             .then(() => fileRead(blockManifestPath))
-            .then(result => expect(result).to.eql(blockData))
-            .then(() => persistence.blockDelete(blockId, projectId))
+            .then(result => expect(result).to.eql(blockFileContents))
+            .then(() => persistence.blocksDelete(projectId, blockId))
             .then(() => fileExists(blockManifestPath))
-            .then(result => assert(false))
-            .catch(err => expect(err).to.equal(errorDoesNotExist));
+            .then(() => fileRead(blockManifestPath))
+            .then(contents => expect(contents).to.eql({}));
         });
 
         it('blockDelete() does not create a commit', () => {
           return persistence.projectWrite(projectId, projectData, userId)
-            .then(() => persistence.blockWrite(blockId, blockData, projectId))
+            .then(() => persistence.blockWrite(projectId, blockData))
             .then(() => {
               return versioning.log(projectRepoDataPath)
                 .then(firstResults => {
-                  return persistence.blockDelete(blockId, projectId)
+                  return persistence.blocksDelete(projectId, blockId)
                     .then(() => versioning.log(projectRepoDataPath))
                     .then((secondResults) => {
                       expect(secondResults.length).to.equal(firstResults.length);
@@ -354,23 +370,23 @@ describe('Server', () => {
         const projectData = new Project();
         const projectId = projectData.id;
         const projectRepoDataPath = filePaths.createProjectDataPath(projectId);
-        const newProject = projectData.merge({projectData: 'new stuff'});
+        const newProject = projectData.merge({ projectData: 'new stuff' });
 
-        const blockData = new Block();
+        const blockData = Block.classless({ projectId });
         const blockId = blockData.id;
-        const newBlock = blockData.merge({blockData: 'new data'});
+        const newBlock = merge({}, blockData, { blockData: 'new data' });
 
         const blockSequence = 'acgcggcgcgatatatatcgcgcg';
         const sequenceMd5 = md5(blockSequence);
 
         before(() => {
           return persistence.projectCreate(projectId, projectData, userId) //3
-            .then(() => persistence.blockCreate(blockId, blockData, projectId))
-            .then(() => persistence.projectSave(projectId)) //2
+            .then(() => persistence.blockWrite(projectId, blockData))
+            .then(() => persistence.projectSave(projectId, userId)) //2
             .then(() => persistence.projectWrite(projectId, newProject))
-            .then(() => persistence.projectSave(projectId)) //1
-            .then(() => persistence.blockWrite(blockId, newBlock, projectId))
-            .then(() => persistence.projectSave(projectId)) //0
+            .then(() => persistence.projectSave(projectId, userId)) //1
+            .then(() => persistence.blockWrite(projectId, newBlock))
+            .then(() => persistence.projectSave(projectId, userId)) //0
             .then(() => versioning.log(projectRepoDataPath))
             .then(log => {
               versionLog = log;
@@ -407,35 +423,40 @@ describe('Server', () => {
 
         it('projectGet() defaults to latest version', () => {
           return persistence.projectGet(projectId)
-            .then(project => expect(project).to.eql(newProject));
+            .then(project => expect(project).to.eql(Object.assign({}, newProject, {
+              version: versions[0],
+              lastSaved: versionLog[0].time
+            })));
         });
 
         it('blockExists() rejects on invalid version', () => {
-          return persistence.blockExists(blockId, projectId, nonExistentSHA)
+          return persistence.blocksExist(projectId, nonExistentSHA, blockId)
             .then(result => assert(false, 'should not resolve'))
             .catch(err => assert(err === errorDoesNotExist, 'wrong error type -> function errored...'));
         });
 
         it('blockExists() accepts a version', () => {
-          return persistence.blockExists(blockId, projectId, versions[2]);
+          return persistence.blocksExist(projectId, versions[2], blockId);
         });
 
         it('blockGet() accepts a version, gets version at that time', () => {
-          return persistence.blockGet(blockId, projectId, versions[2])
+          return persistence.blocksGet(projectId, versions[2], blockId)
+            .then(blockMap => blockMap[blockId])
             .then(block => expect(block).to.eql(blockData));
         });
 
         it('blockGet() defaults to latest version', () => {
-          return persistence.blockGet(blockId, projectId)
+          return persistence.blocksGet(projectId, false, blockId)
+            .then(blockMap => blockMap[blockId])
             .then(block => expect(block).to.eql(newBlock));
         });
 
         it('sequenceWrite() does not create commit even if given blockId and projectId', () => {
           return persistence.sequenceWrite(sequenceMd5, blockSequence, blockId, projectId)
-          .then(() => versioning.log(projectRepoDataPath))
-          .then(log => {
-            expect(log.length).to.equal(versionLog.length);
-          });
+            .then(() => versioning.log(projectRepoDataPath))
+            .then(log => {
+              expect(log.length).to.equal(versionLog.length);
+            });
         });
       });
     });

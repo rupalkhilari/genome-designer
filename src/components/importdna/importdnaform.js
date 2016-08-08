@@ -1,3 +1,18 @@
+/*
+Copyright 2016 Autodesk,Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { uiShowDNAImport } from '../../actions/ui';
@@ -23,7 +38,7 @@ class DNAImportForm extends Component {
     focusedBlocks: PropTypes.array.isRequired,
     focusBlocks: PropTypes.func.isRequired,
     blockGetSequence: PropTypes.func.isRequired,
-    currentConstruct: PropTypes.string,
+    currentConstruct: PropTypes.object,
   };
 
   constructor() {
@@ -32,6 +47,33 @@ class DNAImportForm extends Component {
       inputValid: true,
       validLength: 0,
     };
+  }
+
+  componentWillReceiveProps(nextProps) {
+    // we need a focused block that is not frozen or locked to operate on.
+    if (!this.props.open && nextProps.open) {
+      if (nextProps.focusedBlocks.length !== 1) {
+        this.props.uiShowDNAImport(false);
+        this.props.uiSetGrunt(`Sequence data must be added to a selected block. Please select a block and try again.`);
+        return;
+      }
+      if (nextProps.currentConstruct.isFrozen() || nextProps.currentConstruct.isFixed() || nextProps.currentConstruct.isTemplate()) {
+        this.props.uiShowDNAImport(false);
+        this.props.uiSetGrunt(`You cannot add sequence to a template block.`);
+        return;
+      }
+      const block = this.props.blocks[this.props.focusedBlocks[0]];
+      if (block.components.length) {
+        this.props.uiShowDNAImport(false);
+        this.props.uiSetGrunt(`You cannot add sequence to a block with child components.`);
+        return;
+      }
+      this.setState({
+        inputValid: true,
+        validLength: 0,
+        sequence: null,        
+      });
+    }
   }
 
   onSequenceChanged(evt) {
@@ -80,7 +122,7 @@ class DNAImportForm extends Component {
           this.setSequenceAndClose(this.props.focusedBlocks[emptyIndex], this.state.sequence);
         } else {
           const block = this.props.blockCreate();
-          this.props.blockAddComponent(this.props.currentConstruct, block.id, 0);
+          this.props.blockAddComponent(this.props.currentConstruct.id, block.id, 0);
           this.setSequenceAndClose(block.id, this.state.sequence);
         }
       })
@@ -155,7 +197,8 @@ function mapStateToProps(state) {
   return {
     open: state.ui.modals.showDNAImport,
     focusedBlocks: state.focus.blockIds,
-    currentConstruct: state.focus.constructId,
+    currentConstruct: state.blocks[state.focus.constructId],
+    blocks: state.blocks,
   };
 }
 

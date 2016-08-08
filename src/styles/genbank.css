@@ -3,7 +3,7 @@
 
 
 .genbank-import-form {
-  width: 500px;
+  width: 700px;
 
   .dropzone {
     width: 80%;
@@ -58,6 +58,16 @@
       width: 10rem;
       display: inline-block;
       text-align: left;
+    }
+  }
+  .link {
+    text-align:center;
+
+    span {
+      display: block;
+      width: 100%;
+      margin: 0;
+      padding: 0;
     }
   }
 }

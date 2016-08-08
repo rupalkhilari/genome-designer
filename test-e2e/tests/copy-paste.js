@@ -4,14 +4,12 @@ var signin = require('../fixtures/signin');
 var dragFromTo = require('../fixtures/dragfromto');
 var newProject = require('../fixtures/newproject');
 var newConstruct = require('../fixtures/newconstruct');
-var clickMainMenu = require('../fixtures/click-main-menu');
 var testProject = require('../fixtures/testproject');
+var size = require('../fixtures/size');
 
 module.exports = {
   'Test copy and paste via keyboard for nested test project' : function (browser) {
-
-    // maximize for graphical tests
-    browser.windowSize('current', 1200, 900);
+    size(browser);
 
     // register via fixture
     var credentials = homepageRegister(browser);
@@ -21,8 +19,6 @@ module.exports = {
 
     // now we can go to the project page
     browser
-      // expect to start with 8 blocks
-      .assert.countelements('.role-glyph', 6)
       // send select all
       .keys([browser.Keys.COMMAND, 'a'])
       .pause(1000)
@@ -36,7 +32,7 @@ module.exports = {
       .keys([browser.Keys.NULL, browser.Keys.COMMAND, 'v'])
       .pause(1000)
       // should now have 16 blocks
-      .assert.countelements(".role-glyph", 12)
+      .assert.countelements('[data-nodetype="block"]', 12)
       .end();
   }
 };

@@ -18,6 +18,7 @@ const AUTOPREFIXER_BROWSERS = [
 ];
 
 //folder paths
+const dataPath = path.resolve(__dirname, '../data');
 const sourcePath = path.resolve(__dirname, '../src');
 const serverSourcePath = path.resolve(__dirname, '../server');
 const pluginsSourcePath = path.resolve(__dirname, '../plugins');
@@ -58,6 +59,7 @@ const config = {
           sourcePath,
           serverSourcePath,
           pluginsSourcePath,
+          dataPath,
         ],
         exclude: /node_modules/,
         query: {
@@ -161,7 +163,7 @@ export const clientConfig = merge({}, config, {
 
   // Choose a developer tool to enhance debugging
   // http://webpack.github.io/docs/configuration.html#devtool
-  devtool: DEBUG ? 'inline-source-map' : false,
+  devtool: DEBUG ? 'cheap-module-source-map' : false,
 });
 
 export const serverConfig = merge({}, config, {

@@ -1,9 +1,35 @@
-import express from 'express';
-const router = express.Router();
+/*
+ Copyright 2016 Autodesk,Inc.
 
-const defaultUser = {
-  uuid: "0",
-  email: "developer@localhost",
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
+/**
+ * Mock authentication for local development, or when the bionano-auth package is not in use.
+ *
+ * The default user is used for all requests, and its ID is used for all permissions / keying.
+ *
+ * Exposes a few routes but does not exhaustively cover the bionano-auth router.
+ *
+ * This user is used in unit testing.
+ */
+import express from 'express';
+import checkUserSetup from './userSetup';
+
+export const router = express.Router(); //eslint-disable-line new-cap
+
+export const defaultUser = {
+  uuid: '0',
+  email: 'developer@localhost',
   firstName: 'Dev',
   lastName: 'Eloper',
 };
@@ -32,20 +58,21 @@ router.get('/current-user', (req, res) => {
   return res.end();
 });
 
-//testing only
+//testing only - route not present in auth module
 router.get('/cookies', (req, res) => {
   if (req.cookies.sess) {
-    res.send(req.cookies.sess);
+    return res.send(req.cookies.sess);
   }
-  else res.send(':(');
+
+  res.send(':(');
 });
 
-const mockUser = (req, res, next) => {
+export const mockUser = (req, res, next) => {
   if (req.cookies.sess !== null) {
     Object.assign(req, { user: defaultUser });
   }
-  next();
-};
 
-module.exports.router = router;
-module.exports.mockUser = mockUser;
+  //stub the initial user setup here as well
+  checkUserSetup({ uuid: "0" })
+    .then(() => next());
+};

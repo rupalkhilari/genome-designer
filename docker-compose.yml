@@ -3,3 +3,9 @@ genome-designer:
     file: docker-compose-common.yml
     service: genome-designer
   build: .
+  command:
+    npm run start-instance
+  ports:
+    - "3000:3000"
+  environment:
+    PORT: 3000

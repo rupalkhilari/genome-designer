@@ -1,10 +1,26 @@
+/*
+Copyright 2016 Autodesk,Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import DnD from '../../containers/graphics/dnd/dnd';
 import MouseTrap from '../../containers/graphics/mousetrap';
-import { focusForceBlocks } from '../../actions/focus';
+import { focusBlocks } from '../../actions/focus';
 import InventoryListGroup from './InventoryListGroup';
 import InventoryItemBlock from './InventoryItemBlock';
+import * as instanceMap from '../../store/instanceMap';
 
 import { block as blockDragType } from '../../constants/DragTypes';
 
@@ -23,7 +39,12 @@ export class InventoryConstruct extends Component {
     isActive: PropTypes.bool.isRequired,
     isConstruct: PropTypes.bool.isRequired,
     isTemplate: PropTypes.bool.isRequired,
-    focusForceBlocks: PropTypes.func.isRequired,
+    focusBlocks: PropTypes.func.isRequired,
+    depth: PropTypes.number,
+  };
+
+  static defaultProps = {
+    depth: 1, // 0 for 'New Construct'
   };
 
   shouldRenderAsConstruct(props = this.props) {
@@ -86,27 +107,30 @@ export class InventoryConstruct extends Component {
   }
 
   render() {
-    const { blockId, block, isConstruct, isTemplate, isActive, focusForceBlocks, ...rest } = this.props;
+    const { blockId, depth, block, isConstruct, isTemplate, isActive, focusBlocks, ...rest } = this.props;
+    const defaultName = depth < 1 ? 'New Construct' : 'New Block';
 
-    //use !isConstruct so short circuit, to avoid calling ref in InventoryListGroup (will be null if never mounted, cause errors)
+    //use !shouldRenderAsConstruct so short circuit, to avoid calling ref in InventoryListGroup (will be null if never mounted, cause errors when ref clause is called)
     const innerContent = !this.shouldRenderAsConstruct()
       ?
       <InventoryItemBlock block={block}
-                          isTemplate={isTemplate}
+                          defaultName={defaultName}
                           {...rest} />
       :
       //explicitly call connected component to handle recursion
       (
-        <InventoryListGroup title={block.getName()}
+        <InventoryListGroup title={block.getName(defaultName)}
                             isActive={isActive}
-                            onSelect={() => focusForceBlocks([block])}
+                            onSelect={() => focusBlocks([block.id])}
                             isSelectable
+                            dataAttribute={`construct ${block.id}`}
                             ref={(el) => {
                               if (el) { this.itemElement = el.getHeading(); }
                             }}>
           {block.components.map(compId => (
             <InventoryConstructConnected {...rest}
               key={compId}
+              depth={depth + 1}
               blockId={compId}/>
           ))}
         </InventoryListGroup>
@@ -122,8 +146,9 @@ export class InventoryConstruct extends Component {
 
 const InventoryConstructConnected = connect((state, props) => {
   const { blockId } = props;
-  const block = state.blocks[blockId];
-  const isActive = state.focus.forceBlocks.some(block => block.id === blockId);
+  //prefer state version, which is correct if you've undo-ed something
+  const block = state.blocks[blockId] || instanceMap.getBlock(blockId);
+  const isActive = state.focus.blockIds.some(focusId => focusId === blockId);
   const isConstruct = block.isConstruct();
   const isTemplate = block.isTemplate();
 
@@ -134,7 +159,7 @@ const InventoryConstructConnected = connect((state, props) => {
     isTemplate,
   };
 }, {
-  focusForceBlocks,
+  focusBlocks,
 })(InventoryConstruct);
 
 export default InventoryConstructConnected;

@@ -1,9 +1,25 @@
+/*
+Copyright 2016 Autodesk,Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 import React, { Component, PropTypes } from 'react';
 import {connect} from 'react-redux';
 import { uiShowAuthenticationForm, uiSetGrunt } from '../../actions/ui';
-import { forgot } from '../../middleware/data';
+import { forgot } from '../../middleware/auth';
+import track from '../../analytics/ga';
 
-/**
+/*
  * default visibility and text for error labels
  * @type {Object}
  */
@@ -46,12 +62,14 @@ class ForgotForm extends Component {
               text: 'Unrecognized email address',
             },
           });
+          track('Authentication', 'Forgot', json.message);
           return;
         }
         // show grunt
         this.props.uiSetGrunt(`Check Email: A link to reset your password has been sent to ${this.emailAddress}`);
         // close the form
         this.props.uiShowAuthenticationForm('none');
+        track('Authentication', 'Forgot', 'Success');
       })
       .catch((reason) => {
         this.setState({
@@ -60,6 +78,7 @@ class ForgotForm extends Component {
             text: 'Unexpected error, please check your connection',
           },
         });
+        track('Authentication', 'Forgot', 'Unexpected Error');
       });
   }
 

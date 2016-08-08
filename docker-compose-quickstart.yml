@@ -1,10 +1,16 @@
 genome-designer:
   extends:
-    file: docker-compose-common.yml
+    file: docker-compose.yml
     service: genome-designer
   image: quay.io/autodesk_bionano/genomedesigner_genome-designer${BNR_ENV_TAG}
+  volumes:
+    - /storage/genome-designer/projects:/projects
   environment:
-    API_END_POINT: http://auth${AUTH_ENV_TAG}.bionano.bio:8080/api
-    HOST_URL: http://genome-designer${AUTH_ENV_TAG}.bionano.autodesk.com
+    STORAGE: /projects
+    API_END_POINT: http://auth${BNR_ENV_URL_SUFFIX}.bionano.bio:8080/api
+    HOST_URL: https://geneticconstructor${BNR_ENV_URL_SUFFIX}.bionano.autodesk.com
+    NODE_ENV: ${NODE_ENV}
+    GITHUB_ACCESS_TOKEN: ${GITHUB_ACCESS_TOKEN}
   command:
     npm run server-auth
+  log_driver: json-file

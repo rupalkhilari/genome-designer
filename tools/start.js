@@ -107,8 +107,46 @@ async function start() {
             },
           }, resolve);
 
+          //todo - we want ton only recompile once per batch of changes - currently every single file change will trigger a build. Maybe just debounce?
+          const ignoreDotFilesAndNestedNodeModules = /([\/\\]\.)|(node_modules\/.*?\/node_modules)/gi;
+          const checkSymlinkedNodeModule = /(.*?\/)?extensions\/.*?\/node_modules/;
+          const checkIsInServerExtensions = /^server\//;
+          const ignoreFilePathCheck = (path) => {
+            if (ignoreDotFilesAndNestedNodeModules.test(path)) {
+              return true;
+            }
+            //ignore jetbrains temp filesystem
+            if (/__jb_/ig.test(path)) {
+              return true;
+            }
+            //ignore node_modules for things in the root server/extensions/ folder
+            //additional check needed to handle symlinked files (nested node modules wont pick this up in symlinks)
+            //ugly because javascript doesnt support negative lookaheads
+            if (checkSymlinkedNodeModule.test(path) && checkIsInServerExtensions.test(path)) {
+              return true;
+            }
+          };
+
+          const eventsCareAbout = ['add', 'change', 'unlink', 'addDir', 'unlinkDir'];
+          const handleChange = (evt, path, stat) => {
+            if (ignoreFilePathCheck(path)) {
+              return;
+            }
+            if (eventsCareAbout.includes(evt)) {
+              console.log('webpack watch:', evt, path);
+              runServer();
+            }
+          };
+
           //while we are not bundling the server, we can set up a watch to recompile on changes
-          bs.watch('server/**/*').on('change', () => runServer());
+          const watcher = bs.watch('server/**/*', {
+            ignored: ignoreFilePathCheck,
+          });
+
+          //wait for initial scan to complete then listen for events
+          watcher.on('ready', () => watcher.on('all', handleChange));
+
+          //simple watch for plugins for now, intend to deprecate when merge extensions + plugins into the extension folder
           bs.watch('plugins/**/*').on('change', () => runServer());
 
           //reassign so that we arent creating multiple browsersync entities, or rebuilding over and over
@@ -126,7 +164,7 @@ async function start() {
     /*
      console.info('beginning webpack build');
      clientCompiler.run((err) => {
-      if (err) throw err;
+     if (err) throw err;
      });
      */
   });

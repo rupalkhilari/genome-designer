@@ -1,3 +1,18 @@
+/*
+Copyright 2016 Autodesk,Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { uiShowAuthenticationForm, uiSetGrunt } from '../../actions/ui';
@@ -5,8 +20,9 @@ import { userLogin } from '../../actions/user';
 import { reset } from '../../middleware/data';
 import invariant from 'invariant';
 import { projectOpen } from '../../actions/projects';
+import track from '../../analytics/ga';
 
-/**
+/*
  * default visibility and text for error labels
  * @type {Object}
  */
@@ -42,6 +58,7 @@ class RegisterForm extends Component {
     evt.preventDefault();
     // client side validation first
     if (this.clientValidation()) {
+      track('Authentication', 'Reset', 'Failed client validation');
       return;
     }
 
@@ -51,6 +68,7 @@ class RegisterForm extends Component {
           this.showServerErrors(json);
           return;
         }
+        track('Authentication', 'Reset', 'Success');
         this.props.uiSetGrunt(`Your password has been reset`);
         // we can sign in the user since we have their password and email
         this.props.userLogin(this.getParameter('e'), this.password)
@@ -68,6 +86,7 @@ class RegisterForm extends Component {
         this.showServerErrors({
           message: reason.message || 'Unexpected error, please check your connection',
         });
+        track('Authentication', 'Reset', 'Unexpected Error');
       });
   }
 

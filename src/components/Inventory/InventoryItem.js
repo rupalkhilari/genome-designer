@@ -1,12 +1,35 @@
+/*
+ Copyright 2016 Autodesk,Inc.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import DnD from '../../containers/graphics/dnd/dnd';
 import MouseTrap from '../../containers/graphics/mousetrap';
 import RoleSvg from '../RoleSvg';
 import BasePairCount from '../ui/BasePairCount';
+import {
+  block as blockDragType,
+  role as roleDragType,
+} from '../../constants/DragTypes';
 
-import { inspectorToggleVisibility } from '../../actions/ui';
-import { focusForceBlocks } from '../../actions/focus';
+import {
+  inspectorToggleVisibility,
+  uiSetGrunt,
+  uiSpin,
+} from '../../actions/ui';
+import { focusForceBlocks, focusRole } from '../../actions/focus';
 
 import '../../styles/InventoryItem.css';
 
@@ -19,16 +42,29 @@ export class InventoryItem extends Component {
         image: PropTypes.string,
       }).isRequired,
     }).isRequired,
-    glyph: PropTypes.string, //e.g. lock icon for templates
+    itemDetail: PropTypes.string, //gray text shown after
+    image: PropTypes.string, //takes precedence over svg
     svg: PropTypes.string, //right now, SBOL SVG ID
+    svgProps: PropTypes.object,
     defaultName: PropTypes.string,
+    dataAttribute: PropTypes.string,
     onDrop: PropTypes.func, //can return promise (e.g. update store), value is used for onDrop in DnD registered drop target. Can pass value from promise to use for drop as payload, or undefined
+    onDropFailure: PropTypes.func,
     onDragStart: PropTypes.func, //transact
     onDragComplete: PropTypes.func, //commit
     onSelect: PropTypes.func, //e.g. when clicked
     forceBlocks: PropTypes.array.isRequired,
+    focusBlocks: PropTypes.array.isRequired,
     inspectorToggleVisibility: PropTypes.func.isRequired,
+    focusRole: PropTypes.func.isRequired,
     focusForceBlocks: PropTypes.func.isRequired,
+    uiSetGrunt: PropTypes.func.isRequired,
+    uiSpin: PropTypes.func.isRequired,
+  };
+
+  static defaultProps = {
+    svgProps: {},
+    dataAttribute: '',
   };
 
   componentDidMount() {
@@ -60,6 +96,13 @@ export class InventoryItem extends Component {
           return this.props.onDrop(this.props.item, target, position);
         }
       },
+      onDropFailure: (error, target) => {
+        this.props.uiSetGrunt(`There was an error creating a block for ${this.props.item.metadata.name}`);
+        this.props.uiSpin();
+        if (this.props.onDropFailure) {
+          return this.props.onDropFailure(error, target);
+        }
+      },
       onDragComplete: (target, position, payload) => {
         if (this.props.onDragComplete) {
           this.props.onDragComplete(payload.item, target, position);
@@ -85,36 +128,45 @@ export class InventoryItem extends Component {
   }
 
   handleClick = () => {
-    const { item, onSelect, inspectorToggleVisibility, focusForceBlocks } = this.props;
+    const { item, onSelect, inventoryType, inspectorToggleVisibility, focusForceBlocks, focusGsl, focusRole } = this.props;
 
     const promise = (!!onSelect) ? onSelect(item) : Promise.resolve(item);
 
     promise.then(result => {
-      focusForceBlocks([result]);
+      //todo - this shouldnt be responsibility of this generic component. move into specific components.
+      if (inventoryType === blockDragType) {
+        focusForceBlocks([result]);
+      } else if (inventoryType === roleDragType) {
+        focusRole(result.id);
+      }
       inspectorToggleVisibility(true);
     });
   };
 
   render() {
-    const { item, svg, glyph, defaultName } = this.props;
-    const isSelected = this.props.forceBlocks.indexOf(item) >= 0;
+    const { item, itemDetail, image, svg, svgProps, defaultName, inventoryType, dataAttribute, forceBlocks, focusBlocks } = this.props;
+    const isSelected = forceBlocks.some(block => item.id === block.id) || focusBlocks.some(focusId => item.id === focusId);
 
     const hasSequence = item.sequence && item.sequence.length > 0;
     const itemName = item.metadata.name || defaultName || 'Unnamed';
+    const dataAttr = !!dataAttribute ? dataAttribute : `${inventoryType} ${item.id}`;
 
     return (
       <div className={'InventoryItem' +
-        (!!svg ? ' hasImage' : '') +
-        (!!isSelected ? ' selected' : '')}
-           ref={(el) => this.itemElement = el}>
+      ((!!image || !!svg) ? ' hasImage' : '') +
+      (!!isSelected ? ' selected' : '')}
+           ref={(el) => this.itemElement = el}
+           data-inventory={dataAttr}>
         <a className="InventoryItem-item"
            onClick={this.handleClick}>
-          {svg ? <RoleSvg symbolName={svg} color="white"/> : null}
-          {!!glyph ? <span className="InventoryItem-glyph">{glyph}</span> : null}
-          <span className="InventoryItem-text">
+          {image && (<span className="InventoryItem-image" style={{backgroundImage: `url(${image})`}} />)}
+          {(svg && !image) ? <RoleSvg symbolName={svg} color="white" {...svgProps} styles={{}}/> : null}
+          <span className="InventoryItem-text" title={itemName}>
             {itemName}
           </span>
-          {hasSequence && <BasePairCount count={item.sequence.length}/>}
+          {itemDetail && <span className="InventoryItem-detail">{itemDetail}</span>}
+          {(!itemDetail && hasSequence) &&
+          <span className="InventoryItem-detail"><BasePairCount count={item.sequence.length}/></span>}
         </a>
       </div>
     );
@@ -123,9 +175,13 @@ export class InventoryItem extends Component {
 
 export default connect((state) => {
   return {
+    focusBlocks: state.focus.blockIds,
     forceBlocks: state.focus.forceBlocks,
   };
 }, {
   focusForceBlocks,
+  focusRole,
   inspectorToggleVisibility,
+  uiSetGrunt,
+  uiSpin,
 })(InventoryItem);

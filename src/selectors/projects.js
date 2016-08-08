@@ -1,5 +1,25 @@
+/*
+Copyright 2016 Autodesk,Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 import invariant from 'invariant';
 import * as blockSelectors from './blocks';
+
+const _getCurrentProjectId = () => {
+  const match = /^\/project\/(.*?)\??$/gi.exec(window.location.pathname);
+  return match ? match[1] : null;
+};
 
 const _getProjectFromStore = (projectId, store) => {
   if (!projectId) {
@@ -14,11 +34,10 @@ export const projectGet = (projectId) => {
   };
 };
 
-//bit of a hack - expects focus section of store, and projectPage to have set it
+//get the focused project from the URL, since react-router is only accessible in react components
 export const projectGetCurrentId = () => {
   return (dispatch, getState) => {
-    const { focus } = getState();
-    return !!focus ? focus.projectId : null;
+    return _getCurrentProjectId();
   };
 };
 
@@ -29,19 +48,21 @@ export const projectGetVersion = (projectId) => {
   };
 };
 
+//note - does not include options
 export const projectListAllComponents = (projectId) => {
   return (dispatch, getState) => {
     const project = _getProjectFromStore(projectId, getState());
 
     return project.components.reduce((acc, componentId) => {
       acc.push(dispatch(blockSelectors.blockGet(componentId)));
-      const constructChildren = dispatch(blockSelectors.blockGetChildrenRecursive(componentId));
+      const constructChildren = dispatch(blockSelectors.blockGetComponentsRecursive(componentId));
       acc.push(...constructChildren);
       return acc;
     }, []);
   };
 };
 
+//note - does not include components
 export const projectListAllOptions = (projectId) => {
   return (dispatch, getState) => {
     const components = dispatch(projectListAllComponents(projectId));
@@ -50,7 +71,7 @@ export const projectListAllOptions = (projectId) => {
   };
 };
 
-//returns constructs first, then all blocks afterwards, order not guaranteed
+//all contents
 export const projectListAllBlocks = (projectId) => {
   return (dispatch, getState) => {
     const components = dispatch(projectListAllComponents(projectId));
@@ -87,7 +108,12 @@ export const projectGetOptionWithSource = (projectId, sourceKey, sourceId) => {
 export const projectCreateRollup = (projectId) => {
   return (dispatch, getState) => {
     const project = _getProjectFromStore(projectId, getState());
-    const blocks = dispatch(projectListAllBlocks(projectId));
+    if (!project) {
+      return null;
+    }
+
+    const blocks = dispatch(projectListAllBlocks(projectId))
+      .reduce((acc, block) => Object.assign(acc, { [block.id]: block }), {});
 
     return {
       project,

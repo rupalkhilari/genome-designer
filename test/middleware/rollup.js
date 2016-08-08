@@ -1,5 +1,6 @@
 import chai from 'chai';
 import * as api from '../../src/middleware/data';
+import { merge, range } from 'lodash';
 const { assert, expect } = chai;
 import {
   fileExists,
@@ -10,6 +11,7 @@ import {
   directoryMake,
   directoryDelete
 } from '../../server/utils/fileSystem';
+import Block from '../../src/models/Block';
 
 import * as commitMessages from '../../server/data/commitMessages';
 import * as filePaths from '../../server/utils/filePaths';
@@ -42,8 +44,8 @@ describe('Middleware', () => {
       return api.loadProject(projectId)
         .then(gotRoll => {
           expect(gotRoll.project).to.eql(project);
-          assert(gotRoll.blocks.every(block => {
-            return roll.blocks.some(initialBlock => initialBlock.id === block.id);
+          assert(Object.keys(gotRoll.blocks).every(blockId => {
+            return !!roll.blocks[blockId];
           }));
         });
     });
@@ -52,19 +54,21 @@ describe('Middleware', () => {
       const roll = createExampleRollup();
       const project = roll.project;
       const projectId = project.id;
-      const [blockP, blockA, blockB, blockC, blockD, blockE] = roll.blocks;
+      const blockKeys = Object.keys(roll.blocks);
+      const block1 = roll.blocks[blockKeys[0]];
+      const block2 = roll.blocks[blockKeys[3]];
 
       return api.saveProject(projectId, roll)
-        .then(() => Promise
+        .then((commit) => Promise
           .all([
             persistence.projectGet(projectId),
-            persistence.blockGet(blockA.id, projectId),
-            persistence.blockGet(blockE.id, projectId),
+            persistence.blocksGet(projectId, false, block1.id).then(map => map[block1.id]),
+            persistence.blocksGet(projectId, false, block2.id).then(map => map[block2.id]),
           ])
-          .then(([gotProject, gotA, gotE]) => {
-            expect(gotProject).to.eql(project);
-            expect(gotA).to.eql(blockA);
-            expect(gotE).to.eql(blockE);
+          .then(([gotProject, got1, got2]) => {
+            expect(gotProject).to.eql(Object.assign({}, project, { version: commit.sha, lastSaved: commit.time }));
+            expect(got1).to.eql(block1);
+            expect(got2).to.eql(block2);
           }));
     });
 
@@ -102,11 +106,14 @@ describe('Middleware', () => {
         });
     });
 
-    it.only('can save a huge project (10mb or so)', () => {
+    it('can save a huge project (10mb or so)', () => {
       const roll = createExampleRollup();
       const project = roll.project;
 
-      project.metadata.description = 'thisIsSuperLong'.repeat(1024 * 1024);
+      const newBlocks = range(1000).map(() => new Block())
+        .reduce((acc, block) => Object.assign(acc, { [block.id]: block }), {});
+
+      merge(roll.blocks, newBlocks);
 
       return api.saveProject(project.id, roll);
     });

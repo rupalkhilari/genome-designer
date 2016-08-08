@@ -1,3 +1,18 @@
+/*
+Copyright 2016 Autodesk,Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 import MouseTrap from '../mousetrap';
 import invariant from 'invariant';
 
@@ -31,7 +46,7 @@ export default class UserInterface {
   }
   /**
    * replace current selections, call with falsey to reset selections
-   * @param {[type]} newSelections [description]
+   *
    */
   setSelections(newSelections) {
     this.selections = newSelections ? newSelections.slice() : [];
@@ -39,7 +54,7 @@ export default class UserInterface {
   }
   /**
    * add to selections, ignores if already present
-   * @param {[type]} node [description]
+   *
    */
   addToSelections(nodes) {
     let added = 0;
@@ -55,8 +70,8 @@ export default class UserInterface {
   }
   /**
    * remove from selections, ignores if not present
-   * @param  {[type]} node [description]
-   * @return {[type]}      [description]
+   *
+   *
    */
   removeFromSelections(node) {
     invariant(node.sg === this.sg, 'node is not in our scenegraph');
@@ -68,7 +83,7 @@ export default class UserInterface {
   }
   /**
    * returns true if the node is selected
-   * @param  {[type]}  node [description]
+   *
    * @return {Boolean}      [description]
    */
   isSelected(node) {
@@ -77,7 +92,7 @@ export default class UserInterface {
 
   /**
    * create / add / remove selection elements according to current selections
-   * @return {[type]} [description]
+   *
    */
   updateSelections() {
     // bucket any items are don't need anymore, we will try to reuse them
@@ -104,11 +119,11 @@ export default class UserInterface {
         this.selectionMap[node.uuid] = sel;
       }
       // update to current node bounds
-      const bounds = node.getAABB();
+      const bounds = node.getAABBWithChildren();
       sel.style.left = bounds.x + 'px';
       sel.style.top = bounds.y + 'px';
-      sel.style.width = bounds.width + 'px';
-      sel.style.height = bounds.height + 'px';
+      sel.style.width = bounds.width + 1 +'px';
+      sel.style.height = bounds.height + 1 + 'px';
     });
 
     // now we have to say goodbye to items left in the bucket
@@ -163,7 +178,7 @@ export default class UserInterface {
 
   /**
    * general update, called whenever our scenegraph updates
-   * @return {[type]} [description]
+   *
    */
   update() {
     this.updateSelections();
@@ -171,7 +186,7 @@ export default class UserInterface {
 
   /**
    * update our element to the current scene graph size
-   * @return {[type]} [description]
+   *
    */
   updateSize() {
     this.el.style.width = this.sg.width + 'px';

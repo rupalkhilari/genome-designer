@@ -1,3 +1,18 @@
+/*
+Copyright 2016 Autodesk,Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import Project from '../../models/Project';
@@ -15,7 +30,7 @@ export class InventoryProject extends Component {
   static propTypes = {
     project: (props, propName) => {
       if (!(Project.validate(props[propName]) && props[propName] instanceof Project)) {
-        return new Error('must pass a project (Block model) to InventoryProject');
+        return new Error('must pass a project (Project model) to InventoryProject');
       }
     },
     isActive: PropTypes.bool.isRequired,
@@ -30,9 +45,10 @@ export class InventoryProject extends Component {
   state = {
     isLoading: false,
     isExpanded: false,
+    errorLoading: false,
   };
 
-  //handle double-click to open
+  //handle click to open
   onToggleProject = (nextState, projectId) => {
     const { isActive } = this.props;
 
@@ -43,9 +59,7 @@ export class InventoryProject extends Component {
           //inspect it
           this.inspectProject(projectId);
         } else {
-          //save the previous one, open the new one
-          this.props.projectSave()
-            .then(() => this.props.projectOpen(projectId));
+          this.props.projectOpen(projectId);
         }
       });
   };
@@ -60,7 +74,6 @@ export class InventoryProject extends Component {
   loadProject = (projectId) => {
     //for now, just load the whole project and stick it in the store
     //need to ensure things like blockClone will work on drag. Simplifies browsing of project.
-    //todo - caching, at top level, only load blocks into store when needed
     //could delegate loading of construct components to InventoryConstruct, and load only one level deep
     return this.props.projectLoad(projectId);
   };
@@ -73,6 +86,11 @@ export class InventoryProject extends Component {
         .then(() => this.setState({
           isLoading: false,
           isExpanded: true,
+        }))
+        .catch(() => this.setState({
+          isLoading: false,
+          isExpanded: false,
+          errorLoading: true,
         }));
     }
 
@@ -83,22 +101,31 @@ export class InventoryProject extends Component {
 
   render() {
     const { project, isActive } = this.props;
-    const { isLoading, isExpanded } = this.state;
+    const { isLoading, isExpanded, errorLoading } = this.state;
     const projectId = project.id;
+    //const canToggle = project.components.length > 0;
+    const canToggle = true;
 
     return (
       <InventoryListGroup title={project.getName()}
                           manual
-                          hideToggle={!project.components.length}
+                          canToggle={canToggle && !errorLoading}
                           isLoading={isLoading}
-                          isExpanded={isExpanded}
+                          isExpanded={isExpanded && canToggle}
                           onToggle={(nextState) => this.handleToggleProject(nextState, projectId)}
                           onSelect={(nextState) => this.onToggleProject(nextState, projectId)}
-                          isActive={isActive}>
-        {project.components.map(compId => {
-          return (<InventoryConstruct key={compId}
-                                      blockId={compId}/>);
-        })}
+                          isActive={isActive}
+                          dataAttribute={`project ${project.id}`}>
+        {project.components.length > 0
+          ?
+          project.components.map(compId => {
+            return (<InventoryConstruct key={compId}
+                                        depth={0}
+                                        blockId={compId}/>);
+          })
+          :
+          (<div style={{padding: '0.25em 0.5em', userSelect: 'none', opacity: 0.5}}>No constructs</div>)
+        }
       </InventoryListGroup>
     );
   }
