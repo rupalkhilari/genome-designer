@@ -44,7 +44,7 @@ Now, you should see a linked directory `myExtension` in `node_modules` of server
 
 ###### Notes:
 
-- When creating a link, npm may not run the `preprocess` script if you have defined one, even though this script is called with `npm install`.
+- When creating a link, npm may not run the `preprocess` (or `prepublish` etc) script if you have defined one, even though this script is called with `npm install`, and the extension will not automatically recompile for you.
 
 - `npm run install-extensions` clears the `node_modules` directory, so you will have to re-establish the link after running that script using `npm link <packageName>`.
 
