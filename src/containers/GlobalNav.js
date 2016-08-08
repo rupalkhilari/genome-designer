@@ -609,6 +609,14 @@ class GlobalNav extends Component {
                 this.props.inventorySelectTab('role');
               },
             },
+            {
+              text: 'GSL Library',
+              shortcut: stringToShortcut('shift meta G'),
+              action: () => {
+                this.props.inventoryToggleVisibility(true);
+                this.props.inventorySelectTab('gsl');
+              },
+            },
           ],
         },
         {
