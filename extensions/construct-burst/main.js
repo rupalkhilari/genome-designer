@@ -83,10 +83,7 @@ function render(container, options) {
   const subscriber = window.constructor.store.subscribe(function onSubscribe(state, lastAction) {
     console.log('subscribe');
     drawSunburst(cont[0][0], state, layout);
-  });
-
-  //call first time
-  drawSunburst(cont[0][0], window.constructor.store.getState(), layout);
+  }, true);
 
   return function unsubscribe() {
     console.log('unrendering');

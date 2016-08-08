@@ -70,6 +70,7 @@ export { lastAction, dispatch, subscribe, getState, pause, resume, isPaused };
  * @name subscribe
  * @function
  * @param {function} subscriber Function to subscribe to the store, It will be passed the store and lastAction type.
+ * @param {boolean} callOnSubscribe Call the function on subscription
  * @returns {function} function to call to unsubscribe
  * @example
  * var unsubscribe = constructor.store.subscribe(function (store, lastAction) { ... });

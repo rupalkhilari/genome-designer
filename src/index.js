@@ -53,7 +53,11 @@ Object.assign(exposed, {
   store: {
     ...store,
     lastAction: lastAction,
-    subscribe: (callback) => {
+    subscribe: (callback, callOnSubscribe) => {
+      if (callOnSubscribe === true) {
+        callback(store.getState(), lastAction());
+      }
+
       return store.subscribe(() => {
         callback(store.getState(), lastAction());
       });
