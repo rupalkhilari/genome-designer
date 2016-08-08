@@ -511,6 +511,12 @@ export default class Block extends Instance {
     optionIds.forEach(optionId => {
       Object.assign(options, { [optionId]: !this.options[optionId] });
     });
+
+    //disallow removing all the options
+    if (Object.keys(options).filter(id => options[id]).length === 0) {
+      return this;
+    }
+
     return this.mutate('options', options);
   }
 
