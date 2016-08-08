@@ -5,7 +5,6 @@
   "dependencies": {
     "testClient" : "../../extensions/testClient",
     "SequenceDetail" : "IsaacLuo/onion2#extensions-refactor",
-    "seq-viewer": "git+http://github.com/duncanmeech/sequence-viewer.git",
-    "construct-burst": "../../extensions/construct-burst"
+    "seq-viewer": "git+http://github.com/duncanmeech/sequence-viewer.git"
   }
 }
