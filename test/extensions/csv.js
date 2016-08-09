@@ -7,9 +7,6 @@ import { extensionApiPath } from '../../src/middleware/paths';
 import { callExtensionApi } from '../../src/middleware/extensions'
 import rejectingFetch from '../../src/middleware/rejectingFetch';
 
-//noinspection JSUnusedLocalSymbols
-const devServer = require('../../server/server'); // starts the server which will be accessed by methods below
-
 describe('Extensions', () => {
   describe('CSV', () => {
     const fileName = 'simplecsv.csv';
