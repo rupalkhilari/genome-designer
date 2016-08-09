@@ -19,6 +19,7 @@
  NOTE - create instances using Block.classless and Project.classless - the server is expect JSON blobs that it can assign to, and instances of classes are frozen.
  */
 import invariant from 'invariant';
+import { pickBy } from 'lodash';
 
 import onboardingDefaults from './onboardingDefauts';
 import * as rollup from '../data/rollup';
@@ -26,33 +27,24 @@ import * as rollup from '../data/rollup';
 import makeEgfRollup from '../../data/egf_templates/index';
 import emptyProjectWithConstruct from '../../data/emptyProject/index';
 
+//while we are using imports, do this statically. todo - use require() for dynamic (will need to reconcile with build eventually, but whatever)
 const projectMap = {
   egf_templates: () => makeEgfRollup(),
   emptyProject: () => emptyProjectWithConstruct(true),
 };
 
-//create the EGF project + empty project for them
-export default function onboardNewUser(user, inputConfig) {
-  //todo - merge deeply, or shallow assign?
-  const config = Object.assign({}, onboardingDefaults, inputConfig);
-
-  invariant(config.projects.length >= 1, 'must have some default projects, got none. check config for user ' + user.uuid);
-
-  const initialProjects = generateInitialProjects(config);
-  console.log(`[User Setup] Generated ${config.projects.length} projects for user ${user.uuid}:
-${config.projects.join(', ')} @
-${initialProjects.map(roll => roll.project.id).join(', ')}`);
-
-  const [firstRoll, ...restRolls] = initialProjects;
-
-  return Promise.all(
-    restRolls.map(roll => rollup.writeProjectRollup(roll.project.id, roll, user.uuid))
-  )
-    .then(() => rollup.writeProjectRollup(firstRoll.project.id, firstRoll, user.uuid));
-}
-
 //create rollups, where first is the one to return as final project ID
-const generateInitialProjects = (config) => {
+const generateInitialProjects = (config, user) => {
+  const projects = Object.keys(config.projects)
+    .map(projectKey => ({
+      id: projectKey,
+      ...config.projects[projectKey],
+    }))
+    .filter(projectInfo => projectInfo.access === true)
+    .sort((one, two) => one.default ? -1 : 1);
+
+  invariant(projects.length >= 1, 'must have some default projects, got none. check config for user ' + user.uuid);
+
   return config.projects.reduce((acc, projectConfig) => {
     const gen = projectMap[projectConfig.id];
     if (gen) {
@@ -61,3 +53,21 @@ const generateInitialProjects = (config) => {
     return acc;
   }, []);
 };
+
+//create the EGF project + empty project for them
+export default function onboardNewUser(user, inputConfig) {
+  //todo - merge deeply, or shallow assign? For now, merge so have to for
+  const config = Object.assign({}, onboardingDefaults, inputConfig);
+
+  const initialProjects = generateInitialProjects(config, user);
+  const [firstRoll, ...restRolls] = initialProjects;
+
+  console.log(`[User Setup] Generated ${initialProjects.length} projects for user ${user.uuid}:
+${initialProjects.map(roll => `${roll.project.name || 'Unnamed'} @ ${roll.project.id}`).join(', ')}`);
+
+  return Promise.all(
+    restRolls.map(roll => rollup.writeProjectRollup(roll.project.id, roll, user.uuid))
+  )
+    .then(() => rollup.writeProjectRollup(firstRoll.project.id, firstRoll, user.uuid));
+}
+

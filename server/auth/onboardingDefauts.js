@@ -14,11 +14,23 @@
  limitations under the License.
  */
 export default {
-  projects: [
-    { id: 'emptyProject' },
-    { id: 'egf_templates' },
-  ],
+  projects: {
+    emptyProject: {
+      access: true,
+      default: true,
+    },
+    egf_templates: {
+      access: true,
+    },
+  },
   extensions: {
-    'seq-viewer': true,
+    testClient: {
+      access: true,
+      visible: false,
+    },
+    'seq-viewer': {
+      access: true,
+      visible: true,
+    },
   },
 };
