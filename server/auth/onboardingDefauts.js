@@ -15,8 +15,8 @@
  */
 export default {
   projects: [
-    'emptyProject',
-    'egf_templates',
+    { id: 'emptyProject' },
+    { id: 'egf_templates' },
   ],
   extensions: {
     'seq-viewer': true,

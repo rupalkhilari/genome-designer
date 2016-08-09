@@ -27,7 +27,7 @@ import makeEgfRollup from '../../data/egf_templates/index';
 import emptyProjectWithConstruct from '../../data/emptyProject/index';
 
 const projectMap = {
-  egf_templates: makeEgfRollup,
+  egf_templates: () => makeEgfRollup(),
   emptyProject: () => emptyProjectWithConstruct(true),
 };
 
@@ -53,10 +53,10 @@ ${initialProjects.map(roll => roll.project.id).join(', ')}`);
 
 //create rollups, where first is the one to return as final project ID
 const generateInitialProjects = (config) => {
-  return config.projects.reduce((acc, projectId) => {
-    const gen = projectMap[projectId];
+  return config.projects.reduce((acc, projectConfig) => {
+    const gen = projectMap[projectConfig.id];
     if (gen) {
-      acc.push(gen());
+      acc.push(gen(projectConfig));
     }
     return acc;
   }, []);
