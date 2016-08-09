@@ -62,8 +62,8 @@ export const createSequencedRollup = () => {
   const sequences = range(numSeqs).map(() => generateRandomSequence());
   const sequenceMd5s = sequences.map(seq => md5(seq));
   const sequenceMap = sequenceMd5s.reduce((acc, seqMd5, index) => {
-    return Object.assign(acc, { [seqMd5] : sequences[index] });
-  });
+    return Object.assign(acc, { [seqMd5]: sequences[index] });
+  }, {});
 
   const blocks = range(numSeqs).map((index) => Block.classless({
     sequence: {
@@ -72,14 +72,14 @@ export const createSequencedRollup = () => {
   }));
 
   const construct = Block.classless({
-    components: blocks.map(block => block.id)
+    components: blocks.map(block => block.id),
   });
 
   const project = Project.classless({
     components: [construct.id],
   });
 
-  const roll = rollupFromArray(project, ...blocks);
+  const roll = rollupFromArray(project, ...blocks, construct);
   Object.assign(roll, { sequences: sequenceMap });
   return roll;
 };

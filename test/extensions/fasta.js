@@ -1,31 +1,39 @@
 import _ from 'lodash';
 import uuid from 'node-uuid';
-import { expect } from 'chai';
-import * as rollup from '../../server/data/rollup';
-import { callExtensionApi } from '../../src/middleware/extensions'
-import { numberBlocksInRollup, createExampleRollup } from '../utils/rollup';
+import { assert, expect } from 'chai';
+import * as persistence from '../../server/data/persistence';
+import { callExtensionApi } from '../../src/middleware/extensions';
+import createExampleProject from '../fixtures/rollup';
 
 const extensionKey = 'fasta';
 
 describe('Extensions', () => {
-  describe.only('FASTA', () => {
-    const roll = createExampleRollup();
-    const project = roll.project;
-    const projectId = project.id;
-    const leaves = _.values(roll.blocks).filter(block => block.components.length === 0);
+  describe('FASTA', () => {
+    let roll;
 
     before(() => {
-      return rollup.writeProjectRollup(projectId, roll, '0');
+      return createExampleProject()
+        .then(created => { roll = created; });
     });
 
     it('should be able to export specific blocks', () => {
-      return callExtensionApi(extensionKey, `export/blocks/${projectId}/${leaves[0].id},${leaves[2].id}`)
+      const construct = roll.blocks[roll.project.components[1]];
+      const leafIds = construct.components.filter((id, index) => index % 2);
+      const md5s = leafIds.map(id => roll.blocks[id].sequence.md5);
+
+      assert(leafIds.length > 1, 'should be at least 2 blocks with sequence');
+
+      return callExtensionApi(extensionKey, `export/blocks/${roll.project.id}/${leafIds.join(',')}`)
         .then(resp => {
           expect(resp.status).to.equal(200);
           return resp.text();
         })
         .then(fasta => {
-          console.log(fasta);
+          return Promise.all(md5s.map(md5 => persistence.sequenceGet(md5)))
+            .then(sequences => {
+              expect(fasta.substring(0, 1)).to.equal('>');
+              assert(sequences.every(seq => fasta.indexOf(seq) > 0), 'sequence not present');
+            });
         });
     });
   });

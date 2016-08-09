@@ -1,5 +1,4 @@
-
-import invariant from 'invaraint';
+import invariant from 'invariant';
 import { merge } from 'lodash';
 import Block from '../../src/models/Block';
 import Project from '../../src/models/Project';
@@ -48,8 +47,10 @@ export const createExampleProject = () => {
 
   //write everything
   return Promise.all([
-    rollup.writeProjectRollup(roll.project.id, roll, 0),
+    rollup.writeProjectRollup(roll.project.id, roll, '0'),
     ...Object.keys(sequenceRoll.sequences).map(seqMd5 => persistence.sequenceWrite(seqMd5, sequenceRoll.sequences[seqMd5])),
   ])
     .then(() => roll);
 };
+
+export default createExampleProject;
