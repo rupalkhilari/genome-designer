@@ -16,7 +16,7 @@ limitations under the License.
 import Block from '../../src/models/Block';
 import Project from '../../src/models/Project';
 
-export default function rollupWithConstruct(useClassless = false) {
+export default function emptyProjectWithConstruct(useClassless = false) {
   const construct = useClassless ? Block.classless() : new Block();
   const input = {
     components: [construct.id],
