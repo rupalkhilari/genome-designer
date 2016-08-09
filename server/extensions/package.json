@@ -4,7 +4,7 @@
   "description": "list of the default extensions for genome designer",
   "dependencies": {
     "testClient" : "../../extensions/testClient",
-    "SequenceDetail" : "../../../onion2",
+    "SequenceDetail" : "IsaacLuo/onion2#extensions-refactor",
     "seq-viewer": "git+http://github.com/duncanmeech/sequence-viewer.git"
   }
 }
