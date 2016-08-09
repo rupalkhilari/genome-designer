@@ -462,6 +462,7 @@ export default class Layout {
         text: text,
         color: this.baseColor,
         bounds: new Box2D(this.insetX, this.insetY + kT.bannerHeight, width, kT.titleH),
+        dataAttribute: {name: 'construct-title', value: text},
       });
 
       // set dots to the right of the text
