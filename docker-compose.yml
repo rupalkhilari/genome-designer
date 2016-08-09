@@ -1,7 +1,7 @@
-genome-designer:
+webapp:
   extends:
     file: docker-compose-common.yml
-    service: genome-designer
+    service: webapp
   build: .
   command:
     npm run start-instance
