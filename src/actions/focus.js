@@ -60,6 +60,7 @@ export const focusConstruct = (inputConstructId) => {
   };
 };
 
+//todo - ensure all blocks are from the same construct
 /**
  * Focus blocks (from a single construct) , updating construct if necessary
  * @function
@@ -70,14 +71,21 @@ export const focusBlocks = (blockIds) => {
   return (dispatch, getState) => {
     invariant(Array.isArray(blockIds), 'must pass array to focus blocks');
     invariant(blockIds.every(block => idValidator(block)), 'must pass array of block IDs');
+    const focusedConstructId = getState().focus.constructId;
+
+    //todo - ensure none of the blocks are actually constructs, instead of just the current one (and dipatch an action)
+    if (blockIds.some(blockId => blockId === focusedConstructId)) {
+      //focus a construct instead
+      return getState().focus.blockIds;
+    }
 
     if (blockIds.length) {
       const firstBlockId = blockIds[0];
       const construct = dispatch(BlockSelector.blockGetParentRoot(firstBlockId));
       // null => no parent => construct (or detached)... undefined could be soething else
       //const constructId = !!construct ? construct.id : (construct !== null ? firstBlockId : undefined);
-      const constructId = construct ? construct.id : undefined;
-      if (constructId !== getState().focus.constructId || constructId === firstBlockId) {
+      const constructId = construct ? construct.id : null;
+      if (constructId !== focusedConstructId || constructId === firstBlockId) {
         dispatch({
           type: ActionTypes.FOCUS_CONSTRUCT,
           constructId,
