@@ -159,7 +159,7 @@ export const operators = [
       'uHO ; ### ; dHO'
     ],
     color: colors.red,
-    text: '#',
+    text: '###',
     position: 'inline',
   },
   {
