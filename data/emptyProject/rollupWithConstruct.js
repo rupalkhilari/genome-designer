@@ -13,9 +13,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import Block from '../../models/Block';
-import Project from '../../models/Project';
-import rollupFromArray from './rollupFromArray';
+import Block from '../../src/models/Block';
+import Project from '../../src/models/Project';
 
 export default function rollupWithConstruct(useClassless = false) {
   const construct = useClassless ? Block.classless() : new Block();
@@ -24,5 +23,10 @@ export default function rollupWithConstruct(useClassless = false) {
   };
   const project = useClassless ? Project.classless(input) : new Project(input);
 
-  return rollupFromArray(project, construct);
+  return {
+    project,
+    blocks: {
+      [construct.id]: construct,
+    },
+  };
 }

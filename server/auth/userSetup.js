@@ -15,8 +15,9 @@ limitations under the License.
 */
 import * as rollup from '../data/rollup';
 import * as querying from '../data/querying';
+
 import makeEgfRollup from '../../data/egf_parts/project';
-import rollupWithConstruct from '../../src/utils/rollup/rollupWithConstruct';
+import rollupWithConstruct from '../../data/emptyProject/rollupWithConstruct';
 
 /*
 This file creates starting content for users
@@ -28,9 +29,9 @@ NOTE - create instances using Block.classless and Project.classless - the server
 const createInitialData = (user) => {
   const egfRollup = makeEgfRollup();
   console.log('[EGF ROLLUP] made rollup ' + egfRollup.project.id + ' for user ' + user.uuid);
-  //console.log(egfRollup);
 
   const emptyProjectRollup = rollupWithConstruct(true);
+  console.log('[User Setup] made empty rollup ' + emptyProjectRollup.id + ' for user ' + user.uuid);
 
   return rollup.writeProjectRollup(egfRollup.project.id, egfRollup, user.uuid)
     .then(() => rollup.writeProjectRollup(emptyProjectRollup.project.id, emptyProjectRollup, user.uuid));

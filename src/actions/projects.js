@@ -27,7 +27,7 @@ import { push } from 'react-router-redux';
 import * as instanceMap from '../store/instanceMap';
 import Block from '../models/Block';
 import Project from '../models/Project';
-import rollupWithConstruct from '../utils/rollup/rollupWithConstruct';
+import rollupWithConstruct from '../../data/emptyProject/rollupWithConstruct';
 import { pauseAction, resumeAction } from '../store/pausableStore';
 
 import { getItem, setItem } from '../middleware/localStorageCache';
@@ -258,7 +258,9 @@ const _projectLoad = (projectId, loadMoreOnFail = false, dispatch) => {
             //recurse, ignoring this projectId
             return _projectLoad(nextId, ignores, dispatch);
           }
-          //if no manifests, create a new rollup - shouldnt happen while users have sample projects
+          //if no manifests, create a new rollup
+          //note - this shouldnt happen while users have sample projects
+          //todo - may want to hit the server to re-setup the user's account
           return rollupWithConstruct();
         });
     });
