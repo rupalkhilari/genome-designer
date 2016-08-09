@@ -64,7 +64,10 @@ router.get('/export/blocks/:projectId/:blockIdList', (req, res, next) => {
   rollup.getProjectRollup(projectId)
     .then(roll => {
       const blocks = blockIds.map(blockId => roll.blocks[blockId]);
-      invariant(blocks.every(block => block.sequence.md5), 'some blocks dont have md5');
+      if (!blocks.every(block => block.sequence.md5)) {
+        console.warn('[FASTA] some blocks dont have md5: ' + projectId, blockIds);
+        throw Error('all blocks must have an md5');
+      }
 
       return Promise.all(
         blocks.map(block => persistence.sequenceGet(block.sequence.md5))
