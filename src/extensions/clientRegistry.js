@@ -50,7 +50,7 @@ function safelyRunCallbacks(...args) {
  * @param {string} region Region to check
  * @returns {boolean} true if region is valid
  */
-export const validRegion = (region) => region === null || regions.hasOwnProperty(region);
+export const validRegion = (region) => region === null || !!regions[region];
 
 //returns an array
 export const extensionsByRegion = (region) => {
@@ -79,8 +79,8 @@ export const registerManifest = (manifest) => {
     const { name, geneticConstructor } = manifest;
     const { region } = geneticConstructor;
     invariant(name, 'Name is required');
-    invariant(region || region === null, 'Region (manifest.geneticConstructor.region) is required to register a client-side extension, or null for non-visual extensions');
-    invariant(validRegion(region), 'Region must be a valid region');
+    invariant(region || region === null, `Region (manifest.geneticConstructor.region) is required to register a client-side extension, or null for non-visual extensions [${name}]`);
+    invariant(validRegion(region), `Region must be a valid region, got ${region} [${name}]`);
 
     Object.assign(registry, { [name]: manifest });
 

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Example extension which uses Webpack to create a bundle.",
   "geneticConstructor": {
-    "region": "sequenceDetail",
+    "region": "projectDetail",
     "readable": "Webpacked Example"
   },
   "scripts": {
