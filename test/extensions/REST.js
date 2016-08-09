@@ -50,7 +50,7 @@ describe('Extensions', () => {
 
           expect(result.body).to.be.an.object;
           assert(result.body.name === testClient, 'wrong name');
-          assert(result.body.geneticConstructor.region === 'sequenceDetail', 'wrong region');
+          assert(result.body.geneticConstructor.region === 'projectDetail', 'wrong region');
           done();
         });
     });
