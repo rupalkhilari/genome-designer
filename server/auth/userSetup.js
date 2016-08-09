@@ -13,39 +13,20 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import * as rollup from '../data/rollup';
+
 import * as querying from '../data/querying';
+import onboardNewUser from './onboardNewUser';
 
-import makeEgfRollup from '../../data/egf_parts/project';
-import rollupWithConstruct from '../../data/emptyProject/rollupWithConstruct';
-
-/*
-This file creates starting content for users
-
-NOTE - create instances using Block.classless and Project.classless - the server is expect JSON blobs that it can assign to, and instances of classes are frozen.
- */
-
-//create the EGF project + empty project for them
-const createInitialData = (user) => {
-  const egfRollup = makeEgfRollup();
-  console.log('[EGF ROLLUP] made rollup ' + egfRollup.project.id + ' for user ' + user.uuid);
-
-  const emptyProjectRollup = rollupWithConstruct(true);
-  console.log('[User Setup] made empty rollup ' + emptyProjectRollup.id + ' for user ' + user.uuid);
-
-  return rollup.writeProjectRollup(egfRollup.project.id, egfRollup, user.uuid)
-    .then(() => rollup.writeProjectRollup(emptyProjectRollup.project.id, emptyProjectRollup, user.uuid));
-};
-
-const checkUserSetup = (user) => {
+const ensureUserSetup = (user) => {
   return querying.listProjectsWithAccess(user.uuid)
     .then(projects => {
       if (!projects.length) {
-        // create rollups return ID of empty project
-        return createInitialData(user)
+        //todo - get user.config from somewhere once using it
+        return onboardNewUser(user, user.config)
           .then(rollup => rollup.project.id);
       }
+      return projects[0].id;
     });
 };
 
-export default checkUserSetup;
+export default ensureUserSetup;

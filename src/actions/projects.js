@@ -27,7 +27,7 @@ import { push } from 'react-router-redux';
 import * as instanceMap from '../store/instanceMap';
 import Block from '../models/Block';
 import Project from '../models/Project';
-import rollupWithConstruct from '../../data/emptyProject/rollupWithConstruct';
+import emptyProjectWithConstruct from '../../data/emptyProject/index';
 import { pauseAction, resumeAction } from '../store/pausableStore';
 
 import { getItem, setItem } from '../middleware/localStorageCache';
@@ -261,7 +261,7 @@ const _projectLoad = (projectId, loadMoreOnFail = false, dispatch) => {
           //if no manifests, create a new rollup
           //note - this shouldnt happen while users have sample projects
           //todo - may want to hit the server to re-setup the user's account
-          return rollupWithConstruct();
+          return emptyProjectWithConstruct();
         });
     });
 };

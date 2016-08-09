@@ -1,7 +1,7 @@
 import { directoryMake } from '../server/utils/fileSystem';
 import { createStorageUrl } from '../server/utils/filePaths';
 
-import copyToStorage from '../data/egf_parts/copySequencesToStorage';
+import copyToStorage from '../data/egf_templates/copySequencesToStorage';
 
 async function setup() {
   await Promise.all([
