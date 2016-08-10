@@ -205,7 +205,7 @@ export const uiSetGrunt = (gruntMessage) => {
   };
 };
 
-export const uiSpin = (spinMessage) => {
+export const uiSpin = (spinMessage = '') => {
   return (dispatch, getState) => {
     dispatch({
       type: ActionTypes.UI_SPIN,

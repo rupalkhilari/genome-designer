@@ -4,6 +4,6 @@
   "description": "Basic extension to test client capabilities",
   "geneticConstructor": {
     "readable": "Test Client",
-    "region": "sequenceDetail"
+    "region": "projectDetail"
   }
 }

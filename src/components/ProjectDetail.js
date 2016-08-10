@@ -24,7 +24,7 @@ import ExtensionView from './ExtensionView';
 
 import '../styles/ProjectDetail.css';
 
-const projectDetailExtensionRegion = 'sequenceDetail';
+const projectDetailExtensionRegion = 'projectDetail';
 
 export class ProjectDetail extends Component {
   static propTypes = {

@@ -30,6 +30,7 @@ export const downloadExtension = (key) => {
   return new Promise((resolve, reject) => {
     if (cached[key] === true) {
       resolve(false);
+      return;
     }
 
     //avoid trying to download again extensions which already errored

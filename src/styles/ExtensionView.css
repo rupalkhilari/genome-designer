@@ -1,6 +1,8 @@
+@import './variables.css';
+
 .ExtensionView {
   position: relative;
-  height: 100%;
+  height: var(--projectDetailsHeight);
   width: 100%;
   overflow: hidden;
   display: none;

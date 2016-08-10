@@ -21,3 +21,9 @@ If you have the bio-user-platform installed, you can run the server with authent
 `npm run start-auth-stack`.
 
 [Click here to read how to install the bio-user-platform](./installation-bio-user-platform.md)
+
+## Troubleshooting
+
+If you encounter an issue in installation, it may be covered in notes on [troubleshooting](./troubleshooting.md).
+
+Otherwise, please [file an issue on GitHub](https://github.com/autodesk-bionano/genome-designer/issues/new)

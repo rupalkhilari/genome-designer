@@ -5,6 +5,6 @@
   "dependencies": {
     "testClient" : "../../extensions/testClient",
     "SequenceDetail" : "IsaacLuo/onion2#extensions-refactor",
-    "simpleWidget" : "../../extensions/simpleWidget"
+    "seq-viewer": "git+http://github.com/duncanmeech/sequence-viewer.git"
   }
 }

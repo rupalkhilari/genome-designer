@@ -49,12 +49,10 @@ export class Inspector extends Component {
     let inspect;
     switch (type) {
     case 'gsl':
-      inspect = (<InspectorGsl gslId={focused}
-                               readOnly/>);
+      inspect = (<InspectorGsl gslId={focused} readOnly/>);
       break;
-    case 'role':
-      inspect = (<InspectorRole roleId={focused}
-                                readOnly/>);
+    case 'role' :
+      inspect = (<InspectorRole roleId={focused} readOnly/>);
       break;
     case 'project':
       inspect = (<InspectorProject instance={focused}
@@ -71,7 +69,7 @@ export class Inspector extends Component {
     }
 
     return (
-      <div className={'SidePanel Inspector no-vertical-scroll' +
+      <div className={'SidePanel Inspector' +
       (isVisible ? ' visible' : '') +
       (readOnly ? ' readOnly' : '') +
       (showingGrunt ? ' gruntPushdown' : '')}>
@@ -86,7 +84,7 @@ export class Inspector extends Component {
           </div>
         </div>
 
-        <div className="SidePanel-content">
+        <div className="SidePanel-content no-vertical-scroll">
           {inspect}
         </div>
       </div>
@@ -99,9 +97,8 @@ function mapStateToProps(state, props) {
   //UI adjustment
   const showingGrunt = !!state.ui.modals.gruntMessage;
 
-  const { level, projectId, blockIds } = state.focus;
-  //if projectId is not set in store, ProjectPage is passing it in, so lets default to it
-  const currentProject = state.projects[projectId || props.projectId];
+  const { level, blockIds } = state.focus;
+  const currentProject = state.projects[props.projectId];
 
   //delegate handling of focus state handling to selector
   const { type, readOnly, focused } = _getFocused(state, true, props.projectId);

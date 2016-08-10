@@ -54,13 +54,56 @@ router.get('/file/:fileId', (req, res, next) => {
 
 /***** EXPORT ******/
 
+router.get('/export/blocks/:projectId/:blockIdList', (req, res, next) => {
+  const { projectId, blockIdList } = req.params;
+  const blockIds = blockIdList.split(',');
+
+  rollup.getProjectRollup(projectId)
+    .then(roll => {
+      const blocks = blockIds.map(blockId => roll.blocks[blockId]);
+      invariant(blocks.every(block => block.sequence.md5), 'some blocks dont have md5');
+
+      const name = (roll.project.metadata.name || roll.project.id) + '.gb';
+
+      const construct = Block.classless({
+        metadata: {
+          name,
+        },
+        components: blocks.map(block => block.id),
+      });
+      const project = Project.classless(Object.assign(roll.project, {
+        components: [construct.id],
+      }));
+
+      const partialRoll = {
+        project,
+        blocks: blocks.reduce((acc, block) => {
+          return Object.assign(acc, {
+            [block.id]: block,
+          });
+        }, {
+          [construct.id]: construct,
+        }),
+      };
+
+      exportConstruct({ roll: partialRoll, constructId: construct.id })
+        .then(fileContents => {
+          res.set({
+            'Content-Disposition': `attachment; filename="${roll.project.id}.fasta"`,
+          });
+          res.send(fileContents);
+        });
+    })
+    .catch(err => {
+      console.log('Error!', err);
+      res.status(500).send(err);
+    });
+});
+
 router.get('/export/:projectId/:constructId?', (req, res, next) => {
   const { projectId, constructId } = req.params;
 
   rollup.getProjectRollup(projectId)
-    .catch(err => {
-      res.status(500).send(err);
-    })
     .then(roll => {
       const name = (roll.project.metadata.name ? roll.project.metadata.name : roll.project.id) + '.gb';
 
@@ -169,7 +212,7 @@ router.post('/import/:projectId?', (req, res, next) => {
 
       return rollup.getProjectRollup(projectId)
         .then((existingRoll) => {
-          existingRoll.project.components = existingRoll.project.components.concat(blockIds);
+          existingRoll.project.components = existingRoll.project.components.concat(roll.project.components);
           Object.assign(existingRoll.blocks, roll.blocks);
           return existingRoll;
         });

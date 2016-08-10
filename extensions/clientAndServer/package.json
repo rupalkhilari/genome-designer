@@ -4,7 +4,7 @@
   "description": "Extension with both Client and Server Components",
   "geneticConstructor": {
     "readable": "Counter Example",
-    "region": "sequenceDetail",
+    "region": "projectDetail",
     "router": "router.js",
     "client": "client.js"
   },

@@ -7,29 +7,8 @@ import { extensionApiPath } from '../../src/middleware/paths';
 import { callExtensionApi } from '../../src/middleware/extensions'
 import rejectingFetch from '../../src/middleware/rejectingFetch';
 
-const devServer = require('../../server/server');
-
 describe('Extensions', () => {
   describe('CSV', () => {
-    let server;
-
-    before('server setup', (done) => {
-      // this is needed for the middleware functions and could cause conflicts with other tests
-      // recommend creating a global module to provide an app proxy to all tests using the web server from client side
-      // methods
-      server = devServer.listen(3000, 'localhost', function (err) {
-        if (err) {
-          console.log("server failure", err);
-          return done(err);
-        }
-        done();
-      });
-    });
-
-    after(() => {
-      server.close();
-    });
-
     const fileName = 'simplecsv.csv';
     const filePath = path.resolve(__dirname, '../res/' + fileName);
     const fileContents = fs.readFileSync(filePath, 'utf8');
