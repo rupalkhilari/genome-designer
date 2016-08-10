@@ -41,7 +41,7 @@ export const register = (user, config = {}) => {
   invariant(user.email && user.password && user.firstName && user.lastName, 'wrong format user');
 
   //allow passing config directly in the middleware
-  const payload = Object.assign(user, { data: config });
+  const payload = { user, config };
   const stringified = JSON.stringify(payload);
 
   //send them to our custom registration route

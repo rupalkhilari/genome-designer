@@ -55,8 +55,25 @@ export default function registerRouteHandler(req, res, next) {
   //todo - ensure this sets the full configuation (including the default preferences) and is returned on req.user for onboarding callback
   //this will check if they have been registered, and onboard them if needed
   //todo - handle them already being registered
-  fetch('/auth/register', headersPost(JSON.stringify(user)))
+  //fixme - non-static URL, or share constant with server
+
+  console.log('sending');
+  console.log(user);
+
+  fetch('http://0.0.0.0:3000/auth/register', headersPost(JSON.stringify(user)))
+    .then(resp => resp.json())
     .then(userPayload => {
+      console.log('got payload');
+      console.log(userPayload);
+
+      if (!!userPayload.message) {
+        return Promise.reject(userPayload.message);
+      }
       res.json(userPayload);
+    })
+    .catch(err => {
+      console.log('got error');
+      console.log(err);
+      res.status(500).send(err);
     });
 }
