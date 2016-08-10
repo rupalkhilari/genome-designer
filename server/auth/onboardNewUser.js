@@ -57,6 +57,9 @@ const generateInitialProjects = (user) => {
 
 //create initial projects and set up configuration for them
 export default function onboardNewUser(user) {
+  console.log('onboarding');
+  console.log(user);
+
   const initialProjects = generateInitialProjects(user);
   const [firstRoll, ...restRolls] = initialProjects;
 

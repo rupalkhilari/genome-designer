@@ -22,7 +22,7 @@ const ensureUserSetup = (user) => {
   return querying.listProjectsWithAccess(user.uuid)
     .then(projects => {
       if (!projects.length) {
-        return onboardNewUser(user, user[userConfigKey])
+        return onboardNewUser(user)
           .then(rollup => rollup.project.id);
       }
       return projects[0].id;
