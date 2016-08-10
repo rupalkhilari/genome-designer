@@ -82,8 +82,6 @@ if (process.env.BIO_NANO_AUTH) {
       return checkUserSetup(req.user)
         //note this expects an abnormal return of req and res to the next function
         .then((projectId) => {
-          //todo - pass this projectId on the response so the client knows which project to load
-          console.log('made projects for user. Empty project is ' + projectId);
           return next(req, res);
         });
     },
@@ -99,7 +97,7 @@ if (process.env.BIO_NANO_AUTH) {
 }
 
 //expose our own register route to handle custom onboarding
-app.use('/register', registrationHandler);
+app.post('/register', registrationHandler);
 
 //primary routes
 app.use('/data', dataRouter);

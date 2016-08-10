@@ -31,12 +31,25 @@ import { userConfigKey } from './constants';
 export const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json();
 
-export const defaultUser = {
+const defaultUserForcedFields = {
   uuid: '0',
-  email: 'developer@localhost',
-  firstName: 'Dev',
-  lastName: 'Eloper',
 };
+
+const configForDefaultUser = Object.assign({}, onboardingDefaults);
+const userData = Object.assign({}, { [userConfigKey]: configForDefaultUser });
+
+//this object will get updated as /register and /update the user (one user in local auth)
+export const defaultUser = Object.assign(
+  {
+    email: 'developer@localhost',
+    firstName: 'Dev',
+    lastName: 'Eloper',
+  },
+  { data: userData },
+  defaultUserForcedFields
+);
+
+// @ req.user.data[userConfigKey]
 
 //basic auth routes
 
@@ -64,6 +77,36 @@ router.get('/current-user', (req, res) => {
   return res.end();
 });
 
+router.get('/logout', (req, res) => {
+  res.status(501).send('cant log out of local auth');
+});
+
+// simulate saving to the user object.
+// allow writing user config, but not ID etc.
+// expects full user object to be posted
+const handleRegisterOrUpdate = (req, res, next) => {
+  const userInput = req.body;
+  const inputConfig = typeof userInput.data === 'object' ? userInput.data[userConfigKey] : {};
+
+  const userConfig = Object.assign({}, configForDefaultUser, inputConfig);
+  const userData = Object.assign({}, defaultUser.data, { [userConfigKey]: userConfig });
+
+  //assign to the default user
+  Object.assign(defaultUser, userInput, { data: userData }, defaultUserForcedFields);
+
+  res.json(defaultUser);
+};
+
+// register the new user
+// POST user object
+//we aren't really creating a user - we are just updating the preferences of default user (since there is only one user in local auth)
+router.post('/register', jsonParser, handleRegisterOrUpdate);
+
+// update user information
+// POST user object
+// for the moment, not actually persisted, just save for the session of the server (and there is only one user)
+router.post('/update-all', jsonParser, handleRegisterOrUpdate);
+
 // testing only
 
 // route not present in auth module
@@ -75,25 +118,10 @@ router.get('/cookies', (req, res) => {
   res.send(':(');
 });
 
-// user config
-
-// @ req.user.data[userConfigKey]
-const configForDefaultUser = Object.assign({}, onboardingDefaults);
-
-// simulate saving to the user object.
-// expects full user object to be posted
-// for the moment, not actually persistend, just save for the session of the server (and there is only one user)
-router.post('/update-all', jsonParser, (req, res) => {
-  const userObject = req.body;
-  Object.assign(configForDefaultUser, userObject.data[userConfigKey]);
-});
-
 //assign the user to the request, including their config
 export const mockUser = (req, res, next) => {
   if (req.cookies.sess !== null) {
-    const userData = Object.assign({}, req.user.data, { [userConfigKey]: configForDefaultUser });
-    const user = Object.assign({}, defaultUser, { data: userData });
-    Object.assign(req, { user });
+    Object.assign(req, { defaultUser });
   }
 
   //stub the initial user setup here as well

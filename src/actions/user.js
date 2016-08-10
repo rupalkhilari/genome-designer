@@ -65,9 +65,10 @@ export const userLogout = () => {
 
 //Promise
 ////email, password, firstName, lastName
-export const userRegister = (user) => {
+//config is configuration JSON for initial projects + extensions
+export const userRegister = (user, config) => {
   return (dispatch, getState) => {
-    return register(user)
+    return register(user, config)
       .then(user => {
         const mappedUser = mapUserFromServer(user);
         const setUserPayload = _userSetUser(mappedUser);

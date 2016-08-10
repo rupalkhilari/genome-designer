@@ -1,1 +1,1 @@
-export const userConfigKey = 'config';
+export const userConfigKey = 'constructor_config';

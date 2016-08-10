@@ -19,10 +19,9 @@
  NOTE - create instances using Block.classless and Project.classless - the server is expect JSON blobs that it can assign to, and instances of classes are frozen.
  */
 import invariant from 'invariant';
-import { pickBy } from 'lodash';
 
-import onboardingDefaults from './onboardingDefauts';
 import * as rollup from '../data/rollup';
+import { userConfigKey } from './constants';
 
 import makeEgfRollup from '../../data/egf_templates/index';
 import emptyProjectWithConstruct from '../../data/emptyProject/index';
@@ -34,7 +33,9 @@ const projectMap = {
 };
 
 //create rollups, where first is the one to return as final project ID
-const generateInitialProjects = (config, user) => {
+const generateInitialProjects = (user) => {
+  const config = user.data[userConfigKey];
+
   const projects = Object.keys(config.projects)
     .map(projectKey => ({
       id: projectKey,
@@ -54,17 +55,15 @@ const generateInitialProjects = (config, user) => {
   }, []);
 };
 
-//create the EGF project + empty project for them
-export default function onboardNewUser(user, inputConfig) {
-  //todo - merge deeply, or shallow assign? For now, merge so have to for
-  const config = Object.assign({}, onboardingDefaults, inputConfig);
-
-  const initialProjects = generateInitialProjects(config, user);
+//create initial projects and set up configuration for them
+export default function onboardNewUser(user) {
+  const initialProjects = generateInitialProjects(user);
   const [firstRoll, ...restRolls] = initialProjects;
 
   console.log(`[User Setup] Generated ${initialProjects.length} projects for user ${user.uuid}:
 ${initialProjects.map(roll => `${roll.project.name || 'Unnamed'} @ ${roll.project.id}`).join(', ')}`);
 
+  //write the firstRoll last so that it has the most recent timestamp and is opened first
   return Promise.all(
     restRolls.map(roll => rollup.writeProjectRollup(roll.project.id, roll, user.uuid))
   )

@@ -14,17 +14,49 @@
  limitations under the License.
  */
 /*
-Registration + onboarding for new users.
+ Registration + onboarding for new users.
 
-Handle the root /register route, which:
-- takes in their user preferences, allowing referrers to send a configuration for new user defaults
-- delegates to auth/register, to register the user
-- saves that configuration at auth/update-all
-- onboards the user according to their configuration
+ Handle the root /register route, which:
+ - takes in their user preferences, allowing referrers to send a configuration for new user defaults
+ - delegates to auth/register, to register the user
+ - saves that configuration at auth/update-all
+ - onboards the user according to their configuration
+ */
 
-*/
+import fetch from 'isomorphic-fetch';
+import onboardingDefaults from './onboardingDefauts';
+import onboardNewUser from './onboardNewUser';
+import { userConfigKey } from './constants';
+import { headersPost } from '../../src/middleware/headers';
 
-// root /register handler
-export default function (req, res, next) {
-  //todo
+// POST /register handler
+/*
+ Body in form  --- NB different than /auth/register
+ {
+ user
+ config
+ }
+ */
+export default function registerRouteHandler(req, res, next) {
+  const { user: userInput, config: configInput } = req.body;
+
+  //todo - verify format of configuration
+
+  //generate config from input + defaults
+  //question!!!! - merge deeply, or shallow assign? For now, shallow assign so have to explicitly include default projects + extensions for them to show up
+  const config = Object.assign({}, onboardingDefaults, configInput);
+  const userData = {
+    constructor: true,
+    [userConfigKey]: config,
+  };
+  const user = Object.assign({}, userInput, { data: userData });
+
+  //delegate to auth/register
+  //todo - ensure this sets the full configuation (including the default preferences) and is returned on req.user for onboarding callback
+  //this will check if they have been registered, and onboard them if needed
+  //todo - handle them already being registered
+  fetch('/auth/register', headersPost(JSON.stringify(user)))
+    .then(userPayload => {
+      res.json(userPayload);
+    });
 }
