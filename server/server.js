@@ -18,6 +18,7 @@ import fs from 'fs';
 import express from 'express';
 import morgan from 'morgan';
 
+import registrationHandler from './auth/register';
 import dataRouter from './data/index';
 import orderRouter from './order/index';
 import fileRouter from './file/index';
@@ -96,6 +97,9 @@ if (process.env.BIO_NANO_AUTH) {
   const authRouter = require('./auth/local').router;
   app.use('/auth', authRouter);
 }
+
+//expose our own register route to handle custom onboarding
+app.use('/register', registrationHandler);
 
 //primary routes
 app.use('/data', dataRouter);
