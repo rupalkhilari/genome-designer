@@ -16,13 +16,13 @@ limitations under the License.
 
 import * as querying from '../data/querying';
 import onboardNewUser from './onboardNewUser';
+import { userConfigKey } from './constants';
 
 const ensureUserSetup = (user) => {
   return querying.listProjectsWithAccess(user.uuid)
     .then(projects => {
       if (!projects.length) {
-        //todo - get user.config from somewhere once using it
-        return onboardNewUser(user, user.config)
+        return onboardNewUser(user, user[userConfigKey])
           .then(rollup => rollup.project.id);
       }
       return projects[0].id;

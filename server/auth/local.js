@@ -23,9 +23,13 @@
  * This user is used in unit testing.
  */
 import express from 'express';
+import bodyParser from 'body-parser';
 import checkUserSetup from './userSetup';
+import onboardingDefaults from './onboardingDefauts';
+import { userConfigKey } from './constants';
 
 export const router = express.Router(); //eslint-disable-line new-cap
+const jsonParser = bodyParser.json();
 
 export const defaultUser = {
   uuid: '0',
@@ -33,6 +37,8 @@ export const defaultUser = {
   firstName: 'Dev',
   lastName: 'Eloper',
 };
+
+//basic auth routes
 
 router.post('/login', (req, res) => {
   res.cookie('sess', 'mock-auth');
@@ -58,7 +64,9 @@ router.get('/current-user', (req, res) => {
   return res.end();
 });
 
-//testing only - route not present in auth module
+// testing only
+
+// route not present in auth module
 router.get('/cookies', (req, res) => {
   if (req.cookies.sess) {
     return res.send(req.cookies.sess);
@@ -67,12 +75,28 @@ router.get('/cookies', (req, res) => {
   res.send(':(');
 });
 
+// user config
+
+// @ req.user.data[userConfigKey]
+const configForDefaultUser = Object.assign({}, onboardingDefaults);
+
+// simulate saving to the user object.
+// expects full user object to be posted
+// for the moment, not actually persistend, just save for the session of the server (and there is only one user)
+router.post('/update-all', jsonParser, (req, res) => {
+  const userObject = req.body;
+  Object.assign(configForDefaultUser, userObject.data[userConfigKey]);
+});
+
+//assign the user to the request, including their config
 export const mockUser = (req, res, next) => {
   if (req.cookies.sess !== null) {
-    Object.assign(req, { user: defaultUser });
+    const userData = Object.assign({}, req.user.data, { [userConfigKey]: configForDefaultUser });
+    const user = Object.assign({}, defaultUser, { data: userData });
+    Object.assign(req, { user });
   }
 
   //stub the initial user setup here as well
-  checkUserSetup({ uuid: "0" })
+  checkUserSetup({ uuid: defaultUser.uuid })
     .then(() => next());
 };
