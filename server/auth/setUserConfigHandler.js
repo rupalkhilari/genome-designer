@@ -27,6 +27,8 @@ export default function setUserConfigHandler({useRegister = false}) {
   INTERNAL_HOST + '/auth/update-all';
 
   return (req, res, next) => {
+    console.log('hit route ' + req.originalUrl);
+
     const { user: userInput, config: configInput } = req.body;
     let user;
 
@@ -47,9 +49,6 @@ export default function setUserConfigHandler({useRegister = false}) {
     fetch(url, headersPost(JSON.stringify(user)))
       .then(resp => resp.json())
       .then(userPayload => {
-        console.log('got payload');
-        console.log(userPayload);
-
         if (!!userPayload.message) {
           return Promise.reject(userPayload.message);
         }
@@ -63,4 +62,4 @@ export default function setUserConfigHandler({useRegister = false}) {
         res.status(500).send(err);
       });
   };
-};
+}

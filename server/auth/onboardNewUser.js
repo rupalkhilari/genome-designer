@@ -63,7 +63,7 @@ export default function onboardNewUser(user) {
   const [firstRoll, ...restRolls] = initialProjects;
 
   console.log(`[User Setup] Generated ${initialProjects.length} projects for user ${user.uuid}:
-${initialProjects.map(roll => `${roll.project.name || 'Unnamed'} @ ${roll.project.id}`).join(', ')}`);
+${initialProjects.map(roll => `${roll.project.metadata.name || 'Unnamed'} @ ${roll.project.id}`).join('\n')}`);
 
   //write the firstRoll last so that it has the most recent timestamp and is opened first
   return Promise.all(

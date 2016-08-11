@@ -28,6 +28,7 @@ const mapUserFromServer = (serverUser) => ({
   firstName: serverUser.firstName,
   lastName: serverUser.lastName,
   email: serverUser.email,
+  config: serverUser.config,
 });
 
 /*

@@ -45,7 +45,8 @@ export const register = (user, config = {}) => {
   const stringified = JSON.stringify(payload);
 
   //send them to our custom registration route
-  return rejectingFetch(registerPath(), headersPost(stringified));
+  return rejectingFetch(registerPath(), headersPost(stringified))
+    .then(resp => resp.json());
 };
 
 export const forgot = (email) => {
