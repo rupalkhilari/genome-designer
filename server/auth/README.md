@@ -1,6 +1,9 @@
-Referrers should send users to register at `/register`, and can send a configuration
+Referrers should send users to register at `/register`, and can send a configuration to dictate how new users are onboarded.
 
-Internally, Constructor will ensure the proper format of that payload and delegate to its internal router to register the user + set user object, and onboard the new user.
+Onboarding includes:
+
+- setting up initial projects
+- specifying which extensions the user initially sees + can access
 
 ### Configuration
 

@@ -39,6 +39,7 @@ export default function setUserConfigHandler({useRegister = false}) {
     //delegate to auth/register, making server -> server call
     //this will check if they have been registered, and onboard them if needed
     //todo - handle them already being registered both 1) with GC and 2) with auth (if they need to be separate)
+    //avoid setting the config if they are already registered
 
     console.log('sending');
     console.log(user);
