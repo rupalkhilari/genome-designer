@@ -31,6 +31,12 @@ Extensions can be hidden by setting `visible = false`
 
 #### /register
 
+Route for registering a new user
+
+ - takes in their user preferences, allowing referrers to send a configuration for new user defaults
+ - delegates to auth/register, to register the user
+ - onboards the user according to their configuration
+
 Expects payload in form:
 
 ```
@@ -48,6 +54,8 @@ Expects payload in form:
 And creates the user object, verifies the config and merges with defaults, assigns to the user object, and then deletegates to the auth router:
 
 #### /auth/register
+
+Platform Auth, which handles creating the user, then runs the onLogin() hook to handle onboarding a new user
 
 Expects user object in form:
 

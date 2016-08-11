@@ -13,21 +13,11 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-/*
- Registration + onboarding for new users.
-
- Handle the root /register route, which:
- - takes in their user preferences, allowing referrers to send a configuration for new user defaults
- - delegates to auth/register, to register the user
- - saves that configuration at auth/update-all
- - onboards the user according to their configuration
- */
 
 import fetch from 'isomorphic-fetch';
 import { INTERNAL_HOST } from '../urlConstants';
 import { updateUserConfig } from './utils';
 import { headersPost } from '../../src/middleware/headers';
-
 
 //parameterized route handler for setting user config
 //expects req.user and req.config to be set
