@@ -74,3 +74,10 @@ export const pruneUserObjectMiddleware = (req, res, next) => {
   Object.assign(req, { user: pruneUserObject(req.user) });
   next();
 };
+
+export const ensureReqUserMiddleware = (req, res, next) => {
+  if (!req.user) {
+    return res.status(400).send('no user found on request');
+  }
+  next();
+};

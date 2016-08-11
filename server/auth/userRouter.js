@@ -15,15 +15,14 @@
  */
 import express from 'express';
 import bodyParser from 'body-parser';
-import { getConfigFromUser } from './utils';
+import { ensureReqUserMiddleware, getConfigFromUser } from './utils';
 import setUserConfigHandler from './setUserConfigHandler';
-
-//todo - ensure req.user is set - some sort of permissions middleware
 
 export const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json();
 
 router.route('/config')
+  .all(ensureReqUserMiddleware)
   .get((req, res, next) => {
     const config = getConfigFromUser(req.user);
     res.json(config);
