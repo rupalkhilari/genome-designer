@@ -26,6 +26,7 @@ import {
 import * as querying from './querying';
 import * as persistence from './persistence';
 import * as rollup from './rollup';
+import { ensureReqUserMiddleware } from '../auth/utils';
 import { permissionsMiddleware } from './permissions';
 
 import projectFileRouter from './projectFileRouter';
@@ -41,6 +42,8 @@ const jsonParser = bodyParser.json({
  ****************************/
 
 router.use(jsonParser);
+
+router.use(ensureReqUserMiddleware);
 
 /*
  //deprecated - blocks should have a projectId on them, and this is expensive

@@ -48,6 +48,12 @@ export default function setUserConfigHandler({useRegister = false}) {
 
     fetch(url, headersPost(JSON.stringify(user)))
       .then(resp => {
+        //re-assign cookies from platform authentication
+        const cookies = resp.headers.getAll('set-cookie');
+        cookies.forEach(cookie => {
+          res.set('set-cookie', cookie);
+        });
+
         return resp.json();
       })
       .then(userPayload => {

@@ -26,6 +26,7 @@ import makeEgfRollup from '../../data/egf_parts/index';
 import emptyProjectWithConstruct from '../../data/emptyProject/index';
 
 //while we are using imports, do this statically. todo - use require() for dynamic (will need to reconcile with build eventually, but whatever)
+//these return promises
 const projectMap = {
   egf_templates: () => makeEgfRollup(),
   emptyProject: () => emptyProjectWithConstruct(true),
@@ -45,6 +46,8 @@ const generateInitialProjects = (user) => {
 
   invariant(projects.length >= 1, 'must have some default projects, got none. check config for user ' + user.uuid);
 
+  //make sure the projects exist, and add them to the list
+  //todo - should check that this list actually has some length
   return projects.reduce((acc, projectConfig) => {
     const gen = projectMap[projectConfig.id];
     if (gen) {

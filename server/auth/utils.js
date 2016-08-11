@@ -20,6 +20,7 @@ import userConfigDefaults from './userConfigDefaults';
 import { userConfigKey } from './userConstants';
 
 //validate config on user.data
+//todo - should validate that the projects and extensions exist
 export const validateConfig = (config) => {
   const { projects, extensions } = config;
 
@@ -77,7 +78,7 @@ export const pruneUserObjectMiddleware = (req, res, next) => {
 
 export const ensureReqUserMiddleware = (req, res, next) => {
   if (!req.user) {
-    return res.status(400).send('no user found on request');
+    return res.status(401).send('no user found on request');
   }
   next();
 };
