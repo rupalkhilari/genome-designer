@@ -13,18 +13,8 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-import invariant from 'invariant';
-import onboardingDefaults from '../auth/onboardingDefauts';
 import { errorNoPermission } from '../utils/errors';
-import { userConfigKey } from '../auth/constants';
-
-const getConfigFromUser = (user, def = onboardingDefaults) => {
-  const { data } = user;
-  if (!data) {
-    return def;
-  }
-  return data[userConfigKey] || def;
-};
+import { getConfigFromUser } from '../auth/utils';
 
 export const checkUserExtensionAccess = (extensionKey, user) => {
   const config = getConfigFromUser(user);
@@ -38,6 +28,7 @@ export const checkUserExtensionVisible = (extensionKey, user) => {
   return extPrefs && extPrefs.visible === true;
 };
 
+//todo - need to set req.extensionKey where appropriate
 //expects req.extensionKey and req.user to be set
 export const checkUserExtensionAccessMiddleware = (req, res, next) => {
   const config = getConfigFromUser(req.user);
@@ -57,4 +48,3 @@ export const checkUserExtensionAccessMiddleware = (req, res, next) => {
   }
   return next(errorNoPermission);
 };
-

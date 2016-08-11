@@ -19,9 +19,8 @@
  NOTE - create instances using Block.classless and Project.classless - the server is expect JSON blobs that it can assign to, and instances of classes are frozen.
  */
 import invariant from 'invariant';
-import { values } from 'lodash';
 import * as rollup from '../data/rollup';
-import { userConfigKey } from './constants';
+import { getConfigFromUser } from './utils';
 
 import makeEgfRollup from '../../data/egf_templates/index';
 import emptyProjectWithConstruct from '../../data/emptyProject/index';
@@ -34,7 +33,7 @@ const projectMap = {
 
 //create rollups, where first is the one to return as final project ID
 const generateInitialProjects = (user) => {
-  const config = user.data[userConfigKey];
+  const config = getConfigFromUser(user);
 
   const projects = Object.keys(config.projects)
     .map(projectKey => ({
@@ -53,22 +52,6 @@ const generateInitialProjects = (user) => {
     }
     return acc;
   }, []);
-};
-
-export const validateConfig = (config) => {
-  const { projects, extensions } = config;
-
-  if (projects !== undefined) {
-    invariant(typeof projects === 'object', 'config.projects must be an object');
-    invariant(values(projects).every(projectConfig => projectConfig.access === true || projectConfig.access === false), 'each project configuration must specify access');
-  }
-
-  if (extensions !== undefined) {
-    invariant(typeof extensions === 'object', 'config.extensions must be an object');
-    invariant(values(extensions).every(projectConfig => projectConfig.access === true || projectConfig.access === false), 'each project configuration must specify access');
-  }
-
-  return true;
 };
 
 //create initial projects and set up configuration for them

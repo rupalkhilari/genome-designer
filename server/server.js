@@ -18,7 +18,8 @@ import fs from 'fs';
 import express from 'express';
 import morgan from 'morgan';
 
-import registrationHandler from './auth/register';
+import setUserConfigHandler from './auth/setUserConfigHandler';
+import userRouter from './auth/userRouter';
 import dataRouter from './data/index';
 import orderRouter from './order/index';
 import fileRouter from './file/index';
@@ -28,7 +29,7 @@ import bodyParser from 'body-parser';
 import errorHandlingMiddleware from './utils/errorHandlingMiddleware';
 import checkUserSetup from './auth/userSetup';
 
-import { HOST_PORT, HOST_NAME, API_END_POINT } from './constants';
+import { HOST_PORT, HOST_NAME, API_END_POINT } from './urlConstants';
 
 //file paths depending on if building or not
 //note that currently, you basically need to use npm run start in order to serve the client bundle + webpack middleware
@@ -100,7 +101,8 @@ if (process.env.BIO_NANO_AUTH) {
 }
 
 //expose our own register route to handle custom onboarding
-app.post('/register', registrationHandler);
+app.post('/register', setUserConfigHandler({useRegister: true}));
+app.use('/user', userRouter);
 
 //primary routes
 app.use('/data', dataRouter);

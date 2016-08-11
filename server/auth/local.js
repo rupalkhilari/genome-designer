@@ -26,7 +26,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import checkUserSetup from './userSetup';
 import onboardingDefaults from './onboardingDefauts';
-import { userConfigKey } from './constants';
+import { userConfigKey } from './userConstants';
 
 export const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json();
