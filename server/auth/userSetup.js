@@ -22,7 +22,11 @@ const ensureUserSetup = (user) => {
     .then(projects => {
       if (!projects.length) {
         return onboardNewUser(user)
-          .then(rollup => rollup.project.id);
+          .then(rolls => {
+            console.log(`[User Setup] Generated ${rolls.length} projects for user ${user.uuid}:
+${rolls.map(roll => `${roll.project.metadata.name || 'Unnamed'} @ ${roll.project.id}`).join('\n')}`);
+            return rolls[0].project.id;
+          });
       }
       return projects[0].id;
     });

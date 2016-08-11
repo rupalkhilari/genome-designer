@@ -70,18 +70,13 @@ export default function onboardNewUser(user) {
   return Promise.all(
     restRollGens.map(generator => {
       const roll = generator();
-      return rollup.writeProjectRollup(roll.project.id, roll, user.uuid)
+      return rollup.writeProjectRollup(roll.project.id, roll, user.uuid);
     })
   )
-    .then((rolls) => {
+    .then((restRolls) => {
       const roll = firstRollGen();
-      return rollup.writeProjectRollup(firstRollGen.project.id, firstRollGen, user.uuid)
-        .then(firstRoll => [firstRoll, ...rolls]);
-    })
-    .then(rolls => {
-      console.log(`[User Setup] Generated ${initialProjectGenerators.length} projects for user ${user.uuid}:
-${initialProjectGenerators.map(roll => `${roll.project.metadata.name || 'Unnamed'} @ ${roll.project.id}`).join('\n')}`);
-      return rolls[0].project.id;
+      return rollup.writeProjectRollup(roll.project.id, roll, user.uuid)
+        .then(firstRoll => [firstRoll, ...restRolls]);
     });
 }
 
