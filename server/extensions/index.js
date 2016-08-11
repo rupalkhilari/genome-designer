@@ -34,9 +34,15 @@ router.use(errorHandlingMiddleware);
 
 router.get('/list', (req, res) => {
   //console.log(extensionRegistry);
-  res.json(getClientExtensions());
+  const clientExtensions = getClientExtensions();
+
+  //todo - filter according to user config
+  const filtered = clientExtensions;
+
+  res.json(filtered);
 });
 
+//todo - check access according to user config
 router.get('/manifest/:extension', (req, res, next) => {
   const { extension } = req.params;
   const manifest = getClientExtensions()[extension];

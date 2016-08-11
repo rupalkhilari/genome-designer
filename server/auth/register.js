@@ -25,7 +25,7 @@
 
 import fetch from 'isomorphic-fetch';
 import onboardingDefaults from './onboardingDefauts';
-import onboardNewUser from './onboardNewUser';
+import { validateConfig } from './onboardNewUser';
 import { userConfigKey } from './constants';
 import { headersPost } from '../../src/middleware/headers';
 
@@ -40,11 +40,17 @@ import { headersPost } from '../../src/middleware/headers';
 export default function registerRouteHandler(req, res, next) {
   const { user: userInput, config: configInput } = req.body;
 
-  //todo - verify format of configuration
-
   //generate config from input + defaults
   //question!!!! - merge deeply, or shallow assign? For now, shallow assign so have to explicitly include default projects + extensions for them to show up
   const config = Object.assign({}, onboardingDefaults, configInput);
+
+  //validate config format
+  try {
+    validateConfig(config);
+  } catch (err) {
+    return res.status(422).send(err);
+  }
+
   const userData = {
     constructor: true,
     [userConfigKey]: config,

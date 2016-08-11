@@ -25,6 +25,8 @@ router.use(jsonParser);
 
 /** Route Checking **/
 
+//todo - check access according to user config
+
 //for URLs properly formed with an extension already registered, delegate to the router
 router.all('/:ext/*', (req, res, next) => {
   const { ext, route } = req.params;
@@ -50,6 +52,8 @@ Object.keys(serverExtensions).forEach(key => {
 
   //todo - build dependent path lookup
   const extensionRouter = require(path.resolve(__dirname, 'node_modules', key, routePath));
+
+  //todo - middleware to check user access - will need to be dynamic because cannot put on the req since dynamic
 
   //todo - error handling
   //todo - wrap router in a try-catch? Put in own process?

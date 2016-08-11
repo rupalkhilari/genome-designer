@@ -16,7 +16,6 @@ limitations under the License.
 
 import * as querying from '../data/querying';
 import onboardNewUser from './onboardNewUser';
-import { userConfigKey } from './constants';
 
 const ensureUserSetup = (user) => {
   return querying.listProjectsWithAccess(user.uuid)
