@@ -45,7 +45,7 @@ const generateInitialProjects = (user) => {
 
   invariant(projects.length >= 1, 'must have some default projects, got none. check config for user ' + user.uuid);
 
-  return config.projects.reduce((acc, projectConfig) => {
+  return projects.reduce((acc, projectConfig) => {
     const gen = projectMap[projectConfig.id];
     if (gen) {
       acc.push(gen(projectConfig));

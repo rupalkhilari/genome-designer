@@ -16,7 +16,7 @@
 
 import fetch from 'isomorphic-fetch';
 import { INTERNAL_HOST } from '../urlConstants';
-import { updateUserConfig } from './utils';
+import { pruneUserObject, updateUserConfig } from './utils';
 import { headersPost } from '../../src/middleware/headers';
 
 //parameterized route handler for setting user config
@@ -53,7 +53,9 @@ export default function setUserConfigHandler({useRegister = false}) {
         if (!!userPayload.message) {
           return Promise.reject(userPayload.message);
         }
-        res.json(userPayload);
+
+        const pruned = pruneUserObject(userPayload);
+        res.json(pruned);
       })
       .catch(err => {
         console.log('got error');
