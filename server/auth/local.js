@@ -25,7 +25,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import checkUserSetup from './userSetup';
-import onboardingDefaults from './onboardingDefauts';
+import userConfigDefaults from './userConfigDefaults';
 import { userConfigKey } from './userConstants';
 
 export const router = express.Router(); //eslint-disable-line new-cap
@@ -35,7 +35,7 @@ const defaultUserForcedFields = {
   uuid: '0',
 };
 
-const configForDefaultUser = Object.assign({}, onboardingDefaults);
+const configForDefaultUser = Object.assign({}, userConfigDefaults);
 const userData = Object.assign({}, { [userConfigKey]: configForDefaultUser });
 
 //this object will get updated as /register and /update the user (one user in local auth)

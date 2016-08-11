@@ -15,12 +15,9 @@
  */
 import invariant from 'invariant';
 import { values } from 'lodash';
-import fetch from 'isomorphic-fetch';
 
-import { INTERNAL_HOST } from '../urlConstants';
-import onboardingDefaults from './onboardingDefauts';
+import userConfigDefaults from './userConfigDefaults';
 import { userConfigKey } from './userConstants';
-import { headersPost } from '../../src/middleware/headers';
 
 //validate config on user.data
 export const validateConfig = (config) => {
@@ -39,7 +36,7 @@ export const validateConfig = (config) => {
   return true;
 };
 
-export const getConfigFromUser = (user, def = onboardingDefaults) => {
+export const getConfigFromUser = (user, def = userConfigDefaults) => {
   const { data } = user;
   if (!data) {
     return def;
@@ -47,7 +44,6 @@ export const getConfigFromUser = (user, def = onboardingDefaults) => {
   return data[userConfigKey] || def;
 };
 
-//todo - use this
 //validate + create a merged config
 //throws if invalid, so should try-catch appropriately
 export const updateUserConfig = (user, newConfig) => {
