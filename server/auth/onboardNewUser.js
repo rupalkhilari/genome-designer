@@ -32,8 +32,9 @@ const projectMap = {
   emptyProject: () => emptyProjectWithConstruct(true),
 };
 
-//create rollups, where first is the one to return as final project ID
-const generateInitialProjects = (user) => {
+//create rollup generators, where first is the one to return as final project ID
+//return generator so created can control timestamp
+const createGeneratorsInitialProjects = (user) => {
   const config = getConfigFromUser(user);
 
   const projects = Object.keys(config.projects)
@@ -46,12 +47,12 @@ const generateInitialProjects = (user) => {
 
   invariant(projects.length >= 1, 'must have some default projects, got none. check config for user ' + user.uuid);
 
-  //make sure the projects exist, and add them to the list
+  //make sure the projects exist, and add generator to the list
   //todo - should check that this list actually has some length
   return projects.reduce((acc, projectConfig) => {
     const gen = projectMap[projectConfig.id];
     if (gen) {
-      acc.push(gen(projectConfig));
+      acc.push(() => gen(projectConfig));
     }
     return acc;
   }, []);
@@ -62,16 +63,25 @@ export default function onboardNewUser(user) {
   console.log('onboarding');
   console.log(user);
 
-  const initialProjects = generateInitialProjects(user);
-  const [firstRoll, ...restRolls] = initialProjects;
+  const initialProjectGenerators = createGeneratorsInitialProjects(user);
+  const [firstRollGen, ...restRollGens] = initialProjectGenerators;
 
-  console.log(`[User Setup] Generated ${initialProjects.length} projects for user ${user.uuid}:
-${initialProjects.map(roll => `${roll.project.metadata.name || 'Unnamed'} @ ${roll.project.id}`).join('\n')}`);
-
-  //write the firstRoll last so that it has the most recent timestamp and is opened first
+  //generate the firstRoll last, so that it has the most recent timestamp, and is opened first
   return Promise.all(
-    restRolls.map(roll => rollup.writeProjectRollup(roll.project.id, roll, user.uuid))
+    restRollGens.map(generator => {
+      const roll = generator();
+      return rollup.writeProjectRollup(roll.project.id, roll, user.uuid)
+    })
   )
-    .then(() => rollup.writeProjectRollup(firstRoll.project.id, firstRoll, user.uuid));
+    .then((rolls) => {
+      const roll = firstRollGen();
+      return rollup.writeProjectRollup(firstRollGen.project.id, firstRollGen, user.uuid)
+        .then(firstRoll => [firstRoll, ...rolls]);
+    })
+    .then(rolls => {
+      console.log(`[User Setup] Generated ${initialProjectGenerators.length} projects for user ${user.uuid}:
+${initialProjectGenerators.map(roll => `${roll.project.metadata.name || 'Unnamed'} @ ${roll.project.id}`).join('\n')}`);
+      return rolls[0].project.id;
+    });
 }
 

@@ -250,6 +250,8 @@ const _projectLoad = (projectId, loadMoreOnFail = false, dispatch) => {
       return dispatch(projectList())
         .then(manifests => manifests
           .filter(manifest => !ignores.includes(manifest.id))
+          //first sort descending by created date (i.e. if never saved) then descending by saved date (so it takes precedence)
+          .sort((one, two) => two.metadata.created - one.metadata.created)
           .sort((one, two) => two.lastSaved - one.lastSaved)
         )
         .then(manifests => {
