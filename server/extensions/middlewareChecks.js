@@ -15,6 +15,8 @@
  */
 import { errorNoPermission } from '../utils/errors';
 import { getConfigFromUser } from '../auth/utils';
+import { errorExtensionNotFound } from '../utils/errors';
+import extensionRegistry  from './registry';
 
 export const checkUserExtensionAccess = (extensionKey, user) => {
   const config = getConfigFromUser(user);
@@ -28,8 +30,26 @@ export const checkUserExtensionVisible = (extensionKey, user) => {
   return extPrefs && extPrefs.visible === true;
 };
 
+//check if the extension has been registered, assign req.extensionKey
+export const checkExtensionExistsMiddleware = (req, res, next) => {
+  const { ext } = req.params;
+
+  const extension = extensionRegistry[ext];
+
+  if (!extension) {
+    console.log(`could not find extension ${ext} in registry (${Object.keys(extensionRegistry).join(', ')})`);
+    return res.status(404).send(errorExtensionNotFound);
+  }
+
+  Object.assign(req, { extensionKey: ext });
+
+  //let the route continue
+  next();
+};
+
 //todo - need to set req.extensionKey where appropriate
 //expects req.extensionKey and req.user to be set
+//run checkExtensionExistsMiddleware first, which sets extensionKey
 export const checkUserExtensionAccessMiddleware = (req, res, next) => {
   const config = getConfigFromUser(req.user);
 
@@ -46,5 +66,5 @@ export const checkUserExtensionAccessMiddleware = (req, res, next) => {
   if (checkUserExtensionAccess(req.extensionKey, config)) {
     return next();
   }
-  return next(errorNoPermission);
+  return res.status(403).send(errorNoPermission);
 };

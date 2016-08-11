@@ -61,3 +61,16 @@ export const updateUserConfig = (user, newConfig) => {
 
   return Object.assign({}, user, { data: userData });
 };
+
+export const pruneUserObject = (user) => {
+  const config = getConfigFromUser(user);
+  const fields = ['uuid', 'firstName', 'lastName', 'email'];
+  const fieldsObject = fields.reduce((acc, field) => Object.assign(acc, { [field]: user[field] }), {});
+
+  return Object.assign(fieldsObject, { config });
+};
+
+export const pruneUserObjectMiddleware = (req, res, next) => {
+  Object.assign(req, { user: pruneUserObject(req.user) });
+  next();
+};

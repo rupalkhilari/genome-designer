@@ -16,32 +16,24 @@
 import express from 'express';
 import path from 'path';
 import bodyParser from 'body-parser';
-import { errorExtensionNotFound } from '../utils/errors';
-import extensionRegistry, { getServerExtensions } from './registry';
+import { getServerExtensions } from './registry';
+import { pruneUserObjectMiddleware } from '../auth/utils';
+import { checkExtensionExistsMiddleware, checkUserExtensionAccessMiddleware } from './middlewareChecks';
 
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json();
 router.use(jsonParser);
 
-/** Route Checking **/
+//overwrite the user object so that only relevant fields are passed to extensions
+//todo - test
+router.use(pruneUserObjectMiddleware);
 
-//todo - check access according to user config
+//ensure extensions exist or 404
+router.all('/:ext/*', checkExtensionExistsMiddleware);
 
-//for URLs properly formed with an extension already registered, delegate to the router
-router.all('/:ext/*', (req, res, next) => {
-  const { ext } = req.params;
-
-  const extension = extensionRegistry[ext];
-
-  if (!extension) {
-    console.log(`could not find extension ${ext} in registry (${Object.keys(extensionRegistry).join(', ')})`);
-    return res.status(404).send(errorExtensionNotFound);
-  }
-
-  //let the route continue
-  //todo - reassign user object? remove cookies? prune request
-  next();
-});
+//ensure user has access
+//todo - test
+router.all('/:ext/*', checkUserExtensionAccessMiddleware);
 
 /** Route Registering **/
 
@@ -50,10 +42,8 @@ Object.keys(serverExtensions).forEach(key => {
   const manifest = serverExtensions[key];
   const routePath = manifest.geneticConstructor.router;
 
-  //todo - build dependent path lookup
+  //future todo - build dependent path lookup
   const extensionRouter = require(path.resolve(__dirname, 'node_modules', key, routePath));
-
-  //todo - middleware to check user access - will need to be dynamic because cannot put on the req since dynamic
 
   //todo - error handling
   //todo - wrap router in a try-catch? Put in own process?
