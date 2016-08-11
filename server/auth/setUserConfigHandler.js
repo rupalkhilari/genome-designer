@@ -47,10 +47,12 @@ export default function setUserConfigHandler({useRegister = false}) {
     console.log(user);
 
     fetch(url, headersPost(JSON.stringify(user)))
-      .then(resp => resp.json())
+      .then(resp => {
+        return resp.json();
+      })
       .then(userPayload => {
         if (!!userPayload.message) {
-          return Promise.reject(userPayload.message);
+          return Promise.reject(userPayload);
         }
 
         const pruned = pruneUserObject(userPayload);
@@ -59,7 +61,7 @@ export default function setUserConfigHandler({useRegister = false}) {
       .catch(err => {
         console.log('got error');
         console.log(err);
-        res.status(500).send(err);
+        res.status(500).json(err);
       });
   };
 }
