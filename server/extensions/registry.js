@@ -51,12 +51,16 @@ export const isRegistered = (name) => {
   return registry.hasOwnProperty(name);
 };
 
-export const getClientExtensions = () => {
-  return pickBy(registry, (manifest, key) => manifestIsClient(manifest));
+//filter takes arguments (manifest, key), should return true or false
+export const getClientExtensions = (filter = () => true) => {
+  const clients = pickBy(registry, (manifest, key) => manifestIsClient(manifest));
+  return pickBy(clients, filter);
 };
 
-export const getServerExtensions = () => {
-  return pickBy(registry, (manifest, key) => manifestIsServer(manifest));
+//filter takes arguments (manifest, key), should return true or false
+export const getServerExtensions = (filter = () => true) => {
+  const servers = pickBy(registry, (manifest, key) => manifestIsServer(manifest));
+  return pickBy(servers, filter);
 };
 
 export default registry;

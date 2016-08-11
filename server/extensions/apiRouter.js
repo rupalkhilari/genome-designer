@@ -25,15 +25,15 @@ const jsonParser = bodyParser.json();
 router.use(jsonParser);
 
 //overwrite the user object so that only relevant fields are passed to extensions
-//todo - test
+//todo - test works + always run
 router.use(pruneUserObjectMiddleware);
 
 //ensure extensions exist or 404
-router.all('/:ext/*', checkExtensionExistsMiddleware);
+router.all('/:extension/*', checkExtensionExistsMiddleware);
 
 //ensure user has access
-//todo - test
-router.all('/:ext/*', checkUserExtensionAccessMiddleware);
+//todo - test works + always run
+router.all('/:extension/*', checkUserExtensionAccessMiddleware);
 
 /** Route Registering **/
 
@@ -42,7 +42,7 @@ Object.keys(serverExtensions).forEach(key => {
   const manifest = serverExtensions[key];
   const routePath = manifest.geneticConstructor.router;
 
-  //future todo - build dependent path lookup
+  //future - build dependent path lookup
   const extensionRouter = require(path.resolve(__dirname, 'node_modules', key, routePath));
 
   //todo - error handling

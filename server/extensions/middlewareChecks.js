@@ -13,10 +13,11 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
+import invariant from 'invariant';
 import { errorNoPermission } from '../utils/errors';
 import { getConfigFromUser } from '../auth/utils';
 import { errorExtensionNotFound } from '../utils/errors';
-import extensionRegistry  from './registry';
+import extensionRegistry from './registry';
 
 export const checkUserExtensionAccess = (extensionKey, user) => {
   const config = getConfigFromUser(user);
@@ -31,39 +32,39 @@ export const checkUserExtensionVisible = (extensionKey, user) => {
 };
 
 //check if the extension has been registered, assign req.extensionKey
+//expects :extension in the route
 export const checkExtensionExistsMiddleware = (req, res, next) => {
-  const { ext } = req.params;
+  const { extension } = req.params;
 
-  const extension = extensionRegistry[ext];
+  //invariant, since this is not run-time
+  invariant(!!extension, 'expected :extension in route params');
 
-  if (!extension) {
-    console.log(`could not find extension ${ext} in registry (${Object.keys(extensionRegistry).join(', ')})`);
+  Object.assign(req, { extensionKey: extension });
+
+  const extensionManifest = extensionRegistry[extension];
+
+  if (!extensionManifest) {
+    console.log(`could not find extension ${extension} in registry (${Object.keys(extensionRegistry).join(', ')})`);
     return res.status(404).send(errorExtensionNotFound);
   }
-
-  Object.assign(req, { extensionKey: ext });
 
   //let the route continue
   next();
 };
 
-//todo - need to set req.extensionKey where appropriate
-//expects req.extensionKey and req.user to be set
+//expects req.extensionKey and req.user to be set, and user to have a config (or valid default)
 //run checkExtensionExistsMiddleware first, which sets extensionKey
 export const checkUserExtensionAccessMiddleware = (req, res, next) => {
-  const config = getConfigFromUser(req.user);
+  const { user, extensionKey } = req;
+  const config = getConfigFromUser(user);
 
-  if (!req.extensionKey) {
-    console.warn('[auth extensions permissions] no extensionKey on req');
-    next('expected extensionKey on request');
-  }
+  //only should call this middleware when extensionKey exists
+  invariant(extensionKey, '[auth extensions permissions] no extensionKey on req');
 
-  if (!config) {
-    console.warn('[auth extensions permissions] no user config found for user ' + req.user.uuid);
-    next('expected a user configuration');
-  }
+  //config should always exist, at least returning a default
+  invariant(config, '[auth extensions permissions] no user config found for user ' + user.uuid);
 
-  if (checkUserExtensionAccess(req.extensionKey, config)) {
+  if (checkUserExtensionAccess(extensionKey, config)) {
     return next();
   }
   return res.status(403).send(errorNoPermission);
