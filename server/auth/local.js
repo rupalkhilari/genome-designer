@@ -121,7 +121,7 @@ router.get('/cookies', (req, res) => {
 //assign the user to the request, including their config
 export const mockUser = (req, res, next) => {
   if (req.cookies.sess !== null) {
-    Object.assign(req, { defaultUser });
+    Object.assign(req, { user: defaultUser });
   }
 
   //stub the initial user setup here as well
