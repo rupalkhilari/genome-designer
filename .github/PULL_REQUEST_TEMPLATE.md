@@ -2,11 +2,7 @@
 
 
 
-#### Type of change (bug fix, feature, docs, etc.)
-
-
-
-#### Issue
+#### Type of change (bug fix, feature, docs, UI, etc.)
 
 
 
@@ -21,4 +17,7 @@
 
 #### Other information
 
+
+
+#### Issue
 

@@ -1,4 +1,4 @@
-Example plugin which uses webpack and displays in the sequenceDetail region.
+Example plugin which uses webpack and displays in the projectDetail region.
 
 Webpack (https://webpack.github.io/) or some other build tool is necessary for bundling larger projects, as only one file (`index.js`) is allowed to be served per extension.
 

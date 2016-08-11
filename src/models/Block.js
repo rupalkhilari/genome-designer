@@ -511,6 +511,12 @@ export default class Block extends Instance {
     optionIds.forEach(optionId => {
       Object.assign(options, { [optionId]: !this.options[optionId] });
     });
+
+    //disallow removing all the options
+    if (Object.keys(options).filter(id => options[id]).length === 0) {
+      return this;
+    }
+
     return this.mutate('options', options);
   }
 
@@ -529,7 +535,7 @@ export default class Block extends Instance {
   addOptions(...optionIds) {
     invariant(this.isList(), 'must be a list block to add list options');
     invariant(optionIds.every(option => idValidator(option)), 'must pass component IDs');
-    const toAdd = optionIds.reduce((acc, id) => Object.assign(acc, { [id]: false }));
+    const toAdd = optionIds.reduce((acc, id) => Object.assign(acc, { [id]: false }), {});
     const newOptions = Object.assign(cloneDeep(this.options), toAdd);
 
     if (Object.keys(newOptions).length === Object.keys(this.options).length) {

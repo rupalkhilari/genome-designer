@@ -366,6 +366,10 @@ export const projectOpen = (inputProjectId, skipSave = false) => {
       //projectPage will load the project + its blocks
       //change the route
       dispatch(push(`/project/${projectId}`));
+      dispatch({
+        type: ActionTypes.PROJECT_OPEN,
+        projectId,
+      });
     });
   };
 };
