@@ -28,9 +28,7 @@ import bodyParser from 'body-parser';
 import errorHandlingMiddleware from './utils/errorHandlingMiddleware';
 import checkUserSetup from './auth/userSetup';
 
-const DEFAULT_PORT = 3000;
-const port = parseInt(process.argv[2], 10) || process.env.PORT || DEFAULT_PORT;
-const hostname = '0.0.0.0';
+import { HOST_PORT, HOST_NAME, API_END_POINT } from './constants';
 
 //file paths depending on if building or not
 //note that currently, you basically need to use npm run start in order to serve the client bundle + webpack middleware
@@ -77,7 +75,7 @@ if (process.env.BIO_NANO_AUTH) {
     loginLanding: false,
     loginFailure: false,
     resetForm: '/homepage/reset',
-    apiEndPoint: process.env.API_END_POINT || 'http://localhost:8080/api',
+    apiEndPoint: API_END_POINT,
     onLogin: (req, res, next) => {
       return checkUserSetup(req.user)
       //note this expects an abnormal return of req and res to the next function
@@ -165,22 +163,22 @@ const isPortFree = (port, cb) => {
     })
     .listen({
       port,
-      host: 'localhost',
+      host: HOST_NAME,
       exclusive: true,
     });
 };
 
-const startServer = () => app.listen(port, hostname, (err) => {
+const startServer = () => app.listen(HOST_PORT, HOST_NAME, (err) => {
   if (err) {
     console.log('error listening!', err.stack);
     return;
   }
 
   /* eslint-disable no-console */
-  console.log(`Server listening at http://${hostname}:${port}/`);
+  console.log(`Server listening at http://${HOST_NAME}:${HOST_PORT}/`);
 });
 
 //start the server by default, if port is not taken
-isPortFree(port, (err, free) => free && startServer());
+isPortFree(HOST_PORT, (err, free) => free && startServer());
 
 export default app;

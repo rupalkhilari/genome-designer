@@ -24,19 +24,14 @@
  */
 
 import fetch from 'isomorphic-fetch';
+import { INTERNAL_HOST } from '../constants';
 import onboardingDefaults from './onboardingDefauts';
 import { validateConfig } from './onboardNewUser';
 import { userConfigKey } from './constants';
 import { headersPost } from '../../src/middleware/headers';
 
 // POST /register handler
-/*
- Body in form  --- NB different than /auth/register
- {
- user
- config
- }
- */
+// see format in README
 export default function registerRouteHandler(req, res, next) {
   const { user: userInput, config: configInput } = req.body;
 
@@ -60,13 +55,12 @@ export default function registerRouteHandler(req, res, next) {
   //delegate to auth/register
   //todo - ensure this sets the full configuation (including the default preferences) and is returned on req.user for onboarding callback
   //this will check if they have been registered, and onboard them if needed
-  //todo - handle them already being registered
-  //fixme - non-static URL, or share constant with server
+  //todo - handle them already being registered both 1) with GC and 2) with auth (if they need to be separate)
 
   console.log('sending');
   console.log(user);
 
-  fetch('http://0.0.0.0:3000/auth/register', headersPost(JSON.stringify(user)))
+  fetch(INTERNAL_HOST + '/auth/register', headersPost(JSON.stringify(user)))
     .then(resp => resp.json())
     .then(userPayload => {
       console.log('got payload');

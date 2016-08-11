@@ -18,26 +18,41 @@ import onboardingDefaults from '../auth/onboardingDefauts';
 import { errorNoPermission } from '../utils/errors';
 import { userConfigKey } from '../auth/constants';
 
-export const checkUserAccess = (extensionKey, config) => {
+const getConfigFromUser = (user, def = onboardingDefaults) => {
+  const { data } = user;
+  if (!data) {
+    return def;
+  }
+  return data[userConfigKey] || def;
+};
+
+export const checkUserExtensionAccess = (extensionKey, user) => {
+  const config = getConfigFromUser(user);
   const extPrefs = config[extensionKey];
   return extPrefs && extPrefs.access === true;
 };
 
-export const checkUserVisible = (extensionKey, config) => {
+export const checkUserExtensionVisible = (extensionKey, user) => {
+  const config = getConfigFromUser(user);
   const extPrefs = config[extensionKey];
   return extPrefs && extPrefs.visible === true;
 };
 
-//expects req.extensionKey and req.user
-export const checkUserAccessMiddleware = (req, res, next) => {
-  const config = req.user.data[userConfigKey] || onboardingDefaults;
+//expects req.extensionKey and req.user to be set
+export const checkUserExtensionAccessMiddleware = (req, res, next) => {
+  const config = getConfigFromUser(req.user);
 
-  //handling not set e.g. for old users - just use defaults?
+  if (!req.extensionKey) {
+    console.warn('[auth extensions permissions] no extensionKey on req');
+    next('expected extensionKey on request');
+  }
 
-  invariant(req.extensionKey, 'expected extensionKey on request');
-  invariant(config, 'expected a user configuration');
+  if (!config) {
+    console.warn('[auth extensions permissions] no user config found for user ' + req.user.uuid);
+    next('expected a user configuration');
+  }
 
-  if (checkUserAccess(req.extensionKey, config)) {
+  if (checkUserExtensionAccess(req.extensionKey, config)) {
     return next();
   }
   return next(errorNoPermission);
