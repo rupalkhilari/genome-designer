@@ -22,7 +22,7 @@ import invariant from 'invariant';
 import * as rollup from '../data/rollup';
 import { getConfigFromUser } from './utils';
 
-import makeEgfRollup from '../../data/egf_templates/index';
+import makeEgfRollup from '../../data/egf_parts/index';
 import emptyProjectWithConstruct from '../../data/emptyProject/index';
 
 //while we are using imports, do this statically. todo - use require() for dynamic (will need to reconcile with build eventually, but whatever)
