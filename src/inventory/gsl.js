@@ -27,7 +27,7 @@ export const operators = [
     examples: [
       'pEFGR',
     ],
-    color: colors.red,
+    color: colors.blue,
     text: 'p',
     position: 'prefix',
   },
@@ -39,7 +39,7 @@ export const operators = [
     examples: [
       'tErg10',
     ],
-    color: colors.red,
+    color: colors.blue,
     text: 't',
     position: 'prefix',
   },
@@ -51,7 +51,7 @@ export const operators = [
     examples: [
       'uHO'
     ],
-    color: colors.red,
+    color: colors.blue,
     text: 'u',
     position: 'prefix',
   },
@@ -63,7 +63,7 @@ export const operators = [
     examples: [
       'dHO',
     ],
-    color: colors.red,
+    color: colors.blue,
     text: 'd',
     position: 'prefix',
   },
@@ -75,7 +75,7 @@ export const operators = [
     examples: [
       'oERG10',
     ],
-    color: colors.red,
+    color: colors.blue,
     text: 'o',
     position: 'prefix',
   },
@@ -87,7 +87,7 @@ export const operators = [
     examples: [
       'fERG10',
     ],
-    color: colors.red,
+    color: colors.blue,
     text: 'f',
     position: 'prefix',
   },
@@ -99,7 +99,7 @@ export const operators = [
     examples: [
       'mERG10',
     ],
-    color: colors.red,
+    color: colors.blue,
     text: 'm',
     position: 'prefix',
   },
@@ -111,7 +111,7 @@ export const operators = [
     examples: [
       'gADH1[1: ∼400]',
     ],
-    color: colors.red,
+    color: colors.blue,
     text: '[]',
     position: 'postfix',
   },
@@ -123,7 +123,7 @@ export const operators = [
     examples: [
       'gADH1[−20S:150E]',
     ],
-    color: colors.red,
+    color: colors.blue,
     text: 'S',
   },
   {
@@ -134,7 +134,7 @@ export const operators = [
     examples: [
       'gADH1[−20S:150E]',
     ],
-    color: colors.red,
+    color: colors.blue,
     text: 'E',
     position: 'postfix',
   },
@@ -146,7 +146,7 @@ export const operators = [
     examples: [
       '!pERG10',
     ],
-    color: colors.red,
+    color: colors.blue,
     text: '!',
     position: 'prefix',
   },
@@ -158,7 +158,7 @@ export const operators = [
     examples: [
       'uHO ; ### ; dHO'
     ],
-    color: colors.red,
+    color: colors.blue,
     text: '###',
     position: 'inline',
   },
@@ -170,7 +170,7 @@ export const operators = [
     examples: [
       'gERG10[-300E: ∼200E]',
     ],
-    color: colors.red,
+    color: colors.blue,
     text: '~',
     position: 'prefix, inline',
   },
@@ -184,7 +184,7 @@ export const operators = [
       '@BBa_J11053',
       '@myStrongPromoter'
     ],
-    color: colors.red,
+    color: colors.blue,
     text: '@',
     position: 'prefix',
   },
@@ -196,7 +196,7 @@ export const operators = [
     examples: [
       '/ATGTACCGG/',
     ],
-    color: colors.red,
+    color: colors.blue,
     text: '//',
     position: 'inline',
   },
@@ -208,7 +208,7 @@ export const operators = [
     examples: [
       '/$MYR/',
     ],
-    color: colors.red,
+    color: colors.blue,
     text: '/$/',
     position: 'inline',
   },
@@ -220,7 +220,7 @@ export const operators = [
     examples: [
       'gADH1∧',
     ],
-    color: colors.red,
+    color: colors.blue,
     text: '^',
     position: 'postfix',
   },
@@ -232,21 +232,9 @@ export const operators = [
     examples: [
       'pADH1>gERG10',
     ],
-    color: colors.red,
+    color: colors.blue,
     text: '>',
     position: 'infix',
-  },
-  {
-    id: 'casette',
-    name: 'Replace with Casette',
-    type: 'Level 1 Operator',
-    description: ``,
-    examples: [
-      'HIS3^::pGAL1>ERG12',
-    ],
-    color: colors.red,
-    text: '::',
-    position: 'prefix',
   },
 ]
   .map(operator => {
