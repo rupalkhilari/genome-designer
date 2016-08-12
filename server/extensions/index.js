@@ -58,13 +58,11 @@ router.get('/listAll', (req, res) => {
 
 //see currently visible extensions
 router.get('/list', (req, res) => {
-  const filter = (process.env.NODE_ENV !== 'production') ?
-    () => true :
-    (manifest, key) => {
-      return checkUserExtensionVisible(key, req.user);
-    };
+  const filter = (manifest, key) => {
+    return checkUserExtensionVisible(key, req.user);
+  };
 
-  //todo - need to be able to toggle visiblity even in dev. may need better default here so symlinked ones show up as visible  (but even ones in registry - how to disambiguate?)
+  //todo - may need better default here so symlinked ones show up as visible by default (but not by default ones in registry - how to disambiguate?)
   //filters to extensions which are visible
   const clientExtensions = getClientExtensions(filter);
 

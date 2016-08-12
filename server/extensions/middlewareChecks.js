@@ -21,13 +21,13 @@ import extensionRegistry from './registry';
 
 export const checkUserExtensionAccess = (extensionKey, user) => {
   const config = getConfigFromUser(user);
-  const extPrefs = config[extensionKey];
+  const extPrefs = config.extensions[extensionKey];
   return extPrefs && extPrefs.access === true;
 };
 
 export const checkUserExtensionVisible = (extensionKey, user) => {
   const config = getConfigFromUser(user);
-  const extPrefs = config[extensionKey];
+  const extPrefs = config.extensions[extensionKey];
   return extPrefs && extPrefs.visible === true;
 };
 
