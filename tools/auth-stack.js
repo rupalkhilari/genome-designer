@@ -103,10 +103,14 @@ const spawnWaitUntilString = (cmd, args, opts, {
 
 let dockerEnv;
 
-const setupBioNanoPlatform = () => {
-  return promisedExec(`git checkout genome-designer`,
-    { cwd: pathBioNanoPlatform }
-  )
+const setupBioNanoPlatform = (useGenomeDesignerBranch = false) => {
+  const checkoutPromise = useGenomeDesignerBranch == true ?
+    promisedExec(`git checkout genome-designer`,
+      { cwd: pathBioNanoPlatform }
+    ) :
+    Promise.resolve();
+
+  return checkoutPromise
     .then(() => promisedExec(`npm install`,
       { cwd: pathBioNanoPlatform }
     ));
