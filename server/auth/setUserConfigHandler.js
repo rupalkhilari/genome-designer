@@ -24,7 +24,7 @@ import { headersPost } from '../../src/middleware/headers';
 export default function setUserConfigHandler({useRegister = false}) {
   const url = useRegister === true ?
   INTERNAL_HOST + '/auth/register' :
-  INTERNAL_HOST + '/auth/update-all';
+  INTERNAL_HOST + '/auth/update-user';
 
   return (req, res, next) => {
     console.log('hit route ' + req.originalUrl);
@@ -38,6 +38,15 @@ export default function setUserConfigHandler({useRegister = false}) {
       return res.status(422).send(err);
     }
 
+    //copy over cookies in case logged in request
+    const postOptions = headersPost(JSON.stringify(user));
+    const postHeaders = new Headers(postOptions.headers);
+    Object.keys(req.cookies).forEach(name => {
+      const value = req.cookies[name];
+      postHeaders.append('cookie', `${name}=${value}`);
+    });
+    Object.assign(postOptions, {headers: postHeaders});
+
     //delegate to auth/register, making server -> server call
     //this will check if they have been registered, and onboard them if needed
     //todo - handle them already being registered both 1) with GC and 2) with auth (if they need to be separate)
@@ -46,7 +55,7 @@ export default function setUserConfigHandler({useRegister = false}) {
     console.log('sending');
     console.log(user);
 
-    fetch(url, headersPost(JSON.stringify(user)))
+    fetch(url, postOptions)
       .then(resp => {
         //re-assign cookies from platform authentication
         const cookies = resp.headers.getAll('set-cookie');
