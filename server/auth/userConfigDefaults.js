@@ -27,5 +27,8 @@ export default {
     'seq-viewer': {
       active: true,
     },
+    SequenceDetail: {
+      active: false,
+    },
   },
 };
