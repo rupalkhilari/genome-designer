@@ -1,4 +1,4 @@
-[![Docker Repository on Quay](https://quay.io/repository/autodesk_bionano/genomedesigner_genome-designer/status "Docker Repository on Quay")](https://quay.io/repository/autodesk_bionano/genomedesigner_genome-designer)
+[![Docker Repository on Quay](https://quay.io/repository/autodesk_bionano/gctor_webapp/status "Docker Repository on Quay")](https://quay.io/repository/autodesk_bionano/genomedesigner_genome-designer)
 
 # Genetic Constructor
 
