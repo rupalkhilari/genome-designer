@@ -23,7 +23,7 @@ class RouteWrapper extends Component {
   };
 
   render() {
-    if (this.props.user.userid) {
+    if (!!this.props.user.userid) {
       return React.Children.only(this.props.children);
     }
 

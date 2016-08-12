@@ -27,8 +27,3 @@ export default function loadAllExtensions() {
     })
     .then(() => registry);
 }
-
-//simply import this to kick off loading them all after a moment
-//todo - is this necessary?
-//todo - need to run when user logs in
-setTimeout(loadAllExtensions, 100);

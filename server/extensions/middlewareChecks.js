@@ -24,7 +24,7 @@ export const manifestIsPrivate = (manifest) => {
   return manifest.geneticConstructor.private === true;
 };
 
-//todo (future) - clearer checking / clearer defaults, checking beyond just email
+//future - clearer checking / clearer defaults, checking beyond just email
 export const checkUserExtensionAccess = (extensionManifest, user) => {
   //if not private, anyone can access
   if (!manifestIsPrivate(extensionManifest)) {
