@@ -22,14 +22,15 @@ import invariant from 'invariant';
 import * as rollup from '../data/rollup';
 import { getConfigFromUser } from './utils';
 
+//NOTE - egf_parts vs egf_templates
 import makeEgfRollup from '../../data/egf_parts/index';
 import emptyProjectWithConstruct from '../../data/emptyProject/index';
 
 //while we are using imports, do this statically. todo - use require() for dynamic (will need to reconcile with build eventually, but whatever)
-//these return promises
+//these are parameterized generators of projects, which return promises
 const projectMap = {
-  egf_templates: () => makeEgfRollup(),
-  emptyProject: () => emptyProjectWithConstruct(true),
+  egf_templates: (config, user) => makeEgfRollup(),
+  emptyProject: (config, user) => emptyProjectWithConstruct(true),
 };
 
 //create rollup generators, where first is the one to return as final project ID
@@ -37,25 +38,19 @@ const projectMap = {
 const createGeneratorsInitialProjects = (user) => {
   const config = getConfigFromUser(user);
 
-  const projects = Object.keys(config.projects)
+  const projectGenerators = Object.keys(config.projects)
     .map(projectKey => ({
       id: projectKey,
       ...config.projects[projectKey],
+      generator: projectMap[projectKey],
     }))
-    .filter(projectInfo => projectInfo.access === true)
-    .sort((one, two) => one.default ? -1 : 1);
+    .sort((one, two) => one.default ? -1 : 1)
+    .filter(projectConfig => typeof projectConfig.generator === 'function')
+    .map(projectConfig => () => projectConfig(projectConfig, user));
 
-  invariant(projects.length >= 1, 'must have some default projects, got none. check config for user ' + user.uuid);
+  invariant(projectGenerators.length >= 1, 'must have some default projects, got none. check config for user ' + user.uuid + ' -- ' + Object.keys(config.projects).join(', '));
 
-  //make sure the projects exist, and add generator to the list
-  //todo - should check that this list actually has some length
-  return projects.reduce((acc, projectConfig) => {
-    const gen = projectMap[projectConfig.id];
-    if (gen) {
-      acc.push(() => gen(projectConfig));
-    }
-    return acc;
-  }, []);
+  return projectGenerators;
 };
 
 //create initial projects and set up configuration for them

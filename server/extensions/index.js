@@ -17,16 +17,20 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import { errorDoesNotExist } from '../utils/errors';
 import { clientBundleUrl, defaultClientFilePath } from './constants';
-import { getClientExtensions } from './registry';
+import { getExtensions, getClientExtensions } from './registry';
 import loadExtension, { getExtensionInternalPath } from './loadExtension';
 import errorHandlingMiddleware from '../utils/errorHandlingMiddleware';
 import extensionApiRouter from './apiRouter';
 import {
-  checkUserExtensionVisible,
+  checkUserExtensionActive,
   checkUserExtensionAccess,
   checkExtensionExistsMiddleware,
-  checkUserExtensionAccessMiddleware
+  checkUserExtensionAccessMiddleware,
+  checkExtensionIsClientMiddleware,
+  checkExtensionIsServerMiddleware,
 } from './middlewareChecks';
+import { manifestIsServer, manifestIsClient } from './manifestUtils';
+import { ensureReqUserMiddleware } from '../auth/utils';
 
 //native extensions
 import csvRouter from './native/csv/index';
@@ -38,33 +42,43 @@ const jsonParser = bodyParser.json();
 
 router.use(jsonParser);
 router.use(errorHandlingMiddleware);
+router.use(ensureReqUserMiddleware);
 
 //see all extensions you have access to, e.g. for choosing which to show
 router.get('/listAll', (req, res) => {
-  //in dev, no filtering
-  const filter = (process.env.NODE_ENV !== 'production') ?
+  // in dev, running locally, so dont check - you can see them all.
+  // This way, dont need to add extension to user permissions so can just symlink into node_modules without problem.
+  const accessFilter = (process.env.NODE_ENV !== 'production') ?
     () => true :
     (manifest, key) => {
-      return checkUserExtensionAccess(key, req.user);
+      return checkUserExtensionAccess(manifest, req.user);
     };
 
-  //todo - need to better check which ones they have access to
-  //in dev, running locally, so dont check - you can see them all. This way, dont need to add extension to user permissions so can just symlink into node_modules without problem.
-  //non-dev --- ideally, default? i.e. check manifest, show if not private? how do you grant access? shouldn't have to explicitly say you want access to every extension
-  const clientExtensions = getClientExtensions(filter);
-
-  res.json(clientExtensions);
+  res.json(getExtensions(accessFilter));
 });
 
-//see currently visible extensions
-router.get('/list', (req, res) => {
-  const filter = (manifest, key) => {
-    return checkUserExtensionVisible(key, req.user);
+//see currently visible extensions - client and server, unless pass scope
+router.get('/list/:scope?', (req, res, next) => {
+  const { scope } = req.params;
+
+  let scopeFilter;
+  switch (scope) {
+  case 'client':
+    scopeFilter = manifestIsClient;
+    break;
+  case 'server':
+    scopeFilter = manifestIsServer;
+    break;
+  default:
+    scopeFilter = () => true;
+  }
+
+  const activeFilter = (manifest, key) => {
+    return checkUserExtensionActive(manifest, req.user);
   };
 
-  //todo - may need better default here so symlinked ones show up as visible by default (but not by default ones in registry - how to disambiguate?)
   //filters to extensions which are visible
-  const clientExtensions = getClientExtensions(filter);
+  const clientExtensions = getExtensions(scopeFilter, activeFilter);
 
   res.json(clientExtensions);
 });
@@ -74,7 +88,7 @@ router.get('/manifest/:extension',
   checkUserExtensionAccessMiddleware,
   (req, res, next) => {
     const { extension } = req.params;
-    const manifest = getClientExtensions()[extension];
+    const manifest = getExtensions()[extension];
 
     if (!manifest) {
       return res.status(400).send(errorDoesNotExist);
@@ -83,11 +97,16 @@ router.get('/manifest/:extension',
     return res.json(manifest);
   });
 
+//load extensions
+//only for client extensions
+//dependent on whether in production (only client bundle) or not (send any file)
+
 if (process.env.NODE_ENV !== 'production') {
   //make the whole extension available
   router.get('/load/:extension/:filePath?',
     checkExtensionExistsMiddleware,
     checkUserExtensionAccessMiddleware,
+    checkExtensionIsClientMiddleware,
     (req, res, next) => {
       const { filePath = clientBundleUrl, extension } = req.params;
       const extensionFile = getExtensionInternalPath(extension, filePath);
@@ -108,6 +127,7 @@ if (process.env.NODE_ENV !== 'production') {
   router.get('/load/:extension/:filePath?',
     checkExtensionExistsMiddleware,
     checkUserExtensionAccessMiddleware,
+    checkExtensionIsClientMiddleware,
     (req, res, next) => {
       const { extension } = req.params;
 

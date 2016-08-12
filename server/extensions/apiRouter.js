@@ -18,7 +18,11 @@ import path from 'path';
 import bodyParser from 'body-parser';
 import { getServerExtensions } from './registry';
 import { pruneUserObjectMiddleware } from '../auth/utils';
-import { checkExtensionExistsMiddleware, checkUserExtensionAccessMiddleware } from './middlewareChecks';
+import {
+  checkExtensionExistsMiddleware,
+  checkUserExtensionAccessMiddleware,
+  checkExtensionIsServerMiddleware,
+} from './middlewareChecks';
 
 const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json();
@@ -28,12 +32,17 @@ router.use(jsonParser);
 //todo - test works + always run
 router.use(pruneUserObjectMiddleware);
 
-//ensure extensions exist or 404
-router.all('/:extension/*', checkExtensionExistsMiddleware);
+router.all('/:extension/*',
+  //ensure extensions exist or 404
+  checkExtensionExistsMiddleware,
 
-//ensure user has access
-//todo - test works + always run
-router.all('/:extension/*', checkUserExtensionAccessMiddleware);
+  //ensure user has access
+  //todo - test works + always run
+  checkUserExtensionAccessMiddleware,
+
+  //make sure its a server extension
+  checkExtensionIsServerMiddleware,
+);
 
 /** Route Registering **/
 

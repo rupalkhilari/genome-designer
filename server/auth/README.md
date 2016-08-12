@@ -11,15 +11,13 @@ Onboarding includes:
 {
   projects: {
     <projectKey> : {
-      access: true,
       default: true
     },
     ...
   },
   extensions: {
     <extensionKey> : {
-      access: true,
-      visible: true
+      active: false
     },
     ...
   }
@@ -28,7 +26,7 @@ Onboarding includes:
 
 Can specify one default project, which is loaded when the user logs in
 
-Extensions can be hidden by setting `visible = false`
+Extensions can be deactived / hidden by setting `active = false`
 
 ### Routes
 

@@ -18,28 +18,53 @@ import { errorNoPermission } from '../utils/errors';
 import { getConfigFromUser } from '../auth/utils';
 import { errorExtensionNotFound } from '../utils/errors';
 import extensionRegistry from './registry';
+import { manifestIsServer, manifestIsClient } from './manifestUtils';
 
-export const checkUserExtensionAccess = (extensionKey, user) => {
-  const config = getConfigFromUser(user);
-  const extPrefs = config.extensions[extensionKey];
-  return extPrefs && extPrefs.access === true;
+export const manifestIsPrivate = (manifest) => {
+  return manifest.geneticConstructor.private === true;
 };
 
-export const checkUserExtensionVisible = (extensionKey, user) => {
-  const config = getConfigFromUser(user);
-  const extPrefs = config.extensions[extensionKey];
-  return extPrefs && extPrefs.visible === true;
+//todo (future) - clearer checking / clearer defaults, checking beyond just email
+export const checkUserExtensionAccess = (extensionManifest, user) => {
+  //if not private, anyone can access
+  if (!manifestIsPrivate(extensionManifest)) {
+    return true;
+  }
+
+  //if it's private, check if user is valid
+  const accessConfig = extensionManifest.geneticConstructor.access;
+
+  if (accessConfig) {
+    if (accessConfig.email && user.email.indexOf(accessConfig.email) >= 0) {
+      return true;
+    }
+  }
+  return false;
 };
 
-//check if the extension has been registered, assign req.extensionKey
+//check visibility / not disabled -- by default, they are on
+export const checkUserExtensionActive = (extensionManifest, user) => {
+  //make sure they have access
+  if (!checkUserExtensionAccess(extensionManifest, user)) {
+    return false;
+  }
+
+  // todo - do we want this to be opt in or opt-out?
+  // curently, must be in your manifest, and not set to inactive
+  // this requires that when developing an extension, you add it to your config
+  const extensionKey = extensionManifest.id;
+  const config = getConfigFromUser(user);
+  const extPrefs = config.extensions[extensionKey];
+  return extPrefs && extPrefs.active !== false;
+};
+
+//check if the extension has been registered, assign req.extension and req.extensionManifest
 //expects :extension in the route
 export const checkExtensionExistsMiddleware = (req, res, next) => {
   const { extension } = req.params;
 
   //invariant, since this is not run-time
   invariant(!!extension, 'expected :extension in route params');
-
-  Object.assign(req, { extensionKey: extension });
 
   const extensionManifest = extensionRegistry[extension];
 
@@ -48,6 +73,11 @@ export const checkExtensionExistsMiddleware = (req, res, next) => {
     return res.status(404).send(errorExtensionNotFound);
   }
 
+  Object.assign(req, {
+    extension,
+    extensionManifest,
+  });
+
   //let the route continue
   next();
 };
@@ -55,17 +85,37 @@ export const checkExtensionExistsMiddleware = (req, res, next) => {
 //expects req.extensionKey and req.user to be set, and user to have a config (or valid default)
 //run checkExtensionExistsMiddleware first, which sets extensionKey
 export const checkUserExtensionAccessMiddleware = (req, res, next) => {
-  const { user, extensionKey } = req;
+  const { user, extension, extensionManifest } = req;
   const config = getConfigFromUser(user);
 
+  //should only call these routes when authenticated
+  invariant(user, '[auth extensions permissions] no user on req');
+
   //only should call this middleware when extensionKey exists
-  invariant(extensionKey, '[auth extensions permissions] no extensionKey on req');
+  invariant(extension, '[auth extensions permissions] no extension key on req');
+  invariant(extensionManifest, '[auth extensions permissions] no extensionManifest on req');
 
   //config should always exist, at least returning a default
   invariant(config, '[auth extensions permissions] no user config found for user ' + user.uuid);
 
-  if (checkUserExtensionAccess(extensionKey, config)) {
+  if (checkUserExtensionAccess(extensionManifest, config)) {
     return next();
   }
   return res.status(403).send(errorNoPermission);
+};
+
+export const checkExtensionIsClientMiddleware = (req, res, next) => {
+  const { extension, extensionManifest } = req;
+  if (!manifestIsClient(extensionManifest)) {
+    return res.status(404).send('non-client extension: ' + extension);
+  }
+  next();
+};
+
+export const checkExtensionIsServerMiddleware = (req, res, next) => {
+  const { extension, extensionManifest } = req;
+  if (!manifestIsServer(extensionManifest)) {
+    return res.status(404).send('non-server extension: ' + extension);
+  }
+  next();
 };

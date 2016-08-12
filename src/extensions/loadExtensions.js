@@ -18,7 +18,7 @@ import { registry, registerManifest } from './clientRegistry';
 import { getExtensionsInfo } from '../middleware/extensions';
 
 //for now, build the registry using everything registered on the server, and load automatically
-function loadAllExtensions() {
+export default function loadAllExtensions() {
   getExtensionsInfo()
     .then(manifests => {
       Object.keys(manifests)
@@ -28,6 +28,7 @@ function loadAllExtensions() {
     .then(() => registry);
 }
 
+//simply import this to kick off loading them all after a moment
 //todo - is this necessary?
-//load everything automatically after a moment...
+//todo - need to run when user logs in
 setTimeout(loadAllExtensions, 100);

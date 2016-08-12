@@ -22,6 +22,8 @@ const nodeModulesDir = process.env.BUILD ? 'gd_extensions' : path.resolve(__dirn
 
 const registry = {};
 
+//todo - this should include the 'native' extensions -- these wont show up in registry currently
+
 fs.readdirSync(nodeModulesDir).forEach(packageName => {
   try {
     //skip the test extensions unless we're in the test environment
@@ -51,16 +53,19 @@ export const isRegistered = (name) => {
   return registry.hasOwnProperty(name);
 };
 
-//filter takes arguments (manifest, key), should return true or false
-export const getClientExtensions = (filter = () => true) => {
-  const clients = pickBy(registry, (manifest, key) => manifestIsClient(manifest));
-  return pickBy(clients, filter);
+//each filter takes arguments (manifest, key), should return true or false
+export const getExtensions = (...filters) => {
+  return filters.reduce((acc, filter) => {
+    return pickBy(acc, filter);
+  }, registry);
 };
 
-//filter takes arguments (manifest, key), should return true or false
-export const getServerExtensions = (filter = () => true) => {
-  const servers = pickBy(registry, (manifest, key) => manifestIsServer(manifest));
-  return pickBy(servers, filter);
+export const getClientExtensions = (...filters) => {
+  return getExtensions(manifestIsClient, ...filters);
+};
+
+export const getServerExtensions = (...filters) => {
+  return getExtensions(manifestIsServer, ...filters);
 };
 
 export default registry;

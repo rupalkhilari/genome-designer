@@ -17,7 +17,7 @@ import invariant from 'invariant';
 import * as regions from './regions';
 import { downloadExtension, isDownloaded } from './downloadExtension';
 
-//simply import this to kick off loading them all
+//handle auto-loading extensions
 import './loadExtensions';
 
 //map of extensions

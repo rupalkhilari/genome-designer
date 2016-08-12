@@ -16,21 +16,16 @@
 export default {
   projects: {
     emptyProject: {
-      access: true,
       default: true,
     },
-    egf_templates: {
-      access: true,
-    },
+    egf_templates: {},
   },
   extensions: {
     testClient: {
-      access: true,
-      visible: false,
+      active: false,
     },
     'seq-viewer': {
-      access: true,
-      visible: true,
+      active: true,
     },
   },
 };

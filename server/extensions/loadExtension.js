@@ -34,7 +34,7 @@ export const getExtensionInternalPath = (name, fileName = clientBundleUrl) => {
   const extensionPath = path.resolve(__dirname, `./node_modules/${name}`);
 
   //if requesting the bundle, see if the extension has a preferred route for it, otherwise just use index.js
-  if (fileName === clientBundleUrl) {
+  if (!fileName || typeof fileName !== 'string' || fileName === clientBundleUrl) {
     const manifest = registry[name];
     const client = manifest.geneticConstructor.client || defaultClientFilePath;
     return path.resolve(extensionPath, client);

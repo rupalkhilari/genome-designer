@@ -20,24 +20,22 @@ import userConfigDefaults from './userConfigDefaults';
 import { userConfigKey } from './userConstants';
 
 //validate config on user.data
-//todo - should validate that the projects and extensions exist
+//todo - should validate that the projects and extensions exist, here
 export const validateConfig = (config) => {
   const { projects, extensions } = config;
 
   if (projects !== undefined) {
     invariant(typeof projects === 'object', 'config.projects must be an object');
-    invariant(values(projects).every(projectConfig => projectConfig.access === true || projectConfig.access === false), 'each project configuration must specify access');
   }
 
   if (extensions !== undefined) {
     invariant(typeof extensions === 'object', 'config.extensions must be an object');
-    invariant(values(extensions).every(projectConfig => projectConfig.access === true || projectConfig.access === false), 'each project configuration must specify access');
   }
 
   return true;
 };
 
-export const getConfigFromUser = (user, def = userConfigDefaults) => {
+export const getConfigFromUser = (user = {}, def = userConfigDefaults) => {
   const { data } = user;
   if (!data) {
     return def;
