@@ -13,7 +13,7 @@ addons:
       - g++-4.8
 install:
   - npm install
-  - pip install biopython
+  - pip install --user biopython
 script:
   - npm run lint
   - npm run test
