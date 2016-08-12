@@ -78,3 +78,15 @@ export const logout = () => {
 export const getUser = () => {
   return authFetch(authPath('current-user'), headersGet());
 };
+
+export const getUserConfig = () => {
+  return rejectingFetch('/user/config', headersGet())
+    .then(resp => resp.json());
+};
+
+export const setUserConfig = (newConfig) => {
+  invariant(newConfig && typeof newConfig === 'object', 'must pass a new configuration object');
+
+  return rejectingFetch('/user/config', headersPost(JSON.stringify(newConfig)))
+    .then(resp => resp.json());
+};
