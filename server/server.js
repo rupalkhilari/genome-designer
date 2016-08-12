@@ -55,7 +55,15 @@ app.use(errorHandlingMiddleware);
 
 //HTTP logging middleware
 app.use(morgan('dev', {
-  skip: (req, res) => req.path.indexOf('browser-sync') >= 0 || req.path.indexOf('__webpack') >= 0,
+  skip: (req, res) => {
+    if (req.path.indexOf('browser-sync') >= 0 || req.path.indexOf('__webpack') >= 0) {
+      return true;
+    }
+    if (process.env.NODE_ENV === 'test') {
+      return true;
+    }
+    return false;
+  },
 }));
 
 // view engine setup
