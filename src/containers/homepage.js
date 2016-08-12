@@ -22,6 +22,9 @@ import {
  } from '../actions/ui';
 import '../styles/homepage.css';
 import { projectOpen } from '../actions/projects';
+import {
+  privacy,
+} from '../utils/ui/uiapi';
 
 export default class HomePage extends Component {
   static propTypes = {
@@ -33,6 +36,11 @@ export default class HomePage extends Component {
     params: PropTypes.object.isRequired,
     user: PropTypes.object,
   };
+
+  state = {
+    showCookieWarning: this.showCookieWarning(),
+  };
+
 
   // this route can result from path like 'homepage/signin', 'homepage', 'homepage/register' etc.
   // If the final path is the name of an authorization form we will show it
@@ -67,11 +75,33 @@ export default class HomePage extends Component {
     this.props.uiShowAuthenticationForm('signin');
   }
 
+  /**
+   * used is closing the cookie warnig so update local storage as seen
+   */
+  cookieWarningClosed() {
+    localStorage.setItem('cookie-warning', 'acknowledged');
+    this.setState({
+      showCookieWarning: false,
+    });
+  }
+  // truthy if the cookie warning must be shown
+  showCookieWarning() {
+    return !localStorage.getItem('cookie-warning');
+  }
+
   render() {
+    const warning =  this.state.showCookieWarning ? 'block' : 'none';
     return (
       <div className="homepage">
         <div className="homepage-image-area">
           <img className="homepage-logo" src="/images/homepage/app-logo.png"/>
+          <div className="homepage-cookie-warning" style={{display: warning}}>
+            Genetic Constructor uses cookies to ensure you get the best experience.
+            <a href={privacy} target="_blank">More Information</a>
+            <div onClick={this.cookieWarningClosed.bind(this)} className="homepage-cookie-close">
+              Close
+            </div>
+          </div>
           <img className="homepage-background" src="/images/homepage/tiles.jpg"/>
             <div className="homepage-name">
               <div className="lighter">Autodesk&nbsp;</div>
