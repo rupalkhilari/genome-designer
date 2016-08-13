@@ -1,0 +1,13 @@
+{
+  "name": "examplePrivate",
+  "version": "1.0.0",
+  "description": "This extension is private, except to users whose emails end with @mydomain.com",
+  "geneticConstructor": {
+    "readable": "Private Example",
+    "router": "index.js",
+    "private": true,
+    "access": {
+      "email": "@mydomain.com"
+    }
+  }
+}
