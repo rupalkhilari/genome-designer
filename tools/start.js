@@ -9,6 +9,7 @@ import setup from './setup';
 import clean from './clean';
 import copy from './copy';
 import bundleServer from './bundleServer';
+import { debounce } from 'lodash';
 
 const DEBUG = !process.argv.includes('--release');
 
@@ -78,6 +79,8 @@ async function start() {
     });
     const hotMiddleware = webpackHotMiddleware(clientCompiler);
 
+    const debouncedRunServer = debounce(runServer, 100);
+
     //need to essentially build twice so that browsersync starts with a valid bundle
     //use browsersync and its proxy so that we dont need to explicitly include it in server code, only when debugging...
     //also allows us to watch static assets
@@ -134,7 +137,7 @@ async function start() {
             }
             if (eventsCareAbout.includes(evt)) {
               console.log('webpack watch:', evt, path);
-              runServer();
+              debouncedRunServer();
             }
           };
 
@@ -145,9 +148,6 @@ async function start() {
 
           //wait for initial scan to complete then listen for events
           watcher.on('ready', () => watcher.on('all', handleChange));
-
-          //simple watch for plugins for now, intend to deprecate when merge extensions + plugins into the extension folder
-          bs.watch('plugins/**/*').on('change', () => runServer());
 
           //reassign so that we arent creating multiple browsersync entities, or rebuilding over and over
           handleServerBundleComplete = () => {};
