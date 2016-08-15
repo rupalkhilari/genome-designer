@@ -12,8 +12,8 @@ addons:
     - ubuntu-toolchain-r-test
     packages:
     - g++-4.8
-before_install:
-- ./tools/travis-ci-fsharp.sh
+# before_install:
+# - ./tools/travis-ci-fsharp.sh
 install:
 - npm install
 - pip install --user biopython
