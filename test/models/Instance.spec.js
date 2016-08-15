@@ -19,6 +19,7 @@ describe('Model', () => {
         const scaffold = InstanceSchema.scaffold();
         const massaged = Object.assign({}, scaffold, {
           id: inst.id,
+          created: inst.created,
         });
         expect(inst).to.eql(massaged);
         assert(typeof inst.metadata === 'object', 'should have metadata field');
