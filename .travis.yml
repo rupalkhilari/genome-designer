@@ -12,8 +12,8 @@ addons:
     packages:
     - g++-4.8
 before_install:
-- mozroots --import --sync
 - apt-get install mono-complete fsharp
+- mozroots --import --sync
 install:
 - npm install
 - pip install --user biopython
