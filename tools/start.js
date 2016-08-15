@@ -9,6 +9,7 @@ import setup from './setup';
 import clean from './clean';
 import copy from './copy';
 import bundleServer from './bundleServer';
+import { debounce } from 'lodash';
 
 const DEBUG = !process.argv.includes('--release');
 
@@ -78,6 +79,8 @@ async function start() {
     });
     const hotMiddleware = webpackHotMiddleware(clientCompiler);
 
+    const debouncedRunServer = debounce(runServer, 100);
+
     //need to essentially build twice so that browsersync starts with a valid bundle
     //use browsersync and its proxy so that we dont need to explicitly include it in server code, only when debugging...
     //also allows us to watch static assets
@@ -107,26 +110,34 @@ async function start() {
             },
           }, resolve);
 
-          //helpers for events listening
-          const eventsCareAbout = ['add', 'change', 'unlink', 'addDir', 'unlinkDir'];
-          const handleChange = (evt, path, stat) => {
-            if (!eventsCareAbout.indexOf(evt) >= 0) {
-              return;
-            }
-            console.log(evt, path);
-            runServer();
-          };
+          //todo - we want ton only recompile once per batch of changes - currently every single file change will trigger a build. Maybe just debounce?
           const ignoreDotFilesAndNestedNodeModules = /([\/\\]\.)|(node_modules\/.*?\/node_modules)/gi;
+          const checkSymlinkedNodeModule = /(.*?\/)?extensions\/.*?\/node_modules/;
+          const checkIsInServerExtensions = /^server\//;
           const ignoreFilePathCheck = (path) => {
-            console.log(path);
             if (ignoreDotFilesAndNestedNodeModules.test(path)) {
               return true;
             }
-            //ignore node_modules for things in the root /extensions/ folder
-            //additional check to handle symlinked files (nested node modules wont pick this up in symlinks)
-            //ugly because javascript doesnt support negative lookaheads
-            if (/(.*?\/)?extensions\/.*?\/node_modules/.test(path) && (typeof RegExp.$1 === 'string' && RegExp.$1.substring(-6) !== 'server')) {
+            //ignore jetbrains temp filesystem
+            if (/__jb_/ig.test(path)) {
               return true;
+            }
+            //ignore node_modules for things in the root server/extensions/ folder
+            //additional check needed to handle symlinked files (nested node modules wont pick this up in symlinks)
+            //ugly because javascript doesnt support negative lookaheads
+            if (checkSymlinkedNodeModule.test(path) && checkIsInServerExtensions.test(path)) {
+              return true;
+            }
+          };
+
+          const eventsCareAbout = ['add', 'change', 'unlink', 'addDir', 'unlinkDir'];
+          const handleChange = (evt, path, stat) => {
+            if (ignoreFilePathCheck(path)) {
+              return;
+            }
+            if (eventsCareAbout.includes(evt)) {
+              console.log('webpack watch:', evt, path);
+              debouncedRunServer();
             }
           };
 
@@ -137,9 +148,6 @@ async function start() {
 
           //wait for initial scan to complete then listen for events
           watcher.on('ready', () => watcher.on('all', handleChange));
-
-          //simple watch for plugins for now, intend to deprecate when merge extensions + plugins into the extension folder
-          bs.watch('plugins/**/*').on('change', () => runServer());
 
           //reassign so that we arent creating multiple browsersync entities, or rebuilding over and over
           handleServerBundleComplete = () => {};

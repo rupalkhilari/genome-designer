@@ -204,8 +204,11 @@ export default class Layout {
           listParentNode: parentNode,
         });
     } else {
-      // update all the list items
-      let focusedOptionRendered = false;
+      // find the index of the focused list option, or default the first one
+      let focusedIndex = enabled.findIndex(blockId => focusedOptionId === blockId);
+      if (focusedIndex < 0) {
+        focusedIndex = 0;
+      }
       enabled.forEach((blockId, index) => {
         // ensure we have a hash of list nodes for this block.
         let nodes = this.listNodes[block.id];
@@ -231,18 +234,9 @@ export default class Layout {
           listParentBlock: block,
           listParentNode: this.nodeFromElement(block.id),
           listBlock,
-          optionSelected: focusedOptionId === blockId,
+          optionSelected: index === focusedIndex,
         });
-        if (focusedOptionId === blockId) {
-          focusedOptionRendered = true;
-        }
       });
-      // if the enabled set of options does not contain the focused option
-      // then focus the first option. This will cause a re-render and would be
-      // better performed in the data store but here will do for now.
-      if (!focusedOptionRendered) {
-        this.constructViewer.optionSelected(block.id, enabled[0])
-      }
     }
   }
 
@@ -462,17 +456,18 @@ export default class Layout {
       if (this.construct.isTemplate()) {
         text += '<span style="color:gray">&nbsp;Template</span>';
       }
-      const width = this.titleNode.measureText(text).x + kT.textPad + kT.contextDotsW;
+      this.titleNodeTextWidth = this.titleNode.measureText(text).x + kT.textPad;
 
       this.titleNode.set({
         text: text,
         color: this.baseColor,
-        bounds: new Box2D(this.insetX, this.insetY + kT.bannerHeight, width, kT.titleH),
+        bounds: new Box2D(this.insetX, this.insetY + kT.bannerHeight, this.sceneGraph.availableWidth - this.insetX - kT.rightPad, kT.titleH),
+        dataAttribute: {name: 'construct-title', value: text},
       });
 
       // set dots to the right of the text
       this.titleNodeDots.set({
-        bounds: new Box2D(width - kT.contextDotsW, (kT.titleH - kT.contextDotsH) / 2, kT.contextDotsW, kT.contextDotsH),
+        bounds: new Box2D(this.titleNodeTextWidth, (kT.titleH - kT.contextDotsH) / 2, kT.contextDotsW, kT.contextDotsH),
         visible: this.titleNode.hover,
         dotColor: this.baseColor,
       });

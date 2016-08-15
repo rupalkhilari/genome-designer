@@ -1,29 +1,33 @@
 /*
-Copyright 2016 Autodesk,Inc.
+ Copyright 2016 Autodesk,Inc.
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
 import invariant from 'invariant';
 import BlockSchema from '../schemas/Block';
-import { values, flatten } from 'lodash';
+import { values, flatten, get as pathGet, pickBy } from 'lodash';
 import saveCombinations from '../utils/generators/orderConstructs';
+
+const assertBlockExists = (block, blockId) => invariant(block && block.metadata, 'no block exists for block ID ' + blockId);
 
 /***************************************
  * Parent accessing / store knowledge-requiring
  ***************************************/
 
 const _getBlockFromStore = (blockId, store) => {
-  return store.blocks[blockId] || null;
+  const block = store.blocks[blockId] || null;
+  assertBlockExists(block, blockId);
+  return block;
 };
 
 const _getParentFromStore = (blockId, store, def = null) => {
@@ -32,6 +36,15 @@ const _getParentFromStore = (blockId, store, def = null) => {
     return block.components.indexOf(blockId) > -1;
   });
   return !!id ? store.blocks[id] : def;
+};
+
+//ommitting constructId will just return first found list owner
+const _getListOwnerFromStore = (optionId, constructId, store) => {
+  const block = _getBlockFromStore(optionId, store); //assert option is in the store
+  const contents = !!constructId ? _getAllContents(constructId, store) : store.blocks;
+  return Object.keys(contents)
+    .map(blockId => contents[blockId])
+    .find(block => block.options.hasOwnProperty(optionId));
 };
 
 //todo - move to object
@@ -81,6 +94,12 @@ const _getAllOptions = (rootId, store, includeUnselected) => {
   }, {});
 };
 
+const _getAllContents = (rootId, state) => {
+  const options = _getAllOptions(rootId, state);
+  const components = _getAllComponents(rootId, state).reduce((acc, block) => Object.assign(acc, { [block.id]: block }), {});
+  return Object.assign(options, components);
+};
+
 const _filterToLeafNodes = (blocks) => blocks.filter(child => !child.components.length);
 
 const _getParents = (blockId, state) => {
@@ -126,9 +145,26 @@ const _flattenConstruct = (blockId, state) => {
   ));
 };
 
+//e.g. _getWithFieldValue('metadata.name', 'my block', state)
+const _getWithFieldValue = (path, value, store) => {
+  return pickBy(store.blocks, (block) => pathGet(block, path) === value);
+};
+
 export const blockGet = (blockId) => {
   return (dispatch, getState) => {
     return _getBlockFromStore(blockId, getState());
+  };
+};
+
+export const blockGetBlocksWithName = (name) => {
+  return (dispatch, getState) => {
+    return _getWithFieldValue('metadata.name', name, getState());
+  };
+};
+
+export const blockGetParent = (blockId) => {
+  return (dispatch, getState) => {
+    return _getParentFromStore(blockId, getState());
   };
 };
 
@@ -136,8 +172,7 @@ export const blockGet = (blockId) => {
 //returns blocks, not ids
 export const blockGetParents = (blockId) => {
   return (dispatch, getState) => {
-    const store = getState();
-    return _getParents(blockId, store);
+    return _getParents(blockId, getState());
   };
 };
 
@@ -171,15 +206,13 @@ export const blockGetOptionsRecursive = (blockId) => {
 //returns object
 export const blockGetContentsRecursive = (blockId) => {
   return (dispatch, getState) => {
-    const state = getState();
-    const options = _getAllOptions(blockId, state);
-    const components = _getAllComponents(blockId, state).reduce((acc, block) => Object.assign(acc, { [block.id]: block }), {});
-    return Object.assign(options, components);
+    return _getAllContents(blockId, getState());
   };
 };
 
 //get all non-constructs
 //todo - move to object
+//todo - include list blocks
 export const blockGetLeaves = (blockId) => {
   return (dispatch, getState) => {
     return _filterToLeafNodes(_getAllComponents(blockId, getState()));
@@ -194,32 +227,56 @@ export const blockGetSiblings = (blockId) => {
 };
 
 //this could be optimized...
-const _getBoundingBlocks = (state, ...blockIds) => {
-  const construct = _getParentFromStore(blockIds[0], state);
-  if (!construct) {
+const _nearestParent = (state, ...blockIds) => {
+  if (blockIds.length === 1) {
+    return _getBlockFromStore(blockIds[0], state);
+  }
+
+  //map block IDs to arrays of parents
+  const parentsMap = blockIds.reduce((acc, blockId) => Object.assign(acc, { [blockId]: _getParents(blockId, state) }), {});
+
+  //if any block is detached (doesn't have a parent) and not the current construct ID, return null
+  //todo - check if any construct, not the currently focused one
+  if (Object.keys(parentsMap).some(blockId => {
+    const parents = parentsMap[blockId];
+    return parents.length === 0 && state.focus.constructId !== blockId;
+  })) {
     return null;
   }
-  const depthMap = _getAllComponentsByDepth(construct.id, state);
-  const idsToDepth = blockIds.reduce((acc, id) => Object.assign(acc, { [id]: depthMap[id] }), {});
-  const highestLevel = blockIds.reduce((acc, id) => Math.min(acc, idsToDepth[id]), Number.MAX_VALUE);
-  const blocksIdsAtHighest = blockIds.filter(id => idsToDepth[id] === highestLevel);
-  const highSiblings = _getSiblings(blocksIdsAtHighest[0], state);
 
-  //dumb search of all children of siblings to see if focused block present
-  const relevantSiblings = highSiblings.filter(sibling => {
-    if (blockIds.indexOf(sibling.id) >= 0) {
+  //figure out the nearest common parent by iterating through all the parent lists
+  let lastParents = parentsMap[blockIds[0]];
+  for (let index = 1; index < blockIds.length; index++) {
+    const nextParents = parentsMap[blockIds[index]];
+    const nearestLastParent = lastParents.find(parent => nextParents.some(nextParent => nextParent.id === parent.id));
+    const nextOverlapStartIndex = nextParents.findIndex(parent => parent.id === nearestLastParent.id);
+    const nextOverlap = nextParents.slice(nextOverlapStartIndex);
+    lastParents = nextOverlap;
+  }
+  return lastParents[0];
+};
+
+//this could be optimized...
+const _getBoundingBlocks = (state, ...blockIds) => {
+  const nearestParent = _nearestParent(state, ...blockIds);
+
+  if (blockIds.length === 1 || nearestParent.components.length < 1) {
+    return [nearestParent, nearestParent];
+  }
+
+  const components = nearestParent.components.map(blockId => _getBlockFromStore(blockId, state));
+
+  const findComponentWithBlock = (component) => {
+    if (blockIds.indexOf(component.id) >= 0) {
       return true;
     }
-    const kids = _getAllComponents(sibling.id, state);
+    const kids = _getAllComponents(component.id, state);
     return kids.some(kid => blockIds.indexOf(kid.id) >= 0);
-  });
-  const relevantSiblingIds = relevantSiblings.map(sib => sib.id);
+  };
+  const left = components.find(findComponentWithBlock);
+  const right = components.reverse().find(findComponentWithBlock);
 
-  //get the bounds of highest level siblings: [firstId, lastId]
-  return [
-    highSiblings.find(sib => relevantSiblingIds.indexOf(sib.id) >= 0),
-    highSiblings.slice().reverse().find(sib => relevantSiblingIds.indexOf(sib.id) >= 0),
-  ];
+  return [left, right];
 };
 
 export const blockGetBounds = (...blockIds) => {
@@ -279,6 +336,33 @@ export const blockHasSequence = blockId => {
   return (dispatch, getState) => {
     const block = _getBlockFromStore(blockId, getState());
     return !!block && block.hasSequence();
+  };
+};
+
+//constructId is required as list options may exist in multiple places within a project - should be lowest known parent
+export const blockGetListOwner = (optionId, constructId) => {
+  return (dispatch, getState) => {
+    return _getListOwnerFromStore(optionId, constructId, getState());
+  };
+};
+
+export const blockIsListOption = (optionId, constructId, returnParentId = false) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const block = _getBlockFromStore(optionId, state);
+
+    //basic checks
+    if (block.isConstruct() || block.isList()) {
+      return false;
+    }
+
+    const listOwner = _getListOwnerFromStore(optionId, constructId, state);
+
+    if (!listOwner) {
+      return false;
+    }
+
+    return !!returnParentId ? listOwner.id : true;
   };
 };
 
@@ -369,16 +453,16 @@ export const blockGetCombinations = (blockId, onlyIds, includeUnselected) => {
     const positions = dispatch(blockGetPositionalCombinations(blockId, onlyIds, includeUnselected));
 
     /*
-    //guarantee both accumulator (and positions) array have at least one item to map over
-    const last = positions.pop();
-    //iterate through positions, essentially generating tree with * N branches for N options at position
-    const combos = positions.reduceRight((acc, position) => {
-      // for each extant construct, create one variant which adds each part respectively
-      // flatten them for return and repeat!
-      return flatten(position.map(option => acc.map(partialConstruct => [option].concat(partialConstruct))));
-    }, [last]);
-    return combos;
-    */
+     //guarantee both accumulator (and positions) array have at least one item to map over
+     const last = positions.pop();
+     //iterate through positions, essentially generating tree with * N branches for N options at position
+     const combos = positions.reduceRight((acc, position) => {
+     // for each extant construct, create one variant which adds each part respectively
+     // flatten them for return and repeat!
+     return flatten(position.map(option => acc.map(partialConstruct => [option].concat(partialConstruct))));
+     }, [last]);
+     return combos;
+     */
 
     const combinations = [];
     saveCombinations(positions, combinations);
@@ -396,8 +480,10 @@ export const blockFlattenConstructAndLists = (blockId) => {
       const preference = optionPreferences[block.id];
       return (block.isList() && options.length) ?
         //give the block a color if in a list - technically the block in the store but all immutable so whatever
-        //hack - clone it because technically frozen
-        state.blocks[preference || options[0]].clone(false).merge({ metadata: { color: block.metadata.color } }) :
+        //clone it because technically frozen
+        state.blocks[preference || options[0]]
+          .clone(null)
+          .merge({ metadata: { color: block.metadata.color } }) :
         block;
     });
   };

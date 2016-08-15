@@ -57,6 +57,7 @@
     opacity: 0.5;
     flex-shrink: 0;
     align-self: flex-start;
+    user-select: none;
   }
 
   &-glyph:not(:empty) {

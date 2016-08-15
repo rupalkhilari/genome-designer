@@ -15,9 +15,15 @@ limitations under the License.
 */
 import * as BlockSelector from './blocks';
 
+const _getCurrentProjectId = () => {
+  const match = /^\/project\/(.*?)\??$/gi.exec(window.location.pathname);
+  return match ? match[1] : null;
+};
+
 //todo - this should not be exposed as part of 3rd party API... exported so inspector can share
 export const _getFocused = (state, defaultToConstruct = true, defaultProjectId = null) => {
-  const { level, forceProject, forceBlocks, projectId, constructId, blockIds, options, roleId } = state.focus;
+  const { level, forceProject, forceBlocks, constructId, blockIds, options, roleId } = state.focus;
+  const projectId = _getCurrentProjectId();
 
   if (level === 'role') {
     return {
@@ -41,9 +47,9 @@ export const _getFocused = (state, defaultToConstruct = true, defaultProjectId =
 
   if (level === 'project' || (!construct && !blocks.length)) {
     focused = project;
-    readOnly = !!forceProject || project.isSample;
+    readOnly = !!forceProject || !!project.isSample;
     type = 'project'; //override in case here because construct / blocks unspecified
-  } else if (level === 'construct' || (defaultToConstruct === true && construct && !blocks.length)) {
+  } else if (level === 'construct' && construct || (defaultToConstruct === true && construct && !blocks.length)) {
     focused = [construct];
     readOnly = construct.isFrozen();
   } else if (level === 'option' && option) {
@@ -71,11 +77,12 @@ export const focusGetFocused = (defaultToConstruct = true, defaultProjectId = nu
 
 export const focusGetProject = () => {
   return (dispatch, getState) => {
-    const { forceProject, projectId } = getState().focus;
+    const { forceProject } = getState().focus;
     if (forceProject) {
       return forceProject;
     }
-    return getState().projects[projectId];
+    const projectId = _getCurrentProjectId();
+    return !!projectId ? getState().projects[projectId] : null;
   };
 };
 

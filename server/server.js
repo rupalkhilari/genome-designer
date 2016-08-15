@@ -22,12 +22,10 @@ import dataRouter from './data/index';
 import orderRouter from './order/index';
 import fileRouter from './file/index';
 import extensionsRouter from './extensions/index';
+import reportRouter from './report/index';
 import bodyParser from 'body-parser';
 import errorHandlingMiddleware from './utils/errorHandlingMiddleware';
 import checkUserSetup from './auth/userSetup';
-
-import importRouter from '../plugins/convert/import';
-import exportRouter from '../plugins/convert/export';
 
 const DEFAULT_PORT = 3000;
 const port = parseInt(process.argv[2], 10) || process.env.PORT || DEFAULT_PORT;
@@ -39,6 +37,7 @@ const createBuildPath = (isBuild, notBuild = isBuild) => {
   return path.join(__dirname, (process.env.BUILD ? isBuild : notBuild));
 };
 const pathContent = createBuildPath('content', '../src/content');
+const pathDocs = createBuildPath('jsdoc', '../docs/jsdoc/genetic-constructor/0.5.0');
 const pathImages = createBuildPath('images', '../src/images');
 const pathPublic = createBuildPath('public', '../src/public');
 const pathClientBundle = createBuildPath('client.js', '../build/client.js');
@@ -56,7 +55,15 @@ app.use(errorHandlingMiddleware);
 
 //HTTP logging middleware
 app.use(morgan('dev', {
-  skip: (req, res) => req.path.indexOf('browser-sync') >= 0 || req.path.indexOf('__webpack') >= 0,
+  skip: (req, res) => {
+    if (req.path.indexOf('browser-sync') >= 0 || req.path.indexOf('__webpack') >= 0) {
+      return true;
+    }
+    if (process.env.NODE_ENV === 'test') {
+      return true;
+    }
+    return false;
+  },
 }));
 
 // view engine setup
@@ -103,10 +110,7 @@ app.use('/data', dataRouter);
 app.use('/order', orderRouter);
 app.use('/file', fileRouter);
 app.use('/extensions', extensionsRouter);
-
-//extensions
-app.use('/import', importRouter);
-app.use('/export', exportRouter);
+app.use('/report', reportRouter);
 
 // Register Client Requests, delegate routing to client
 // ----------------------------------------------------
@@ -114,6 +118,7 @@ app.use('/export', exportRouter);
 //Static Files
 app.use(express.static(pathPublic));
 app.use('/images', express.static(pathImages));
+app.use('/help/docs', express.static(pathDocs));
 
 app.get('/version', (req, res) => {
   try {
