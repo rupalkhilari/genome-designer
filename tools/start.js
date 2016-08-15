@@ -122,10 +122,6 @@ async function start() {
             if (/__jb_/ig.test(path)) {
               return true;
             }
-            //hack - ignore GSL 
-            if (path.indexOf('GSL') >= 0) {
-              return true;
-            }
             //ignore node_modules for things in the root server/extensions/ folder
             //additional check needed to handle symlinked files (nested node modules wont pick this up in symlinks)
             //ugly because javascript doesnt support negative lookaheads
