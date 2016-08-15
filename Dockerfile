@@ -22,6 +22,9 @@ RUN yes | pip install biopython
 
 RUN pip install awscli
 
+#temp - instal fsharp
+RUN apt-get install mono-complete fsharp
+
 EXPOSE 3000
 ENV PORT=3000
 
