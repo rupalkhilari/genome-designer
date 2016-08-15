@@ -1,6 +1,8 @@
 import { exec, spawn } from 'child_process';
 import path from 'path';
 
+//todo - have a check to make sure docker is running
+
 /** paths **/
 
 const pathProjectRoot = path.resolve(__dirname, '../');
@@ -103,43 +105,27 @@ const spawnWaitUntilString = (cmd, args, opts, {
 
 let dockerEnv;
 
-const setupBioNanoPlatform = () => {
-  return promisedExec(`git checkout genome-designer`,
-    { cwd: pathBioNanoPlatform }
-  )
+const setupBioNanoPlatform = (useGenomeDesignerBranch = false) => {
+  const checkoutPromise = useGenomeDesignerBranch == true ?
+    promisedExec(`git checkout genome-designer`,
+      { cwd: pathBioNanoPlatform }
+    ) :
+    Promise.resolve();
+
+  return checkoutPromise
     .then(() => promisedExec(`npm install`,
       { cwd: pathBioNanoPlatform }
     ));
 };
 
 const startBioNanoPlatform = () => {
-  return spawnWaitUntilString('bash',
-    ['/Applications/Docker/Docker\ Quickstart\ Terminal.app/Contents/Resources/Scripts/start.sh'],
-    { cwd: pathBioNanoPlatform },
-    { waitUntil: 'For help getting started,' }
-  )
-    .then(() => promisedExec(`docker-machine env default --shell=bash`,
-      { cwd: pathBioNanoPlatform }
-    ))
-    .then((stdout, stderr) => {
-      //manually handle docker-machine ENV and insert it, since spawn chaining commands complains
-      dockerEnv = stdout.split('\n')
-        .slice(0, 4)
-        .map(line => line.substr(7))
-        .map(line => line.replace(/\"/g, ''))
-        .reduce((acc, line) => {
-          const [ key, value ] = line.split('=');
-          return Object.assign(acc, { [key]: value });
-        }, {});
-
-      return spawnWaitUntilString('npm', ['run', 'storage-background'],
-        {
-          cwd: pathBioNanoPlatform,
-          env: Object.assign({}, process.env, dockerEnv),
-        },
-        { waitUntil: 'database system is ready to accept connections' }
-      );
-    });
+  return spawnWaitUntilString('npm', ['run', 'storage-background'],
+    {
+      cwd: pathBioNanoPlatform,
+      env: Object.assign({}, process.env, dockerEnv),
+    },
+    { waitUntil: 'database system is ready to accept connections' }
+  );
 };
 
 const startAuthServer = () => {
