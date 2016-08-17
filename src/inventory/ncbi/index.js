@@ -109,7 +109,11 @@ const getSummary = (...ids) => {
       //return array of results
       return Object.keys(results).map(key => results[key]);
     })
-    .then(results => results.map(result => parseSummary(result)))
+    .then(results => results
+      .map(result => parseSummary(result))
+      //filter out results more than a megabase since we cant handle them very well
+      .filter(summary => summary.sequence.length < 1000000)
+    )
     .catch(err => {
       console.log(err);
       throw err;
@@ -158,7 +162,7 @@ export const search = (query, options = {}) => {
   //parameters we support, in this format
   const parameters = Object.assign({
     start: 0,
-    entries: 20,
+    entries: 35,
   }, options);
 
   //mapped to NCBI syntax
