@@ -141,6 +141,7 @@ app.get('*', (req, res) => {
     //so that any routing is delegated to the client
     res.render(path.join(pathContent + '/index.pug'), Object.assign({}, req.user, discourse, {
       productionEnvironment: process.env.NODE_ENV === 'production',
+      buildEnvironment: process.env.BUILD_ENV,
     }));
   }
 });
