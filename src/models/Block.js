@@ -674,7 +674,7 @@ export default class Block extends Instance {
     invariant(this.hasSequence(), 'must have a sequence to set trim');
     invariant(Number.isInteger(start) && start >= 0, 'must pass 0 or positive integer for start');
     invariant(Number.isInteger(end) && end >= 0, 'must pass 0 or positive integer for end');
-    invariant(start <= (this.sequence.length - 1) && end <= (this.sequence.length - 1), 'start and end must be less than length of sequence');
+    invariant((start <= (this.sequence.length - 1)) && (end <= (this.sequence.length - 1)), 'start and end must be less than length of sequence');
 
     return this.merge({
       sequence: {
