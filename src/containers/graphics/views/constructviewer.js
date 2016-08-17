@@ -1,18 +1,18 @@
 /*
-Copyright 2016 Autodesk,Inc.
+ Copyright 2016 Autodesk,Inc.
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import SceneGraph2D from '../scenegraph2d/scenegraph2d';
@@ -24,6 +24,8 @@ import {
   blockCreate,
   blockDelete,
   blockDetach,
+  blockSetAuthoring,
+  blockSetListBlock,
   blockAddComponent,
   blockAddComponents,
   blockClone,
@@ -90,6 +92,8 @@ export class ConstructViewer extends Component {
     blockCreate: PropTypes.func,
     blockGetParent: PropTypes.func,
     blockClone: PropTypes.func,
+    blockSetAuthoring: PropTypes.func,
+    blockSetListBlock: PropTypes.func,
     blockAddComponent: PropTypes.func,
     blockAddComponents: PropTypes.func,
     blockDetach: PropTypes.func,
@@ -277,7 +281,7 @@ export class ConstructViewer extends Component {
    * Join the given block with any other selected block in the same
    * construct level and select them all
    */
-   blockAddToSelectionsRange(partId, currentSelections) {
+  blockAddToSelectionsRange(partId, currentSelections) {
     // get all the blocks at the same level as this one
     const levelBlocks = (this.props.blockGetParents(partId)[0]).components;
     // find min/max index of these blocks if they are in the currentSelections
@@ -364,28 +368,43 @@ export class ConstructViewer extends Component {
    * menu items for blocks context menu, can get merged with construct context menu
    */
   blockContextMenuItems = () => {
+    const singleBlock = this.props.focus.blockIds.length === 1;
+    const firstBlock = this.props.blocks[this.props.focus.blockIds[0]];
+    const isAuthoring = this.props.construct.isAuthoring();
+
+    const authoringListItems = singleBlock && isAuthoring ? [
+      {
+        text: `Convert to ${firstBlock.isList() ? ' Normal Block' : ' List Block'}`,
+        disabled: !singleBlock,
+        action: () => {
+          this.props.blockSetListBlock(firstBlock.id, !firstBlock.isList());
+        },
+      },
+    ] : [];
+
     return [
       {
         text: 'Inspect Block',
-        disabled: this.props.focus.blockIds.length !== 1,
+        disabled: !singleBlock,
         action: () => {
           this.openInspector();
         },
       },
       {
-        text: 'Delete Block',
-        disabled: this.props.construct.isFixed() || this.props.construct.isFrozen(),
+        text: `Delete ${singleBlock ? 'Block' : 'Blocks'}`,
+        disabled: !isAuthoring && (this.props.construct.isFixed() || this.props.construct.isFrozen()),
         action: () => {
           this.removePartsList(this.sg.ui.selectedElements);
         },
       },
       {
         text: 'Import DNA Sequence',
-        disabled: this.props.focus.blockIds.length !== 1 || (this.props.construct.isFixed() || this.props.construct.isFrozen()),
+        disabled: !singleBlock || (!isAuthoring && (this.props.construct.isFixed() || this.props.construct.isFrozen())),
         action: () => {
           this.props.uiShowDNAImport(true);
         },
       },
+      ...authoringListItems,
     ];
   };
 
@@ -405,6 +424,15 @@ export class ConstructViewer extends Component {
    */
   constructContextMenuItems = () => {
     const typeName = this.props.construct.getType('Construct');
+    const templateItems = this.props.construct.isTemplate() ? [
+      {
+        text: `${this.props.construct.isAuthoring() ? 'End Authoring' : 'Author'} ${typeName}`,
+        action: () => {
+          this.props.blockSetAuthoring(this.props.construct.id, !this.props.construct.isAuthoring());
+        },
+      },
+    ] : [];
+
     return [
       {
         text: `Inspect ${typeName}`,
@@ -435,6 +463,7 @@ export class ConstructViewer extends Component {
           this.props.focusConstruct(clone.id);
         },
       },
+      ...templateItems,
     ];
   };
 
@@ -634,6 +663,8 @@ export default connect(mapStateToProps, {
   blockDelete,
   blockDetach,
   blockClone,
+  blockSetAuthoring,
+  blockSetListBlock,
   blockAddComponent,
   blockAddComponents,
   blockRemoveComponent,

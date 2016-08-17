@@ -41,7 +41,7 @@ export class Inspector extends Component {
   };
 
   render() {
-    const { showingGrunt, isVisible, focused, orders, type, readOnly, forceIsConstruct } = this.props;
+    const { showingGrunt, isVisible, focused, orders, type, readOnly, forceIsConstruct, isAuthoring } = this.props;
 
     // inspect instances, or construct if no instance or project if no construct or instances
     let inspect;
@@ -59,6 +59,7 @@ export class Inspector extends Component {
       inspect = (<InspectorBlock instances={focused}
                                  orders={orders}
                                  readOnly={readOnly}
+                                 isAuthoring={isAuthoring}
                                  forceIsConstruct={forceIsConstruct}/>);
       break;
     }
@@ -101,6 +102,9 @@ function mapStateToProps(state, props) {
   const forceIsConstruct = (level === 'construct') ||
     blockIds.some(blockId => currentProject.components.indexOf(blockId) >= 0);
 
+  //todo - check the construct, and check construct if a block
+  const isAuthoring = true;
+
   const orders = Object.keys(state.orders)
     .map(orderId => state.orders[orderId])
     .filter(order => order.projectId === currentProject.id && order.isSubmitted())
@@ -114,6 +118,7 @@ function mapStateToProps(state, props) {
     focused,
     forceIsConstruct,
     orders,
+    isAuthoring,
   };
 }
 

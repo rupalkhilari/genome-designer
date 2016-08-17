@@ -456,6 +456,9 @@ export default class Layout {
       if (this.construct.isTemplate()) {
         text += '<span style="color:gray">&nbsp;Template</span>';
       }
+      if (this.construct.isAuthoring()) {
+        text += '<span style="color:gray">&nbsp;(Authoring)</span>';
+      }
       this.titleNodeTextWidth = this.titleNode.measureText(text).x + kT.textPad;
 
       this.titleNode.set({

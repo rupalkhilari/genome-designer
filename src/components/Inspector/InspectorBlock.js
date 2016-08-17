@@ -37,6 +37,7 @@ export class InspectorBlock extends Component {
         return new Error('Must pass valid instances of blocks to the inspector, got ' + JSON.stringify(instance));
       }
     }).isRequired,
+    isAuthoring: PropTypes.bool.isRequired,
     orders: PropTypes.array.isRequired,
     blockSetColor: PropTypes.func.isRequired,
     blockSetRole: PropTypes.func.isRequired,
@@ -179,7 +180,7 @@ export class InspectorBlock extends Component {
   }
 
   render() {
-    const { instances, orders, readOnly, forceIsConstruct } = this.props;
+    const { instances, orders, readOnly, forceIsConstruct, isAuthoring } = this.props;
     const singleInstance = instances.length === 1;
     const isList = singleInstance && instances[0].isList();
     const isTemplate = singleInstance && instances[0].isTemplate();
@@ -187,7 +188,7 @@ export class InspectorBlock extends Component {
     const inputKey = instances.map(inst => inst.id).join(',');
     const anyIsConstructOrTemplateOrList = instances.some(instance => instance.isConstruct() || instance.isTemplate() || instance.isList());
 
-    const name = singleInstance ? instances[0].getType() : 'Block';
+    const type = singleInstance ? instances[0].getType() : 'Block';
 
     const currentSourceElement = this.currentSource();
     const annotations = this.currentAnnotations();
@@ -200,7 +201,7 @@ export class InspectorBlock extends Component {
     return (
       <div className="InspectorContent InspectorContentBlock">
 
-        <InspectorRow heading={name}>
+        <InspectorRow heading={type}>
           <InputSimple refKey={inputKey}
                        placeholder={this.currentName(true) || 'Enter a name'}
                        readOnly={readOnly}
@@ -236,7 +237,7 @@ export class InspectorBlock extends Component {
         </InspectorRow>
 
         {/* todo - this should have its own component */}
-        <InspectorRow heading={ name + ' Metadata'}
+        <InspectorRow heading={ type + ' Metadata'}
                       hasToggle
                       condition={hasNotes}>
           <div className="InspectorContent-section">
