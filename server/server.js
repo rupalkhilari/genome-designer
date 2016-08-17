@@ -88,10 +88,8 @@ if (process.env.BIO_NANO_AUTH) {
     apiEndPoint: process.env.API_END_POINT || 'http://localhost:8080/api',
     onLogin: (req, res, next) => {
       return checkUserSetup(req.user)
-        //note this expects an abnormal return of req and res to the next function
         .then((projectId) => {
-          //todo - pass this projectId on the response so the client knows which project to load
-          //console.log('made projects for user. Empty project is ' + projectId);
+          //note this expects an abnormal return of req and res to the next function
           return next(req, res);
         });
     },
@@ -167,7 +165,7 @@ const isPortFree = (port, cb) => {
     })
     .listen({
       port,
-      host: 'localhost',
+      host: hostname,
       exclusive: true,
     });
 };
