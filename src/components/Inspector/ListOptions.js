@@ -28,6 +28,7 @@ export class ListOptions extends Component {
     }).isRequired,
     optionBlocks: PropTypes.array.isRequired,
     blockOptionsToggle: PropTypes.func.isRequired,
+    isAuthoring: PropTypes.bool.isRequired,
   };
 
   onSelectOption = (option) => {
