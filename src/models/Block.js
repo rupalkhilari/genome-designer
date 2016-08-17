@@ -595,6 +595,20 @@ export default class Block extends Instance {
   }
 
   /**
+   * Get the blocks sequence length, respecting trim
+   * @method getSequenceLength
+   * @memberOf Block
+   * @param {boolean} [ignoreTrim=false]
+   */
+  getSequenceLength(ignoreTrim = false) {
+    const { length, trim } = this.sequence;
+    if (!Array.isArray(trim) || !!ignoreTrim) {
+      return length;
+    }
+    return length - trim[0] - trim[1];
+  }
+
+  /**
    * Retrieve the sequence of the block. Retrieves the sequence from the server, since it is stored in a separate file.
    * @method getSequence
    * @memberOf Block
@@ -667,6 +681,8 @@ export default class Block extends Instance {
 
   /**
    * Set trim (number of bases to skip) on the sequence
+   * @method setSequenceTrim
+   * @memberOf Block
    * @param {number} start
    * @param {number} end
    */
