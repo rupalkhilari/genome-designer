@@ -111,7 +111,10 @@ class GlobalNav extends Component {
     inventorySelectTab: PropTypes.func.isRequired,
     uiSetGrunt: PropTypes.func.isRequired,
     blockDetach: PropTypes.func.isRequired,
-    clipboard: PropTypes.object.isRequired,
+    clipboard: PropTypes.shape({
+      formats: PropTypes.array.isRequired,
+      data: PropTypes.any,
+    }).isRequired,
     blockGetComponentsRecursive: PropTypes.func.isRequired,
     blockAddComponent: PropTypes.func.isRequired,
     blockAddComponents: PropTypes.func.isRequired,
@@ -557,7 +560,7 @@ class GlobalNav extends Component {
             }, {
               text: 'Paste',
               shortcut: stringToShortcut('meta V'),
-              disabled: !this.props.clipboard.formats.includes(clipboardFormats.blocks) || !this.focusedConstruct() || this.focusedConstruct().isFixed() || this.focusedConstruct().isFrozen(),
+              disabled: !this.props.clipboard.formats.indexOf(clipboardFormats.blocks) >= 0 || !this.focusedConstruct() || this.focusedConstruct().isFixed() || this.focusedConstruct().isFrozen(),
               action: () => {
                 this.pasteBlocksToConstruct();
               },
