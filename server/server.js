@@ -54,7 +54,8 @@ app.use(bodyParser.json({
 app.use(errorHandlingMiddleware);
 
 //HTTP logging middleware
-app.use(morgan('dev', {
+const logLevel = process.env.NODE_ENV === 'production' ? 'combined' : 'dev';
+app.use(morgan(logLevel, {
   skip: (req, res) => {
     if (req.path.indexOf('browser-sync') >= 0 || req.path.indexOf('__webpack') >= 0) {
       return true;
@@ -90,7 +91,7 @@ if (process.env.BIO_NANO_AUTH) {
         //note this expects an abnormal return of req and res to the next function
         .then((projectId) => {
           //todo - pass this projectId on the response so the client knows which project to load
-          console.log('made projects for user. Empty project is ' + projectId);
+          //console.log('made projects for user. Empty project is ' + projectId);
           return next(req, res);
         });
     },
@@ -178,6 +179,9 @@ const startServer = () => app.listen(port, hostname, (err) => {
   }
 
   /* eslint-disable no-console */
+  if (process.env.NODE_ENV !== 'production') {
+    console.log(JSON.stringify(process.memoryUsage(), null, 2));
+  }
   console.log(`Server listening at http://${hostname}:${port}/`);
 });
 

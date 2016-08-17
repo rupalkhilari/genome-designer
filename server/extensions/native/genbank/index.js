@@ -13,6 +13,7 @@ import * as rollup from '../../../../server/data/rollup';
 import { errorDoesNotExist } from '../../../../server/utils/errors';
 import { merge, filter } from 'lodash';
 import resetColorSeed from '../../../../src/utils/generators/color'; //necessary?
+import { permissionsMiddleware } from '../../../data/permissions';
 
 //genbank specific
 import { convert, importProject, exportProject, exportConstruct } from './convert';
@@ -54,9 +55,11 @@ router.get('/file/:fileId', (req, res, next) => {
 
 /***** EXPORT ******/
 
-router.get('/export/blocks/:projectId/:blockIdList', (req, res, next) => {
+router.get('/export/blocks/:projectId/:blockIdList', permissionsMiddleware, (req, res, next) => {
   const { projectId, blockIdList } = req.params;
   const blockIds = blockIdList.split(',');
+
+  console.log(`exporting blocks ${blockIdList} from ${projectId} (${req.user.uuid})`);
 
   rollup.getProjectRollup(projectId)
     .then(roll => {
@@ -100,8 +103,10 @@ router.get('/export/blocks/:projectId/:blockIdList', (req, res, next) => {
     });
 });
 
-router.get('/export/:projectId/:constructId?', (req, res, next) => {
+router.get('/export/:projectId/:constructId?', permissionsMiddleware, (req, res, next) => {
   const { projectId, constructId } = req.params;
+
+  console.log(`exporting construct ${constructId} from ${projectId} (${req.user.uuid})`);
 
   rollup.getProjectRollup(projectId)
     .then(roll => {
@@ -141,6 +146,8 @@ router.post('/import/convert', (req, resp, next) => {
     const fileMd5 = md5(buffer);
     const inputFilePath = createFilePath(fileMd5);
 
+    console.log(`converting genbank (${req.user.uuid}) @ ${inputFilePath}`);
+
     return fileSystem.fileWrite(inputFilePath, buffer, false)
       .then(() => {
         resetColorSeed();
@@ -158,9 +165,11 @@ router.post('/import/convert', (req, resp, next) => {
   });
 });
 
+//todo - permissions check here
+
 router.post('/import/:projectId?', (req, res, next) => {
   const { projectId } = req.params;
-  const noSave = req.query.hasOwnProperty('noSave') || projectId === convert;
+  const noSave = req.query.hasOwnProperty('noSave') || projectId === 'convert';
 
   let genbankFile;
   // save incoming file then read back the string data.
