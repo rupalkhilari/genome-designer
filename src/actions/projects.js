@@ -252,7 +252,7 @@ const _projectLoad = (projectId, loadMoreOnFail = false, dispatch) => {
       return dispatch(projectList())
         .then(manifests => manifests
           .filter(manifest => !(ignores.indexOf(manifest.id) >= 0))
-          .sort((one, two) => two.lastSaved - one.lastSaved)
+          .sort((one, two) => one.lastSaved - two.lastSaved)
         )
         .then(manifests => {
           if (manifests.length) {
