@@ -17,8 +17,9 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { blockMerge, blockSetListBlock, blockFreeze, blockSetHidden } from '../../actions/blocks';
+import Checkbox from '../ui/Checkbox';
 
-import '../../styles/ListOptions.css';
+import '../../styles/TemplateRules.css';
 
 export class TemplateRules extends Component {
   static propTypes = {
@@ -57,19 +58,17 @@ export class TemplateRules extends Component {
           return (
             <div className="TemplateRules-rule"
                  key={rule}>
-              <input type="checkbox"
-                     className="TemplateRules-check"
-                     value={block.rules[rule]}
-                     onChange={(evt) => {
-                       if (!readOnly) {
-                         console.log('running', evt.target.checked);
-                         func(evt.target.checked);
-                       }
-                     }} />
+              <Checkbox checked={block.rules[rule]}
+                        disabled={readOnly}
+                        onChange={(value) => {
+                          if (!readOnly) {
+                            func(value);
+                          }
+                        }}/>
               <span className="TemplateRules-name">{name}</span>
             </div>
           );
-          })}
+        })}
       </div>
     );
   }
