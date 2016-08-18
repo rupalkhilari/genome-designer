@@ -50,7 +50,7 @@ export class TemplateRules extends Component {
   render() {
     //todo - determine whether to deep freeze
     //todo - ability to unfreeze a block - can't do that now
-    const { readOnly, block } = this.props;
+    const { isConstruct, readOnly, block } = this.props;
 
     return (
       <div className="TemplateRules">
@@ -59,7 +59,7 @@ export class TemplateRules extends Component {
             <div className="TemplateRules-rule"
                  key={rule}>
               <Checkbox checked={block.rules[rule]}
-                        disabled={readOnly}
+                        disabled={readOnly || (rule === 'frozen' && isConstruct)}
                         onChange={(value) => {
                           if (!readOnly) {
                             func(value);

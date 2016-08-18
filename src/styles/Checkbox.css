@@ -16,8 +16,9 @@
     border-color: transparent;
   }
 
-  &-disabled {
+  &.disabled {
     opacity: 0.5;
-    cursor: not-allowed;
+    background-color: var(--colors-greyMedLight);
+    /* cursor: not-allowed; */
   }
 }
