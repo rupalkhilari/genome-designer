@@ -22,3 +22,15 @@ export function manifestIsServer(manifest) {
   invariant(typeof manifest.geneticConstructor === 'object', 'must pass a valid genetic constructor manifest');
   return !!manifest.geneticConstructor.router;
 }
+
+export function extensionName(manifest) {
+  return manifest.geneticConstructor.readable || manifest.name;
+}
+
+export function extensionAuthor(manifest) {
+  return manifest.author || 'Unknown';
+}
+
+export function extensionRegion(manifest) {
+  return manifest.geneticConstructor.region;
+}

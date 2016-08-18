@@ -1,22 +1,37 @@
 @import './variables.css';
 
-.ExtensionPicker {
+div.ExtensionPicker {
+  /* hack to handle duncan's stupid cSS */
+  div {
+    width: inherit;
+  }
+
+  &-header {
+    font-weight: bold;
+  }
 
   &-list {
     display: table;
-    width: 50%;
+    width: 100%;
   }
 
   &-row {
     display: table-row;
   }
 
-  &-name {
+  &-cell {
     display: table-cell;
+    color: var(--colors-greyMedLight);
+    text-align: center;
+  }
+
+  &-name {
+    color: var(--colors-grey);
+    font-weight: 500;
+    text-align: right;
   }
 
   &-toggle {
-    display: table-cell;
     vertical-align: middle;
   }
 }
