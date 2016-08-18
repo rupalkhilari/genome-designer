@@ -98,6 +98,7 @@ router.post('/import/:projectId?', jsonParser, (req, resp, next) => {
         return Promise.resolve(blocks);
       }
 
+      //todo - we may need to batch these
       return Promise.all(Object.keys(sequences).map(sequenceMd5 => {
         const sequence = sequences[sequenceMd5];
         return sequence.length > 0 ?
@@ -113,7 +114,7 @@ router.post('/import/:projectId?', jsonParser, (req, resp, next) => {
         return Promise.reject('no valid blocks');
       }
 
-      if (!projectId) {
+      if (!projectId || noSave) {
         const project = Project.classless({ components: blockIds });
         return Promise.resolve({
           project,

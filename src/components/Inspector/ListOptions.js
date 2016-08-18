@@ -16,7 +16,9 @@ limitations under the License.
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import ListOption from './ListOption';
-import { blockOptionsToggle } from '../../actions/blocks';
+import { blockStash, blockOptionsToggle, blockOptionsAdd } from '../../actions/blocks';
+import { importGenbankOrCSV } from '../../middleware/genbank';
+import CSVFileDrop from './CSVFileDrop';
 
 import '../../styles/ListOptions.css';
 
@@ -27,22 +29,34 @@ export class ListOptions extends Component {
       options: PropTypes.object.isRequired,
     }).isRequired,
     optionBlocks: PropTypes.array.isRequired,
-    blockOptionsToggle: PropTypes.func.isRequired,
     isAuthoring: PropTypes.bool.isRequired,
+    blockOptionsToggle: PropTypes.func.isRequired,
+    blockOptionsAdd: PropTypes.func.isRequired,
+    blockStash: PropTypes.func.isRequired,
   };
 
   onSelectOption = (option) => {
     this.props.blockOptionsToggle(this.props.block.id, option.id);
   };
 
+  handleCSVDrop = (files) => {
+    importGenbankOrCSV(files[0], 'convert')
+      .then(({ project, blocks }) => {
+        this.props.blockStash(...Object.keys(blocks).map(blockId => blocks[blockId]));
+        this.props.blockOptionsAdd(this.props.block.id, ...Object.keys(blocks));
+      });
+  };
+
   render() {
-    const { block, optionBlocks } = this.props;
+    const { block, optionBlocks, isAuthoring } = this.props;
     const { options } = block;
     const isFrozen = block.isFrozen();
 
+    //todo - rethink scroll location
     return (
       <div className={'ListOptions no-vertical-scroll' + (isFrozen ? ' isFrozen' : '')}>
-        {isFrozen && <div className="ListOptions-explanation">List items cannot be modified after they have been frozen. Duplicate the template to make changes.</div>}
+        {isFrozen && <div className="ListOptions-explanation">List items cannot be modified after they have been frozen. {isAuthoring ? 'Unfreeze the block to make changes.' : 'Duplicate the template to make changes.'}</div>}
+        {!isFrozen && isAuthoring && <CSVFileDrop style={{marginBottom: '1em'}} onDrop={this.handleCSVDrop}/>}
         {optionBlocks.map(item => {
           return (
             <ListOption
@@ -63,4 +77,6 @@ const mapStateToProps = (state, props) => ({
 
 export default connect(mapStateToProps, {
   blockOptionsToggle,
+  blockOptionsAdd,
+  blockStash,
 })(ListOptions);

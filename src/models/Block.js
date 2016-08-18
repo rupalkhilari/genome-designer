@@ -413,6 +413,7 @@ export default class Block extends Instance {
   getType(defaultType = 'Block') {
     if (this.isTemplate()) return 'Template';
     if (this.isConstruct()) return 'Construct';
+    if (this.isList()) return 'List Block';
     if (this.isFiller()) return 'Filler';
     return defaultType;
   }
@@ -564,7 +565,7 @@ export default class Block extends Instance {
   addOptions(...optionIds) {
     invariant(this.isList(), 'must be a list block to add list options');
     invariant(optionIds.every(option => idValidator(option)), 'must pass component IDs');
-    const toAdd = optionIds.reduce((acc, id) => Object.assign(acc, { [id]: false }), {});
+    const toAdd = optionIds.reduce((acc, id) => Object.assign(acc, { [id]: true }), {});
     const newOptions = Object.assign(cloneDeep(this.options), toAdd);
 
     if (Object.keys(newOptions).length === Object.keys(this.options).length) {

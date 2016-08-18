@@ -262,7 +262,7 @@ export class InspectorBlock extends Component {
                          onSelect={this.selectColor}/>
 
             <SymbolPicker current={this.currentRoleSymbol()}
-                          readOnly={readOnly || isConstruct || isTemplate || isList || forceIsConstruct || anyIsConstructOrTemplateOrList }
+                          readOnly={readOnly || (!isAuthoring && (isConstruct || isTemplate || isList || forceIsConstruct || anyIsConstructOrTemplateOrList)) }
                           onSelect={this.selectSymbol}/>
           </div>
         </InspectorRow>
