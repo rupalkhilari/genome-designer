@@ -21,9 +21,6 @@ export default {
     egf_templates: {},
   },
   extensions: {
-    testClient: {
-      active: false,
-    },
     'seq-viewer': {
       active: true,
     },

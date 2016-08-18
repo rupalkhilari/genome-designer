@@ -14,7 +14,7 @@
  limitations under the License.
  */
 import invariant from 'invariant';
-import { values } from 'lodash';
+import { merge, values } from 'lodash';
 
 import userConfigDefaults from './userConfigDefaults';
 import { userConfigKey } from './userConstants';
@@ -58,7 +58,7 @@ export const updateUserConfig = (user, newConfig) => {
     [userConfigKey]: config,
   };
 
-  return Object.assign({}, user, { data: userData });
+  return merge({}, user, { data: userData });
 };
 
 export const pruneUserObject = (user) => {

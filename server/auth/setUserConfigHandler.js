@@ -15,21 +15,21 @@
  */
 
 import fetch from 'isomorphic-fetch';
-import { INTERNAL_HOST } from '../urlConstants';
+import { INTERNAL_HOST, API_END_POINT } from '../urlConstants';
 import { pruneUserObject, updateUserConfig } from './utils';
 import { headersPost } from '../../src/middleware/headers';
 
+//todo - need to support without auth running (local dev)
+
 //parameterized route handler for setting user config
 //expects req.user and req.config to be set
-export default function setUserConfigHandler({useRegister = false}) {
+export default function setUserConfigHandler({ useRegister = false }) {
   const url = useRegister === true ?
   INTERNAL_HOST + '/auth/register' :
   INTERNAL_HOST + '/auth/update-user';
 
   return (req, res, next) => {
-    console.log('hit route ' + req.originalUrl);
-
-    const { user: userInput, config: configInput } = req.body;
+    const { user: userInput, config: configInput } = req;
     let user;
 
     try {
@@ -38,24 +38,56 @@ export default function setUserConfigHandler({useRegister = false}) {
       return res.status(422).send(err);
     }
 
-    //copy over cookies in case logged in request
     const postOptions = headersPost(JSON.stringify(user));
-    const postHeaders = new Headers(postOptions.headers);
-    Object.keys(req.cookies).forEach(name => {
-      const value = req.cookies[name];
-      postHeaders.append('cookie', `${name}=${value}`);
-    });
-    Object.assign(postOptions, {headers: postHeaders});
 
-    //delegate to auth/register, making server -> server call
-    //this will check if they have been registered, and onboard them if needed
-    //todo - handle them already being registered both 1) with GC and 2) with auth (if they need to be separate)
-    //avoid setting the config if they are already registered
+    if (process.env.BIO_NANO_AUTH) {
+      //todo - handle them already being registered (either with GC or with auth platform)
+      if (useRegister) {
+        return fetch(url, postOptions)
+          .then(resp => {
+            //re-assign cookies from platform authentication
+            const cookies = resp.headers.getAll('set-cookie');
+            cookies.forEach(cookie => {
+              res.set('set-cookie', cookie);
+            });
 
-    console.log('sending');
-    console.log(user);
+            return resp.json();
+          })
+          .then(userPayload => {
+            if (!!userPayload.message) {
+              return Promise.reject(userPayload);
+            }
 
-    fetch(url, postOptions)
+            const pruned = pruneUserObject(userPayload);
+            res.json(pruned);
+          })
+          .catch(err => {
+            console.log('got error');
+            console.log(err);
+            res.status(500).json(err);
+          });
+      }
+
+      //otherwise, update user using function
+      //todo - abstract into shared function
+      const userPromises = require('bio-user-platform').userPromises({
+        apiEndPoint: API_END_POINT,
+      });
+
+      return userPromises.update(user)
+        .then(updatedUser => {
+          const pruned = pruneUserObject(updatedUser);
+          res.json(pruned);
+        })
+        .catch(err => {
+          console.log('error setting user config');
+          console.log(err);
+          res.status(501).send(err);
+        });
+    }
+
+    //local version - just use routes
+    return fetch(url, postOptions)
       .then(resp => {
         //re-assign cookies from platform authentication
         const cookies = resp.headers.getAll('set-cookie');
