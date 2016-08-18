@@ -174,7 +174,7 @@ const isPortFree = (port, cb) => {
     })
     .listen({
       port,
-      host: 'localhost',
+      host: HOST_NAME,
       exclusive: true,
     });
 };
@@ -186,7 +186,7 @@ const startServer = () => app.listen(HOST_PORT, HOST_NAME, (err) => {
   }
 
   /* eslint-disable no-console */
-  console.log(`Server listening at http://${hostname}:${port}/`);
+  console.log(`Server listening at http://${HOST_NAME}:${HOST_PORT}/`);
 });
 
 //start the server by default, if port is not taken
