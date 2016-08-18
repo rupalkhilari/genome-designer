@@ -134,6 +134,13 @@ export const get = (accessionVersion, parameters = {}, searchResult) => {
 
   return rejectingFetch(url)
     .then(resp => resp.text())
+    .then(text => {
+      //make sure we didnt get a 500 error from them
+      if (text.indexOf('<!DOCTYPE') === 0) {
+        return Promise.reject(text);
+      }
+      return text;
+    })
     .then(genbank => genbankToBlock(genbank, parametersMapped.onlyConstruct))
     .then(blocks => blocks.map(block => wrapBlock(block, accessionVersion)))
     .then(blockModels => {
