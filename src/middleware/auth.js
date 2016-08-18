@@ -67,7 +67,7 @@ export const updateAccount = (payload) => {
   const body = payload;
   const stringified = JSON.stringify(body);
 
-  return authFetch(authPath('update-all'), headersPost(stringified));
+  return authFetch('/user/update', headersPost(stringified));
 };
 
 export const logout = () => {

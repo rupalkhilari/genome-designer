@@ -36,6 +36,19 @@ router.route('/config')
     setUserConfigHandler({useRegister: false})
   );
 
+router.route('/update')
+  .all(ensureReqUserMiddleware)
+  .post(jsonParser,
+    (req, res, next) => {
+      const clientUser = req.body;
+      const config = clientUser.config;
+      Object.assign(req, { config });
+      next();
+    },
+    setUserConfigHandler({useRegister: false})
+  );
+
+
 //catch-all
 router.all('*', (req, res, next) => {
   res.status(404).send();

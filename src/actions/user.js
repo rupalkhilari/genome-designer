@@ -21,7 +21,7 @@ limitations under the License.
  */
 //This module is not exported on the window, so marked as private
 import * as ActionTypes from '../constants/ActionTypes';
-import { register, login, logout, updateAccount } from '../middleware/auth';
+import { register, login, logout, updateAccount, setUserConfig } from '../middleware/auth';
 
 const mapUserFromServer = (serverUser) => ({
   userid: serverUser.uuid,
@@ -82,6 +82,18 @@ export const userRegister = (user, config) => {
 export const userUpdate = (user) => {
   return (dispatch, getState) => {
     return updateAccount(user)
+      .then(user => {
+        const mappedUser = mapUserFromServer(user);
+        const setUserPayload = _userSetUser(mappedUser);
+        dispatch(setUserPayload);
+        return user;
+      });
+  };
+};
+
+export const userUpdateConfig = (config) => {
+  return (dispatch, getState) => {
+    return setUserConfig(config)
       .then(user => {
         const mappedUser = mapUserFromServer(user);
         const setUserPayload = _userSetUser(mappedUser);
