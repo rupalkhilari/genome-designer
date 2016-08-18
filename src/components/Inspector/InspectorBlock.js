@@ -125,7 +125,8 @@ export class InspectorBlock extends Component {
    */
   currentName(useGetName = true) {
     if (this.props.instances.length === 1) {
-      return useGetName ? this.props.instances[0].getName() : this.props.instances[0].metadata.name;
+      const defaultName = this.props.forceIsConstruct ? 'New Construct': null;
+      return useGetName ? this.props.instances[0].getName(defaultName) : this.props.instances[0].metadata.name;
     }
     return '';
   }
@@ -189,7 +190,8 @@ export class InspectorBlock extends Component {
     const inputKey = instances.map(inst => inst.id).join(',');
     const anyIsConstructOrTemplateOrList = instances.some(instance => instance.isConstruct() || instance.isTemplate() || instance.isList());
 
-    const type = singleInstance ? instances[0].getType() : 'Block';
+    const defaultType = forceIsConstruct ? 'Construct' : 'Block'
+    const type = singleInstance ? instances[0].getType(defaultType) : 'Blocks';
 
     const currentSourceElement = this.currentSource();
     const annotations = this.currentAnnotations();
