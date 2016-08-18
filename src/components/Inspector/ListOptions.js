@@ -30,7 +30,7 @@ export class ListOptions extends Component {
       isFrozen: PropTypes.func.isRequired,
     }).isRequired,
     optionBlocks: PropTypes.array.isRequired,
-    isAuthoring: PropTypes.bool.isRequired,
+    toggleOnly: PropTypes.bool.isRequired,
     blockOptionsToggle: PropTypes.func.isRequired,
     blockOptionsAdd: PropTypes.func.isRequired,
     blockOptionsRemove: PropTypes.func.isRequired,
@@ -58,20 +58,20 @@ export class ListOptions extends Component {
   };
 
   render() {
-    const { block, optionBlocks, isAuthoring } = this.props;
+    const { block, optionBlocks, toggleOnly } = this.props;
     const { options } = block;
     const isFrozen = block.isFrozen();
 
     //todo - rethink scroll location
     return (
       <div className={'ListOptions no-vertical-scroll' + (isFrozen ? ' isFrozen' : '')}>
-        {isFrozen && <div className="ListOptions-explanation">List items cannot be modified after they have been frozen. {isAuthoring ? 'Unfreeze the block to make changes.' : 'Duplicate the template to make changes.'}</div>}
-        {!isFrozen && isAuthoring && <CSVFileDrop style={{marginBottom: '1em'}} onDrop={this.handleCSVDrop}/>}
+        {isFrozen && <div className="ListOptions-explanation">List items cannot be modified after they have been frozen. {!toggleOnly ? 'Unfreeze the block to make changes.' : 'Duplicate the template to make changes.'}</div>}
+        {!isFrozen && !toggleOnly && <CSVFileDrop style={{marginBottom: '1em'}} onDrop={this.handleCSVDrop}/>}
         {optionBlocks.map(item => {
           return (
             <ListOption
               option={item}
-              isAuthoring={!isFrozen && isAuthoring}
+              toggleOnly={!isFrozen && !toggleOnly}
               key={item.id}
               selected={options[item.id]}
               onDelete={(option) => this.onDeleteOption(option)}

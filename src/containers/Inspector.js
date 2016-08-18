@@ -102,8 +102,8 @@ function mapStateToProps(state, props) {
   const forceIsConstruct = (level === 'construct') ||
     blockIds.some(blockId => currentProject.components.indexOf(blockId) >= 0);
 
-  //todo - check the construct, and check construct if a block
-  const isAuthoring = true;
+  //todo - error handling for these not set
+  const isAuthoring = !!state.focus.constructId && state.blocks[state.focus.constructId].isAuthoring();
 
   const orders = Object.keys(state.orders)
     .map(orderId => state.orders[orderId])

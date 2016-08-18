@@ -267,8 +267,10 @@ export class InspectorBlock extends Component {
           </div>
         </InspectorRow>
 
-        <InspectorRow heading="Template Rules">
+        <InspectorRow heading={type + ' Rules'}
+                      condition={isAuthoring}>
           <TemplateRules block={instances[0]}
+                         readOnly={!isAuthoring}
                          isConstruct={isTemplate}/>
         </InspectorRow>
 
@@ -288,7 +290,7 @@ export class InspectorBlock extends Component {
 
         <InspectorRow heading="List Options"
                       condition={isList}>
-          <ListOptions isAuthoring={isAuthoring}
+          <ListOptions toggleOnly={!isAuthoring}
                        block={instances[0]}/>
         </InspectorRow>
 

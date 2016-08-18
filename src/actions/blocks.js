@@ -446,6 +446,21 @@ export const blockMarkTemplate = (blockId, isTemplate = true) => {
 };
 
 //todo - doc
+export const blockSetHidden = (blockId, isHidden = true) => {
+  return (dispatch, getState) => {
+    const oldBlock = getState().blocks[blockId];
+    const block = oldBlock.setRule('hidden', isHidden);
+    dispatch({
+      type: ActionTypes.BLOCK_SET_HIDDEN,
+      undoable: true,
+      isHidden,
+      block,
+    });
+    return block;
+  };
+};
+
+//todo - doc
 export const blockSetAuthoring = (blockId, isAuthoring = true) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];

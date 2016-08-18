@@ -16,20 +16,61 @@
 
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { blockMerge } from '../../actions/blocks';
+import { blockMerge, blockSetListBlock, blockFreeze, blockSetHidden } from '../../actions/blocks';
 
 import '../../styles/ListOptions.css';
 
 export class TemplateRules extends Component {
   static propTypes = {
     block: PropTypes.object.isRequired,
-    blockMerge: PropTypes.func.isRequired,
+    readOnly: PropTypes.bool.isRequired,
     isConstruct: PropTypes.bool.isRequired,
+    blockMerge: PropTypes.func.isRequired,
+    blockFreeze: PropTypes.func.isRequired,
+    blockSetListBlock: PropTypes.func.isRequired,
+    blockSetHidden: PropTypes.func.isRequired,
   };
 
+  constructor() {
+    super();
+    this.rules = [
+      ['hidden',
+        'Hidden',
+        (value) => this.props.blockSetHidden(this.props.block.id, value)],
+      ['list',
+        'List Block',
+        (value) => this.props.blockSetListBlock(this.props.block.id, value)],
+      ['frozen',
+        'Frozen',
+        (value) => this.props.blockFreeze(this.props.block.id, false)],
+    ];
+  }
+
   render() {
+    //todo - determine whether to deep freeze
+    //todo - ability to unfreeze a block - can't do that now
+    const { readOnly, block } = this.props;
+
     return (
-      <p>(Todo - set frozen, list, hidden){this.props.isConstruct && ' [construct]'}</p>
+      <div className="TemplateRules">
+        {this.rules.map(([rule, name, func]) => {
+          return (
+            <div className="TemplateRules-rule"
+                 key={rule}>
+              <input type="checkbox"
+                     className="TemplateRules-check"
+                     value={block.rules[rule]}
+                     onChange={(evt) => {
+                       if (!readOnly) {
+                         console.log('running', evt.target.checked);
+                         func(evt.target.checked);
+                       }
+                     }} />
+              <span className="TemplateRules-name">{name}</span>
+            </div>
+          );
+          })}
+      </div>
     );
   }
 }
@@ -38,4 +79,7 @@ const mapStateToProps = (state, props) => ({});
 
 export default connect(mapStateToProps, {
   blockMerge,
+  blockFreeze,
+  blockSetListBlock,
+  blockSetHidden,
 })(TemplateRules);

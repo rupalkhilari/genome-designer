@@ -353,6 +353,11 @@ export default class Layout {
     if (block.isFiller()) return '#6B6F7C';
     return '#1d222d';
   }
+  
+  partIsHidden(part) {
+    const block = this.blocks[part];
+    return block.isHidden();
+  }
 
   /**
    * return the property within the rule part of the blocks data
@@ -646,7 +651,7 @@ export default class Layout {
     // which row we are on.
     let rowIndex = 0;
     // display only non hidden blocks
-    const components = ct.components.filter(part => !this.blocks[part].isHidden());
+    const components = ct.components.filter(part => !this.blocks[part].isHidden() || ct.isAuthoring());
     // layout all non hidden blocks
     components.forEach(part => {
 
@@ -702,6 +707,7 @@ export default class Layout {
       node.set({
         bounds: new Box2D(xp, yp, td.x, kT.blockH),
         text: name,
+        opacity: this.partIsHidden(part) ? 0.7 : 1,
         fill: this.fillColor(part),
         color: this.fontColor(part),
       });
