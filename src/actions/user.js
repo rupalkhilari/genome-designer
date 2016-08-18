@@ -41,9 +41,9 @@ const _userSetUser = (user) => ({
 /**
  * identify user to heap analytics
  */
-const identifyUser = (userid) => {
+const identifyUser = (email) => {
   if (heap && heap.identify) {
-    heap.identify(userid);
+    heap.identify(email);
   }
 }
 
@@ -53,7 +53,7 @@ export const userLogin = (email, password) => {
     return login(email, password)
       .then(user => {
         const mappedUser = mapUserFromServer(user);
-        identifyUser(mappedUser.userid);
+        identifyUser(mappedUser.email);
         const setUserPayload = _userSetUser(mappedUser);
         dispatch(setUserPayload);
         return mappedUser;
@@ -80,7 +80,7 @@ export const userRegister = (user) => {
     return register(user)
       .then(user => {
         const mappedUser = mapUserFromServer(user);
-        identifyUser(mappedUser.userid);
+        identifyUser(mappedUser.email);
         const setUserPayload = _userSetUser(mappedUser);
         dispatch(setUserPayload);
         return user;
@@ -93,6 +93,7 @@ export const userUpdate = (user) => {
     return updateAccount(user)
       .then(user => {
         const mappedUser = mapUserFromServer(user);
+        identifyUser(mappedUser.email);
         const setUserPayload = _userSetUser(mappedUser);
         dispatch(setUserPayload);
         return user;
