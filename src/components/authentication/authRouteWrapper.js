@@ -15,11 +15,13 @@ limitations under the License.
 */
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router';
 
 class RouteWrapper extends Component {
   static propTypes = {
     user: PropTypes.object,
     children: PropTypes.object,
+    router: PropTypes.object.isRequired,
   };
 
   render() {
@@ -28,6 +30,7 @@ class RouteWrapper extends Component {
     }
 
     if (process.env.NODE_ENV !== 'production') {
+      this.props.router.push('/homepage');
       //console.log('no user for RouteWrapper');
     }
 
@@ -41,4 +44,4 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps)(RouteWrapper);
+export default withRouter(connect(mapStateToProps)(RouteWrapper));
