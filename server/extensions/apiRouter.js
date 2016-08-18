@@ -51,12 +51,18 @@ Object.keys(serverExtensions).forEach(key => {
   const manifest = serverExtensions[key];
   const routePath = manifest.geneticConstructor.router;
 
-  //future - build dependent path lookup
-  const extensionRouter = require(path.resolve(__dirname, 'node_modules', key, routePath));
+  try {
+    //future - build dependent path lookup
+    const extensionRouter = require(path.resolve(__dirname, 'node_modules', key, routePath));
 
-  //todo - error handling
-  //todo - wrap router in a try-catch? Put in own process?
-  router.use(`/${key}/`, extensionRouter);
+    //todo - error handling
+    //todo - wrap router in a try-catch? Put in own process?
+    router.use(`/${key}/`, extensionRouter);
+  } catch (err) {
+    console.error('there was an error registering extension ' + key);
+    console.log(err);
+    console.log(err.stack);
+  }
 });
 
 //catch-all

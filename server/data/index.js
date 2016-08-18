@@ -22,6 +22,7 @@ import {
   errorDoesNotExist,
   errorCouldntFindProjectId,
   errorVersioningSystem,
+  errorNoUser,
 } from './../utils/errors';
 import * as querying from './querying';
 import * as persistence from './persistence';
@@ -142,6 +143,8 @@ router.route('/info/:type/:detail?/:additional?')
     const { user } = req;
     const { type, detail, additional } = req.params;
 
+    //todo - permissions checks where appropriate
+
     switch (type) {
     case 'role' :
       if (detail) {
@@ -206,6 +209,10 @@ router.route('/projects')
   .all(jsonParser)
   .get((req, res, next) => {
     const { user } = req;
+
+    if (!user || !user.uuid) {
+      return res.status(401).send(errorNoUser);
+    }
 
     querying.getAllProjectManifests(user.uuid)
       .then(metadatas => res.status(200).json(metadatas))

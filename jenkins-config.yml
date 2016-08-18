@@ -1,4 +1,4 @@
-service-name: genomedesigner
+service-name: gctor
 # NOTE override this value in the Jenkins job as it varies by environment
 environment: local
 
