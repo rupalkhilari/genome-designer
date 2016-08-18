@@ -42,8 +42,8 @@ const _userSetUser = (user) => ({
  * identify user to heap analytics
  */
 const identifyUser = (email) => {
-  if (heap && heap.identify) {
-    heap.identify(email);
+  if (window && window.heap && window.heap.identify) {
+    window.heap.identify(email);
   }
 }
 
