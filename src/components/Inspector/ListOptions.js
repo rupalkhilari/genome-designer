@@ -16,7 +16,7 @@ limitations under the License.
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import ListOption from './ListOption';
-import { blockStash, blockOptionsToggle, blockOptionsAdd } from '../../actions/blocks';
+import { blockStash, blockOptionsToggle, blockOptionsAdd, blockOptionsRemove } from '../../actions/blocks';
 import { importGenbankOrCSV } from '../../middleware/genbank';
 import CSVFileDrop from './CSVFileDrop';
 
@@ -27,16 +27,26 @@ export class ListOptions extends Component {
     block: PropTypes.shape({
       id: PropTypes.string.isRequired,
       options: PropTypes.object.isRequired,
+      isFrozen: PropTypes.func.isRequired,
     }).isRequired,
     optionBlocks: PropTypes.array.isRequired,
     isAuthoring: PropTypes.bool.isRequired,
     blockOptionsToggle: PropTypes.func.isRequired,
     blockOptionsAdd: PropTypes.func.isRequired,
+    blockOptionsRemove: PropTypes.func.isRequired,
     blockStash: PropTypes.func.isRequired,
   };
 
   onSelectOption = (option) => {
-    this.props.blockOptionsToggle(this.props.block.id, option.id);
+    if (!this.props.block.isFrozen()) {
+      this.props.blockOptionsToggle(this.props.block.id, option.id);
+    }
+  };
+
+  onDeleteOption = (option) => {
+    if (!this.props.block.isFrozen()) {
+      this.props.blockOptionsRemove(this.props.block.id, option.id);
+    }
   };
 
   handleCSVDrop = (files) => {
@@ -61,9 +71,11 @@ export class ListOptions extends Component {
           return (
             <ListOption
               option={item}
+              isAuthoring={!isFrozen && isAuthoring}
               key={item.id}
               selected={options[item.id]}
-              onClick={(option) => { if (!isFrozen) { this.onSelectOption(option); }}}/>
+              onDelete={(option) => this.onDeleteOption(option)}
+              onClick={(option) => this.onSelectOption(option)}/>
           );
         })}
       </div>
@@ -78,5 +90,6 @@ const mapStateToProps = (state, props) => ({
 export default connect(mapStateToProps, {
   blockOptionsToggle,
   blockOptionsAdd,
+  blockOptionsRemove,
   blockStash,
 })(ListOptions);
