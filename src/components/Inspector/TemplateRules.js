@@ -37,10 +37,12 @@ export class TemplateRules extends Component {
     this.rules = [
       ['hidden',
         'Hidden',
-        (value) => this.props.blockSetHidden(this.props.block.id, value)],
+        (value) => this.props.blockSetHidden(this.props.block.id, value),
+        () => this.props.isConstruct ],
       ['list',
         'List Block',
-        (value) => this.props.blockSetListBlock(this.props.block.id, value)],
+        (value) => this.props.blockSetListBlock(this.props.block.id, value),
+        () => this.props.block.isConstruct()],
       ['frozen',
         'Frozen',
         (value) => this.props.blockFreeze(this.props.block.id, false)],
@@ -54,7 +56,8 @@ export class TemplateRules extends Component {
 
     return (
       <div className="TemplateRules">
-        {this.rules.map(([rule, name, func]) => {
+        {this.rules.map(([rule, name, func, hideIf = () => {}]) => {
+          if (hideIf() === true) { return null; }
           return (
             <div className="TemplateRules-rule"
                  key={rule}>
