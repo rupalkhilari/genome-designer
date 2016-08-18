@@ -24,17 +24,20 @@ import { headersPost } from '../../src/middleware/headers';
 export default function setUserConfigHandler({ useRegister = false }) {
   const url = useRegister === true ?
   INTERNAL_HOST + '/auth/register' :
-  INTERNAL_HOST + '/auth/update-user';
+  INTERNAL_HOST + '/auth/update-all';
 
   return (req, res, next) => {
     const { user: userInput, config: configInput } = req;
     let user;
+
 
     try {
       user = updateUserConfig(userInput, configInput);
     } catch (err) {
       return res.status(422).send(err);
     }
+
+    console.log(user, userInput, configInput);
 
     const postOptions = headersPost(JSON.stringify(user));
 
