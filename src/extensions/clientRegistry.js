@@ -17,9 +17,6 @@ import invariant from 'invariant';
 import * as regions from './regions';
 import { downloadExtension, isDownloaded } from './downloadExtension';
 
-//handle auto-loading extensions
-import './loadExtensions';
-
 //map of extensions
 export const registry = {};
 
@@ -183,6 +180,13 @@ export const downloadAndRender = (key, container, options) => {
  */
 export const isRegistered = (key) => {
   return !!registry[key];
+};
+
+export const clearRegistry = () => {
+  Object.keys(registry).forEach(key => {
+    delete registry[key];
+  });
+  safelyRunCallbacks();
 };
 
 export default registry;

@@ -18,8 +18,9 @@ import { headersGet } from './headers';
 import { extensionsPath, extensionApiPath } from './paths';
 import invariant from 'invariant';
 
-export const getExtensionsInfo = () => {
-  return rejectingFetch(extensionsPath('list'), headersGet())
+export const getExtensionsInfo = (listAll = false) => {
+  const url = listAll === true ? 'listAll' : 'list';
+  return rejectingFetch(extensionsPath(url), headersGet())
     .then(resp => resp.json());
 };
 

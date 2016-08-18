@@ -28,6 +28,7 @@ import reportRouter from './report/index';
 import bodyParser from 'body-parser';
 import errorHandlingMiddleware from './utils/errorHandlingMiddleware';
 import checkUserSetup from './auth/userSetup';
+import { pruneUserObject } from './auth/utils';
 
 import { HOST_PORT, HOST_NAME, API_END_POINT } from './urlConstants';
 
@@ -110,7 +111,7 @@ if (process.env.BIO_NANO_AUTH) {
 }
 
 //expose our own register route to handle custom onboarding
-app.post('/register', setUserConfigHandler({useRegister: true}));
+app.post('/register', setUserConfigHandler({ useRegister: true }));
 app.use('/user', userRouter);
 
 //primary routes
@@ -148,7 +149,9 @@ app.get('*', (req, res) => {
       discourseDomain: process.env.BNR_ENV_URL_SUFFIX || `https://forum.bionano.autodesk.com`,
     };
     //so that any routing is delegated to the client
-    res.render(path.join(pathContent + '/index.pug'), Object.assign({}, req.user, discourse, {
+    const prunedUser = pruneUserObject(req.user);
+    const user = Object.assign({}, prunedUser, { config: JSON.stringify(prunedUser.config) });
+    res.render(path.join(pathContent + '/index.pug'), Object.assign({}, user, discourse, {
       productionEnvironment: process.env.NODE_ENV === 'production',
     }));
   }

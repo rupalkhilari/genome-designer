@@ -1,0 +1,22 @@
+@import './variables.css';
+
+.ExtensionPicker {
+
+  &-list {
+    display: table;
+    width: 50%;
+  }
+
+  &-row {
+    display: table-row;
+  }
+
+  &-name {
+    display: table-cell;
+  }
+
+  &-toggle {
+    display: table-cell;
+    vertical-align: middle;
+  }
+}

@@ -13,12 +13,16 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import { registry, registerManifest } from './clientRegistry';
+import { registry, registerManifest, clearRegistry } from './clientRegistry';
 //import downloadExtension from './downloadExtension';
 import { getExtensionsInfo } from '../middleware/extensions';
 
 //for now, build the registry using everything registered on the server, and load automatically
-export default function loadAllExtensions() {
+export default function loadAllExtensions(shouldClear = false) {
+  if (shouldClear === true) {
+    clearRegistry();
+  }
+
   getExtensionsInfo()
     .then(manifests => {
       Object.keys(manifests)

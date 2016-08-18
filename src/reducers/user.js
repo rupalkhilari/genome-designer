@@ -22,6 +22,7 @@ const initialState = {
   email: flashedUser.email || null,
   firstName: flashedUser.firstName || null,
   lastName: flashedUser.lastName || null,
+  config: flashedUser.config || {},
 };
 
 export default function user(state = initialState, action) {
@@ -33,6 +34,7 @@ export default function user(state = initialState, action) {
       email = null,
       firstName = null,
       lastName = null,
+      config = {},
     } = action.user;
 
     return Object.assign({}, state, {
@@ -40,6 +42,7 @@ export default function user(state = initialState, action) {
       email,
       firstName,
       lastName,
+      config,
     });
 
   default :
