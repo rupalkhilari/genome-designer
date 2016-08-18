@@ -21,7 +21,13 @@ import { uiShowExtensionPicker } from '../../actions/ui';
 import { userUpdateConfig } from '../../actions/user';
 import loadAllExtensions from '../../extensions/loadExtensions';
 import { getExtensionsInfo } from '../../middleware/extensions';
-import { extensionName, extensionAuthor, extensionRegion, manifestIsClient, manifestIsServer } from '../../../server/extensions/manifestUtils';
+import {
+  extensionName,
+  extensionAuthor,
+  extensionRegion,
+  manifestIsClient,
+  manifestIsServer
+} from '../../../server/extensions/manifestUtils';
 
 import '../../styles/ExtensionPicker.css';
 
@@ -80,7 +86,9 @@ export class ExtensionPicker extends Component {
       return null;
     }
 
-    const tableFields = ['name', 'author', 'region'];
+    //todo - better dirty check - see if not at inital state
+
+    const tableFields = ['Name', 'Author'];
 
     //later - we'll probably want to group by region...
 
@@ -95,34 +103,33 @@ export class ExtensionPicker extends Component {
                className="ExtensionPicker gd-form">
             <div className="title">Extensions</div>
 
-            <div className="ExtensionPicker-list ExtensionPicker-header">
-              {tableFields.map(field => {
-                return (<div className="ExtensionPicker-cell">{field}</div>);
-              })}
-            </div>
-
             <div className="ExtensionPicker-list">
+              <div className="ExtensionPicker-row ExtensionPicker-header">
+                {[...tableFields, 'Active'].map(field => {
+                  return (<div className="ExtensionPicker-cell">{field}</div>);
+                })}
+              </div>
               {Object.keys(this.state.extensions).map(key => this.state.extensions[key]).map(extension => {
                 const values = {
-                  name : extensionName(extension),
-                  author : extensionAuthor(extension),
-                  isClient : manifestIsClient(extension),
-                  isServer : manifestIsServer(extension),
-                  region : extensionRegion(extension),
+                  Name: extensionName(extension),
+                  Author: extensionAuthor(extension),
+                  Client: manifestIsClient(extension),
+                  isServer: manifestIsServer(extension),
+                  Region: extensionRegion(extension),
                 };
 
-                //todo - map through fields + toggle
-
                 return (<div className="ExtensionPicker-row" key={extension.name}>
-                  <div className="ExtensionPicker-cell ExtensionPicker-name">{values.name}</div>
-                  <div className="ExtensionPicker-cell">{values.author}</div>
-                  <div className="ExtensionPicker-cell">{values.region}</div>
+                  {tableFields.map((field) => {
+                    return (<div className={'ExtensionPicker-cell ExtensionPicker-' + field}>
+                      {values[field]}
+                    </div>);
+                  })}
                   <div className="ExtensionPicker-cell">
-                  <input type="checkbox"
-                         className="ExtensionPicker-toggle"
-                         checked={this.checkExtensionActive(extension.name)}
-                         onChange={() => this.handleToggleExtension(extension.name)}/>
-                    </div>
+                    <input type="checkbox"
+                           className="ExtensionPicker-cell ExtensionPicker-toggle"
+                           checked={this.checkExtensionActive(extension.name)}
+                           onChange={() => this.handleToggleExtension(extension.name)}/>
+                  </div>
                 </div>);
               })}
             </div>

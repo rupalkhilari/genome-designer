@@ -79,6 +79,7 @@
     background-color: white;
     border: 1px solid lightgray;
     color: lightgray;
+    cursor: default;
   }
   /* errors are hidden by default, add the .visible class to make them appear*/
   .error {
