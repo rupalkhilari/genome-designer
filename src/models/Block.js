@@ -322,13 +322,11 @@ export default class Block extends Instance {
   setListBlock(isList = true) {
     if (!!isList) {
       //clear components
-      const cleared = this.merge({
-        components: [],
-      });
+      const cleared = this.mutate('components', []);
       return cleared.setRule('list', true);
     }
 
-    const cleared = this.merge({options: {}});
+    const cleared = this.mutate('options', {})
     return cleared.setRule('list', false);
   }
 
