@@ -602,11 +602,27 @@ export class ConstructViewer extends Component {
   };
 
   /**
-   * only visible on templates that are not part of the sample(s) project
+   * only visible on templates that are not part of the sample(s) project.
+   * Further, for EGF ordering: All blocks must have a source of 'egf' OR
+   * it must be a list block with all options coming from 'egf'
    */
   orderButton() {
     if (this.props.construct.isTemplate() && !this.isSampleProject()) {
-      return <button onClick={this.onOrderDNA} className="order-button">Order DNA</button>;
+      let canOrderFromEGF = this.props.construct.components.every(blockId => {
+        const block = this.props.blocks[blockId];
+        if (block.source.source === 'egf') {
+          return true;
+        }
+        const optionIds = Object.keys(block.options);
+        if (optionIds.length === 0) {
+          return false;
+        }
+        return optionIds.every(optionId => {
+          const option = this.props.blocks[optionId];
+          return option.source.source === 'egf';
+        });
+      });
+      return canOrderFromEGF ? <button onClick={this.onOrderDNA} className="order-button">Order DNA</button> : null;
     }
     return null;
   }
