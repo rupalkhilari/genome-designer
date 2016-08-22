@@ -461,7 +461,7 @@ export default class Layout {
       if (this.construct.isTemplate()) {
         text += '<span style="color:gray">&nbsp;Template</span>';
       }
-      if (this.construct.isAuthoring()) {
+      if (this.isAuthoring()) {
         text += '<span style="color:gray">&nbsp;(Authoring)</span>';
       }
       this.titleNodeTextWidth = this.titleNode.measureText(text).x + kT.textPad;
@@ -549,6 +549,15 @@ export default class Layout {
       this.nestedLayouts[key].dispose();
     });
     this.nestedLayouts = this.newNestedLayouts;
+  }
+
+  /**
+   * nested constructs may be indicate not authoring when the top level construct does
+   * so always check the top level construct.
+   * @return {Boolean}
+   */
+  isAuthoring() {
+    return this.constructViewer.props.construct.isAuthoring()
   }
   /**
    * store layout information on our cloned copy of the data, constructing
@@ -654,7 +663,7 @@ export default class Layout {
     // which row we are on.
     let rowIndex = 0;
     // display only non hidden blocks
-    const components = ct.components.filter(part => !this.blocks[part].isHidden() || ct.isAuthoring());
+    const components = ct.components.filter(part => !this.blocks[part].isHidden() || this.isAuthoring());
     // layout all non hidden blocks
     components.forEach(part => {
 
