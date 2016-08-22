@@ -15,7 +15,7 @@ limitations under the License.
 */
 import invariant from 'invariant';
 
-const storage = global.localStorage;
+const storage = window.localStorage;
 
 export function getItem(id) {
   try {
