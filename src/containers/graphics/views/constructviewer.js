@@ -365,6 +365,17 @@ export class ConstructViewer extends Component {
   }
 
   /**
+   * return true if the given block can accept children.
+   * @param  {string}  blockId
+   * @return {Boolean}
+   */
+  blockCanHaveChildren(blockId) {
+    const block = this.props.blocks[blockId];
+    invariant(block, 'expected to get a block');
+    // list blocks cannot have children
+    return !block.isList();
+  }
+  /**
    * menu items for blocks context menu, can get merged with construct context menu
    */
   blockContextMenuItems = () => {
