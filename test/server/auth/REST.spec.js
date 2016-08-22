@@ -51,7 +51,10 @@ describe('Server', () => {
 
     //todo - e2e tests for auth config / update account
 
-    it('/user/config should get user config');
+    it('/user/config should get user config', () => {
+      throw new Error('write me');
+    });
+
     it('/user/config should set user config');
     it('/user/config should error on setting invalid user config');
     it('/user/update should merge user update');

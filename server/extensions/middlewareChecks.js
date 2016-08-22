@@ -52,7 +52,7 @@ export const checkUserExtensionActive = (extensionManifest, user) => {
     return false;
   }
 
-  // todo - do we want this to be opt in or opt-out?
+  // todo - do we want this to be opt in or opt-out? currently: opt-in
   // curently, must be in your manifest, and not set to inactive
   // this requires that when developing an extension, you add it to your config
   const extensionKey = extensionManifest.name;
