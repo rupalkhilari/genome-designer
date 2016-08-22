@@ -19,8 +19,6 @@ describe('Extensions', () => {
             return done(err);
           }
 
-          console.log(result.body);
-
           expect(result.body).to.be.an.object;
           assert(Object.keys(result.body).length > 0, 'there should be extensions registered');
           assert(Object.keys(result.body).every(key => {

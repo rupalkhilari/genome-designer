@@ -48,14 +48,14 @@ const createGeneratorsInitialProjects = (user) => {
     .filter(projectConfig => typeof projectConfig.generator === 'function')
     .map(projectConfig => () => projectConfig.generator(projectConfig, user));
 
-  invariant(projectGenerators.length >= 1, 'must have some default projects, got none. check config for user ' + user.uuid + ' -- ' + Object.keys(config.projects).join(', '));
+  invariant(projectGenerators.length >= 1, '[User Setup] must have some default projects, got none. check config for user ' + user.uuid + ' -- ' + Object.keys(config.projects).join(', '));
 
   return projectGenerators;
 };
 
 //create initial projects and set up configuration for them
 export default function onboardNewUser(user) {
-  console.log('onboarding ' + user.uuid + ' ' + user.email);
+  console.log('[User Setup] Onboarding ' + user.uuid + ' ' + user.email);
 
   const initialProjectGenerators = createGeneratorsInitialProjects(user);
   const [firstRollGen, ...restRollGens] = initialProjectGenerators;

@@ -27,6 +27,7 @@ import bodyParser from 'body-parser';
 import checkUserSetup from './userSetup';
 import userConfigDefaults from './userConfigDefaults';
 import { userConfigKey } from './userConstants';
+import { getConfigFromUser } from './utils';
 
 export const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json();
@@ -86,13 +87,17 @@ router.get('/logout', (req, res) => {
 // expects full user object to be posted
 const handleRegisterOrUpdate = (req, res, next) => {
   const userInput = req.body;
-  const inputConfig = typeof userInput.data === 'object' ? userInput.data[userConfigKey] : {};
+  const inputConfig = getConfigFromUser(userInput);
 
+  //todo - should we merge deep?
   const userConfig = Object.assign({}, configForDefaultUser, inputConfig);
   const userData = Object.assign({}, defaultUser.data, { [userConfigKey]: userConfig });
 
   //assign to the default user
   Object.assign(defaultUser, userInput, { data: userData }, defaultUserForcedFields);
+
+  //console.log('[Local Auth - User Update]');
+  //console.log(JSON.stringify(defaultUser, null, 2));
 
   res.json(defaultUser);
 };

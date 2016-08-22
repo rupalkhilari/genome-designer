@@ -22,6 +22,7 @@ describe('middleware', () => {
     });
 
     //not sure how to test this... jsdom doesn't set cookies apparently
+    //todo - test headers
     it('login() should set a cookie');
 
     it('getUser() should fetch a user object if you are logged in', () => {

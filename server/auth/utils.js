@@ -19,6 +19,10 @@ import { merge, values } from 'lodash';
 import userConfigDefaults from './userConfigDefaults';
 import { userConfigKey } from './userConstants';
 
+//these are the fields we expect on the client user object
+//todo - reconcile uuid here and userid on client
+const fields = ['config', 'uuid', 'firstName', 'lastName', 'email'];
+
 //validate config on user.data
 //todo - should validate that the projects and extensions exist, here
 export const validateConfig = (config) => {
@@ -59,6 +63,14 @@ export const updateUserConfig = (user, newConfig) => {
   };
 
   return merge({}, user, { data: userData });
+};
+
+//update user, from client form { ...user, config }
+export const updateUserAll = (user, patch) => {
+  invariant(Object.keys(patch).every(key => fields.indexOf(key) >= 0), 'got unexpected key user patch: ' + Object.keys(patch));
+
+  const { config, ...rest } = patch;
+  return merge({}, updateUserConfig(user, config), rest);
 };
 
 export const pruneUserObject = (user) => {

@@ -44,10 +44,12 @@ fs.readdirSync(nodeModulesDir).forEach(packageName => {
       [packageName]: depManifest,
     });
   } catch (err) {
-    console.warn('error loading extension: ' + packageName);
+    console.warn('\n\nerror loading extension: ' + packageName);
     console.error(err);
   }
 });
+
+console.log('[Extensions Loaded] ' + Object.keys(registry));
 
 export const isRegistered = (name) => {
   return registry.hasOwnProperty(name);

@@ -34,7 +34,10 @@ export const checkUserExtensionAccess = (extensionManifest, user) => {
   //if it's private, check if user is valid
   const accessConfig = extensionManifest.geneticConstructor.access;
 
+  //console.log('\n\nAccess Check - ' + extensionManifest.name, extensionManifest.geneticConstructor.access);
+
   if (accessConfig) {
+    //console.log('[User Extension Access] got access config', accessConfig.email, user.email, user.email.indexOf(accessConfig.email) >= 0);
     if (accessConfig.email && user.email.indexOf(accessConfig.email) >= 0) {
       return true;
     }
@@ -55,14 +58,6 @@ export const checkUserExtensionActive = (extensionManifest, user) => {
   const extensionKey = extensionManifest.name;
   const config = getConfigFromUser(user);
   const extPrefs = config.extensions[extensionKey];
-
-  console.log(extensionKey, extensionManifest, extPrefs);
-
-  //todo - remove this, once can update user's config
-  //opt-out by default....
-  if (!extPrefs) {
-    return true;
-  }
 
   return extPrefs && extPrefs.active !== false;
 };

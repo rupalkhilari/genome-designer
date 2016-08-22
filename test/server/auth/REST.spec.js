@@ -49,8 +49,12 @@ describe('Server', () => {
         });
     });
 
-    //it('[future] should return the session key in the database');
-    //it('[future] should ensure user exists');
-    //it('[future] should error for invalid users');
+    //todo - e2e tests for auth config / update account
+
+    it('/user/config should get user config');
+    it('/user/config should set user config');
+    it('/user/config should error on setting invalid user config');
+    it('/user/update should merge user update');
+    it('/register accepts a configuration, returns the user');
   });
 });

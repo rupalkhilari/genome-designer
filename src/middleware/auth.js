@@ -16,14 +16,20 @@
 import rejectingFetch from './rejectingFetch';
 import invariant from 'invariant';
 import { headersGet, headersPost, headersPut, headersDelete } from './headers';
-import { authPath, registerPath } from './paths';
+import { serverPath, authPath, registerPath } from './paths';
 
 const authFetch = (...args) => {
   return rejectingFetch(...args)
-    .then(resp => {
-      return resp.json();
-    })
-    .catch(resp => resp.json().then(err => Promise.reject(err)));
+    .then(resp => resp.json())
+    .catch(resp => {
+      if (!resp.status) {
+        return Promise.reject(resp);
+      }
+      if (resp.headers.get('Content-Type').indexOf('json') >= 0) {
+        return Promise.reject(resp.json());
+      }
+      return Promise.reject(resp.text());
+    });
 };
 
 // login with email and password and set the sessionKey (cookie) for later use
@@ -67,7 +73,7 @@ export const updateAccount = (payload) => {
   const body = payload;
   const stringified = JSON.stringify(body);
 
-  return authFetch('/user/update', headersPost(stringified));
+  return authFetch(serverPath('user/update'), headersPost(stringified));
 };
 
 export const logout = () => {
@@ -80,13 +86,13 @@ export const getUser = () => {
 };
 
 export const getUserConfig = () => {
-  return rejectingFetch('/user/config', headersGet())
+  return rejectingFetch(serverPath('user/config'), headersGet())
     .then(resp => resp.json());
 };
 
 export const setUserConfig = (newConfig) => {
   invariant(newConfig && typeof newConfig === 'object', 'must pass a new configuration object');
 
-  return rejectingFetch('/user/config', headersPost(JSON.stringify(newConfig)))
+  return rejectingFetch(serverPath('user/config'), headersPost(JSON.stringify(newConfig)))
     .then(resp => resp.json());
 };

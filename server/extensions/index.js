@@ -48,7 +48,7 @@ router.use(ensureReqUserMiddleware);
 router.get('/listAll', (req, res) => {
   // in dev, running locally, so dont check - you can see them all.
   // This way, dont need to add extension to user permissions so can just symlink into node_modules without problem.
-  const accessFilter = (process.env.NODE_ENV !== 'production') ?
+  const accessFilter = (process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test') ?
     () => true :
     (manifest, key) => {
       return checkUserExtensionAccess(manifest, req.user);

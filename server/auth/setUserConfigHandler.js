@@ -15,29 +15,46 @@
  */
 
 import fetch from 'isomorphic-fetch';
+import invariant from 'invariant';
 import { INTERNAL_HOST, API_END_POINT } from '../urlConstants';
-import { pruneUserObject, updateUserConfig } from './utils';
+import { pruneUserObject, updateUserAll, updateUserConfig } from './utils';
 import { headersPost } from '../../src/middleware/headers';
 
+//todo - rename (handles user not just config)
 //parameterized route handler for setting user config
 //expects req.user and req.config to be set
-export default function setUserConfigHandler({ useRegister = false }) {
+export default function setUserConfigHandler({
+  useRegister = false,
+  updateWholeUser = false,
+}) {
   const url = useRegister === true ?
   INTERNAL_HOST + '/auth/register' :
   INTERNAL_HOST + '/auth/update-all';
 
   return (req, res, next) => {
-    const { user: userInput, config: configInput } = req;
-    let user;
+    if (!req.user) next('req.user must be set');
+    if (updateWholeUser === true && !req.userPatch) next('if updating user, set req.userPatch');
+    if (updateWholeUser === false && !req.config) next('if updating config, set req.config');
 
+    const { user: userInput, config: configInput, userPatch } = req;
+    let user = userInput;
+
+    //console.log(userInput, userPatch, configInput);
 
     try {
-      user = updateUserConfig(userInput, configInput);
+      if (updateWholeUser === true) {
+        user = updateUserAll(userInput, userPatch);
+      } else {
+        user = updateUserConfig(userInput, configInput);
+      }
     } catch (err) {
-      return res.status(422).send(err);
+      console.log('[User Config Handler] Error Updating config');
+      console.log(err);
+      return res.status(422).json({ err });
     }
 
-    console.log(user, userInput, configInput);
+    //console.log('USER CONFIG HANDLER');
+    //console.log(user, userInput, configInput, userPatch);
 
     const postOptions = headersPost(JSON.stringify(user));
 
@@ -56,7 +73,7 @@ export default function setUserConfigHandler({ useRegister = false }) {
         .catch(err => {
           console.log('error setting user config');
           console.log(err);
-          res.status(501).send(err);
+          res.status(501).json({ err });
         });
     }
 
@@ -76,17 +93,25 @@ export default function setUserConfigHandler({ useRegister = false }) {
         return resp.json();
       })
       .then(userPayload => {
+        //console.log('userPayload');
+        //console.log(userPayload);
+
         if (!!userPayload.message) {
           return Promise.reject(userPayload);
         }
 
         const pruned = pruneUserObject(userPayload);
+
+        //console.log('sending pruned');
+        //console.log(pruned);
+
         res.json(pruned);
       })
       .catch(err => {
-        console.log('got error');
+        console.log('got error setting user config');
         console.log(err);
-        res.status(500).json(err);
+        console.log(err.stack);
+        res.status(500).json({ err });
       });
   };
 }
