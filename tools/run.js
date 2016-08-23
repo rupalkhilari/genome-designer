@@ -14,7 +14,11 @@ function run(fn, options) {
     console.log(
       `[${format(end)}] Finished '${task.name}${options ? `(${options})` : ''}' after ${time} ms`
     );
-  });
+  })
+    .catch(err => {
+      console.log(err);
+      throw err;
+    });
 }
 
 //e.g. babel-node tools/run script

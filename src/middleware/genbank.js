@@ -49,6 +49,9 @@ export const importGenbankOrCSV = (file, projectId) => {
   return rejectingFetch(uri, headers)
     .then(resp => resp.json())
     .then(json => {
+      if (projectId === 'convert') {
+        return json;
+      }
       invariant(json && json.ProjectId, 'expect a project ID');
       return json.ProjectId;
     });

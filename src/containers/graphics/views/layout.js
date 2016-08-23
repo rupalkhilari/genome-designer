@@ -354,6 +354,11 @@ export default class Layout {
     return '#1d222d';
   }
 
+  partIsHidden(part) {
+    const block = this.blocks[part];
+    return block.isHidden();
+  }
+
   /**
    * return the property within the rule part of the blocks data
    */
@@ -456,6 +461,9 @@ export default class Layout {
       if (this.construct.isTemplate()) {
         text += '<span style="color:gray">&nbsp;Template</span>';
       }
+      if (this.isAuthoring()) {
+        text += '<span style="color:gray">&nbsp;(Authoring)</span>';
+      }
       this.titleNodeTextWidth = this.titleNode.measureText(text).x + kT.textPad;
 
       this.titleNode.set({
@@ -541,6 +549,15 @@ export default class Layout {
       this.nestedLayouts[key].dispose();
     });
     this.nestedLayouts = this.newNestedLayouts;
+  }
+
+  /**
+   * nested constructs may be indicate not authoring when the top level construct does
+   * so always check the top level construct.
+   * @return {Boolean}
+   */
+  isAuthoring() {
+    return this.constructViewer.props.construct.isAuthoring()
   }
   /**
    * store layout information on our cloned copy of the data, constructing
@@ -639,11 +656,14 @@ export default class Layout {
     // additional height required by the tallest list on the row
     let maxListHeight = 0;
 
+    // used to track the nested constructs on each row
+    let nestedConstructs = [];
+
     // width of first row is effected by parent block, so we have to track
     // which row we are on.
     let rowIndex = 0;
     // display only non hidden blocks
-    const components = ct.components.filter(part => !this.blocks[part].isHidden());
+    const components = ct.components.filter(part => !this.blocks[part].isHidden() || this.isAuthoring());
     // layout all non hidden blocks
     components.forEach(part => {
 
@@ -683,22 +703,37 @@ export default class Layout {
 
       // if position would exceed x limit then wrap
       if (xp + td.x > mx) {
+        // ensure all nested constructs on the row are updated for list block height
+        if (nestedConstructs.length && maxListHeight > 0) {
+          nestedConstructs.forEach(child => {
+            child.insetY += maxListHeight;
+            child.update({
+              construct: child.construct,
+              blocks: this.blocks,
+              currentBlocks: this.currentBlocks,
+              currentConstructId: this.currentConstructId})
+          });
+        }
+
+        nestedConstructs = [];
         xp = startX;
         yp += kT.rowH + nestedVertical + maxListHeight;
         nestedVertical = 0;
         maxListHeight = 0;
         row = this.rowFactory(new Box2D(xp, yp - kT.rowBarH, 0, kT.rowBarH));
         rowIndex += 1;
+
       }
 
       // update maxListHeight based on how many list items this block has
-      maxListHeight = Math.max(maxListHeight, listN * kT.blockH);
+      maxListHeight = Math.max(maxListHeight, listN * kT.optionH);
       invariant(isFinite(maxListHeight) && maxListHeight >= 0, 'expected a valid number');
 
       // update part, including its text and color and with height to accomodate list items
       node.set({
         bounds: new Box2D(xp, yp, td.x, kT.blockH),
         text: name,
+        opacity: this.partIsHidden(part) ? 0.7 : 1,
         fill: this.fillColor(part),
         color: this.fontColor(part),
       });
@@ -721,6 +756,10 @@ export default class Layout {
             rootLayout: false,
           });
         }
+
+        // track the nested layouts per row since they might need adjusting for list blocks
+        // at the end of the row
+        nestedConstructs.push(nestedLayout);
 
         // update base color of nested construct skeleton
         nestedLayout.baseColor = block.metadata.color || this.baseColor;
@@ -754,6 +793,18 @@ export default class Layout {
       const rowEnd = rowIndex === 0 ? Math.max(xp, this.initialRowXLimit) : xp;
       const rowWidth = rowEnd - rowStart;
       row.set({translateX: rowStart + rowWidth / 2, width: rowWidth});
+
+      // ensure all nested constructs on the row are updated for list block height
+      if (nestedConstructs.length && maxListHeight > 0) {
+        nestedConstructs.forEach(child => {
+          child.insetY += maxListHeight;
+          child.update({
+            construct: child.construct,
+            blocks: this.blocks,
+            currentBlocks: this.currentBlocks,
+            currentConstructId: this.currentConstructId})
+        });
+      }
     }
 
     // cleanup any dangling rows

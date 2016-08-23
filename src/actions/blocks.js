@@ -422,7 +422,73 @@ export const blockMoveComponent = (blockId, componentId, newIndex) => {
  Options
  ***************************************/
 
-//not exposing authoring actions yet, as there is some work to be done to ensure blocks are actually part of the project etc.
+//todo - doc
+export const blockMarkTemplate = (blockId, isTemplate = true) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const oldBlock = getState().blocks[blockId];
+    //better check this (maybe make a selector - logic used lots of places)
+    invariant(Object.keys(state.projects)
+        .map(projectId => state.projects[projectId])
+        .some(project => project.components.indexOf(blockId) >= 0),
+      'construct must be direct child of project'
+    );
+
+    const block = oldBlock.setTemplate(isTemplate);
+    dispatch({
+      type: ActionTypes.BLOCK_SET_TEMPLATE,
+      undoable: true,
+      isTemplate,
+      block,
+    });
+    return block;
+  };
+};
+
+//todo - doc
+export const blockSetHidden = (blockId, isHidden = true) => {
+  return (dispatch, getState) => {
+    const oldBlock = getState().blocks[blockId];
+    const block = oldBlock.setRule('hidden', isHidden);
+    dispatch({
+      type: ActionTypes.BLOCK_SET_HIDDEN,
+      undoable: true,
+      isHidden,
+      block,
+    });
+    return block;
+  };
+};
+
+//todo - doc
+export const blockSetAuthoring = (blockId, isAuthoring = true) => {
+  return (dispatch, getState) => {
+    const oldBlock = getState().blocks[blockId];
+
+    const block = oldBlock.setAuthoring(isAuthoring);
+    dispatch({
+      type: ActionTypes.BLOCK_SET_AUTHORING,
+      undoable: true,
+      isAuthoring,
+      block,
+    });
+    return block;
+  };
+};
+
+export const blockSetListBlock = (blockId, isList = true) => {
+  return (dispatch, getState) => {
+    const oldBlock = getState().blocks[blockId];
+    const block = oldBlock.setListBlock(isList);
+    dispatch({
+      type: ActionTypes.BLOCK_SET_LIST,
+      undoable: true,
+      isList,
+      block,
+    });
+    return block;
+  };
+};
 
 //for authoring template
 export const blockOptionsAdd = (blockId, ...optionIds) => {
