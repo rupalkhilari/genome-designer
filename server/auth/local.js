@@ -24,10 +24,10 @@
  */
 import express from 'express';
 import bodyParser from 'body-parser';
-import checkUserSetup from './userSetup';
-import userConfigDefaults from './userConfigDefaults';
-import { userConfigKey } from './userConstants';
-import { getConfigFromUser } from './utils';
+import checkUserSetup from '../onboarding/userSetup';
+import userConfigDefaults from '../onboarding/userConfigDefaults';
+import { userConfigKey } from '../user/userConstants';
+import { getConfigFromUser } from '../user/utils';
 
 export const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json();

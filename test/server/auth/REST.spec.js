@@ -1,7 +1,7 @@
 import { assert, expect } from 'chai';
 import request from 'supertest';
 import { merge } from 'lodash';
-import userConfigDefaults from '../../../server/auth/userConfigDefaults';
+import userConfigDefaults from '../../../server/onboarding/userConfigDefaults';
 
 const devServer = require('../../../server/server');
 

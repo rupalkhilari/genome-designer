@@ -17,7 +17,7 @@ import express from 'express';
 import path from 'path';
 import bodyParser from 'body-parser';
 import { getServerExtensions } from './registry';
-import { pruneUserObjectMiddleware } from '../auth/utils';
+import { pruneUserObjectMiddleware } from '../user/utils';
 import {
   checkExtensionExistsMiddleware,
   checkUserExtensionAccessMiddleware,

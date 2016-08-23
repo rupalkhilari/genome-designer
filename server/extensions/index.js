@@ -16,8 +16,8 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import { errorDoesNotExist } from '../utils/errors';
-import { clientBundleUrl, defaultClientFilePath } from './constants';
-import { getExtensions, getClientExtensions } from './registry';
+import { clientBundleUrl } from './constants';
+import { getExtensions } from './registry';
 import loadExtension, { getExtensionInternalPath } from './loadExtension';
 import errorHandlingMiddleware from '../utils/errorHandlingMiddleware';
 import extensionApiRouter from './apiRouter';
@@ -27,10 +27,9 @@ import {
   checkExtensionExistsMiddleware,
   checkUserExtensionAccessMiddleware,
   checkExtensionIsClientMiddleware,
-  checkExtensionIsServerMiddleware,
 } from './middlewareChecks';
 import { manifestIsServer, manifestIsClient } from './manifestUtils';
-import { ensureReqUserMiddleware } from '../auth/utils';
+import { ensureReqUserMiddleware } from '../user/utils';
 
 //native extensions
 import csvRouter from './native/csv/index';

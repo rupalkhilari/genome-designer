@@ -20,7 +20,7 @@
  */
 import invariant from 'invariant';
 import * as rollup from '../data/rollup';
-import { getConfigFromUser } from './utils';
+import { getConfigFromUser } from '../user/utils';
 
 //NOTE - egf_parts vs egf_templates
 import makeEgfRollup from '../../data/egf_parts/index';

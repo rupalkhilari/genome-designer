@@ -23,11 +23,11 @@ import {
   errorCouldntFindProjectId,
   errorVersioningSystem,
   errorNoUser,
-} from './../utils/errors';
+} from '../utils/errors';
 import * as querying from './querying';
 import * as persistence from './persistence';
 import * as rollup from './rollup';
-import { ensureReqUserMiddleware } from '../auth/utils';
+import { ensureReqUserMiddleware } from '../user/utils';
 import { permissionsMiddleware } from './permissions';
 
 import projectFileRouter from './projectFileRouter';

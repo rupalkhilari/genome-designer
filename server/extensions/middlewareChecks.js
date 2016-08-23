@@ -14,9 +14,8 @@
  limitations under the License.
  */
 import invariant from 'invariant';
-import { errorNoPermission } from '../utils/errors';
-import { getConfigFromUser } from '../auth/utils';
-import { errorExtensionNotFound } from '../utils/errors';
+import { errorNoPermission, errorExtensionNotFound } from '../utils/errors';
+import { getConfigFromUser } from '../user/utils';
 import extensionRegistry from './registry';
 import { manifestIsServer, manifestIsClient } from './manifestUtils';
 

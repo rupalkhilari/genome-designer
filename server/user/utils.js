@@ -16,7 +16,7 @@
 import invariant from 'invariant';
 import { merge, values } from 'lodash';
 
-import userConfigDefaults from './userConfigDefaults';
+import userConfigDefaults from '../onboarding/userConfigDefaults';
 import { userConfigKey } from './userConstants';
 
 //these are the fields we expect on the client user object

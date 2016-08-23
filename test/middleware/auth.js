@@ -1,7 +1,7 @@
 import { assert, expect } from 'chai';
 import { merge } from 'lodash';
 import { login, getUser, getUserConfig, setUserConfig } from '../../src/middleware/auth';
-import userConfigDefaults from '../../server/auth/userConfigDefaults';
+import userConfigDefaults from '../../server/onboarding/userConfigDefaults';
 
 //noinspection JSUnusedLocalSymbols
 const devServer = require('../../server/server'); // starts the server which will be accessed by methods below

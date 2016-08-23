@@ -15,7 +15,6 @@
  */
 
 import fetch from 'isomorphic-fetch';
-import invariant from 'invariant';
 import { INTERNAL_HOST, API_END_POINT } from '../urlConstants';
 import { pruneUserObject, updateUserAll, updateUserConfig } from './utils';
 import { headersPost } from '../../src/middleware/headers';

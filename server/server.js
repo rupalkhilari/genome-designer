@@ -18,8 +18,8 @@ import fs from 'fs';
 import express from 'express';
 import morgan from 'morgan';
 
-import setUserConfigHandler from './auth/setUserConfigHandler';
-import userRouter from './auth/userRouter';
+import setUserConfigHandler from './user/setUserConfigHandler';
+import userRouter from './user/userRouter';
 import dataRouter from './data/index';
 import orderRouter from './order/index';
 import fileRouter from './file/index';
@@ -27,8 +27,8 @@ import extensionsRouter from './extensions/index';
 import reportRouter from './report/index';
 import bodyParser from 'body-parser';
 import errorHandlingMiddleware from './utils/errorHandlingMiddleware';
-import checkUserSetup from './auth/userSetup';
-import { pruneUserObject } from './auth/utils';
+import checkUserSetup from './onboarding/userSetup';
+import { pruneUserObject } from './user/utils';
 
 import { HOST_PORT, HOST_NAME, API_END_POINT } from './urlConstants';
 
