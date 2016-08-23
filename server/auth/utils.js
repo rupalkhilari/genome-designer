@@ -29,11 +29,11 @@ export const validateConfig = (config) => {
   const { projects, extensions } = config;
 
   if (projects !== undefined) {
-    invariant(typeof projects === 'object', 'config.projects must be an object');
+    invariant(typeof projects === 'object' && !Array.isArray(projects), 'config.projects must be an object');
   }
 
   if (extensions !== undefined) {
-    invariant(typeof extensions === 'object', 'config.extensions must be an object');
+    invariant(typeof extensions === 'object' && !Array.isArray(extensions), 'config.extensions must be an object');
   }
 
   return true;

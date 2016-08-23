@@ -1,5 +1,4 @@
 import { assert, expect } from 'chai';
-import request from 'supertest';
 import { merge } from 'lodash';
 import { login, getUser, getUserConfig, setUserConfig } from '../../src/middleware/auth';
 import userConfigDefaults from '../../server/auth/userConfigDefaults';
@@ -46,7 +45,7 @@ describe('middleware', () => {
           assert(typeof config === 'object', 'expected a config');
           assert(typeof config.projects === 'object', 'expected projects config');
           assert(typeof config.extensions === 'object', 'expected an extensions config');
-        })
+        });
     });
 
     it('setUserConfig() should set user config', () => {
@@ -60,13 +59,13 @@ describe('middleware', () => {
               console.log(newConfig);
 
               expect(oldConfig.projects).to.eql(newConfig.projects);
-              expect(oldConfig.extensions).not.to.eql(newConfig.extensions)
-              expect(newConfig.extensions).to.eql(nextConfig.extensions)
+              expect(oldConfig.extensions).not.to.eql(newConfig.extensions);
+              expect(newConfig.extensions).to.eql(nextConfig.extensions);
               return getUserConfig()
             })
             .then(confirmConfig => {
               expect(oldConfig.projects).to.eql(confirmConfig.projects);
-              expect(nextConfig.extensions).to.eql(confirmConfig.extensions)
+              expect(nextConfig.extensions).to.eql(confirmConfig.extensions);
             });
         });
     });

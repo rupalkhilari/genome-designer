@@ -1,11 +1,12 @@
 import { assert, expect } from 'chai';
 import request from 'supertest';
-import { login, getUser } from '../../../src/middleware/auth';
+import { merge } from 'lodash';
+import userConfigDefaults from '../../../server/auth/userConfigDefaults';
 
 const devServer = require('../../../server/server');
 
 describe('Server', () => {
-  describe('Auth', () => {
+  describe.only('Auth', () => {
     const dummyUser = {
       email: 'bio.nano.dev@autodesk.com',
       password: 'HelpMe#1',
@@ -49,18 +50,45 @@ describe('Server', () => {
         });
     });
 
-    //todo - e2e tests for auth config / update account
+    it('/user/config should get user config', (done) => {
+      const agent = request.agent(devServer);
 
-    it('/user/config should get user config', () => {
-      throw new Error('write me');
+      agent.get('/user/config')
+        .expect(200)
+        .expect((res) => {
+          const config = res.body;
+          assert(typeof config === 'object', 'expected a config');
+          assert(typeof config.projects === 'object', 'expected projects config');
+          assert(typeof config.extensions === 'object', 'expected an extensions config');
+        })
+        .end(done);
     });
 
-    it('/user/config should set user config', () => {
-      throw new Error('write me');
+    it('/user/config should set user config', (done) => {
+      const agent = request.agent(devServer);
+
+      const allInactive = Object.keys(userConfigDefaults.extensions).reduce((acc, key) => Object.assign(acc, { [key]: { active: false } }), {});
+      const nextConfig = merge({}, userConfigDefaults, { extensions: allInactive });
+
+      agent.post('/user/config')
+        .send(nextConfig)
+        .expect(200)
+        .expect((res) => {
+          const config = res.body;
+          assert(typeof config === 'object', 'expected a config');
+          assert(typeof config.projects === 'object', 'expected projects config');
+          assert(typeof config.extensions === 'object', 'expected an extensions config');
+          expect(config.extensions).to.eql(nextConfig.extensions);
+          expect(config.projects).to.eql(nextConfig.projects);
+        })
+        .end(done);
     });
 
-    it('/user/config should error on setting invalid user config', () => {
-      throw new Error('write me');
+    it('/user/config should error on setting invalid user config', (done) => {
+      const agent = request.agent(devServer);
+      agent.post('/user/config')
+        .send({ extensions: [] })
+        .expect(422, done)
     });
 
     it('/user/update should merge user update', () => {
