@@ -26,7 +26,7 @@ import {
   extensionAuthor,
   extensionRegion,
   manifestIsClient,
-  manifestIsServer
+  manifestIsServer,
 } from '../../../server/extensions/manifestUtils';
 
 import '../../styles/ExtensionPicker.css';
@@ -118,9 +118,11 @@ export class ExtensionPicker extends Component {
                   Region: extensionRegion(extension),
                 };
 
-                return (<div className="ExtensionPicker-row" key={extension.name}>
+                return (<div className="ExtensionPicker-row"
+                             key={extension.name}>
                   {tableFields.map((field) => {
-                    return (<div className={'ExtensionPicker-cell ExtensionPicker-' + field}>
+                    return (<div className={'ExtensionPicker-cell ExtensionPicker-' + field}
+                                 key={field}>
                       {values[field]}
                     </div>);
                   })}

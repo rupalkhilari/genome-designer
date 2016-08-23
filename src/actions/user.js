@@ -94,9 +94,10 @@ export const userUpdate = (user) => {
 export const userUpdateConfig = (config) => {
   return (dispatch, getState) => {
     return setUserConfig(config)
-      .then(user => {
-        const mappedUser = mapUserFromServer(user);
-        const setUserPayload = _userSetUser(mappedUser);
+      .then(config => {
+        const user = Object.assign({}, getState().user, { config });
+        console.log(user);
+        const setUserPayload = _userSetUser(user);
         dispatch(setUserPayload);
         return user;
       });
