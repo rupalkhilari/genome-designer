@@ -96,7 +96,6 @@ router.route('/:extension')
     next();
   })
   .get((req, res, next) => {
-    console.log("Coming here");
     const { projectId, extension, folderPath } = req;
 
     fileSystem.directoryContents(folderPath)
