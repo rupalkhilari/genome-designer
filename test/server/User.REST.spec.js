@@ -1,55 +1,27 @@
+/*
+ Copyright 2016 Autodesk,Inc.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
 import { assert, expect } from 'chai';
 import request from 'supertest';
 import { merge } from 'lodash';
-import userConfigDefaults from '../../../server/onboarding/userConfigDefaults';
+import userConfigDefaults from '../../server/onboarding/userConfigDefaults';
 
 const devServer = require('../../../server/server');
 
 describe('Server', () => {
-  describe.only('Auth', () => {
-    const dummyUser = {
-      email: 'bio.nano.dev@autodesk.com',
-      password: 'HelpMe#1',
-    };
-
-    it('/auth/login route should return a 200', (done) => {
-      request(devServer)
-        .post('/auth/login')
-        .send(dummyUser)
-        .expect(200, done);
-    });
-
-    it('/auth/login should set a cookie on the client', (done) => {
-      request(devServer)
-        .post('/auth/login')
-        .send(dummyUser)
-        .expect((res) => {
-          const cookie = res.headers['set-cookie'].join(';');
-          assert(cookie.length, 'no cookie on response for login...');
-        })
-        .end(done);
-    });
-
-    it('/auth/cookies should return cookies sent on request', (done) => {
-      const agent = request.agent(devServer);
-
-      agent
-        .post('/auth/login')
-        .send(dummyUser)
-        .end((err, res) => {
-          const cookie = res.headers['set-cookie'].join(';');
-          assert(cookie, 'no cookie on response for login...');
-
-          agent
-            .get('/auth/cookies')
-            .expect((res) => {
-              expect(res.text).to.not.equal(':(');
-              expect(res.text).to.equal('mock-auth');
-            })
-            .end(done);
-        });
-    });
-
+  describe('User', () => {
     it('/user/config should get user config', (done) => {
       const agent = request.agent(devServer);
 
