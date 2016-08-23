@@ -5,7 +5,7 @@ import { login, getUser } from '../../../src/middleware/auth';
 const devServer = require('../../../server/server');
 
 describe('Server', () => {
-  describe('auth', () => {
+  describe('Auth', () => {
     const dummyUser = {
       email: 'bio.nano.dev@autodesk.com',
       password: 'HelpMe#1',
@@ -24,7 +24,7 @@ describe('Server', () => {
         .send(dummyUser)
         .expect((res) => {
           const cookie = res.headers['set-cookie'].join(';');
-          assert(cookie, 'no cookie on response for login...');
+          assert(cookie.length, 'no cookie on response for login...');
         })
         .end(done);
     });
@@ -55,9 +55,20 @@ describe('Server', () => {
       throw new Error('write me');
     });
 
-    it('/user/config should set user config');
-    it('/user/config should error on setting invalid user config');
-    it('/user/update should merge user update');
-    it('/register accepts a configuration, returns the user');
+    it('/user/config should set user config', () => {
+      throw new Error('write me');
+    });
+
+    it('/user/config should error on setting invalid user config', () => {
+      throw new Error('write me');
+    });
+
+    it('/user/update should merge user update', () => {
+      throw new Error('write me');
+    });
+
+    it('/register accepts a configuration, returns the user', () => {
+      throw new Error('write me');
+    });
   });
 });

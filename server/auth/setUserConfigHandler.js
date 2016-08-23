@@ -31,6 +31,8 @@ export default function setUserConfigHandler({
   INTERNAL_HOST + '/auth/register' :
   INTERNAL_HOST + '/auth/update-all';
 
+  const wholeUser = useRegister === true || updateWholeUser === true;
+
   return (req, res, next) => {
     if (!req.user) next('req.user must be set');
     if (updateWholeUser === true && !req.userPatch) next('if updating user, set req.userPatch');
@@ -42,7 +44,7 @@ export default function setUserConfigHandler({
     //console.log(userInput, userPatch, configInput);
 
     try {
-      if (updateWholeUser === true) {
+      if (wholeUser) {
         user = updateUserAll(userInput, userPatch);
       } else {
         user = updateUserConfig(userInput, configInput);
@@ -68,7 +70,8 @@ export default function setUserConfigHandler({
       return userPromises.update(user)
         .then(updatedUser => {
           const pruned = pruneUserObject(updatedUser);
-          res.json(pruned);
+          const toSend = wholeUser ? pruned : pruned.config;
+          res.json(toSend);
         })
         .catch(err => {
           console.log('error setting user config');
@@ -101,11 +104,12 @@ export default function setUserConfigHandler({
         }
 
         const pruned = pruneUserObject(userPayload);
+        const toSend = wholeUser ? pruned : pruned.config;
 
         //console.log('sending pruned');
         //console.log(pruned);
 
-        res.json(pruned);
+        res.json(toSend);
       })
       .catch(err => {
         console.log('got error setting user config');
