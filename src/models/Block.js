@@ -243,16 +243,6 @@ export default class Block extends Instance {
     return this.rules.frozen === true;
   }
 
-  /**
-   * Check whether a template is being authored
-   * @method isAuthoring
-   * @memberOf Block
-   * @returns {boolean}
-   */
-  isAuthoring() {
-    return this.rules.authoring === true;
-  }
-
   /************
    rules
    ************/
@@ -312,6 +302,7 @@ export default class Block extends Instance {
     return this.setRule('role', role);
   }
 
+  //todo - should this delete the options entirely?
   /**
    * Specify whether Block is a list block. Clears components when setting to true, and clears options when setting to false.
    * @method setListBlock
@@ -328,28 +319,8 @@ export default class Block extends Instance {
       return cleared.setRule('list', true);
     }
 
-    const cleared = this.merge({options: {}});
+    const cleared = this.merge(Object.keys(this.options).reduce((acc, key) => Object.assign(acc, { [key]: false })));
     return cleared.setRule('list', false);
-  }
-
-  /**
-   * Set a construct as a template
-   * @method setTemplate
-   * @memberOf Block
-   * @param {boolean} [isTemplate=true]
-   */
-  setTemplate(isTemplate = true) {
-    return this.setRule('fixed', Boolean(isTemplate));
-  }
-
-  /**
-   *
-   * @param isAuthoring
-   * @returns {Block}
-   */
-  setAuthoring(isAuthoring = true) {
-    invariant(this.isTemplate(), 'can only author a template');
-    return this.setRule('authoring', Boolean(isAuthoring));
   }
 
   /************
@@ -413,7 +384,6 @@ export default class Block extends Instance {
   getType(defaultType = 'Block') {
     if (this.isTemplate()) return 'Template';
     if (this.isConstruct()) return 'Construct';
-    if (this.isList()) return 'List Block';
     if (this.isFiller()) return 'Filler';
     return defaultType;
   }
@@ -458,7 +428,7 @@ export default class Block extends Instance {
    * @returns {Block}
    */
   addComponent(componentId, index) {
-    invariant(!this.isFixed() || this.isAuthoring(), 'Block is fixed - cannot add/remove/move components');
+    invariant(!this.isFixed(), 'Block is fixed - cannot add/remove/move components');
     invariant(!this.isList(), 'cannot add components to a list block');
     invariant(idValidator(componentId), 'must pass valid component ID');
     const spliceIndex = (Number.isInteger(index) && index >= 0) ? index : this.components.length;
@@ -476,7 +446,7 @@ export default class Block extends Instance {
    * @returns {Block} Returns same instance if componentId not found
    */
   removeComponent(componentId) {
-    invariant(!this.isFixed() || this.isAuthoring(), 'Block is fixed - cannot add/remove/move components');
+    invariant(!this.isFixed(), 'Block is fixed - cannot add/remove/move components');
     const spliceIndex = this.components.findIndex(compId => compId === componentId);
 
     if (spliceIndex < 0) {
@@ -500,7 +470,7 @@ export default class Block extends Instance {
    */
   //
   moveComponent(componentId, newIndex) {
-    invariant(!this.isFixed() || this.isAuthoring(), 'Block is fixed - cannot add/remove/move components');
+    invariant(!this.isFixed(), 'Block is fixed - cannot add/remove/move components');
     invariant(!this.isList(), 'cannot add components to a list block');
     const spliceFromIndex = this.components.findIndex(compId => compId === componentId);
 
@@ -565,7 +535,7 @@ export default class Block extends Instance {
   addOptions(...optionIds) {
     invariant(this.isList(), 'must be a list block to add list options');
     invariant(optionIds.every(option => idValidator(option)), 'must pass component IDs');
-    const toAdd = optionIds.reduce((acc, id) => Object.assign(acc, { [id]: true }), {});
+    const toAdd = optionIds.reduce((acc, id) => Object.assign(acc, { [id]: false }), {});
     const newOptions = Object.assign(cloneDeep(this.options), toAdd);
 
     if (Object.keys(newOptions).length === Object.keys(this.options).length) {

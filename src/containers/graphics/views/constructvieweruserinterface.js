@@ -164,17 +164,11 @@ export default class ConstructViewerUserInterface extends UserInterface {
     }
 
     if (bestItem) {
-      // the edgeThreshold is usually a small region at left/right of block
-      // but if the block cannot have children then we expand to cover the entire block
-      let threshold = edgeThreshold;
-      if (!this.constructViewer.blockCanHaveChildren(bestItem.block)) {
-        threshold = Math.ceil(bestItem.AABB.w / 2);
-      }
       let edge = null;
-      if (point.x <= bestItem.AABB.x + threshold) {
+      if (point.x <= bestItem.AABB.x + edgeThreshold) {
         edge = 'left';
       }
-      if (point.x >= bestItem.AABB.right - threshold) {
+      if (point.x >= bestItem.AABB.right - edgeThreshold) {
         edge = 'right';
       }
       return {block: bestItem.block, edge};
@@ -638,7 +632,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
     // select construct on drag over
     this.selectConstruct();
     // no drop on frozen or fixed constructs
-    if (this.construct.isFrozen() || (this.construct.isFixed() && !this.construct.isAuthoring())) {
+    if (this.construct.isFrozen() || this.construct.isFixed()) {
       return;
     }
     if (payload.item.isConstruct && payload.item.isConstruct() && payload.item.isTemplate()) {
@@ -664,7 +658,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
    */
   onDrop(globalPosition, payload, event) {
     // no drop on frozen or fixed constructs
-    if (this.construct.isFrozen() || (this.construct.isFixed() && !this.construct.isAuthoring())) {
+    if (this.construct.isFrozen() || this.construct.isFixed()) {
       return;
     }
     // for now templates can only be dropped on the new construct target which is part of the canvas
