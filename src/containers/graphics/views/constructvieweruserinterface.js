@@ -164,11 +164,17 @@ export default class ConstructViewerUserInterface extends UserInterface {
     }
 
     if (bestItem) {
+      // the edgeThreshold is usually a small region at left/right of block
+      // but if the block cannot have children then we expand to cover the entire block
+      let threshold = edgeThreshold;
+      if (!this.constructViewer.blockCanHaveChildren(bestItem.block)) {
+        threshold = Math.ceil(bestItem.AABB.w / 2);
+      }
       let edge = null;
-      if (point.x <= bestItem.AABB.x + edgeThreshold) {
+      if (point.x <= bestItem.AABB.x + threshold) {
         edge = 'left';
       }
-      if (point.x >= bestItem.AABB.right - edgeThreshold) {
+      if (point.x >= bestItem.AABB.right - threshold) {
         edge = 'right';
       }
       return {block: bestItem.block, edge};
