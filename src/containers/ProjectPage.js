@@ -96,6 +96,7 @@ class ProjectPage extends Component {
 
   render() {
     const { showingGrunt, project, projectId, constructs } = this.props;
+    debugger;
 
     //handle project not loaded
     if (!project || !project.metadata) {
