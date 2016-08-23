@@ -61,7 +61,6 @@ export default class Node2D {
       fontSize: '2rem',
       fontWeight: 'normal',
       fontFamily: 'Arial',
-      opacity: 1,
       color: 'black',
       uuid: uuid.v4(),
       glyph: 'none',
@@ -399,7 +398,7 @@ export default class Node2D {
     this.el.style.transform = this.localTransform.toCSSString();
 
     // visibility is controlled with opacity
-    this.el.style.opacity = this.visible ? this.opacity : 0;
+    this.el.style.opacity = this.visible ? 1 : 0;
 
     // now update our glyph
     if (this.glyphObject) {
