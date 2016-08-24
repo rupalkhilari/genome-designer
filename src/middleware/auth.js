@@ -68,21 +68,21 @@ export const reset = (email, forgotPasswordHash, newPassword) => {
   return authFetch(authPath('reset-password'), headersPost(stringified));
 };
 
-// update account
-export const updateAccount = (payload) => {
-  const body = payload;
-  const stringified = JSON.stringify(body);
-
-  return authFetch(serverPath('user/update'), headersPost(stringified));
-};
-
 export const logout = () => {
   return rejectingFetch(authPath('logout'), headersGet());
 };
 
 // use established sessionKey to get the user object
 export const getUser = () => {
-  return authFetch(authPath('current-user'), headersGet());
+  return authFetch(serverPath('user/info'), headersGet());
+};
+
+// update account
+export const updateAccount = (payload) => {
+  const body = payload;
+  const stringified = JSON.stringify(body);
+
+  return authFetch(serverPath('user/info'), headersPost(stringified));
 };
 
 export const getUserConfig = () => {

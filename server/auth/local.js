@@ -24,10 +24,11 @@
  */
 import express from 'express';
 import bodyParser from 'body-parser';
+import validEmail from 'valid-email';
 import checkUserSetup from '../onboarding/userSetup';
 import userConfigDefaults from '../onboarding/userConfigDefaults';
 import { userConfigKey } from '../user/userConstants';
-import { getConfigFromUser } from '../user/utils';
+import { getConfigFromUser, mergeConfigToUserData } from '../user/utils';
 
 export const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json();
@@ -85,32 +86,57 @@ router.get('/logout', (req, res) => {
 // simulate saving to the user object.
 // allow writing user config, but not ID etc.
 // expects full user object to be posted
-const handleRegisterOrUpdate = (req, res, next) => {
+const handleUpdate = (req, res, next) => {
   const userInput = req.body;
   const inputConfig = getConfigFromUser(userInput);
 
-  //todo - should we merge deep?
-  const userConfig = Object.assign({}, configForDefaultUser, inputConfig);
-  const userData = Object.assign({}, defaultUser.data, { [userConfigKey]: userConfig });
+  //merge deep here to match the auth platform
+  const mappedUser = mergeConfigToUserData(userInput, inputConfig);
 
   //assign to the default user
-  Object.assign(defaultUser, userInput, { data: userData }, defaultUserForcedFields);
+  Object.assign(defaultUser, mappedUser, defaultUserForcedFields);
 
-  //console.log('[Local Auth - User Update]');
-  //console.log(JSON.stringify(defaultUser, null, 2));
+  console.log('[Local Auth - User Update]');
+  console.log(JSON.stringify(defaultUser, null, 2));
 
   res.json(defaultUser);
 };
 
+//we dont really do anything on register, but do need to handle it the same way as auth platform
+// this route expects an email and password (fristname ,lastname, config), not the whole user.
+const handleRegister = (req, res, next) => {
+  const { email, password, firstName, lastName, data } = req.body;
+
+  //basic checks, auth platform usually sends 400
+  if (!email || !validEmail(email)) {
+    res.status(400).json({ message: 'invalid email' });
+  }
+  if (!password || password.length < 6) {
+    res.status(400).json({ message: 'invalid password' });
+  }
+
+  Object.assign(defaultUser, { email, firstName, lastName }, defaultUserForcedFields);
+  if (data) {
+    Object.assign(defaultUser, { data });
+  }
+
+  console.log('[Local Auth - User Register]');
+  console.log(JSON.stringify(defaultUser, null, 2));
+
+  //we dont need to check user setup here (or provide callback on register), since mockUser middleware does it on every request, and ID not changing
+
+  res.send(defaultUser);
+};
+
 // register the new user
-// POST user object
+// POST config object (not user object)
 //we aren't really creating a user - we are just updating the preferences of default user (since there is only one user in local auth)
-router.post('/register', jsonParser, handleRegisterOrUpdate);
+router.post('/register', jsonParser, handleRegister);
 
 // update user information
 // POST user object
 // for the moment, not actually persisted, just save for the session of the server (and there is only one user)
-router.post('/update-all', jsonParser, handleRegisterOrUpdate);
+router.post('/update-all', jsonParser, handleUpdate);
 
 // testing only
 
@@ -122,6 +148,8 @@ router.get('/cookies', (req, res) => {
 
   res.send(':(');
 });
+
+//todo - mock forgot-password and reset-password
 
 //assign the user to the request, including their config
 export const mockUser = (req, res, next) => {

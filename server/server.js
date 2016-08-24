@@ -18,7 +18,7 @@ import fs from 'fs';
 import express from 'express';
 import morgan from 'morgan';
 
-import setUserConfigHandler from './user/setUserConfigHandler';
+import { registrationHandler } from './user/updateUserHandler';
 import userRouter from './user/userRouter';
 import dataRouter from './data/index';
 import orderRouter from './order/index';
@@ -75,6 +75,19 @@ app.set('view engine', 'pug');
 // Register API middleware
 // ----------------------------------------------------
 
+const onLoginHandler = (req, res, next) => {
+  return checkUserSetup(req.user)
+    .then((projectId) => {
+      //note this expects an abnormal return of req and res to the next function
+      return next(req, res);
+    })
+    .catch(err => {
+      console.log(err);
+      console.log(err.stack);
+      res.status(500).end();
+    });
+};
+
 // insert some form of user authentication
 // the auth routes are currently called from the client and expect JSON responses
 if (process.env.BIO_NANO_AUTH) {
@@ -87,18 +100,7 @@ if (process.env.BIO_NANO_AUTH) {
     loginFailure: false,
     resetForm: '/homepage/reset',
     apiEndPoint: API_END_POINT,
-    onLogin: (req, res, next) => {
-      return checkUserSetup(req.user)
-        .then((projectId) => {
-          //note this expects an abnormal return of req and res to the next function
-          return next(req, res);
-        })
-        .catch(err => {
-          console.log(err);
-          console.log(err.stack);
-          res.status(500).end();
-        });
-    },
+    onLogin: onLoginHandler,
     registerRedirect: false,
   };
   app.use(initAuthMiddleware(authConfig));
@@ -111,7 +113,7 @@ if (process.env.BIO_NANO_AUTH) {
 }
 
 //expose our own register route to handle custom onboarding
-app.post('/register', setUserConfigHandler({ useRegister: true }));
+app.post('/register', registrationHandler);
 app.use('/user', userRouter);
 
 //primary routes

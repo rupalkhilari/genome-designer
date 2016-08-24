@@ -20,8 +20,18 @@ import userConfigDefaults from '../onboarding/userConfigDefaults';
 import { userConfigKey } from './userConstants';
 
 //these are the fields we expect on the client user object
+//note that the field UUID is here, whereas on the client it is userid
 //todo - reconcile uuid here and userid on client
 const fields = ['config', 'uuid', 'firstName', 'lastName', 'email'];
+
+export const mergeConfigToUserData = (user, config = userConfigDefaults) => {
+  return merge({}, user, {
+    data: {
+      constructor: true,
+      [userConfigKey]: config,
+    },
+  });
+};
 
 //validate config on user.data
 //todo - should validate that the projects and extensions exist, here
@@ -30,6 +40,7 @@ export const validateConfig = (config) => {
 
   if (projects !== undefined) {
     invariant(typeof projects === 'object' && !Array.isArray(projects), 'config.projects must be an object');
+    invariant(Object.keys(projects).length > 0, 'must have some starting projects');
   }
 
   if (extensions !== undefined) {
@@ -44,7 +55,12 @@ export const getConfigFromUser = (user = {}, def = userConfigDefaults) => {
   if (!data) {
     return def;
   }
-  return data[userConfigKey] || def;
+
+  const config = data[userConfigKey];
+  if (!config || !Object.keys(config).length) {
+    return def;
+  }
+  return config;
 };
 
 //validate + create a merged config
@@ -52,17 +68,13 @@ export const getConfigFromUser = (user = {}, def = userConfigDefaults) => {
 export const updateUserConfig = (user, newConfig) => {
   const oldConfig = getConfigFromUser(user);
 
+  //todo
   //question!!!! - merge deeply, or shallow assign? For now, shallow assign so have to explicitly include default projects + extensions for them to show up
   const config = Object.assign({}, oldConfig, newConfig);
 
   validateConfig(config);
 
-  const userData = {
-    constructor: true,
-    [userConfigKey]: config,
-  };
-
-  return merge({}, user, { data: userData });
+  return mergeConfigToUserData(user, config);
 };
 
 //update user, from client form { ...user, config }

@@ -15,8 +15,8 @@
  */
 import express from 'express';
 import bodyParser from 'body-parser';
-import { ensureReqUserMiddleware, getConfigFromUser } from './utils';
-import setUserConfigHandler from './setUserConfigHandler';
+import { ensureReqUserMiddleware, getConfigFromUser, pruneUserObject } from './utils';
+import updateUserHandler from './updateUserHandler';
 
 export const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json();
@@ -33,11 +33,14 @@ router.route('/config')
       Object.assign(req, { config });
       next();
     },
-    setUserConfigHandler({ useRegister: false })
+    updateUserHandler({})
   );
 
-router.route('/update')
+router.route('/info')
   .all(ensureReqUserMiddleware)
+  .get((req, res, next) => {
+    res.json(pruneUserObject(req.user));
+  })
   .post(jsonParser,
     (req, res, next) => {
       const userPatch = req.body;
@@ -45,7 +48,7 @@ router.route('/update')
       Object.assign(req, { config, userPatch });
       next();
     },
-    setUserConfigHandler({ useRegister: false, updateWholeUser: true })
+    updateUserHandler({ updateWholeUser: true })
   );
 
 //catch-all

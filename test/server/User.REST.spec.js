@@ -18,10 +18,10 @@ import request from 'supertest';
 import { merge } from 'lodash';
 import userConfigDefaults from '../../server/onboarding/userConfigDefaults';
 
-const devServer = require('../../../server/server');
+const devServer = require('../../server/server');
 
 describe('Server', () => {
-  describe('User', () => {
+  describe.only('User', () => {
     it('/user/config should get user config', (done) => {
       const agent = request.agent(devServer);
 
@@ -60,15 +60,92 @@ describe('Server', () => {
       const agent = request.agent(devServer);
       agent.post('/user/config')
         .send({ extensions: [] })
-        .expect(422, done)
+        .expect(422, done);
     });
 
-    it('/user/update should merge user update', () => {
-      throw new Error('write me');
+    it('GET /user/info should get pruned user', (done) => {
+      const agent = request.agent(devServer);
+      agent.get('/user/info')
+        .expect(200)
+        .expect((res) => {
+          const user = res.body;
+          expect(user.userid).to.be.defined;
+          expect(user.email).to.be.defined;
+          expect(user.firstName).to.be.defined;
+          expect(user.lastName).to.be.defined;
+          assert(typeof user.config === 'object', 'expected a config');
+        })
+        .end(done);
     });
 
-    it('/register accepts a configuration, returns the user', () => {
-      throw new Error('write me');
+    it('POST /user/update should merge user delta, and return user', (done) => {
+      const agent = request.agent(devServer);
+      const newEmail = 'billybob@joe.com';
+      agent.post('/user/info')
+        .send({email: newEmail})
+        .expect(200)
+        .expect((res) => {
+          const user = res.body;
+          expect(user.email).to.equal(newEmail);
+        })
+        .end(done);
+    });
+
+    it('POST /user/update errors on fields it doesnt know', (done) => {
+      const agent = request.agent(devServer);
+      agent.post('/user/info')
+        .send({invalidField: 'some value'})
+        .expect(422, done);
+    });
+
+    it('/register works without a configuration', (done) => {
+      const agent = request.agent(devServer);
+      const user = {
+        email: `T.${Math.random()}@test.com`,
+        password: '123456',
+      };
+
+      agent.post('/register')
+        .send(user)
+        .expect(200)
+        .expect(res => {
+          const user = res.body;
+          console.log('got user');
+          console.log(user);
+
+          throw new Error('todo');
+
+          //todo - check headers for cookie
+          //todo - redirect? handle same way as auth
+        })
+        .end(done);
+    });
+
+    it('/register accepts a configuration, returns the user', (done) => {
+      const agent = request.agent(devServer);
+
+      const allInactive = Object.keys(userConfigDefaults.extensions).reduce((acc, key) => Object.assign(acc, { [key]: { active: false } }), {});
+      const nextConfig = { projects: {}, extensions: allInactive };
+      const user = {
+        email: `T.${Math.random()}@test.com`,
+        password: '123456',
+        config: nextConfig,
+      };
+
+      agent.post('/register')
+        .send(user)
+        .expect(200)
+        .expect(res => {
+          const user = res.body;
+          console.log('got user');
+          console.log(user);
+
+          throw new Error('todo');
+
+          //todo - check headers for cookie
+          //todo - redirect? handle same way as auth
+        })
+        .end(done);
     });
   });
 });

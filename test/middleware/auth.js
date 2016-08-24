@@ -56,12 +56,10 @@ describe('middleware', () => {
         .then(oldConfig => {
           return setUserConfig(nextConfig)
             .then(newConfig => {
-              console.log(newConfig);
-
               expect(oldConfig.projects).to.eql(newConfig.projects);
               expect(oldConfig.extensions).not.to.eql(newConfig.extensions);
               expect(newConfig.extensions).to.eql(nextConfig.extensions);
-              return getUserConfig()
+              return getUserConfig();
             })
             .then(confirmConfig => {
               expect(oldConfig.projects).to.eql(confirmConfig.projects);
