@@ -893,7 +893,7 @@ export default class Layout {
     }
 
     // for nesting return the height consumed by the layout
-    return heightUsed + nestedVertical + kT.rowBarH;
+    return heightUsed + nestedVertical + kT.rowBarH + maxListHeight;
   }
 
   /**

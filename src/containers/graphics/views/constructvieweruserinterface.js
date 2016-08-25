@@ -521,8 +521,12 @@ export default class ConstructViewerUserInterface extends UserInterface {
       if (block) {
         // cancel our own mouse operations for now
         this.mouseTrap.cancelDrag();
-        // no mutation of frozen or fixed constructs
-        if (this.construct.isFrozen() || this.construct.isFixed()) {
+        // no mutation of frozen constructs
+        if (this.construct.isFrozen()) {
+          return;
+        }
+        // no mutation of fixed constructs unless authoring
+        if (this.construct.isFixed() && !this.construct.isAuthoring()) {
           return;
         }
         // open an undo/redo transaction
@@ -538,7 +542,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
         const globalPoint = this.mouseTrap.mouseToGlobal(evt);
         // proxy representing 1 ore more blocks
         const proxy = this.makeDragProxy(draggables);
-        // remove the blocks, unless meta key pressed
+        // remove the blocks, unless meta key pressed.
         const copying = evt.altKey;
         // filter our selected elements so they are in natural order
         // and with children of selected parents excluded.
