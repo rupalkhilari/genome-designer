@@ -332,6 +332,8 @@ export const blockAddComponent = (blockId, componentId, index = -1, forceProject
     const oldBlock = getState().blocks[blockId];
     const component = getState().blocks[componentId];
 
+    invariant(!component.isTemplate(), 'cannot add a template as a component');
+
     const componentProjectId = component.projectId;
     const nextParentProjectId = oldBlock.projectId;
 
@@ -386,11 +388,16 @@ export const blockAddComponents = (blockId, componentIds, index, forceProjectId 
     dispatch(pauseAction());
     dispatch(undoActions.transact());
 
-    componentIds.forEach((componentId, subIndex) => {
-      dispatch(blockAddComponent(blockId, componentId, index + subIndex, forceProjectId));
-    });
+    try {
+      componentIds.forEach((componentId, subIndex) => {
+        dispatch(blockAddComponent(blockId, componentId, index + subIndex, forceProjectId));
+      });
+      dispatch(undoActions.commit());
+    } catch (err) {
+      dispatch(undoActions.abort());
+      console.error(err);
+    }
 
-    dispatch(undoActions.commit());
     dispatch(resumeAction());
 
     return componentIds;
@@ -427,12 +434,7 @@ export const blockMarkTemplate = (blockId, isTemplate = true) => {
   return (dispatch, getState) => {
     const state = getState();
     const oldBlock = getState().blocks[blockId];
-    //better check this (maybe make a selector - logic used lots of places)
-    invariant(Object.keys(state.projects)
-        .map(projectId => state.projects[projectId])
-        .some(project => project.components.indexOf(blockId) >= 0),
-      'construct must be direct child of project'
-    );
+    invariant(dispatch(selectors.blockIsTopLevelConstruct(blockId)), 'construct must be direct child of project');
 
     const block = oldBlock.setTemplate(isTemplate);
     dispatch({
@@ -465,6 +467,9 @@ export const blockSetAuthoring = (blockId, isAuthoring = true) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
 
+    invariant(oldBlock.isTemplate(), 'can only start authoring a template');
+    invariant(dispatch(selectors.blockIsTopLevelConstruct(blockId)), 'construct must be direct child of project');
+
     const block = oldBlock.setAuthoring(isAuthoring);
     dispatch({
       type: ActionTypes.BLOCK_SET_AUTHORING,
@@ -476,6 +481,7 @@ export const blockSetAuthoring = (blockId, isAuthoring = true) => {
   };
 };
 
+//todo - doc
 export const blockSetListBlock = (blockId, isList = true) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
@@ -490,6 +496,7 @@ export const blockSetListBlock = (blockId, isList = true) => {
   };
 };
 
+//todo - doc
 //for authoring template
 export const blockOptionsAdd = (blockId, ...optionIds) => {
   return (dispatch, getState) => {
@@ -505,6 +512,7 @@ export const blockOptionsAdd = (blockId, ...optionIds) => {
   };
 };
 
+//todo - doc
 //for authoring template
 export const blockOptionsRemove = (blockId, ...optionIds) => {
   return (dispatch, getState) => {

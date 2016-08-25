@@ -162,6 +162,24 @@ export const blockGetBlocksWithName = (name) => {
   };
 };
 
+export const blockIsTopLevelConstruct = (blockId) => {
+  return (dispatch, getState) => {
+    const state = getState();
+    const block = _getBlockFromStore(blockId, state);
+    const { projectId } = block;
+
+    //not in a project
+    if (!projectId) {
+      return false;
+    }
+
+    //cant rely on project selectors (circular dep)
+    const project = state.projects[projectId];
+
+    return !!project && project.components.indexOf(blockId) >= 0;
+  };
+};
+
 export const blockGetParent = (blockId) => {
   return (dispatch, getState) => {
     return _getParentFromStore(blockId, getState());
@@ -238,9 +256,9 @@ const _nearestParent = (state, ...blockIds) => {
   //if any block is detached (doesn't have a parent) and not the current construct ID, return null
   //todo - check if any construct, not the currently focused one
   if (Object.keys(parentsMap).some(blockId => {
-    const parents = parentsMap[blockId];
-    return parents.length === 0 && state.focus.constructId !== blockId;
-  })) {
+      const parents = parentsMap[blockId];
+      return parents.length === 0 && state.focus.constructId !== blockId;
+    })) {
     return null;
   }
 

@@ -326,7 +326,7 @@ export default class Block extends Instance {
       return cleared.setRule('list', true);
     }
 
-    const cleared = this.mutate('options', {})
+    const cleared = this.mutate('options', {});
     return cleared.setRule('list', false);
   }
 
@@ -341,8 +341,10 @@ export default class Block extends Instance {
   }
 
   /**
-   *
-   * @param isAuthoring
+   * Enable Authoring for a template.
+   * @method setProjectId
+   * @memberOf Block
+   * @param {boolean} [isAuthoring=true]
    * @returns {Block}
    */
   setAuthoring(isAuthoring = true) {
