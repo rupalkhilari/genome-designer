@@ -451,7 +451,8 @@ export const blockMarkTemplate = (blockId, isTemplate = true) => {
 export const blockSetHidden = (blockId, isHidden = true) => {
   return (dispatch, getState) => {
     const oldBlock = getState().blocks[blockId];
-    const block = oldBlock.setRule('hidden', isHidden);
+
+    const block = oldBlock.setHidden(isHidden);
     dispatch({
       type: ActionTypes.BLOCK_SET_HIDDEN,
       undoable: true,

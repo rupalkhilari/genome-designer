@@ -352,6 +352,18 @@ export default class Block extends Instance {
     return this.setRule('authoring', Boolean(isAuthoring));
   }
 
+  /**
+   * Mark a block as hidden
+   * @method setHidden
+   * @memberOf Block
+   * @param {boolean} [isHidden=true]
+   * @returns {Block}
+   */
+  setHidden(isHidden = true) {
+    invariant(!this.isTemplate(), 'cannnot hide a template');
+    return this.setRule('hidden', Boolean(isHidden));
+  }
+
   /************
    metadata
    ************/
