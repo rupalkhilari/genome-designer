@@ -326,7 +326,7 @@ export default class Block extends Instance {
       return cleared.setRule('list', true);
     }
 
-    const cleared = this.mutate('options', {})
+    const cleared = this.mutate('options', {});
     return cleared.setRule('list', false);
   }
 
@@ -341,13 +341,27 @@ export default class Block extends Instance {
   }
 
   /**
-   *
-   * @param isAuthoring
+   * Enable Authoring for a template.
+   * @method setProjectId
+   * @memberOf Block
+   * @param {boolean} [isAuthoring=true]
    * @returns {Block}
    */
   setAuthoring(isAuthoring = true) {
     invariant(this.isTemplate(), 'can only author a template');
     return this.setRule('authoring', Boolean(isAuthoring));
+  }
+
+  /**
+   * Mark a block as hidden
+   * @method setHidden
+   * @memberOf Block
+   * @param {boolean} [isHidden=true]
+   * @returns {Block}
+   */
+  setHidden(isHidden = true) {
+    invariant(!this.isTemplate(), 'cannnot hide a template');
+    return this.setRule('hidden', Boolean(isHidden));
   }
 
   /************
