@@ -43,15 +43,15 @@ export class TemplateRules extends Component {
         'List Block',
         (value) => this.props.blockSetListBlock(this.props.block.id, value),
         () => this.props.block.isConstruct()],
+      /*
       ['frozen',
         'Frozen',
         (value) => this.props.blockFreeze(this.props.block.id, false)],
+      */
     ];
   }
 
   render() {
-    //todo - determine whether to deep freeze
-    //todo - ability to unfreeze a block - can't do that now
     const { isConstruct, readOnly, block } = this.props;
 
     return (
