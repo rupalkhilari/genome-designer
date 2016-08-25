@@ -19,17 +19,13 @@ import { withRouter } from 'react-router';
 
 class AuthRouteWrapper extends Component {
   static propTypes = {
-    user: PropTypes.object,
+    userid: PropTypes.string,
     children: PropTypes.object,
     router: PropTypes.object.isRequired,
   };
 
-  shouldComponentUpdate(nextProps) {
-    return nextProps.user.userid !== this.props.user.userid;
-  }
-
   render() {
-    if (!!this.props.user.userid) {
+    if (!!this.props.userid) {
       return React.Children.only(this.props.children);
     }
 
@@ -44,7 +40,7 @@ class AuthRouteWrapper extends Component {
 
 function mapStateToProps(state) {
   return {
-    user: state.user,
+    userid: state.user.userid,
   };
 }
 
