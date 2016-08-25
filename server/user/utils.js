@@ -86,6 +86,10 @@ export const updateUserAll = (user, patch) => {
 };
 
 export const pruneUserObject = (user) => {
+  if (!user) {
+    return {};
+  }
+
   const config = getConfigFromUser(user);
   const fields = ['uuid', 'firstName', 'lastName', 'email'];
   const fieldsObject = fields.reduce((acc, field) => Object.assign(acc, { [field]: user[field] }), {});

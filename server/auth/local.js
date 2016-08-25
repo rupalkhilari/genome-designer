@@ -30,6 +30,13 @@ import userConfigDefaults from '../onboarding/userConfigDefaults';
 import { userConfigKey } from '../user/userConstants';
 import { getConfigFromUser, mergeConfigToUserData } from '../user/utils';
 
+//super basic session handling
+const requireLogin = Boolean(process.env.REQUIRELOGIN);
+const generateMockCookieValue = () => requireLogin ?
+  `cookie${Math.floor(Math.random() * 10000000)}` :
+  'mock-auth';
+let currentCookie = generateMockCookieValue();
+
 export const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json();
 
@@ -56,7 +63,8 @@ export const defaultUser = Object.assign(
 //basic auth routes
 
 router.post('/login', (req, res) => {
-  res.cookie('sess', 'mock-auth');
+  currentCookie = generateMockCookieValue();
+  res.cookie('sess', currentCookie);
   res.statusCode = 200;
   res.send(defaultUser);
   return res.end();
@@ -80,7 +88,9 @@ router.get('/current-user', (req, res) => {
 });
 
 router.get('/logout', (req, res) => {
-  res.status(501).send('cant log out of local auth');
+  currentCookie = null;
+  res.clearCookie('sess');
+  res.status(200).send();
 });
 
 // simulate saving to the user object.
@@ -123,9 +133,13 @@ const handleRegister = (req, res, next) => {
   console.log('[Local Auth - User Register]');
   console.log(JSON.stringify(defaultUser, null, 2));
 
-  //we dont need to check user setup here (or provide callback on register), since mockUser middleware does it on every request, and ID not changing
+  //if not logged in (requireLogin) then mockAuth won't setup user on register, so lets double check here (even though ID not changing)
+  checkUserSetup(defaultUser).then(() => {
+    currentCookie = generateMockCookieValue();
+    res.cookie('sess', currentCookie);
 
-  res.send(defaultUser);
+    res.send(defaultUser);
+  });
 };
 
 // register the new user
@@ -153,11 +167,13 @@ router.get('/cookies', (req, res) => {
 
 //assign the user to the request, including their config
 export const mockUser = (req, res, next) => {
-  if (req.cookies.sess !== null) {
+  if (requireLogin !== true || req.cookies.sess === currentCookie) {
     Object.assign(req, { user: defaultUser });
-  }
 
-  //stub the initial user setup here as well
-  checkUserSetup({ uuid: defaultUser.uuid })
-    .then(() => next());
+    //stub the initial user setup here as well
+    checkUserSetup({ uuid: defaultUser.uuid })
+      .then(() => next());
+  } else {
+    next();
+  }
 };

@@ -24,7 +24,7 @@ var registerViaHomepage = function(browser) {
     // expect 6 errors to appear ( name error, two email errors, two password erros TOS error )
     .assert.countelements('.error.visible', 6);
     // create fields with viable values including a random email
-  var email = new Date().getTime() + '@hotmail.com';
+  var email = 'User' + new Date().getTime() + 'blah@hotmail.com';
   var password = '123456';
   var firstName = 'George';
   var lastName = 'Washington';
@@ -49,6 +49,7 @@ var registerViaHomepage = function(browser) {
     .pause(1000)
     .waitForElementNotPresent('#auth-signup', 10000, 'expected form to be dismissed')
     .waitForElementPresent('.userwidget', 10000, 'expected to land on page with the user widget visible')
+    .pause(1000)
     // wait for inventory and inspector to be present to ensure we are on a project page
     .waitForElementPresent('.SidePanel.Inventory', 10000, 'Expected Inventory Groups')
     .waitForElementPresent('.SidePanel.Inspector', 10000, 'Expected Inspector')

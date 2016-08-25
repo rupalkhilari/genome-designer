@@ -294,6 +294,8 @@ export const projectLoad = (projectId, avoidCache = false, loadMoreOnFail = fals
       dispatch(pauseAction());
       dispatch(undoActions.transact());
 
+      console.log('dispatching lodaded');
+
       dispatch({
         type: ActionTypes.BLOCK_STASH,
         blocks: Object.keys(rollup.blocks).map(blockId => rollup.blocks[blockId]),
@@ -326,6 +328,7 @@ export const projectOpen = (inputProjectId, skipSave = false) => {
     const currentProjectId = dispatch(projectSelectors.projectGetCurrentId());
     const projectId = inputProjectId || getItem(recentProjectKey);
 
+    //ignore if on a project, and passed the same one
     if (!!currentProjectId && currentProjectId === projectId) {
       return Promise.resolve();
     }
@@ -374,6 +377,7 @@ export const projectOpen = (inputProjectId, skipSave = false) => {
         type: ActionTypes.PROJECT_OPEN,
         projectId,
       });
+      return projectId;
     });
   };
 };

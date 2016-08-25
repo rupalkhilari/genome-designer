@@ -27,14 +27,15 @@ import { headersPost } from '../../src/middleware/headers';
 //note - expects JSON parser ahead of it
 export function registrationHandler(req, res, next) {
   invariant(req.body && typeof req.body === 'object', 'must pass object to register handler, use json parser');
-  const { email, password, firstName, lastName, config } = req.body;
+  const { user, config } = req.body;
+  const { email, password, firstName, lastName } = user;
 
   //basic checks before we hand off to auth/register
   if (!email || !validEmail(email)) {
-    res.status(422).json({ message: 'invalid email' });
+    return res.status(422).json({ message: 'invalid email' });
   }
   if (!password || password.length < 6) {
-    res.status(422).json({ message: 'invalid password' });
+    return res.status(422).json({ message: 'invalid password' });
   }
 
   const mappedUser = mergeConfigToUserData({

@@ -152,7 +152,8 @@ app.get('*', (req, res) => {
     };
     //so that any routing is delegated to the client
     const prunedUser = pruneUserObject(req.user);
-    const user = Object.assign({}, prunedUser, { config: JSON.stringify(prunedUser.config) });
+    const config = prunedUser.config ? JSON.stringify(prunedUser.config) : '{}';
+    const user = Object.assign({}, prunedUser, { config });
     res.render(path.join(pathContent + '/index.pug'), Object.assign({}, user, discourse, {
       productionEnvironment: process.env.NODE_ENV === 'production',
     }));

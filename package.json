@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "babel-node tools/run start",
+    "start-testing": "REQUIRELOGIN=true NODE_ENV=test npm run start",
     "start-instance": "babel-node tools/run start-instance",
     "start-auth-stack": "babel-node tools/run auth-stack",
     "start-auth-stack-testing": "NODE_ENV=test babel-node tools/run auth-stack",

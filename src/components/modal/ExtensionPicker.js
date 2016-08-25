@@ -82,7 +82,7 @@ export class ExtensionPicker extends Component {
 
   render() {
     // no render when not open
-    if (!this.props.open) {
+    if (!this.props.open || !this.props.config || !this.props.config.extensions) {
       return null;
     }
 

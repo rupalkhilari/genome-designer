@@ -94,7 +94,7 @@ class RegisterForm extends Component {
       // close the form / wait message
       this.props.uiSpin();
       this.props.uiShowAuthenticationForm('none');
-      this.props.projectOpen(null);
+      this.props.projectOpen(null, true);
     })
     .catch((reason) => {
       this.props.uiSpin();
