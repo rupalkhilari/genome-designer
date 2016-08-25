@@ -103,7 +103,7 @@ function mapStateToProps(state, props) {
     blockIds.some(blockId => currentProject.components.indexOf(blockId) >= 0);
 
   //todo - error handling for these not set
-  const isAuthoring = !!state.focus.constructId && state.blocks[state.focus.constructId].isAuthoring();
+  const isAuthoring = !!state.focus.constructId && state.blocks[state.focus.constructId].isAuthoring() && focused.length === 1 && type !== 'project' && !readOnly;
 
   const orders = Object.keys(state.orders)
     .map(orderId => state.orders[orderId])
