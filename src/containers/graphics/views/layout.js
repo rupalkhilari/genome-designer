@@ -318,9 +318,9 @@ export default class Layout {
       this.sceneGraph.root.appendChild(node);
       this.map(part, node);
     }
-    // hide/or child expand/collapse glyph
+    // hide/show child expand/collapse glyph
     node.set({
-      hasChildren: this.hasChildren(part),
+      hasChildren: this.someChildrenVisible(part),
     });
     // mark part as in use
     this.usePart(part);
@@ -354,9 +354,36 @@ export default class Layout {
     return '#1d222d';
   }
 
-  partIsHidden(part) {
-    const block = this.blocks[part];
+  /**
+   * NOTE: In authoring mode blocks are never hidden.
+   * @param  {string} blockId
+   * @return {boolean}
+   */
+  blockIsHidden(blockId) {
+    if (this.isAuthoring()) {
+      return false;
+    }
+    const block = this.blocks[blockId];
     return block.isHidden();
+  }
+
+  /**
+   * return true if all the children of the given block are hidden.
+   * Also returns true if the block has no children
+   * @param  {string} blockId
+   * @return {boolean}
+   */
+  allChildrenHidden(blockId) {
+    return this.blocks[blockId].components.every(childId => this.blockIsHidden(childId));
+  }
+
+  /**
+   * true if any of the children are visible
+   * @param  {string} blockId
+   * @return {boolean}
+   */
+  someChildrenVisible(blockId) {
+    return this.blocks[blockId].components.some(childId => !this.blockIsHidden(childId));
   }
 
   /**
@@ -392,11 +419,24 @@ export default class Layout {
   }
 
   /**
+   * first child then is not hidden
+   * @param  {[type]} blockId [description]
+   * @return {[type]}         [description]
+   */
+  firstVisibleChild(blockId) {
+    const block = this.blocks[blockId];
+    invariant(block, 'expect to be able to find the block');
+    const cid = block.components.find(childId => !this.blockIsHidden(childId));
+    invariant(cid, 'expect to find a visible child');
+    return cid;
+  }
+
+  /**
    * return the two nodes that we need to graphically connect to show a connection.
    * The given block is the source block
    */
   connectionInfo(sourceBlockId) {
-    const destinationBlockId = this.firstChild(sourceBlockId);
+    const destinationBlockId = this.firstVisibleChild(sourceBlockId);
     invariant(destinationBlockId, 'expected a child if this method is called');
     return {
       sourceBlock: this.blocks[sourceBlockId],
@@ -662,8 +702,10 @@ export default class Layout {
     // width of first row is effected by parent block, so we have to track
     // which row we are on.
     let rowIndex = 0;
+
     // display only non hidden blocks
-    const components = ct.components.filter(part => !this.blocks[part].isHidden() || this.isAuthoring());
+    const components = ct.components.filter(blockId => !this.blockIsHidden(blockId));
+
     // layout all non hidden blocks
     components.forEach(part => {
 
@@ -733,7 +775,6 @@ export default class Layout {
       node.set({
         bounds: new Box2D(xp, yp, td.x, kT.blockH),
         text: name,
-        opacity: this.partIsHidden(part) ? 0.7 : 1,
         fill: this.fillColor(part),
         color: this.fontColor(part),
       });
@@ -741,8 +782,8 @@ export default class Layout {
       // update any list parts for this blocks
       this.updateListForBlock(block, td.x);
 
-      // render children ( nested constructs )
-      if (this.hasChildren(part) && node.showChildren) {
+      // render children unless user has collapsed the block or it is hidden OR all its children are hidden
+      if (node.showChildren && !this.blockIsHidden(part) && this.someChildrenVisible(part)) {
         // establish the position
         const nestedX = this.insetX + kT.nestedInsetX;
         const nestedY = yp + nestedVertical + kT.blockH + kT.nestedInsetY;
@@ -862,7 +903,10 @@ export default class Layout {
     // update / make all the parts
     this.construct.components.forEach(part => {
       // render children ( nested constructs )
-      if (this.hasChildren(part) && this.nodeFromElement(part).showChildren) {
+      if (this.hasChildren(part) &&
+          !this.blockIsHidden(part) &&
+          !this.allChildrenHidden(part) &&
+          this.nodeFromElement(part).showChildren) {
         // update / create connection
         this.updateConnection(part);
       }
@@ -884,6 +928,9 @@ export default class Layout {
    */
   updateConnection(part) {
     const cnodes = this.connectionInfo(part);
+    if (!cnodes.destinationNode) {
+      return;
+    }
     // the source and destination node id's are used to as the cache key for the connectors
     const key = `${cnodes.sourceBlock.id}-${cnodes.destinationBlock.id}`;
     // get or create connection line
