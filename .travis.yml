@@ -21,8 +21,7 @@ install:
 script:
 - npm run lint
 - npm run test
-- npm run start-testing &
-- sleep 10
+- npm run start-testing
 - npm run nightwatch-saucelabs
 - pkill node
 cache:
