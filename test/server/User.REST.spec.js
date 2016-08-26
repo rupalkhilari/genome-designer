@@ -21,7 +21,7 @@ import userConfigDefaults from '../../server/onboarding/userConfigDefaults';
 const devServer = require('../../server/server');
 
 describe('Server', () => {
-  describe.only('User', () => {
+  describe('User', () => {
     it('/user/config should get user config', (done) => {
       const agent = request.agent(devServer);
 
@@ -82,7 +82,7 @@ describe('Server', () => {
       const agent = request.agent(devServer);
       const newEmail = 'billybob@joe.com';
       agent.post('/user/info')
-        .send({email: newEmail})
+        .send({ email: newEmail })
         .expect(200)
         .expect((res) => {
           const user = res.body;
@@ -94,7 +94,7 @@ describe('Server', () => {
     it('POST /user/update errors on fields it doesnt know', (done) => {
       const agent = request.agent(devServer);
       agent.post('/user/info')
-        .send({invalidField: 'some value'})
+        .send({ invalidField: 'some value' })
         .expect(422, done);
     });
 
@@ -106,17 +106,16 @@ describe('Server', () => {
       };
 
       agent.post('/register')
-        .send(user)
+        .send({ user })
         .expect(200)
         .expect(res => {
-          const user = res.body;
-          console.log('got user');
-          console.log(user);
+          const retrivedUser = res.body;
 
-          throw new Error('todo');
+          assert(res.headers['set-cookie'], 'expected cookie');
+          assert(res.headers['set-cookie'].indexOf('sess'), 'expected session in cookie');
 
-          //todo - check headers for cookie
-          //todo - redirect? handle same way as auth
+          assert(user.email === retrivedUser.email, 'expected same email');
+          expect(retrivedUser.uuid).to.be.defined;
         })
         .end(done);
     });
@@ -129,21 +128,24 @@ describe('Server', () => {
       const user = {
         email: `T.${Math.random()}@test.com`,
         password: '123456',
+      };
+      const payload = {
+        user,
         config: nextConfig,
       };
 
       agent.post('/register')
-        .send(user)
+        .send(payload)
         .expect(200)
         .expect(res => {
-          const user = res.body;
-          console.log('got user');
-          console.log(user);
+          const retrivedUser = res.body;
 
-          throw new Error('todo');
+          assert(res.headers['set-cookie'], 'expected cookie');
+          assert(res.headers['set-cookie'].indexOf('sess'), 'expected session in cookie');
 
-          //todo - check headers for cookie
-          //todo - redirect? handle same way as auth
+          assert(user.email === retrivedUser.email, 'expected same email');
+          expect(retrivedUser.uuid).to.be.defined;
+          expect(retrivedUser.config).to.eql(merge({}, retrivedUser.config, nextConfig));
         })
         .end(done);
     });
