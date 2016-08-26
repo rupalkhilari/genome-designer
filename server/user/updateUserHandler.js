@@ -82,6 +82,60 @@ export function registrationHandler(req, res, next) {
     });
 }
 
+export function loginHandler(req, res, next) {
+  invariant(req.body && typeof req.body === 'object', 'must pass object to login handler, use json parser');
+  const { email, password } = req.body;
+
+  console.log(email, password);
+
+  //basic checks before we hand off to auth/register
+  if (!email || !validEmail(email)) {
+    return res.status(422).json({ message: 'invalid email' });
+  }
+  if (!password || password.length < 6) {
+    return res.status(422).json({ message: 'invalid password' });
+  }
+
+  //regardless whether local auth or real auth (it is mounted appropriately at /auth), we want to hit this route
+  const url = INTERNAL_HOST + '/auth/login';
+
+  console.log('hit login');
+  console.log(email, password, url);
+
+  return fetch(url, headersPost(JSON.stringify(req.body)))
+    .then(resp => {
+      //re-assign cookies from platform authentication
+      const cookies = resp.headers.getAll('set-cookie');
+      cookies.forEach(cookie => {
+        res.set('set-cookie', cookie);
+      });
+
+      return resp.json();
+    })
+    .then(userPayload => {
+      console.log('userPayload');
+      console.log(userPayload);
+
+      if (!!userPayload.message) {
+        return Promise.reject(userPayload);
+      }
+
+      const pruned = pruneUserObject(userPayload);
+
+      //console.log('sending pruned');
+      //console.log(pruned);
+
+      res.json(pruned);
+    })
+    .catch(err => {
+      console.log('[User Register] got error registering');
+      console.log(req.body);
+      console.log(err);
+      console.log(err.stack);
+      res.status(500).json({ err });
+    });
+}
+
 //parameterized route handler for setting user config
 //expects req.user and req.config / req.userPatch to be set
 export default function updateUserHandler({ updateWholeUser = false } = {}) {

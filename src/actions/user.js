@@ -28,7 +28,7 @@ const mapUserFromServer = (serverUser) => ({
   firstName: serverUser.firstName,
   lastName: serverUser.lastName,
   email: serverUser.email,
-  config: serverUser.config,
+  config: serverUser.config || {},
 });
 
 /*
@@ -44,6 +44,8 @@ export const userLogin = (email, password) => {
   return (dispatch, getState) => {
     return login(email, password)
       .then(user => {
+        console.log('got user');
+        console.log(user);
         const mappedUser = mapUserFromServer(user);
         const setUserPayload = _userSetUser(mappedUser);
         dispatch(setUserPayload);

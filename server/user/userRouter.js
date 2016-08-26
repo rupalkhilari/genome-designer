@@ -16,7 +16,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import { ensureReqUserMiddleware, getConfigFromUser, pruneUserObject } from './utils';
-import updateUserHandler from './updateUserHandler';
+import updateUserHandler, { loginHandler } from './updateUserHandler';
 
 export const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json();
@@ -50,6 +50,9 @@ router.route('/info')
     },
     updateUserHandler({ updateWholeUser: true })
   );
+
+router.route('/login')
+  .post(jsonParser, loginHandler);
 
 //catch-all
 router.all('*', (req, res, next) => {

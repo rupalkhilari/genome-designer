@@ -40,7 +40,7 @@ export const login = (user, password) => {
   };
   const stringified = JSON.stringify(body);
 
-  return authFetch(authPath('login'), headersPost(stringified));
+  return authFetch(serverPath('user/login'), headersPost(stringified));
 };
 
 export const register = (user, config = {}) => {

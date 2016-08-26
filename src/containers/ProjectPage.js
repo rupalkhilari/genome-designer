@@ -97,15 +97,11 @@ class ProjectPage extends Component {
   render() {
     const { showingGrunt, project, projectId, constructs } = this.props;
 
-    console.log('rendering project page');
-
     //handle project not loaded
     if (!project || !project.metadata) {
       this.props.projectLoad(projectId, false, true)
         .then(project => {
-          console.log('loaded', project.id, projectId, project);
           if (project.id !== projectId) {
-            console.log('opening');
             this.props.projectOpen(project.id);
           }
         });
@@ -148,14 +144,11 @@ class ProjectPage extends Component {
 }
 
 function mapStateToProps(state, ownProps) {
-
   const userId = state.user.userid;
 
   const projectId = ownProps.params.projectId;
   const project = state.projects[projectId];
   const showingGrunt = !!state.ui.modals.gruntMessage;
-
-  console.log('mapping state', projectId, project);
 
   if (!project) {
     return {
