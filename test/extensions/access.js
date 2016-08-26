@@ -18,9 +18,14 @@ import { assert, expect } from 'chai';
 import testPrivate from '../../extensions/testPrivate/package.json';
 import { updateAccount } from '../../src/middleware/auth';
 import { getExtensionsInfo } from '../../src/middleware/extensions';
+import extensionManifest from '../../server/extensions/package.json';
 
 describe('Extensions', () => {
-  describe.only('Access', () => {
+  describe('Access', () => {
+    before(() => {
+      expect(extensionManifest.dependencies[testPrivate.name]).to.be.defined;
+    });
+
     it('should not allow access to private extensions', () => {
       return getExtensionsInfo()
         .then(manifests => {

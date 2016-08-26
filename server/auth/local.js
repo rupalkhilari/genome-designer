@@ -131,7 +131,7 @@ const handleRegister = (req, res, next) => {
   }
 
   console.log('[Local Auth - User Register]');
-  console.log(JSON.stringify(defaultUser, null, 2));
+  //console.log(JSON.stringify(defaultUser, null, 2));
 
   //if not logged in (requireLogin) then mockAuth won't setup user on register, so lets double check here (even though ID not changing)
   checkUserSetup(defaultUser).then(() => {
