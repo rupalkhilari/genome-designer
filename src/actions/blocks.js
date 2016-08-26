@@ -715,3 +715,27 @@ export const blockSetSequence = (blockId, sequence, useStrict) => {
       });
   };
 };
+
+/**
+ * Set trim of a block's sequence, i.e. how many bases at start and end to skip when viewing
+ * @function
+ * @param {UUID} blockId
+ * @param {number} start bases from start to skip
+ * @param {number} end bases from end to ignore
+ * @returns {Block}
+ */
+export const blockTrimSequence = (blockId, start = 0, end = 0) => {
+  return (dispatch, getState) => {
+    const oldBlock = getState().blocks[blockId];
+
+    return oldBlock.setSequenceTrim(start, end)
+      .then(block => {
+        dispatch({
+          type: ActionTypes.BLOCK_SET_TRIM,
+          undoable: true,
+          block,
+        });
+        return block;
+      });
+  };
+};
