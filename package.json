@@ -22,6 +22,7 @@
     "test-jenkins": "rm -rf ./storage/test && NODE_ENV=test babel-node tools/run setup && NODE_ENV=test make jenkins",
     "test:watch": "npm test -- --watch",
     "nightwatch": "node ./node_modules/nightwatch/bin/nightwatch --retries 3 --config ./test-e2e/nightwatch.json",
+    "nightwatch-saucelabs": "node ./node_modules/nightwatch/bin/nightwatch --config ./test-e2e/nightwatch.js --env chrome"
     "e2e": "NODE_ENV=test node ./bin/e2e.js",
     "imagediff": "node ./bin/imagediff/imagediff.js --truth ./test-e2e/cannonical-screenshots/ --hypothesis ./test-e2e/current-screenshots/",
     "selenium": "node ./node_modules/selenium-standalone/bin/selenium-standalone install",
