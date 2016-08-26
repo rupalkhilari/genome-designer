@@ -1,6 +1,7 @@
 import { expect, assert } from 'chai';
 import uuid from 'node-uuid';
 import request from 'supertest';
+import { testUserId } from '../../../constants';
 import Project from '../../../../src/models/Project';
 import * as persistence from '../../../../server/data/persistence';
 import * as fileSystem from '../../../../server/utils/fileSystem';
@@ -12,7 +13,7 @@ describe('Server', () => {
     describe('REST', () => {
       describe('Projects', () => {
         let server;
-        const userId = '0'; //for test environment
+        const userId = testUserId; //for test environment
         const initialFields = { initial: 'value' };
         const projectData = new Project(initialFields);
         const projectId = projectData.id;
@@ -222,7 +223,7 @@ describe('Server', () => {
                     fileSystem.fileExists(manifestPath).catch(err => done(err)),
                     fileSystem.fileExists(permissionsPath).catch(err => done(err)),
                     fileSystem.fileRead(permissionsPath)
-                      .then(result => assert(result.indexOf('0') >= 0, 'should still list user ID')),
+                      .then(result => assert(result.indexOf(testUserId) >= 0, 'should still list user ID')),
                   ])
                   .then(() => done())
                   .catch(err => done(err));

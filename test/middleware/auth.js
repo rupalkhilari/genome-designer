@@ -15,9 +15,9 @@ describe('middleware', () => {
     it('login() receive the user object', () => {
       return login(dummyUser.email, dummyUser.password)
         .then(userInfo => {
-          expect(userInfo).to.be.not.null;
-          expect(userInfo.uuid).to.be.not.null;
-          expect(userInfo.email).to.be.not.null;
+          expect(userInfo).to.be.defined;
+          expect(userInfo.uuid).to.be.defined;
+          expect(userInfo.email).to.be.defined;
         });
     });
 
@@ -27,8 +27,8 @@ describe('middleware', () => {
     it('getUser() should fetch a user object if you are logged in', () => {
       return getUser()
         .then(user => {
-          expect(user).to.be.not.null;
-          expect(user.uuid).to.be.not.null;
+          expect(user).to.be.defined;
+          expect(user.uuid).to.be.defined;
           expect(typeof user.uuid).to.be.equal('string');
         });
     });

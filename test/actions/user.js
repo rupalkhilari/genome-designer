@@ -1,4 +1,6 @@
 import { expect } from 'chai';
+import { merge } from 'lodash';
+import { testUserClient } from '../constants';
 import * as actions from '../../src/actions/user';
 import userReducer from '../../src/reducers/user';
 import { simpleStore } from '../store/mocks';
@@ -13,12 +15,7 @@ describe('Actions', () => {
     };
 
     //this actually comes from the default user in server/auth/local
-    const dummyUser = {
-      userid: '0',
-      firstName: 'Dev',
-      lastName: 'Eloper',
-      email: 'developer@localhost',
-    };
+    const dummyUser = testUserClient();
 
     const userStore = simpleStore(initialState, userReducer, 'user');
 

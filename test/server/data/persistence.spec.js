@@ -3,6 +3,7 @@ import path from 'path';
 import uuid from 'node-uuid';
 import merge from 'lodash.merge';
 import md5 from 'md5';
+import { testUserId } from '../../constants';
 import { errorInvalidModel, errorAlreadyExists, errorDoesNotExist } from '../../../server/utils/errors';
 import {
   fileExists,
@@ -123,7 +124,7 @@ describe('Server', () => {
       });
 
       describe('creation', () => {
-        const userId = uuid.v4();
+        const userId = testUserId;
 
         const projectData = new Project();
         const projectId = projectData.id;
@@ -164,7 +165,7 @@ describe('Server', () => {
       });
 
       describe('write + merge', () => {
-        const userId = uuid.v4();
+        const userId = testUserId;
 
         const projectData = new Project();
         const projectId = projectData.id;
@@ -297,7 +298,7 @@ describe('Server', () => {
       });
 
       describe('deletion', () => {
-        const userId = uuid.v4();
+        const userId = testUserId;
 
         const projectData = new Project();
         const projectId = projectData.id;
@@ -362,7 +363,7 @@ describe('Server', () => {
       });
 
       describe('versioning', () => {
-        const userId = uuid.v4();
+        const userId = testUserId;
 
         let versionLog;
         let versions;

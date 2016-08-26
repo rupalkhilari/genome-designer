@@ -23,12 +23,13 @@
  * This user is used in unit testing.
  */
 import express from 'express';
+import { testUserId } from '../../test/constants';
 import checkUserSetup from './userSetup';
 
 export const router = express.Router(); //eslint-disable-line new-cap
 
 export const defaultUser = {
-  uuid: '0',
+  uuid: testUserId,
   email: 'developer@localhost',
   firstName: 'Dev',
   lastName: 'Eloper',
@@ -73,6 +74,6 @@ export const mockUser = (req, res, next) => {
   }
 
   //stub the initial user setup here as well
-  checkUserSetup({ uuid: "0" })
+  checkUserSetup({ uuid: testUserId })
     .then(() => next());
 };
