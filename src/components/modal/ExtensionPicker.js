@@ -121,6 +121,8 @@ export class ExtensionPicker extends Component {
                   Region: extensionRegion(extension),
                 };
 
+
+
                 return (<div className="ExtensionPicker-row"
                              key={extension.name}>
                   <div className="ExtensionPicker-cell">

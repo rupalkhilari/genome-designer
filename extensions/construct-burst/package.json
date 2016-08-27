@@ -5,6 +5,7 @@
   "main": "index.js",
   "geneticConstructor": {
     "readable": "Sunburst",
+    "type": "Visualization",
     "client": "index.js",
     "region": "projectDetail"
   },

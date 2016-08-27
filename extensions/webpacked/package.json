@@ -4,6 +4,7 @@
   "description": "Example extension which uses Webpack to create a bundle.",
   "geneticConstructor": {
     "region": "projectDetail",
+    "type": "(Example)",
     "readable": "Webpacked Example"
   },
   "scripts": {
