@@ -31,6 +31,14 @@ export function extensionAuthor(manifest) {
   return manifest.author || 'Unknown';
 }
 
+export function extensionDescription(manifest) {
+  return manifest.geneticConstructor.description || manifest.description || 'No Description';
+}
+
+export function extensionType(manifest) {
+  return manifest.geneticConstructor.type || '';
+}
+
 export function extensionRegion(manifest) {
   return manifest.geneticConstructor.region;
 }

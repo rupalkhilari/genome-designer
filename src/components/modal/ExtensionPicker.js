@@ -25,6 +25,8 @@ import {
   extensionName,
   extensionAuthor,
   extensionRegion,
+  extensionType,
+  extensionDescription,
   manifestIsClient,
   manifestIsServer,
 } from '../../../server/extensions/manifestUtils';
@@ -88,7 +90,7 @@ export class ExtensionPicker extends Component {
 
     //todo - better dirty check - see if not at inital state
 
-    const tableFields = ['Name', 'Author'];
+    const tableFields = ['Name', 'Type', 'Description'];
 
     //later - we'll probably want to group by region...
 
@@ -99,19 +101,20 @@ export class ExtensionPicker extends Component {
         title="Extensions"
         closeModal={() => this.props.uiShowExtensionPicker(false)}
         payload={(
-          <div style={{ padding: '1rem 2em 3rem', width: '60rem' }}
-               className="ExtensionPicker gd-form">
+          <div className="ExtensionPicker gd-form">
             <div className="title">Extensions</div>
 
             <div className="ExtensionPicker-list">
               <div className="ExtensionPicker-row ExtensionPicker-header">
-                {[...tableFields, 'Active'].map(field => {
+                {['', ...tableFields].map(field => {
                   return (<div className="ExtensionPicker-cell">{field}</div>);
                 })}
               </div>
               {Object.keys(this.state.extensions).map(key => this.state.extensions[key]).map(extension => {
                 const values = {
                   Name: extensionName(extension),
+                  Type: extensionType(extension),
+                  Description: extensionDescription(extension),
                   Author: extensionAuthor(extension),
                   Client: manifestIsClient(extension),
                   isServer: manifestIsServer(extension),
@@ -120,18 +123,19 @@ export class ExtensionPicker extends Component {
 
                 return (<div className="ExtensionPicker-row"
                              key={extension.name}>
-                  {tableFields.map((field) => {
-                    return (<div className={'ExtensionPicker-cell ExtensionPicker-' + field}
-                                 key={field}>
-                      {values[field]}
-                    </div>);
-                  })}
                   <div className="ExtensionPicker-cell">
                     <input type="checkbox"
                            className="ExtensionPicker-cell ExtensionPicker-toggle"
                            checked={this.checkExtensionActive(extension.name)}
                            onChange={() => this.handleToggleExtension(extension.name)}/>
                   </div>
+                  {tableFields.map((field) => {
+                    return (<div className={'ExtensionPicker-cell ExtensionPicker-' + field}
+                                 key={field}>
+                      {values[field]}
+                    </div>);
+                  })}
+
                 </div>);
               })}
             </div>

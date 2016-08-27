@@ -29,6 +29,7 @@
 
   .title {
     font-size: var(--element-height * 0.5);
+    font-weight: 200;
     color: var(--textcolor);
     text-align: center;
     margin-top: 1rem;
