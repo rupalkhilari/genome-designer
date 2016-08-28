@@ -113,62 +113,27 @@ router.get('/manifest/:extension',
 //dependent on whether in production (only client files explicitly listed) or not (send any file)
 
 //todo - update docs about client files
-// todo - update client to fetch all files
+//todo - update client to fetch all files
 
+router.get('/load/:extension/:filePath',
+  checkExtensionExistsMiddleware,
+  checkUserExtensionAccessMiddleware,
+  checkExtensionIsClientMiddleware,
+  checkClientExtensionFilePath,
+  (req, res, next) => {
+    const { filePath, extension } = req;
 
-//todo - merge these -- there is jsut a middleware check differentiating them
-if (process.env.NODE_ENV !== 'production') {
-  //make the whole extension available
-  router.get('/load/:extension/:filePath',
-    checkExtensionExistsMiddleware,
-    checkUserExtensionAccessMiddleware,
-    checkExtensionIsClientMiddleware,
-    (req, res, next) => {
-      const { filePath, extension } = req;
-
-      const extensionFile = getExtensionInternalPath(extension, filePath);
-
-      res.sendFile(extensionFile, (err) => {
-        if (err) {
-          console.log('error sending extension!', err);
-          console.log(err.stack);
-          //don't write headers because express may complain about them already being set
-        }
-        //force ending of response, since lib/response seems not to if we provide a callback
-        return res.end();
-      });
+    const extensionFile = getExtensionInternalPath(extension, filePath);
+    res.sendFile(extensionFile, (err) => {
+      if (err) {
+        console.log('error sending extension!', err);
+        console.log(err.stack);
+        //don't write headers because express may complain about them already being set
+      }
+      //force ending of response, since lib/response seems not to if we provide a callback
+      return res.end();
     });
-} else {
-  router.get('/load/:extension/:filePath',
-    checkExtensionExistsMiddleware,
-    checkUserExtensionAccessMiddleware,
-    checkExtensionIsClientMiddleware,
-    checkClientExtensionFilePath,
-    (req, res, next) => {
-      const { filePath, extension } = req;
-
-      loadExtension(extension)
-        .then(manifest => {
-          const extensionFile = getExtensionInternalPath(extension, filePath);
-          res.sendFile(extensionFile, (err) => {
-            if (err) {
-              console.log('error sending extension!', err);
-              console.log(err.stack);
-              //don't write headers because express may complain about them already being set
-            }
-            //force ending of response, since lib/response seems not to if we provide a callback
-            return res.end();
-          });
-        })
-        //shouldn't hit this 404, middleware should catch but handle other errors
-        .catch(err => {
-          if (err === errorDoesNotExist) {
-            return res.status(404).send(errorDoesNotExist);
-          }
-          next(err);
-        });
-    });
-}
+  });
 
 //handle native extensions which are included statically
 router.use('/api/csv', csvRouter);

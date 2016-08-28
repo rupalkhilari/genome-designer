@@ -124,6 +124,11 @@ export const checkExtensionIsClientMiddleware = (req, res, next) => {
 };
 
 export const checkClientExtensionFilePath = (req, res, next) => {
+  //make the whole extension available when not in production
+  if (process.env.NODE_ENV !== 'production') {
+    return next();
+  }
+
   const { filePath, extensionManifest } = req;
 
   const clientFiles = manifestClientFiles(extensionManifest);
