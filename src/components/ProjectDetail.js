@@ -113,7 +113,6 @@ export class ProjectDetail extends Component {
     }
 
     this.toggle(true);
-    this.loadExtension(this.extensions[0]);
   };
 
   toggle = (forceVal) => {
@@ -135,8 +134,8 @@ export class ProjectDetail extends Component {
                               onMouseDown={this.handleResizableMouseDown}></div>)}
         <div className="ProjectDetail-heading">
           {!isVisible && (<a ref="open"
-             className={'ProjectDetail-heading-toggle' + (isVisible ? ' visible' : '')}
-             onClick={this.handleClickToggle}/>)}
+                             className={'ProjectDetail-heading-toggle' + (isVisible ? ' visible' : '')}
+                             onClick={this.handleClickToggle}/>)}
           <div className={'ProjectDetail-heading-extensionList' + (isVisible ? ' visible' : '')}>
             {this.extensions.map(key => {
               const name = getExtensionName(key);

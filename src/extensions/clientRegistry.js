@@ -167,14 +167,15 @@ export const getExtensionName = (key) => {
  * @function
  *
  * @param key
+ * @param region
  * @param container
  * @param options
  * @returns {Promise}
  * @resolve {Function} callback from render, the unregister function
  * @reject {Error} Error while rendering
  */
-//todo - need to pass region, and render extensions for this region
-export const downloadAndRender = (key, container, options) => {
+//todo - render extensions only per region
+export const downloadAndRender = (key, region, container, options) => {
   return downloadExtension(key)
     .then(() => {
       const manifest = registry[key];
