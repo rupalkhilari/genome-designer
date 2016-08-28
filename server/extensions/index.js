@@ -112,9 +112,6 @@ router.get('/manifest/:extension',
 //only for client extensions
 //dependent on whether in production (only client files explicitly listed) or not (send any file)
 
-//todo - update docs about client files
-//todo - update client to fetch all files
-
 router.get('/load/:extension/:filePath',
   checkExtensionExistsMiddleware,
   checkUserExtensionAccessMiddleware,

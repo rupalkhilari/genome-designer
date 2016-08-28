@@ -57,7 +57,7 @@ export class ExtensionPicker extends Component {
   checkExtensionActive = (extension) => {
     return (typeof this.state.extensionsActive[extension] === 'boolean') ?
       this.state.extensionsActive[extension] :
-      this.props.config.extensions[extension] && this.props.config.extensions[extension].active;
+      (this.props.config.extensions[extension] && this.props.config.extensions[extension].active);
   };
 
   handleToggleExtension = (extension) => {
@@ -68,15 +68,15 @@ export class ExtensionPicker extends Component {
   };
 
   submitForm = () => {
-    this.setState({ dirty: false });
-
     const mappedExtensionsActive = Object.keys(this.state.extensionsActive).reduce((acc, key) => {
       return Object.assign(acc, { [key]: { active: this.state.extensionsActive[key] } });
     }, {});
     const nextConfig = merge({}, this.props.config, { extensions: mappedExtensionsActive });
+
     this.props.userUpdateConfig(nextConfig)
       .then(user => {
         loadAllExtensions(true);
+        this.setState({ dirty: false });
         this.props.uiShowExtensionPicker(false);
       });
   };
@@ -90,8 +90,6 @@ export class ExtensionPicker extends Component {
     //todo - better dirty check - see if not at inital state
 
     const tableFields = ['Name', 'Type', 'Description'];
-
-    //later - we'll probably want to group by region...
 
     return (
       <ModalWindow
@@ -119,8 +117,6 @@ export class ExtensionPicker extends Component {
                   isServer: manifestIsServer(extension),
                   Region: extensionRegion(extension),
                 };
-
-
 
                 return (<div className="ExtensionPicker-row"
                              key={extension.name}>

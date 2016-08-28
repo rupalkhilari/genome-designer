@@ -15,7 +15,8 @@
  */
 import invariant from 'invariant';
 import * as regions from './regions';
-import { downloadExtension, isDownloaded } from './downloadExtension';
+import { manifestClientRegions } from '../../server/extensions/manifestUtils';
+import { downloadExtension } from './downloadExtension';
 
 //map of extensions
 export const registry = {};
@@ -47,14 +48,15 @@ function safelyRunCallbacks(...args) {
  * @param {string} region Region to check
  * @returns {boolean} true if region is valid
  */
-export const validRegion = (region) => region === null || !!regions[region];
+export const validRegion = (region) => region === null || typeof regions[region] === 'string';
 
 //returns an array
 export const extensionsByRegion = (region) => {
   return Object.keys(registry)
     .filter(key => {
       const manifest = registry[key];
-      return manifest.geneticConstructor.region === region;
+      const regions = manifestClientRegions(manifest);
+      return regions.indexOf(region) >= 0;
     })
     .map(key => registry[key])
     .sort((one, two) => one.name < two.name ? -1 : 1)
@@ -63,33 +65,55 @@ export const extensionsByRegion = (region) => {
 
 /**
  * Validate + register an extension manifest
- * If invalid, error is caught and logged
+ * If invalid, error is caught and logged and the extension is ignored
+ * Downloads non-visual parts of client extension immediately, then runs all callbacks if successful. These callbacks include sections of the page to update when the registry updates.
  * called by loadExtensions to add the manifests
  * @function
  * @private
  * @param {Object} manifest A valid manifest
  * @returns {Object} registry
- * @throws If manifest is invalid
  */
 export const registerManifest = (manifest) => {
   try {
     const { name, geneticConstructor } = manifest;
-    const { region } = geneticConstructor;
+    const { client } = geneticConstructor;
+
     invariant(name, 'Name is required');
-    invariant(region || region === null, `Region (manifest.geneticConstructor.region) is required to register a client-side extension, or null for non-visual extensions [${name}]`);
-    invariant(validRegion(region), `Region must be a valid region, got ${region} [${name}]`);
+    invariant(Array.isArray(client) && client.length > 0, 'must specify client files in extension to register, check geneticConstructor.client');
 
-    Object.assign(registry, { [name]: manifest });
+    //save:
+    // 1) list of files for non-visual extensions to download immediately upon registration, if all files listed pass checks
+    // 2) list of relevant regions
+    const extensionInfo = client.reduce((acc, { file, region }, index) => {
+      invariant(region || region === null, `Region (manifest.geneticConstructor.region) is required to register a client-side extension, or null for non-visual extensions [${name}]`);
+      invariant(validRegion(region), `Region must be a valid region, got ${region} [${name}, #${index}]`);
 
-    //temp - for non-visual extensions, just run them on load
-    if (region === null) {
-      downloadExtension(name);
-    }
+      acc.regions.add(region);
 
-    safelyRunCallbacks(registry, name, region);
+      if (region === null) {
+        acc.files.add(file)
+      }
+
+      return acc;
+    }, { files: new Set(), regions: new Set() });
+
+    //extension checks out. actually register it and download non-visual components
+
+    //download appropriate files immediately, then run callbacks
+    Promise.all(
+      [...extensionInfo.files].map(file => downloadExtension(name, file))
+    )
+      .then(() => {
+        //todo - update callbacks to expect array of regions
+        safelyRunCallbacks(registry, name, [...regions]);
+      });
+
+    //register and return the registry
+    return Object.assign(registry, { [name]: manifest });
   } catch (err) {
-    console.log(`could not register extension ${manifest.name}:`);
+    console.log(`could not register extension ${manifest.name}, ignoring.`);
     console.error(err);
+    return registry;
   }
 };
 
@@ -116,8 +140,8 @@ export const registerRender = (key, render) => {
  * @name onRegister
  * @function
  * @memberOf module:constructor.module:extensions
- * @param {Function} cb Callback, called with signature (registry, key, region) where key is last registered extension key
- * @param {boolean} [skipFirst=false] Execute on register?
+ * @param {Function} cb Callback, called with signature (registry, key, regions) where key is last registered extension key.
+ * @param {boolean} [skipFirst=false] Execute on register? regions is null for this callback.
  * @returns {Function} Unregister function
  */
 export const onRegister = (cb, skipFirst = false) => {
@@ -149,6 +173,7 @@ export const getExtensionName = (key) => {
  * @resolve {Function} callback from render, the unregister function
  * @reject {Error} Error while rendering
  */
+//todo - need to pass region, and render extensions for this region
 export const downloadAndRender = (key, container, options) => {
   return downloadExtension(key)
     .then(() => {
