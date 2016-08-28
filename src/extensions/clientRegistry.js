@@ -140,7 +140,7 @@ export const registerRender = (key, render) => {
  * @name onRegister
  * @function
  * @memberOf module:constructor.module:extensions
- * @param {Function} cb Callback, called with signature (registry, key, regions) where key is last registered extension key.
+ * @param {Function} cb Callback, called with signature (registry, key, regions) where key is last registered extension key, and regions is an array of region names where the extension registers
  * @param {boolean} [skipFirst=false] Execute on register? regions is null for this callback.
  * @returns {Function} Unregister function
  */
