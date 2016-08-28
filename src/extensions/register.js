@@ -17,14 +17,16 @@ import registry, { registerRender } from './clientRegistry';
 import invariant from 'invariant';
 
 /**
- * Register a client-side extension with Genetic Constructor. This function registers a `render` function with the manifest of the extension, allowing the extension to render on the page.
+ * Register a client-side extension with Genetic Constructor.
+ * `register()` is actually called by extension's script.
+ * This function registers a `render` function with the manifest of the extension, allowing the extension to render on the page.
  * @name register
  * @function
  * @memberOf module:constructor.module:extensions
  * @param {string} key Name of the extension, must match package.json of the extension
  * @param {function} render Function called when the extension is requested to render. Called with signature `render(container, options)`
  */
-const registerExtension = (key, render) => {
+const register = (key, render) => {
   const manifest = registry[key];
 
   //we've already checked the manifest is valid when registering the manifest, so if its present, its valid.
@@ -47,4 +49,4 @@ const registerExtension = (key, render) => {
   registerRender(key, wrappedRender);
 };
 
-export default registerExtension;
+export default register;

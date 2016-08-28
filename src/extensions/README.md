@@ -7,3 +7,25 @@ The list of extensions is loaded from the server on startup. Only active extensi
 Nonvisual client extensions are downloaded immediately.
 
 Visual extensions are downloaded lazily as needed. Extension manifests must be registered before the extension can register a `render()` function.
+
+---
+
+The flow:
+
+... on startup, or when config changes ...
+
+- retrieve list of extensions from server
+- check + register manifests
+- download non-visual client files immediately
+- run onRegister() callbacks
+
+... when user downloads the extension ...
+
+- call downloadAndRender() for an extension, which has two steps:
+- downloadExtension() downloads client files
+    - extension files actually downloaded
+    - each extension file should call constructor.extensions.register() with the extension's render() function
+    - register() assigns a wrappedRender() function to the manifest
+- render()
+    - calls wrappedRender() and passes appropriate containers for each region
+    - extension now actually visible
