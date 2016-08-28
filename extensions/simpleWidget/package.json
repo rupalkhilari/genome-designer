@@ -5,7 +5,12 @@
   "geneticConstructor": {
     "readable": "Simple Widget",
     "type": "(Example)",
-    "region": "projectDetail"
+    "client": [
+      {
+        "file": "index.js",
+        "region": "projectDetail"
+      }
+    ]
   },
   "main": "index.js",
   "author": "",

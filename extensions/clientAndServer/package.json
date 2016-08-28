@@ -5,9 +5,13 @@
   "geneticConstructor": {
     "readable": "Counter Example",
     "type": "(Example)",
-    "region": "projectDetail",
     "router": "router.js",
-    "client": "client.js"
+    "client": [
+      {
+        "file": "client.js",
+        "region": "projectDetail"
+      }
+    ]
   },
   "author": "",
   "license": "MIT",

@@ -55,7 +55,6 @@ export class ExtensionPicker extends Component {
   }
 
   checkExtensionActive = (extension) => {
-    //todo - handle active state not set (extension key not present in config)
     return (typeof this.state.extensionsActive[extension] === 'boolean') ?
       this.state.extensionsActive[extension] :
       this.props.config.extensions[extension] && this.props.config.extensions[extension].active;

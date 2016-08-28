@@ -17,7 +17,7 @@ import invariant from 'invariant';
 import { errorNoPermission, errorExtensionNotFound } from '../utils/errors';
 import { getConfigFromUser } from '../user/utils';
 import extensionRegistry from './registry';
-import { manifestIsServer, manifestIsClient } from './manifestUtils';
+import { manifestIsServer, manifestIsClient, manifestClientFiles } from './manifestUtils';
 
 export const manifestIsPrivate = (manifest) => {
   return manifest.geneticConstructor.private === true;
@@ -64,10 +64,15 @@ export const checkUserExtensionActive = (extensionManifest, user) => {
 //check if the extension has been registered, assign req.extension and req.extensionManifest
 //expects :extension in the route
 export const checkExtensionExistsMiddleware = (req, res, next) => {
-  const { extension } = req.params;
+  const { extension, filePath } = req.params;
 
-  //invariant, since this is not run-time
-  invariant(!!extension, 'expected :extension in route params');
+  if (!!extension) {
+    return res.status(401).send('expected :extension in route params');
+  }
+
+  if (!!filePath) {
+    return res.status(404).send('expected specific :filePath in route params');
+  }
 
   const extensionManifest = extensionRegistry[extension];
 
@@ -77,6 +82,7 @@ export const checkExtensionExistsMiddleware = (req, res, next) => {
   }
 
   Object.assign(req, {
+    filePath,
     extension,
     extensionManifest,
   });
@@ -109,9 +115,23 @@ export const checkUserExtensionAccessMiddleware = (req, res, next) => {
 
 export const checkExtensionIsClientMiddleware = (req, res, next) => {
   const { extension, extensionManifest } = req;
+
   if (!manifestIsClient(extensionManifest)) {
     return res.status(404).send('non-client extension: ' + extension);
   }
+
+  next();
+};
+
+export const checkClientExtensionFilePath = (req, res, next) => {
+  const { filePath, extensionManifest } = req;
+
+  const clientFiles = manifestClientFiles(extensionManifest);
+
+  if (clientFiles.indexOf(filePath) < 0) {
+    res.status(404).send('file requested not listed in extension client files');
+  }
+
   next();
 };
 

@@ -5,6 +5,11 @@
   "geneticConstructor": {
     "readable": "Test Client",
     "type": "(Example)",
-    "region": "projectDetail"
+    "client": [
+      {
+        "file": "index.js",
+        "region": "projectDetail"
+      }
+    ]
   }
 }

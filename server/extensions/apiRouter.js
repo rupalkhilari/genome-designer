@@ -55,8 +55,7 @@ Object.keys(serverExtensions).forEach(key => {
     //future - build dependent path lookup
     const extensionRouter = require(path.resolve(__dirname, 'node_modules', key, routePath));
 
-    //todo - error handling
-    //todo - wrap router in a try-catch? Put in own process?
+    //todo - Put in own process?
     router.use(`/${key}/`, extensionRouter);
   } catch (err) {
     console.error('there was an error registering extension ' + key);

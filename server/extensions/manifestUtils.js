@@ -8,8 +8,18 @@ import invariant from 'invariant';
  */
 export function manifestIsClient(manifest) {
   invariant(typeof manifest.geneticConstructor === 'object', 'must pass a valid genetic constructor manifest');
-  const hasRegion = (manifest.geneticConstructor.region === null || !!manifest.geneticConstructor.region);
-  return hasRegion;
+
+  //check for old format
+  if (typeof manifest.geneticConstructor.client === 'string' || typeof manifest.geneticConstructor.region === 'string') {
+    console.error('extension in wrong format. Manifest should list array of client modules, not a single one. Check docs.')
+  }
+
+  if (!Array.isArray(manifest.geneticConstructor.client)) {
+    return false;
+  }
+
+  const first = manifest.geneticConstructor.client[0];
+  return typeof first.file === 'string' && (first.region === null || typeof first.region === 'string');
 }
 
 /**
@@ -21,6 +31,11 @@ export function manifestIsClient(manifest) {
 export function manifestIsServer(manifest) {
   invariant(typeof manifest.geneticConstructor === 'object', 'must pass a valid genetic constructor manifest');
   return !!manifest.geneticConstructor.router;
+}
+
+export function manifestClientFiles(manifest) {
+  invariant(manifestIsClient(manifest), 'must pass client manifest');
+  return manifest.geneticConstructor.client.map(clientObj => clientObj.file);
 }
 
 export function extensionName(manifest) {

@@ -6,8 +6,12 @@
   "geneticConstructor": {
     "readable": "Sunburst",
     "type": "Visualization",
-    "client": "index.js",
-    "region": "projectDetail"
+    "client": [
+      {
+        "file": "index.js",
+        "region": "projectDetail"
+      }
+    ]
   },
   "scripts": {
     "dev": "webpack main.js -o index.js -d -s --watch",

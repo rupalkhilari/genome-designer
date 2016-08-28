@@ -27,6 +27,7 @@ import {
   checkExtensionExistsMiddleware,
   checkUserExtensionAccessMiddleware,
   checkExtensionIsClientMiddleware,
+  checkClientExtensionFilePath,
 } from './middlewareChecks';
 import { manifestIsServer, manifestIsClient } from './manifestUtils';
 import { ensureReqUserMiddleware } from '../user/utils';
@@ -44,7 +45,21 @@ router.use(errorHandlingMiddleware);
 router.use(ensureReqUserMiddleware);
 
 //see all extensions you have access to, e.g. for choosing which to show
-router.get('/listAll', (req, res) => {
+router.get('/listAll/:scope?', (req, res) => {
+  const { scope } = req.params;
+
+  let scopeFilter;
+  switch (scope) {
+  case 'client':
+    scopeFilter = manifestIsClient;
+    break;
+  case 'server':
+    scopeFilter = manifestIsServer;
+    break;
+  default:
+    scopeFilter = () => true;
+  }
+
   // in dev, running locally, so dont check - you can see them all.
   // This way, dont need to add extension to user permissions so can just symlink into node_modules without problem.
   const accessFilter = (process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test') ?
@@ -53,7 +68,7 @@ router.get('/listAll', (req, res) => {
       return checkUserExtensionAccess(manifest, req.user);
     };
 
-  res.json(getExtensions(accessFilter));
+  res.json(getExtensions(scopeFilter, accessFilter));
 });
 
 //see currently visible extensions - client and server, unless pass scope
@@ -76,10 +91,7 @@ router.get('/list/:scope?', (req, res, next) => {
     return checkUserExtensionActive(manifest, req.user);
   };
 
-  //filters to extensions which are visible
-  const clientExtensions = getExtensions(scopeFilter, activeFilter);
-
-  res.json(clientExtensions);
+  res.json(getExtensions(scopeFilter, activeFilter));
 });
 
 router.get('/manifest/:extension',
@@ -98,16 +110,22 @@ router.get('/manifest/:extension',
 
 //load extensions
 //only for client extensions
-//dependent on whether in production (only client bundle) or not (send any file)
+//dependent on whether in production (only client files explicitly listed) or not (send any file)
 
+//todo - update docs about client files
+// todo - update client to fetch all files
+
+
+//todo - merge these -- there is jsut a middleware check differentiating them
 if (process.env.NODE_ENV !== 'production') {
   //make the whole extension available
-  router.get('/load/:extension/:filePath?',
+  router.get('/load/:extension/:filePath',
     checkExtensionExistsMiddleware,
     checkUserExtensionAccessMiddleware,
     checkExtensionIsClientMiddleware,
     (req, res, next) => {
-      const { filePath = clientBundleUrl, extension } = req.params;
+      const { filePath, extension } = req;
+
       const extensionFile = getExtensionInternalPath(extension, filePath);
 
       res.sendFile(extensionFile, (err) => {
@@ -121,19 +139,18 @@ if (process.env.NODE_ENV !== 'production') {
       });
     });
 } else {
-  //only index.js (i.e. clientBundleUrl) files are available
-
-  router.get('/load/:extension/:filePath?',
+  router.get('/load/:extension/:filePath',
     checkExtensionExistsMiddleware,
     checkUserExtensionAccessMiddleware,
     checkExtensionIsClientMiddleware,
+    checkClientExtensionFilePath,
     (req, res, next) => {
-      const { extension } = req.params;
+      const { filePath, extension } = req;
 
       loadExtension(extension)
         .then(manifest => {
-          const filePath = getExtensionInternalPath(extension);
-          res.sendFile(filePath, (err) => {
+          const extensionFile = getExtensionInternalPath(extension, filePath);
+          res.sendFile(extensionFile, (err) => {
             if (err) {
               console.log('error sending extension!', err);
               console.log(err.stack);
