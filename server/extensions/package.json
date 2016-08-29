@@ -7,6 +7,6 @@
     "testPrivate" : "../../extensions/testPrivate",
     "testErrorServer" : "../../extensions/testErrorServer",
     "SequenceDetail" : "IsaacLuo/onion2#extensions-refactor",
-    "seq-viewer": "duncanmeech/sequence-viewer#extension-package-format"
+    "seq-viewer": "git+http://github.com/duncanmeech/sequence-viewer.git"
   }
 }

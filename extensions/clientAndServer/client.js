@@ -27,4 +27,4 @@ function render(container, options) {
   return subscriber;
 }
 
-window.constructor.extensions.register(extensionKey, render);
+window.constructor.extensions.register(extensionKey, 'projectDetail', render);
