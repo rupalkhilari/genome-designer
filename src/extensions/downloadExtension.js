@@ -37,6 +37,9 @@ export const downloadExtension = (key, file) => {
     let extCache = cached[key];
 
     if (typeof extCache === 'object') {
+      if (typeof extCache[file] === 'object' && typeof extCache[file].then === 'function') {
+        return resolve(extCache[file]);
+      }
       //if we've downloaded this file, skip it
       if (extCache[file] === true) {
         return resolve(false);
@@ -56,15 +59,19 @@ export const downloadExtension = (key, file) => {
     //we can try to catch some errors, but adding script dynamically to head of page doesn't allow us to catch this way
     //todo - patch window.onerror and catch
     try {
-      //cache to start, in case attempting to download same file twice. will set to failure if it doesn't work.
-      extCache[file] = true;
-
-      loadScript(url, (err, script) => {
-        if (err) {
-          extCache[file] = false;
-          return reject(err);
-        }
-        return resolve(true);
+      //set cache to promise in case request multiple at same time.
+      //download the script, resolve this promise, and resolve download promise in case other listeners waiting
+      extCache[file] = new Promise((resolveDownload, rejectDownload) => {
+        loadScript(url, (err, script) => {
+          if (err) {
+            extCache[file] = false;
+            rejectDownload(err);
+            return reject(err);
+          }
+          extCache[file] = true;
+          resolveDownload(true);
+          return resolve(true);
+        });
       });
     } catch (err) {
       extCache[file] = false;

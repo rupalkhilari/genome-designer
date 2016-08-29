@@ -24,8 +24,9 @@ The flow:
 - download non-visual client files immediately
 - run onRegister() callbacks
 
-... when user downloads the extension ...
+... when user requests / opens the extension ...
 
+- the extension is not loaded all at once. Each region the extension will download its file as needed, and only render its own region. Files are only downloaded as needed, unless multiple regions refer to the same file.
 - call downloadAndRender() for an extension, which has two steps:
 - downloadExtension() downloads client files
     - extension files actually downloaded
