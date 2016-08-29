@@ -597,7 +597,11 @@ export default class Layout {
    * @return {Boolean}
    */
   isAuthoring() {
-    return this.constructViewer.props.construct.isAuthoring()
+    // construct may not be present when used as a preview control in the order form
+    if (this.constructViewer.props.construct) {
+      return this.constructViewer.props.construct.isAuthoring();
+    }
+    return false;
   }
   /**
    * store layout information on our cloned copy of the data, constructing

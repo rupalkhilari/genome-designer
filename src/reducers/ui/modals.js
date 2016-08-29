@@ -41,6 +41,10 @@ export default function modals(state = initialState, action) {
     const { showGenBankImport } = action;
     return Object.assign({}, state, { showGenBankImport });
 
+  case ActionTypes.UI_SHOW_PARTSCSV_IMPORT:
+    const { showPartsCSVImport, listBlock } = action;
+    return Object.assign({}, state, { showPartsCSVImport, listBlock });
+
   case ActionTypes.UI_SHOW_DNAIMPORT:
     const { showDNAImport } = action;
     return Object.assign({}, state, { showDNAImport });

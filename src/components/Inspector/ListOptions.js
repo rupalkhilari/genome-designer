@@ -18,7 +18,11 @@ import { connect } from 'react-redux';
 import ListOption from './ListOption';
 import { blockStash, blockOptionsToggle, blockOptionsAdd, blockOptionsRemove } from '../../actions/blocks';
 import { importGenbankOrCSV } from '../../middleware/genbank';
-import CSVFileDrop from './CSVFileDrop';
+import {
+  uiShowPartsCSVImport,
+} from '../../actions/ui';
+//import CSVFileDrop from './CSVFileDrop';
+//import '../../styles/CSVFileDrop.css';
 
 import '../../styles/ListOptions.css';
 
@@ -49,24 +53,22 @@ export class ListOptions extends Component {
     }
   };
 
-  handleCSVDrop = (files) => {
-    importGenbankOrCSV(files[0], 'convert')
-      .then(({ project, blocks }) => {
-        this.props.blockStash(...Object.keys(blocks).map(blockId => blocks[blockId]));
-        this.props.blockOptionsAdd(this.props.block.id, ...Object.keys(blocks));
-      });
+  handleCSVImport = (files) => {
+    this.props.uiShowPartsCSVImport(true, this.props.block);
   };
 
   render() {
     const { block, optionBlocks, toggleOnly } = this.props;
     const { options } = block;
     const isFrozen = block.isFrozen();
+    //const csvUploadButton = !isFrozen && !toggleOnly ? <CSVFileDrop style={{marginBottom: '1em'}} onDrop={this.handleCSVDrop}/> : null;
+    const csvUploadButton = !isFrozen && !toggleOnly ? <div style={{marginBottom: '1em'}} className="CSVFileDrop" onClick={this.handleCSVImport}>Upload Parts (CSV)</div> : null;
 
     //todo - rethink scroll location
     return (
       <div className={'ListOptions no-vertical-scroll' + (isFrozen ? ' isFrozen' : '')}>
         {isFrozen && <div className="ListOptions-explanation">List items cannot be modified after they have been frozen. {!toggleOnly ? 'Unfreeze the block to make changes.' : 'Duplicate the template to make changes.'}</div>}
-        {!isFrozen && !toggleOnly && <CSVFileDrop style={{marginBottom: '1em'}} onDrop={this.handleCSVDrop}/>}
+        {csvUploadButton}
         {optionBlocks.map(item => {
           return (
             <ListOption
@@ -88,6 +90,7 @@ const mapStateToProps = (state, props) => ({
 });
 
 export default connect(mapStateToProps, {
+  uiShowPartsCSVImport,
   blockOptionsToggle,
   blockOptionsAdd,
   blockOptionsRemove,

@@ -16,7 +16,7 @@
 import React, { PropTypes } from 'react';
 import Dropzone from 'react-dropzone';
 
-import '../../styles/CSVFileDrop.css';
+//import '../../styles/CSVFileDrop.css';
 
 export default function CSVFileDrop({ onDrop, ...rest }) {
   return (
