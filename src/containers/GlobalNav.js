@@ -289,7 +289,7 @@ class GlobalNav extends Component {
   }
 
   newTemplate() {
-    return this.newConstruct({ rules: { fixed: true } });
+    return this.newConstruct({ rules: { authoring: true, fixed: true } });
   }
 
   /**

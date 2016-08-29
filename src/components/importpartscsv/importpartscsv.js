@@ -1,18 +1,18 @@
 /*
-Copyright 2016 Autodesk,Inc.
+ Copyright 2016 Autodesk,Inc.
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import ModalWindow from '../modal/modalwindow';
@@ -23,8 +23,9 @@ import {
 } from '../../actions/ui';
 import {
   blockStash,
-  blockOptionsAdd
+  blockOptionsAdd,
 } from '../../actions/blocks';
+import Block from '../../models/Block';
 import { importGenbankOrCSV } from '../../middleware/genbank';
 
 import '../../../src/styles/partscsv.css';
@@ -40,6 +41,7 @@ class ImportPartsCSVModal extends Component {
     uiSpin: PropTypes.func.isRequired,
     blockOptionsAdd: PropTypes.func.isRequired,
     blockStash: PropTypes.func.isRequired,
+    listBlock: PropTypes.object.isRequired,
   };
 
   constructor() {
@@ -69,10 +71,19 @@ class ImportPartsCSVModal extends Component {
     evt.preventDefault();
 
     // validate the prefix
-    const prefix = parseInt(this.refs.prefixInput.value);
-    if (!isFinite(prefix) || prefix < 0 || prefix > 10000) {
+    const prefix = parseInt(this.refs.prefixInput.value, 10);
+    const suffix = parseInt(this.refs.suffixInput.value, 10);
+
+    if (!isFinite(prefix) || prefix <= 0 || prefix >= 10000) {
       this.setState({
         error: "Please enter a valid prefix between 0 and 10000.",
+      });
+      return;
+    }
+
+    if (!isFinite(suffix) || suffix <= 0 || suffix >= 10000) {
+      this.setState({
+        error: "Please enter a valid suffix between 0 and 10000.",
       });
       return;
     }
@@ -91,8 +102,11 @@ class ImportPartsCSVModal extends Component {
       const file = this.state.files[0];
       importGenbankOrCSV(file, 'convert')
         .then(({ project, blocks }) => {
-          this.props.blockStash(...Object.keys(blocks).map(blockId => blocks[blockId]));
-          this.props.blockOptionsAdd(this.props.listBlock.id, ...Object.keys(blocks));
+          const blockModels = Object.keys(blocks)
+            .map(blockId => new Block(blocks[blockId]))
+            .map(block => block.setSequenceTrim(prefix, suffix));
+          this.props.blockStash(...blockModels);
+          this.props.blockOptionsAdd(this.props.listBlock.id, ...blockModels.map(block => block.id));
           this.props.uiShowPartsCSVImport(false);
           this.props.uiSpin();
         })
@@ -100,7 +114,7 @@ class ImportPartsCSVModal extends Component {
           this.setState({
             error: reason.statusText,
             processing: false,
-          })
+          });
           this.props.uiSpin();
         });
     }
@@ -130,8 +144,12 @@ class ImportPartsCSVModal extends Component {
               <div className="title">Import Parts into List Block</div>
               <div>
                 <div className="prefix-container">
-                  <label>Select the prefix</label>
+                  <label>Prefix</label>
                   <input ref="prefixInput" type="number" defaultValue="0" min="0" max="10000"/>
+                </div>
+                <div className="prefix-container">
+                  <label>Suffix</label>
+                  <input ref="suffixInput" type="number" defaultValue="0" min="0" max="10000"/>
                 </div>
               </div>
               <Dropzone

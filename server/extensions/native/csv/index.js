@@ -134,7 +134,7 @@ router.post('/import/:projectId?', jsonParser, (req, resp, next) => {
         .then(() => roll);
     })
     .then(roll => {
-      if (noSave) {
+      if (noSave || projectId === 'convert') {
         return Promise.resolve(roll);
       }
 
