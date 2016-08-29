@@ -1,5 +1,7 @@
 import invariant from 'invariant';
 
+//todo (future) - allow manifest to specify multiple regions for a single file. Allow region to be an array, not just a string.
+
 //validate a manifest
 export function validateManifest(manifest) {
   invariant(typeof manifest === 'object', 'must pass manifest to clientCheck');
