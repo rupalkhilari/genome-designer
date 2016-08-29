@@ -15,7 +15,7 @@
  */
 import invariant from 'invariant';
 import * as regions from './regions';
-import { manifestClientRegions } from '../../server/extensions/manifestUtils';
+import { manifestClientRegions, getClientFileFromRegion, extensionName } from '../../server/extensions/manifestUtils';
 import { downloadExtension } from './downloadExtension';
 
 //map of extensions
@@ -108,8 +108,10 @@ export const registerManifest = (manifest) => {
         safelyRunCallbacks(registry, name, [...regions]);
       });
 
-    //register and return the registry
-    return Object.assign(registry, { [name]: manifest });
+    //register extension, do some setup, return registry
+    Object.assign(registry, { [name]: manifest });
+    Object.assign(register[name], { render: {} });
+    return registry;
   } catch (err) {
     console.log(`could not register extension ${manifest.name}, ignoring.`);
     console.error(err);
@@ -123,16 +125,15 @@ export const registerManifest = (manifest) => {
  * used by registerExtension()
  * @function
  * @private
- * @param key
- * @param render
+ * @param {string} key
+ * @param {string} region
+ * @param {Function} renderFn
  * @throws If extension manifest not already registered
  */
-export const registerRender = (key, render) => {
+export const registerRender = (key, region, renderFn) => {
   invariant(registry[key], 'manifest must exist for extension ' + key + ' before registering');
 
-  Object.assign(registry[key], {
-    render,
-  });
+  Object.assign(registry[key].render, { [region]: renderFn });
 };
 
 /**
@@ -155,7 +156,7 @@ export const getExtensionName = (key) => {
   if (!manifest) {
     return null;
   }
-  return manifest.geneticConstructor.readable || manifest.name;
+  return extensionName(manifest);
 };
 
 /**
@@ -174,19 +175,22 @@ export const getExtensionName = (key) => {
  * @resolve {Function} callback from render, the unregister function
  * @reject {Error} Error while rendering
  */
-//todo - render extensions only per region
 export const downloadAndRender = (key, region, container, options) => {
-  return downloadExtension(key)
+  const manifest = registry[key];
+  const file = getClientFileFromRegion(manifest, region);
+
+  return downloadExtension(key, file)
     .then(() => {
       const manifest = registry[key];
-      if (typeof manifest.render !== 'function') {
-        console.warn(`Extension ${name} did not specify a render() function, even though it defined a region. Check Extension manifest definition.`);
-        return;
+      const regionRender = manifest.render[region];
+
+      if (typeof regionRender !== 'function') {
+        return Promise.reject(`Extension ${name} did not specify a render() function, even though it defined a region. Check Extension manifest definition.`);
       }
 
       return new Promise((resolve, reject) => {
         try {
-          const callback = manifest.render(container, options);
+          const callback = regionRender(container, options);
           resolve(callback);
         } catch (err) {
           //already logged it when wrap render in registerExtension

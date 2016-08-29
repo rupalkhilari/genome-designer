@@ -22,6 +22,8 @@ const cached = {};
  * given an extension key and file, actually load the script.
  * @name downloadExtension
  * @memberOf extensions
+ * @param {string} key
+ * @param {string} file
  * @returns {Promise}
  * @resolve {boolean} (false) - was cached, (true) - was downloaded
  * @reject {Response} (err) - error downloading

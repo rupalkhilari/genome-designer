@@ -12,6 +12,11 @@ Visual extensions are downloaded lazily as needed. Extension manifests must be r
 
 The flow:
 
+... server starts ...
+
+- extensions are validated, and registered + installed on the server
+- a route exists to get all the extension manifests
+
 ... on startup, or when config changes ...
 
 - retrieve list of extensions from server

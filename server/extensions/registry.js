@@ -16,7 +16,7 @@
 import path from 'path';
 import fs from 'fs';
 import { pickBy } from 'lodash';
-import { manifestIsServer, manifestIsClient } from './manifestUtils';
+import { validateManifest, manifestIsServer, manifestIsClient } from './manifestUtils';
 
 const nodeModulesDir = process.env.BUILD ? 'gd_extensions' : path.resolve(__dirname, './node_modules');
 
@@ -35,10 +35,7 @@ fs.readdirSync(nodeModulesDir).forEach(packageName => {
     const filePath = path.resolve(nodeModulesDir, packageName + '/package.json');
     const depManifest = require(filePath);
 
-    if (!depManifest.geneticConstructor) {
-      console.log('ignoring package ' + packageName + ', no field geneticConstructor');
-      return;
-    }
+    validateManifest(depManifest);
 
     Object.assign(registry, {
       [packageName]: depManifest,
