@@ -20,7 +20,7 @@ import extensionRegistry from './registry';
 import { manifestIsServer, manifestIsClient, manifestClientFiles } from './manifestUtils';
 
 export const manifestIsPrivate = (manifest) => {
-  return manifest.geneticConstructor.private === true;
+  return manifest.geneticConstructor.private === true || typeof manifest.geneticConstructor.access === 'object';
 };
 
 //future - clearer checking / clearer defaults, checking beyond just email
