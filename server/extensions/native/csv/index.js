@@ -56,7 +56,7 @@ router.get('/file/:fileId', (req, res, next) => {
 
 router.post('/import/:projectId?', jsonParser, (req, resp, next) => {
   const { projectId } = req.params;
-  const noSave = req.query.hasOwnProperty('noSave') || projectId === 'convert';
+  const noSave = req.query.hasOwnProperty('noSave');
   const returnRoll = projectId === 'convert';
 
   let csvFile;
@@ -114,7 +114,7 @@ router.post('/import/:projectId?', jsonParser, (req, resp, next) => {
         return Promise.reject('no valid blocks');
       }
 
-      if (!projectId || noSave) {
+      if (!projectId || noSave || projectId === 'convert') {
         const project = Project.classless({ components: blockIds });
         return Promise.resolve({
           project,

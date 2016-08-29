@@ -28,7 +28,7 @@ const contentTypeTextHeader = { headers: { 'Content-Type': 'text/plain' } };
  * Promise resolves with projectId on success and rejects with statusText of xhr
  * @private
  */
-export const importGenbankOrCSV = (file, projectId) => {
+export const importGenbankOrCSV = (file, projectId, noSave = false) => {
   invariant(file && file.name, 'expected a file object of the type that can be added to FormData');
 
   const formData = new FormData();
@@ -37,7 +37,7 @@ export const importGenbankOrCSV = (file, projectId) => {
   //hack - CSV should have its own middleware but so sparingly used we just put it here
   const isCSV = file.name.toLowerCase().endsWith('.csv');
   const extensionName = isCSV ? 'csv' : extensionKey;
-  const uri = extensionApiPath(extensionName, `import${projectId ? ('/' + projectId) : ''}`);
+  const uri = extensionApiPath(extensionName, `import${projectId ? ('/' + projectId) : ''}${noSave === true ? '?noSave=true' : ''}`);
 
   //define these here so content type not automatically applied so webkit can define its own boundry
   const headers = {

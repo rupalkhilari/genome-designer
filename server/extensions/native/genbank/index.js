@@ -134,7 +134,8 @@ router.get('/export/:projectId/:constructId?', permissionsMiddleware, (req, res,
 //takes a string as input, not a file, unlike route below
 //returns { roots: [], blocks: { <id> : <block> } }
 router.post('/import/convert', (req, resp, next) => {
-  const constructsOnly = !!req.query.constructsOnly;
+  const constructsOnly = req.query.hasOwnProperty('constructsOnly');
+  const noSave = req.query.hasOwnProperty('noSave'); //todo - not supported currently. sqeuences always written
 
   let buffer = '';
 
@@ -169,7 +170,7 @@ router.post('/import/convert', (req, resp, next) => {
 
 router.post('/import/:projectId?', (req, res, next) => {
   const { projectId } = req.params;
-  const noSave = req.query.hasOwnProperty('noSave') || projectId === 'convert';
+  const noSave = req.query.hasOwnProperty('noSave'); //todo - not fully supported currently. sqeuences always written. this just blocks saving the rollup on the server.
 
   let genbankFile;
   // save incoming file then read back the string data.
