@@ -35,6 +35,12 @@ See the npm documentation for how to update `package.json`.
 
 A few additional fields in `package.json` indicate to Constructor information and intent about the extension. See the docs on [Client extensions](ClientExtensions.md) and [Server Extensions](ServerExtensions.md) for specifics.
 
+### Developing Extensions
+
+To develop an extension, you should download and run Genetic Constructor locally, and develop your extension by including it in the local server. The recommended way of including your extension is to use [`npm link`](npmLink.md).
+
+When running locally, simple / mocked [authentication](../../server/auth/README.md) is used.
+
 ### Tips
 
 [`npm link`](npmLink.md)
