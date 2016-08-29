@@ -66,11 +66,11 @@ export const checkUserExtensionActive = (extensionManifest, user) => {
 export const checkExtensionExistsMiddleware = (req, res, next) => {
   const { extension, filePath } = req.params;
 
-  if (!!extension) {
+  if (!extension) {
     return res.status(401).send('expected :extension in route params');
   }
 
-  if (!!filePath) {
+  if (!filePath) {
     return res.status(404).send('expected specific :filePath in route params');
   }
 

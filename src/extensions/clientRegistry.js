@@ -24,6 +24,7 @@ export const registry = {};
 //listeners when an extension registers
 const callbacks = [];
 
+const defaultArgs = [registry, null, []];
 function safelyRunCallback(callback, ...args) {
   try {
     callback.apply(null, args);
@@ -36,7 +37,7 @@ function safelyRunCallback(callback, ...args) {
 }
 
 function safelyRunCallbacks(...args) {
-  const callbackArgs = args.length ? args : [registry];
+  const callbackArgs = (args.length > 0) ? args : defaultArgs;
   callbacks.forEach(cb => safelyRunCallback(cb, ...callbackArgs));
 }
 
@@ -105,7 +106,7 @@ export const registerManifest = (manifest) => {
     )
       .then(() => {
         //todo - update callbacks to expect array of regions
-        safelyRunCallbacks(registry, name, [...regions]);
+        safelyRunCallbacks(registry, name, [...extensionInfo.regions]);
       });
 
     //register extension, do some setup for render obj, return registry
@@ -149,7 +150,7 @@ export const registerRender = (key, region, renderFn) => {
  */
 export const onRegister = (cb, skipFirst = false) => {
   callbacks.push(cb);
-  !skipFirst && safelyRunCallback(cb, registry, null);
+  !skipFirst && safelyRunCallback(cb, ...defaultArgs);
   return function unregister() { callbacks.splice(callbacks.findIndex(cb), 1); };
 };
 

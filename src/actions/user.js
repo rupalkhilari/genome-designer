@@ -44,8 +44,6 @@ export const userLogin = (email, password) => {
   return (dispatch, getState) => {
     return login(email, password)
       .then(user => {
-        console.log('got user');
-        console.log(user);
         const mappedUser = mapUserFromServer(user);
         const setUserPayload = _userSetUser(mappedUser);
         dispatch(setUserPayload);
@@ -98,7 +96,6 @@ export const userUpdateConfig = (config) => {
     return setUserConfig(config)
       .then(config => {
         const user = Object.assign({}, getState().user, { config });
-        console.log(user);
         const setUserPayload = _userSetUser(user);
         dispatch(setUserPayload);
         return user;

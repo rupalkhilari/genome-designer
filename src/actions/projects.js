@@ -294,8 +294,6 @@ export const projectLoad = (projectId, avoidCache = false, loadMoreOnFail = fals
       dispatch(pauseAction());
       dispatch(undoActions.transact());
 
-      console.log('dispatching lodaded');
-
       dispatch({
         type: ActionTypes.BLOCK_STASH,
         blocks: Object.keys(rollup.blocks).map(blockId => rollup.blocks[blockId]),
