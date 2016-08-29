@@ -20,10 +20,7 @@ install:
 - npm install
 script:
 - npm run lint
-- npm run test
-- npm run start-testing
-- npm run nightwatch-saucelabs
-- pkill node
+- npm run test && npm run start-testing && npm run nightwatch-saucelabs && pkill node
 cache:
   directories:
   - node_modules
