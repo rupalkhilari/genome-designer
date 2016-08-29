@@ -63,11 +63,6 @@ export class InspectorGsl extends Component {
           ))}
         </InspectorRow>
 
-        <InspectorRow heading="Syntax Coloring">
-          <PickerItem readOnly
-                      styles={{backgroundColor: instance.color}}/>
-        </InspectorRow>
-
       </div>
     );
   }
