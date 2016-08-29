@@ -34,9 +34,9 @@ export const downloadExtension = (key, file) => {
       return reject('key and file name both required')
     }
 
-    const extCache = cached[key];
+    let extCache = cached[key];
 
-    if (extCache) {
+    if (typeof extCache === 'object') {
       //if we've downloaded this file, skip it
       if (extCache[file] === true) {
         return resolve(false);
@@ -46,6 +46,9 @@ export const downloadExtension = (key, file) => {
         console.warn(`there was an error loading ${key}, so not trying again`);
         return reject('already errored');
       }
+    } else {
+      Object.assign(cached, { [key]: {} });
+      extCache = cached[key];
     }
 
     const url = `/extensions/load/${key}/${file}`;
@@ -53,15 +56,18 @@ export const downloadExtension = (key, file) => {
     //we can try to catch some errors, but adding script dynamically to head of page doesn't allow us to catch this way
     //todo - patch window.onerror and catch
     try {
+      //cache to start, in case attempting to download same file twice. will set to failure if it doesn't work.
+      extCache[file] = true;
+
       loadScript(url, (err, script) => {
         if (err) {
-          reject(err);
+          extCache[file] = false;
+          return reject(err);
         }
-        cached[key] = true;
-        resolve(true);
+        return resolve(true);
       });
     } catch (err) {
-      cached[key] = false;
+      extCache[file] = false;
       reject(err);
     }
   });

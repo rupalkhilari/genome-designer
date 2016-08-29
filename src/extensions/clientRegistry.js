@@ -108,9 +108,10 @@ export const registerManifest = (manifest) => {
         safelyRunCallbacks(registry, name, [...regions]);
       });
 
-    //register extension, do some setup, return registry
-    Object.assign(registry, { [name]: manifest });
-    Object.assign(register[name], { render: {} });
+    //register extension, do some setup for render obj, return registry
+    Object.assign(registry, {
+      [name]: Object.assign(manifest, { render: {} }),
+    });
     return registry;
   } catch (err) {
     console.log(`could not register extension ${manifest.name}, ignoring.`);
@@ -131,6 +132,7 @@ export const registerManifest = (manifest) => {
  * @throws If extension manifest not already registered
  */
 export const registerRender = (key, region, renderFn) => {
+  invariant(!!key && typeof region === 'string' && typeof renderFn === 'function', 'improper args to registerRender');
   invariant(registry[key], 'manifest must exist for extension ' + key + ' before registering');
 
   Object.assign(registry[key].render, { [region]: renderFn });
