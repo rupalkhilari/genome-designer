@@ -11,6 +11,8 @@ export function validateManifest(manifest) {
 
   invariant(typeof type === 'string', 'must specify geneticConstructor.type');
 
+  invariant(!!client || !!router, 'must specify client or router for extension');
+
   if (!!client) {
     invariant(Array.isArray(client), 'geneticConstructor.client must be array');
     invariant(client.every(clientObj => typeof clientObj.file === 'string'), 'each client extension object must have a file');
