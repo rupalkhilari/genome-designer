@@ -64,7 +64,8 @@ export const checkUserExtensionActive = (extensionManifest, user) => {
 //check if the extension has been registered, assign req.extension and req.extensionManifest
 //expects :extension in the route
 export const checkExtensionExistsMiddleware = (req, res, next) => {
-  const { extension, filePath } = req.params;
+  const { extension } = req.params;
+  const filePath = req.params[0]; //this might be present
 
   if (!extension) {
     return res.status(401).send('expected :extension in route params');

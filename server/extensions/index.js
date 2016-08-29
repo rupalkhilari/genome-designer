@@ -112,7 +112,7 @@ router.get('/manifest/:extension',
 //only for client extensions
 //dependent on whether in production (only client files explicitly listed) or not (send any file)
 
-router.get('/load/:extension/:filePath',
+router.get('/load/:extension/*',
   checkExtensionExistsMiddleware,
   checkUserExtensionAccessMiddleware,
   checkExtensionIsClientMiddleware,
