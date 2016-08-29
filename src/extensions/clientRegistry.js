@@ -14,8 +14,9 @@
  limitations under the License.
  */
 import invariant from 'invariant';
+import { isEqual, merge, get as getPath } from 'lodash';
 import * as regions from './regions';
-import { manifestClientRegions, getClientFileFromRegion, extensionName } from '../../server/extensions/manifestUtils';
+import { manifestIsClient, manifestClientRegions, getClientFileFromRegion, extensionName } from '../../server/extensions/manifestUtils';
 import { downloadExtension } from './downloadExtension';
 
 //map of extensions
@@ -23,6 +24,10 @@ export const registry = {};
 
 //listeners when an extension registers
 const callbacks = [];
+
+//track user's config for extensions - { [key] : {active : Boolean} }
+//note - need to set this whenever it changes (currently track from user reducers)
+const extensionConfig = {};
 
 const defaultArgs = [registry, null, []];
 function safelyRunCallback(callback, ...args) {
@@ -41,6 +46,28 @@ function safelyRunCallbacks(...args) {
   callbacks.forEach(cb => safelyRunCallback(cb, ...callbackArgs));
 }
 
+//pass config.extensions
+export const setExtensionConfig = (config = {}) => {
+  invariant(!config.extensions, 'pass config.extensions directly');
+
+  if (!isEqual(config, extensionConfig)) {
+    Object.keys(extensionConfig).forEach(key => {
+      delete extensionConfig[key];
+    });
+    merge(extensionConfig, config);
+    return true;
+  }
+  return false;
+};
+
+export const extensionIsActive = (key) => {
+  const extensionManifest = registry[key];
+  if (!extensionManifest) {
+    return false;
+  }
+  return getPath(extensionConfig, [key, 'active'], false);
+};
+
 /**
  * Check whether a region is a valid to load the extension
  * @name validRegion
@@ -52,14 +79,14 @@ function safelyRunCallbacks(...args) {
 export const validRegion = (region) => region === null || typeof regions[region] === 'string';
 
 //returns an array
-export const extensionsByRegion = (region) => {
+export const extensionsByRegion = (region, includeInactive = false) => {
   return Object.keys(registry)
-    .filter(key => {
-      const manifest = registry[key];
+    .map(key => registry[key])
+    .filter(manifest => includeInactive === true || (manifestIsClient(manifest) && extensionIsActive(manifest.name)))
+    .filter(manifest => {
       const regions = manifestClientRegions(manifest);
       return regions.indexOf(region) >= 0;
     })
-    .map(key => registry[key])
     .sort((one, two) => one.name < two.name ? -1 : 1)
     .map(manifest => manifest.name);
 };
@@ -80,34 +107,37 @@ export const registerManifest = (manifest) => {
     const { client } = geneticConstructor;
 
     invariant(name, 'Name is required');
-    invariant(Array.isArray(client) && client.length > 0, 'must specify client files in extension to register, check geneticConstructor.client');
 
-    //save:
-    // 1) list of files for non-visual extensions to download immediately upon registration, if all files listed pass checks
-    // 2) list of relevant regions
-    const extensionInfo = client.reduce((acc, { file, region }, index) => {
-      invariant(region || region === null, `Region (manifest.geneticConstructor.region) is required to register a client-side extension, or null for non-visual extensions [${name}]`);
-      invariant(validRegion(region), `Region must be a valid region, got ${region} [${name}, #${index}]`);
+    if (!!client) {
+      invariant(Array.isArray(client) && client.length > 0, 'must specify client files in extension to register, check geneticConstructor.client');
 
-      acc.regions.add(region);
+      //save:
+      // 1) list of files for non-visual extensions to download immediately upon registration, if all files listed pass checks
+      // 2) list of relevant regions
+      const extensionInfo = client.reduce((acc, { file, region }, index) => {
+        invariant(region || region === null, `Region (manifest.geneticConstructor.region) is required to register a client-side extension, or null for non-visual extensions [${name}]`);
+        invariant(validRegion(region), `Region must be a valid region, got ${region} [${name}, #${index}]`);
 
-      if (region === null) {
-        acc.files.add(file)
-      }
+        acc.regions.add(region);
 
-      return acc;
-    }, { files: new Set(), regions: new Set() });
+        if (region === null) {
+          acc.files.add(file)
+        }
 
-    //extension checks out. actually register it and download non-visual components
+        return acc;
+      }, { files: new Set(), regions: new Set() });
 
-    //download appropriate files immediately, then run callbacks
-    Promise.all(
-      [...extensionInfo.files].map(file => downloadExtension(name, file))
-    )
-      .then(() => {
-        //todo - update callbacks to expect array of regions
-        safelyRunCallbacks(registry, name, [...extensionInfo.regions]);
-      });
+      //extension checks out. actually register it and download non-visual components
+
+      //download appropriate files immediately, then run callbacks
+      Promise.all(
+        [...extensionInfo.files].map(file => downloadExtension(name, file))
+      )
+        .then(() => {
+          //todo - update callbacks to expect array of regions
+          safelyRunCallbacks(registry, name, [...extensionInfo.regions]);
+        });
+    }
 
     //register extension, do some setup for render obj, return registry
     Object.assign(registry, {

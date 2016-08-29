@@ -17,12 +17,12 @@ import { registry, registerManifest, clearRegistry } from './clientRegistry';
 import { getExtensionsInfo } from '../middleware/extensions';
 
 //for now, build the registry using everything registered on the server, and load automatically
-export default function loadAllExtensions(shouldClear = false) {
+export default function loadAllExtensions(loadAll = true, shouldClear = true) {
   if (shouldClear === true) {
     clearRegistry();
   }
 
-  getExtensionsInfo()
+  getExtensionsInfo(loadAll)
     .then(manifests => {
       Object.keys(manifests)
         .map(key => manifests[key])

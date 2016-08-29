@@ -59,7 +59,7 @@ class ProjectPage extends Component {
     // https://github.com/mjackson/history/blob/master/docs/ConfirmingNavigation.md
     window.onbeforeunload = window.onunload = this.onWindowUnload;
 
-    //load extension
+    //load extensions (also see componentWillReceiveProps)
     if (!!this.props.userId) {
       loadAllExtensions();
     }
@@ -79,7 +79,7 @@ class ProjectPage extends Component {
 
     //reload extensions if user changed
     //could be smarter about this... but probably not an issue since log the user out and refrresh the page
-    if (this.props.userId !== nextProps.userId) {
+    if (this.props.userId !== nextProps.userId && nextProps.userId) {
       loadAllExtensions();
     }
   }
@@ -169,7 +169,7 @@ function mapStateToProps(state, ownProps) {
     project,
     constructs,
     orders,
-    userId
+    userId,
   };
 }
 

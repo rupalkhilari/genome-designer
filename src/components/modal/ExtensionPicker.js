@@ -20,7 +20,7 @@ import ModalWindow from './modalwindow';
 import { uiShowExtensionPicker } from '../../actions/ui';
 import { userUpdateConfig } from '../../actions/user';
 import loadAllExtensions from '../../extensions/loadExtensions';
-import { getExtensionsInfo } from '../../middleware/extensions';
+import registry from '../../extensions/clientRegistry';
 import {
   extensionName,
   extensionAuthor,
@@ -37,22 +37,20 @@ export class ExtensionPicker extends Component {
   static propTypes = {
     open: PropTypes.bool.isRequired,
     config: PropTypes.shape({
-      extensions: PropTypes.object.isRequired,
-    }).isRequired,
+      extensions: PropTypes.object,
+    }),
     uiShowExtensionPicker: PropTypes.func.isRequired,
     userUpdateConfig: PropTypes.func.isRequired,
   };
 
-  state = {
-    dirty: false,
-    extensions: {},
-    extensionsActive: {},
+  static defaultProps = {
+    config: { extensions: {} },
   };
 
-  componentDidMount() {
-    getExtensionsInfo(true)
-      .then(extensions => this.setState({ extensions }));
-  }
+  state = {
+    dirty: false,
+    extensionsActive: {},
+  };
 
   checkExtensionActive = (extension) => {
     return (typeof this.state.extensionsActive[extension] === 'boolean') ?
@@ -75,7 +73,7 @@ export class ExtensionPicker extends Component {
 
     this.props.userUpdateConfig(nextConfig)
       .then(user => {
-        loadAllExtensions(true);
+        loadAllExtensions(true, true);
         this.setState({ dirty: false });
         this.props.uiShowExtensionPicker(false);
       });
@@ -104,10 +102,10 @@ export class ExtensionPicker extends Component {
             <div className="ExtensionPicker-list">
               <div className="ExtensionPicker-row ExtensionPicker-header">
                 {['', ...tableFields].map(field => {
-                  return (<div className="ExtensionPicker-cell">{field}</div>);
+                  return (<div className="ExtensionPicker-cell" key={field}>{field}</div>);
                 })}
               </div>
-              {Object.keys(this.state.extensions).map(key => this.state.extensions[key]).map(extension => {
+              {Object.keys(registry).map(key => registry[key]).map(extension => {
                 const values = {
                   Name: extensionName(extension),
                   Type: extensionType(extension),
