@@ -70,10 +70,6 @@ export const checkExtensionExistsMiddleware = (req, res, next) => {
     return res.status(401).send('expected :extension in route params');
   }
 
-  if (!filePath) {
-    return res.status(404).send('expected specific :filePath in route params');
-  }
-
   const extensionManifest = extensionRegistry[extension];
 
   if (!extensionManifest) {
@@ -130,6 +126,10 @@ export const checkClientExtensionFilePath = (req, res, next) => {
   }
 
   const { filePath, extensionManifest } = req;
+
+  if (!filePath) {
+    return res.status(404).send('expected specific :filePath in route params');
+  }
 
   const clientFiles = manifestClientFiles(extensionManifest);
 
