@@ -18,12 +18,16 @@ import { getExtensionsInfo } from '../middleware/extensions';
 
 //for now, build the registry using everything registered on the server, and load automatically
 export default function loadAllExtensions(loadAll = true, shouldClear = true) {
+  console.log('loading extensions');
+
   if (shouldClear === true) {
     clearRegistry();
   }
 
   getExtensionsInfo(loadAll)
     .then(manifests => {
+      console.log('loaded');
+
       Object.keys(manifests)
         .map(key => manifests[key])
         .forEach(manifest => registerManifest(manifest));

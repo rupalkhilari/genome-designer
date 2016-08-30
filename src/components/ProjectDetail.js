@@ -49,6 +49,7 @@ export class ProjectDetail extends Component {
     this.extensionsListener = onRegister((registry, key, regions) => {
       if (key === null || regions.indexOf(projectDetailExtensionRegion) >= 0) {
         this.extensions = extensionsByRegion(projectDetailExtensionRegion);
+        console.log('got extensions', this.extensions);
         this.forceUpdate();
       }
     });
