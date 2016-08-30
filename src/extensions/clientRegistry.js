@@ -55,8 +55,6 @@ function safelyRunCallbacks(...args) {
 export const setExtensionConfig = (config = {}) => {
   invariant(!config.extensions, 'pass config.extensions directly');
 
-  console.log('updating user config', config);
-
   if (!isEqual(config, extensionConfig)) {
     Object.keys(extensionConfig).forEach(key => {
       delete extensionConfig[key];
@@ -87,10 +85,6 @@ export const validRegion = (region) => region === null || typeof regions[region]
 
 //returns an array
 export const extensionsByRegion = (region, includeInactive = false, includeServer = false) => {
-  console.log('getting by region');
-  console.log(extensionConfig);
-  console.log(Object.keys(registry));
-
   return Object.keys(registry)
     .map(key => registry[key])
     .filter(manifest => includeServer === true || manifestIsClient(manifest))
