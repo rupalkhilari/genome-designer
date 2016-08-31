@@ -36,6 +36,7 @@ const mapUserFromServer = (serverUser) => ({
  */
 const _userSetUser = (user) => ({
   type: ActionTypes.USER_SET_USER,
+  updateConfig: true,
   user,
 });
 

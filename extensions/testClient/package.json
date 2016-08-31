@@ -9,6 +9,10 @@
       {
         "file": "index.js",
         "region": "projectDetail"
+      },
+      {
+        "file": "background.js",
+        "region": null
       }
     ]
   }

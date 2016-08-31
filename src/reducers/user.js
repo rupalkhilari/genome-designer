@@ -31,14 +31,15 @@ setExtensionConfig(initialState.config.extensions);
 export default function user(state = initialState, action) {
   switch (action.type) {
   case ActionTypes.USER_SET_USER:
-    invariant(typeof action.user === 'object', 'user must be object (can be empty)');
+    const { user, updateConfig = false} = action;
+    invariant(typeof user === 'object', 'user must be object (can be empty)');
     const {
       userid = null,
       email = null,
       firstName = null,
       lastName = null,
       config = {},
-    } = action.user;
+    } = user;
 
     const nextState = Object.assign({}, state, {
       userid,
@@ -48,8 +49,10 @@ export default function user(state = initialState, action) {
       config,
     });
 
-    //update config in clientRegistry here (before all listeners are called)
-    setExtensionConfig(nextState.config.extensions);
+    //update config in clientRegistry here (before all listeners are called - components, user promises, etc.)
+    if (updateConfig) {
+      setExtensionConfig(nextState.config.extensions);
+    }
 
     return nextState;
 

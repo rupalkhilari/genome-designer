@@ -16,7 +16,12 @@
 import invariant from 'invariant';
 import { isEqual, merge, get as getPath } from 'lodash';
 import * as regions from './regions';
-import { manifestIsClient, manifestClientRegions, getClientFileFromRegion, extensionName } from '../../server/extensions/manifestUtils';
+import {
+  manifestIsClient,
+  manifestClientRegions,
+  getClientFileFromRegion,
+  extensionName
+} from '../../server/extensions/manifestUtils';
 import { downloadExtension } from './downloadExtension';
 
 //map of extensions
@@ -79,10 +84,11 @@ export const extensionIsActive = (key) => {
 export const validRegion = (region) => region === null || typeof regions[region] === 'string';
 
 //returns an array
-export const extensionsByRegion = (region, includeInactive = false) => {
+export const extensionsByRegion = (region, includeInactive = false, includeServer = false) => {
   return Object.keys(registry)
     .map(key => registry[key])
-    .filter(manifest => includeInactive === true || (manifestIsClient(manifest) && extensionIsActive(manifest.name)))
+    .filter(manifest => includeServer === true || manifestIsClient(manifest))
+    .filter(manifest => includeInactive === true || extensionIsActive(manifest.name))
     .filter(manifest => {
       const regions = manifestClientRegions(manifest);
       return regions.indexOf(region) >= 0;
@@ -104,45 +110,48 @@ export const extensionsByRegion = (region, includeInactive = false) => {
 export const registerManifest = (manifest) => {
   try {
     const { name, geneticConstructor } = manifest;
-    const { client } = geneticConstructor;
+    const { client = [] } = geneticConstructor;
 
+    //checks
     invariant(name, 'Name is required');
-
-    if (!!client) {
-      invariant(Array.isArray(client) && client.length > 0, 'must specify client files in extension to register, check geneticConstructor.client');
-
-      //save:
-      // 1) list of files for non-visual extensions to download immediately upon registration, if all files listed pass checks
-      // 2) list of relevant regions
-      const extensionInfo = client.reduce((acc, { file, region }, index) => {
-        invariant(region || region === null, `Region (manifest.geneticConstructor.region) is required to register a client-side extension, or null for non-visual extensions [${name}]`);
-        invariant(validRegion(region), `Region must be a valid region, got ${region} [${name}, #${index}]`);
-
-        acc.regions.add(region);
-
-        if (region === null) {
-          acc.files.add(file)
-        }
-
-        return acc;
-      }, { files: new Set(), regions: new Set() });
-
-      //extension checks out. actually register it and download non-visual components
-
-      //download appropriate files immediately, then run callbacks
-      Promise.all(
-        [...extensionInfo.files].map(file => downloadExtension(name, file))
-      )
-        .then(() => {
-          //todo - update callbacks to expect array of regions
-          safelyRunCallbacks(registry, name, [...extensionInfo.regions]);
-        });
+    invariant(Array.isArray(client), 'geneticConstruct.client must be an array');
+    if (client.length > 0) {
+      invariant(client.every(({ file, region }, index) => typeof file === 'string'), `File required for each client-side component, check ${name}`);
+      invariant(client.every(({ file, region }, index) => region || region === null), `Region (manifest.geneticConstructor.region) is required to register a client-side extension, or null for non-visual extensions [${name}]`);
+      invariant(client.every(({ file, region }, index) => validRegion(region)), `Region must be a valid region, check ${name}`);
     }
 
-    //register extension, do some setup for render obj, return registry
+    //checks out, so assign to registry + do some setup for render functions
     Object.assign(registry, {
       [name]: Object.assign(manifest, { render: {} }),
     });
+
+    //when register non-client manifest, don't try to download or anything...
+
+    //save:
+    // 1) list of files for non-visual extensions to download immediately upon registration, if the extension is active
+    // 2) list of relevant regions
+    const extensionInfo = client.reduce((acc, { file, region }) => {
+      acc.regions.add(region);
+
+      if (region === null) {
+        acc.files.add(file)
+      }
+
+      return acc;
+    }, { files: new Set(), regions: new Set() });
+
+    //download appropriate files immediately, then run callbacks asynchronously, regardless of whether extension was downloaded
+    const promises = extensionIsActive(manifest.name) ?
+      [...extensionInfo.files].map(file => downloadExtension(name, file)) :
+      [];
+
+    Promise.all(promises)
+      .then(() => {
+        safelyRunCallbacks(registry, name, [...extensionInfo.regions]);
+      });
+
+    //return the registry synchronously
     return registry;
   } catch (err) {
     console.log(`could not register extension ${manifest.name}, ignoring.`);
