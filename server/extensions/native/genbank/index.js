@@ -35,6 +35,11 @@ const createFileUrl = (fileName) => {
 //create the router
 const router = express.Router(); //eslint-disable-line new-cap
 
+router.param('projectId', (req, res, next, id) => {
+  Object.assign(req, { projectId: id });
+  next();
+});
+
 /***** FILES ******/
 
 //route to download genbank files
