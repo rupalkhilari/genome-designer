@@ -172,7 +172,7 @@ export const operators = [
     ],
     color: colors.blue,
     text: '~',
-    position: 'prefix, inline',
+    position: 'prefix',
   },
   {
     id: 'variable',
