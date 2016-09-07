@@ -220,6 +220,7 @@ router.post('/import/:projectId?', (req, res, next) => {
         return Promise.reject('no valid blocks');
       }
 
+      //if no project ID, we are adding to a new project, no need to merge
       if (!projectId) {
         return Promise.resolve(roll);
       }
