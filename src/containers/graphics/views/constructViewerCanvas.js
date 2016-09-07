@@ -37,6 +37,9 @@ import { block as blockDragType } from '../../../constants/DragTypes';
 
 import '../../../styles/constructviewercanvas.css';
 
+const defaultDropMessage = 'Drop blocks here to create a new construct.';
+const droppingMessage = 'Building new construct...';
+
 export class ConstructViewerCanvas extends Component {
 
   static propTypes = {
@@ -53,6 +56,9 @@ export class ConstructViewerCanvas extends Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+      dropMessage: defaultDropMessage,
+    };
   }
 
   /**
@@ -76,6 +82,9 @@ export class ConstructViewerCanvas extends Component {
       constructViewer.addItemAtInsertionPoint(payload, null, null);
       this.props.focusConstruct(construct.id);
     }
+    this.setState({
+      dropMessage: defaultDropMessage,
+    });
   }
 
   /**
@@ -105,6 +114,11 @@ export class ConstructViewerCanvas extends Component {
       },
       dragLeave: () => {
         ReactDOM.findDOMNode(this.refs.dropTarget).classList.remove('cvc-hovered');
+      },
+      dragEnd: () => {
+        this.setState({
+          dropMessage: droppingMessage,
+        });
       },
       zorder: -1,
     });
@@ -226,7 +240,7 @@ export class ConstructViewerCanvas extends Component {
     // map construct viewers so we can propagate projectId and any recently dropped blocks
     return (
       <div className="ProjectPage-constructs no-vertical-scroll" onClick={this.onClick}>
-        <div className={dropClasses} ref="dropTarget" key="dropTarget">Drop blocks here to create a new construct.</div>;
+        <div className={dropClasses} ref="dropTarget" key="dropTarget">{this.state.dropMessage}</div>;
         {constructViewers}
       </div>
     );

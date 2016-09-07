@@ -21,6 +21,7 @@ import RoleSvg from '../RoleSvg';
 import BasePairCount from '../ui/BasePairCount';
 import {
   block as blockDragType,
+  gsl as gslDragType,
   role as roleDragType,
 } from '../../constants/DragTypes';
 
@@ -29,7 +30,7 @@ import {
   uiSetGrunt,
   uiSpin,
 } from '../../actions/ui';
-import { focusForceBlocks, focusRole } from '../../actions/focus';
+import { focusForceBlocks, focusGsl, focusRole } from '../../actions/focus';
 
 import '../../styles/InventoryItem.css';
 
@@ -43,6 +44,7 @@ export class InventoryItem extends Component {
       }).isRequired,
     }).isRequired,
     itemDetail: PropTypes.string, //gray text shown after
+    proxyText: PropTypes.string,
     image: PropTypes.string, //takes precedence over svg
     svg: PropTypes.string, //right now, SBOL SVG ID
     svgProps: PropTypes.object,
@@ -56,6 +58,7 @@ export class InventoryItem extends Component {
     forceBlocks: PropTypes.array.isRequired,
     focusBlocks: PropTypes.array.isRequired,
     inspectorToggleVisibility: PropTypes.func.isRequired,
+    focusGsl: PropTypes.func.isRequired,
     focusRole: PropTypes.func.isRequired,
     focusForceBlocks: PropTypes.func.isRequired,
     uiSetGrunt: PropTypes.func.isRequired,
@@ -117,7 +120,7 @@ export class InventoryItem extends Component {
   makeDnDProxy() {
     const proxy = document.createElement('div');
     proxy.className = 'InventoryItemProxy';
-    proxy.innerHTML = this.props.item.metadata.name || this.props.defaultName;
+    proxy.innerHTML = this.props.proxyText || this.props.item.metadata.name || this.props.defaultName;
     const svg = this.itemElement.querySelector('svg');
     if (svg) {
       const svgClone = svg.cloneNode(true);
@@ -136,6 +139,8 @@ export class InventoryItem extends Component {
       //todo - this shouldnt be responsibility of this generic component. move into specific components.
       if (inventoryType === blockDragType) {
         focusForceBlocks([result]);
+      } else if (inventoryType === gslDragType) {
+        focusGsl(result.id);
       } else if (inventoryType === roleDragType) {
         focusRole(result.id);
       }
@@ -153,8 +158,8 @@ export class InventoryItem extends Component {
 
     return (
       <div className={'InventoryItem' +
-      ((!!image || !!svg) ? ' hasImage' : '') +
-      (!!isSelected ? ' selected' : '')}
+        ((!!image || !!svg) ? ' hasImage' : '') +
+        (!!isSelected ? ' selected' : '')}
            ref={(el) => this.itemElement = el}
            data-inventory={dataAttr}>
         <a className="InventoryItem-item"
@@ -180,6 +185,7 @@ export default connect((state) => {
   };
 }, {
   focusForceBlocks,
+  focusGsl,
   focusRole,
   inspectorToggleVisibility,
   uiSetGrunt,

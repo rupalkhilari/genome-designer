@@ -6,6 +6,7 @@
     "testClient" : "../../extensions/testClient",
     "testPrivate" : "../../extensions/testPrivate",
     "testErrorServer" : "../../extensions/testErrorServer",
+    "gslEditor" : "../../extensions/gslEditor",
     "SequenceDetail" : "IsaacLuo/onion2#extensions-refactor",
     "seq-viewer": "git+http://github.com/duncanmeech/sequence-viewer.git"
   }

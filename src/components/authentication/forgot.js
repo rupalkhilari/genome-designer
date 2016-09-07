@@ -72,13 +72,24 @@ class ForgotForm extends Component {
         track('Authentication', 'Forgot', 'Success');
       })
       .catch((reason) => {
-        this.setState({
-          emailError: {
-            visible: true,
-            text: 'Unexpected error, please check your connection',
-          },
-        });
-        track('Authentication', 'Forgot', 'Unexpected Error');
+        // unrecognized email throws an exception, but we don't want the caller to know if the email is registered or not.
+        if (reason && reason.message === 'Invalid email') {
+          this.setState({
+            emailError: {
+              visible: true,
+              text: 'Unrecognized email address',
+            },
+          });
+          track('Authentication', 'Forgot', 'Unrecognized Email');
+        } else {
+          this.setState({
+            emailError: {
+              visible: true,
+              text: 'Unexpected error, please check your connection',
+            },
+          });
+          track('Authentication', 'Forgot', 'Unexpected Error');
+        }
       });
   }
 
