@@ -136,6 +136,7 @@ router.post('/import/:projectId?', jsonParser, (req, resp, next) => {
     .then(blocks => {
       const componentIds = Object.keys(blocks).filter(blockId => blocks[blockId].components.length > 0);
 
+      //if no project ID, we are adding to a new project, no need to merge
       if (!projectId) {
         const project = Project.classless({ components: componentIds });
         return Promise.resolve({
