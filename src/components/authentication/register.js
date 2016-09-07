@@ -79,7 +79,7 @@ class RegisterForm extends Component {
     evt.preventDefault();
     // client side validation first
     if (this.clientValidation()) {
-      track('Authentication', 'Sign Up', 'Failed client validation');
+      track('Authentication', 'Register', 'Failed client validation');
       return;
     }
     this.props.uiSpin('Creating your account... Please wait.');
@@ -90,7 +90,7 @@ class RegisterForm extends Component {
       lastName: this.lastName,
     })
     .then((json) => {
-      track('Authentication', 'Sign Up', 'Success');
+      track('Authentication', 'Register', 'Success');
       // close the form / wait message
       this.props.uiSpin();
       this.props.uiShowAuthenticationForm('none');
@@ -103,7 +103,7 @@ class RegisterForm extends Component {
       this.showServerErrors({
         message,
       });
-      track('Authentication', 'Sign Up', message);
+      track('Authentication', 'Register', message);
     });
   }
 
@@ -253,8 +253,8 @@ class RegisterForm extends Component {
     };
 
     return (
-      <form id="auth-signup" className="gd-form authentication-form" onSubmit={this.onSubmit.bind(this)}>
-        <div className="title">Sign Up</div>
+      <form id="auth-register" className="gd-form authentication-form" onSubmit={this.onSubmit.bind(this)}>
+        <div className="title">Register</div>
         <span style={registerStyle}>{"Already have an account? "}
           <a className="blue-link" href="/" onClick={this.onSignIn.bind(this)}>Sign In&nbsp;</a>
         </span>
@@ -315,7 +315,7 @@ class RegisterForm extends Component {
         <button
           type="submit"
           disabled={!this.state.canSubmit}
-          >Sign Up</button>
+          >Register</button>
         <button
           type="button"
           onClick={() => {

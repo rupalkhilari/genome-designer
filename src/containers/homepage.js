@@ -46,7 +46,7 @@ export default class HomePage extends Component {
   // If the final path is the name of an authorization form we will show it
   componentDidMount() {
     const authForm = this.props.params.comp;
-    if (['signin', 'signup', 'account', 'reset', 'forgot'].indexOf(authForm) >= 0) {
+    if (['signin', 'register', 'account', 'reset', 'forgot'].indexOf(authForm) >= 0) {
       this.props.uiShowAuthenticationForm(authForm);
     } else {
       // if not showing an auth form goto most recent project or demo project
