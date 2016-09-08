@@ -42,6 +42,7 @@ const register = (key, region, render) => {
   //wrap the render function in a closure and try-catch, and ensure it is downloaded
   const wrappedRender = function wrappedRender() {
     try {
+      Object.assign(registry[key], { _activated: +Date.now() });
       return render.apply(null, arguments);
     } catch (err) {
       console.error(`there was an error rendering the extension ${key} in ${region}`);

@@ -52,14 +52,14 @@ function safelyRunCallbacks(...args) {
 }
 
 //pass config.extensions
-export const setExtensionConfig = (config = {}) => {
-  invariant(!config.extensions, 'pass config.extensions directly');
+export const setExtensionConfig = (nextConfig = {}) => {
+  invariant(!nextConfig.extensions, 'pass config.extensions directly');
 
-  if (!isEqual(config, extensionConfig)) {
+  if (!isEqual(nextConfig, extensionConfig)) {
     Object.keys(extensionConfig).forEach(key => {
       delete extensionConfig[key];
     });
-    merge(extensionConfig, config);
+    merge(extensionConfig, nextConfig);
     return true;
   }
   return false;
@@ -121,9 +121,18 @@ export const registerManifest = (manifest) => {
       invariant(client.every(({ file, region }, index) => validRegion(region)), `Region must be a valid region, check ${name}`);
     }
 
+    //if we're already registered this extension, skip assigning render and downloading non-visible components, but let listeners know its in
+    if (registry[name] && registry[name]._activated > 0) {
+      safelyRunCallbacks(registry, name, manifestClientRegions(registry[name]));
+      return registry;
+    }
+
     //checks out, so assign to registry + do some setup for render functions
     Object.assign(registry, {
-      [name]: Object.assign(manifest, { render: {} }),
+      [name]: Object.assign(manifest, {
+        _downloaded: +Date.now(),
+        _activated: extensionIsActive(manifest.name) ? +Date.now() : null,
+        render: {} }),
     });
 
     //when register non-client manifest, don't try to download or anything...
@@ -227,7 +236,7 @@ export const downloadAndRender = (key, region, container, options) => {
       const regionRender = manifest.render[region];
 
       if (typeof regionRender !== 'function') {
-        return Promise.reject(`Extension ${name} did not specify a render() function, even though it defined a region. Check Extension manifest definition.`);
+        return Promise.reject(`Extension ${key} did not specify a render() function, even though it defined a region. Check Extension manifest definition.`);
       }
 
       return new Promise((resolve, reject) => {
@@ -255,9 +264,12 @@ export const isRegistered = (key) => {
 };
 
 export const clearRegistry = () => {
+  console.warn('not actually clearning the registry');
+  /*
   Object.keys(registry).forEach(key => {
     delete registry[key];
   });
+  */
   safelyRunCallbacks();
 };
 
