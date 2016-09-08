@@ -140,7 +140,7 @@ export function loginHandler(req, res, next) {
       res.json(pruned);
     })
     .catch(err => {
-      console.log('[User Register] got error registering');
+      console.log('[User Login] got error logging in');
       console.log(req.body);
       console.log(err);
       console.log(err.stack);

@@ -10,6 +10,7 @@ function render(container, options) {
   var subscriber = window.constructor.store.subscribe(function storeSubscription(state, lastAction) {
     window.fetch(apiEndpoint, {
       method: 'POST',
+      credentials: 'same-origin',
       headers: {
         'Content-Type': 'text/plain',
       },
