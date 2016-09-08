@@ -44,5 +44,7 @@ export const callExtensionApi = (extensionKey, route, fetchBody = {}) => {
   invariant(typeof extensionKey === 'string' && !!extensionKey, 'must pass extensionKey');
   invariant(typeof route === 'string', 'must pass a route');
   const url = extensionApiPath(extensionKey, route);
-  return fetch(url, fetchBody);
+
+  const fetchOpts = Object.assign({ credentials: 'same-origin' }, fetchBody);
+  return fetch(url, fetchOpts);
 };
