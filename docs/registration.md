@@ -23,6 +23,10 @@ Extensions are listed in `/server/extensions/package.json`
 geneticconstructor.com/homepage/register?projects=emptyProject&extensions=seq-viewer
 ```
 
+#### Why Query Parameters
+
+Users must log in on the Constructor website, so they are authenticated properly. sending a POST to the /register route will create a user, but will not authenticate them, and they will be required to authenticate again on Constructor.
+
 ### Configuration (In App)
 
 ```
