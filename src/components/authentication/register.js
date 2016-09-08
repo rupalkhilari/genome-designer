@@ -88,8 +88,7 @@ export class RegisterForm extends Component {
       password: this.password,
       firstName: this.firstName,
       lastName: this.lastName,
-      config: this.getConfig(),
-    })
+    }, this.getConfig())
       .then((json) => {
         track('Authentication', 'Register', 'Success');
         // close the form / wait message
@@ -256,7 +255,22 @@ export class RegisterForm extends Component {
 
   getConfig() {
     const params = queryString.parse(window.location.search);
-    const { config = {} } = params;
+    const { projects, extensions } = params;
+    const config = {};
+
+    if (!!projects) {
+      const projectNames = projects.split(',');
+      config.projects = projectNames.reduce((acc, projectName) => {
+        return Object.assign(acc, { [projectName]: {} });
+      }, {});
+      Object.assign(config.projects[projectNames[0]], { default: true });
+    }
+
+    if (!!extensions) {
+      config.extensions = extensions.split(',').reduce((acc, projectName) => {
+        return Object.assign(acc, { [projectName]: { active: true } });
+      }, {});
+    }
 
     return config;
   }
