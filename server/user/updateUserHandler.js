@@ -18,7 +18,8 @@ import fetch from 'isomorphic-fetch';
 import invariant from 'invariant';
 import validEmail from 'valid-email';
 import { INTERNAL_HOST, API_END_POINT } from '../urlConstants';
-import { pruneUserObject, updateUserAll, updateUserConfig, mergeConfigToUserData } from './utils';
+import userConfigDefaults from '../onboarding/userConfigDefaults';
+import { pruneUserObject, validateConfig, updateUserAll, updateUserConfig, mergeConfigToUserData } from './utils';
 import { headersPost } from '../../src/middleware/headers';
 
 //todo - share fetch handling with config / register routes
@@ -38,12 +39,23 @@ export function registrationHandler(req, res, next) {
     return res.status(422).json({ message: 'invalid password' });
   }
 
+  const mergedConfig = Object.assign({}, userConfigDefaults, config);
+
+  try {
+    validateConfig(mergedConfig);
+  } catch (err) {
+    console.log('[User Register] Error in input config');
+    console.log(err);
+    console.log(err.stack);
+    return res.status(422).send({ err });
+  }
+
   const mappedUser = mergeConfigToUserData({
     email,
     password,
     firstName,
     lastName,
-  }, config);
+  }, mergedConfig);
 
   //regardless whether local auth or real auth (it is mounted appropriately at /auth), we want to hit this route
   const url = INTERNAL_HOST + '/auth/register';

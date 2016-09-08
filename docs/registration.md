@@ -1,13 +1,33 @@
 ## Registration + Configuring Onboarding
 
-Referrers should send users to register at `geneticconstructor.com/register`, and can send a configuration to dictate how new users are onboarded.
+Referrers can send their users to register with Constructor with custom configurations.
 
 Onboarding includes:
 
 - setting up initial projects
 - specifying which extensions the user initially sees + can access
 
-### Configuration
+### Configuration (URL)
+
+Referrers should send users to register at `geneticconstructor.com/homepage/register`, and can specify a configuration to dictate how new users are onboarded, using query parameters.
+
+Use URL query parameters to dictate starting projects and extensions. The first project is the default project.
+
+Projects are listed in `/server/onboarding/onboardNewUser.js`
+
+Extensions are listed in `/server/extensions/package.json`
+
+#### Example
+
+```
+geneticconstructor.com/homepage/register?projects=emptyProject&extensions=seq-viewer
+```
+
+#### Why Query Parameters
+
+Users must log in on the Constructor website, so they are authenticated properly. sending a POST to the /register route will create a user, but will not authenticate them, and they will be required to authenticate again on Constructor.
+
+### Configuration (In App)
 
 ```
 {
