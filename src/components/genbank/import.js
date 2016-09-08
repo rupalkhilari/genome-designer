@@ -151,7 +151,7 @@ class ImportGenBankModal extends Component {
                 className="dropzone"
                 activeClassName="dropzone-hot"
                 multiple={false}>
-                <div className="dropzone-text">Drop Files Here</div>
+                <div className="dropzone-text">Drop File Here</div>
               </Dropzone>
               {this.showFiles()}
               {this.state.error ? <div className="error visible">{this.state.error}</div> : null}
@@ -164,8 +164,8 @@ class ImportGenBankModal extends Component {
                 }}>Cancel
               </button>
               <div className="link">
-                <span>Format documentation and same .CSV files can be found here</span>
-                <a className="blue-link" href="https://forum.bionano.autodesk.com/t/importing-data-using-csv-format" target="_blank">discourse.bionano.autodesk.com/genetic-constructor/formats</a>
+                <span>Format documentation and sample .CSV files can be found here</span>
+                <a className="blue-link" href="https://forum.bionano.autodesk.com/t/importing-data-using-csv-format/94" target="_blank">discourse.bionano.autodesk.com/genetic-constructor/formats</a>
               </div>
             </form>
           )}

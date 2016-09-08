@@ -94,6 +94,9 @@ router.get('/export/blocks/:projectId/:blockIdList', permissionsMiddleware, (req
         }),
       };
 
+      console.log('Exporting 1');
+      console.log(JSON.stringify({ roll: partialRoll, constructId: construct.id }));
+
       exportConstruct({ roll: partialRoll, constructId: construct.id })
         .then(fileContents => {
           res.set({
@@ -123,6 +126,10 @@ router.get('/export/:projectId/:constructId?', permissionsMiddleware, (req, res,
 
       return promise
         .then(result => {
+
+          console.log('Exporting 2');
+          console.log(JSON.stringify({ roll, constructId }));
+
           res.attachment(name);
           res.status(200).send(result);
         });
@@ -164,6 +171,10 @@ router.post('/import/convert', (req, resp, next) => {
         const payload = constructsOnly ?
         { roots, blocks: rootBlocks } :
           converted;
+
+        console.log('Converting Import');
+        console.log(JSON.stringify(payload));
+
         resp.status(200).json(payload);
       })
       .catch(err => next(err));
@@ -177,6 +188,7 @@ router.post('/import/:projectId?', (req, res, next) => {
   const noSave = req.query.hasOwnProperty('noSave') || projectId === 'convert';
 
   let genbankFile;
+  let importedName;
   // save incoming file then read back the string data.
   // If these files turn out to be large we could modify the import functions to take
   // file names instead but for now, in memory is fine.
@@ -194,6 +206,9 @@ router.post('/import/:projectId?', (req, res, next) => {
   //make sure we got files, read them back
     .then(files => {
       const tempPath = (files && files.data) ? files.data.path : null;
+      importedName = files.data.name;
+
+      //todo - ensure got a Genbank
 
       if (!tempPath) {
         return Promise.reject('no file provided');
@@ -212,7 +227,7 @@ router.post('/import/:projectId?', (req, res, next) => {
       resetColorSeed();
       return importProject(genbankFile);
     })
-    //check if we are merging into a project or making a new one, return appropriate rollup
+    //wrap all the childless blocks in a construct (so they dont appear as top-level constructs), update rollup with construct Ids
     .then(roll => {
       const blockIds = Object.keys(roll.blocks);
 
@@ -220,6 +235,33 @@ router.post('/import/:projectId?', (req, res, next) => {
         return Promise.reject('no valid blocks');
       }
 
+      const childlessBlockIds = roll.project.components.filter(blockId => roll.blocks[blockId].components.length === 0);
+
+      const wrapperConstructs = childlessBlockIds.reduce((acc, blockId, index) => {
+        const name = importedName + (index > 0 ? ' - Construct ' + (index + 1) : '');
+        const construct = Block.classless({
+          components: [blockId],
+          metadata: {
+            name,
+          },
+        });
+        return Object.assign(acc, { [construct.id]: construct });
+      }, {});
+
+      //add constructs to rollup of blocks
+      Object.assign(roll.blocks, wrapperConstructs);
+
+      //update project components to use wrapped constructs and replace childless blocks
+      roll.project.components = [
+        ...roll.project.components.filter(blockId => childlessBlockIds.indexOf(blockId) < 0),
+        ...Object.keys(wrapperConstructs),
+      ];
+
+      return roll;
+    })
+    //check if we are merging into a project or making a new one, return appropriate rollup
+    .then(roll => {
+      //if no project ID, we are adding to a new project, no need to merge
       if (!projectId) {
         return Promise.resolve(roll);
       }

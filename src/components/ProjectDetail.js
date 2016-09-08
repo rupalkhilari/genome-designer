@@ -113,6 +113,7 @@ export class ProjectDetail extends Component {
     }
 
     this.toggle(true);
+    this.openExtension(this.extensions[0]);
   };
 
   toggle = (forceVal) => {
