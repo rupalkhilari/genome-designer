@@ -124,7 +124,7 @@ describe('Server', () => {
       const agent = request.agent(devServer);
 
       const allInactive = Object.keys(userConfigDefaults.extensions).reduce((acc, key) => Object.assign(acc, { [key]: { active: false } }), {});
-      const nextConfig = { projects: {}, extensions: allInactive };
+      const nextConfig = { extensions: allInactive };
       const user = {
         email: `T.${Math.random()}@test.com`,
         password: '123456',
@@ -145,7 +145,7 @@ describe('Server', () => {
 
           assert(user.email === retrivedUser.email, 'expected same email');
           expect(retrivedUser.uuid).to.be.defined;
-          expect(retrivedUser.config).to.eql(merge({}, retrivedUser.config, nextConfig));
+          expect(retrivedUser.config).to.eql(Object.assign({}, retrivedUser.config, nextConfig));
         })
         .end(done);
     });
