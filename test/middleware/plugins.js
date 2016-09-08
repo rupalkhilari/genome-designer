@@ -1,7 +1,7 @@
 import { assert, expect } from 'chai';
 import fs from 'fs';
 import * as api from '../../src/middleware/data';
-import { exportBlock, importFile, importGenbankOrCSV } from '../../src/middleware/genbank';
+import { exportBlock, importGenbankString, importGenbankOrCSV } from '../../src/middleware/genbank';
 
 describe('Middleware', () => {
   describe('Plugins', () => {
@@ -32,7 +32,7 @@ describe('Middleware', () => {
               expect(gotRoll.blocks.length).to.equal(8); // There are 8 blocks in that file
               // Now add a construct to it...
               fs.readFile('./test/res/sampleGenbankContiguous.gb', 'utf8', (err, sampleStrConstruct) => {
-                importFile(sampleStrConstruct, result.ProjectId)
+                importGenbankString(sampleStrConstruct, result.ProjectId)
                   .then(data => {
                     // This just tests that the api works as expected. The tests about the particular
                     // Genbank conversions to and from blocks are in the genbank.spec.js file

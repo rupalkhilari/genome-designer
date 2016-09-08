@@ -17,6 +17,7 @@ import rejectingFetch from './rejectingFetch';
 import invariant from 'invariant';
 import { headersGet, headersPost, headersPut, headersDelete } from './headers';
 import { extensionApiPath } from './paths';
+import readFileText from './utils/fileReader';
 
 const extensionKey = 'genbank';
 
@@ -73,10 +74,15 @@ export const exportProject = (projectId) => {
     .then(resp => resp.text());
 };
 
-export const importFile = (genbankString, projectId) => {
+export const importGenbankString = (genbankString, projectId) => {
   invariant(typeof genbankString === 'string', 'must pass a genbank file as text. to use a file, use importGenbankOrCSV.');
 
   const url = extensionApiPath(extensionKey, `import${projectId ? ('/' + projectId) : ''}`);
   return rejectingFetch(url, headersPost(genbankString, contentTypeTextHeader))
     .then(resp => resp.json());
+};
+
+export const importGenbankFile = (genbankFile, projectId) => {
+  return readFileText(genbankFile)
+    .then(contents => importGenbankString(contents, projectId));
 };
