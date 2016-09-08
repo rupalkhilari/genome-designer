@@ -22,7 +22,7 @@ import { userConfigKey } from './userConstants';
 //these are the fields we expect on the client user object
 //note that the field UUID is here, whereas on the client it is userid
 //todo - reconcile uuid here and userid on client
-const fields = ['config', 'uuid', 'firstName', 'lastName', 'email'];
+const fields = ['password', 'newPassword', 'config', 'uuid', 'firstName', 'lastName', 'email'];
 
 export const mergeConfigToUserData = (user, config = userConfigDefaults) => {
   return merge({}, user, {
