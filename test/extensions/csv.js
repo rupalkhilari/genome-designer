@@ -23,9 +23,6 @@ describe('Extensions', () => {
     it('should convert a simple file', () => {
       return convertCsv(fileContents)
         .then(({ blocks, sequences }) => {
-          console.log(blocks);
-          console.log(sequences);
-
           expect(Object.keys(blocks).length === 1);
           expect(Object.keys(sequences).length === 1);
 

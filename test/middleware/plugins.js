@@ -1,7 +1,11 @@
 import { assert, expect } from 'chai';
 import fs from 'fs';
 import * as api from '../../src/middleware/data';
-import { exportBlock, importGenbankString, importGenbankOrCSV } from '../../src/middleware/genbank';
+import {
+  exportBlock,
+  importString as importGenbankString,
+  importFile as importGenbankFile,
+} from '../../src/middleware/genbank';
 
 describe('Middleware', () => {
   describe('Plugins', () => {
@@ -22,7 +26,7 @@ describe('Middleware', () => {
 
     it.skip('importGenbankOrCSV() should be able convert a genbank file to a project and add a construct to it', function testFunc(done) {
       const file = new File('./test/res/sampleGenbank.gb');
-      importGenbankOrCSV(file)
+      importGenbankFile(file)
         .then(result => {
           expect(result.ProjectId === undefined).to.equal(false);
           return api.loadProject(result.ProjectId)

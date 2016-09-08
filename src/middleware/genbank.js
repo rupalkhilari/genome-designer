@@ -20,34 +20,19 @@ import { extensionApiPath } from './paths';
 import readFileText from './utils/fileReader';
 
 const extensionKey = 'genbank';
-
 const contentTypeTextHeader = { headers: { 'Content-Type': 'text/plain' } };
 
 /**
- * import a genbank or CSV file into the given project or into a new project.
- * project ID is returned and should be reloaded if the current project or opened if a new project.
- * Promise resolves with projectId on success and rejects with statusText of xhr
  * @private
+ * import a CSV file into the given project or into a new project.
+ * project ID is returned and should be reloaded if the current project or opened if a new project.
+ * Promise resolves with projectId on success and rejects with fetch response
  */
-export const importGenbankOrCSV = (file, projectId) => {
-  invariant(file && file.name, 'expected a file object of the type that can be added to FormData');
+export const importString = (genbankString, projectId) => {
+  invariant(typeof genbankString === 'string', 'must pass a genbank file as text. to use a file, use importGenbankFile.');
 
-  const formData = new FormData();
-  formData.append('data', file, file.name);
-
-  //hack - CSV should have its own middleware but so sparingly used we just put it here
-  const isCSV = file.name.toLowerCase().endsWith('.csv');
-  const extensionName = isCSV ? 'csv' : extensionKey;
-  const uri = extensionApiPath(extensionName, `import${projectId ? ('/' + projectId) : ''}`);
-
-  //define these here so content type not automatically applied so webkit can define its own boundry
-  const headers = {
-    method: 'POST',
-    credentials: 'same-origin',
-    body: formData,
-  };
-
-  return rejectingFetch(uri, headers)
+  const url = extensionApiPath(extensionKey, `import${projectId ? ('/' + projectId) : ''}`);
+  return rejectingFetch(url, headersPost(genbankString, contentTypeTextHeader))
     .then(resp => resp.json())
     .then(json => {
       invariant(json && json.ProjectId, 'expect a project ID');
@@ -55,8 +40,15 @@ export const importGenbankOrCSV = (file, projectId) => {
     });
 };
 
+export const importFile = (genbankFile, projectId) => {
+  return readFileText(genbankFile)
+    .then(contents => importGenbankString(contents, projectId));
+};
+
 //convert without creating a project, but will save sequences
-export const convertGenbank = (genbank, constructsOnly = false) => {
+export const convert = (genbank, constructsOnly = false) => {
+  invariant(typeof genbankString === 'string', 'must pass a genbank file as text. to use a file, use importGenbankFile.');
+
   const url = extensionApiPath('genbank', `import/convert${constructsOnly ? '?constructsOnly=true' : ''}`);
   return rejectingFetch(url, headersPost(genbank, contentTypeTextHeader))
     .then(resp => resp.json());
@@ -72,17 +64,4 @@ export const exportProject = (projectId) => {
   const url = extensionApiPath(extensionKey, `export/${projectId}`);
   return rejectingFetch(url, headersGet())
     .then(resp => resp.text());
-};
-
-export const importGenbankString = (genbankString, projectId) => {
-  invariant(typeof genbankString === 'string', 'must pass a genbank file as text. to use a file, use importGenbankOrCSV.');
-
-  const url = extensionApiPath(extensionKey, `import${projectId ? ('/' + projectId) : ''}`);
-  return rejectingFetch(url, headersPost(genbankString, contentTypeTextHeader))
-    .then(resp => resp.json());
-};
-
-export const importGenbankFile = (genbankFile, projectId) => {
-  return readFileText(genbankFile)
-    .then(contents => importGenbankString(contents, projectId));
 };

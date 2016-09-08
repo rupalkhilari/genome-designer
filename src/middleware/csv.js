@@ -22,16 +22,36 @@ import readFileText from './utils/fileReader';
 const extensionKey = 'csv';
 const contentTypeTextHeader = { headers: { 'Content-Type': 'text/plain' } };
 
-export const importCsvString = (csvString, projectId) => {
-  invariant(typeof csvString === 'string', 'must pass a genbank file as text. to use a file, use importGenbankOrCSV.');
+export const convert = (csvString, projectId) => {
+  invariant(false, 'forthcoming');
+  invariant(typeof csvString === 'string', 'must pass a csv file as text. to use a file, use importCsvFile.');
 
-  const url = extensionApiPath(extensionKey, `import${projectId ? ('/' + projectId) : ''}`);
+  const url = extensionApiPath(extensionKey, `import/convert`);
 
   return rejectingFetch(url, headersPost(csvString, contentTypeTextHeader))
     .then(resp => resp.json());
 };
 
-export const importCsvFile = (csvFile, projectId) => {
+/**
+ * @private
+ * import a CSV file into the given project or into a new project.
+ * project ID is returned and should be reloaded if the current project or opened if a new project.
+ * Promise resolves with projectId on success and rejects with fetch response
+ */
+export const importString = (csvString, projectId) => {
+  invariant(typeof csvString === 'string', 'must pass a csv file as text. to use a file, use importCsvFile.');
+
+  const url = extensionApiPath(extensionKey, `import${projectId ? ('/' + projectId) : ''}`);
+
+  return rejectingFetch(url, headersPost(csvString, contentTypeTextHeader))
+    .then(resp => resp.json())
+    .then(json => {
+      invariant(json && json.ProjectId, 'expect a project ID');
+      return json.ProjectId;
+    });
+};
+
+export const importFile = (csvFile, projectId) => {
   return readFileText(csvFile)
     .then(contents => importCsvString(contents, projectId));
 };

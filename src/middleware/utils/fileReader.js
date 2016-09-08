@@ -13,8 +13,11 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
+import invariant from 'invariant';
 
 export default function readFileText(file) {
+  invariant(file && file.name, 'expected a file object of the type that can be added to FormData');
+
   return new Promise((resolve, reject) => {
     const fr = new FileReader();
     fr.onload = (evt) => resolve(evt.target.result);

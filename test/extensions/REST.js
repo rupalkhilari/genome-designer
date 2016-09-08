@@ -19,8 +19,6 @@ describe('Extensions', () => {
             return done(err);
           }
 
-          console.log(result.body);
-
           expect(result.body).to.be.an.object;
           assert(Object.keys(result.body).length > 0, 'there should be extensions registered');
           assert(Object.keys(result.body).every(key => {
@@ -56,7 +54,7 @@ describe('Extensions', () => {
     });
 
     it('/load/ to get the index.js script', (done) => {
-      const url = `/extensions/manifest/${testClient}`;
+      const url = `/extensions/manifest/${testClient}/index.js`;
       request(devServer)
         .get(url)
         .expect(200)
