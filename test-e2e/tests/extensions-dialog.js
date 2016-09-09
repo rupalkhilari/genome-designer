@@ -29,13 +29,16 @@ module.exports = {
     // bring it back again
     openExtensions(browser);
     browser
+      .pause(1000)
       .click('input.ExtensionPicker-toggle')
+      .pause(1000)
       // submit button ( its not really a form )
       .click('.ExtensionPicker.gd-form button[type="submit"]')
       // form should go away
       .waitForElementNotPresent('.ExtensionPicker.gd-form')
       // viewer should be available again
       .waitForElementPresent('.ProjectDetail-heading-extension');
+      
     clickText(browser, "Sequence Viewer", '.ProjectDetail-heading-extension');
     browser
       .waitForElementPresent('.viewer', 5000, 'expected viewer to be')
