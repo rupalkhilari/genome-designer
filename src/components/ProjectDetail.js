@@ -46,8 +46,8 @@ export class ProjectDetail extends Component {
   componentDidMount() {
     //listen to get relevant manifests here.
     //run on first time (key === null) in case registry is already populated.
-    this.extensionsListener = onRegister((registry, key, region) => {
-      if (key === null || region === projectDetailExtensionRegion) {
+    this.extensionsListener = onRegister((registry, key, regions) => {
+      if (key === null || regions.indexOf(projectDetailExtensionRegion) >= 0) {
         this.extensions = extensionsByRegion(projectDetailExtensionRegion);
         this.forceUpdate();
       }
@@ -112,6 +112,7 @@ export class ProjectDetail extends Component {
       return this.toggle(false);
     }
 
+    this.toggle(true);
     this.openExtension(this.extensions[0]);
   };
 
@@ -134,8 +135,8 @@ export class ProjectDetail extends Component {
                               onMouseDown={this.handleResizableMouseDown}></div>)}
         <div className="ProjectDetail-heading">
           {!isVisible && (<a ref="open"
-             className={'ProjectDetail-heading-toggle' + (isVisible ? ' visible' : '')}
-             onClick={this.handleClickToggle}/>)}
+                             className={'ProjectDetail-heading-toggle' + (isVisible ? ' visible' : '')}
+                             onClick={this.handleClickToggle}/>)}
           <div className={'ProjectDetail-heading-extensionList' + (isVisible ? ' visible' : '')}>
             {this.extensions.map(key => {
               const name = getExtensionName(key);
