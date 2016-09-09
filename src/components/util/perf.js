@@ -14,7 +14,7 @@
  limitations under the License.
  */
 
-import { Component, createElement } from 'react'
+import { Component, createElement } from 'react';
 import ReactPerf from 'react-addons-perf';
 
 function getDisplayName(WrappedComponent) {
@@ -39,18 +39,24 @@ function getNow() {
 export default function perf(Component) {
   if (process.env.NODE_ENV !== 'production') {
     class Perf extends Component {
-      componentDidMount() {
-        this.start = getNow();
+      componentWillUpdate() {
         ReactPerf.start();
+        this.start = getNow();
       }
 
       componentDidUpdate() {
         this.end = getNow();
-        console.log(this.end - this.start); //eslint-disable-line
+        const time = this.end - this.start;
+        const groupName = getDisplayName(Component);
+        ReactPerf.stop();
+
+        console.groupCollapsed(groupName + ' - ' + time);
 
         const measurements = ReactPerf.getLastMeasurements();
+        ReactPerf.printExclusive(measurements);
         ReactPerf.printWasted(measurements);
-        ReactPerf.start();
+
+        console.groupEnd();
       }
 
       getWrappedInstance() {
