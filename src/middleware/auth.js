@@ -77,12 +77,18 @@ export const getUser = () => {
   return authFetch(serverPath('user/info'), headersGet());
 };
 
+// hack - this hits auth directly, rather than our user routes
+// remove the data object from the request so it is not accidently consumed with the wrong shape
 // update account
 export const updateAccount = (payload) => {
   const body = payload;
   const stringified = JSON.stringify(body);
 
-  return authFetch(serverPath('user/info'), headersPost(stringified));
+  return authFetch(authPath('update-all'), headersPost(stringified))
+    .then(json => {
+      delete json.data;
+      return json;
+    });
 };
 
 export const getUserConfig = () => {
