@@ -39,6 +39,11 @@ function getNow() {
 export default function perf(Component) {
   if (process.env.NODE_ENV !== 'production') {
     class Perf extends Component {
+      constructor(props, context) {
+        super(props, context);
+        this.mounted = getNow();
+      }
+
       componentWillUpdate() {
         ReactPerf.start();
         this.start = getNow();
@@ -74,8 +79,10 @@ export default function perf(Component) {
     }
 
     Perf.displayName = `Perf(${getDisplayName(Component)})`;
+    Perf.WrappedComponent = Component;
 
     return Perf;
   }
+
   return Component;
 }
