@@ -17,7 +17,7 @@ import rejectingFetch from './rejectingFetch';
 import invariant from 'invariant';
 import { headersGet, headersPost, headersPut, headersDelete } from './headers';
 import { extensionApiPath } from './paths';
-import { isFile } from './utils/fileReader';
+import uploadFiles from './utils/uploadFiles';
 
 const extensionKey = 'csv';
 
@@ -31,21 +31,9 @@ const extensionKey = 'csv';
  * @resolve with projectId on success and rejects with fetch response
  */
 export function importFile(projectId = null, ...files) {
-  invariant(files.every(file => isFile(file)), 'must only pass files');
-
-  const formData = new FormData();
-  files.forEach(file => formData.append('data', file, file.name));
-
   const url = extensionApiPath(extensionKey, `import${projectId ? ('/' + projectId) : ''}`);
 
-  //define these here so content type not automatically applied so webkit can define its own boundry
-  const headers = {
-    method: 'POST',
-    credentials: 'same-origin',
-    body: formData,
-  };
-
-  return rejectingFetch(url, headers)
+  return uploadFiles(url, {}, ...files)
     .then(resp => resp.json())
     .then(json => {
       invariant(json && json.projectId, 'expect a project ID');
@@ -72,7 +60,7 @@ function importStringBase(payload, projectId) {
 }
 
 //todo
-alert('need to support convert route');
+console.error('need to support convert route, with string');
 export const convert = (csvString, options = {}) => {
   invariant(false, 'forthcoming');
   invariant(typeof csvString === 'string', 'must pass a csv file as text. to use a file, use importCsvFile.');

@@ -17,9 +17,20 @@ import rejectingFetch from './rejectingFetch';
 import invariant from 'invariant';
 import { headersGet, headersPost, headersPut, headersDelete } from './headers';
 import { extensionApiPath } from './paths';
-import { isFile } from './utils/fileReader';
+import uploadFiles from './utils/uploadFiles';
 
 const extensionKey = 'genbank';
+
+export function importFile(projectId = null, ...files) {
+  const url = extensionApiPath(extensionKey, `import${projectId ? ('/' + projectId) : ''}`);
+
+  return uploadFiles(url, {}, ...files)
+    .then(resp => resp.json())
+    .then(json => {
+      invariant(json && json.projectId, 'expect a project ID');
+      return json.projectId;
+    });
+}
 
 //todo - need a route
 function importStringBase(payload, projectId) {
@@ -48,11 +59,6 @@ export const importString = (genbankString, projectId, options = {}) => {
       invariant(json && json.projectId, 'expect a project ID');
       return json.projectId;
     });
-};
-
-export const importFile = (genbankFile, projectId, options) => {
-  return readFileText(genbankFile)
-    .then(({ name, string }) => importString({name, string}, projectId, options));
 };
 
 //convert without creating a project, but will save sequences
