@@ -27,6 +27,7 @@ const createFilePath = (fileName) => {
   invariant(fileName, 'need a file name');
   return filePaths.createStorageUrl(extensionKey, fileName);
 };
+
 const createFileUrl = (fileName) => {
   invariant(fileName, 'need a file name');
   return extensionKey + '/file/' + fileName;

@@ -22,7 +22,7 @@ import uploadFiles from './utils/uploadFiles';
 const extensionKey = 'genbank';
 
 export function importFile(projectId = null, ...files) {
-  const url = extensionApiPath(extensionKey, `import${!!projectId ? ('/' + projectId) : ''}`);
+  const url = extensionApiPath(extensionKey, `import/file${!!projectId ? ('/' + projectId) : ''}`);
 
   return uploadFiles(url, {}, ...files)
     .then(resp => resp.json())
@@ -32,12 +32,11 @@ export function importFile(projectId = null, ...files) {
     });
 }
 
-//todo - need a route
 function importStringBase(payload, projectId) {
   invariant(typeof payload === 'object', 'payload must be object');
   invariant(typeof payload.string === 'string', 'must pass string to import');
 
-  const url = extensionApiPath(extensionKey, `import${projectId ? ('/' + projectId) : ''}`);
+  const url = extensionApiPath(extensionKey, `import/string${projectId ? ('/' + projectId) : ''}`);
 
   return rejectingFetch(url, headersPost(JSON.stringify(payload)))
     .then(resp => resp.json());
@@ -53,6 +52,7 @@ export const importString = (genbankString, projectId, options = {}) => {
   invariant(typeof genbankString === 'string', 'must pass a genbank file as text. to use a file, use importFile.');
 
   const payload = Object.assign({}, options, { string: genbankString });
+
   return importStringBase(payload, projectId)
     .then(json => {
       invariant(json && json.projectId, 'expect a project ID');
@@ -72,6 +72,8 @@ export const convert = (genbankString, constructsOnly = false) => {
   return importStringBase(payload, 'convert');
 };
 
+/* export */
+
 export const exportConstruct = (projectId, constructId, options = {}) => {
   invariant(projectId, 'project ID is required');
   invariant(constructId, 'construct ID is required, otherwise export project');
@@ -79,6 +81,7 @@ export const exportConstruct = (projectId, constructId, options = {}) => {
 
   const url = extensionApiPath(extensionKey, `export/${projectId}/${constructId}`);
   const opts = JSON.stringify(options);
+
   return rejectingFetch(url, headersPost(opts))
     .then(resp => resp.text());
 };
@@ -89,6 +92,7 @@ export const exportProject = (projectId, options = {}) => {
 
   const url = extensionApiPath(extensionKey, `export/${projectId}`);
   const opts = JSON.stringify(options);
+
   return rejectingFetch(url, headersPost(opts))
     .then(resp => resp.text());
 };
