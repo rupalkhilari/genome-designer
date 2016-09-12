@@ -148,39 +148,32 @@ router.post('/export/:projectId/:constructId?', permissionsMiddleware, (req, res
 //takes a string as input, not a file, unlike route below
 //returns { roots: [], blocks: { <id> : <block> } }
 router.post('/import/convert', (req, resp, next) => {
-  const constructsOnly = !!req.query.constructsOnly;
+  const { string, constructsOnly } = req.body;
+  const fileMd5 = md5(string);
+  const inputFilePath = createFilePath(fileMd5);
 
-  let buffer = '';
+  //todo - verify this is working (json parse)
 
-  req.on('data', data => {
-    buffer += data;
-  });
+  console.log(`converting genbank (${req.user.uuid}) @ ${inputFilePath}`);
 
-  req.on('end', () => {
-    const fileMd5 = md5(buffer);
-    const inputFilePath = createFilePath(fileMd5);
+  return fileSystem.fileWrite(inputFilePath, string, false)
+    .then(() => {
+      resetColorSeed();
+      return convert(inputFilePath);
+    })
+    .then(converted => {
+      const roots = converted.roots;
+      const rootBlocks = filter(converted.blocks, (block, blockId) => roots.indexOf(blockId) >= 0);
+      const payload = constructsOnly ?
+      { roots, blocks: rootBlocks } :
+        converted;
 
-    console.log(`converting genbank (${req.user.uuid}) @ ${inputFilePath}`);
+      console.log('Converting Import');
+      console.log(JSON.stringify(payload));
 
-    return fileSystem.fileWrite(inputFilePath, buffer, false)
-      .then(() => {
-        resetColorSeed();
-        return convert(inputFilePath);
-      })
-      .then(converted => {
-        const roots = converted.roots;
-        const rootBlocks = filter(converted.blocks, (block, blockId) => roots.indexOf(blockId) >= 0);
-        const payload = constructsOnly ?
-        { roots, blocks: rootBlocks } :
-          converted;
-
-        console.log('Converting Import');
-        console.log(JSON.stringify(payload));
-
-        resp.status(200).json(payload);
-      })
-      .catch(err => next(err));
-  });
+      resp.status(200).json(payload);
+    })
+    .catch(err => next(err));
 });
 
 //todo - permissions check here

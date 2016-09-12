@@ -52,9 +52,8 @@ function importStringBase(payload, projectId) {
 export const importString = (genbankString, projectId, options = {}) => {
   invariant(typeof genbankString === 'string', 'must pass a genbank file as text. to use a file, use importFile.');
 
-  const url = extensionApiPath(extensionKey, `import${projectId ? ('/' + projectId) : ''}`);
-  return rejectingFetch(url, headersPost(genbankString, contentTypeTextHeader))
-    .then(resp => resp.json())
+  const payload = Object.assign({}, options, { string: genbankString });
+  return importStringBase(payload, projectId)
     .then(json => {
       invariant(json && json.projectId, 'expect a project ID');
       return json.projectId;
@@ -65,9 +64,12 @@ export const importString = (genbankString, projectId, options = {}) => {
 export const convert = (genbankString, constructsOnly = false) => {
   invariant(typeof genbankString === 'string', 'must pass a genbank file as text. to use a file, use importGenbankFile.');
 
-  const url = extensionApiPath('genbank', `import/convert${constructsOnly ? '?constructsOnly=true' : ''}`);
-  return rejectingFetch(url, headersPost(genbankString, contentTypeTextHeader))
-    .then(resp => resp.json());
+  const payload = {
+    constructsOnly,
+    string: genbankString,
+  };
+
+  return importStringBase(payload, 'convert');
 };
 
 export const exportConstruct = (projectId, constructId, options = {}) => {
