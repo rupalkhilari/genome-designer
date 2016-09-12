@@ -20,7 +20,16 @@ import { extensionApiPath } from './paths';
 import readFileText from './utils/fileReader';
 
 const extensionKey = 'genbank';
-const contentTypeTextHeader = { headers: { 'Content-Type': 'text/plain' } };
+
+function importBase(payload, projectId) {
+  invariant(typeof payload === 'object', 'payload must be object');
+  invariant(typeof payload.string === 'string', 'must pass string to import');
+
+  const url = extensionApiPath(extensionKey, `import${projectId ? ('/' + projectId) : ''}`);
+
+  return rejectingFetch(url, headersPost(payload))
+    .then(resp => resp.json());
+}
 
 /**
  * @private
@@ -29,7 +38,7 @@ const contentTypeTextHeader = { headers: { 'Content-Type': 'text/plain' } };
  * Promise resolves with projectId on success and rejects with fetch response
  */
 export const importString = (genbankString, projectId, options = {}) => {
-  invariant(typeof genbankString === 'string', 'must pass a genbank file as text. to use a file, use importGenbankFile.');
+  invariant(typeof genbankString === 'string', 'must pass a genbank file as text. to use a file, use importFile.');
 
   const url = extensionApiPath(extensionKey, `import${projectId ? ('/' + projectId) : ''}`);
   return rejectingFetch(url, headersPost(genbankString, contentTypeTextHeader))
@@ -42,7 +51,7 @@ export const importString = (genbankString, projectId, options = {}) => {
 
 export const importFile = (genbankFile, projectId, options) => {
   return readFileText(genbankFile)
-    .then(({ contents }) => importString(contents, projectId, options));
+    .then(({ name, string }) => importString({name, string}, projectId, options));
 };
 
 //convert without creating a project, but will save sequences

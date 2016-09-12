@@ -23,9 +23,10 @@ export default function readFileText(file) {
 
     fr.onload = (evt) => resolve({
       name: file.name,
-      size: file.size,
-      type: file.type,
-      contents: evt.target.result,
+      string: evt.target.result,
+      length: evt.target.result.length,
+      fileSize: file.size,
+      fileType: file.type,
     });
 
     fr.readAsText(file);

@@ -55,11 +55,13 @@ router.get('/file/:fileId', (req, res, next) => {
     });
 });
 
-router.post('/import/:projectId?', textParser, (req, resp, next) => {
+router.post('/import/:projectId?', jsonParser, (req, resp, next) => {
   const { projectId } = req.params;
   const noSave = req.query.hasOwnProperty('noSave') || projectId === 'convert';
   const returnRoll = projectId === 'convert';
-  const file = req.body;
+  const { name, string, ...rest } = req.body;
+
+  console.log(name, string, rest);
 
   let importedName;
   let csvFile;

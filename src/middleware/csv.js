@@ -20,16 +20,34 @@ import { extensionApiPath } from './paths';
 import readFileText from './utils/fileReader';
 
 const extensionKey = 'csv';
-const contentTypeTextHeader = { headers: { 'Content-Type': 'text/plain' } };
 
-export const convert = (csvString, projectId) => {
+function importBase(payload, projectId) {
+  invariant(typeof payload === 'object', 'payload must be object');
+  invariant(typeof payload.string === 'string', 'must pass string to import');
+
+  const url = extensionApiPath(extensionKey, `import${projectId ? ('/' + projectId) : ''}`);
+
+  return rejectingFetch(url, headersPost(payload))
+    .then(resp => resp.json());
+}
+
+export const convert = (csvString, options = {}) => {
   invariant(false, 'forthcoming');
   invariant(typeof csvString === 'string', 'must pass a csv file as text. to use a file, use importCsvFile.');
 
-  const url = extensionApiPath(extensionKey, `import/convert`);
+  const payload = Object.assign({}, options, { string: csvString });
+  return importBase(payload, 'convert');
+};
 
-  return rejectingFetch(url, headersPost(csvString, contentTypeTextHeader))
-    .then(resp => resp.json());
+export const importString = (csvString, projectId, options = {}) => {
+  invariant(typeof csvString === 'string', 'must pass a csv file as text. to use a file, use importFile.');
+
+  const payload = Object.assign({}, options, { string: csvString });
+  return importBase(payload, projectId)
+    .then(json => {
+      invariant(json && json.projectId, 'expect a project ID');
+      return json.projectId;
+    });
 };
 
 /**
@@ -38,20 +56,14 @@ export const convert = (csvString, projectId) => {
  * project ID is returned and should be reloaded if the current project or opened if a new project.
  * Promise resolves with projectId on success and rejects with fetch response
  */
-export const importString = (csvString, projectId) => {
-  invariant(typeof csvString === 'string', 'must pass a csv file as text. to use a file, use importCsvFile.');
-
-  const url = extensionApiPath(extensionKey, `import${projectId ? ('/' + projectId) : ''}`);
-
-  return rejectingFetch(url, headersPost(csvString, contentTypeTextHeader))
-    .then(resp => resp.json())
+export const importFile = (csvFile, projectId, options = {}) => {
+  return readFileText(csvFile)
+    .then(({ name, string }) => {
+      const payload = Object.assign({ name }, options, { string });
+      return importBase(payload, projectId);
+    })
     .then(json => {
       invariant(json && json.projectId, 'expect a project ID');
       return json.projectId;
     });
-};
-
-export const importFile = (csvFile, projectId) => {
-  return readFileText(csvFile)
-    .then(({ contents }) => importString(contents, projectId, options));
 };
