@@ -14,7 +14,7 @@
  limitations under the License.
  */
 import rejectingFetch, { fetch } from './utils/rejectingFetch';
-import { headersGet } from './headers';
+import { headersGet } from './utils/headers';
 import { extensionsPath, extensionApiPath } from './paths';
 import invariant from 'invariant';
 

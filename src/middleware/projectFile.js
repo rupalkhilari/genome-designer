@@ -15,7 +15,7 @@
  */
 import rejectingFetch from './utils/rejectingFetch';
 import invariant from 'invariant';
-import { headersGet, headersPost, headersDelete } from './headers';
+import { headersGet, headersPost, headersDelete } from './utils/headers';
 import { projectFilePath } from './paths';
 
 const contentTypeTextHeader = { headers: { 'Content-Type': 'text/plain' } };

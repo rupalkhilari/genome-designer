@@ -16,7 +16,7 @@
 
 import { expect } from 'chai';
 import rejectingFetch from '../../src/middleware/utils/rejectingFetch';
-import { headersGet } from '../../src/middleware/headers';
+import { headersGet } from '../../src/middleware/utils/headers';
 import { reportApiPath } from '../../src/middleware/paths';
 
 describe('Middleware', () => {
