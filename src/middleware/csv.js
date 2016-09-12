@@ -17,11 +17,51 @@ import rejectingFetch from './rejectingFetch';
 import invariant from 'invariant';
 import { headersGet, headersPost, headersPut, headersDelete } from './headers';
 import { extensionApiPath } from './paths';
-import readFileText from './utils/fileReader';
+import { isFile } from './utils/fileReader';
 
 const extensionKey = 'csv';
 
-function importBase(payload, projectId) {
+/**
+ * Imoprt CSV Files, into the given project or into a new project.
+ * project ID is returned and should be reloaded if the current project or opened if a new project.
+ * @private
+ * @param {string} [projectId]
+ * @param {...File} files
+ * @returns {Promise}
+ * @resolve with projectId on success and rejects with fetch response
+ */
+export function importFile(projectId = null, ...files) {
+  invariant(files.every(file => isFile(file)), 'must only pass files');
+
+  const formData = new FormData();
+  files.forEach(file => formData.append('data', file, file.name));
+
+  const url = extensionApiPath(extensionKey, `import${projectId ? ('/' + projectId) : ''}`);
+
+  //define these here so content type not automatically applied so webkit can define its own boundry
+  const headers = {
+    method: 'POST',
+    credentials: 'same-origin',
+    body: formData,
+  };
+
+  return rejectingFetch(url, headers)
+    .then(resp => resp.json())
+    .then(json => {
+      invariant(json && json.projectId, 'expect a project ID');
+      return json.projectId;
+    });
+}
+
+/**
+ * Import a CSV string
+ * @private
+ * @param payload
+ * @param projectId
+ * @returns {*}
+ */
+//todo - need a route
+function importStringBase(payload, projectId) {
   invariant(typeof payload === 'object', 'payload must be object');
   invariant(typeof payload.string === 'string', 'must pass string to import');
 
@@ -31,37 +71,21 @@ function importBase(payload, projectId) {
     .then(resp => resp.json());
 }
 
+//todo
+alert('need to support convert route');
 export const convert = (csvString, options = {}) => {
   invariant(false, 'forthcoming');
   invariant(typeof csvString === 'string', 'must pass a csv file as text. to use a file, use importCsvFile.');
 
   const payload = Object.assign({}, options, { string: csvString });
-  return importBase(payload, 'convert');
+  return importStringBase(payload, 'convert');
 };
 
 export const importString = (csvString, projectId, options = {}) => {
   invariant(typeof csvString === 'string', 'must pass a csv file as text. to use a file, use importFile.');
 
   const payload = Object.assign({}, options, { string: csvString });
-  return importBase(payload, projectId)
-    .then(json => {
-      invariant(json && json.projectId, 'expect a project ID');
-      return json.projectId;
-    });
-};
-
-/**
- * @private
- * import a CSV file into the given project or into a new project.
- * project ID is returned and should be reloaded if the current project or opened if a new project.
- * Promise resolves with projectId on success and rejects with fetch response
- */
-export const importFile = (csvFile, projectId, options = {}) => {
-  return readFileText(csvFile)
-    .then(({ name, string }) => {
-      const payload = Object.assign({ name }, options, { string });
-      return importBase(payload, projectId);
-    })
+  return importStringBase(payload, projectId)
     .then(json => {
       invariant(json && json.projectId, 'expect a project ID');
       return json.projectId;

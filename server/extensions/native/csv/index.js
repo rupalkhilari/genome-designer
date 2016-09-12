@@ -69,6 +69,7 @@ router.post('/import/:projectId?', jsonParser, (req, resp, next) => {
   // If these files turn out to be large we could modify the import functions to take
   // file names instead but for now, in memory is fine.
   const form = new formidable.IncomingForm();
+  form.hash = 'md5';
 
   return new Promise((resolve, reject) => {
     form.parse(req, (err, fields, files) => {

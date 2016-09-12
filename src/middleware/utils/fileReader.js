@@ -32,3 +32,8 @@ export default function readFileText(file) {
     fr.readAsText(file);
   });
 }
+
+export function isFile(file) {
+  //basic checks so can mock e.g. in JSDOM
+  return file && typeof file === 'object' && file.name && file.type;
+}

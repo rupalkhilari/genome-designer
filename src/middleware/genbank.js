@@ -17,11 +17,12 @@ import rejectingFetch from './rejectingFetch';
 import invariant from 'invariant';
 import { headersGet, headersPost, headersPut, headersDelete } from './headers';
 import { extensionApiPath } from './paths';
-import readFileText from './utils/fileReader';
+import { isFile } from './utils/fileReader';
 
 const extensionKey = 'genbank';
 
-function importBase(payload, projectId) {
+//todo - need a route
+function importStringBase(payload, projectId) {
   invariant(typeof payload === 'object', 'payload must be object');
   invariant(typeof payload.string === 'string', 'must pass string to import');
 
