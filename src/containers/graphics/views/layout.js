@@ -417,6 +417,7 @@ export default class Layout {
       this.banner = new Node2D({
         sg: this.sceneGraph,
         glyph: 'construct-banner',
+        dataAttribute: {name: 'nodetype', value: 'construct-banner'},
       });
       this.sceneGraph.root.appendChild(this.banner);
     }

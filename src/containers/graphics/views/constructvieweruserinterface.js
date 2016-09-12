@@ -340,6 +340,23 @@ export default class ConstructViewerUserInterface extends UserInterface {
     }
     return false;
   }
+  /**
+   * true if the point is in the title expander node ( looks like a triangle )
+   * @param  {[type]} evt   [description]
+   * @param  {[type]} point [description]
+   * @return {[type]}       [description]
+   */
+  constructExpander(evt, point) {
+    const hits = this.sg.findNodesAt(point);
+    const hit = hits.length ? hits.pop() : null;
+    if (hit === this.layout.banner) {
+      // inside the banner but should be within the triangle
+      const AABB = this.layout.banner.getAABB();
+      // just a box test, which is more forgiving for the user
+      return point.x - AABB.x < AABB.height;
+    }
+    return false;
+  }
 
   /**
    * select with mouse including handling ancillary actions like opening the context menu and toggle nested construct
@@ -350,6 +367,10 @@ export default class ConstructViewerUserInterface extends UserInterface {
     this.selectConstruct();
     // open construct menu for title according to position
     if (this.titleContextMenu(evt, point, true)) {
+      return;
+    }
+    if (this.constructExpander(event, point)) {
+      alert('expander');
       return;
     }
     // check for block select
