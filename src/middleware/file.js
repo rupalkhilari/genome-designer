@@ -16,7 +16,7 @@ limitations under the License.
 import rejectingFetch from './utils/rejectingFetch';
 import invariant from 'invariant';
 import { headersGet, headersPost, headersDelete } from './utils/headers';
-import { fileApiPath } from './paths';
+import { fileApiPath } from './utils/paths';
 
 const contentTypeTextHeader = { headers: { 'Content-Type': 'text/plain' } };
 

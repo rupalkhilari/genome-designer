@@ -3,7 +3,7 @@ import fs from 'fs';
 import { expect } from 'chai';
 import request from 'supertest';
 import { convertCsv } from '../../server/extensions/native/csv/convert';
-import { extensionApiPath } from '../../src/middleware/paths';
+import { extensionApiPath } from '../../src/middleware/utils/paths';
 import { callExtensionApi } from '../../src/middleware/extensions'
 import rejectingFetch from '../../src/middleware/utils/rejectingFetch';
 

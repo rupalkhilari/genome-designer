@@ -16,7 +16,7 @@ limitations under the License.
 import rejectingFetch from './utils/rejectingFetch';
 import { getItem, setItem } from './localStorageCache';
 import { headersGet, headersPost } from './utils/headers';
-import { dataApiPath } from './paths';
+import { dataApiPath } from './utils/paths';
 
 const getSequenceUrl = (md5, format = null, blockId = null, projectId) => dataApiPath(`sequence/${md5}` + (!!blockId ? `/${blockId}` : ''));
 

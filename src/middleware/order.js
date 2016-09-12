@@ -15,7 +15,7 @@ limitations under the License.
 */
 import rejectingFetch from './utils/rejectingFetch';
 import invariant from 'invariant';
-import { orderApiPath } from './paths';
+import { orderApiPath } from './utils/paths';
 import { headersGet, headersPost, headersPut, headersDelete } from './utils/headers';
 import Order from '../models/Order';
 

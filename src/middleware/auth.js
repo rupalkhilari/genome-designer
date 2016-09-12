@@ -16,7 +16,7 @@ limitations under the License.
 import rejectingFetch from './utils/rejectingFetch';
 import invariant from 'invariant';
 import { headersGet, headersPost, headersPut, headersDelete } from './utils/headers';
-import { authPath } from './paths';
+import { authPath } from './utils/paths';
 
 const authFetch = (...args) => {
   return rejectingFetch(...args)

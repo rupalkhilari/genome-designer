@@ -16,7 +16,7 @@
 import rejectingFetch from './utils/rejectingFetch';
 import invariant from 'invariant';
 import { headersPost} from './utils/headers';
-import { reportApiPath } from './paths';
+import { reportApiPath } from './utils/paths';
 
 export const reportError = (title, description, url, user) => {
   invariant(title, 'title is required');

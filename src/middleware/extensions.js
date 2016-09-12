@@ -15,7 +15,7 @@
  */
 import rejectingFetch, { fetch } from './utils/rejectingFetch';
 import { headersGet } from './utils/headers';
-import { extensionsPath, extensionApiPath } from './paths';
+import { extensionsPath, extensionApiPath } from './utils/paths';
 import invariant from 'invariant';
 
 export const getExtensionsInfo = () => {

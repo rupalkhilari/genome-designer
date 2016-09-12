@@ -76,7 +76,7 @@ import AutosaveTracking from '../components/GlobalNav/autosaveTracking';
 import OkCancel from '../components/okcancel';
 import * as instanceMap from '../store/instanceMap';
 import { merge } from 'lodash';
-import { extensionApiPath } from '../middleware/paths';
+import { extensionApiPath } from '../middleware/utils/paths';
 
 
 import '../styles/GlobalNav.css';
