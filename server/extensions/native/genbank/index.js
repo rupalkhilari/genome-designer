@@ -111,10 +111,12 @@ router.get('/export/blocks/:projectId/:blockIdList', permissionsMiddleware, (req
     });
 });
 
-router.get('/export/:projectId/:constructId?', permissionsMiddleware, (req, res, next) => {
+router.post('/export/:projectId/:constructId?', permissionsMiddleware, (req, res, next) => {
   const { projectId, constructId } = req.params;
+  const options = req.body;
 
   console.log(`exporting construct ${constructId} from ${projectId} (${req.user.uuid})`);
+  console.log(options);
 
   rollup.getProjectRollup(projectId)
     .then(roll => {

@@ -57,16 +57,20 @@ export const convert = (genbankString, constructsOnly = false) => {
 export const exportConstruct = (projectId, constructId, options = {}) => {
   invariant(projectId, 'project ID is required');
   invariant(constructId, 'construct ID is required, otherwise export project');
+  invariant(typeof options === 'object', 'options must be an object');
 
   const url = extensionApiPath(extensionKey, `export/${projectId}/${constructId}`);
-  return rejectingFetch(url, headersGet())
+  const opts = JSON.stringify(options);
+  return rejectingFetch(url, headersPost(opts))
     .then(resp => resp.text());
 };
 
 export const exportProject = (projectId, options = {}) => {
   invariant(projectId, 'project ID is required');
+  invariant(typeof options === 'object', 'options must be an object');
 
   const url = extensionApiPath(extensionKey, `export/${projectId}`);
-  return rejectingFetch(url, headersGet())
+  const opts = JSON.stringify(options);
+  return rejectingFetch(url, headersPost(opts))
     .then(resp => resp.text());
 };
