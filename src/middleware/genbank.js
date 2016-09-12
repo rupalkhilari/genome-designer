@@ -42,15 +42,15 @@ export const importString = (genbankString, projectId) => {
 
 export const importFile = (genbankFile, projectId) => {
   return readFileText(genbankFile)
-    .then(contents => importGenbankString(contents, projectId));
+    .then(contents => importString(contents, projectId));
 };
 
 //convert without creating a project, but will save sequences
-export const convert = (genbank, constructsOnly = false) => {
+export const convert = (genbankString, constructsOnly = false) => {
   invariant(typeof genbankString === 'string', 'must pass a genbank file as text. to use a file, use importGenbankFile.');
 
   const url = extensionApiPath('genbank', `import/convert${constructsOnly ? '?constructsOnly=true' : ''}`);
-  return rejectingFetch(url, headersPost(genbank, contentTypeTextHeader))
+  return rejectingFetch(url, headersPost(genbankString, contentTypeTextHeader))
     .then(resp => resp.json());
 };
 
