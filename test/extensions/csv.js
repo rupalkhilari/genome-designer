@@ -5,7 +5,7 @@ import request from 'supertest';
 import { convertCsv } from '../../server/extensions/native/csv/convert';
 import { extensionApiPath } from '../../src/middleware/paths';
 import { callExtensionApi } from '../../src/middleware/extensions'
-import rejectingFetch from '../../src/middleware/rejectingFetch';
+import rejectingFetch from '../../src/middleware/utils/rejectingFetch';
 
 describe('Extensions', () => {
   describe('CSV', () => {

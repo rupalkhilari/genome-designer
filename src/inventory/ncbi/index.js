@@ -13,7 +13,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-import rejectingFetch from '../../middleware/rejectingFetch';
+import rejectingFetch from '../../middleware/utils/rejectingFetch';
 import queryString from 'query-string';
 import Block from '../../models/Block';
 import { merge, debounce } from 'lodash';

@@ -20,7 +20,7 @@
  */
 import express from 'express';
 import bodyParser from 'body-parser';
-import rejectingFetch from '../../src/middleware/rejectingFetch';
+import rejectingFetch from '../../src/middleware/utils/rejectingFetch';
 import { headersPost } from '../../src/middleware/headers';
 import errorHandlingMiddleware from '../utils/errorHandlingMiddleware';
 

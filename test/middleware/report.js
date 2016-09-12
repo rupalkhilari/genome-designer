@@ -15,7 +15,7 @@
  */
 
 import { expect } from 'chai';
-import rejectingFetch from '../../src/middleware/rejectingFetch';
+import rejectingFetch from '../../src/middleware/utils/rejectingFetch';
 import { headersGet } from '../../src/middleware/headers';
 import { reportApiPath } from '../../src/middleware/paths';
 

@@ -13,7 +13,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-import rejectingFetch, { fetch } from './rejectingFetch';
+import rejectingFetch, { fetch } from './utils/rejectingFetch';
 import { headersGet } from './headers';
 import { extensionsPath, extensionApiPath } from './paths';
 import invariant from 'invariant';
