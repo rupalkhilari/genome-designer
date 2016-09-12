@@ -80,9 +80,9 @@ class ImportGenBankModal extends Component {
 
       const file = this.state.files[0];
       const isCSV = file.name.toLowerCase().endsWith('.csv');
-      const importer = isCSV ? importGenbankFile : importCsvFile;
+      const importer = isCSV ? importCsvFile : importGenbankFile;
 
-      importer(file, projectId)
+      importer(projectId, file)
         .then(projectId => {
           this.props.uiSpin();
           if (projectId === this.props.currentProjectId) {

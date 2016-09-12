@@ -56,15 +56,16 @@ router.get('/file/:fileId', (req, res, next) => {
 
 router.post('/import/:format/:projectId?', jsonParser, (req, res, next) => {
   const { format, projectId } = req.params;
-  const noSave = req.query.hasOwnProperty('noSave') || projectId === 'convert';
-  const returnRoll = projectId === 'convert';
+  const noSave = req.query.hasOwnProperty('noSave') || projectId === 'convert'; //dont save sequences or project
+  const returnRoll = projectId === 'convert'; //return roll at end instead of projectId
 
-  let promise; //resolves to the files in form { name, string, path, url }
+  let promise; //resolves to the files in form { name, string, hash, filePath, fileUrl }
 
   //depending on the type, set variables for file urls etc.
-
   if (format === 'string') {
     const { name, string, ...rest } = req.body;
+    console.log('body');
+
     console.log(name, string, rest);
 
     const hash = md5(string);
@@ -94,29 +95,33 @@ router.post('/import/:format/:projectId?', jsonParser, (req, res, next) => {
       });
     })
       .then(files => {
-        //future - support multiple files
-        const tempPath = (files && files.data) ? files.data.path : null;
+        //future - actually support multiple files
+        return Promise.all(
+          [files].map(file => {
+            const tempPath = (file && file.data) ? file.data.path : null;
 
-        if (!tempPath) {
-          return Promise.reject('no file provided');
-        }
+            if (!tempPath) {
+              return Promise.reject('no file provided');
+            }
 
-        const name = files.data.name;
+            const name = file.data.name;
 
-        return fileSystem.fileRead(tempPath, false)
-          .then((string) => {
-            const hash = md5(string);
-            const filePath = createFilePath(hash);
-            const fileUrl = createFileUrl(hash);
-            return fileSystem.fileWrite(filePath, string, false)
-              .then(() => ({
-                name,
-                string,
-                hash,
-                filePath,
-                fileUrl,
-              }));
-          });
+            return fileSystem.fileRead(tempPath, false)
+              .then((string) => {
+                const hash = md5(string);
+                const filePath = createFilePath(hash);
+                const fileUrl = createFileUrl(hash);
+                return fileSystem.fileWrite(filePath, string, false)
+                  .then(() => ({
+                    name,
+                    string,
+                    hash,
+                    filePath,
+                    fileUrl,
+                  }));
+              });
+          })
+        );
       });
   } else {
     return res.status(404).send('unknown import format, got ' + format + ', expected string or file');
@@ -126,15 +131,25 @@ router.post('/import/:format/:projectId?', jsonParser, (req, res, next) => {
   promise
   //write the files to their proper locations + do the conversion
     .then(files => {
+
+      console.log('fils');
+      console.log(files);
+
       resetColorSeed();
 
       //future - handle multiple files. expect only one right now. need to reduce into single object before proceeding
 
       const { name, string, hash, filePath, fileUrl } = files[0];
-      return convertCsv(string, name, fileUrl);
+      return convertCsv(string, name, fileUrl)
+        .then(converted => {
+          return fileSystem.fileWrite(filePath + '-converted', converted)
+            .then(() => converted);
+        });
     })
     //get maps of sequence hash and blocks, write sequences first
     .then(({ blocks, sequences }) => {
+      console.log(blocks, sequences);
+
       if (noSave) {
         return Promise.resolve(blocks);
       }
@@ -191,10 +206,6 @@ router.post('/import/:format/:projectId?', jsonParser, (req, res, next) => {
         });
     })
     .then(roll => {
-      return fileSystem.fileWrite(csvFile + '-converted', roll)
-        .then(() => roll);
-    })
-    .then(roll => {
       if (noSave) {
         return Promise.resolve(roll);
       }
@@ -211,7 +222,7 @@ router.post('/import/:format/:projectId?', jsonParser, (req, res, next) => {
       res.status(200).json(response);
     })
     .catch(err => {
-      console.log('Error in Import: ' + err);
+      console.log('Error in CSV Import: ' + err);
       console.log(err.stack);
       res.status(500).send(err);
     });

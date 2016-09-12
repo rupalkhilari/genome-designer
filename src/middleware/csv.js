@@ -31,7 +31,7 @@ const extensionKey = 'csv';
  * @resolve with projectId on success and rejects with fetch response
  */
 export function importFile(projectId = null, ...files) {
-  const url = extensionApiPath(extensionKey, `import${projectId ? ('/' + projectId) : ''}`);
+  const url = extensionApiPath(extensionKey, `import/file${!!projectId ? ('/' + projectId) : ''}`);
 
   return uploadFiles(url, {}, ...files)
     .then(resp => resp.json())
@@ -48,19 +48,16 @@ export function importFile(projectId = null, ...files) {
  * @param projectId
  * @returns {*}
  */
-//todo - need a route
 function importStringBase(payload, projectId) {
   invariant(typeof payload === 'object', 'payload must be object');
   invariant(typeof payload.string === 'string', 'must pass string to import');
 
-  const url = extensionApiPath(extensionKey, `import${projectId ? ('/' + projectId) : ''}`);
+  const url = extensionApiPath(extensionKey, `import/string${projectId ? ('/' + projectId) : ''}`);
 
-  return rejectingFetch(url, headersPost(payload))
+  return rejectingFetch(url, headersPost(JSON.stringify(payload)))
     .then(resp => resp.json());
 }
 
-//todo
-console.error('need to support convert route, with string');
 export const convert = (csvString, options = {}) => {
   invariant(false, 'forthcoming');
   invariant(typeof csvString === 'string', 'must pass a csv file as text. to use a file, use importCsvFile.');

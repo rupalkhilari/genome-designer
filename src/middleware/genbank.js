@@ -22,7 +22,7 @@ import uploadFiles from './utils/uploadFiles';
 const extensionKey = 'genbank';
 
 export function importFile(projectId = null, ...files) {
-  const url = extensionApiPath(extensionKey, `import${projectId ? ('/' + projectId) : ''}`);
+  const url = extensionApiPath(extensionKey, `import${!!projectId ? ('/' + projectId) : ''}`);
 
   return uploadFiles(url, {}, ...files)
     .then(resp => resp.json())
@@ -39,7 +39,7 @@ function importStringBase(payload, projectId) {
 
   const url = extensionApiPath(extensionKey, `import${projectId ? ('/' + projectId) : ''}`);
 
-  return rejectingFetch(url, headersPost(payload))
+  return rejectingFetch(url, headersPost(JSON.stringify(payload)))
     .then(resp => resp.json());
 }
 
