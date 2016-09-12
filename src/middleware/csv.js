@@ -46,8 +46,8 @@ export const importString = (csvString, projectId) => {
   return rejectingFetch(url, headersPost(csvString, contentTypeTextHeader))
     .then(resp => resp.json())
     .then(json => {
-      invariant(json && json.ProjectId, 'expect a project ID');
-      return json.ProjectId;
+      invariant(json && json.projectId, 'expect a project ID');
+      return json.projectId;
     });
 };
 

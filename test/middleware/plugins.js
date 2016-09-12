@@ -28,19 +28,19 @@ describe('Middleware', () => {
       const file = new File('./test/res/sampleGenbank.gb');
       importGenbankFile(file)
         .then(result => {
-          expect(result.ProjectId === undefined).to.equal(false);
-          return api.loadProject(result.ProjectId)
+          expect(result.projectId === undefined).to.equal(false);
+          return api.loadProject(result.projectId)
             .then(gotRoll => {
               expect(gotRoll.project.metadata.name).to.equal('EU912544');
               expect(gotRoll.project.components.length).to.equal(1);
               expect(gotRoll.blocks.length).to.equal(8); // There are 8 blocks in that file
               // Now add a construct to it...
               fs.readFile('./test/res/sampleGenbankContiguous.gb', 'utf8', (err, sampleStrConstruct) => {
-                importGenbankString(sampleStrConstruct, result.ProjectId)
+                importGenbankString(sampleStrConstruct, result.projectId)
                   .then(data => {
                     // This just tests that the api works as expected. The tests about the particular
                     // Genbank conversions to and from blocks are in the genbank.spec.js file
-                    return api.loadProject(result.ProjectId)
+                    return api.loadProject(result.projectId)
                       .then(secondRoll => {
                         expect(secondRoll.project.metadata.name).to.equal('EU912544');
                         expect(secondRoll.project.components.length).to.equal(2);

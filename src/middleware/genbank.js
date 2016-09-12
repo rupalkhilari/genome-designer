@@ -28,21 +28,21 @@ const contentTypeTextHeader = { headers: { 'Content-Type': 'text/plain' } };
  * project ID is returned and should be reloaded if the current project or opened if a new project.
  * Promise resolves with projectId on success and rejects with fetch response
  */
-export const importString = (genbankString, projectId) => {
+export const importString = (genbankString, projectId, focusOptions) => {
   invariant(typeof genbankString === 'string', 'must pass a genbank file as text. to use a file, use importGenbankFile.');
 
   const url = extensionApiPath(extensionKey, `import${projectId ? ('/' + projectId) : ''}`);
   return rejectingFetch(url, headersPost(genbankString, contentTypeTextHeader))
     .then(resp => resp.json())
     .then(json => {
-      invariant(json && json.ProjectId, 'expect a project ID');
-      return json.ProjectId;
+      invariant(json && json.projectId, 'expect a project ID');
+      return json.projectId;
     });
 };
 
-export const importFile = (genbankFile, projectId) => {
+export const importFile = (genbankFile, ...rest) => {
   return readFileText(genbankFile)
-    .then(contents => importString(contents, projectId));
+    .then(contents => importString(contents, ...rest));
 };
 
 //convert without creating a project, but will save sequences

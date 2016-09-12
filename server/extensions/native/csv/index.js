@@ -168,7 +168,7 @@ router.post('/import/:projectId?', jsonParser, (req, resp, next) => {
     .then((roll) => {
       const response = returnRoll ?
         roll :
-      { ProjectId: roll.project.id };
+      { projectId: roll.project.id };
 
       resp.status(200).json(response);
     })

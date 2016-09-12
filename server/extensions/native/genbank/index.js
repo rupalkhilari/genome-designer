@@ -286,7 +286,7 @@ router.post('/import/:projectId?', (req, res, next) => {
         .then(() => persistence.projectSave(roll.project.id, req.user.uuid))
         .then(() => roll);
     })
-    .then((roll) => res.status(200).json({ ProjectId: roll.project.id }))
+    .then((roll) => res.status(200).json({ projectId: roll.project.id }))
     .catch(err => {
       console.log('Error in Import: ' + err);
       console.log(err.stack);
