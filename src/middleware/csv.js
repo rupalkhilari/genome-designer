@@ -53,5 +53,5 @@ export const importString = (csvString, projectId) => {
 
 export const importFile = (csvFile, projectId) => {
   return readFileText(csvFile)
-    .then(contents => importString(contents, projectId));
+    .then(({ contents }) => importString(contents, projectId, options));
 };

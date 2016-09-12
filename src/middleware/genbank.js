@@ -40,9 +40,9 @@ export const importString = (genbankString, projectId, options = {}) => {
     });
 };
 
-export const importFile = (genbankFile, ...rest) => {
+export const importFile = (genbankFile, projectId, options) => {
   return readFileText(genbankFile)
-    .then(contents => importString(contents, ...rest));
+    .then(({ contents }) => importString(contents, projectId, options));
 };
 
 //convert without creating a project, but will save sequences

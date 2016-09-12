@@ -36,6 +36,7 @@ const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
   strict: false, //allow values other than arrays and objects
 });
+const textParser = bodyParser.text();
 
 //route to download files
 router.get('/file/:fileId', (req, res, next) => {
@@ -54,10 +55,11 @@ router.get('/file/:fileId', (req, res, next) => {
     });
 });
 
-router.post('/import/:projectId?', jsonParser, (req, resp, next) => {
+router.post('/import/:projectId?', textParser, (req, resp, next) => {
   const { projectId } = req.params;
   const noSave = req.query.hasOwnProperty('noSave') || projectId === 'convert';
   const returnRoll = projectId === 'convert';
+  const file = req.body;
 
   let importedName;
   let csvFile;

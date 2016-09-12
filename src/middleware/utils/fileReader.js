@@ -20,7 +20,14 @@ export default function readFileText(file) {
 
   return new Promise((resolve, reject) => {
     const fr = new FileReader();
-    fr.onload = (evt) => resolve(evt.target.result);
+
+    fr.onload = (evt) => resolve({
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      contents: evt.target.result,
+    });
+
     fr.readAsText(file);
   });
 }
