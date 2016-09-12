@@ -30,6 +30,7 @@ const mapPartFields = (importedObject) => {
     sequence = null,
     color,
     index = 0,
+    fileName = 'CSV Import',
     ...rest,
   } = importedObject;
 
@@ -42,6 +43,7 @@ const mapPartFields = (importedObject) => {
       description,
       color,
       csv_row: index,
+      csv_file: fileName,
     },
     rules: {
       role,
@@ -79,10 +81,11 @@ export function convertCsv(csvContents, fileName, fileUrl) {
     .then(lines => lines.filter(line => line.some(field => !!field)))
     //make object with appropriate keys
     .then(lines => lines.map(line => zip(fields, line)))
-    //assign the index before we do more filtering
+    //assign the index before we do more filtering, and the file name
     //hack - assumes that none were filtered
     .then(parts => parts.map((part, index) => Object.assign(part, {
       index: `${index + 1}`,
+      fileName,
     })))
     //remove parts which do not have any required fields
     .then(parts => parts.filter(part => requiredFields.some(field => !!part[field])))

@@ -4,7 +4,7 @@ import formidable from 'formidable';
 import invariant from 'invariant';
 import md5 from 'md5';
 
-import convertFromFile from './convert';
+import convertFromFile, { convertCsv } from './convert';
 
 //GC specific
 import Project from '../../../../src/models/Project';
@@ -36,7 +36,6 @@ const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json({
   strict: false, //allow values other than arrays and objects
 });
-const textParser = bodyParser.text();
 
 //route to download files
 router.get('/file/:fileId', (req, res, next) => {
@@ -55,52 +54,85 @@ router.get('/file/:fileId', (req, res, next) => {
     });
 });
 
-router.post('/import/:projectId?', jsonParser, (req, resp, next) => {
-  const { projectId } = req.params;
+router.post('/import/:format/:projectId?', jsonParser, (req, res, next) => {
+  const { format, projectId } = req.params;
   const noSave = req.query.hasOwnProperty('noSave') || projectId === 'convert';
   const returnRoll = projectId === 'convert';
-  const { name, string, ...rest } = req.body;
 
-  console.log(name, string, rest);
+  let promise; //resolves to the files in form { name, string, path, url }
 
-  let importedName;
-  let csvFile;
-  // save incoming file then read back the string data.
-  // If these files turn out to be large we could modify the import functions to take
-  // file names instead but for now, in memory is fine.
-  const form = new formidable.IncomingForm();
-  form.hash = 'md5';
+  //depending on the type, set variables for file urls etc.
 
-  return new Promise((resolve, reject) => {
-    form.parse(req, (err, fields, files) => {
-      if (err) {
-        return reject(err);
-      }
-      resolve(files);
-    });
-  })
-    .then(files => {
-      const tempPath = (files && files.data) ? files.data.path : null;
-      importedName = files.data.name;
+  if (format === 'string') {
+    const { name, string, ...rest } = req.body;
+    console.log(name, string, rest);
 
-      //todo - ensure theyve passed a CSV - look at files.data.type === 'text/csv'
+    const hash = md5(string);
+    const filePath = createFilePath(hash);
+    const fileUrl = createFileUrl(hash);
 
-      if (!tempPath) {
-        return Promise.reject('no file provided');
-      }
+    promise = Promise.resolve([{
+      name,
+      string,
+      hash,
+      filePath,
+      fileUrl,
+    }]);
+  } else if (format === 'file') {
 
-      return fileSystem.fileRead(tempPath, false)
-        .then((data) => {
-          const fileName = md5(data);
-          csvFile = createFilePath(fileName);
-          return fileSystem.fileWrite(csvFile, data, false)
-            .then(() => {
-              resetColorSeed();
-              return convertFromFile(csvFile, fileName, createFileUrl(fileName));
-            });
-        });
+    // save incoming file then read back the string data.
+    // If these files turn out to be large we could modify the import functions to take
+    // file names instead but for now, in memory is fine.
+    const form = new formidable.IncomingForm();
+
+    promise = new Promise((resolve, reject) => {
+      form.parse(req, (err, fields, files) => {
+        if (err) {
+          return reject(err);
+        }
+        resolve(files);
+      });
     })
-    //todo - handle catch here for CSV failures
+      .then(files => {
+        //future - support multiple files
+        const tempPath = (files && files.data) ? files.data.path : null;
+
+        if (!tempPath) {
+          return Promise.reject('no file provided');
+        }
+
+        const name = files.data.name;
+
+        return fileSystem.fileRead(tempPath, false)
+          .then((string) => {
+            const hash = md5(string);
+            const filePath = createFilePath(hash);
+            const fileUrl = createFileUrl(hash);
+            return fileSystem.fileWrite(filePath, string, false)
+              .then(() => ({
+                name,
+                string,
+                hash,
+                filePath,
+                fileUrl,
+              }));
+          });
+      });
+  } else {
+    return res.status(404).send('unknown import format, got ' + format + ', expected string or file');
+  }
+
+  //todo - handle catch here for CSV failures
+  promise
+  //write the files to their proper locations + do the conversion
+    .then(files => {
+      resetColorSeed();
+
+      //future - handle multiple files. expect only one right now. need to reduce into single object before proceeding
+
+      const { name, string, hash, filePath, fileUrl } = files[0];
+      return convertCsv(string, name, fileUrl);
+    })
     //get maps of sequence hash and blocks, write sequences first
     .then(({ blocks, sequences }) => {
       if (noSave) {
@@ -126,7 +158,8 @@ router.post('/import/:projectId?', jsonParser, (req, resp, next) => {
 
       const allBlocks = blockIds.reduce((acc, blockId) => {
         const row = blocks[blockId].metadata.csv_row;
-        const name = importedName + (row > 0 ? ' - row ' + row : '');
+        const fileName = blocks[blockId].metadata.csv_file;
+        const name = fileName + (row > 0 ? ' - row ' + row : '');
         const construct = Block.classless({
           components: [blockId],
           metadata: {
@@ -175,12 +208,12 @@ router.post('/import/:projectId?', jsonParser, (req, resp, next) => {
         roll :
       { projectId: roll.project.id };
 
-      resp.status(200).json(response);
+      res.status(200).json(response);
     })
     .catch(err => {
       console.log('Error in Import: ' + err);
       console.log(err.stack);
-      resp.status(500).send(err);
+      res.status(500).send(err);
     });
 });
 
