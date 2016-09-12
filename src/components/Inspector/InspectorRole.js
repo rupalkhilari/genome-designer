@@ -14,7 +14,6 @@
  limitations under the License.
  */
 import React, { Component, PropTypes } from 'react';
-import { connect } from 'react-redux';
 import InputSimple from './../InputSimple';
 import symbols, { symbolMap } from '../../inventory/roles';
 import InspectorRow from './InspectorRow';
@@ -51,3 +50,4 @@ export default class InspectorRole extends Component {
     );
   }
 }
+

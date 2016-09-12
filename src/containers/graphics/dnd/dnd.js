@@ -147,6 +147,11 @@ class DnD {
     const target = this.findTargetAt(globalPosition);
 
     if (target && target.options) {
+
+      if (target.options.dragEnd) {
+        target.options.dragEnd.call(this, globalPosition, null, evt);
+      }
+
       const savedPayload = this.payload;
 
       Promise.resolve(this.onDrop(target, globalPosition))

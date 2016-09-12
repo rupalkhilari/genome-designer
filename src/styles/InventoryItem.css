@@ -50,6 +50,14 @@
     flex-shrink: 1;
   }
 
+  &-image {
+    display: inline-block;
+    background-size: contain;
+    margin-top: -0.25em;
+    height: 27px;
+    width: 27px;
+  }
+
   &-detail {
     padding-left: 0.75em;
     opacity: 0.5;

@@ -22,6 +22,7 @@ export const initialState = {
   forceBlocks: [], //forced models
   blockIds: [], //ids of selection
   constructId: null, //id of current
+  gslId: null, // ID of focused GSL
   roleId: null, //ID of focused Role
   level: 'project', //what to give priority to (when defined)
   options: {}, //map {listBlockId : selectedOptionId}
@@ -36,6 +37,7 @@ export default function inventory(state = initialState, action) {
       blockIds: [],
       constructId: null,
       forceProject: project,
+      gslId: null,
       roleId: null,
       level: 'project',
     });
@@ -48,6 +50,7 @@ export default function inventory(state = initialState, action) {
       forceProject: null,
       blockIds: [],
       constructId: null,
+      gslId: null,
       roleId: null,
       level: 'block',
     });
@@ -58,6 +61,7 @@ export default function inventory(state = initialState, action) {
       forceProject: null,
       forceBlocks: [],
       constructId: constructId,
+      gslId: null,
       roleId: null,
       level: 'construct',
     });
@@ -69,6 +73,7 @@ export default function inventory(state = initialState, action) {
       forceProject: null,
       forceBlocks: [],
       blockIds: blockIds,
+      gslId: null,
       roleId: null,
       level: 'block',
     });
@@ -83,8 +88,16 @@ export default function inventory(state = initialState, action) {
     const { options } = action;
     return Object.assign({}, state, {
       level: 'option',
+      gslId: null,
       roleId: null,
       options,
+    });
+
+  case ActionTypes.FOCUS_GSL_OPERATOR :
+    const { gslId } = action;
+    return Object.assign({}, state, {
+      level: 'gsl',
+      gslId,
     });
 
   case ActionTypes.FOCUS_ROLE :
