@@ -28,7 +28,7 @@ const contentTypeTextHeader = { headers: { 'Content-Type': 'text/plain' } };
  * project ID is returned and should be reloaded if the current project or opened if a new project.
  * Promise resolves with projectId on success and rejects with fetch response
  */
-export const importString = (genbankString, projectId, focusOptions) => {
+export const importString = (genbankString, projectId, options = {}) => {
   invariant(typeof genbankString === 'string', 'must pass a genbank file as text. to use a file, use importGenbankFile.');
 
   const url = extensionApiPath(extensionKey, `import${projectId ? ('/' + projectId) : ''}`);
@@ -54,13 +54,18 @@ export const convert = (genbankString, constructsOnly = false) => {
     .then(resp => resp.json());
 };
 
-export const exportBlock = (projectId, constructId) => {
-  const url = extensionApiPath(extensionKey, `export/${projectId}${constructId ? ('/' + constructId) : ''}`);
+export const exportConstruct = (projectId, constructId, options = {}) => {
+  invariant(projectId, 'project ID is required');
+  invariant(constructId, 'construct ID is required, otherwise export project');
+
+  const url = extensionApiPath(extensionKey, `export/${projectId}/${constructId}`);
   return rejectingFetch(url, headersGet())
     .then(resp => resp.text());
 };
 
-export const exportProject = (projectId) => {
+export const exportProject = (projectId, options = {}) => {
+  invariant(projectId, 'project ID is required');
+
   const url = extensionApiPath(extensionKey, `export/${projectId}`);
   return rejectingFetch(url, headersGet())
     .then(resp => resp.text());
