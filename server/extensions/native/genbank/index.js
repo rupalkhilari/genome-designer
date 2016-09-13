@@ -32,6 +32,19 @@ const createFileUrl = (fileName) => {
   return extensionKey + '/file/' + fileName;
 };
 
+// Download a temporary file and delete it afterwards
+const downloadAndDelete = (res, tempFileName, downloadFileName) => {
+  return new Promise((resolve, reject) => {
+    res.download((tempFileName, downloadFileName, err) => {
+      if (err) {
+        return reject(err);
+      }
+      fileSystem.fileDelete(tempFileName);
+      resolve();
+    });
+  })
+};
+
 //create the router
 const router = express.Router(); //eslint-disable-line new-cap
 
@@ -94,15 +107,9 @@ router.get('/export/blocks/:projectId/:blockIdList', permissionsMiddleware, (req
         }),
       };
 
-      console.log('Exporting 1');
-      console.log(JSON.stringify({ roll: partialRoll, constructId: construct.id }));
-
-      exportConstruct({ roll: partialRoll, constructId: construct.id })
-        .then(fileContents => {
-          res.set({
-            'Content-Disposition': `attachment; filename="${roll.project.id}.fasta"`,
-          });
-          res.send(fileContents);
+      return exportConstruct({ roll: partialRoll, constructId: construct.id })
+        .then(resultFileName => {
+          return downloadAndDelete(res, resultFileName, roll.project.id + '.fasta');
         });
     })
     .catch(err => {
@@ -118,20 +125,20 @@ router.get('/export/:projectId/:constructId?', permissionsMiddleware, (req, res,
 
   rollup.getProjectRollup(projectId)
     .then(roll => {
-      const name = (roll.project.metadata.name ? roll.project.metadata.name : roll.project.id) + '.gb';
+      const name = (roll.project.metadata.name ? roll.project.metadata.name : roll.project.id);
 
       const promise = !!constructId ?
         exportConstruct({ roll, constructId }) :
         exportProject(roll);
 
       return promise
-        .then(result => {
-
-          console.log('Exporting 2');
-          console.log(JSON.stringify({ roll, constructId }));
-
-          res.attachment(name);
-          res.status(200).send(result);
+        .then((resultFileName) => {
+          return fileSystem.fileRead(resultFileName, false)
+            .then(fileOutput => {
+              // We have to disambiguate between zip files and gb files!
+              const fileExtension = (fileOutput.substring(0, 5) !== 'LOCUS') ? '.zip' : '.gb';
+              return downloadAndDelete(res, resultFileName, name + fileExtension);
+            });
         });
     })
     .catch(err => {
@@ -171,9 +178,6 @@ router.post('/import/convert', (req, resp, next) => {
         const payload = constructsOnly ?
         { roots, blocks: rootBlocks } :
           converted;
-
-        console.log('Converting Import');
-        console.log(JSON.stringify(payload));
 
         resp.status(200).json(payload);
       })
