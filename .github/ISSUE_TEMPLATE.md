@@ -23,5 +23,5 @@
 * **Browser:** [all | Chrome XX | Firefox XX | IE XX | Safari XX | Mobile Chrome XX | Android X.X Web Browser | iOS XX Safari ] 
 <!-- All browsers where this could be reproduced -->
  
-* **Node (for AoT issues):** `node --version` = 
+* **Node:** `node --version` = 
 
