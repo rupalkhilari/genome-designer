@@ -15,6 +15,8 @@ import { merge, filter } from 'lodash';
 import resetColorSeed from '../../../../src/utils/generators/color'; //necessary?
 import { permissionsMiddleware } from '../../../data/permissions';
 
+import importMiddleware, { mergeRollupMiddleware } from '../_shared/importMiddleware';
+
 //genbank specific
 import { convert, importProject, exportProject, exportConstruct } from './convert';
 
@@ -36,7 +38,15 @@ const createFileUrl = (fileName) => {
 //create the router
 const router = express.Router(); //eslint-disable-line new-cap
 
+router.param('projectId', (req, res, next, id) => {
+  Object.assign(req, { projectId: id });
+  next();
+});
+
 /***** FILES ******/
+
+//todo - deprecate -- use file path actually written in importMiddleware
+//todo - ensure genbank conversion actually writes the file to the block
 
 //route to download genbank files
 router.get('/file/:fileId', (req, res, next) => {
@@ -55,11 +65,6 @@ router.get('/file/:fileId', (req, res, next) => {
 });
 
 /***** EXPORT ******/
-
-router.param('projectId', (req, res, next, id) => {
-  Object.assign(req, { projectId: id });
-  next();
-});
 
 router.get('/export/blocks/:projectId/:blockIdList', permissionsMiddleware, (req, res, next) => {
   const { projectId, blockIdList } = req.params;
@@ -145,151 +150,84 @@ router.post('/export/:projectId/:constructId?', permissionsMiddleware, (req, res
 
 /***** IMPORT ******/
 
-//convert without persisting
-//takes a string as input, not a file, unlike route below
-//returns { roots: [], blocks: { <id> : <block> } }
-router.post('/import/convert', (req, resp, next) => {
-  const { string, constructsOnly } = req.body;
-  const fileMd5 = md5(string);
-  const inputFilePath = createFilePath(fileMd5);
+//todo - ensure got genbank
+router.post('/import/:format/:projectId?',
+  importMiddleware,
+  (req, res, next) => {
+    const { noSave, returnRoll, format, projectId, files } = req;
+    const { constructsOnly } = req.body;
 
-  //todo - verify this is working (json parse)
+    console.log(`converting genbank (${req.user.uuid}) @ ${files.map(file => file.filePath).join(', ')}`);
 
-  console.log(`converting genbank (${req.user.uuid}) @ ${inputFilePath}`);
+    //future - handle multiple files. expect only one right now. need to reduce into single object before proceeding\
+    const { name, string, hash, filePath, fileUrl } = files[0];
 
-  return fileSystem.fileWrite(inputFilePath, string, false)
-    .then(() => {
-      resetColorSeed();
-      return convert(inputFilePath);
-    })
-    .then(converted => {
-      const roots = converted.roots;
-      const rootBlocks = filter(converted.blocks, (block, blockId) => roots.indexOf(blockId) >= 0);
-      const payload = constructsOnly ?
-      { roots, blocks: rootBlocks } :
-        converted;
+    //todo - unify
+    if (projectId === 'convert') {
+      return convert(filePath)
+        .then(converted => {
+          const roots = converted.roots;
+          const rootBlocks = filter(converted.blocks, (block, blockId) => roots.indexOf(blockId) >= 0);
+          const payload = constructsOnly ?
+          { roots, blocks: rootBlocks } :
+            converted;
 
-      console.log('Converting Import');
-      console.log(JSON.stringify(payload));
+          console.log('Converting Import');
+          console.log(JSON.stringify(payload));
 
-      resp.status(200).json(payload);
-    })
-    .catch(err => next(err));
-});
+          res.status(200).json(payload);
+        })
+        .catch(err => next(err));
+    }
 
-//todo - permissions check here
-
-router.post('/import/:projectId?', (req, res, next) => {
-  const { projectId } = req.params;
-  const noSave = req.query.hasOwnProperty('noSave') || projectId === 'convert';
-
-  let genbankFile;
-  let importedName;
-  // save incoming file then read back the string data.
-  // If these files turn out to be large we could modify the import functions to take
-  // file names instead but for now, in memory is fine.
-  const form = new formidable.IncomingForm();
-  form.hash = 'md5';
-
-  //parse the form
-  return new Promise((resolve, reject) => {
-    form.parse(req, (err, fields, files) => {
-      if (err) {
-        return reject(err);
-      }
-      resolve(files);
-    });
-  })
-  //make sure we got files, read them back
-    .then(files => {
-      const tempPath = (files && files.data) ? files.data.path : null;
-      importedName = files.data.name;
-
-      //todo - ensure got a Genbank
-
-      if (!tempPath) {
-        return Promise.reject('no file provided');
-      }
-
-      return fileSystem.fileRead(tempPath, false);
-    })
-    //write files to our own location
-    .then((data) => {
-      const fileName = md5(data);
-      genbankFile = createFilePath(fileName);
-      return fileSystem.fileWrite(genbankFile, data, false);
-    })
-    //convert the genbank to a rollup, saving sequences in the process
-    .then(() => {
-      resetColorSeed();
-      return importProject(genbankFile);
-    })
+    return importProject(filePath)
     //wrap all the childless blocks in a construct (so they dont appear as top-level constructs), update rollup with construct Ids
-    .then(roll => {
-      const blockIds = Object.keys(roll.blocks);
+      .then(roll => {
+        const blockIds = Object.keys(roll.blocks);
 
-      if (!blockIds.length) {
-        return Promise.reject('no valid blocks');
-      }
+        if (!blockIds.length) {
+          return Promise.reject('no valid blocks');
+        }
 
-      const childlessBlockIds = roll.project.components.filter(blockId => roll.blocks[blockId].components.length === 0);
+        const childlessBlockIds = roll.project.components.filter(blockId => roll.blocks[blockId].components.length === 0);
 
-      const wrapperConstructs = childlessBlockIds.reduce((acc, blockId, index) => {
-        const name = importedName + (index > 0 ? ' - Construct ' + (index + 1) : '');
-        const construct = Block.classless({
-          components: [blockId],
-          metadata: {
-            name,
-          },
-        });
-        return Object.assign(acc, { [construct.id]: construct });
-      }, {});
+        const wrapperConstructs = childlessBlockIds.reduce((acc, blockId, index) => {
+          const name = importedName + (index > 0 ? ' - Construct ' + (index + 1) : '');
+          const construct = Block.classless({
+            components: [blockId],
+            metadata: {
+              name,
+            },
+          });
+          return Object.assign(acc, { [construct.id]: construct });
+        }, {});
 
-      //add constructs to rollup of blocks
-      Object.assign(roll.blocks, wrapperConstructs);
+        //add constructs to rollup of blocks
+        Object.assign(roll.blocks, wrapperConstructs);
 
-      //update project components to use wrapped constructs and replace childless blocks
-      roll.project.components = [
-        ...roll.project.components.filter(blockId => childlessBlockIds.indexOf(blockId) < 0),
-        ...Object.keys(wrapperConstructs),
-      ];
+        //update project components to use wrapped constructs and replace childless blocks
+        roll.project.components = [
+          ...roll.project.components.filter(blockId => childlessBlockIds.indexOf(blockId) < 0),
+          ...Object.keys(wrapperConstructs),
+        ];
 
-      return roll;
-    })
-    //check if we are merging into a project or making a new one, return appropriate rollup
-    .then(roll => {
-      //if no project ID, we are adding to a new project, no need to merge
-      if (!projectId) {
-        return Promise.resolve(roll);
-      }
-
-      return rollup.getProjectRollup(projectId)
-        .then((existingRoll) => {
-          existingRoll.project.components = existingRoll.project.components.concat(roll.project.components);
-          Object.assign(existingRoll.blocks, roll.blocks);
-          return existingRoll;
-        });
-    })
-    .then(roll => {
-      return fileSystem.fileWrite(genbankFile + '-converted', roll)
-        .then(() => roll);
-    })
-    .then(roll => {
-      if (noSave) {
-        return Promise.resolve(roll);
-      }
-
-      return rollup.writeProjectRollup(roll.project.id, roll, req.user.uuid)
-        .then(() => persistence.projectSave(roll.project.id, req.user.uuid))
-        .then(() => roll);
-    })
-    .then((roll) => res.status(200).json({ projectId: roll.project.id }))
-    .catch(err => {
-      console.log('Error in Import: ' + err);
-      console.log(err.stack);
-      res.status(500).send(err);
-    });
-});
+        return roll;
+      })
+      .then(roll => {
+        return fileSystem.fileWrite(filePath + '-converted', roll)
+          .then(() => {
+            Object.assign(req, { roll });
+            next();
+          });
+      })
+      .catch((err) => {
+        console.log('error in Genbank conversion', err);
+        console.log(err.stack);
+        next(err);
+      });
+  },
+  mergeRollupMiddleware
+);
 
 router.all('*', (req, res) => res.status(404).send('route not found'));
 

@@ -35,5 +35,5 @@ export default function readFileText(file) {
 
 export function isFile(file) {
   //basic checks so can mock e.g. in JSDOM
-  return file && typeof file === 'object' && file.name && file.type;
+  return file && typeof file === 'object' && file.name && typeof file.type === 'string';
 }

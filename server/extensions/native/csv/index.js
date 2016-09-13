@@ -10,8 +10,6 @@ import Project from '../../../../src/models/Project';
 import Block from '../../../../src/models/Block';
 import * as fileSystem from '../../../../server/utils/fileSystem';
 import * as filePaths from '../../../../server/utils/filePaths';
-import * as persistence from '../../../../server/data/persistence';
-import * as rollup from '../../../../server/data/rollup';
 import { errorDoesNotExist } from '../../../../server/utils/errors';
 import { permissionsMiddleware } from '../../../data/permissions';
 
@@ -45,6 +43,8 @@ router.param('projectId', (req, res, next, id) => {
 
 /* file route */
 
+//todo - deprecate -- use file path actually written in importMiddleware
+
 //route to download files
 router.get('/file/:fileId', (req, res, next) => {
   const { fileId } = req.params;
@@ -63,9 +63,8 @@ router.get('/file/:fileId', (req, res, next) => {
 });
 
 /* import */
-
+//todo - ensure valid CSV
 router.post('/import/:format/:projectId?',
-  jsonParser,
   importMiddleware,
   (req, res, next) => {
     const { noSave, returnRoll, format, projectId, files } = req;
@@ -112,6 +111,11 @@ router.post('/import/:format/:projectId?',
 
         Object.assign(req, { roll });
         next();
+      })
+      .catch((err) => {
+        console.log('error in CSV conversion', err);
+        console.log(err.stack);
+        next(err);
       });
   },
   mergeRollupMiddleware
