@@ -53,13 +53,14 @@ export default function importMiddleware(req, res, next) {
     const filePath = createFilePath(hash);
     const fileUrl = createFileUrl(hash);
 
-    promise = Promise.resolve([{
-      name,
-      string,
-      hash,
-      filePath,
-      fileUrl,
-    }]);
+    promise = fileSystem.fileWrite(filePath, string, false)
+      .then(() => [{
+        name,
+        string,
+        hash,
+        filePath,
+        fileUrl,
+      }]);
   } else if (format === 'file') {
     // save incoming file then read back the string data.
     // If these files turn out to be large we could modify the import functions to take
