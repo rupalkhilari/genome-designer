@@ -182,6 +182,10 @@ export default class ConstructViewerUserInterface extends UserInterface {
   get construct() {
     return this.constructViewer.props.construct;
   }
+  // syntax sugar to determine if collapsed
+  get collapsed() {
+    return this.layout.collapsed;
+  }
   /**
    * mouse enter/leave are used to ensure no block is in the hover state
    */
@@ -240,9 +244,11 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * mouse move handler ( note, not the same as drag which is with a button held down )
    */
   mouseMove(evt, point) {
-    const hits = this.sg.findNodesAt(point);
-    this.setTitleHover(this.isConstructTitleNode(hits.length ? hits.pop() : null));
-    this.setBlockHover(this.topBlockAt(point));
+    if (!this.collapsed) {
+      const hits = this.sg.findNodesAt(point);
+      this.setTitleHover(this.isConstructTitleNode(hits.length ? hits.pop() : null));
+      this.setBlockHover(this.topBlockAt(point));
+    }
   }
   /**
    * mouse down handler, selection occurs on up since we have to wait to
@@ -365,15 +371,27 @@ export default class ConstructViewerUserInterface extends UserInterface {
     evt.preventDefault();
     // select construct whenever a selection occcurs regardless of blocks hit etc
     this.selectConstruct();
+
+    // text expander toggle first
+    if (this.constructExpander(event, point)) {
+      this.layout.collapsed = !this.layout.collapsed;
+      if (this.collapsed) {
+        // remove selections if we are now collapsed
+        this.constructViewer.blockSelected([]);
+      }
+      this.constructViewer.update();
+      return;
+    }
+    // ignore everything else if we are collapsed
+    if (this.collapsed) {
+      return;
+    }
+
     // open construct menu for title according to position
     if (this.titleContextMenu(evt, point, true)) {
       return;
     }
-    if (this.constructExpander(event, point)) {
-      this.layout.collapsed = !this.layout.collapsed;
-      this.constructViewer.update();
-      return;
-    }
+
     // check for block select
     const block = this.topBlockAt(point);
     if (block) {
@@ -450,6 +468,12 @@ export default class ConstructViewerUserInterface extends UserInterface {
       this.lighten();
     } else {
       this.darken();
+    }
+    // added faded style to layer if collapsed
+    if (this.layout.collapsed) {
+      this.el.classList.add('scenegraph-faded');
+    } else {
+      this.el.classList.remove('scenegraph-faded');
     }
   }
 
@@ -529,6 +553,10 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * to the DND manager to handle
    */
   mouseDrag(evt, point, startPoint, distance) {
+    // ignore if collapsed
+    if (this.collapsed) {
+      return;
+    }
 
     // ignore drags until they reach a certain vector threshold
     if (distance > dragThreshold && !this.fence) {
