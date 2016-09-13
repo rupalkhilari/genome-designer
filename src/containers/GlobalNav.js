@@ -76,7 +76,7 @@ import AutosaveTracking from '../components/GlobalNav/autosaveTracking';
 import OkCancel from '../components/okcancel';
 import * as instanceMap from '../store/instanceMap';
 import { merge } from 'lodash';
-import { exportProject as exportProjectGenbank} from '../middleware/genbank';
+import { exportProject as exportProjectGenbank } from '../middleware/genbank';
 import { extensionApiPath } from '../middleware/utils/paths';
 
 import '../styles/GlobalNav.css';
@@ -302,21 +302,41 @@ class GlobalNav extends Component {
   downloadProjectGenbank() {
     this.saveProject()
       .then(() => {
-        //todo - download the file...
-        try {
-          exportProjectGenbank(this.props.currentProjectId, this.props.focus.options)
-            .then(string => {
-            });
-        } catch (err) {
-
-        }
+        const url = extensionApiPath('genbank', `export/${this.props.currentProjectId}`);
+        const postBody = this.props.focus.options;
+        const iframeTarget = '' + Math.floor(Math.random() * 10000) + +Date.now();
 
         // for now use an iframe otherwise any errors will corrupt the page
-        const url = extensionApiPath('genbank', `export/${this.props.currentProjectId}`);
         const iframe = document.createElement('iframe');
+        iframe.name = iframeTarget;
         iframe.style.display = 'none';
-        iframe.src = url;
+        iframe.src = '';
         document.body.appendChild(iframe);
+
+        //make form to post to iframe
+        const form = document.createElement('form');
+        form.style.display = 'none';
+        form.action = url;
+        form.method = 'post';
+        form.target = iframeTarget;
+
+        //add inputs to the form for each value in postBody
+        Object.keys(postBody).forEach(key => {
+          const input = document.createElement('input');
+          input.type = 'hidden';
+          input.name = key;
+          input.value = postBody[key];
+          form.appendChild(input);
+        });
+
+        document.body.appendChild(form);
+        form.submit();
+
+        //removing elements will cancel, so give them a nice timeout
+        setTimeout(() => {
+          document.body.removeChild(form);
+          document.body.removeChild(iframe);
+        }, 60 * 1000);
       });
   }
 

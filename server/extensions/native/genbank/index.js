@@ -1,5 +1,6 @@
 import express from 'express';
 import formidable from 'formidable';
+import bodyParser from 'body-parser';
 import invariant from 'invariant';
 import md5 from 'md5';
 
@@ -38,18 +39,20 @@ const createFileUrl = (fileName) => {
 // Download a temporary file and delete it afterwards
 const downloadAndDelete = (res, tempFileName, downloadFileName) => {
   return new Promise((resolve, reject) => {
-    res.download((tempFileName, downloadFileName, err) => {
+    res.download(tempFileName, downloadFileName, (err) => {
       if (err) {
         return reject(err);
       }
       fileSystem.fileDelete(tempFileName);
-      resolve();
+      resolve(downloadFileName);
     });
-  })
+  });
 };
 
 //create the router
 const router = express.Router(); //eslint-disable-line new-cap
+
+const formParser = bodyParser.urlencoded({ extended: true });
 
 router.param('projectId', (req, res, next, id) => {
   Object.assign(req, { projectId: id });
@@ -124,36 +127,39 @@ router.get('/export/blocks/:projectId/:blockIdList', permissionsMiddleware, (req
     });
 });
 
-router.post('/export/:projectId/:constructId?', permissionsMiddleware, (req, res, next) => {
-  const { projectId, constructId } = req.params;
-  const options = req.body;
+router.all('/export/:projectId/:constructId?',
+  permissionsMiddleware,
+  formParser,
+  (req, res, next) => {
+    const { projectId, constructId } = req.params;
+    const options = req.body;
 
-  console.log(`exporting construct ${constructId} from ${projectId} (${req.user.uuid})`);
-  console.log(options);
+    console.log(`exporting construct ${constructId} from ${projectId} (${req.user.uuid})`);
 
-  rollup.getProjectRollup(projectId)
-    .then(roll => {
-      const name = (roll.project.metadata.name ? roll.project.metadata.name : roll.project.id);
+    rollup.getProjectRollup(projectId)
+      .then(roll => {
+        const name = (roll.project.metadata.name ? roll.project.metadata.name : roll.project.id);
 
-      const promise = !!constructId ?
-        exportConstruct({ roll, constructId }) :
-        exportProject(roll);
+        const promise = !!constructId ?
+          exportConstruct({ roll, constructId }) :
+          exportProject(roll);
 
-      return promise
-        .then((resultFileName) => {
-          return fileSystem.fileRead(resultFileName, false)
-            .then(fileOutput => {
-              // We have to disambiguate between zip files and gb files!
-              const fileExtension = (fileOutput.substring(0, 5) !== 'LOCUS') ? '.zip' : '.gb';
-              return downloadAndDelete(res, resultFileName, name + fileExtension);
-            });
-        });
-    })
-    .catch(err => {
-      console.log('Error!', err);
-      res.status(500).send(err);
-    });
-});
+        return promise
+          .then((resultFileName) => {
+            return fileSystem.fileRead(resultFileName, false)
+              .then(fileOutput => {
+                // We have to disambiguate between zip files and gb files!
+                const fileExtension = (fileOutput.substring(0, 5) !== 'LOCUS') ? '.zip' : '.gb';
+                return downloadAndDelete(res, resultFileName, name + fileExtension);
+              });
+          });
+      })
+      .catch(err => {
+        console.log('Error!', err);
+        console.log(err.stack);
+        res.status(500).send(err);
+      });
+  });
 
 /***** IMPORT ******/
 
@@ -196,11 +202,11 @@ router.post('/import/:format/:projectId?',
         const childlessBlockIds = roll.project.components.filter(blockId => roll.blocks[blockId].components.length === 0);
 
         const wrapperConstructs = childlessBlockIds.reduce((acc, blockId, index) => {
-          const name = importedName + (index > 0 ? ' - Construct ' + (index + 1) : '');
+          const constructName = name + (index > 0 ? ' - Construct ' + (index + 1) : '');
           const construct = Block.classless({
             components: [blockId],
             metadata: {
-              name,
+              constructName,
             },
           });
           return Object.assign(acc, { [construct.id]: construct });
