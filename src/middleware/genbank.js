@@ -82,6 +82,7 @@ export const exportConstruct = (projectId, constructId, options = {}) => {
   const url = extensionApiPath(extensionKey, `export/${projectId}/${constructId}`);
   const opts = JSON.stringify(options);
 
+  //todo - handle if zip
   return rejectingFetch(url, headersPost(opts))
     .then(resp => resp.text());
 };
@@ -93,6 +94,7 @@ export const exportProject = (projectId, options = {}) => {
   const url = extensionApiPath(extensionKey, `export/${projectId}`);
   const opts = JSON.stringify(options);
 
+  //todo - handle if zip
   return rejectingFetch(url, headersPost(opts))
     .then(resp => resp.text());
 };

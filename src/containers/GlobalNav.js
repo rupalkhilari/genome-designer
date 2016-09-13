@@ -76,8 +76,8 @@ import AutosaveTracking from '../components/GlobalNav/autosaveTracking';
 import OkCancel from '../components/okcancel';
 import * as instanceMap from '../store/instanceMap';
 import { merge } from 'lodash';
+import { exportProject as exportProjectGenbank} from '../middleware/genbank';
 import { extensionApiPath } from '../middleware/utils/paths';
-
 
 import '../styles/GlobalNav.css';
 
@@ -208,6 +208,7 @@ class GlobalNav extends Component {
       heap.identify(flashedUser.email);
     }
   }
+
   /**
    * unsink all keyboard events on unmount
    */
@@ -301,6 +302,15 @@ class GlobalNav extends Component {
   downloadProjectGenbank() {
     this.saveProject()
       .then(() => {
+        //todo - download the file...
+        try {
+          exportProjectGenbank(this.props.currentProjectId, this.props.focus.options)
+            .then(string => {
+            });
+        } catch (err) {
+
+        }
+
         // for now use an iframe otherwise any errors will corrupt the page
         const url = extensionApiPath('genbank', `export/${this.props.currentProjectId}`);
         const iframe = document.createElement('iframe');
