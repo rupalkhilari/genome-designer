@@ -370,7 +370,8 @@ export default class ConstructViewerUserInterface extends UserInterface {
       return;
     }
     if (this.constructExpander(event, point)) {
-      alert('expander');
+      this.layout.collapsed = !this.layout.collapsed;
+      this.constructViewer.update();
       return;
     }
     // check for block select
@@ -653,7 +654,11 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * drag over event
    */
   onDragOver(globalPosition, payload, proxySize) {
-    // select construct on drag over
+    // ignore if collapsed
+    if (this.layout.collapsed) {
+      return;
+    }
+    // select construct on drag over (unless collapsed)
     this.selectConstruct();
     // no drop on frozen or fixed constructs
     if (this.construct.isFrozen() || this.construct.isFixed()) {
@@ -681,8 +686,8 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * to our actual constructViewer which has all the necessary props
    */
   onDrop(globalPosition, payload, event) {
-    // no drop on frozen or fixed constructs
-    if (this.construct.isFrozen() || this.construct.isFixed()) {
+    // no drop on frozen or fixed constructs or collapsed
+    if (this.construct.isFrozen() || this.construct.isFixed() || this.layout.collapsed) {
       return;
     }
     // for now templates can only be dropped on the new construct target which is part of the canvas

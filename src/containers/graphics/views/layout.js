@@ -73,11 +73,13 @@ export default class Layout {
    */
   autoSizeSceneGraph() {
     if (this.rootLayout) {
-      // start with a box at 0,0, to ensure we capture the top left of the view
-      // and ensure we at least use the available
       const aabb = this.getBlocksAABB();
       this.sceneGraph.width = Math.max(aabb.right, kT.minWidth);
-      this.sceneGraph.height = Math.max(aabb.bottom, kT.minHeight) + kT.bottomPad;
+      if (this.collapsed) {
+        this.sceneGraph.height = kT.collapsedHeight;
+      } else {
+        this.sceneGraph.height = Math.max(aabb.bottom, kT.minHeight) + kT.bottomPad;
+      }
       this.sceneGraph.updateSize();
     }
   }
@@ -707,8 +709,8 @@ export default class Layout {
       // update any list parts for this blocks
       this.updateListForBlock(block, td.x);
 
-      // render children ( nested constructs )
-      if (this.hasChildren(part) && node.showChildren) {
+      // render nested constructs, unless user has collapsed construct or branch is collapsed
+      if (this.hasChildren(part) && node.showChildren && !this.collapsed) {
         // establish the position
         const nestedX = this.insetX + kT.nestedInsetX;
         const nestedY = yp + nestedVertical + kT.blockH + kT.nestedInsetY;
@@ -809,14 +811,16 @@ export default class Layout {
    * update connections after the layout
    */
   postLayout() {
-    // update / make all the parts
-    this.construct.components.forEach(part => {
-      // render children ( nested constructs )
-      if (this.hasChildren(part) && this.nodeFromElement(part).showChildren) {
-        // update / create connection
-        this.updateConnection(part);
-      }
-    });
+    if (!this.collapsed) {
+      // update / make all the parts
+      this.construct.components.forEach(part => {
+        // render children ( nested constructs )
+        if (this.hasChildren(part) && this.nodeFromElement(part).showChildren) {
+          // update / create connection
+          this.updateConnection(part);
+        }
+      });
+    }
     // dispose dangling connections
     this.disposeConnections();
   }
