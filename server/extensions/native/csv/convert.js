@@ -55,7 +55,7 @@ const mapPartFields = (importedObject) => {
   };
 };
 
-export function convertCsv(csvContents, fileName, hash) {
+export function convertCsv(csvContents, fileName, fileUrl, hash) {
   invariant(typeof csvContents === 'string', 'expected a string');
 
   let fields;
@@ -102,6 +102,7 @@ export function convertCsv(csvContents, fileName, hash) {
         source: {
           source: 'csv',
           id: hash,
+          url: '/extensions/api/csv/file/' + hash, //todo - use fileUrl once import router is up
         },
       });
     }))

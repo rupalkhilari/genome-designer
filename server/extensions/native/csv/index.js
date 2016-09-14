@@ -57,7 +57,7 @@ router.post('/import/:format/:projectId?',
     //future - handle multiple files. expect only one right now. need to reduce into single object before proceeding\
     const { name, string, hash, filePath, fileUrl } = files[0];
 
-    return convertCsv(string, name, hash)
+    return convertCsv(string, name, fileUrl, hash)
       .then(converted => {
         return fileSystem.fileWrite(filePath + '-converted', converted)
           .then(() => converted);
