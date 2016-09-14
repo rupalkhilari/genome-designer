@@ -15,7 +15,7 @@ limitations under the License.
 */
 import { errorInvalidPart, errorOrderRejected } from '../utils/errors';
 import fetch from 'isomorphic-fetch';
-import { headersPost } from '../../src/middleware/headers';
+import { headersPost } from '../../src/middleware/utils/headers';
 
 //testing
 import { fileWrite } from '../utils/fileSystem';

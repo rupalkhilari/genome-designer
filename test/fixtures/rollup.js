@@ -21,6 +21,7 @@ import { createExampleRollup, createSequencedRollup, createListRollup } from '..
  * /-\   |
  * C  D  E
  *
+ *
  * 1 - flat, all blocks have sequence
  *
  * project
@@ -29,8 +30,19 @@ import { createExampleRollup, createSequencedRollup, createListRollup } from '..
  * |
  * B*-C*-D*-E*-F*-G*
  *
- * 2 - template with lists (e.g. EGF) TODO!!!!
  *
+ * 2 - template with lists (e.g. EGF)
+ * one construct, four list blocks, 5 options each, each with sequence
+ *
+ *             project
+ *                |
+ *    A      B       C       D
+ *    |      |       |       |
+ *    1      1       1       1
+ *    2      2       2       2
+ *    3      3       3       3
+ *    4      4       4       4
+ *    5      5       5       5
  */
 export const createExampleProject = () => {
   invariant(process.env.NODE_ENV === 'test', 'can only be used in testing environment');

@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import fetch from 'isomorphic-fetch';
 import Project from '../../../../src/models/Project';
-import { dataApiPath } from '../../../../src/middleware/paths';
+import { dataApiPath } from '../../../../src/middleware/utils/paths';
 import { updateProjectWithAuthor } from '../../../utils/userUtils';
 
 //noinspection ES6UnusedImports
