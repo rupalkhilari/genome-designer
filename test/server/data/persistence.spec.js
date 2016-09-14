@@ -2,6 +2,7 @@ import { assert, expect } from 'chai';
 import path from 'path';
 import uuid from 'node-uuid';
 import merge from 'lodash.merge';
+import { updateProjectWithAuthor } from '../../utils/userUtils';
 import md5 from 'md5';
 import { testUserId } from '../../constants';
 import { errorInvalidModel, errorAlreadyExists, errorDoesNotExist } from '../../../server/utils/errors';
@@ -28,7 +29,7 @@ describe('Server', () => {
     describe('persistence', function persistenceTests() {
       describe('existence + reading', () => {
         const projectName = 'persistenceProject';
-        const projectData = new Project({ metadata: { name: projectName } });
+        const projectData = new Project(updateProjectWithAuthor({ metadata: { name: projectName } }));
         const projectId = projectData.id;
         const projectPath = filePaths.createProjectPath(projectId);
         const projectDataPath = filePaths.createProjectDataPath(projectId);
@@ -126,7 +127,7 @@ describe('Server', () => {
       describe('creation', () => {
         const userId = testUserId;
 
-        const projectData = new Project();
+        const projectData = new Project(updateProjectWithAuthor());
         const projectId = projectData.id;
         const projectRepoDataPath = filePaths.createProjectDataPath(projectId);
         const projectManifestPath = filePaths.createProjectManifestPath(projectId);
@@ -167,7 +168,7 @@ describe('Server', () => {
       describe('write + merge', () => {
         const userId = testUserId;
 
-        const projectData = new Project();
+        const projectData = new Project(updateProjectWithAuthor());
         const projectId = projectData.id;
         const projectRepoDataPath = filePaths.createProjectDataPath(projectId);
         const projectManifestPath = filePaths.createProjectManifestPath(projectId);
@@ -300,7 +301,7 @@ describe('Server', () => {
       describe('deletion', () => {
         const userId = testUserId;
 
-        const projectData = new Project();
+        const projectData = new Project(updateProjectWithAuthor());
         const projectId = projectData.id;
         const projectRepoDataPath = filePaths.createProjectDataPath(projectId);
         const projectManifestPath = filePaths.createProjectManifestPath(projectId);
@@ -368,7 +369,7 @@ describe('Server', () => {
         let versionLog;
         let versions;
         const nonExistentSHA = '795c5751c8e0b0c9b5993ec81928cd89f7eefd27';
-        const projectData = new Project();
+        const projectData = new Project(updateProjectWithAuthor());
         const projectId = projectData.id;
         const projectRepoDataPath = filePaths.createProjectDataPath(projectId);
         const newProject = projectData.merge({ projectData: 'new stuff' });
