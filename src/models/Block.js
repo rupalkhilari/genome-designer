@@ -277,7 +277,7 @@ export default class Block extends Instance {
    * @returns {string} Block rule
    */
   getRole(userFriendly = true) {
-    const role = this.rules.role;
+    const role = this.rules.role || this.metadata.role;
     const friendly = symbolMap[role];
 
     return (userFriendly === true && friendly) ?
@@ -312,6 +312,7 @@ export default class Block extends Instance {
     return this.setRule('role', role);
   }
 
+  //todo - should this delete the options entirely?
   /**
    * Specify whether Block is a list block. Clears components when setting to true, and clears options when setting to false.
    * @method setListBlock
@@ -452,6 +453,16 @@ export default class Block extends Instance {
    */
   setColor(newColor = color()) {
     return this.mutate('metadata.color', newColor);
+  }
+
+  /**
+   * Get Block's color
+   * @method getColor
+   * @memberOf Block
+   * @returns {string} Hex Color value
+   */
+  getColor() {
+    return this.metadata.color;
   }
 
   /************

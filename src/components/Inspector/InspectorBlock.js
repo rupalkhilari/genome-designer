@@ -1,18 +1,18 @@
 /*
- Copyright 2016 Autodesk,Inc.
+Copyright 2016 Autodesk,Inc.
 
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
- http://www.apache.org/licenses/LICENSE-2.0
+    http://www.apache.org/licenses/LICENSE-2.0
 
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
- */
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import Block from '../../models/Block';
@@ -39,6 +39,10 @@ export class InspectorBlock extends Component {
       }
     }).isRequired,
     isAuthoring: PropTypes.bool.isRequired,
+    overrides: PropTypes.shape({
+      color: PropTypes.string,
+      role: PropTypes.string,
+    }).isRequired,
     orders: PropTypes.array.isRequired,
     blockSetColor: PropTypes.func.isRequired,
     blockSetRole: PropTypes.func.isRequired,
@@ -103,8 +107,12 @@ export class InspectorBlock extends Component {
    * color of selected instance or null if multiple blocks selected
    */
   currentColor() {
-    if (this.props.instances.length === 1) {
-      return this.props.instances[0].metadata.color;
+    const { instances, overrides } = this.props;
+    if (!!overrides.color) {
+      return overrides.color;
+    }
+    if (instances.length === 1) {
+      return instances[0].metadata.color;
     }
     return null;
   }
@@ -113,8 +121,12 @@ export class InspectorBlock extends Component {
    * role symbol of selected instance or null if multiple blocks selected
    */
   currentRoleSymbol() {
-    if (this.props.instances.length === 1) {
-      return this.props.instances[0].rules.role;
+    const { instances, overrides } = this.props;
+    if (!!overrides.role) {
+      return overrides.role;
+    }
+    if (instances.length === 1) {
+      return instances[0].getRole(false);
     }
     //false is specially handled in symbol picker as blank, and is different than null (no symbol)
     return false;

@@ -1,18 +1,18 @@
 /*
- Copyright 2016 Autodesk,Inc.
+Copyright 2016 Autodesk,Inc.
 
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
- http://www.apache.org/licenses/LICENSE-2.0
+    http://www.apache.org/licenses/LICENSE-2.0
 
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
- */
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
 /**
  * @module Actions_Projects
  * @memberOf module:Actions
@@ -27,7 +27,7 @@ import { push } from 'react-router-redux';
 import * as instanceMap from '../store/instanceMap';
 import Block from '../models/Block';
 import Project from '../models/Project';
-import rollupWithConstruct from '../utils/rollup/rollupWithConstruct';
+import emptyProjectWithConstruct from '../../data/emptyProject/index';
 import { pauseAction, resumeAction } from '../store/pausableStore';
 
 import { getItem, setItem } from '../middleware/localStorageCache';
@@ -203,8 +203,7 @@ export const projectSnapshot = (projectId, message, withRollup = true) => {
  */
 export const projectCreate = (initialModel) => {
   return (dispatch, getState) => {
-    const userId = getState().user.userid;
-    const project = new Project(initialModel, { authors: [userId] });
+    const project = new Project(initialModel);
     dispatch({
       type: ActionTypes.PROJECT_CREATE,
       project,
@@ -253,7 +252,9 @@ const _projectLoad = (projectId, loadMoreOnFail = false, dispatch) => {
       return dispatch(projectList())
         .then(manifests => manifests
           .filter(manifest => !(ignores.indexOf(manifest.id) >= 0))
-          .sort((one, two) => one.lastSaved - two.lastSaved)
+          //first sort descending by created date (i.e. if never saved) then descending by saved date (so it takes precedence)
+          .sort((one, two) => two.metadata.created - one.metadata.created)
+          .sort((one, two) => two.lastSaved - one.lastSaved)
         )
         .then(manifests => {
           if (manifests.length) {
@@ -261,8 +262,10 @@ const _projectLoad = (projectId, loadMoreOnFail = false, dispatch) => {
             //recurse, ignoring this projectId
             return _projectLoad(nextId, ignores, dispatch);
           }
-          //if no manifests, create a new rollup - shouldnt happen while users have sample projects
-          return rollupWithConstruct();
+          //if no manifests, create a new rollup
+          //note - this shouldnt happen while users have sample projects
+          //todo - may want to hit the server to re-setup the user's account
+          return emptyProjectWithConstruct();
         });
     });
 };
@@ -323,6 +326,7 @@ export const projectOpen = (inputProjectId, skipSave = false) => {
     const currentProjectId = dispatch(projectSelectors.projectGetCurrentId());
     const projectId = inputProjectId || getItem(recentProjectKey);
 
+    //ignore if on a project, and passed the same one
     if (!!currentProjectId && currentProjectId === projectId) {
       return Promise.resolve();
     }
@@ -371,6 +375,7 @@ export const projectOpen = (inputProjectId, skipSave = false) => {
         type: ActionTypes.PROJECT_OPEN,
         projectId,
       });
+      return projectId;
     });
   };
 };

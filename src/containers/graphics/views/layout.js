@@ -802,9 +802,12 @@ export default class Layout {
           });
         }
 
+        /*
+        // MERGE CONFLICT - unsure whether to keep
         // track the nested layouts per row since they might need adjusting for list blocks
         // at the end of the row
         nestedConstructs.push(nestedLayout);
+        */
 
         // update base color of nested construct skeleton
         nestedLayout.baseColor = block.metadata.color || this.baseColor;
@@ -839,6 +842,8 @@ export default class Layout {
       const rowWidth = rowEnd - rowStart;
       row.set({translateX: rowStart + rowWidth / 2, width: rowWidth});
 
+      /*
+       // MERGE CONFLICT - unsure whether to keep
       // ensure all nested constructs on the row are updated for list block height
       if (nestedConstructs.length && maxListHeight > 0) {
         nestedConstructs.forEach(child => {
@@ -850,6 +855,7 @@ export default class Layout {
             currentConstructId: this.currentConstructId})
         });
       }
+      */
     }
 
     // cleanup any dangling rows

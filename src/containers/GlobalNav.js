@@ -201,6 +201,12 @@ class GlobalNav extends Component {
     });
   }
 
+  componentDidMount() {
+    // if we have a user then identify them to heap
+    if (heap && heap.identify && flashedUser && flashedUser.email) {
+      heap.identify(flashedUser.email);
+    }
+  }
   /**
    * unsink all keyboard events on unmount
    */
@@ -500,7 +506,7 @@ class GlobalNav extends Component {
               },
             },
             {
-              text: 'Download Genbank File',
+              text: 'Download Genbank/Zip File',
               action: () => {
                 this.downloadProjectGenbank();
               },
