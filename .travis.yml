@@ -20,7 +20,7 @@ install:
 - npm install
 script:
 - npm run lint
-- npm run test
+# - npm run test #only need to run coverage report - will run tests + report coverage
 - npm run test-coverage-report
 #- npm run start-testing; npm run nightwatch-saucelabs; pkill node
 cache:
