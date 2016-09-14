@@ -29,6 +29,8 @@ export const initialState = {
   showSaveError: false,
   showOrderForm: false,
   showReportError: false,
+  showPartsCSVImport: false,
+  listBlock: null,
   showExtensionPicker: false,
 };
 

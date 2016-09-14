@@ -27,6 +27,7 @@ import {
 } from '../../actions/blocks';
 import Block from '../../models/Block';
 import { importGenbankOrCSV } from '../../middleware/genbank';
+import invariant from 'invariant';
 
 import '../../../src/styles/partscsv.css';
 
@@ -41,7 +42,7 @@ class ImportPartsCSVModal extends Component {
     uiSpin: PropTypes.func.isRequired,
     blockOptionsAdd: PropTypes.func.isRequired,
     blockStash: PropTypes.func.isRequired,
-    listBlock: PropTypes.object.isRequired,
+    listBlock: PropTypes.object,
   };
 
   constructor() {
@@ -131,6 +132,8 @@ class ImportPartsCSVModal extends Component {
     if (!this.props.open) {
       return null;
     }
+    invariant(this.props.listBlock, 'expected a list block to be in the modal');
+
     return (
       <div>
         <ModalWindow
