@@ -13,10 +13,10 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-import rejectingFetch from './rejectingFetch';
+import rejectingFetch from './utils/rejectingFetch';
 import invariant from 'invariant';
-import { headersGet, headersPost, headersPut, headersDelete } from './headers';
-import { serverPath, authPath, registerPath } from './paths';
+import { headersGet, headersPost, headersPut, headersDelete } from './utils/headers';
+import { serverPath, authPath, registerPath } from './utils/paths';
 
 const authFetch = (...args) => {
   return rejectingFetch(...args)

@@ -13,11 +13,11 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-import rejectingFetch from '../../middleware/rejectingFetch';
+import rejectingFetch from '../../middleware/utils/rejectingFetch';
 import queryString from 'query-string';
 import Block from '../../models/Block';
 import { merge, debounce } from 'lodash';
-import { convertGenbank } from '../../middleware/genbank';
+import { convert } from '../../middleware/genbank';
 
 const fetchOpts = {
   mode: 'cors',
@@ -34,7 +34,7 @@ const makeFastaUrl = (id) => `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efet
 //assume there is always one root construct
 //returns array in form [construct, ...blocks]
 const genbankToBlock = (gb, onlyConstruct) => {
-  return convertGenbank(gb, onlyConstruct)
+  return convert(gb, onlyConstruct)
     .then(result => {
       const { blocks, roots } = result;
       const blockArray = Object.keys(blocks).map(blockId => blocks[blockId]);

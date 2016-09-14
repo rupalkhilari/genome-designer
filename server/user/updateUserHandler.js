@@ -20,7 +20,7 @@ import validEmail from 'valid-email';
 import { INTERNAL_HOST, API_END_POINT } from '../urlConstants';
 import userConfigDefaults from '../onboarding/userConfigDefaults';
 import { pruneUserObject, validateConfig, updateUserAll, updateUserConfig, mergeConfigToUserData } from './utils';
-import { headersPost } from '../../src/middleware/headers';
+import { headersPost } from '../../src/middleware/utils/headers';
 
 //todo - share fetch handling with config / register routes
 

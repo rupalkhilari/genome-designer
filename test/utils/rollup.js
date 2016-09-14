@@ -85,6 +85,17 @@ export const createSequencedRollup = () => {
 };
 
 //creates project with 4 list blocks, each with 5 options (all active, all with a random sequence)
+/*
+ *             project
+ *                |
+ *    A      B       C       D
+ *    |      |       |       |
+ *    1      1       1       1
+ *    2      2       2       2
+ *    3      3       3       3
+ *    4      4       4       4
+ *    5      5       5       5
+ */
 export const createListRollup = () => {
   const numListBlocks = 4;
   const numOptions = 5;
