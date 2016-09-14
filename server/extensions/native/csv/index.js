@@ -105,7 +105,7 @@ router.post('/import/:format/:projectId?',
         const project = Project.classless({ components: constructIds });
         const roll = {
           project,
-          allBlocks,
+          blocks: allBlocks,
           sequences,
         };
 
