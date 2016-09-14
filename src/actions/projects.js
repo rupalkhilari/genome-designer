@@ -23,6 +23,7 @@ import { saveProject, loadProject, snapshot, listProjects, deleteProject } from 
 import * as projectSelectors from '../selectors/projects';
 import * as undoActions from '../store/undo/actions';
 import { push } from 'react-router-redux';
+import { merge } from 'lodash';
 
 import * as instanceMap from '../store/instanceMap';
 import Block from '../models/Block';
@@ -203,7 +204,14 @@ export const projectSnapshot = (projectId, message, withRollup = true) => {
  */
 export const projectCreate = (initialModel) => {
   return (dispatch, getState) => {
-    const project = new Project(initialModel);
+    const userId = getState().user.userid;
+    const defaultModel = {
+      metadata: {
+        authors: [ userId ],
+      },
+    };
+
+    const project = new Project(merge(defaultModel, initialModel));
     dispatch({
       type: ActionTypes.PROJECT_CREATE,
       project,
