@@ -29,7 +29,6 @@ describe('Model', () => {
         const unannotated = annotated.removeAnnotation(annotation.name);
         expect(unannotated.sequence.annotations.length).to.equal(0);
       });
-
     });
   });
 });

@@ -4,7 +4,7 @@ import Project from '../../../src/models/Project';
 
 describe('Model', () => {
   describe('Block', () => {
-    describe('Constructor', () => {
+    describe('Clone', () => {
       let block;
       beforeEach(() => {
         block = new Block();
