@@ -35,14 +35,14 @@ const createFileUrl = (fileName) => {
 // Download a temporary file and delete it afterwards
 const downloadAndDelete = (res, tempFileName, downloadFileName) => {
   return new Promise((resolve, reject) => {
-    res.download((tempFileName, downloadFileName, err) => {
+    res.download(tempFileName, downloadFileName, (err) => {
       if (err) {
         return reject(err);
       }
       fileSystem.fileDelete(tempFileName);
-      resolve();
+      resolve(downloadFileName);
     });
-  })
+  });
 };
 
 //create the router
