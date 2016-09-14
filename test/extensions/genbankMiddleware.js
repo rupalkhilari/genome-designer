@@ -1,13 +1,11 @@
 import { assert, expect } from 'chai';
 import fs from 'fs';
-import uuid from 'node-uuid';
 import Block from '../../src/models/Block';
 import * as api from '../../src/middleware/data';
 import {
   exportConstruct,
   convert,
   importString as importGenbankString,
-  importFile as importGenbankFile,
 } from '../../src/middleware/genbank';
 import { createExampleProject } from '../fixtures/rollup';
 import * as fileSystem from '../../server/utils/fileSystem';
