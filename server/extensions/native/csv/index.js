@@ -15,24 +15,8 @@ import { permissionsMiddleware } from '../../../data/permissions';
 
 const extensionKey = 'csv';
 
-//make storage directory just in case...
-fileSystem.directoryMake(filePaths.createStorageUrl(extensionKey));
-
-const createFilePath = (fileName) => {
-  invariant(fileName, 'need a file name');
-  return filePaths.createStorageUrl(extensionKey, fileName);
-};
-
-const createFileUrl = (fileName) => {
-  invariant(fileName, 'need a file name');
-  return extensionKey + '/file/' + fileName;
-};
-
 //create the router
 const router = express.Router(); //eslint-disable-line new-cap
-const jsonParser = bodyParser.json({
-  strict: false, //allow values other than arrays and objects
-});
 
 /* special parameters */
 
@@ -43,13 +27,15 @@ router.param('projectId', (req, res, next, id) => {
 
 /* file route */
 
-//todo - deprecate -- use file path actually written in importMiddleware
-
 //route to download files
 router.get('/file/:fileId', (req, res, next) => {
   const { fileId } = req.params;
 
-  const path = createFilePath(fileId);
+  if (!fileId) {
+    return res.status(404).send('file id required');
+  }
+
+  const path = filePaths.createStorageUrl('import', fileId);
 
   fileSystem.fileExists(path)
     .then(() => res.download(path))
@@ -57,7 +43,6 @@ router.get('/file/:fileId', (req, res, next) => {
       if (err === errorDoesNotExist) {
         return res.status(404).send();
       }
-
       next(err);
     });
 });
@@ -72,7 +57,7 @@ router.post('/import/:format/:projectId?',
     //future - handle multiple files. expect only one right now. need to reduce into single object before proceeding\
     const { name, string, hash, filePath, fileUrl } = files[0];
 
-    return convertCsv(string, name, fileUrl)
+    return convertCsv(string, name, hash)
       .then(converted => {
         return fileSystem.fileWrite(filePath + '-converted', converted)
           .then(() => converted);

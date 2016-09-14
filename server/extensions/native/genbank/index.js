@@ -1,19 +1,15 @@
 import express from 'express';
-import formidable from 'formidable';
 import bodyParser from 'body-parser';
 import invariant from 'invariant';
-import md5 from 'md5';
 
 //GC specific
 import Project from '../../../../src/models/Project';
 import Block from '../../../../src/models/Block';
 import * as fileSystem from '../../../../server/utils/fileSystem';
 import * as filePaths from '../../../../server/utils/filePaths';
-import * as persistence from '../../../../server/data/persistence';
 import * as rollup from '../../../../server/data/rollup';
 import { errorDoesNotExist } from '../../../../server/utils/errors';
 import { merge, filter } from 'lodash';
-import resetColorSeed from '../../../../src/utils/generators/color'; //necessary?
 import { permissionsMiddleware } from '../../../data/permissions';
 
 import importMiddleware, { mergeRollupMiddleware } from '../_shared/importMiddleware';
@@ -22,19 +18,6 @@ import importMiddleware, { mergeRollupMiddleware } from '../_shared/importMiddle
 import { convert, importProject, exportProject, exportConstruct } from './convert';
 
 const extensionKey = 'genbank';
-
-//make storage directory just in case...
-fileSystem.directoryMake(filePaths.createStorageUrl(extensionKey));
-
-const createFilePath = (fileName) => {
-  invariant(fileName, 'need a file name');
-  return filePaths.createStorageUrl(extensionKey, fileName);
-};
-
-const createFileUrl = (fileName) => {
-  invariant(fileName, 'need a file name');
-  return extensionKey + '/file/' + fileName;
-};
 
 // Download a temporary file and delete it afterwards
 const downloadAndDelete = (res, tempFileName, downloadFileName) => {
@@ -61,14 +44,15 @@ router.param('projectId', (req, res, next, id) => {
 
 /***** FILES ******/
 
-//todo - deprecate -- use file path actually written in importMiddleware
-//todo - ensure genbank conversion actually writes the file to the block
-
 //route to download genbank files
 router.get('/file/:fileId', (req, res, next) => {
   const { fileId } = req.params;
 
-  const path = createFilePath(fileId);
+  if (!fileId) {
+    return res.status(404).send('file id required');
+  }
+
+  const path = filePaths.createStorageUrl('import', fileId);
 
   fileSystem.fileExists(path)
     .then(() => res.download(path))

@@ -55,7 +55,7 @@ const mapPartFields = (importedObject) => {
   };
 };
 
-export function convertCsv(csvContents, fileName, fileUrl) {
+export function convertCsv(csvContents, fileName, hash) {
   invariant(typeof csvContents === 'string', 'expected a string');
 
   let fields;
@@ -101,8 +101,7 @@ export function convertCsv(csvContents, fileName, fileUrl) {
       return Object.assign(part, {
         source: {
           source: 'csv',
-          id: fileName,
-          url: fileUrl,
+          id: hash,
         },
       });
     }))

@@ -33,6 +33,7 @@ const createFilePath = (fileName) => {
   return filePaths.createStorageUrl(extensionKey, fileName);
 };
 
+//todo - NB not yet active. no import router to serve these files. should use hash and include route in the conversion router itseld
 const createFileUrl = (fileName) => {
   invariant(fileName, 'need a file name');
   return extensionKey + '/file/' + fileName;
