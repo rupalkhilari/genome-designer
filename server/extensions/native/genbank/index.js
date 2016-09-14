@@ -170,7 +170,7 @@ router.post('/import/:format/:projectId?',
     const { noSave, returnRoll, format, projectId, files } = req;
     const { constructsOnly } = req.body;
 
-    console.log(`converting genbank (${req.user.uuid}) @ ${files.map(file => file.filePath).join(', ')}`);
+    console.log(`importing genbank (${req.user.uuid}) @ ${files.map(file => file.filePath).join(', ')}`);
 
     //future - handle multiple files. expect only one right now. need to reduce into single object before proceeding\
     const { name, string, hash, filePath, fileUrl } = files[0];

@@ -21,6 +21,13 @@ import uploadFiles from './utils/uploadFiles';
 
 const extensionKey = 'genbank';
 
+function parseResponseIfText(resp) {
+  if (resp.headers.get('content-type') === 'text/plain')  {
+    return resp.text();
+  }
+  return resp;
+}
+
 export function importFile(projectId = null, ...files) {
   const url = extensionApiPath(extensionKey, `import/file${!!projectId ? ('/' + projectId) : ''}`);
 
@@ -74,6 +81,9 @@ export const convert = (genbankString, constructsOnly = false) => {
 
 /* export */
 
+//todo - better handling if zip - do we download it for the user? copy code from globalNav to do this.
+//todo - options to specify blocks instead of zip
+
 export const exportConstruct = (projectId, constructId, options = {}) => {
   invariant(projectId, 'project ID is required');
   invariant(constructId, 'construct ID is required, otherwise export project');
@@ -82,9 +92,8 @@ export const exportConstruct = (projectId, constructId, options = {}) => {
   const url = extensionApiPath(extensionKey, `export/${projectId}/${constructId}`);
   const opts = JSON.stringify(options);
 
-  //todo - handle if zip
   return rejectingFetch(url, headersPost(opts))
-    .then(resp => resp.text());
+    .then(parseResponseIfText);
 };
 
 export const exportProject = (projectId, options = {}) => {
@@ -94,7 +103,6 @@ export const exportProject = (projectId, options = {}) => {
   const url = extensionApiPath(extensionKey, `export/${projectId}`);
   const opts = JSON.stringify(options);
 
-  //todo - handle if zip
   return rejectingFetch(url, headersPost(opts))
-    .then(resp => resp.text());
+    .then(parseResponseIfText);
 };
