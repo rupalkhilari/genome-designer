@@ -738,7 +738,7 @@ export default class Layout {
       });
 
       // measure element text or used condensed spacing
-      let td = this.measureText(node, name);
+      const td = this.measureText(node, name);
 
       // measure the max required width of all list blocks
       Object.keys(block.options).filter(opt => block.options[opt]).forEach(blockId => {
@@ -757,7 +757,7 @@ export default class Layout {
               construct: child.construct,
               blocks: this.blocks,
               currentBlocks: this.currentBlocks,
-              currentConstructId: this.currentConstructId})
+              currentConstructId: this.currentConstructId});
           });
         }
 

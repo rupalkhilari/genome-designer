@@ -295,6 +295,9 @@ export const orderGet = (orderId, projectId) => {
 export const projectCreate = (projectId, project, userId) => {
   invariant(typeof userId !== 'undefined', 'user id is required');
 
+  //force the user as author of the project
+  merge(project, { metadata: { authors: [userId] } });
+
   return projectAssertNew(projectId)
     .then(() => _projectSetup(projectId, userId))
     .then(() => _projectWrite(projectId, project))
