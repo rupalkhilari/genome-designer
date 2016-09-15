@@ -38,7 +38,7 @@ jenkins:
 	    || true
 
 lint:
-	$(LINT) $(LINT_OPTS) || true
+	$(LINT) $(LINT_OPTS)
 
 
 .PHONY: test jenkins lint
