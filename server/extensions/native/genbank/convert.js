@@ -12,7 +12,6 @@ import Project from '../../../../src/models/Project';
 import Block from '../../../../src/models/Block';
 import Annotation from '../../../../src/models/Annotation';
 import BlockSchema from '../../../../src/schemas/Block';
-import ProjectSchema from '../../../../src/schemas/Project';
 
 //////////////////////////////////////////////////////////////
 // COMMON
@@ -180,9 +179,7 @@ const handleBlocks = (inputFilePath) => {
             return { project: result.project, rootBlocks: newRootBlocks, blocks: blockMap };
           });
       }
-      else {
-        return 'Invalid Genbank format.';
-      }
+      return 'Invalid Genbank format.';
     });
 };
 

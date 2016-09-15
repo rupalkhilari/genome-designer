@@ -15,7 +15,7 @@ limitations under the License.
 */
 import rejectingFetch from './utils/rejectingFetch';
 import invariant from 'invariant';
-import { headersGet, headersPost, headersPut, headersDelete } from './utils/headers';
+import { headersGet, headersPost, headersDelete } from './utils/headers';
 import { dataApiPath } from './utils/paths';
 import { noteSave, noteFailure } from '../store/saveState';
 

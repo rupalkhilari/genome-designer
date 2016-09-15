@@ -14,7 +14,7 @@
  limitations under the License.
  */
 import invariant from 'invariant';
-import { merge, values } from 'lodash';
+import { merge } from 'lodash';
 
 import userConfigDefaults from '../onboarding/userConfigDefaults';
 import { userConfigKey } from './userConstants';

@@ -142,7 +142,7 @@ export class InventoryItem extends Component {
   }
 
   handleClick = () => {
-    const { item, onSelect, inventoryType, inspectorToggleVisibility, focusForceBlocks, focusGsl, focusRole } = this.props;
+    const { item, onSelect, inventoryType, inspectorToggleVisibility, focusForceBlocks, focusRole } = this.props;
 
     this.setState({ skipFocus: false });
 
@@ -185,7 +185,7 @@ export class InventoryItem extends Component {
       }
     })
       .catch(err => {
-        console.log(err);
+        console.log(err); //eslint-disable-line no-console
         if (onSelect) {
           this.setState({ loadError: true });
         }

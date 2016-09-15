@@ -22,3 +22,4 @@ eslint.xml
 VERSION
 build-manifest.txt
 coverage
+docs/jsdoc/genetic-constructor
