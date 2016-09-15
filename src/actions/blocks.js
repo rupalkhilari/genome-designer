@@ -395,7 +395,7 @@ export const blockAddComponents = (blockId, componentIds, index, forceProjectId 
       dispatch(undoActions.commit());
     } catch (err) {
       dispatch(undoActions.abort());
-      console.error(err);
+      console.error(err); //eslint-disable-line no-console
     }
 
     dispatch(resumeAction());
@@ -432,7 +432,6 @@ export const blockMoveComponent = (blockId, componentId, newIndex) => {
 //todo - doc
 export const blockMarkTemplate = (blockId, isTemplate = true) => {
   return (dispatch, getState) => {
-    const state = getState();
     const oldBlock = getState().blocks[blockId];
     invariant(dispatch(selectors.blockIsTopLevelConstruct(blockId)), 'construct must be direct child of project');
 

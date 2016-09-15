@@ -35,7 +35,6 @@ import '../../../src/styles/partscsv.css';
  * Genbank import dialog.
  */
 class ImportPartsCSVModal extends Component {
-
   static propTypes = {
     open: PropTypes.bool.isRequired,
     uiShowPartsCSVImport: PropTypes.func.isRequired,
@@ -77,14 +76,14 @@ class ImportPartsCSVModal extends Component {
 
     if (!isFinite(prefix) || prefix <= 0 || prefix >= 10000) {
       this.setState({
-        error: "Please enter a valid prefix between 0 and 10000.",
+        error: 'Please enter a valid prefix between 0 and 10000.',
       });
       return;
     }
 
     if (!isFinite(suffix) || suffix <= 0 || suffix >= 10000) {
       this.setState({
-        error: "Please enter a valid suffix between 0 and 10000.",
+        error: 'Please enter a valid suffix between 0 and 10000.',
       });
       return;
     }

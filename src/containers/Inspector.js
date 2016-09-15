@@ -43,7 +43,7 @@ export class Inspector extends Component {
   };
 
   render() {
-    const { showingGrunt, isVisible, focused, orders, overrides, type, readOnly, forceIsConstruct, isAuthoring } = this.props;
+    const { isVisible, focused, orders, overrides, type, readOnly, forceIsConstruct, isAuthoring } = this.props;
 
     // inspect instances, or construct if no instance or project if no construct or instances
     let inspect;
