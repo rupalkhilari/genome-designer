@@ -18,7 +18,7 @@ endif
 
 LINT = ./node_modules/eslint/bin/eslint.js
 
-LINT_OPTS = src server plugins
+LINT_OPTS = src server
 
 check: test
 

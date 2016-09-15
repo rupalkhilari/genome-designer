@@ -15,7 +15,7 @@
  */
 import rejectingFetch from './utils/rejectingFetch';
 import invariant from 'invariant';
-import { headersGet, headersPost, headersPut, headersDelete } from './utils/headers';
+import { headersPost } from './utils/headers';
 import { extensionApiPath } from './utils/paths';
 import uploadFiles from './utils/uploadFiles';
 

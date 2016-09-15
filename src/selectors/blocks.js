@@ -38,15 +38,6 @@ const _getParentFromStore = (blockId, store, def = null) => {
   return !!id ? store.blocks[id] : def;
 };
 
-//ommitting constructId will just return first found list owner
-const _getListOwnerFromStore = (optionId, constructId, store) => {
-  const block = _getBlockFromStore(optionId, store); //assert option is in the store
-  const contents = !!constructId ? _getAllContents(constructId, store) : store.blocks;
-  return Object.keys(contents)
-    .map(blockId => contents[blockId])
-    .find(block => block.options.hasOwnProperty(optionId));
-};
-
 //todo - move to object
 const _getComponentsShallow = (blockId, store) => {
   const block = _getBlockFromStore(blockId, store);
@@ -75,7 +66,7 @@ const _getAllComponentsByDepth = (rootId, store, children = {}, depth = 1) => {
 };
 
 //returns map
-const _getOptionsShallow = (blockId, store) => {
+const _getOptionsShallow = (blockId, store) => { //eslint-disable-line no-unused-vars
   const block = _getBlockFromStore(blockId, store);
   return Object.keys(block.options)
     .map(id => _getBlockFromStore(id, store))
@@ -115,6 +106,14 @@ const _getParents = (blockId, state) => {
 const _getSiblings = (blockId, state) => {
   const parent = _getParentFromStore(blockId, state, {});
   return (parent.components || []).map(id => _getBlockFromStore(id, state));
+};
+
+//ommitting constructId will just return first found list owner
+const _getListOwnerFromStore = (optionId, constructId, store) => {
+  const contents = !!constructId ? _getAllContents(constructId, store) : store.blocks;
+  return Object.keys(contents)
+    .map(blockId => contents[blockId])
+    .find(block => block.options.hasOwnProperty(optionId));
 };
 
 //returns map of { optionId : option }

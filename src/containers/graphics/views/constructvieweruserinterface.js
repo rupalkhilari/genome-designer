@@ -1,18 +1,18 @@
 /*
-Copyright 2016 Autodesk,Inc.
+ Copyright 2016 Autodesk,Inc.
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
 import UserInterface from '../scenegraph2d/userinterface';
 import DnD from '../dnd/dnd';
 import Vector2D from '../geometry/vector2d';
@@ -22,7 +22,6 @@ import kT from './layoutconstants';
 import Fence from './fence';
 import { dispatch } from '../../../store/index';
 import { sortBlocksByIndexAndDepthExclude } from '../../../utils/ui/uiapi';
-
 
 // # of pixels of mouse movement before a drag is triggered.
 const dragThreshold = 8;
@@ -42,7 +41,6 @@ export default class ConstructViewerUserInterface extends UserInterface {
       dragLeave: this.onDragLeave.bind(this),
       dragOver: this.onDragOver.bind(this),
       drop: this.onDrop.bind(this),
-
       zorder: 0,
     });
 
@@ -98,6 +96,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
     // no hits or no blocks in the hits
     return null;
   }
+
   /**
    * return the top most block at a given location
    *
@@ -171,26 +170,30 @@ export default class ConstructViewerUserInterface extends UserInterface {
       if (point.x >= bestItem.AABB.right - edgeThreshold) {
         edge = 'right';
       }
-      return {block: bestItem.block, edge};
+      return { block: bestItem.block, edge };
     }
     // the construct must be empty
     return null;
   }
+
   /**
    * accessor for the construct in our constructviewer owner
    */
   get construct() {
     return this.constructViewer.props.construct;
   }
+
   /**
    * mouse enter/leave are used to ensure no block is in the hover state
    */
   mouseEnter(event) {
     this.setBlockHover();
   }
+
   mouseLeave(event) {
     this.setBlockHover();
   }
+
   /**
    * set the given block to the hover state
    */
@@ -213,6 +216,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
       this.hover.node.updateBranch();
     }
   }
+
   /**
    * set hover state for title node
    */
@@ -220,7 +224,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
     if (bool !== this.titleHover) {
       this.titleHover = bool;
       if (this.layout.titleNode) {
-        this.layout.titleNode.children[0].set({visible: this.titleHover});
+        this.layout.titleNode.children[0].set({ visible: this.titleHover });
         this.layout.titleNode.children[0].updateBranch();
       }
     }
@@ -244,6 +248,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
     this.setTitleHover(this.isConstructTitleNode(hits.length ? hits.pop() : null));
     this.setBlockHover(this.topBlockAt(point));
   }
+
   /**
    * mouse down handler, selection occurs on up since we have to wait to
    * see if a drag occurs first.
@@ -268,10 +273,6 @@ export default class ConstructViewerUserInterface extends UserInterface {
       this.mouseSelect(evt, point);
     }
   }
-  /**
-   * mouse section can occur by click or when a drag is started so it gets
-   * its own method.
-   */
 
   checkOS() {
     let osType = 'unknown';
@@ -327,7 +328,6 @@ export default class ConstructViewerUserInterface extends UserInterface {
     if (this.isConstructTitleNode(hits.length ? hits.pop() : null)) {
       // over the entire block, refine test as required
       if (onlyDots) {
-        const AABB = this.layout.titleNode.getAABB();
         if (point.x < this.layout.titleNodeTextWidth) {
           return false;
         }
@@ -399,14 +399,22 @@ export default class ConstructViewerUserInterface extends UserInterface {
         }
         break;
 
-      default: break;
+      default:
+        break;
       }
       // perform the final selection action using block
       switch (action) {
-      case 'toggle' : this.constructViewer.blockToggleSelected([block]); break;
-      case 'add': this.constructViewer.blockAddToSelectionsRange(block, this.selectedElements); break;
-      case 'optionSelect': break;
-      default: this.constructViewer.blockSelected([block]); break;
+      case 'toggle' :
+        this.constructViewer.blockToggleSelected([block]);
+        break;
+      case 'add':
+        this.constructViewer.blockAddToSelectionsRange(block, this.selectedElements);
+        break;
+      case 'optionSelect':
+        break;
+      default:
+        this.constructViewer.blockSelected([block]);
+        break;
       }
     } else {
       // clear block selections
@@ -441,6 +449,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
       this.constructViewer.constructSelected(this.constructViewer.props.construct.id);
     }
   }
+
   /**
    * return an indication of where in the block this point lies.
    * {
@@ -457,8 +466,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
     // compare to bounds
     if (vpt.x < box.left || vpt.x > box.right || vpt.y < box.top || vpt.y > box.bottom) {
       // check list blocks which are outside the bounds of the parent
-      let optionId;
-      for(let i = 0; i < node.children.length; i += 1) {
+      for (let i = 0; i < node.children.length; i += 1) {
         const child = node.children[i];
         if (child.listParentBlock) {
           // node represents a list block
@@ -471,13 +479,15 @@ export default class ConstructViewerUserInterface extends UserInterface {
             };
           }
         }
-      };
-      return {where: 'none'};
+      }
+      return { where: 'none' };
     }
+
     // context menu area?
     if (vpt.x >= box.right - kT.contextDotsW) {
-      return {where: 'dots'};
+      return { where: 'dots' };
     }
+
     // child expander, if present
     if (node.hasChildren) {
       const triSize = 18;     // width / height equilateral triangle, slightly larger than css but makes for a better feel
@@ -486,13 +496,14 @@ export default class ConstructViewerUserInterface extends UserInterface {
       if (insetX < triSize && insetY < triSize) {
         // whatever the x position is ( 0..triSize ), y must be less than trisize - x
         if (insetY <= (triSize - insetX)) {
-          return {where: 'triangle'};
+          return { where: 'triangle' };
         }
       }
     }
     // in block but nowhere special
-    return {where: 'main'};
+    return { where: 'main' };
   }
+
   /**
    * list of all selected blocks, based on our selected scenegraph blocks
    *
@@ -502,12 +513,12 @@ export default class ConstructViewerUserInterface extends UserInterface {
       return this.layout.elementFromNode(node);
     });
   }
+
   /**
    * move drag handler, if the user initiates a drag of a block hand over
    * to the DND manager to handle
    */
   mouseDrag(evt, point, startPoint, distance) {
-
     // ignore drags until they reach a certain vector threshold
     if (distance > dragThreshold && !this.fence) {
       // start a block drag if we have one
@@ -612,6 +623,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
     this.hideBlockInsertionPoint();
     this.selectConstruct();
   }
+
   /**
    * drag left the construct viewer
    */
@@ -628,6 +640,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
   lighten() {
     this.sg.lighten();
   }
+
   /**
    * drag over event
    */
@@ -655,6 +668,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
       this.showDefaultInsertPoint();
     }
   }
+
   /**
    * user dropped the payload on us at the given position. Defer the insertion
    * to our actual constructViewer which has all the necessary props
@@ -674,6 +688,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
     this.constructViewer.constructSelected(this.constructViewer.props.constructId);
     this.constructViewer.blockSelected(blockids);
   }
+
   /**
    * show the insertion point at the top left of an empty construct.
    */
@@ -683,6 +698,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
     const point = this.layout.getInitialLayoutPoint();
     this.showInsertionPointForEdgeAt(point.x, point.y);
   }
+
   /**
    * show the insertion point at the given edge of the given block...usually
    * used when dropping a new block(s) into the construct
@@ -698,8 +714,9 @@ export default class ConstructViewerUserInterface extends UserInterface {
     this.showInsertionPointForEdgeAt(Math.max(0, xposition - 3), AABB.y + 1);
 
     // save the current insertion point
-    this.insertion = {block, node, edge};
+    this.insertion = { block, node, edge };
   }
+
   /**
    * create and show insertion point for edge at the given position
    */
@@ -714,10 +731,11 @@ export default class ConstructViewerUserInterface extends UserInterface {
     this.insertionEdgeEl.style.left = x + 'px';
     this.insertionEdgeEl.style.top = y - 10 + 'px';
   }
- /**
-  * show the insertion point over the given block, usually used when dropping
-  * an SBOL symbol onto an existing block.
-  */
+
+  /**
+   * show the insertion point over the given block, usually used when dropping
+   * an SBOL symbol onto an existing block.
+   */
   showInsertionPointForBlock(block, edge) {
     // insertion point may alternate so ensure we remove the block cursor
     this.hideEdgeInsertionPoint();
@@ -739,8 +757,9 @@ export default class ConstructViewerUserInterface extends UserInterface {
     this.insertionBlockEl.style.height = AABB.h + 1 + 'px';
 
     // save the current insertion point
-    this.insertion = {block, node};
+    this.insertion = { block, node };
   }
+
   /**
    * return the current insertion point if any
    *
@@ -748,6 +767,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
   getInsertionPoint() {
     return this.insertion;
   }
+
   /**
    * hide / deletion insertion point element
    */
@@ -759,6 +779,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
     }
     this.insertion = null;
   }
+
   hideEdgeInsertionPoint() {
     if (this.insertionEdgeEl) {
       // this.el.removeChild(this.insertionEdgeEl);

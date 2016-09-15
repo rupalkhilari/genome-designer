@@ -14,7 +14,7 @@
  limitations under the License.
  */
 import * as ActionTypes from '../constants/ActionTypes';
-import { registry, getSources } from '../inventory/registry';
+import { getSources } from '../inventory/registry';
 import { getItem, setItem } from '../middleware/localStorageCache';
 
 /*
@@ -69,7 +69,7 @@ export default function inventory(state = initialState, action) {
     });
   }
   case ActionTypes.INVENTORY_SEARCH_RESOLVE_PARTIAL : {
-    const { patch, searchTerm, source } = action;
+    const { patch, searchTerm } = action;
 
     if (searchTerm !== state.searchTerm) {
       return state;
@@ -109,7 +109,7 @@ export default function inventory(state = initialState, action) {
     });
   }
   case ActionTypes.INVENTORY_SEARCH_PAGINATE : {
-    const { searchTerm, source, parameters } = action;
+    const { source, parameters } = action;
     const results = state.searchResults[source];
     const nextResults = Object.assign([...results], { parameters, loading: true });
     const nextSearchResults = Object.assign({}, state.searchResults, { [source]: nextResults });

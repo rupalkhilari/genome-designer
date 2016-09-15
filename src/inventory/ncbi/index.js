@@ -16,7 +16,7 @@
 import rejectingFetch from '../../middleware/utils/rejectingFetch';
 import queryString from 'query-string';
 import Block from '../../models/Block';
-import { merge, debounce } from 'lodash';
+import { merge } from 'lodash';
 import { convert } from '../../middleware/genbank';
 
 const fetchOpts = {
@@ -119,7 +119,7 @@ const getSummary = (...ids) => {
       .filter(summary => summary.sequence.length < 1000000)
     )
     .catch(err => {
-      console.log(err);
+      console.log(err); //eslint-disable-line no-console
       throw err;
     });
 };
@@ -163,7 +163,7 @@ export const get = (accessionVersion, parameters = {}, searchResult) => {
         [construct, ...rest];
     })
     .catch(err => {
-      console.log(err);
+      console.log(err); //eslint-disable-line no-console
       throw err;
     });
 };
@@ -200,7 +200,7 @@ export const search = (query, options = {}) => {
     .then(ids => getSummary(...ids))
     .then(results => Object.assign(results, { count, parameters }))
     .catch(err => {
-      console.log(err);
+      console.log(err); //eslint-disable-line no-console
       throw err;
     });
 };
