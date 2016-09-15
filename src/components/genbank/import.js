@@ -23,7 +23,8 @@ import {
 } from '../../actions/ui';
 import { projectGet, projectListAllBlocks } from '../../selectors/projects';
 import { projectList, projectLoad, projectOpen } from '../../actions/projects';
-import { importGenbankOrCSV } from '../../middleware/genbank';
+import { importFile as importGenbankFile } from '../../middleware/genbank';
+import { importFile as importCsvFile } from '../../middleware/csv';
 
 import '../../../src/styles/genbank.css';
 
@@ -76,8 +77,12 @@ class ImportGenBankModal extends Component {
       });
       this.props.uiSpin('Importing your file... Please wait');
       const projectId = this.state.destination === 'current project' ? this.props.currentProjectId : '';
+
       const file = this.state.files[0];
-      importGenbankOrCSV(file, projectId)
+      const isCSV = file.name.toLowerCase().endsWith('.csv');
+      const importer = isCSV ? importCsvFile : importGenbankFile;
+
+      importer(projectId, file)
         .then(projectId => {
           this.props.uiSpin();
           if (projectId === this.props.currentProjectId) {

@@ -13,10 +13,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import rejectingFetch from './rejectingFetch';
+import rejectingFetch from './utils/rejectingFetch';
 import { getItem, setItem } from './localStorageCache';
-import { headersGet, headersPost } from './headers';
-import { dataApiPath } from './paths';
+import { headersGet, headersPost } from './utils/headers';
+import { dataApiPath } from './utils/paths';
 
 const getSequenceUrl = (md5, format = null, blockId = null, projectId) => dataApiPath(`sequence/${md5}` + (!!blockId ? `/${blockId}` : ''));
 

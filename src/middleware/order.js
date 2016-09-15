@@ -13,10 +13,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import rejectingFetch from './rejectingFetch';
+import rejectingFetch from './utils/rejectingFetch';
 import invariant from 'invariant';
-import { orderApiPath } from './paths';
-import { headersGet, headersPost, headersPut, headersDelete } from './headers';
+import { orderApiPath } from './utils/paths';
+import { headersGet, headersPost, headersPut, headersDelete } from './utils/headers';
 import Order from '../models/Order';
 
 // likely want a registry like for inventory and hit their respective functions for each foundry

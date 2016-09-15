@@ -40,7 +40,6 @@ import '../styles/SceneGraphPage.css';
 class ProjectPage extends Component {
   static propTypes = {
     userId: PropTypes.string,
-    showingGrunt: PropTypes.bool,
     projectId: PropTypes.string.isRequired,
     project: PropTypes.object, //if have a project (not fetching)
     constructs: PropTypes.array, //if have a project (not fetching)
@@ -95,7 +94,7 @@ class ProjectPage extends Component {
   }
 
   render() {
-    const { showingGrunt, project, projectId, constructs } = this.props;
+    const { project, projectId, constructs } = this.props;
 
     //handle project not loaded
     if (!project || !project.metadata) {
@@ -118,7 +117,7 @@ class ProjectPage extends Component {
     });
 
     return (
-      <div className={'ProjectPage' + (showingGrunt ? ' gruntPushdown' : '')}>
+      <div className="ProjectPage">
         <ImportGenBankModal currentProjectId={projectId}/>
         <ImportDNAForm />
         <SaveErrorModal />
@@ -148,11 +147,9 @@ function mapStateToProps(state, ownProps) {
 
   const projectId = ownProps.params.projectId;
   const project = state.projects[projectId];
-  const showingGrunt = !!state.ui.modals.gruntMessage;
 
   if (!project) {
     return {
-      showingGrunt,
       projectId,
     };
   }
@@ -164,7 +161,6 @@ function mapStateToProps(state, ownProps) {
     .sort((one, two) => one.status.timeSent - two.status.timeSent);
 
   return {
-    showingGrunt,
     projectId,
     project,
     constructs,
