@@ -22,6 +22,7 @@ import kT from './layoutconstants';
 import Fence from './fence';
 import { dispatch } from '../../../store/index';
 import { sortBlocksByIndexAndDepthExclude } from '../../../utils/ui/uiapi';
+import { getLocal, setLocal } from '../../../utils/ui/localstorage';
 
 
 // # of pixels of mouse movement before a drag is triggered.
@@ -374,9 +375,8 @@ export default class ConstructViewerUserInterface extends UserInterface {
 
     // text expander toggle first
     if (this.constructExpander(event, point)) {
-      this.layout.collapsed = !this.layout.collapsed;
+      this.layout.setCollapsed(!this.layout.collapsed);
       if (this.collapsed) {
-        // remove selections if we are now collapsed
         this.constructViewer.blockSelected([]);
       }
       this.constructViewer.update();

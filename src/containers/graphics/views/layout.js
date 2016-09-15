@@ -24,6 +24,7 @@ import LineNode2D from '../scenegraph2d/line2d';
 import kT from './layoutconstants';
 import objectValues from '../../../utils/object/values';
 import invariant from 'invariant';
+import { getLocal, setLocal } from '../../../utils/ui/localstorage';
 
 // just for internal tracking of what type of block a node represents.
 const blockType = 'block';
@@ -562,6 +563,9 @@ export default class Layout {
 
     this.baseColor = this.construct.metadata.color;
 
+    // get collapsed state, if present from local storage
+    this.collapsed = getLocal(`${this.construct.id}-collapsed`, false);
+
     // perform layout and remember how much vertical was required
     const heightUsed = this.layoutWrap();
 
@@ -573,6 +577,14 @@ export default class Layout {
 
     // nest layouts need to the vertical space required
     return heightUsed;
+  }
+
+  /**
+   * set collapsed state and persist to local storage
+   */
+  setCollapsed(state) {
+    this.collapsed = state;
+    setLocal(`${this.construct.id}-collapsed`, this.collapsed);
   }
 
   /**
