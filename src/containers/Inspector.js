@@ -27,10 +27,10 @@ import '../styles/SidePanel.css';
 
 export class Inspector extends Component {
   static propTypes = {
-    showingGrunt: PropTypes.bool,
     isVisible: PropTypes.bool.isRequired,
     inspectorToggleVisibility: PropTypes.func.isRequired,
     readOnly: PropTypes.bool.isRequired,
+    isAuthoring: PropTypes.bool.isRequired,
     forceIsConstruct: PropTypes.bool.isRequired,
     type: PropTypes.string.isRequired,
     focused: PropTypes.any.isRequired,
@@ -70,8 +70,7 @@ export class Inspector extends Component {
     return (
       <div className={'SidePanel Inspector' +
       (isVisible ? ' visible' : '') +
-      (readOnly ? ' readOnly' : '') +
-      (showingGrunt ? ' gruntPushdown' : '')}>
+      (readOnly ? ' readOnly' : '')}>
 
         <div className="SidePanel-heading">
           <button tabIndex="-1" className="button-nostyle SidePanel-heading-trigger Inspector-trigger"
@@ -93,8 +92,6 @@ export class Inspector extends Component {
 
 function mapStateToProps(state, props) {
   const { isVisible } = state.ui.inspector;
-  //UI adjustment
-  const showingGrunt = !!state.ui.modals.gruntMessage;
 
   const { level, blockIds } = state.focus;
   const currentProject = state.projects[props.projectId];
@@ -127,7 +124,6 @@ function mapStateToProps(state, props) {
     .sort((one, two) => one.status.timeSent - two.status.timeSent);
 
   return {
-    showingGrunt,
     isVisible,
     type,
     readOnly,
