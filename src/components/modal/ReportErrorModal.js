@@ -57,7 +57,7 @@ class SaveErrorModal extends Component {
         });
       })
       .catch(resp => {
-        resp.json().then(json => console.log(json));
+        resp.json().then(json => console.log(json)); //eslint-disable-line no-console
         this.setState({
           submitted: false,
           hasError: true,

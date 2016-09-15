@@ -17,9 +17,6 @@ import { errorInvalidPart, errorOrderRejected } from '../utils/errors';
 import fetch from 'isomorphic-fetch';
 import { headersPost } from '../../src/middleware/utils/headers';
 
-//testing
-import { fileWrite } from '../utils/fileSystem';
-
 const url = 'http://synnp.org:8010/api/order/';
 
 const createOrderPayload = (order, user, constructList, blockMap) => {

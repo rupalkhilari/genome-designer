@@ -16,11 +16,9 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import {
-  errorNoIdProvided,
   errorInvalidModel,
   errorInvalidRoute,
   errorDoesNotExist,
-  errorCouldntFindProjectId,
   errorVersioningSystem,
   errorNoUser,
 } from '../utils/errors';
