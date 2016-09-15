@@ -1,8 +1,6 @@
 import express from 'express';
-import bodyParser from 'body-parser';
-import invariant from 'invariant';
 
-import convertFromFile, { convertCsv } from './convert';
+import { convertCsv } from './convert';
 import importMiddleware, { mergeRollupMiddleware } from '../_shared/importMiddleware';
 
 //GC specific
@@ -13,7 +11,7 @@ import * as filePaths from '../../../../server/utils/filePaths';
 import { errorDoesNotExist } from '../../../../server/utils/errors';
 import { permissionsMiddleware } from '../../../data/permissions';
 
-const extensionKey = 'csv';
+const extensionKey = 'csv'; //eslint-disable-line no-unused-vars
 
 //create the router
 const router = express.Router(); //eslint-disable-line new-cap
@@ -52,7 +50,7 @@ router.get('/file/:fileId', (req, res, next) => {
 router.post('/import/:format/:projectId?',
   importMiddleware,
   (req, res, next) => {
-    const { noSave, returnRoll, format, projectId, files } = req;
+    const { noSave, returnRoll, format, projectId, files } = req; //eslint-disable-line no-unused-vars
 
     //future - handle multiple files. expect only one right now. need to reduce into single object before proceeding\
     const { name, string, hash, filePath, fileUrl } = files[0];

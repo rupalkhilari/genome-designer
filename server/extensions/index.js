@@ -16,9 +16,8 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import { errorDoesNotExist } from '../utils/errors';
-import { clientBundleUrl } from './constants';
 import { getExtensions } from './registry';
-import loadExtension, { getExtensionInternalPath } from './loadExtension';
+import { getExtensionInternalPath } from './loadExtension';
 import errorHandlingMiddleware from '../utils/errorHandlingMiddleware';
 import extensionApiRouter from './apiRouter';
 import {

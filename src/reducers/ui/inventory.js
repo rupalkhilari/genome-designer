@@ -14,7 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import * as ActionTypes from '../../constants/ActionTypes';
-import { LOCATION_CHANGE } from 'react-router-redux';
 import { getItem, setItem } from '../../middleware/localStorageCache';
 
 export const initialState = {

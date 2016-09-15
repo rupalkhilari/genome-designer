@@ -21,7 +21,6 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import rejectingFetch from '../../src/middleware/utils/rejectingFetch';
-import { headersPost } from '../../src/middleware/utils/headers';
 import errorHandlingMiddleware from '../utils/errorHandlingMiddleware';
 
 const githubIssuesApiUrl = 'https://api.github.com/repos/autodesk-bionano/genome-designer/issues';
