@@ -19,14 +19,29 @@ const fs = require('fs');
 const path = require('path');
 const rimraf = require('rimraf');
 
-const pkg = require(path.resolve(__dirname, 'package.json'));
-const deps = pkg.dependencies;
-const dirContents = fs.readdirSync(path.resolve(__dirname, 'node_modules'));
+const nodeModulePath = path.resolve(__dirname, 'node_modules');
 
-dirContents.forEach(dir => {
-  if (!deps[dir]) {
-    rimraf(path.resolve(__dirname, 'node_modules', dir), function callback() {
-      console.log('deleted extension (not listed in package.json): ' + dir);
-    });
+fs.stat(nodeModulePath, function checkDirExists(err, stat) {
+  if (err) {
+    if (err.code === 'ENOENT') {
+      return;
+    }
+
+    console.error('error checking for directory server/extensions/node_modules');
+    console.error(err);
+    throw err;
   }
+
+  const pkg = require(path.resolve(__dirname, 'package.json'));
+  const deps = pkg.dependencies;
+  const dirContents = fs.readdirSync(nodeModulePath);
+
+  dirContents.forEach(function checkDir(dir) {
+    if (!deps[dir]) {
+      rimraf(path.resolve(nodeModulePath, dir), function callback() {
+        console.log('deleted extension (not listed in package.json): ' + dir);
+      });
+    }
+  });
 });
+
