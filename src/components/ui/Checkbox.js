@@ -43,4 +43,4 @@ export default class Checkbox extends Component {
            onClick={(evt) => this.onClick(evt)} />
     );
   }
-};
+}

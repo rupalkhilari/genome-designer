@@ -20,7 +20,7 @@ import Dropzone from 'react-dropzone';
 
 export default function CSVFileDrop({ onDrop, ...rest }) {
   return (
-    <Dropzone onDrop={(files) => {onDrop(files)}}
+    <Dropzone onDrop={(files) => { onDrop(files); }}
               className="CSVFileDrop"
               activeClassName="CSVFileDrop-hover"
               rejectClassName="CSVFileDrop-reject"

@@ -17,7 +17,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import ListOption from './ListOption';
 import { blockStash, blockOptionsToggle, blockOptionsAdd, blockOptionsRemove } from '../../actions/blocks';
-import { importGenbankOrCSV } from '../../middleware/genbank';
+import { importFile as importCsvFile } from '../../middleware/csv';
 import {
   uiShowPartsCSVImport,
 } from '../../actions/ui';
@@ -39,6 +39,7 @@ export class ListOptions extends Component {
     blockOptionsAdd: PropTypes.func.isRequired,
     blockOptionsRemove: PropTypes.func.isRequired,
     blockStash: PropTypes.func.isRequired,
+    uiShowPartsCSVImport: PropTypes.func.isRequired,
   };
 
   onSelectOption = (option) => {
@@ -54,14 +55,14 @@ export class ListOptions extends Component {
   };
 
   handleCSVDrop = (files) => {
-    importGenbankOrCSV(files[0], 'convert')
+    importCsvFile(files[0], 'convert')
       .then(({ project, blocks }) => {
         this.props.blockStash(...Object.keys(blocks).map(blockId => blocks[blockId]));
         this.props.blockOptionsAdd(this.props.block.id, ...Object.keys(blocks));
       });
   };
 
-  handleCSVImport = (files) => {
+  handleCSVImport = () => {
     this.props.uiShowPartsCSVImport(true, this.props.block);
   };
 

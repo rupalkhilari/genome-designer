@@ -778,7 +778,6 @@ export default class Layout {
         maxListHeight = 0;
         row = this.rowFactory(new Box2D(xp, yp - kT.rowBarH, 0, kT.rowBarH));
         rowIndex += 1;
-
       }
 
       // update maxListHeight based on how many list items this block has

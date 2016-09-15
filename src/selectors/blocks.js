@@ -255,9 +255,9 @@ const _nearestParent = (state, ...blockIds) => {
   //if any block is detached (doesn't have a parent) and not the current construct ID, return null
   //todo - check if any construct, not the currently focused one
   if (Object.keys(parentsMap).some(blockId => {
-      const parents = parentsMap[blockId];
-      return parents.length === 0 && state.focus.constructId !== blockId;
-    })) {
+    const parents = parentsMap[blockId];
+    return parents.length === 0 && state.focus.constructId !== blockId;
+  })) {
     return null;
   }
 
