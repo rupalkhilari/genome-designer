@@ -70,14 +70,14 @@ import {
 } from '../../../actions/projects';
 import RoleSvg from '../../../components/RoleSvg';
 
-import "../../../styles/constructviewer.css";
+import '../../../styles/constructviewer.css';
 
 // static hash for matching viewers to constructs
 const idToViewer = {};
 
 export class ConstructViewer extends Component {
-
   static propTypes = {
+    currentProjectId: PropTypes.string.isRequired,
     projectId: PropTypes.string.isRequired,
     construct: PropTypes.object.isRequired,
     constructId: PropTypes.string.isRequired,
@@ -90,6 +90,7 @@ export class ConstructViewer extends Component {
     currentBlock: PropTypes.array,
     blockSetRole: PropTypes.func,
     blockCreate: PropTypes.func,
+    blockRename: PropTypes.func,
     blockGetParent: PropTypes.func,
     blockClone: PropTypes.func,
     blockRename: PropTypes.func,
@@ -163,6 +164,22 @@ export class ConstructViewer extends Component {
     }
   }
 
+  componentWillReceiveProps(nextProps) {
+    // scroll into view when focused by user, unless this is a result of a drag operation
+    if (!this.sg.ui.dragInside) {
+      const hasFocus = this.isFocused();
+      const willFocus = nextProps.construct.id === nextProps.focus.constructId;
+      if (!hasFocus && willFocus) {
+        const element = ReactDOM.findDOMNode(this);
+        if (element.scrollIntoViewIfNeeded) {
+          element.scrollIntoViewIfNeeded(true);
+        } else {
+          element.scrollIntoView();
+        }
+      }
+    }
+  }
+
   shouldComponentUpdate(props, nextProps) {
     // console.log(`CT:${this.props.construct.id}, ${props.construct !== nextProps.construct}`);
     // return props.construct !== nextProps.construct;
@@ -194,21 +211,17 @@ export class ConstructViewer extends Component {
     window.removeEventListener('resize', this.resizeDebounced);
   }
 
-  componentWillReceiveProps(nextProps) {
-    // scroll into view when focused by user, unless this is a result of a drag operation
-    if (!this.sg.ui.dragInside) {
-      const hasFocus = this.isFocused();
-      const willFocus = nextProps.construct.id === nextProps.focus.constructId;
-      if (!hasFocus && willFocus) {
-        const element = ReactDOM.findDOMNode(this);
-        if (element.scrollIntoViewIfNeeded) {
-          element.scrollIntoViewIfNeeded(true);
-        } else {
-          element.scrollIntoView();
-        }
-      }
-    }
-  }
+  /**
+   * launch DNA form for this construct
+   */
+  onOrderDNA = () => {
+    let order = this.props.orderCreate(this.props.currentProjectId, [this.props.construct.id]);
+    this.props.orderList(this.props.currentProjectId)
+      .then((orders) => {
+        order = this.props.orderSetName(order.id, `Order ${orders.length}`);
+        this.props.uiShowOrderForm(true, order.id);
+      });
+  };
 
   /**
    * given a construct ID return the current viewer if there is one
@@ -592,18 +605,6 @@ export class ConstructViewer extends Component {
   }
 
   /**
-   * launch DNA form for this construct
-   */
-  onOrderDNA = () => {
-    let order = this.props.orderCreate(this.props.currentProjectId, [this.props.construct.id]);
-    this.props.orderList(this.props.currentProjectId)
-      .then((orders) => {
-        order = this.props.orderSetName(order.id, `Order ${orders.length}`);
-        this.props.uiShowOrderForm(true, order.id);
-      });
-  };
-
-  /**
    * only visible on templates that are not part of the sample(s) project
    */
   orderButton() {
@@ -644,7 +645,7 @@ export class ConstructViewer extends Component {
       return null;
     }
     const isFocused = this.props.construct.id === this.props.focus.constructId;
-    const classes = `lockIcon${isFocused ? "" : " sceneGraph-dark"}`;
+    const classes = `lockIcon${isFocused ? '' : ' sceneGraph-dark'}`;
     return (
       <div className={classes}>
         <RoleSvg
@@ -655,7 +656,7 @@ export class ConstructViewer extends Component {
           fill={this.props.construct.metadata.color}
         />
       </div>
-    )
+    );
   }
 
   /**

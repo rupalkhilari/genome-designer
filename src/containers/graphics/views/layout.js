@@ -1,18 +1,18 @@
 /*
-Copyright 2016 Autodesk,Inc.
+ Copyright 2016 Autodesk,Inc.
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
 import Box2D from '../geometry/box2d';
 import Vector2D from '../geometry/vector2d';
 import Line2D from '../geometry/line2d';
@@ -25,15 +25,10 @@ import kT from './layoutconstants';
 import objectValues from '../../../utils/object/values';
 import invariant from 'invariant';
 
-// just for internal tracking of what type of block a node represents.
-const blockType = 'block';
-const roleType = 'role';
-
 /**
  * layout and scene graph manager for the construct viewer
  */
 export default class Layout {
-
   constructor(constructViewer, sceneGraph, options) {
     // we need a construct viewer, a scene graph, a construct and options
     this.constructViewer = constructViewer;
@@ -81,6 +76,7 @@ export default class Layout {
       this.sceneGraph.updateSize();
     }
   }
+
   /**
    * return the AABB for our block nodes only, including any nested layouts
    */
@@ -110,6 +106,7 @@ export default class Layout {
     this.nodes2parts[node.uuid] = part;
     this.parts2nodes[part] = node;
   }
+
   /**
    * flag the part as currently in use i.e. should be rendered.
    * Parts that are found to be no longer be in use are removed after rendering
@@ -144,13 +141,13 @@ export default class Layout {
    * create a list part for the block
    */
   listBlockFactory(blockId) {
-    const block = this.blocks[blockId];
     const props = Object.assign({}, {
-      dataAttribute: {name: 'nodetype', value: 'part'},
+      dataAttribute: { name: 'nodetype', value: 'part' },
       sg: this.sceneGraph,
     }, kT.partAppearance);
     return new ListItem2D(props);
   }
+
   /**
    * create an empty list block
    */
@@ -166,6 +163,7 @@ export default class Layout {
     }
     return node;
   }
+
   /**
    * drop nodes allocated with emptyListBlockFactory that are no longer needed
    *
@@ -179,6 +177,7 @@ export default class Layout {
       }
     });
   }
+
   /**
    * create / update the list items for the block
    */
@@ -190,19 +189,19 @@ export default class Layout {
     // the node representing the parent block
     const parentNode = this.nodeFromElement(block.id);
     // get the focused list for this block
-    let focusedOptionId = this.focusedOptions[block.id];
+    const focusedOptionId = this.focusedOptions[block.id];
     // get only the options that are enabled for this block
     const enabled = Object.keys(block.options).filter(opt => block.options[opt]);
     // if block list is empty add a single placeholder block
     if (enabled.length === 0) {
-        const node = this.emptyListBlockFactory(block.id, parentNode);
-        node.set({
-          bounds: new Box2D(0, kT.blockH + 1, pW, kT.optionH),
-          fill: this.fillColor(block.id),
-          updateReference: this.updateReference,
-          listParentBlock: block,
-          listParentNode: parentNode,
-        });
+      const node = this.emptyListBlockFactory(block.id, parentNode);
+      node.set({
+        bounds: new Box2D(0, kT.blockH + 1, pW, kT.optionH),
+        fill: this.fillColor(block.id),
+        updateReference: this.updateReference,
+        listParentBlock: block,
+        listParentNode: parentNode,
+      });
     } else {
       // find the index of the focused list option, or default the first one
       let focusedIndex = enabled.findIndex(blockId => focusedOptionId === blockId);
@@ -271,6 +270,7 @@ export default class Layout {
     }
     return part;
   }
+
   /**
    * reverse mapping from anything with an 'uuid' property to a node
    * Looks into nested constructs as well.
@@ -285,13 +285,14 @@ export default class Layout {
     }
     return node;
   }
+
   /**
    * return an array of {block, node} objects for this layout
    * and all nested layouts.
    */
   allNodesAndBlocks() {
     let list = Object.keys(this.parts2nodes).map(block => {
-      return {block, node: this.parts2nodes[block]};
+      return { block, node: this.parts2nodes[block] };
     });
     Object.keys(this.nestedLayouts).forEach(key => {
       list = list.concat(this.nestedLayouts[key].allNodesAndBlocks());
@@ -310,10 +311,10 @@ export default class Layout {
     let node = this.nodeFromElement(part);
     if (!node) {
       const props = Object.assign({}, {
-        dataAttribute: {name: 'nodetype', value: 'block'},
+        dataAttribute: { name: 'nodetype', value: 'block' },
         sg: this.sceneGraph,
       }, appearance);
-      props.roleName = this.isSBOL(part) ? this.blocks[part].rules.role  || this.blocks[part].metadata.role: null;
+      props.roleName = this.isSBOL(part) ? this.blocks[part].rules.role || this.blocks[part].metadata.role : null;
       node = new Role2D(props);
       this.sceneGraph.root.appendChild(node);
       this.map(part, node);
@@ -325,6 +326,7 @@ export default class Layout {
     // mark part as in use
     this.usePart(part);
   }
+
   /**
    * return one of the meta data properties for a part.
    */
@@ -345,6 +347,7 @@ export default class Layout {
     // use color in meta data
     return block.metadata.color || 'lightgray';
   }
+
   /**
    * filler blocks get a special color
    */
@@ -453,6 +456,7 @@ export default class Layout {
   partName(part) {
     return this.blocks[part].getName('Block', true);
   }
+
   /**
    * create the banner / bar for the construct ( contains the triangle )
    *
@@ -473,6 +477,7 @@ export default class Layout {
       });
     }
   }
+
   /**
    * create title as necessary
    *
@@ -483,7 +488,7 @@ export default class Layout {
       if (!this.titleNode) {
         // node that carries the text
         this.titleNode = new Node2D(Object.assign({
-          dataAttribute: {name: 'nodetype', value: 'construct-title'},
+          dataAttribute: { name: 'nodetype', value: 'construct-title' },
           sg: this.sceneGraph,
         }, kT.titleAppearance));
         // add the context menu dots
@@ -510,7 +515,7 @@ export default class Layout {
         text: text,
         color: this.baseColor,
         bounds: new Box2D(this.insetX, this.insetY + kT.bannerHeight, this.sceneGraph.availableWidth - this.insetX - kT.rightPad, kT.titleH),
-        dataAttribute: {name: 'construct-title', value: text},
+        dataAttribute: { name: 'construct-title', value: text },
       });
 
       // set dots to the right of the text
@@ -521,6 +526,7 @@ export default class Layout {
       });
     }
   }
+
   /**
    * create the vertical bar as necessary and update its color
    */
@@ -535,6 +541,7 @@ export default class Layout {
       fill: this.baseColor,
     });
   }
+
   /**
    * create or recycle a row on demand.
    */
@@ -565,6 +572,7 @@ export default class Layout {
   resetNestedConstructs() {
     this.newNestedLayouts = {};
   }
+
   /**
    * dispose and unused rows
    */
@@ -643,12 +651,14 @@ export default class Layout {
       condensed: false,
     });
   }
+
   /**
    */
 
   measureText(node, str) {
     return node.getPreferredSize(str);
   }
+
   /**
    * return the point where layout of actual blocks begins
    *
@@ -665,6 +675,7 @@ export default class Layout {
     invariant(item, 'list item not found');
     return item;
   }
+
   /**
    * layout, configured with various options:
    * xlimit: maximum x extent
@@ -712,7 +723,6 @@ export default class Layout {
 
     // layout all non hidden blocks
     components.forEach(part => {
-
       // create a row bar as neccessary
       if (!row) {
         row = this.rowFactory(new Box2D(this.insetX, yp - kT.rowBarH, 0, kT.rowBarH));
@@ -721,7 +731,7 @@ export default class Layout {
       const rowStart = this.insetX;
       const rowEnd = rowIndex === 0 ? Math.max(xp, this.initialRowXLimit) : xp;
       const rowWidth = rowEnd - rowStart;
-      row.set({translateX: rowStart + rowWidth / 2, width: rowWidth});
+      row.set({ translateX: rowStart + rowWidth / 2, width: rowWidth });
 
       // create the node representing the part
       this.partFactory(part, kT.partAppearance);
@@ -824,7 +834,8 @@ export default class Layout {
           construct: this.blocks[part],
           blocks: this.blocks,
           currentBlocks: this.currentBlocks,
-          currentConstructId: this.currentConstructId}) + kT.nestedInsetY;
+          currentConstructId: this.currentConstructId,
+        }) + kT.nestedInsetY;
 
         // remove from old collection so the layout won't get disposed
         // and add to the new set of layouts
@@ -840,7 +851,7 @@ export default class Layout {
       const rowStart = this.insetX + 1;
       const rowEnd = rowIndex === 0 ? Math.max(xp, this.initialRowXLimit) : xp;
       const rowWidth = rowEnd - rowStart;
-      row.set({translateX: rowStart + rowWidth / 2, width: rowWidth});
+      row.set({ translateX: rowStart + rowWidth / 2, width: rowWidth });
 
       /*
        // MERGE CONFLICT - unsure whether to keep
@@ -932,6 +943,7 @@ export default class Layout {
     const sourceRectangle = cnodes.sourceNode.getAABB();
     return sourceRectangle.center.x + kT.rowBarW / 2;
   }
+
   /**
    * update / create the connection between the part which must be the
    * parent of a nested construct.
@@ -951,9 +963,9 @@ export default class Layout {
         strokeWidth: kT.rowBarW,
         sg: this.sceneGraph,
         parent: this.sceneGraph.root,
-        dataAttribute: {name: 'connection', value: cnodes.sourceBlock.id},
+        dataAttribute: { name: 'connection', value: cnodes.sourceBlock.id },
       });
-      connector = {line};
+      connector = { line };
       this.connectors[key] = connector;
     }
     // update connector position
@@ -993,7 +1005,7 @@ export default class Layout {
     this.removeNode(this.banner);
     this.removeNode(this.titleNode);
     this.removeNode(this.vertical);
-    this.rows.forEach( node => {
+    this.rows.forEach(node => {
       this.removeNode(node);
     });
     Object.keys(this.parts2nodes).forEach(part => {

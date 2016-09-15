@@ -20,7 +20,7 @@
 import invariant from 'invariant';
 import path from 'path';
 import { merge, values, forEach } from 'lodash';
-import { errorDoesNotExist, errorAlreadyExists, errorInvalidModel, errorVersioningSystem } from '../utils/errors';
+import { errorDoesNotExist, errorAlreadyExists, errorInvalidModel } from '../utils/errors';
 import { validateBlock, validateProject, validateOrder } from '../utils/validation';
 import * as filePaths from './../utils/filePaths';
 import * as versioning from './versioning';
@@ -219,6 +219,7 @@ const projectAssertNew = (projectId) => {
     });
 };
 
+/*
 const blockAssertNew = (blockId, projectId) => {
   return blocksExist(projectId, false, blockId)
     .then(() => Promise.reject(errorAlreadyExists))
@@ -229,6 +230,7 @@ const blockAssertNew = (blockId, projectId) => {
       return Promise.reject(err);
     });
 };
+*/
 
 const orderAssertNew = (orderId, projectId) => {
   return orderExists(orderId, projectId)

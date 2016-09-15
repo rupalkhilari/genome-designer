@@ -15,7 +15,7 @@
  */
 import rejectingFetch from './utils/rejectingFetch';
 import invariant from 'invariant';
-import { headersGet, headersPost, headersPut, headersDelete } from './utils/headers';
+import { headersGet, headersPost } from './utils/headers';
 import { serverPath, authPath, registerPath } from './utils/paths';
 
 const authFetch = (...args) => {

@@ -15,14 +15,14 @@
  */
 import rejectingFetch from './utils/rejectingFetch';
 import invariant from 'invariant';
-import { headersGet, headersPost, headersPut, headersDelete } from './utils/headers';
+import { headersPost } from './utils/headers';
 import { extensionApiPath } from './utils/paths';
 import uploadFiles from './utils/uploadFiles';
 
 const extensionKey = 'genbank';
 
 function parseResponseIfText(resp) {
-  if (resp.headers.get('content-type') === 'text/plain')  {
+  if (resp.headers.get('content-type') === 'text/plain') {
     return resp.text();
   }
   return resp;

@@ -103,7 +103,7 @@ class SignInForm extends Component {
   showServerErrors(json) {
     invariant(json && json.message, 'We expected an error message');
     // any unrecognized errors are displayed below the tos
-    const msg = json.message === 'Incorrect username.' ? "Email address not recognized" : json.message;
+    const msg = json.message === 'Incorrect username.' ? 'Email address not recognized' : json.message;
     this.setState({
       signinError: {
         visible: true,

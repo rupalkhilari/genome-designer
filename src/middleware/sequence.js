@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import rejectingFetch from './utils/rejectingFetch';
-import { getItem, setItem } from './localStorageCache';
+import { getItem } from './localStorageCache';
 import { headersGet, headersPost } from './utils/headers';
 import { dataApiPath } from './utils/paths';
 

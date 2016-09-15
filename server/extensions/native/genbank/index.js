@@ -9,7 +9,7 @@ import * as fileSystem from '../../../../server/utils/fileSystem';
 import * as filePaths from '../../../../server/utils/filePaths';
 import * as rollup from '../../../../server/data/rollup';
 import { errorDoesNotExist } from '../../../../server/utils/errors';
-import { merge, filter } from 'lodash';
+import { filter } from 'lodash';
 import { permissionsMiddleware } from '../../../data/permissions';
 
 import importMiddleware, { mergeRollupMiddleware } from '../_shared/importMiddleware';
@@ -17,7 +17,7 @@ import importMiddleware, { mergeRollupMiddleware } from '../_shared/importMiddle
 //genbank specific
 import { convert, importProject, exportProject, exportConstruct } from './convert';
 
-const extensionKey = 'genbank';
+const extensionKey = 'genbank'; //eslint-disable-line no-unused-vars
 
 // Download a temporary file and delete it afterwards
 const downloadAndDelete = (res, tempFileName, downloadFileName) => {
@@ -116,9 +116,12 @@ router.all('/export/:projectId/:constructId?',
   formParser,
   (req, res, next) => {
     const { projectId, constructId } = req.params;
+
+    //todo - use this for genbank
     const options = req.body;
 
     console.log(`exporting construct ${constructId} from ${projectId} (${req.user.uuid})`);
+    console.log(options);
 
     rollup.getProjectRollup(projectId)
       .then(roll => {
@@ -151,13 +154,13 @@ router.all('/export/:projectId/:constructId?',
 router.post('/import/:format/:projectId?',
   importMiddleware,
   (req, res, next) => {
-    const { noSave, returnRoll, format, projectId, files } = req;
+    const { noSave, returnRoll, format, projectId, files } = req; //eslint-disable-line no-unused-vars
     const { constructsOnly } = req.body;
 
     console.log(`importing genbank (${req.user.uuid}) @ ${files.map(file => file.filePath).join(', ')}`);
 
     //future - handle multiple files. expect only one right now. need to reduce into single object before proceeding\
-    const { name, string, hash, filePath, fileUrl } = files[0];
+    const { name, string, hash, filePath, fileUrl } = files[0]; //eslint-disable-line no-unused-vars
 
     //todo - unify rather than just returning (esp once convert does not save sequences)
     if (projectId === 'convert') {
