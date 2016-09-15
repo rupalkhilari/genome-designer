@@ -134,6 +134,94 @@ export class RegisterForm extends Component {
     });
   }
 
+  getConfig() {
+    const params = queryString.parse(window.location.search);
+    const { projects, extensions } = params;
+    const config = {};
+
+    if (!!projects) {
+      const projectNames = projects.split(',');
+      config.projects = projectNames.reduce((acc, projectName) => {
+        return Object.assign(acc, { [projectName]: {} });
+      }, {});
+      Object.assign(config.projects[projectNames[0]], { default: true });
+    }
+
+    if (!!extensions) {
+      config.extensions = extensions.split(',').reduce((acc, projectName) => {
+        return Object.assign(acc, { [projectName]: { active: true } });
+      }, {});
+    }
+
+    return config;
+  }
+
+  // syntactic suger for fetcing values from inputs
+  get firstName() {
+    return this.refs.firstName.value.trim();
+  }
+
+  get lastName() {
+    return this.refs.lastName.value.trim();
+  }
+
+  get emailAddress() {
+    return this.refs.emailAddress.value.trim();
+  }
+
+  get emailConfirm() {
+    return this.refs.emailConfirm.value.trim();
+  }
+
+  get password() {
+    return this.refs.password.value.trim();
+  }
+
+  get passwordConfirm() {
+    return this.refs.passwordConfirm.value.trim();
+  }
+
+  get tos() {
+    return this.refs.tos.checked;
+  }
+
+  /**
+   * basic validation occurs on client i.e. matching email addresses, Passwords
+   * and all required fields present
+   */
+  clientValidation() {
+    // reset all error messages
+    const newState = Object.assign({}, errors);
+    // parse individual problems and report
+    if (!this.firstName || !this.lastName) {
+      newState.nameError = { visible: true, text: 'Please enter a first and last name' };
+    }
+    if (!this.emailAddress) {
+      newState.email1Error = { visible: true, text: 'Please enter a valid email address.' };
+    }
+    if (!this.emailConfirm || this.emailAddress !== this.emailConfirm) {
+      newState.email2Error = { visible: true, text: 'The email addresses entered don\'t match.' };
+    }
+    if (!this.password) {
+      newState.password1Error = { visible: true, text: 'Please enter a password' };
+    }
+    if (!this.passwordConfirm || this.password !== this.passwordConfirm) {
+      newState.password2Error = { visible: true, text: 'The passwords entered don\'t match.' };
+    }
+    if (this.password.length < 6) {
+      newState.password1Error = { visible: true, text: 'Passwords must be at least six characters long' };
+    }
+    if (!this.tos) {
+      newState.tosError = { visible: true, text: 'Please agree to our terms of service' };
+    }
+    // display appropriate errors
+    this.setState(newState);
+    // return true if there was an error
+    return Object.keys(newState).find((key) => {
+      return newState[key].visible;
+    });
+  }
+
   /**
    * display server errors in the most logical way
    */
@@ -185,94 +273,6 @@ export class RegisterForm extends Component {
         text: json.message,
       },
     });
-  }
-
-  /**
-   * basic validation occurs on client i.e. matching email addresses, Passwords
-   * and all required fields present
-   */
-  clientValidation() {
-    // reset all error messages
-    const newState = Object.assign({}, errors);
-    // parse individual problems and report
-    if (!this.firstName || !this.lastName) {
-      newState.nameError = { visible: true, text: 'Please enter a first and last name' };
-    }
-    if (!this.emailAddress) {
-      newState.email1Error = { visible: true, text: 'Please enter a valid email address.' };
-    }
-    if (!this.emailConfirm || this.emailAddress !== this.emailConfirm) {
-      newState.email2Error = { visible: true, text: 'The email addresses entered don\'t match.' };
-    }
-    if (!this.password) {
-      newState.password1Error = { visible: true, text: 'Please enter a password' };
-    }
-    if (!this.passwordConfirm || this.password !== this.passwordConfirm) {
-      newState.password2Error = { visible: true, text: 'The passwords entered don\'t match.' };
-    }
-    if (this.password.length < 6) {
-      newState.password1Error = { visible: true, text: 'Passwords must be at least six characters long' };
-    }
-    if (!this.tos) {
-      newState.tosError = { visible: true, text: 'Please agree to our terms of service' };
-    }
-    // display appropriate errors
-    this.setState(newState);
-    // return true if there was an error
-    return Object.keys(newState).find((key) => {
-      return newState[key].visible;
-    });
-  }
-
-  // syntactic suger for fetcing values from inputs
-  get firstName() {
-    return this.refs.firstName.value.trim();
-  }
-
-  get lastName() {
-    return this.refs.lastName.value.trim();
-  }
-
-  get emailAddress() {
-    return this.refs.emailAddress.value.trim();
-  }
-
-  get emailConfirm() {
-    return this.refs.emailConfirm.value.trim();
-  }
-
-  get password() {
-    return this.refs.password.value.trim();
-  }
-
-  get passwordConfirm() {
-    return this.refs.passwordConfirm.value.trim();
-  }
-
-  get tos() {
-    return this.refs.tos.checked;
-  }
-
-  getConfig() {
-    const params = queryString.parse(window.location.search);
-    const { projects, extensions } = params;
-    const config = {};
-
-    if (!!projects) {
-      const projectNames = projects.split(',');
-      config.projects = projectNames.reduce((acc, projectName) => {
-        return Object.assign(acc, { [projectName]: {} });
-      }, {});
-      Object.assign(config.projects[projectNames[0]], { default: true });
-    }
-
-    if (!!extensions) {
-      config.extensions = extensions.split(',').reduce((acc, projectName) => {
-        return Object.assign(acc, { [projectName]: { active: true } });
-      }, {});
-    }
-
-    return config;
   }
 
   render() {

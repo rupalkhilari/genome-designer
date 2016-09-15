@@ -4,8 +4,6 @@ import Block from '../../../../src/models/Block';
 import parse from 'csv-parse';
 import md5 from 'md5';
 
-//default fields in the CSV
-const defaultColumns = ['name', 'description', 'role', 'color', 'sequence'];
 //one of these fields is required for each block attempting to import
 const requiredFields = ['name', 'description', 'role', 'sequence'];
 

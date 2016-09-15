@@ -15,19 +15,25 @@
  */
 import rejectingFetch from './utils/rejectingFetch';
 import invariant from 'invariant';
-import { headersGet, headersPost, headersPut, headersDelete } from './utils/headers';
+import { headersPost } from './utils/headers';
 import { extensionApiPath } from './utils/paths';
 import uploadFiles from './utils/uploadFiles';
 
 const extensionKey = 'genbank';
 
 function parseResponseIfText(resp) {
-  if (resp.headers.get('content-type') === 'text/plain')  {
+  if (resp.headers.get('content-type') === 'text/plain') {
     return resp.text();
   }
   return resp;
 }
 
+/**
+ * @private
+ * import a Genbank file into the given project or into a new project.
+ * project ID is returned and should be reloaded if the current project or opened if a new project.
+ * Promise resolves with projectId on success and rejects with fetch response
+ */
 export function importFile(projectId = null, ...files) {
   const url = extensionApiPath(extensionKey, `import/file${!!projectId ? ('/' + projectId) : ''}`);
 
@@ -51,7 +57,7 @@ function importStringBase(payload, projectId) {
 
 /**
  * @private
- * import a CSV file into the given project or into a new project.
+ * import a genbank string (file contents) into the given project or into a new project.
  * project ID is returned and should be reloaded if the current project or opened if a new project.
  * Promise resolves with projectId on success and rejects with fetch response
  */

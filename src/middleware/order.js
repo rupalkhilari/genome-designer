@@ -16,7 +16,7 @@ limitations under the License.
 import rejectingFetch from './utils/rejectingFetch';
 import invariant from 'invariant';
 import { orderApiPath } from './utils/paths';
-import { headersGet, headersPost, headersPut, headersDelete } from './utils/headers';
+import { headersGet, headersPost } from './utils/headers';
 import Order from '../models/Order';
 
 // likely want a registry like for inventory and hit their respective functions for each foundry
@@ -39,9 +39,12 @@ export const submitOrder = (order, foundry = 'egf', positionalCombinations) => {
     .then(resp => resp.json());
 };
 
+/*
+//todo - implement once supported
 const getQuote = (foundry, order) => {
   invariant(false, 'not implemented');
 };
+*/
 
 export const getOrder = (projectId, orderId, avoidCache = false) => {
   const url = orderApiPath(`${projectId}/${orderId}`);

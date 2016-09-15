@@ -38,6 +38,7 @@ class DNAImportForm extends Component {
     focusedBlocks: PropTypes.array.isRequired,
     focusBlocks: PropTypes.func.isRequired,
     blockGetSequence: PropTypes.func.isRequired,
+    blocks: PropTypes.object.isRequired,
     currentConstruct: PropTypes.object,
   };
 

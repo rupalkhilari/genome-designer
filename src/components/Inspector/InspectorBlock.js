@@ -1,18 +1,18 @@
 /*
-Copyright 2016 Autodesk,Inc.
+ Copyright 2016 Autodesk,Inc.
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import Block from '../../models/Block';
@@ -24,6 +24,7 @@ import ColorPicker from './../ui/ColorPicker';
 import SymbolPicker from './../ui/SymbolPicker';
 import BlockSource from './BlockSource';
 import ListOptions from './ListOptions';
+import TemplateRules from './TemplateRules';
 import OrderList from './OrderList';
 import InspectorRow from './InspectorRow';
 import BlockNotes from './BlockNotes';
@@ -37,6 +38,7 @@ export class InspectorBlock extends Component {
         return new Error('Must pass valid instances of blocks to the inspector, got ' + JSON.stringify(instance));
       }
     }).isRequired,
+    isAuthoring: PropTypes.bool.isRequired,
     overrides: PropTypes.shape({
       color: PropTypes.string,
       role: PropTypes.string,
@@ -135,7 +137,8 @@ export class InspectorBlock extends Component {
    */
   currentName(useGetName = true) {
     if (this.props.instances.length === 1) {
-      return useGetName ? this.props.instances[0].getName() : this.props.instances[0].metadata.name;
+      const defaultName = this.props.forceIsConstruct ? 'New Construct' : null;
+      return useGetName ? this.props.instances[0].getName(defaultName) : this.props.instances[0].metadata.name;
     }
     return '';
   }
@@ -191,7 +194,7 @@ export class InspectorBlock extends Component {
   }
 
   render() {
-    const { instances, orders, readOnly, forceIsConstruct } = this.props;
+    const { instances, orders, readOnly, forceIsConstruct, isAuthoring } = this.props;
     const singleInstance = instances.length === 1;
     const isList = singleInstance && instances[0].isList();
     const isTemplate = singleInstance && instances[0].isTemplate();
@@ -199,7 +202,8 @@ export class InspectorBlock extends Component {
     const inputKey = instances.map(inst => inst.id).join(',');
     const anyIsConstructOrTemplateOrList = instances.some(instance => instance.isConstruct() || instance.isTemplate() || instance.isList());
 
-    const name = singleInstance ? instances[0].getType() : 'Block';
+    const defaultType = forceIsConstruct ? 'Construct' : 'Block';
+    const type = singleInstance ? instances[0].getType(defaultType) : 'Blocks';
 
     const currentSourceElement = this.currentSource();
     const annotations = this.currentAnnotations();
@@ -212,7 +216,7 @@ export class InspectorBlock extends Component {
     return (
       <div className="InspectorContent InspectorContentBlock">
 
-        <InspectorRow heading={name}>
+        <InspectorRow heading={type}>
           <InputSimple refKey={inputKey}
                        placeholder={this.currentName(true) || 'Enter a name'}
                        readOnly={readOnly}
@@ -248,7 +252,7 @@ export class InspectorBlock extends Component {
         </InspectorRow>
 
         {/* todo - this should have its own component */}
-        <InspectorRow heading={ name + ' Metadata'}
+        <InspectorRow heading={ type + ' Metadata'}
                       hasToggle
                       condition={hasNotes}>
           <div className="InspectorContent-section">
@@ -272,9 +276,16 @@ export class InspectorBlock extends Component {
                          onSelect={this.selectColor}/>
 
             <SymbolPicker current={this.currentRoleSymbol()}
-                          readOnly={readOnly || isConstruct || isTemplate || isList || forceIsConstruct || anyIsConstructOrTemplateOrList }
+                          readOnly={readOnly || (!isAuthoring && (isConstruct || isTemplate || isList || forceIsConstruct || anyIsConstructOrTemplateOrList)) }
                           onSelect={this.selectSymbol}/>
           </div>
+        </InspectorRow>
+
+        <InspectorRow heading={type + ' Rules'}
+                      condition={isAuthoring}>
+          <TemplateRules block={instances[0]}
+                         readOnly={!isAuthoring}
+                         isConstruct={isTemplate}/>
         </InspectorRow>
 
         <InspectorRow heading="Annotations"
@@ -293,7 +304,8 @@ export class InspectorBlock extends Component {
 
         <InspectorRow heading="List Options"
                       condition={isList}>
-          <ListOptions block={instances[0]}/>
+          <ListOptions toggleOnly={!isAuthoring}
+                       block={instances[0]}/>
         </InspectorRow>
 
       </div>

@@ -16,15 +16,14 @@ module.exports = {
     port: 4444,
     cli_args: {
       'webdriver.chrome.driver': './node_modules/selenium-standalone/.selenium/chromedriver/2.21-x64-chromedriver',
-      'webdriver.ie.driver': '',
     },
   },
 
   test_settings: {
     local: {
-      launch_url: 'http://localhost:3001/',
+      launch_url: 'http://localhost:3000/',
       selenium_port: 4444,
-      selenium_host: 'localhost',
+      selenium_host: '127.0.0.1',
       silent: true,
       screenshots: {
         enabled: true,

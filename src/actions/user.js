@@ -47,7 +47,7 @@ const identifyUser = (email) => {
   if (window && window.heap && window.heap.identify) {
     window.heap.identify(email);
   }
-}
+};
 
 //Promise
 export const userLogin = (email, password) => {

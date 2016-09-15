@@ -16,7 +16,13 @@ limitations under the License.
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import ListOption from './ListOption';
-import { blockOptionsToggle } from '../../actions/blocks';
+import { blockStash, blockOptionsToggle, blockOptionsAdd, blockOptionsRemove } from '../../actions/blocks';
+import { importFile as importCsvFile } from '../../middleware/csv';
+import {
+  uiShowPartsCSVImport,
+} from '../../actions/ui';
+//import CSVFileDrop from './CSVFileDrop';
+//import '../../styles/CSVFileDrop.css';
 
 import '../../styles/ListOptions.css';
 
@@ -25,30 +31,65 @@ export class ListOptions extends Component {
     block: PropTypes.shape({
       id: PropTypes.string.isRequired,
       options: PropTypes.object.isRequired,
+      isFrozen: PropTypes.func.isRequired,
     }).isRequired,
     optionBlocks: PropTypes.array.isRequired,
+    toggleOnly: PropTypes.bool.isRequired,
     blockOptionsToggle: PropTypes.func.isRequired,
+    blockOptionsAdd: PropTypes.func.isRequired,
+    blockOptionsRemove: PropTypes.func.isRequired,
+    blockStash: PropTypes.func.isRequired,
+    uiShowPartsCSVImport: PropTypes.func.isRequired,
   };
 
   onSelectOption = (option) => {
-    this.props.blockOptionsToggle(this.props.block.id, option.id);
+    if (!this.props.block.isFrozen()) {
+      this.props.blockOptionsToggle(this.props.block.id, option.id);
+    }
+  };
+
+  onDeleteOption = (option) => {
+    if (!this.props.block.isFrozen()) {
+      this.props.blockOptionsRemove(this.props.block.id, option.id);
+    }
+  };
+
+  handleCSVDrop = (files) => {
+    importCsvFile(files[0], 'convert')
+      .then(({ project, blocks }) => {
+        this.props.blockStash(...Object.keys(blocks).map(blockId => blocks[blockId]));
+        this.props.blockOptionsAdd(this.props.block.id, ...Object.keys(blocks));
+      });
+  };
+
+  handleCSVImport = () => {
+    this.props.uiShowPartsCSVImport(true, this.props.block);
   };
 
   render() {
-    const { block, optionBlocks } = this.props;
+    const { block, optionBlocks, toggleOnly } = this.props;
     const { options } = block;
     const isFrozen = block.isFrozen();
 
+    //const csvUploadButton = !isFrozen && !toggleOnly ? <CSVFileDrop style={{marginBottom: '1em'}} onDrop={this.handleCSVDrop}/> : null;
+    const csvUploadButton = !isFrozen && !toggleOnly ? <div style={{marginBottom: '1em'}} className="CSVFileDrop" onClick={this.handleCSVImport}>Upload Parts (CSV)</div> : null;
+
+    //todo - rethink scroll location
     return (
       <div className={'ListOptions no-vertical-scroll' + (isFrozen ? ' isFrozen' : '')}>
-        {isFrozen && <div className="ListOptions-explanation">List items cannot be modified after they have been frozen. Duplicate the template to make changes.</div>}
+        {isFrozen && <div className="ListOptions-explanation">List items cannot be modified after they have been frozen. {!toggleOnly ? 'Unfreeze the block to make changes.' : 'Duplicate the template to make changes.'}</div>}
+
+        {csvUploadButton}
+
         {optionBlocks.map(item => {
           return (
             <ListOption
               option={item}
+              toggleOnly={!isFrozen && !toggleOnly}
               key={item.id}
               selected={options[item.id]}
-              onClick={(option) => { if (!isFrozen) { this.onSelectOption(option); }}}/>
+              onDelete={(option) => this.onDeleteOption(option)}
+              onClick={(option) => this.onSelectOption(option)}/>
           );
         })}
       </div>
@@ -61,5 +102,9 @@ const mapStateToProps = (state, props) => ({
 });
 
 export default connect(mapStateToProps, {
+  uiShowPartsCSVImport,
   blockOptionsToggle,
+  blockOptionsAdd,
+  blockOptionsRemove,
+  blockStash,
 })(ListOptions);
