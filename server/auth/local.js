@@ -23,6 +23,7 @@
  * This user is used in unit testing.
  */
 import express from 'express';
+import { testUserId } from '../../test/constants';
 import bodyParser from 'body-parser';
 import validEmail from 'valid-email';
 import checkUserSetup from '../onboarding/userSetup';
@@ -41,7 +42,7 @@ export const router = express.Router(); //eslint-disable-line new-cap
 const jsonParser = bodyParser.json();
 
 const defaultUserForcedFields = {
-  uuid: '0',
+  uuid: testUserId,
 };
 
 const configForDefaultUser = Object.assign({}, userConfigDefaults);

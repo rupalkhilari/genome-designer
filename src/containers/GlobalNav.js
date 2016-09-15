@@ -291,12 +291,17 @@ class GlobalNav extends Component {
   /**
    * add a new construct to the current project
    */
-  newConstruct() {
+  newConstruct(initialModel = {}) {
     this.props.transact();
-    const block = this.props.blockCreate();
+    const block = this.props.blockCreate(initialModel);
     this.props.projectAddConstruct(this.props.currentProjectId, block.id);
     this.props.commit();
     this.props.focusConstruct(block.id);
+    return block;
+  }
+
+  newTemplate() {
+    return this.newConstruct({ rules: { authoring: true, fixed: true } });
   }
 
   /**
@@ -306,6 +311,8 @@ class GlobalNav extends Component {
   downloadProjectGenbank() {
     this.saveProject()
       .then(() => {
+        //todo - maybe this whole complicated bit should go in middleware as its own function
+
         const url = extensionApiPath('genbank', `export/${this.props.currentProjectId}`);
         const postBody = this.props.focus.options;
         const iframeTarget = '' + Math.floor(Math.random() * 10000) + +Date.now();
@@ -418,30 +425,6 @@ class GlobalNav extends Component {
   }
 
   /**
-   * add a new construct to the current project
-   */
-  newConstruct() {
-    this.props.transact();
-    const block = this.props.blockCreate();
-    this.props.projectAddConstruct(this.props.currentProjectId, block.id);
-    this.props.commit();
-    this.props.focusConstruct(block.id);
-  }
-
-  /**
-   * new project and navigate to new project
-   */
-  newProject() {
-    // create project and add a default construct
-    const project = this.props.projectCreate();
-    // add a construct to the new project
-    const block = this.props.blockCreate({ projectId: project.id });
-    this.props.projectAddConstruct(project.id, block.id);
-    this.props.focusConstruct(block.id);
-    this.props.projectOpen(project.id);
-  }
-
-  /**
    * return true if the focused construct is fixrf
    * @return {Boolean} [description]
    */
@@ -544,6 +527,12 @@ class GlobalNav extends Component {
               shortcut: stringToShortcut('shift option N'),
               action: () => {
                 this.newConstruct();
+              },
+            },
+            {
+              text: 'New Template',
+              action: () => {
+                this.newTemplate();
               },
             },
             {},

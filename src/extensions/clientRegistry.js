@@ -264,7 +264,9 @@ export const isRegistered = (key) => {
 };
 
 export const clearRegistry = () => {
-  console.warn('not actually clearning the registry');
+  if (process.env.NODE_ENV !== 'production') {
+    console.warn('not actually clearning the registry, or doing anything');
+  }
   /*
   Object.keys(registry).forEach(key => {
     delete registry[key];

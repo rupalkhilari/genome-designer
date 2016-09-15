@@ -30,6 +30,7 @@ export class Inspector extends Component {
     isVisible: PropTypes.bool.isRequired,
     inspectorToggleVisibility: PropTypes.func.isRequired,
     readOnly: PropTypes.bool.isRequired,
+    isAuthoring: PropTypes.bool.isRequired,
     forceIsConstruct: PropTypes.bool.isRequired,
     type: PropTypes.string.isRequired,
     focused: PropTypes.any.isRequired,
@@ -42,7 +43,7 @@ export class Inspector extends Component {
   };
 
   render() {
-    const { isVisible, focused, orders, overrides, type, readOnly, forceIsConstruct } = this.props;
+    const { showingGrunt, isVisible, focused, orders, overrides, type, readOnly, forceIsConstruct, isAuthoring } = this.props;
 
     // inspect instances, or construct if no instance or project if no construct or instances
     let inspect;
@@ -61,6 +62,7 @@ export class Inspector extends Component {
                                  overrides={overrides}
                                  orders={orders}
                                  readOnly={readOnly}
+                                 isAuthoring={isAuthoring}
                                  forceIsConstruct={forceIsConstruct}/>);
       break;
     }
@@ -113,6 +115,9 @@ function mapStateToProps(state, props) {
   const forceIsConstruct = (level === 'construct') ||
     blockIds.some(blockId => currentProject.components.indexOf(blockId) >= 0);
 
+  //todo - error handling for these not set
+  const isAuthoring = !!state.focus.constructId && state.blocks[state.focus.constructId].isAuthoring() && focused.length === 1 && type !== 'project' && !readOnly;
+
   const orders = Object.keys(state.orders)
     .map(orderId => state.orders[orderId])
     .filter(order => order.projectId === currentProject.id && order.isSubmitted())
@@ -126,6 +131,7 @@ function mapStateToProps(state, props) {
     forceIsConstruct,
     orders,
     overrides,
+    isAuthoring,
   };
 }
 

@@ -16,6 +16,7 @@ limitations under the License.
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import ImportGenBankModal from '../components/genbank/import';
+import ImportPartsCSVModal from '../components/importpartscsv/importpartscsv';
 import ImportDNAForm from '../components/importdna/importdnaform';
 import OrderModal from '../containers/orders/ordermodal';
 import SaveErrorModal from '../components/modal/SaveErrorModal';
@@ -120,6 +121,7 @@ class ProjectPage extends Component {
       <div className="ProjectPage">
         <ImportGenBankModal currentProjectId={projectId}/>
         <ImportDNAForm />
+        <ImportPartsCSVModal />
         <SaveErrorModal />
         <OrderModal projectId={projectId} />
 

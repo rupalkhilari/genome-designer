@@ -163,11 +163,17 @@ export default class ConstructViewerUserInterface extends UserInterface {
     }
 
     if (bestItem) {
+      // the edgeThreshold is usually a small region at left/right of block
+      // but if the block cannot have children then we expand to cover the entire block
+      let threshold = edgeThreshold;
+      if (!this.constructViewer.blockCanHaveChildren(bestItem.block)) {
+        threshold = Math.ceil(bestItem.AABB.w / 2);
+      }
       let edge = null;
-      if (point.x <= bestItem.AABB.x + edgeThreshold) {
+      if (point.x <= bestItem.AABB.x + threshold) {
         edge = 'left';
       }
-      if (point.x >= bestItem.AABB.right - edgeThreshold) {
+      if (point.x >= bestItem.AABB.right - threshold) {
         edge = 'right';
       }
       return { block: bestItem.block, edge };
@@ -263,6 +269,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
     // don't let it propagate to the canvas, it will register as a click and cause
     // an unfocus operation to undo what we are about to do.
     evt.stopPropagation();
+    evt.preventDefault();
     if (this.fence) {
       // select blocks within the fence then dispose it
       this.selectNodesByRectangle(this.fence.getBox());
@@ -527,8 +534,12 @@ export default class ConstructViewerUserInterface extends UserInterface {
       if (block) {
         // cancel our own mouse operations for now
         this.mouseTrap.cancelDrag();
-        // no mutation of frozen or fixed constructs
-        if (this.construct.isFrozen() || this.construct.isFixed()) {
+        // no mutation of frozen constructs
+        if (this.construct.isFrozen()) {
+          return;
+        }
+        // no mutation of fixed constructs unless authoring
+        if (this.construct.isFixed() && !this.construct.isAuthoring()) {
           return;
         }
         // open an undo/redo transaction
@@ -544,7 +555,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
         const globalPoint = this.mouseTrap.mouseToGlobal(evt);
         // proxy representing 1 ore more blocks
         const proxy = this.makeDragProxy(draggables);
-        // remove the blocks, unless meta key pressed
+        // remove the blocks, unless meta key pressed.
         const copying = evt.altKey;
         // filter our selected elements so they are in natural order
         // and with children of selected parents excluded.
@@ -648,7 +659,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
     // select construct on drag over
     this.selectConstruct();
     // no drop on frozen or fixed constructs
-    if (this.construct.isFrozen() || this.construct.isFixed()) {
+    if (this.construct.isFrozen() || (this.construct.isFixed() && !this.construct.isAuthoring())) {
       return;
     }
     if (payload.item.isConstruct && payload.item.isConstruct() && payload.item.isTemplate()) {
@@ -675,7 +686,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
    */
   onDrop(globalPosition, payload, event) {
     // no drop on frozen or fixed constructs
-    if (this.construct.isFrozen() || this.construct.isFixed()) {
+    if (this.construct.isFrozen() || (this.construct.isFixed() && !this.construct.isAuthoring())) {
       return;
     }
     // for now templates can only be dropped on the new construct target which is part of the canvas

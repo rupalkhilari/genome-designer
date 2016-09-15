@@ -297,6 +297,9 @@ export const orderGet = (orderId, projectId) => {
 export const projectCreate = (projectId, project, userId) => {
   invariant(typeof userId !== 'undefined', 'user id is required');
 
+  //force the user as author of the project
+  merge(project, { metadata: { authors: [userId] } });
+
   return projectAssertNew(projectId)
     .then(() => _projectSetup(projectId, userId))
     .then(() => _projectWrite(projectId, project))
@@ -308,8 +311,16 @@ export const projectCreate = (projectId, project, userId) => {
 
 //SET (WRITE + MERGE)
 
-export const projectWrite = (projectId, project, userId) => {
-  const idedProject = Object.assign({}, project, { id: projectId });
+export const projectWrite = (projectId, project = {}, userId) => {
+  //todo (future) - merge author IDs, not just assign
+  const authors = [userId];
+
+  const idedProject = merge({}, project, {
+    id: projectId,
+    metadata: {
+      authors,
+    },
+  });
 
   if (!validateProject(idedProject)) {
     return Promise.reject(errorInvalidModel);

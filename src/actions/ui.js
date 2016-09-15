@@ -154,6 +154,17 @@ export const uiShowGenBankImport = (bool) => {
   };
 };
 
+export const uiShowPartsCSVImport = (bool, listBlock) => {
+  return (dispatch, getState) => {
+    dispatch({
+      type: ActionTypes.UI_SHOW_PARTSCSV_IMPORT,
+      showPartsCSVImport: bool,
+      listBlock,
+    });
+    return bool;
+  };
+};
+
 export const uiShowDNAImport = (bool) => {
   return (dispatch, getState) => {
     dispatch({

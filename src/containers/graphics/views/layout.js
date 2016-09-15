@@ -319,9 +319,9 @@ export default class Layout {
       this.sceneGraph.root.appendChild(node);
       this.map(part, node);
     }
-    // hide/or child expand/collapse glyph
+    // hide/show child expand/collapse glyph
     node.set({
-      hasChildren: this.hasChildren(part),
+      hasChildren: this.someChildrenVisible(part),
     });
     // mark part as in use
     this.usePart(part);
@@ -358,6 +358,38 @@ export default class Layout {
   }
 
   /**
+   * NOTE: In authoring mode blocks are never hidden.
+   * @param  {string} blockId
+   * @return {boolean}
+   */
+  blockIsHidden(blockId) {
+    if (this.isAuthoring()) {
+      return false;
+    }
+    const block = this.blocks[blockId];
+    return block.isHidden();
+  }
+
+  /**
+   * return true if all the children of the given block are hidden.
+   * Also returns true if the block has no children
+   * @param  {string} blockId
+   * @return {boolean}
+   */
+  allChildrenHidden(blockId) {
+    return this.blocks[blockId].components.every(childId => this.blockIsHidden(childId));
+  }
+
+  /**
+   * true if any of the children are visible
+   * @param  {string} blockId
+   * @return {boolean}
+   */
+  someChildrenVisible(blockId) {
+    return this.blocks[blockId].components.some(childId => !this.blockIsHidden(childId));
+  }
+
+  /**
    * return the property within the rule part of the blocks data
    */
   partRule(part, name) {
@@ -390,11 +422,24 @@ export default class Layout {
   }
 
   /**
+   * first child then is not hidden
+   * @param  {[type]} blockId [description]
+   * @return {[type]}         [description]
+   */
+  firstVisibleChild(blockId) {
+    const block = this.blocks[blockId];
+    invariant(block, 'expect to be able to find the block');
+    const cid = block.components.find(childId => !this.blockIsHidden(childId));
+    invariant(cid, 'expect to find a visible child');
+    return cid;
+  }
+
+  /**
    * return the two nodes that we need to graphically connect to show a connection.
    * The given block is the source block
    */
   connectionInfo(sourceBlockId) {
-    const destinationBlockId = this.firstChild(sourceBlockId);
+    const destinationBlockId = this.firstVisibleChild(sourceBlockId);
     invariant(destinationBlockId, 'expected a child if this method is called');
     return {
       sourceBlock: this.blocks[sourceBlockId],
@@ -460,6 +505,9 @@ export default class Layout {
       let text = this.construct.getName('New Construct');
       if (this.construct.isTemplate()) {
         text += '<span style="color:gray">&nbsp;Template</span>';
+      }
+      if (this.isAuthoring()) {
+        text += '<span style="color:gray">&nbsp;(Authoring)</span>';
       }
       this.titleNodeTextWidth = this.titleNode.measureText(text).x + kT.textPad;
 
@@ -551,6 +599,18 @@ export default class Layout {
     this.nestedLayouts = this.newNestedLayouts;
   }
 
+  /**
+   * nested constructs may be indicate not authoring when the top level construct does
+   * so always check the top level construct.
+   * @return {Boolean}
+   */
+  isAuthoring() {
+    // construct may not be present when used as a preview control in the order form
+    if (this.constructViewer.props.construct) {
+      return this.constructViewer.props.construct.isAuthoring();
+    }
+    return false;
+  }
   /**
    * store layout information on our cloned copy of the data, constructing
    * display elements as required
@@ -651,12 +711,15 @@ export default class Layout {
     // additional height required by the tallest list on the row
     let maxListHeight = 0;
 
+    // used to track the nested constructs on each row
+    let nestedConstructs = [];
+
     // width of first row is effected by parent block, so we have to track
     // which row we are on.
     let rowIndex = 0;
 
     // display only non hidden blocks
-    const components = ct.components.filter(part => !this.blocks[part].isHidden());
+    const components = ct.components.filter(blockId => !this.blockIsHidden(blockId));
 
     // layout all non hidden blocks
     components.forEach(part => {
@@ -696,16 +759,30 @@ export default class Layout {
 
       // if position would exceed x limit then wrap
       if (xp + td.x > mx) {
+        // ensure all nested constructs on the row are updated for list block height
+        if (nestedConstructs.length && maxListHeight > 0) {
+          nestedConstructs.forEach(child => {
+            child.insetY += maxListHeight;
+            child.update({
+              construct: child.construct,
+              blocks: this.blocks,
+              currentBlocks: this.currentBlocks,
+              currentConstructId: this.currentConstructId});
+          });
+        }
+
+        nestedConstructs = [];
         xp = startX;
         yp += kT.rowH + nestedVertical + maxListHeight;
         nestedVertical = 0;
         maxListHeight = 0;
         row = this.rowFactory(new Box2D(xp, yp - kT.rowBarH, 0, kT.rowBarH));
         rowIndex += 1;
+
       }
 
       // update maxListHeight based on how many list items this block has
-      maxListHeight = Math.max(maxListHeight, listN * kT.blockH);
+      maxListHeight = Math.max(maxListHeight, listN * kT.optionH);
       invariant(isFinite(maxListHeight) && maxListHeight >= 0, 'expected a valid number');
 
       // update part, including its text and color and with height to accomodate list items
@@ -719,8 +796,8 @@ export default class Layout {
       // update any list parts for this blocks
       this.updateListForBlock(block, td.x);
 
-      // render children ( nested constructs )
-      if (this.hasChildren(part) && node.showChildren) {
+      // render children unless user has collapsed the block or it is hidden OR all its children are hidden
+      if (node.showChildren && !this.blockIsHidden(part) && this.someChildrenVisible(part)) {
         // establish the position
         const nestedX = this.insetX + kT.nestedInsetX;
         const nestedY = yp + nestedVertical + kT.blockH + kT.nestedInsetY;
@@ -734,6 +811,13 @@ export default class Layout {
             rootLayout: false,
           });
         }
+
+        /*
+        // MERGE CONFLICT - unsure whether to keep
+        // track the nested layouts per row since they might need adjusting for list blocks
+        // at the end of the row
+        nestedConstructs.push(nestedLayout);
+        */
 
         // update base color of nested construct skeleton
         nestedLayout.baseColor = block.metadata.color || this.baseColor;
@@ -768,6 +852,21 @@ export default class Layout {
       const rowEnd = rowIndex === 0 ? Math.max(xp, this.initialRowXLimit) : xp;
       const rowWidth = rowEnd - rowStart;
       row.set({ translateX: rowStart + rowWidth / 2, width: rowWidth });
+
+      /*
+       // MERGE CONFLICT - unsure whether to keep
+      // ensure all nested constructs on the row are updated for list block height
+      if (nestedConstructs.length && maxListHeight > 0) {
+        nestedConstructs.forEach(child => {
+          child.insetY += maxListHeight;
+          child.update({
+            construct: child.construct,
+            blocks: this.blocks,
+            currentBlocks: this.currentBlocks,
+            currentConstructId: this.currentConstructId})
+        });
+      }
+      */
     }
 
     // cleanup any dangling rows
@@ -815,7 +914,7 @@ export default class Layout {
     }
 
     // for nesting return the height consumed by the layout
-    return heightUsed + nestedVertical + kT.rowBarH;
+    return heightUsed + nestedVertical + kT.rowBarH + maxListHeight;
   }
 
   /**
@@ -825,7 +924,10 @@ export default class Layout {
     // update / make all the parts
     this.construct.components.forEach(part => {
       // render children ( nested constructs )
-      if (this.hasChildren(part) && this.nodeFromElement(part).showChildren) {
+      if (this.hasChildren(part) &&
+          !this.blockIsHidden(part) &&
+          !this.allChildrenHidden(part) &&
+          this.nodeFromElement(part).showChildren) {
         // update / create connection
         this.updateConnection(part);
       }
@@ -848,6 +950,9 @@ export default class Layout {
    */
   updateConnection(part) {
     const cnodes = this.connectionInfo(part);
+    if (!cnodes.destinationNode) {
+      return;
+    }
     // the source and destination node id's are used to as the cache key for the connectors
     const key = `${cnodes.sourceBlock.id}-${cnodes.destinationBlock.id}`;
     // get or create connection line
