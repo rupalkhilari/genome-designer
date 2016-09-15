@@ -29,8 +29,7 @@ import Block from '../models/Block';
 import Project from '../models/Project';
 import emptyProjectWithConstruct from '../../data/emptyProject/index';
 import { pauseAction, resumeAction } from '../store/pausableStore';
-
-import { getItem, setItem } from '../middleware/localStorageCache';
+import { getLocal, setLocal } from '../utils/ui/localstorage';
 const recentProjectKey = 'mostRecentProject';
 const saveMessageKey = 'projectSaveMessage';
 
@@ -131,15 +130,15 @@ export const projectSave = (inputProjectId, forceSave = false) => {
 
     return saveProject(projectId, roll)
       .then(commitInfo => {
-        setItem(recentProjectKey, projectId);
+        setLocal(recentProjectKey, projectId);
 
         //if no version => first time saving, show a grunt
-        if (!getItem(saveMessageKey)) {
+        if (!getLocal(saveMessageKey)) {
           dispatch({
             type: ActionTypes.UI_SET_GRUNT,
             gruntMessage: 'Project Saved. Changes will continue to be saved automatically as you work.',
           });
-          setItem(saveMessageKey, 'true');
+          setLocal(saveMessageKey, true);
         }
 
         const { sha, time } = commitInfo;
@@ -324,7 +323,7 @@ export const projectLoad = (projectId, avoidCache = false, loadMoreOnFail = fals
 export const projectOpen = (inputProjectId, skipSave = false) => {
   return (dispatch, getState) => {
     const currentProjectId = dispatch(projectSelectors.projectGetCurrentId());
-    const projectId = inputProjectId || getItem(recentProjectKey);
+    const projectId = inputProjectId || getLocal(recentProjectKey);
 
     //ignore if on a project, and passed the same one
     if (!!currentProjectId && currentProjectId === projectId) {
