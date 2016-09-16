@@ -156,7 +156,6 @@ app.get('*', (req, res) => {
     const user = Object.assign({}, prunedUser, { config });
     res.render(path.join(pathContent + '/index.pug'), Object.assign({}, user, discourse, {
       productionEnvironment: process.env.NODE_ENV === 'production',
-      buildEnvironment: process.env.BUILD_ENV,
     }));
   }
 });
