@@ -21,9 +21,9 @@ import * as ActionTypes from '../constants/ActionTypes';
 import invariant from 'invariant';
 import extensionRegistry from '../extensions/clientRegistry';
 
-//so this is super weird - jsdoc will work when you have some statements here. This file needs 2!
-const space_filler = 10;
-const space_filler_2 = 20;
+//hack - so this is super weird - jsdoc will work when you have some statements here. This file needs 2!
+const spaceFiller = 10; //eslint-disable-line no-unused-vars
+const spaceFiller2 = 20; //eslint-disable-line no-unused-vars
 
 /**
  * Toggle whether the inspector is visible
@@ -149,6 +149,17 @@ export const uiShowGenBankImport = (bool) => {
     dispatch({
       type: ActionTypes.UI_SHOW_GENBANK_IMPORT,
       showGenBankImport: bool,
+    });
+    return bool;
+  };
+};
+
+export const uiShowPartsCSVImport = (bool, listBlock) => {
+  return (dispatch, getState) => {
+    dispatch({
+      type: ActionTypes.UI_SHOW_PARTSCSV_IMPORT,
+      showPartsCSVImport: bool,
+      listBlock,
     });
     return bool;
   };

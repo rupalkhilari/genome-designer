@@ -36,6 +36,9 @@ ADD . /app
 #install extensions, continue even if errors
 RUN npm run install-extensions || true
 
+# add docs, even if package.json hasnt changed
+RUN npm run jsdoc
+
 RUN cd /app
 
 # Redis now launch via docker-compose and is referenced via link

@@ -36,12 +36,15 @@ export class ProjectDetail extends Component {
     project: PropTypes.object.isRequired,
   };
 
+  constructor() {
+    super();
+    this.extensions = [];
+  }
+
   state = {
     //default open height
     openHeight: 400,
   };
-
-  extensions = [];
 
   componentDidMount() {
     //listen to get relevant manifests here.

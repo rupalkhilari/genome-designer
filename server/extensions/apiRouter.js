@@ -58,6 +58,10 @@ Object.keys(serverExtensions).forEach(key => {
     //todo - Put in own process?
     router.use(`/${key}/`, extensionRouter);
   } catch (err) {
+    //implicitly test that extensions wont bring down build, but ignore this output
+    if (key === 'testErrorServer') {
+      return;
+    }
     console.error('there was an error registering extension ' + key);
     console.log(err);
     console.log(err.stack);

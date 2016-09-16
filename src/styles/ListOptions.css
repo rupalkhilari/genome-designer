@@ -16,3 +16,21 @@
     padding: 0.25em 0 0.5em;
   }
 }
+
+.CSVFileDrop {
+  padding: 1em;
+  border-radius: 0.5em;
+  background-color: var(--colors-blueGreyDark);
+  text-align: center;
+  transition: background-color var(--timing-fast) ease-out;
+
+  &-hover,
+  &:hover {
+    background-color: var(--colors-blueGreyMed);
+    cursor: pointer;
+  }
+
+  &-reject {
+    background-color: rgba(255, 0, 0, 0.5);
+  }
+}

@@ -15,15 +15,15 @@
  */
 
 import { expect } from 'chai';
-import rejectingFetch from '../../src/middleware/rejectingFetch';
-import { headersGet } from '../../src/middleware/headers';
-import { reportApiPath } from '../../src/middleware/paths';
+import rejectingFetch from '../../src/middleware/utils/rejectingFetch';
+import { headersGet } from '../../src/middleware/utils/headers';
+import { reportApiPath } from '../../src/middleware/utils/paths';
 
 describe('Middleware', () => {
   describe('Reporting', () => {
     const issueId = 10;
     //only run this test in CI, where env var is set
-    if (process.env.CI) {
+    if (process.env.GITHUB_ACCESS_TOKEN || (process.env.CI && process.env.TRAVIS_SECURE_ENV_VARS)) {
       it('should be able to talk to github', () => {
         return rejectingFetch(reportApiPath('githubIssue/' + issueId), headersGet())
           .then(resp => resp.json())

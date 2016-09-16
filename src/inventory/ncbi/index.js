@@ -13,11 +13,11 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-import rejectingFetch from '../../middleware/rejectingFetch';
+import rejectingFetch from '../../middleware/utils/rejectingFetch';
 import queryString from 'query-string';
 import Block from '../../models/Block';
-import { merge, debounce } from 'lodash';
-import { convertGenbank } from '../../middleware/genbank';
+import { merge } from 'lodash';
+import { convert } from '../../middleware/genbank';
 
 const fetchOpts = {
   mode: 'cors',
@@ -34,7 +34,7 @@ const makeFastaUrl = (id) => `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efet
 //assume there is always one root construct
 //returns array in form [construct, ...blocks]
 const genbankToBlock = (gb, onlyConstruct) => {
-  return convertGenbank(gb, onlyConstruct)
+  return convert(gb, onlyConstruct)
     .then(result => {
       const { blocks, roots } = result;
       const blockArray = Object.keys(blocks).map(blockId => blocks[blockId]);
@@ -119,7 +119,7 @@ const getSummary = (...ids) => {
       .filter(summary => summary.sequence.length < 1000000)
     )
     .catch(err => {
-      console.log(err);
+      console.log(err); //eslint-disable-line no-console
       throw err;
     });
 };
@@ -163,7 +163,7 @@ export const get = (accessionVersion, parameters = {}, searchResult) => {
         [construct, ...rest];
     })
     .catch(err => {
-      console.log(err);
+      console.log(err); //eslint-disable-line no-console
       throw err;
     });
 };
@@ -200,7 +200,7 @@ export const search = (query, options = {}) => {
     .then(ids => getSummary(...ids))
     .then(results => Object.assign(results, { count, parameters }))
     .catch(err => {
-      console.log(err);
+      console.log(err); //eslint-disable-line no-console
       throw err;
     });
 };

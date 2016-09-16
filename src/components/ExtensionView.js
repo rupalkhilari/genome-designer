@@ -86,8 +86,8 @@ export default class ExtensionView extends Component {
       try {
         this.callback();
       } catch (err) {
-        console.log('error on unregister callback');
-        console.error(err);
+        console.log('error on unregister callback'); //eslint-disable-line no-console
+        console.error(err); //eslint-disable-line no-console
       }
     }
     this.callback = null;
@@ -124,7 +124,7 @@ export default class ExtensionView extends Component {
             });
           });
       } catch (err) {
-        console.error('error loading / rendering extension ' + extension);
+        console.error('error loading / rendering extension ' + extension); //eslint-disable-line no-console
         throw err;
       }
     });
