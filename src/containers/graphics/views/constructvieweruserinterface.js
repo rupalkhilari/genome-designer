@@ -740,7 +740,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
    */
   onDrop(globalPosition, payload, event) {
     // no drop on frozen or fixed constructs or collapsed
-    if (this.construct.isFrozen() || this.construct.isFixed() !this.construct.isAuthoring() || this.layout.collapsed) {
+    if (this.construct.isFrozen() || this.construct.isFixed() || !this.construct.isAuthoring() || this.layout.collapsed) {
       return;
     }
     // for now templates can only be dropped on the new construct target which is part of the canvas
