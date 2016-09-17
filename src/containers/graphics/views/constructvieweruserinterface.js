@@ -483,12 +483,6 @@ export default class ConstructViewerUserInterface extends UserInterface {
     } else {
       this.darken();
     }
-    // added faded style to layer if collapsed
-    if (this.layout.collapsed) {
-      this.el.classList.add('scenegraph-faded');
-    } else {
-      this.el.classList.remove('scenegraph-faded');
-    }
   }
 
   /**

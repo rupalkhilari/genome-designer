@@ -43,14 +43,6 @@
   box-sizing: border-box;
 }
 
-/**
- * used when a construct viewer is collapsed
- */
-.scenegraph-faded {
-  /*color should match blueGreyDark #292D40*/
-  /* NOTE: CSS prefixers only seems to like decimal values in rgba in linear-gradient */
-  background: linear-gradient(180deg, transparent, rgba(41, 45, 64, 0.8));
-}
 
 /* overlaid panel for handling mouse inputs and displaying overlaid UI affordances/glyphs */
 .scenegraph-userinterface {
