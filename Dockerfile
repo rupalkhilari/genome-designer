@@ -24,7 +24,7 @@ RUN yes | pip install biopython
 
 RUN pip install awscli
 
-#install fsharp (need by gslEditor extension if it exists)
+#install fsharp (needed by gslEditor extension if it exists)
 RUN if [ -d ./extensions/gslEditor/ ]; then ./extensions/gslEditor/tools/install-fsharp.sh ; fi
 
 EXPOSE 3000
