@@ -51,6 +51,8 @@ const minWidth = blockH * 4;
 const minHeight = blockH + rowBarH + titleH;
 // height when collapsed
 const collapsedHeight = blockH + titleH + bannerHeight + rowBarH;
+// width of message for collapsed constructs e.g. 'and 123 more...'
+const collapsedMessageWidth = 200;
 // padding at right / bottom of scenegraph to make selection easier
 const bottomPad = 50;
 const rightPad = 30;
@@ -92,6 +94,7 @@ export default {
   minWidth,
   minHeight,
   collapsedHeight,
+  collapsedMessageWidth,
   bottomPad,
   rightPad,
 
