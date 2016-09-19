@@ -8,6 +8,6 @@
     "testErrorServer" : "../../extensions/testErrorServer",
     "SequenceDetail" : "IsaacLuo/onion2#8f03cd9d4820b9e98965dc945539afed9b9205cb",
     "gslEditor" : "../../extensions/gslEditor",
-    "seq-viewer": "git+http://github.com/duncanmeech/sequence-viewer.git"
+    "GC-Sequence-Viewer": "duncanmeech/sequence-viewer"
   }
 }

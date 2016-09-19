@@ -21,7 +21,7 @@ export default {
     egf_templates: {},
   },
   extensions: {
-    'seq-viewer': {
+    'GC-Sequence-Viewer': {
       active: true,
     },
     SequenceDetail: {
