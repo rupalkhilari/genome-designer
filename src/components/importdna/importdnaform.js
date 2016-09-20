@@ -60,12 +60,19 @@ class DNAImportForm extends Component {
         this.props.uiSetGrunt(`Sequence data must be added to a selected block. Please select a single block and try again.`);
         return;
       }
-      if (nextProps.currentConstruct.isFrozen() || nextProps.currentConstruct.isFixed() || nextProps.currentConstruct.isTemplate()) {
+      const ncc = nextProps.currentConstruct;
+      const authoring = ncc.isTemplate() && ncc.isAuthoring();
+      if (ncc.isFrozen() || (!authoring && (ncc.isFixed() || ncc.isTemplate()))) {
         this.props.uiShowDNAImport(false);
         this.props.uiSetGrunt(`You cannot add sequence to a template block.`);
         return;
       }
       const block = this.props.blocks[this.props.focusedBlocks[0]];
+      if (block.isList()) {
+        this.props.uiShowDNAImport(false);
+        this.props.uiSetGrunt(`You cannot add sequence to a list block.`);
+        return;
+      }
       if (block.components.length) {
         this.props.uiShowDNAImport(false);
         this.props.uiSetGrunt(`You cannot add sequence to a block with child components.`);
