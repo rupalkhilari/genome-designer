@@ -22,7 +22,6 @@ import kT from './layoutconstants';
 import Fence from './fence';
 import { dispatch } from '../../../store/index';
 import { sortBlocksByIndexAndDepthExclude } from '../../../utils/ui/uiapi';
-import { getLocal, setLocal } from '../../../utils/ui/localstorage';
 
 // # of pixels of mouse movement before a drag is triggered.
 const dragThreshold = 8;

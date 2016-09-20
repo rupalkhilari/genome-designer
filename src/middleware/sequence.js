@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import rejectingFetch from './utils/rejectingFetch';
-import { getLocal } from '../utils/ui/localstorage.js'
+import { getLocal } from '../utils/ui/localstorage.js';
 import { headersGet, headersPost } from './utils/headers';
 import { dataApiPath } from './utils/paths';
 
