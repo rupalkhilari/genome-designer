@@ -79,6 +79,9 @@ class DNAImportForm extends Component {
       }
       block.getSequence()
         .then(sequence => {
+          if (this.refs.sequenceTextArea) {
+            this.refs.sequenceTextArea.value = sequence || '';
+          }
           this.setState({
             inputValid: true,
             validLength: sequence ? sequence.length : 0,
