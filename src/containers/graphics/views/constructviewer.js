@@ -13,18 +13,13 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-import React, {
-  Component,
-  PropTypes
-} from 'react';
+import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import SceneGraph2D from '../scenegraph2d/scenegraph2d';
 import Vector2D from '../geometry/vector2d';
 import Layout from './layout.js';
 import PopupMenu from '../../../components/Menu/PopupMenu';
-import {
-  connect
-} from 'react-redux';
+import { connect } from 'react-redux';
 import {
   blockCreate,
   blockDelete,
@@ -54,9 +49,7 @@ import {
   blockGetParents,
 } from '../../../selectors/blocks';
 
-import {
-  role as roleDragType
-} from '../../../constants/DragTypes';
+import { role as roleDragType } from '../../../constants/DragTypes';
 import debounce from 'lodash.debounce';
 import UserInterface from './constructvieweruserinterface';
 import {
@@ -76,7 +69,6 @@ import {
   projectAddConstruct,
 } from '../../../actions/projects';
 import RoleSvg from '../../../components/RoleSvg';
-import perf from '../../../components/util/perf';
 
 import '../../../styles/constructviewer.css';
 
@@ -127,10 +119,10 @@ export class ConstructViewer extends Component {
     super(props);
     idToViewer[this.props.constructId] = this;
     this.state = {
-      blockPopupMenuOpen: false, // context menu for blocks
+      blockPopupMenuOpen: false,     // context menu for blocks
       constructPopupMenuOpen: false, // context menu for construct
-      menuPosition: new Vector2D(), // position for any popup menu,
-      modalOpen: false, // controls visibility of test modal window
+      menuPosition: new Vector2D(),  // position for any popup menu,
+      modalOpen: false,              // controls visibility of test modal window
     };
     this.update = debounce(this._update.bind(this), 16);
   }
@@ -187,7 +179,9 @@ export class ConstructViewer extends Component {
     }
   }
 
-  shouldComponentUpdate(nextProps) {
+  shouldComponentUpdate(props, nextProps) {
+    // console.log(`CT:${this.props.construct.id}, ${props.construct !== nextProps.construct}`);
+    // return props.construct !== nextProps.construct;
     return true;
   }
 
@@ -222,10 +216,10 @@ export class ConstructViewer extends Component {
   onOrderDNA = () => {
     let order = this.props.orderCreate(this.props.currentProjectId, [this.props.construct.id]);
     this.props.orderList(this.props.currentProjectId)
-      .then((orders) => {
-        order = this.props.orderSetName(order.id, `Order ${orders.length}`);
-        this.props.uiShowOrderForm(true, order.id);
-      });
+    .then((orders) => {
+      order = this.props.orderSetName(order.id, `Order ${orders.length}`);
+      this.props.uiShowOrderForm(true, order.id);
+    });
   };
 
   /**
@@ -403,27 +397,32 @@ export class ConstructViewer extends Component {
     const firstBlock = this.props.blocks[this.props.focus.blockIds[0]];
     const isAuthoring = this.props.construct.isAuthoring();
 
-    const authoringListItems = singleBlock && isAuthoring ? [{
-      text: `Convert to ${firstBlock.isList() ? ' Normal Block' : ' List Block'}`,
-      disabled: !singleBlock,
-      action: () => {
-        this.props.blockSetListBlock(firstBlock.id, !firstBlock.isList());
+    const authoringListItems = singleBlock && isAuthoring ? [
+      {
+        text: `Convert to ${firstBlock.isList() ? ' Normal Block' : ' List Block'}`,
+        disabled: !singleBlock,
+        action: () => {
+          this.props.blockSetListBlock(firstBlock.id, !firstBlock.isList());
+        },
       },
-    }, ] : [];
+    ] : [];
 
-    return [{
+    return [
+      {
         text: 'Inspect Block',
         disabled: !singleBlock,
         action: () => {
           this.openInspector();
         },
-      }, {
+      },
+      {
         text: `Delete ${singleBlock ? 'Block' : 'Blocks'}`,
         disabled: !isAuthoring && (this.props.construct.isFixed() || this.props.construct.isFrozen()),
         action: () => {
           this.removePartsList(this.sg.ui.selectedElements);
         },
-      }, {
+      },
+      {
         text: 'Import DNA Sequence',
         disabled: !singleBlock || (!isAuthoring && (this.props.construct.isFixed() || this.props.construct.isFrozen())),
         action: () => {
@@ -438,319 +437,282 @@ export class ConstructViewer extends Component {
    * return JSX for block construct menu
    */
   blockContextMenu() {
-    return ( < PopupMenu open = {
-        this.state.blockPopupMenuOpen
-      }
-      position = {
-        this.state.menuPosition
-      }
-      closePopup = {
-        this.closePopups.bind(this)
-      }
-      menuItems = {
-        this.blockContextMenuItems()
-      }
-      />);
-    }
+    return (<PopupMenu
+      open={this.state.blockPopupMenuOpen}
+      position={this.state.menuPosition}
+      closePopup={this.closePopups.bind(this)}
+      menuItems={this.blockContextMenuItems()}/>);
+  }
 
-    /**
-     * menu items for the construct context menu
-     */
-    constructContextMenuItems = () => {
-      const typeName = this.props.construct.getType('Construct');
-      const templateItems = this.props.construct.isTemplate() ? [{
+  /**
+   * menu items for the construct context menu
+   */
+  constructContextMenuItems = () => {
+    const typeName = this.props.construct.getType('Construct');
+    const templateItems = this.props.construct.isTemplate() ? [
+      {
         text: `${this.props.construct.isAuthoring() ? 'End Authoring' : 'Author'} ${typeName}`,
         action: () => {
           this.props.blockSetAuthoring(this.props.construct.id, !this.props.construct.isAuthoring());
         },
-      }, ] : [];
+      },
+    ] : [];
 
-      return [{
-          text: `Inspect ${typeName}`,
-          action: () => {
-            this.openInspector();
-            this.props.focusBlocks([]);
-            this.props.focusConstruct(this.props.constructId);
-          },
-        }, {
-          text: `Delete ${typeName}`,
-          disabled: this.isSampleProject(),
-          action: () => {
-            this.props.projectRemoveConstruct(this.props.projectId, this.props.constructId);
-          },
-        }, {
-          text: `Duplicate ${typeName}`,
-          disabled: this.isSampleProject(),
-          action: () => {
-            // clone the our construct/template and then add to project and ensure focused
-            let clone = this.props.blockClone(this.props.construct);
-            const oldName = clone.getName();
-            if (!oldName.endsWith(' - copy')) {
-              clone = this.props.blockRename(clone.id, `${oldName} - copy`);
-            }
-            this.props.projectAddConstruct(this.props.projectId, clone.id);
-            this.props.focusConstruct(clone.id);
-          },
+    return [
+      {
+        text: `Inspect ${typeName}`,
+        action: () => {
+          this.openInspector();
+          this.props.focusBlocks([]);
+          this.props.focusConstruct(this.props.constructId);
         },
-        ...templateItems,
-      ];
-    };
-
-    /**
-     * return JSX for construct context menu
-     */
-    constructContextMenu() {
-      // add the blocks context menu items if there are selected blocks
-      let items = this.constructContextMenuItems();
-      if (this.props.focus.blockIds.length) {
-        items = [...items, {}, ...this.blockContextMenuItems()];
-      }
-
-      return ( < PopupMenu open = {
-          this.state.constructPopupMenuOpen
-        }
-        position = {
-          this.state.menuPosition
-        }
-        closePopup = {
-          this.closePopups.bind(this)
-        }
-        menuItems = {
-          items
-        }
-        />);
-      }
-
-      /**
-       * add the given item using an insertion point from the constructviewer user interface.
-       * Insertion point may be null, in which the block is added at the end
-       */
-      addItemAtInsertionPoint(payload, insertionPoint, event) {
-        const {
-          item,
-          type
-        } = payload;
-        let index;
-        // get the immediate parent ( which might not be the top level block if this is a nested construct )
-        let parent = insertionPoint ? this.getBlockParent(insertionPoint.block) : this.props.construct;
-        if (type === roleDragType) {
-          // create new block with correct type of sbol symbo
-          const droppedBlock = this.props.blockCreate({
-            rules: {
-              role: item.rules.role
-            }
-          });
-          // insert next to block, inject into a block, or add as the first block of an empty construct
-          if (insertionPoint) {
-            if (insertionPoint.edge) {
-              // get index of insertion allowing for the edge closest to the drop if provided
-              index = parent.components.indexOf(insertionPoint.block) + (insertionPoint.edge === 'right' ? 1 : 0);
-              this.props.blockAddComponent(parent.id, droppedBlock.id, index);
-            } else {
-              // if the dropped block has sequence data then push down that block and the dropped block
-              // ( if the block has sequence its components should currently be empty )
-              const oldParent = parent;
-              parent = this.props.blocks[insertionPoint.block];
-              if (parent.hasSequence()) {
-                // create a new parent for the old parent and the dropped item
-                const block = this.props.blockCreate();
-                const replaceIndex = oldParent.components.indexOf(parent.id);
-                this.props.blockRemoveComponent(oldParent.id, parent.id);
-                this.props.blockAddComponent(oldParent.id, block.id, replaceIndex);
-                // now add the two blocks to the new parent
-                this.props.blockAddComponents(block.id, [parent.id, droppedBlock.id]);
-              } else {
-                // we can just add the dropped item into the components of the parent
-                this.props.blockAddComponent(parent.id, droppedBlock.id, parent.components.length);
-              }
-            }
-            // return the dropped block for selection
-            return [droppedBlock.id];
+      },
+      {
+        text: `Delete ${typeName}`,
+        disabled: this.isSampleProject(),
+        action: () => {
+          this.props.projectRemoveConstruct(this.props.projectId, this.props.constructId);
+        },
+      },
+      {
+        text: `Duplicate ${typeName}`,
+        disabled: this.isSampleProject(),
+        action: () => {
+          // clone the our construct/template and then add to project and ensure focused
+          let clone = this.props.blockClone(this.props.construct);
+          const oldName = clone.getName();
+          if (!oldName.endsWith(' - copy')) {
+            clone = this.props.blockRename(clone.id, `${oldName} - copy`);
           }
-          // the construct must be empty, add as the first child of the construct
-          this.props.blockAddComponent(parent.id, droppedBlock.id, 0);
-          return [droppedBlock.id];
-        }
+          this.props.projectAddConstruct(this.props.projectId, clone.id);
+          this.props.focusConstruct(clone.id);
+        },
+      },
+      ...templateItems,
+    ];
+  };
 
-        // this will become the new blocks we are going to insert, declare here first
-        // in case we do a push down
-        const newBlocks = [];
+  /**
+   * return JSX for construct context menu
+   */
+  constructContextMenu() {
+    // add the blocks context menu items if there are selected blocks
+    let items = this.constructContextMenuItems();
+    if (this.props.focus.blockIds.length) {
+      items = [...items, {}, ...this.blockContextMenuItems()];
+    }
 
-        // if no edge specified then the parent becomes the target block and index is simply
-        // the length of components to add them at the end of the current children
-        if (insertionPoint && !insertionPoint.edge) {
+    return (<PopupMenu
+      open={this.state.constructPopupMenuOpen}
+      position={this.state.menuPosition}
+      closePopup={this.closePopups.bind(this)}
+      menuItems={items}/>);
+  }
+
+  /**
+   * add the given item using an insertion point from the constructviewer user interface.
+   * Insertion point may be null, in which the block is added at the end
+   */
+  addItemAtInsertionPoint(payload, insertionPoint, event) {
+    const { item, type } = payload;
+    let index;
+    // get the immediate parent ( which might not be the top level block if this is a nested construct )
+    let parent = insertionPoint ? this.getBlockParent(insertionPoint.block) : this.props.construct;
+    if (type === roleDragType) {
+      // create new block with correct type of sbol symbo
+      const droppedBlock = this.props.blockCreate({ rules: { role: item.rules.role } });
+      // insert next to block, inject into a block, or add as the first block of an empty construct
+      if (insertionPoint) {
+        if (insertionPoint.edge) {
+          // get index of insertion allowing for the edge closest to the drop if provided
+          index = parent.components.indexOf(insertionPoint.block) + (insertionPoint.edge === 'right' ? 1 : 0);
+          this.props.blockAddComponent(parent.id, droppedBlock.id, index);
+        } else {
+          // if the dropped block has sequence data then push down that block and the dropped block
+          // ( if the block has sequence its components should currently be empty )
           const oldParent = parent;
           parent = this.props.blocks[insertionPoint.block];
-          index = parent.components.length;
-          // if the block we are targeting already has a sequence then we will replace it with a new empty
-          // block, then insert the old block at the start of the payload so it is added as a child to the new block
           if (parent.hasSequence()) {
-            // create new block and replace current parent
+            // create a new parent for the old parent and the dropped item
             const block = this.props.blockCreate();
             const replaceIndex = oldParent.components.indexOf(parent.id);
-            invariant(replaceIndex >= 0, 'expect to get an index here');
             this.props.blockRemoveComponent(oldParent.id, parent.id);
             this.props.blockAddComponent(oldParent.id, block.id, replaceIndex);
-            // seed new blocks with the old target block
-            newBlocks.push(parent.id);
-            // bump the index
-            index += 1;
-            // now make parent equal to the new block so blocks get added to it.
-            parent = block;
-          }
-        } else {
-          index = parent.components.length;
-          if (insertionPoint) {
-            index = parent.components.indexOf(insertionPoint.block) + (insertionPoint.edge === 'right' ? 1 : 0);
+            // now add the two blocks to the new parent
+            this.props.blockAddComponents(block.id, [parent.id, droppedBlock.id]);
+          } else {
+            // we can just add the dropped item into the components of the parent
+            this.props.blockAddComponent(parent.id, droppedBlock.id, parent.components.length);
           }
         }
-
-        // add all blocks in the payload
-        const blocks = Array.isArray(payload.item) ? payload.item : [payload.item];
-        // return the list of newly added blocks so we can select them for example
-        blocks.forEach(block => {
-          const newBlock = (payload.source === 'inventory' || payload.copying) ?
-            this.props.blockClone(block) :
-            this.props.blocks[block];
-          newBlocks.push(newBlock.id);
-        });
-
-        //if the block is from the inventory, we've cloned it and dont need to worry about forcing the projectId when we add the components
-        const shouldForceProjectId = payload.source.indexOf('inventory') >= 0;
-
-        // now insert the blocks in one go
-        return this.props.blockAddComponents(parent.id, newBlocks, index, shouldForceProjectId);
+        // return the dropped block for selection
+        return [droppedBlock.id];
       }
-
-      /**
-       * only visible on templates that are not part of the sample(s) project
-       */
-      orderButton() {
-        if (this.props.construct.isTemplate() && !this.isSampleProject()) {
-          const canOrderFromEGF = this.props.construct.components.every(blockId => {
-            const block = this.props.blocks[blockId];
-            if (block.source.source === 'egf') {
-              return true;
-            }
-            const optionIds = Object.keys(block.options);
-            return optionIds.every(optionId => {
-              const option = this.props.blocks[optionId];
-              return option.source.source === 'egf';
-            });
-          });
-
-          return canOrderFromEGF ?
-            <
-            button onClick = {
-              this.onOrderDNA
-            }
-          className = "order-button" > Order DNA < /button> :
-          null;
-        }
-        return null;
-      }
-
-      isSampleProject() {
-        return this.props.projectGet(this.props.currentProjectId).isSample;
-      }
-
-      /**
-       * true if our construct is focused
-       * @return {Boolean}
-       */
-      isFocused() {
-        return this.props.construct.id === this.props.focus.constructId;
-      }
-
-      lockIcon() {
-        if (!this.props.construct.isFrozen()) {
-          return null;
-        }
-        const isFocused = this.props.construct.id === this.props.focus.constructId;
-        const classes = `lockIcon${isFocused ? '' : ' sceneGraph-dark'}`;
-        return ( <
-          div className = {
-            classes
-          } >
-          <
-          RoleSvg symbolName = "lock"
-          color = {
-            this.props.construct.metadata.color
-          }
-          width = "14px"
-          height = "14px"
-          fill = {
-            this.props.construct.metadata.color
-          }
-          /> < /
-          div >
-        );
-      }
-
-      /**
-       * render the component, the scene graph will render later when componentDidUpdate is called
-       */
-      render() {
-        const rendered = ( <
-            div className = "construct-viewer"
-            key = {
-              this.props.construct.id
-            } >
-            <
-            div className = "sceneGraphContainer" >
-            <
-            div className = "sceneGraph" / >
-            <
-            /div> {
-            this.blockContextMenu()
-          } {
-            this.constructContextMenu()
-          } {
-            this.orderButton()
-          } {
-            this.lockIcon()
-          } <
-          /div>
-      );
-      return rendered;
+      // the construct must be empty, add as the first child of the construct
+      this.props.blockAddComponent(parent.id, droppedBlock.id, 0);
+      return [droppedBlock.id];
     }
+
+    // this will become the new blocks we are going to insert, declare here first
+    // in case we do a push down
+    const newBlocks = [];
+
+    // if no edge specified then the parent becomes the target block and index is simply
+    // the length of components to add them at the end of the current children
+    if (insertionPoint && !insertionPoint.edge) {
+      const oldParent = parent;
+      parent = this.props.blocks[insertionPoint.block];
+      index = parent.components.length;
+      // if the block we are targeting already has a sequence then we will replace it with a new empty
+      // block, then insert the old block at the start of the payload so it is added as a child to the new block
+      if (parent.hasSequence()) {
+        // create new block and replace current parent
+        const block = this.props.blockCreate();
+        const replaceIndex = oldParent.components.indexOf(parent.id);
+        invariant(replaceIndex >= 0, 'expect to get an index here');
+        this.props.blockRemoveComponent(oldParent.id, parent.id);
+        this.props.blockAddComponent(oldParent.id, block.id, replaceIndex);
+        // seed new blocks with the old target block
+        newBlocks.push(parent.id);
+        // bump the index
+        index += 1;
+        // now make parent equal to the new block so blocks get added to it.
+        parent = block;
+      }
+    } else {
+      index = parent.components.length;
+      if (insertionPoint) {
+        index = parent.components.indexOf(insertionPoint.block) + (insertionPoint.edge === 'right' ? 1 : 0);
+      }
+    }
+
+    // add all blocks in the payload
+    const blocks = Array.isArray(payload.item) ? payload.item : [payload.item];
+    // return the list of newly added blocks so we can select them for example
+    blocks.forEach(block => {
+      const newBlock = (payload.source === 'inventory' || payload.copying)
+        ? this.props.blockClone(block)
+        : this.props.blocks[block];
+      newBlocks.push(newBlock.id);
+    });
+
+    //if the block is from the inventory, we've cloned it and dont need to worry about forcing the projectId when we add the components
+    const shouldForceProjectId = payload.source.indexOf('inventory') >= 0;
+
+    // now insert the blocks in one go
+    return this.props.blockAddComponents(parent.id, newBlocks, index, shouldForceProjectId);
   }
 
-  function mapStateToProps(state, props) {
-    return {
-      focus: state.focus,
-      construct: state.blocks[props.constructId],
-      blocks: state.blocks,
-    };
+  /**
+   * only visible on templates that are not part of the sample(s) project
+   */
+  orderButton() {
+    if (this.props.construct.isTemplate() && !this.isSampleProject()) {
+      const canOrderFromEGF = this.props.construct.components.every(blockId => {
+        const block = this.props.blocks[blockId];
+        if (block.source.source === 'egf') {
+          return true;
+        }
+        const optionIds = Object.keys(block.options);
+        return optionIds.every(optionId => {
+          const option = this.props.blocks[optionId];
+          return option.source.source === 'egf';
+        });
+      });
+
+      return canOrderFromEGF ?
+        <button onClick={this.onOrderDNA} className="order-button">Order DNA</button> :
+        null;
+    }
+    return null;
   }
-  export default perf(connect(mapStateToProps, {
-    blockCreate,
-    blockDelete,
-    blockDetach,
-    blockClone,
-    blockSetAuthoring,
-    blockSetListBlock,
-    blockAddComponent,
-    blockAddComponents,
-    blockRemoveComponent,
-    blockGetParents,
-    blockSetRole,
-    blockRename,
-    focusBlocks,
-    focusBlocksAdd,
-    focusBlocksToggle,
-    focusBlockOption,
-    focusConstruct,
-    projectGetVersion,
-    projectGet,
-    projectRemoveConstruct,
-    projectAddConstruct,
-    inspectorToggleVisibility,
-    uiShowDNAImport,
-    uiShowOrderForm,
-    uiToggleDetailView,
-    orderCreate,
-    orderGenerateConstructs,
-    orderList,
-    orderSetName,
-  })(ConstructViewer));
+
+  isSampleProject() {
+    return this.props.projectGet(this.props.currentProjectId).isSample;
+  }
+
+  /**
+   * true if our construct is focused
+   * @return {Boolean}
+   */
+  isFocused() {
+    return this.props.construct.id === this.props.focus.constructId;
+  }
+
+  lockIcon() {
+    if (!this.props.construct.isFrozen()) {
+      return null;
+    }
+    const isFocused = this.props.construct.id === this.props.focus.constructId;
+    const classes = `lockIcon${isFocused ? '' : ' sceneGraph-dark'}`;
+    return (
+      <div className={classes}>
+        <RoleSvg
+          symbolName="lock"
+          color={this.props.construct.metadata.color}
+          width="14px"
+          height="14px"
+          fill={this.props.construct.metadata.color}
+        />
+      </div>
+    );
+  }
+
+  /**
+   * render the component, the scene graph will render later when componentDidUpdate is called
+   */
+  render() {
+    const rendered = (
+      <div className="construct-viewer" key={this.props.construct.id}>
+        <div className="sceneGraphContainer">
+          <div className="sceneGraph"/>
+        </div>
+        {this.blockContextMenu()}
+        {this.constructContextMenu()}
+        {this.orderButton()}
+        {this.lockIcon()}
+      </div>
+    );
+    return rendered;
+  }
+}
+
+function mapStateToProps(state, props) {
+  return {
+    focus: state.focus,
+    construct: state.blocks[props.constructId],
+    blocks: state.blocks,
+  };
+}
+
+export default connect(mapStateToProps, {
+  blockCreate,
+  blockDelete,
+  blockDetach,
+  blockClone,
+  blockSetAuthoring,
+  blockSetListBlock,
+  blockAddComponent,
+  blockAddComponents,
+  blockRemoveComponent,
+  blockGetParents,
+  blockSetRole,
+  blockRename,
+  focusBlocks,
+  focusBlocksAdd,
+  focusBlocksToggle,
+  focusBlockOption,
+  focusConstruct,
+  projectGetVersion,
+  projectGet,
+  projectRemoveConstruct,
+  projectAddConstruct,
+  inspectorToggleVisibility,
+  uiShowDNAImport,
+  uiShowOrderForm,
+  uiToggleDetailView,
+  orderCreate,
+  orderGenerateConstructs,
+  orderList,
+  orderSetName,
+})(ConstructViewer);

@@ -734,6 +734,7 @@ export default class ConstructViewerUserInterface extends UserInterface {
    */
   onDrop(globalPosition, payload, event) {
     // no drop on frozen or fixed constructs or collapsed
+    debugger;
     if (this.construct.isFrozen() || this.construct.isFixed() || !this.construct.isAuthoring() || this.layout.collapsed) {
       return;
     }

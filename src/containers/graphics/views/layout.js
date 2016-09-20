@@ -874,7 +874,7 @@ export default class Layout {
             construct         : child.construct,
             blocks            : this.blocks,
             currentBlocks     : this.currentBlocks,
-            currentConstructId: this.currentConstructId
+            currentConstructId: this.currentConstructId,
           });
         });
       }
