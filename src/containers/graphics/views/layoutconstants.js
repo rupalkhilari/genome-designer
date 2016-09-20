@@ -52,7 +52,7 @@ const minHeight = blockH + rowBarH + titleH;
 // height when collapsed
 const collapsedHeight = blockH + titleH + bannerHeight + rowBarH;
 // width of message for collapsed constructs e.g. 'and 123 more...'
-const collapsedMessageWidth = 200;
+const collapsedMessageWidth = 100;
 // padding at right / bottom of scenegraph to make selection easier
 const bottomPad = 50;
 const rightPad = 30;
@@ -123,6 +123,14 @@ export default {
     glyph: 'rectangle',
     strokeWidth: 1,
     stroke: background,
+    fontSize: blockFontSize,
+  },
+  labelAppearance: {
+    color: 'white',
+    fill: 'transparent',
+    glyph: 'rectangle',
+    strokeWidth: 0,
+    stroke: 'transparent',
     fontSize: blockFontSize,
   },
   connectorAppearance: {

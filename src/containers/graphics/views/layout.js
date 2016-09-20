@@ -949,9 +949,28 @@ export default class Layout {
           this.updateConnection(part);
         }
       });
+      if (this.collapsedLabel) {
+        this.collapsedLabel.detach();
+        this.collapsedLabel = null;
+      }
     } else {
       // if collapsed and there were clipped blocks, display the number
-      console.log('Clipped Blocks:', layoutResults.clippedBlocks);
+      if (!this.collapsedLabel) {
+        this.collapsedLabel = new Node2D(Object.assign({}, {
+          sg: this.sceneGraph,
+          glyph: 'rectangle',
+          dataAttribute: {name: 'nodetype', value: 'moreLabel'},
+        }, kT.labelAppearance));
+        this.sceneGraph.root.appendChild(this.collapsedLabel);
+      }
+      const text = layoutResults.clippedBlocks ? `${layoutResults.clippedBlocks} more...` : 'More';
+      this.collapsedLabel.set({
+        text,
+        bounds: new Box2D(this.sceneGraph.availableWidth - kT.collapsedMessageWidth,
+          this.getInitialLayoutPoint().y,
+          kT.collapsedMessageWidth,
+          kT.blockH),
+      });
     }
     // dispose dangling connections
     this.disposeConnections();
