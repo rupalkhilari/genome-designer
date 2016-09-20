@@ -357,11 +357,14 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * true if the point is in the title expander node ( looks like a triangle )
    * @param  {[type]} evt   [description]
    * @param  {[type]} point [description]
-   * @return {[type]}       [description]
+   * @return {Boolean}       [description]
    */
   constructExpander(evt, point) {
     const hits = this.sg.findNodesAt(point);
     const hit = hits.length ? hits.pop() : null;
+    if (hit.dataAttribute && hit.dataAttribute.value === 'moreLabel') {
+      return true;
+    }
     if (hit === this.layout.banner) {
       // inside the banner but should be within the triangle
       const AABB = this.layout.banner.getAABB();
