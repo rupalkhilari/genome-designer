@@ -6,7 +6,7 @@
   "scripts": {
     "start": "babel-node tools/run start",
     "start-instance": "babel-node tools/run start-instance",
-    "start-testing": "REQUIRELOGIN=true NODE_ENV=test npm run start-instance",
+    "start-testing": "REQUIRELOGIN=true NODE_ENV=test PORT=3001 npm run start-instance",
     "start-auth-stack": "babel-node tools/run auth-stack",
     "start-auth-stack-testing": "NODE_ENV=test babel-node tools/run auth-stack",
     "clean": "babel-node tools/run clean",
@@ -31,7 +31,7 @@
     "selenium": "node ./node_modules/selenium-standalone/bin/selenium-standalone install",
     "start-docker": "docker build -t genome-designer . && docker run --privileged -v /var/run/docker.sock:/run/docker.sock -i -p 3000:3000 -t genome-designer",
     "auth": "./bin/local-auth.sh",
-    "auth-testing": "NODE_ENV=test npm run auth",
+    "auth-testing": "NODE_ENV=test PORT=3001 npm run auth",
     "server-auth": "EMAIL=1 COMMAND='npm run start-instance -- --release' ./bin/server-auth.sh"
   },
   "repository": {
