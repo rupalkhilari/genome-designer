@@ -20,7 +20,7 @@ Extensions are listed in `/server/extensions/package.json`
 #### Example
 
 ```
-geneticconstructor.com/homepage/register?projects=emptyProject&extensions=seq-viewer
+geneticconstructor.com/homepage/register?projects=emptyProject&extensions=GC-Sequence-Viewer
 ```
 
 #### Why Query Parameters
