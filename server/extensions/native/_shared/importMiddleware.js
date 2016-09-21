@@ -146,7 +146,7 @@ export function mergeRollupMiddleware(req, res, next) {
       Promise.resolve();
   }))
     .then(() => {
-      if (!projectId) {
+      if (!projectId || returnRoll) {
         return Promise.resolve({
           project,
           blocks,
