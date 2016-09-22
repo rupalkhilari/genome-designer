@@ -15,7 +15,7 @@
  */
 import * as ActionTypes from '../constants/ActionTypes';
 import { getSources } from '../inventory/registry';
-import { getItem, setItem } from '../middleware/localStorageCache';
+import { getLocal, setLocal } from '../utils/ui/localstorage';
 
 /*
  Search results take the form:
@@ -42,7 +42,7 @@ const createSourcesVisible = (valueFunction = () => false, sourceList = getSourc
 };
 
 const searchSources = getSources('search');
-const initialSearchSources = getItem('searchSources') ? getItem('searchSources').split(',') : searchSources;
+const initialSearchSources = getLocal('searchSources') ? getLocal('searchSources').split(',') : searchSources;
 const defaultSearchResults = createEmptySearchResults(searchSources);
 
 export const initialState = {
@@ -142,7 +142,7 @@ export default function inventory(state = initialState, action) {
   }
   case ActionTypes.INVENTORY_SET_SOURCES : {
     const { sourceList } = action;
-    setItem('searchSources', sourceList.join(','));
+    setLocal('searchSources', sourceList.join(','));
     return Object.assign({}, state, {
       sourceList,
     });

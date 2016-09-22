@@ -10,18 +10,18 @@ module.exports = {
 
   selenium: {
     start_process: true,
-    server_path: './node_modules/selenium-standalone/.selenium/selenium-server/2.53.1-server.jar',
+    server_path: './node_modules/selenium-standalone/.selenium/selenium-server/2.50.1-server.jar',
     log_path: '',
     host: '127.0.0.1',
     port: 4444,
     cli_args: {
-      'webdriver.chrome.driver': './node_modules/selenium-standalone/.selenium/chromedriver/2.24-x64-chromedriver',
+      'webdriver.chrome.driver': './node_modules/selenium-standalone/.selenium/chromedriver/2.21-x64-chromedriver',
     },
   },
 
   test_settings: {
     local: {
-      launch_url: 'http://localhost:3000/',
+      launch_url: 'http://localhost:3001/',
       selenium_port: 4444,
       selenium_host: '127.0.0.1',
       silent: true,
@@ -37,7 +37,7 @@ module.exports = {
     },
 
     default: {
-      launch_url: 'http://localhost:3000',
+      launch_url: 'http://localhost:3001',
       selenium_port: 80,
       selenium_host: 'ondemand.saucelabs.com',
       desiredCapabilities: {
