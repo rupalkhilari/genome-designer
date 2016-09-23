@@ -74,14 +74,14 @@ class ImportPartsCSVModal extends Component {
     const prefix = parseInt(this.refs.prefixInput.value, 10);
     const suffix = parseInt(this.refs.suffixInput.value, 10);
 
-    if (!isFinite(prefix) || prefix <= 0 || prefix >= 10000) {
+    if (!isFinite(prefix) || prefix < 0 || prefix >= 10000) {
       this.setState({
         error: 'Please enter a valid prefix between 0 and 10000.',
       });
       return;
     }
 
-    if (!isFinite(suffix) || suffix <= 0 || suffix >= 10000) {
+    if (!isFinite(suffix) || suffix < 0 || suffix >= 10000) {
       this.setState({
         error: 'Please enter a valid suffix between 0 and 10000.',
       });
@@ -101,22 +101,25 @@ class ImportPartsCSVModal extends Component {
       this.props.uiSpin('Importing your parts... Please wait');
       const file = this.state.files[0];
       importFile('convert', file)
-        .then(({ project, blocks }) => {
-          const blockModels = Object.keys(blocks)
-            .map(blockId => new Block(blocks[blockId]))
-            .map(block => block.setSequenceTrim(prefix, suffix));
-          this.props.blockStash(...blockModels);
-          this.props.blockOptionsAdd(this.props.listBlock.id, ...blockModels.map(block => block.id));
-          this.props.uiShowPartsCSVImport(false);
-          this.props.uiSpin();
-        })
-        .catch(reason => {
-          this.setState({
-            error: reason.statusText,
-            processing: false,
-          });
-          this.props.uiSpin();
+      .then(({ project, blocks }) => {
+        const blockModels = Object.keys(blocks)
+        .map(blockId => new Block(blocks[blockId]))
+        .map(block => block.setSequenceTrim(prefix, suffix));
+        this.props.blockStash(...blockModels);
+        this.props.blockOptionsAdd(this.props.listBlock.id, ...blockModels.map(block => block.id));
+        this.props.uiShowPartsCSVImport(false);
+        this.setState({
+          processing: false,
         });
+        this.props.uiSpin();
+      })
+      .catch(reason => {
+        this.setState({
+          error: reason.statusText,
+          processing: false,
+        });
+        this.props.uiSpin();
+      });
     }
   }
 
