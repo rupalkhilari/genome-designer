@@ -26,7 +26,7 @@ import {
   blockOptionsAdd,
 } from '../../actions/blocks';
 import Block from '../../models/Block';
-import { importGenbankOrCSV } from '../../middleware/genbank';
+import { importFile } from '../../middleware/csv';
 import invariant from 'invariant';
 
 import '../../../src/styles/partscsv.css';
@@ -100,7 +100,7 @@ class ImportPartsCSVModal extends Component {
       });
       this.props.uiSpin('Importing your parts... Please wait');
       const file = this.state.files[0];
-      importGenbankOrCSV(file, 'convert')
+      importFile('convert', file)
         .then(({ project, blocks }) => {
           const blockModels = Object.keys(blocks)
             .map(blockId => new Block(blocks[blockId]))

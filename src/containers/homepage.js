@@ -25,6 +25,11 @@ import { projectOpen } from '../actions/projects';
 import {
   privacy,
 } from '../utils/ui/uiapi';
+import {
+  getLocal,
+  setLocal,
+} from '../utils/ui/localstorage';
+
 
 export class HomePage extends Component {
   static propTypes = {
@@ -80,7 +85,7 @@ export class HomePage extends Component {
    * used is closing the cookie warnig so update local storage as seen
    */
   cookieWarningClosed() {
-    localStorage.setItem('cookie-warning', 'acknowledged');
+    setLocal('cookie-warning', 'acknowledged');
     this.setState({
       showCookieWarning: false,
     });
@@ -88,7 +93,7 @@ export class HomePage extends Component {
 
   // truthy if the cookie warning must be shown
   showCookieWarning() {
-    return !localStorage.getItem('cookie-warning');
+    return !getLocal('cookie-warning');
   }
 
   render() {

@@ -188,7 +188,10 @@ export default class ConstructViewerUserInterface extends UserInterface {
   get construct() {
     return this.constructViewer.props.construct;
   }
-
+  // syntax sugar to determine if collapsed
+  get collapsed() {
+    return this.layout.collapsed;
+  }
   /**
    * mouse enter/leave are used to ensure no block is in the hover state
    */
@@ -250,9 +253,11 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * mouse move handler ( note, not the same as drag which is with a button held down )
    */
   mouseMove(evt, point) {
-    const hits = this.sg.findNodesAt(point);
-    this.setTitleHover(this.isConstructTitleNode(hits.length ? hits.pop() : null));
-    this.setBlockHover(this.topBlockAt(point));
+    if (!this.collapsed) {
+      const hits = this.sg.findNodesAt(point);
+      this.setTitleHover(this.isConstructTitleNode(hits.length ? hits.pop() : null));
+      this.setBlockHover(this.topBlockAt(point));
+    }
   }
 
   /**
@@ -347,6 +352,26 @@ export default class ConstructViewerUserInterface extends UserInterface {
     }
     return false;
   }
+  /**
+   * true if the point is in the title expander node ( looks like a triangle )
+   * @param  {[type]} evt   [description]
+   * @param  {[type]} point [description]
+   * @return {Boolean}       [description]
+   */
+  constructExpander(evt, point) {
+    const hits = this.sg.findNodesAt(point);
+    const hit = hits.length ? hits.pop() : null;
+    if (hit.dataAttribute && hit.dataAttribute.value === 'moreLabel') {
+      return true;
+    }
+    if (hit === this.layout.banner) {
+      // inside the banner but should be within the triangle
+      const AABB = this.layout.banner.getAABB();
+      // just a box test, which is more forgiving for the user
+      return point.x - AABB.x < AABB.height;
+    }
+    return false;
+  }
 
   /**
    * select with mouse including handling ancillary actions like opening the context menu and toggle nested construct
@@ -355,10 +380,26 @@ export default class ConstructViewerUserInterface extends UserInterface {
     evt.preventDefault();
     // select construct whenever a selection occcurs regardless of blocks hit etc
     this.selectConstruct();
+
+    // text expander toggle first
+    if (this.constructExpander(event, point)) {
+      this.layout.setCollapsed(!this.layout.collapsed);
+      if (this.collapsed) {
+        this.constructViewer.blockSelected([]);
+      }
+      this.constructViewer.update();
+      return;
+    }
+    // ignore everything else if we are collapsed
+    if (this.collapsed) {
+      return;
+    }
+
     // open construct menu for title according to position
     if (this.titleContextMenu(evt, point, true)) {
       return;
     }
+
     // check for block select
     const block = this.topBlockAt(point);
     if (block) {
@@ -526,6 +567,11 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * to the DND manager to handle
    */
   mouseDrag(evt, point, startPoint, distance) {
+    // ignore if collapsed
+    if (this.collapsed) {
+      return;
+    }
+
     // ignore drags until they reach a certain vector threshold
     if (distance > dragThreshold && !this.fence) {
       // start a block drag if we have one
@@ -656,7 +702,11 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * drag over event
    */
   onDragOver(globalPosition, payload, proxySize) {
-    // select construct on drag over
+    // ignore if collapsed
+    if (this.layout.collapsed) {
+      return;
+    }
+    // select construct on drag over (unless collapsed)
     this.selectConstruct();
     // no drop on frozen or fixed constructs
     if (this.construct.isFrozen() || (this.construct.isFixed() && !this.construct.isAuthoring())) {
@@ -685,8 +735,8 @@ export default class ConstructViewerUserInterface extends UserInterface {
    * to our actual constructViewer which has all the necessary props
    */
   onDrop(globalPosition, payload, event) {
-    // no drop on frozen or fixed constructs
-    if (this.construct.isFrozen() || (this.construct.isFixed() && !this.construct.isAuthoring())) {
+    // no drop on frozen or fixed constructs or collapsed
+    if (this.layout.collapsed || this.construct.isFrozen() || (this.construct.isFixed() && !this.construct.isAuthoring())) {
       return;
     }
     // for now templates can only be dropped on the new construct target which is part of the canvas
