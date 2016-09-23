@@ -68,29 +68,38 @@ router.post('/import/:format/:projectId?',
           return Promise.reject('no valid blocks');
         }
 
-        //wrap all the blocks in a construct (so they dont appear as top-level constructs), add constructs to the blocks Object
+        const roll = { sequences };
 
-        const allBlocks = blockIds.reduce((acc, blockId) => {
-          const row = blocks[blockId].metadata.csv_row;
-          const fileName = blocks[blockId].metadata.csv_file;
-          const name = fileName + (row > 0 ? ' - row ' + row : '');
-          const construct = Block.classless({
-            components: [blockId],
-            metadata: {
-              name,
-            },
+        //hack - if we are doing a convert, then dont wrap with constructs
+        if (projectId === 'convert') {
+          Object.assign(roll, {
+            project: Project.classless({ components: blockIds }),
+            blocks,
           });
-          return Object.assign(acc, { [construct.id]: construct });
-        }, blocks);
+        } else {
+          //wrap all the blocks in a construct (so they dont appear as top-level constructs), add constructs to the blocks Object
 
-        const constructIds = Object.keys(allBlocks).filter(blockId => allBlocks[blockId].components.length > 0);
+          const allBlocks = blockIds.reduce((acc, blockId) => {
+            const row = blocks[blockId].metadata.csv_row;
+            const fileName = blocks[blockId].metadata.csv_file;
+            const name = fileName + (row > 0 ? ' - row ' + row : '');
+            const construct = Block.classless({
+              components: [blockId],
+              metadata: {
+                name,
+              },
+            });
+            return Object.assign(acc, { [construct.id]: construct });
+          }, blocks);
 
-        const project = Project.classless({ components: constructIds });
-        const roll = {
-          project,
-          blocks: allBlocks,
-          sequences,
-        };
+          const constructIds = Object.keys(allBlocks).filter(blockId => allBlocks[blockId].components.length > 0);
+
+          const project = Project.classless({ components: constructIds });
+          Object.assign(roll, {
+            project,
+            blocks: allBlocks,
+          });
+        }
 
         Object.assign(req, { roll });
         next();

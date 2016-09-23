@@ -36,6 +36,9 @@ export function importFile(projectId = null, ...files) {
   return uploadFiles(url, {}, ...files)
     .then(resp => resp.json())
     .then(json => {
+      if (projectId === 'convert') {
+        return json;
+      }
       invariant(json && json.projectId, 'expect a project ID');
       return json.projectId;
     });
