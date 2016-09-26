@@ -50,3 +50,4 @@ export default class InspectorRole extends Component {
     );
   }
 }
+

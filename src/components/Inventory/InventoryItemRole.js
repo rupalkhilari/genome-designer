@@ -16,10 +16,7 @@ limitations under the License.
 import React, { Component, PropTypes } from 'react';
 import { role as roleDragType } from '../../constants/DragTypes';
 import Block from '../../models/Block';
-
 import InventoryItem from './InventoryItem';
-
-//note - if we know we have a (non-construct) block as inventory item, then we dont need to do any transactions / deep cloning - inventory drag + drop is straight forward. Use InventoryConstruct if you have a block that may be a construct (with components) OR a block.
 
 export default class InventoryItemRole extends Component {
   static propTypes = {

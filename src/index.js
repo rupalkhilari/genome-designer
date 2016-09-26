@@ -21,6 +21,7 @@ import * as actionTypes from './constants/ActionTypes';
 import store, { lastAction } from './store/index';
 import orchestrator from './store/api';
 import extensions from './extensions/_expose';
+import DnD from './containers/graphics/dnd/dnd';
 
 render(
   <Provider store={store}>
@@ -64,4 +65,5 @@ Object.assign(exposed, {
     },
     replaceReducer: () => {}, //hide from 3rd party
   },
+  DnD,
 });

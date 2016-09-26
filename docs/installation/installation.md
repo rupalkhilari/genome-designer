@@ -43,6 +43,13 @@ If you have the bio-user-platform installed, you can run the server with authent
 
 [Click here to read how to install the bio-user-platform](./installation-bio-user-platform.md)
 
+## Extensions
+
+Once the server is up and running, you might need to make sure that certain specific server requirements as noted in the extension's README.md are installed. Currently, only the `gslEditor` extension requires manual installation of Mono/F# on the server as it requires `sudo` access to do so. If you need to run GSL code within the `gslEditor` extension, you could view [its README.md](../extensions/gslEditor/README.md) for Mono/F# installation instructions or run following command:
+
+```./extensions/gslEditor/tools/install-fsharp.sh```
+
+
 ## Troubleshooting
 
 If you encounter an issue in installation, it may be covered in notes on [troubleshooting](./troubleshooting.md).

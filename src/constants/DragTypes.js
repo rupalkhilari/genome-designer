@@ -27,3 +27,6 @@ export const block = 'BLOCK';
 
 //Role e.g. SBOL symbol
 export const role = 'ROLE';
+
+//GSL element
+export const gsl = 'GSL';

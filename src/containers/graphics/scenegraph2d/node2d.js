@@ -259,7 +259,7 @@ export default class Node2D {
       textDIV = document.createElement('DIV');
       textDIV.style.display = 'inline-block';
       textDIV.style.position = 'absolute';
-      textDIV.style.left = '-100000px';
+      textDIV.style.left = textDIV.style.top = '-100000px';
       textDIV.style.padding = 0;
       textDIV.style.visibility = 'hidden';
       document.body.appendChild(textDIV);

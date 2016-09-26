@@ -67,6 +67,10 @@ export class Inventory extends Component {
                             type="role"
                             isActive={currentTab === 'role'}
                             setActive={() => inventorySelectTab('role')} />
+            <InventoryGroup title="GSL Library"
+                            type="gsl"
+                            isActive={currentTab === 'gsl'}
+                            setActive={() => inventorySelectTab('gsl')} />
           </div>
         </div>
       </div>

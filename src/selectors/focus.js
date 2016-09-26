@@ -1,18 +1,18 @@
 /*
-Copyright 2016 Autodesk,Inc.
+ Copyright 2016 Autodesk,Inc.
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+ http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-*/
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
 import * as BlockSelector from './blocks';
 
 const _getCurrentProjectId = () => {
@@ -22,8 +22,16 @@ const _getCurrentProjectId = () => {
 
 //todo - this should not be exposed as part of 3rd party API... exported so inspector can share
 export const _getFocused = (state, defaultToConstruct = true, defaultProjectId = null) => {
-  const { level, forceProject, forceBlocks, constructId, blockIds, options, roleId } = state.focus;
+  const { level, forceProject, forceBlocks, constructId, blockIds, gslId, roleId, options } = state.focus;
   const projectId = _getCurrentProjectId();
+
+  if (level === 'gsl') {
+    return {
+      type: 'gsl',
+      readOnly: true,
+      focused: gslId,
+    };
+  }
 
   if (level === 'role') {
     return {

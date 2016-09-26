@@ -37,6 +37,9 @@ import { block as blockDragType } from '../../../constants/DragTypes';
 
 import '../../../styles/constructviewercanvas.css';
 
+const defaultDropMessage = 'Drop blocks here to create a new construct.';
+const droppingMessage = 'Building new construct...';
+
 export class ConstructViewerCanvas extends Component {
   static propTypes = {
     uiSpin: PropTypes.func.isRequired,
@@ -53,6 +56,9 @@ export class ConstructViewerCanvas extends Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+      dropMessage: defaultDropMessage,
+    };
   }
 
   /**
@@ -75,6 +81,11 @@ export class ConstructViewerCanvas extends Component {
       },
       dragLeave: () => {
         ReactDOM.findDOMNode(this.refs.dropTarget).classList.remove('cvc-hovered');
+      },
+      dragEnd: () => {
+        this.setState({
+          dropMessage: droppingMessage,
+        });
       },
       zorder: -1,
     });

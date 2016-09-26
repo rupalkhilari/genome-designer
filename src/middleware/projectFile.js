@@ -90,6 +90,6 @@ export const listProjectFiles = (projectId, extension) => {
   invariant(projectId, 'projectId is required');
   invariant(extension, 'must pass an extension');
 
-  return rejectingFetch(projectFilePath(projectId, extension), headersGet())
+  return rejectingFetch(projectFilePath(projectId, extension, ''), headersGet())
     .then(resp => resp.text());
 };
