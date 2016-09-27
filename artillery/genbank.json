@@ -1,19 +1,19 @@
 {
-  "comment": "Register a user and create and save a very simple construct.",
+  "comment": "Register a user an upload a genbank file into a new project",
   "config": {
     "processor": "./helpers.js",
     "target": "https://geneticconstructor.bionano.autodesk.com",
     "timeout": 120,
     "phases": [
       {
-        "duration": 10,
+        "duration": 5,
         "arrivalCount": 1
       }
     ]
   },
   "scenarios": [
     {
-      "name": "register",
+      "name": "genbank",
       "flow": [
         {
           "post": {
@@ -44,10 +44,9 @@
         },
         {
           "post": {
-            "beforeRequest": "createSimpleProjectJSON",
-            "headers": {
-              "Content-Type": "application/json"
-            }
+            "url": "/extensions/api/genbank/import/file",
+            "beforeRequest": "createGenbankUpload",
+            "headers": {}
           }
         }
       ]

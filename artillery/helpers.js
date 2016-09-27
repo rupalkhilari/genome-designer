@@ -1,9 +1,11 @@
 var uuid = require('../node_modules/node-uuid/uuid.js');
+var fs = require('fs');
 
 module.exports = {
 
   createUserJSON,
   createSimpleProjectJSON,
+  createGenbankUpload,
 
 };
 
@@ -25,6 +27,23 @@ function createUserJSON(requestParams, context, ee, next) {
     },
     config: {},
   };
+  return next();
+}
+
+/**
+ * send a genbank file to the server and have it added to a new project.
+ * @param requestParams
+ * @param context
+ * @param ee
+ * @param next
+ * @returns {*}
+ */
+function createGenbankUpload(requestParams, context, ee, next) {
+  const boundary = 'gc0p4Jq0M2Yt08jU534c0p';
+  requestParams.headers['content-type'] = `multipart/form-data; boundary=${boundary}`;
+  const file = fs.readFileSync('artillery/test.gb').toString();
+  requestParams.body = `--${boundary}\r\nContent-Disposition: form-data; name="data"; filename="test.gb"\r\nContent-Type: biosequence/genbank\r\n\r\n${file}\r\n--${boundary}--`;
+  requestParams.headers['Content-Length'] = requestParams.body.length;
   return next();
 }
 
