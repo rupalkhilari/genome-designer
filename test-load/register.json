@@ -6,8 +6,8 @@
     "timeout": 120,
     "phases": [
       {
-        "duration": 60,
-        "arrivalCount": 5
+        "duration": 10,
+        "arrivalCount": 2
       }
     ]
   },
