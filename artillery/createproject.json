@@ -44,8 +44,6 @@
         },
         {
           "post": {
-            "url": "fill me in URL",
-            "json": "fill me in JSON",
             "beforeRequest": "createSimpleProjectJSON",
             "headers": {
               "Content-Type": "application/json"

@@ -40,7 +40,7 @@ function createSimpleProjectJSON(requestParams, context, ee, next) {
 
   // create project ID and use it to set the end point
   const projectId = `project-${uuid.v4()}`;
-  requestParams.url = `/data/projects/${projectId}`;
+  requestParams.url = `${context.vars.target}/data/projects/${projectId}`;
 
   // create a parent construct id and a child block id
   const parentId = `block-${uuid.v4()}`;
@@ -50,7 +50,7 @@ function createSimpleProjectJSON(requestParams, context, ee, next) {
   const past = Date.now() - 5000;
 
   // setup project JSON rollup
-  requestParams.json = {
+  const project = {
     'project': {
       'id': projectId,
       'parents': [],
@@ -70,7 +70,7 @@ function createSimpleProjectJSON(requestParams, context, ee, next) {
     'blocks': {},
   };
 
-  requestParams.json.blocks[parentId] = {
+  project.blocks[parentId] = {
     'id': parentId,
     'parents': [],
     'metadata': {
@@ -102,7 +102,7 @@ function createSimpleProjectJSON(requestParams, context, ee, next) {
     'projectId': projectId,
   };
 
-  requestParams.json.blocks[childId] = {
+  project.blocks[childId] = {
 
     'id': childId,
     'parents': [],
@@ -134,5 +134,7 @@ function createSimpleProjectJSON(requestParams, context, ee, next) {
     'notes': {},
     'projectId': projectId,
   };
+  requestParams.json = project;
+
   return next();
 }
