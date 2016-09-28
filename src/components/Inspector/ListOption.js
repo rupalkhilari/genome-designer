@@ -17,7 +17,7 @@ import React, { PropTypes } from 'react';
 
 import '../../styles/ListOption.css';
 
-export default function ListOption({ option, selected, onClick, onDelete }) {
+export default function ListOption({ option, selected, onClick, onDelete, toggleOnly }) {
   return (
     <div className={'ListOption' +
                     (selected ? ' selected' : '')}
@@ -25,13 +25,14 @@ export default function ListOption({ option, selected, onClick, onDelete }) {
       <span className="ListOption-check">
         &#x2714;
       </span>
-      <span className="ListOption-name">
+      <span className="ListOption-name"
+            title={option.metadata.name}>
         {option.metadata.name}
       </span>
-      <span className="ListOption-delete"
+      {!toggleOnly && (<span className="ListOption-delete"
             onClick={(evt) => { evt.stopPropagation(); onDelete(option); }}>
         &#10006;
-      </span>
+      </span>)}
     </div>
   );
 }
@@ -39,10 +40,12 @@ export default function ListOption({ option, selected, onClick, onDelete }) {
 ListOption.propTypes = {
   option: PropTypes.shape({
     id: PropTypes.string.isRequired,
+    metadata: PropTypes.object.isRequired,
     source: PropTypes.object.isRequired,
   }).isRequired,
   defaultName: PropTypes.string,
   onClick: PropTypes.func,
   onDelete: PropTypes.func,
   selected: PropTypes.bool,
+  toggleOnly: PropTypes.bool,
 };

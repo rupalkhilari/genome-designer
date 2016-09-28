@@ -85,7 +85,7 @@ export class ListOptions extends Component {
           return (
             <ListOption
               option={item}
-              toggleOnly={!isFrozen && !toggleOnly}
+              toggleOnly={isFrozen || toggleOnly}
               key={item.id}
               selected={options[item.id]}
               onDelete={(option) => this.onDeleteOption(option)}
