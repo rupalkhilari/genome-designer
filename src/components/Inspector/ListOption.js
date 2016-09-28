@@ -17,7 +17,7 @@ import React, { PropTypes } from 'react';
 
 import '../../styles/ListOption.css';
 
-export default function ListOption({ option, selected, onClick }) {
+export default function ListOption({ option, selected, onClick, onDelete }) {
   return (
     <div className={'ListOption' +
                     (selected ? ' selected' : '')}
@@ -27,6 +27,10 @@ export default function ListOption({ option, selected, onClick }) {
       </span>
       <span className="ListOption-name">
         {option.metadata.name}
+      </span>
+      <span className="ListOption-delete"
+            onClick={(evt) => { evt.stopPropagation(); onDelete(option); }}>
+        &#10006;
       </span>
     </div>
   );
@@ -39,5 +43,6 @@ ListOption.propTypes = {
   }).isRequired,
   defaultName: PropTypes.string,
   onClick: PropTypes.func,
+  onDelete: PropTypes.func,
   selected: PropTypes.bool,
 };
