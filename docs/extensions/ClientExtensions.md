@@ -97,4 +97,4 @@ Options include:
 boundingBox - boundingRect of container element
 ```
 
-Can pass an unregister() callback (e.g. to clean up listeners)
+Can pass an `unregister()` callback (e.g. to clean up listeners)
